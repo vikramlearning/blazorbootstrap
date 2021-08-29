@@ -14,13 +14,17 @@ namespace BlazorBootstrap.Components
 
         private Color color = Color.None;
 
-        private Size? size;
+        private Size size = Size.None;
 
         private bool outline;
+
+        private bool disabled;
 
         private bool active;
 
         private bool block;
+
+        private bool loading;
 
         #endregion
 
@@ -31,8 +35,12 @@ namespace BlazorBootstrap.Components
         {
             builder.Append(BootstrapClassProvider.Button());
             builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != Color.None && !Outline);
-
-            // TODO: pending
+            builder.Append(BootstrapClassProvider.ButtonOutline(Color), Color != Color.None && Outline);
+            builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Enums.Size.None);
+            builder.Append(BootstrapClassProvider.ButtonDisabled(), disabled);
+            builder.Append(BootstrapClassProvider.ButtonActive(), active);
+            builder.Append(BootstrapClassProvider.ButtonBlock(), Block);
+            builder.Append(BootstrapClassProvider.ButtonLoading(), Loading && LoadingTemplate != null);
 
             base.BuildClasses(builder);
         }
@@ -43,7 +51,24 @@ namespace BlazorBootstrap.Components
                 .OpenElement(Type.ToButtonTagName())
                 .Type(Type.ToButtonTypeString())
                 .Class(ClassNames)
-                .Style(StyleNames);
+                .Style(StyleNames)
+                .Disabled(Disabled)
+                .AriaPressed(Active)
+                .TabIndex(TabIndex).DataBootstrap("toggle", "button");
+
+            if(Type == ButtonType.Link)
+            {
+                builder.Role("button")
+                    .Href(To)
+                    .Target(Target);
+
+                if (Disabled)
+                {
+                    builder
+                        .TabIndex(-1)
+                        .AriaDisabled("true");
+                }
+            }
 
             builder.Attributes(Attributes);
             builder.Content(ChildContent);
@@ -62,14 +87,13 @@ namespace BlazorBootstrap.Components
         /// <summary>
         /// Gets or sets the button color.
         /// </summary>
-        [Parameter]
+        [Parameter] 
         public Color Color
         {
             get => color;
             set
             {
                 color = value;
-
                 DirtyClasses();
             }
         }
@@ -78,13 +102,12 @@ namespace BlazorBootstrap.Components
         /// Changes the size of a button.
         /// </summary>
         [Parameter]
-        public Size? Size
+        public Size Size
         {
             get => size;
             set
             {
                 size = value;
-
                 DirtyClasses();
             }
         }
@@ -99,7 +122,6 @@ namespace BlazorBootstrap.Components
             set
             {
                 outline = value;
-
                 DirtyClasses();
             }
         }
@@ -107,17 +129,16 @@ namespace BlazorBootstrap.Components
         /// <summary>
         /// When set to 'true', disables the component's functionality and places it in a disabled state.
         /// </summary>
-        //[Parameter]
-        //public bool Disabled
-        //{
-        //    get => disabled || !canExecuteCommand.GetValueOrDefault(true);
-        //    set
-        //    {
-        //        disabled = value;
-
-        //        DirtyClasses();
-        //    }
-        //}
+        [Parameter]
+        public bool Disabled
+        {
+            get => disabled; // || !canExecuteCommand.GetValueOrDefault(true);
+            set
+            {
+                disabled = value;
+                DirtyClasses();
+            }
+        }
 
         /// <summary>
         /// When set to 'true', places the component in the active state with active styling.
@@ -129,7 +150,6 @@ namespace BlazorBootstrap.Components
             set
             {
                 active = value;
-
                 DirtyClasses();
             }
         }
@@ -144,10 +164,44 @@ namespace BlazorBootstrap.Components
             set
             {
                 block = value;
-
                 DirtyClasses();
             }
         }
+
+        /// <summary>
+        /// Shows the loading spinner or a <see cref="LoadingTemplate"/>.
+        /// </summary>
+        [Parameter]
+        public bool Loading
+        {
+            get => loading;
+            set
+            {
+                loading = value;
+                DirtyClasses();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the component loading template.
+        /// </summary>
+        [Parameter] public RenderFragment LoadingTemplate { get; set; }
+
+        /// <summary>
+        /// Denotes the target route of the <see cref="ButtonType.Link"/> button.
+        /// </summary>
+        [Parameter] public string To { get; set; }
+
+
+        /// <summary>
+        /// The target attribute specifies where to open the linked document for a <see cref="ButtonType.Link"/>.
+        /// </summary>
+        [Parameter] public Target Target { get; set; } = Target.None;
+
+        /// <summary>
+        /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
+        /// </summary>
+        [Parameter] public int? TabIndex { get; set; }
 
         /// <summary>
         /// Specifies the content to be rendered inside this <see cref="Button"/>.
@@ -155,5 +209,8 @@ namespace BlazorBootstrap.Components
         [Parameter] public RenderFragment ChildContent { get; set; }
 
         #endregion
+
+        // TODO:
+        // Disable text wrapping: https://getbootstrap.com/docs/5.1/components/buttons/#disable-text-wrapping
     }
 }

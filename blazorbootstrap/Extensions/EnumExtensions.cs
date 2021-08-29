@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap.Extensions
+﻿using BlazorBootstrap.Enums;
+
+namespace BlazorBootstrap.Extensions
 {
     public static class EnumExtensions
     {
@@ -21,5 +23,17 @@
                 _ => null,
             };
         }
+
+        /// <summary>
+        /// Gets the link target name.
+        /// </summary>
+        public static string ToTargetString(this Target target) => target switch
+        {
+            Target.Blank => "_blank",
+            Target.Parent => "_parent",
+            Target.Top => "_top",
+            Target.Self => "_self",
+            _ => null,
+        };
     }
 }

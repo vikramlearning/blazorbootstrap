@@ -1,4 +1,5 @@
 ﻿#region Using directives
+using BlazorBootstrap.Enums;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
@@ -102,15 +103,15 @@ namespace BlazorBootstrap.Extensions
             return builder;
         }
 
-        //public static RenderTreeBuilder Target(this RenderTreeBuilder builder, Target target, [CallerLineNumber] int line = 0)
-        //{
-        //    if (target != Blazorise.Target.None)
-        //    {
-        //        builder.AddAttribute(line, "target", target.ToTargetString());
-        //    }
+        public static RenderTreeBuilder Target(this RenderTreeBuilder builder, Target target, [CallerLineNumber] int line = 0)
+        {
+            if (target != Enums.Target.None)
+            {
+                builder.AddAttribute(line, "target", target.ToTargetString());
+            }
 
-        //    return builder;
-        //}
+            return builder;
+        }
 
         public static RenderTreeBuilder Disabled(this RenderTreeBuilder builder, bool value, [CallerLineNumber] int line = 0)
         {
@@ -135,6 +136,12 @@ namespace BlazorBootstrap.Extensions
             return builder;
         }
 
+        public static RenderTreeBuilder DataBootstrap(this RenderTreeBuilder builder, string name, object value, [CallerLineNumber] int line = 0)
+        {
+            builder.AddAttribute(line, $"data-bs-{name}", value);
+            return builder;
+        }
+
         public static RenderTreeBuilder TabIndex(this RenderTreeBuilder builder, int? value, [CallerLineNumber] int line = 0)
         {
             builder.AddAttribute(line, "tabindex", value);
@@ -142,9 +149,13 @@ namespace BlazorBootstrap.Extensions
             return builder;
         }
 
-        public static RenderTreeBuilder AriaPressed(this RenderTreeBuilder builder, object value, [CallerLineNumber] int line = 0)
+        public static RenderTreeBuilder AriaPressed(this RenderTreeBuilder builder, bool value, [CallerLineNumber] int line = 0)
         {
-            return Aria(builder, "pressed", value, line);
+            if (value)
+            {
+                return Aria(builder, "pressed", "true", line);
+            }
+            return builder;
         }
 
         public static RenderTreeBuilder AriaHidden(this RenderTreeBuilder builder, object value, [CallerLineNumber] int line = 0)
