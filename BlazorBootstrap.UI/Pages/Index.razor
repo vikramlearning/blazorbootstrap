@@ -83,3 +83,25 @@
     <Button Type="ButtonType.Link" Color="Enums.Color.Primary" To="#" Active="true"> Active toggle button </Button>
     <Button Type="ButtonType.Link" Color="Enums.Color.Primary" To="#" Disabled="true"> Disabled toggle button </Button>
 </p>
+
+<h4>Button Click</h4>
+<p>
+    <Button Color="Enums.Color.Primary" Clicked="@OnClickedTest" CommandParameter="@IsFormValid"> Toggle button </Button>
+</p>
+
+@code{
+
+    public bool IsFormValid = false;
+
+    protected void OnClickedTest()
+    {
+        Console.WriteLine("clicked");
+
+        Console.WriteLine("Form not valid");
+
+        //IsFormValid = true;
+    }
+
+
+
+}

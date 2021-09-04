@@ -4,6 +4,10 @@ using BlazorBootstrap.Extensions;
 using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Components.RenderTree;
+using System;
+using System.Threading.Tasks;
+using System.Windows.Input;
 #endregion
 
 namespace BlazorBootstrap.Components
@@ -26,6 +30,12 @@ namespace BlazorBootstrap.Components
 
         private bool loading;
 
+        private ICommand command;
+
+        private object commandParameter;
+
+        private bool? canExecuteCommand;
+
         #endregion
 
         #region Methods
@@ -45,6 +55,17 @@ namespace BlazorBootstrap.Components
             base.BuildClasses(builder);
         }
 
+        protected async Task ClickHandler()
+        {
+            if (!Disabled)
+            {
+                await Clicked.InvokeAsync(null); 
+                
+                // Don't need to check CanExecute again is already part of Disabled check
+                Command?.Execute(CommandParameter);
+            }
+        }
+
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             builder
@@ -54,7 +75,8 @@ namespace BlazorBootstrap.Components
                 .Style(StyleNames)
                 .Disabled(Disabled)
                 .AriaPressed(Active)
-                .TabIndex(TabIndex).DataBootstrap("toggle", "button");
+                .TabIndex(TabIndex);
+                //.DataBootstrap("toggle", "button");
 
             if(Type == ButtonType.Link)
             {
@@ -70,9 +92,53 @@ namespace BlazorBootstrap.Components
                 }
             }
 
+            // click
+            builder.OnClick(this, EventCallback.Factory.Create(this, ClickHandler));
+
             builder.Attributes(Attributes);
             builder.Content(ChildContent);
             builder.CloseElement();
+        }
+
+        private void BindCommand(ICommand value)
+        {
+            if (command != null)
+            {
+                command.CanExecuteChanged -= OnCanExecuteChanged;
+            }
+
+            command = value;
+
+            if (command != null)
+            {
+                command.CanExecuteChanged += OnCanExecuteChanged;
+            }
+
+            OnCanExecuteChanged(value, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Occurs when changes occur that affect whether or not the command should execute.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="eventArgs"></param>
+        protected virtual void OnCanExecuteChanged(object sender, EventArgs eventArgs)
+        {
+            var canExecute = Command?.CanExecute(CommandParameter);
+
+            if (canExecute != canExecuteCommand)
+            {
+                canExecuteCommand = canExecute;
+
+                //if (Rendered)
+                {
+                    // in case some provider is using Disabled flag for custom styles
+                    DirtyStyles();
+                    DirtyClasses();
+
+                    InvokeAsync(StateHasChanged);
+                }
+            }
         }
 
         #endregion
@@ -83,6 +149,11 @@ namespace BlazorBootstrap.Components
         /// Defines the button type.
         /// </summary>
         [Parameter] public ButtonType Type { get; set; } = ButtonType.Button;
+
+        /// <summary>
+        /// Occurs when the button is clicked.
+        /// </summary>
+        [Parameter] public EventCallback Clicked { get; set; }
 
         /// <summary>
         /// Gets or sets the button color.
@@ -132,7 +203,7 @@ namespace BlazorBootstrap.Components
         [Parameter]
         public bool Disabled
         {
-            get => disabled; // || !canExecuteCommand.GetValueOrDefault(true);
+            get => disabled || !canExecuteCommand.GetValueOrDefault(true);
             set
             {
                 disabled = value;
@@ -187,11 +258,35 @@ namespace BlazorBootstrap.Components
         /// </summary>
         [Parameter] public RenderFragment LoadingTemplate { get; set; }
 
+        [Parameter]
+        public ICommand Command
+        {
+            get => command;
+            set => BindCommand(value);
+        }
+
+        /// <summary>
+        /// Reflects the parameter to pass to the CommandProperty upon execution.
+        /// </summary>
+        [Parameter]
+        public object CommandParameter
+        {
+            get => commandParameter;
+            set
+            {
+                if (commandParameter.IsEqual(value))
+                    return;
+
+                commandParameter = value;
+
+                OnCanExecuteChanged(this, EventArgs.Empty);
+            }
+        }
+
         /// <summary>
         /// Denotes the target route of the <see cref="ButtonType.Link"/> button.
         /// </summary>
         [Parameter] public string To { get; set; }
-
 
         /// <summary>
         /// The target attribute specifies where to open the linked document for a <see cref="ButtonType.Link"/>.
@@ -211,6 +306,7 @@ namespace BlazorBootstrap.Components
         #endregion
 
         // TODO:
-        // Disable text wrapping: https://getbootstrap.com/docs/5.1/components/buttons/#disable-text-wrapping
+        // - Disable text wrapping: https://getbootstrap.com/docs/5.1/components/buttons/#disable-text-wrapping
+        // - Toogle states: https://getbootstrap.com/docs/5.1/components/buttons/#toggle-states
     }
 }
