@@ -1,5 +1,5 @@
 ﻿#region Using directives
-using BlazorBootstrap.Components;
+using BlazorBootstrap;
 using BlazorBootstrap.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using System;

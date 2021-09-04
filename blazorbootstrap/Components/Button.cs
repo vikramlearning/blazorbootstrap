@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 #endregion
 
-namespace BlazorBootstrap.Components
+namespace BlazorBootstrap
 {
     public partial class Button : BaseComponent
     {
