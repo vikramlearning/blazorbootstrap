@@ -30,12 +30,6 @@ namespace BlazorBootstrap.Components
 
         private bool loading;
 
-        private ICommand command;
-
-        private object commandParameter;
-
-        private bool? canExecuteCommand;
-
         #endregion
 
         #region Methods
@@ -53,17 +47,6 @@ namespace BlazorBootstrap.Components
             builder.Append(BootstrapClassProvider.ButtonLoading(), Loading && LoadingTemplate != null);
 
             base.BuildClasses(builder);
-        }
-
-        protected async Task ClickHandler()
-        {
-            if (!Disabled)
-            {
-                await Clicked.InvokeAsync(null); 
-                
-                // Don't need to check CanExecute again is already part of Disabled check
-                Command?.Execute(CommandParameter);
-            }
         }
 
         protected override void BuildRenderTree(RenderTreeBuilder builder)
@@ -92,54 +75,31 @@ namespace BlazorBootstrap.Components
                 }
             }
 
-            // click
-            builder.OnClick(this, EventCallback.Factory.Create(this, ClickHandler));
-
             builder.Attributes(Attributes);
-            builder.Content(ChildContent);
+            
+            if (Loading && LoadingTemplate != null)
+                builder.Content(LoadingTemplate);
+            else
+                builder.Content(ChildContent);
+
             builder.CloseElement();
+
+            base.BuildRenderTree(builder);
         }
 
-        private void BindCommand(ICommand value)
+        protected override void OnInitialized()
         {
-            if (command != null)
-            {
-                command.CanExecuteChanged -= OnCanExecuteChanged;
-            }
+            LoadingTemplate ??= ProvideDefaultLoadingTemplate();
 
-            command = value;
-
-            if (command != null)
-            {
-                command.CanExecuteChanged += OnCanExecuteChanged;
-            }
-
-            OnCanExecuteChanged(value, EventArgs.Empty);
+            base.OnInitialized();
         }
 
-        /// <summary>
-        /// Occurs when changes occur that affect whether or not the command should execute.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="eventArgs"></param>
-        protected virtual void OnCanExecuteChanged(object sender, EventArgs eventArgs)
+        //protected virtual RenderFragment ProvideDefaultLoadingTemplate() => null;
+
+        protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder =>
         {
-            var canExecute = Command?.CanExecute(CommandParameter);
-
-            if (canExecute != canExecuteCommand)
-            {
-                canExecuteCommand = canExecute;
-
-                //if (Rendered)
-                {
-                    // in case some provider is using Disabled flag for custom styles
-                    DirtyStyles();
-                    DirtyClasses();
-
-                    InvokeAsync(StateHasChanged);
-                }
-            }
-        }
+            builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}");
+        };
 
         #endregion
 
@@ -149,11 +109,6 @@ namespace BlazorBootstrap.Components
         /// Defines the button type.
         /// </summary>
         [Parameter] public ButtonType Type { get; set; } = ButtonType.Button;
-
-        /// <summary>
-        /// Occurs when the button is clicked.
-        /// </summary>
-        [Parameter] public EventCallback Clicked { get; set; }
 
         /// <summary>
         /// Gets or sets the button color.
@@ -203,7 +158,7 @@ namespace BlazorBootstrap.Components
         [Parameter]
         public bool Disabled
         {
-            get => disabled || !canExecuteCommand.GetValueOrDefault(true);
+            get => disabled;
             set
             {
                 disabled = value;
@@ -254,34 +209,15 @@ namespace BlazorBootstrap.Components
         }
 
         /// <summary>
+        /// Gets or sets the loadgin text.
+        /// <see cref="LoadingTemplate"/> takes precedence.
+        /// </summary>
+        [Parameter] public string LoadingText { get; set; } = "Loading...";
+
+        /// <summary>
         /// Gets or sets the component loading template.
         /// </summary>
         [Parameter] public RenderFragment LoadingTemplate { get; set; }
-
-        [Parameter]
-        public ICommand Command
-        {
-            get => command;
-            set => BindCommand(value);
-        }
-
-        /// <summary>
-        /// Reflects the parameter to pass to the CommandProperty upon execution.
-        /// </summary>
-        [Parameter]
-        public object CommandParameter
-        {
-            get => commandParameter;
-            set
-            {
-                if (commandParameter.IsEqual(value))
-                    return;
-
-                commandParameter = value;
-
-                OnCanExecuteChanged(this, EventArgs.Empty);
-            }
-        }
 
         /// <summary>
         /// Denotes the target route of the <see cref="ButtonType.Link"/> button.
