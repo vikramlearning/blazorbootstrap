@@ -1,5 +1,4 @@
-﻿#region Using Directives
-using BlazorBootstrap.Enums;
+﻿using BlazorBootstrap.Enums;
 using BlazorBootstrap.Extensions;
 using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Components.RenderTree;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-#endregion
 
 namespace BlazorBootstrap
 {

@@ -25,6 +25,42 @@ namespace BlazorBootstrap.Utilities
 
         #endregion
 
+        #region Alert
+
+        public string Alert() => "alert";
+
+        public string AlertColor(Color color) => $"{Alert()}-{ToColor(color)}";
+
+        public string AlertDismisable() => "alert-dismissible";
+
+        public string AlertFade() => Fade();
+
+        public string AlertShow() => Show();
+
+        public string AlertHasMessage() => null;
+
+        public string AlertHasDescription() => null;
+
+        public string AlertMessage() => null;
+
+        public string AlertDescription() => null;
+
+        #endregion
+
+        #region States
+
+        public string Show() => "show";
+
+        public string Fade() => "fade";
+
+        public string Active() => "active";
+
+        public string Disabled() => "disabled";
+
+        public string Collapsed() => "collapsed";
+
+        #endregion
+
         #region Enums
 
         public string ToSize(Size size)

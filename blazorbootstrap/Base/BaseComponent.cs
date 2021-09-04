@@ -69,6 +69,20 @@ namespace BlazorBootstrap
         #region Properties
 
         /// <summary>
+        /// Gets or sets the reference to the rendered element.
+        /// </summary>
+        public ElementReference ElementRef { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique id of the element.
+        /// </summary>
+        /// <remarks>
+        /// Note that this ID is not defined for the component but instead for the underlined element that it represents.
+        /// eg: for the TextEdit the ID will be set on the input element.
+        /// </remarks>
+        [Parameter] public string ElementId { get; set; }
+
+        /// <summary>
         /// Gets the class builder.
         /// </summary>
         protected ClassBuilder ClassBuilder { get; private set; }
