@@ -1,12 +1,9 @@
-﻿#region Using directives
-using BlazorBootstrap.Enums;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-#endregion
 
 namespace BlazorBootstrap.Extensions
 {
@@ -105,7 +102,7 @@ namespace BlazorBootstrap.Extensions
 
         public static RenderTreeBuilder Target(this RenderTreeBuilder builder, Target target, [CallerLineNumber] int line = 0)
         {
-            if (target != Enums.Target.None)
+            if (target != BlazorBootstrap.Target.None)
             {
                 builder.AddAttribute(line, "target", target.ToTargetString());
             }

@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Enums
+﻿namespace BlazorBootstrap
 {
     /// <summary>
     /// Predefined set of contextual colors.

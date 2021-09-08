@@ -1,6 +1,4 @@
-﻿using BlazorBootstrap.Enums;
-
-namespace BlazorBootstrap.States
+﻿namespace BlazorBootstrap.States
 {
     /// <summary>
     /// Holds the information about the current state of the <see cref="Alert"/> component.

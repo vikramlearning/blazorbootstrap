@@ -1,30 +1,7 @@
-﻿using BlazorBootstrap.Enums;
-
-namespace BlazorBootstrap.Utilities
+﻿namespace BlazorBootstrap.Utilities
 {
     public class BootstrapClassProvider
     {
-
-        #region Button
-
-        public string Button() => "btn";
-
-        public string ButtonColor(Color color) => $"{Button()}-{ToColor(color)}";
-
-        public string ButtonOutline(Color color) => color != Color.None ? $"{Button()}-outline-{ToColor(color)}" : $"{Button()}-outline";
-
-        public string ButtonSize(Size size) => $"{Button()}-{ToSize(size)}";
-
-        public string ButtonBlock() => $"{Button()}-block";
-
-        public string ButtonActive() => "active";
-
-        public string ButtonDisabled() => "disabled";
-
-        public string ButtonLoading() => null;
-
-        #endregion
-
         #region Alert
 
         public string Alert() => "alert";
@@ -47,6 +24,26 @@ namespace BlazorBootstrap.Utilities
 
         #endregion
 
+        #region Button
+
+        public string Button() => "btn";
+
+        public string ButtonColor(Color color) => $"{Button()}-{ToColor(color)}";
+
+        public string ButtonOutline(Color color) => color != Color.None ? $"{Button()}-outline-{ToColor(color)}" : $"{Button()}-outline";
+
+        public string ButtonSize(Size size) => $"{Button()}-{ToSize(size)}";
+
+        public string ButtonBlock() => $"{Button()}-block";
+
+        public string ButtonActive() => "active";
+
+        public string ButtonDisabled() => "disabled";
+
+        public string ButtonLoading() => null;
+
+        #endregion
+
         #region States
 
         public string Show() => "show";
@@ -61,20 +58,23 @@ namespace BlazorBootstrap.Utilities
 
         #endregion
 
-        #region Enums
+        #region Tooltip
 
-        public string ToSize(Size size)
-        {
-            return size switch
-            {
-                Size.ExtraSmall => "xs",
-                Size.Small => "sm",
-                Size.Medium => "md",
-                Size.Large => "lg",
-                Size.ExtraLarge => "xl",
-                _ => null,
-            };
-        }
+        //public string Tooltip() => "b-tooltip";
+
+        //public string TooltipPlacement(TooltipPlacement tooltipPlacement) => $"b-tooltip-{ToTooltipPlacement(tooltipPlacement)}";
+
+        //public string TooltipMultiline() => "b-tooltip-multiline";
+
+        //public string TooltipAlwaysActive() => "b-tooltip-active";
+
+        //public string TooltipFade() => "b-tooltip-fade";
+
+        //public string TooltipInline() => "b-tooltip-inline";
+
+        #endregion
+
+        #region Enums
 
         public string ToColor(Color color)
         {
@@ -90,6 +90,30 @@ namespace BlazorBootstrap.Utilities
                 Color.Dark => "dark",
                 Color.Link => "link",
                 _ => null,
+            };
+        }
+
+        public string ToSize(Size size)
+        {
+            return size switch
+            {
+                Size.ExtraSmall => "xs",
+                Size.Small => "sm",
+                Size.Medium => "md",
+                Size.Large => "lg",
+                Size.ExtraLarge => "xl",
+                _ => null,
+            };
+        }
+
+        public string ToTooltipPlacement(TooltipPlacement tooltipPlacement)
+        {
+            return tooltipPlacement switch
+            {
+                TooltipPlacement.Bottom => "bottom",
+                TooltipPlacement.Left => "left",
+                TooltipPlacement.Right => "right",
+                _ => "top",
             };
         }
 

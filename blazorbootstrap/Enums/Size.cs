@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Enums
+﻿namespace BlazorBootstrap
 {
     /// <summary>
     /// Defines an element size.

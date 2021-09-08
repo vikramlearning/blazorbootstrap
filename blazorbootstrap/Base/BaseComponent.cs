@@ -1,10 +1,11 @@
-﻿using BlazorBootstrap.Utilities;
+﻿using BlazorBootstrap.Base;
+using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 
 namespace BlazorBootstrap
 {
-    public abstract class BaseComponent : ComponentBase
+    public abstract class BaseComponent : BaseAfterRenderComponent
     {
         #region Members
 
@@ -25,6 +26,17 @@ namespace BlazorBootstrap
         #endregion
 
         #region Methods
+
+        protected override void OnInitialized()
+        {
+            if(ShouldAutoGenerateId && ElementId == null)
+            {
+                ElementId = IdGenerator.Generate;
+            }
+
+            base.OnInitialized();
+        }
+
 
         /// <summary>
         /// Builds a list of classnames for this component.
@@ -83,6 +95,14 @@ namespace BlazorBootstrap
         [Parameter] public string ElementId { get; set; }
 
         /// <summary>
+        /// If true, <see cref="ElementId"/> will be auto-generated on component initialize.
+        /// </summary>
+        /// <remarks>
+        /// Override this in components that need to have an id defined before calling JSInterop.
+        /// </remarks>
+        protected virtual bool ShouldAutoGenerateId => false;
+
+        /// <summary>
         /// Gets the class builder.
         /// </summary>
         protected ClassBuilder ClassBuilder { get; private set; }
@@ -101,6 +121,17 @@ namespace BlazorBootstrap
         /// Gets the built styles based on all the rules set by the component parameters.
         /// </summary>
         public string StyleNames => StyleBuilder.Styles;
+
+        /// <summary>
+        /// Gets or set the javascript runner.
+        /// </summary>
+        [Inject] protected IIdGenerator IdGenerator { get; set; }
+
+        /// <summary>
+        /// Gets or set the javascript runner.
+        /// </summary>
+        //[Inject] 
+        //protected IJSRunner JSRunner { get; set; }
 
         /// <summary>
         /// Gets or sets the classname provider.

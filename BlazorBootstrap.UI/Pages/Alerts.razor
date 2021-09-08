@@ -2,11 +2,20 @@
 @page "/alerts"
 
 <h4>Alerts</h4>
-<Alert Color="Enums.Color.Primary"> A simple primary alert—check it out! </Alert>
-<Alert Color="Enums.Color.Secondary"> A simple secondary alert—check it out! </Alert>
-<Alert Color="Enums.Color.Success"> A simple success alert—check it out! </Alert>
-<Alert Color="Enums.Color.Danger"> A simple danger alert—check it out! </Alert>
-<Alert Color="Enums.Color.Warning"> A simple warning alert—check it out! </Alert>
-<Alert Color="Enums.Color.Info"> A simple info alert—check it out! </Alert>
-<Alert Color="Enums.Color.Light"> A simple light alert—check it out! </Alert>
-<Alert Color="Enums.Color.Dark"> A simple dark alert—check it out! </Alert>
+<Alert Color="Color.Primary"> A simple primary alert—check it out! </Alert>
+<Alert Color="Color.Secondary"> A simple secondary alert—check it out! </Alert>
+<Alert Color="Color.Success"> A simple success alert—check it out! </Alert>
+<Alert Color="Color.Danger"> A simple danger alert—check it out! </Alert>
+<Alert Color="Color.Warning"> A simple warning alert—check it out! </Alert>
+<Alert Color="Color.Info"> A simple info alert—check it out! </Alert>
+<Alert Color="Color.Light"> A simple light alert—check it out! </Alert>
+<Alert @ref="darkAlert" Color="Color.Dark"> A simple dark alert—check it out! </Alert>
+
+@code{
+    Alert darkAlert;
+
+    void onClick()
+    {
+        darkAlert.Show();
+    }
+}

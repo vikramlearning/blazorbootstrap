@@ -1,5 +1,4 @@
-﻿using BlazorBootstrap.Enums;
-using BlazorBootstrap.States;
+﻿using BlazorBootstrap.States;
 using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
 

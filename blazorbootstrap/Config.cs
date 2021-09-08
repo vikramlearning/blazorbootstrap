@@ -1,5 +1,4 @@
 ﻿#region Using directives
-using BlazorBootstrap;
 using BlazorBootstrap.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -18,6 +17,8 @@ namespace BlazorBootstrap
         public static IServiceCollection AddBlazorBootstrap(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<BootstrapClassProvider>();
+            //serviceCollection.AddScoped<IJSRunner, JSRunner>();
+            serviceCollection.AddScoped<IIdGenerator, IdGenerator>();
 
             serviceCollection.AddBootstrapComponents();
 
@@ -36,7 +37,7 @@ namespace BlazorBootstrap
 
         public static IDictionary<Type, Type> ComponentMap => new Dictionary<Type, Type>
         {
-            { typeof(Button), typeof(Button) },
+            { typeof(Button), typeof(Button) }
         };
     }
 }

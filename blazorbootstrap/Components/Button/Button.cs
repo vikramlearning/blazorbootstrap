@@ -1,12 +1,9 @@
-﻿using BlazorBootstrap.Enums;
-using BlazorBootstrap.Extensions;
+﻿using BlazorBootstrap.Extensions;
 using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.AspNetCore.Components.RenderTree;
-using System;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using Microsoft.JSInterop;
+using System.Collections.Generic;
 
 namespace BlazorBootstrap
 {
@@ -38,7 +35,7 @@ namespace BlazorBootstrap
             builder.Append(BootstrapClassProvider.Button());
             builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != Color.None && !Outline);
             builder.Append(BootstrapClassProvider.ButtonOutline(Color), Color != Color.None && Outline);
-            builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Enums.Size.None);
+            builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
             builder.Append(BootstrapClassProvider.ButtonDisabled(), disabled);
             builder.Append(BootstrapClassProvider.ButtonActive(), active);
             builder.Append(BootstrapClassProvider.ButtonBlock(), Block);
@@ -51,15 +48,15 @@ namespace BlazorBootstrap
         {
             builder
                 .OpenElement(Type.ToButtonTagName())
+                .Id(ElementId)
                 .Type(Type.ToButtonTypeString())
                 .Class(ClassNames)
                 .Style(StyleNames)
                 .Disabled(Disabled)
                 .AriaPressed(Active)
                 .TabIndex(TabIndex);
-                //.DataBootstrap("toggle", "button");
 
-            if(Type == ButtonType.Link)
+            if (Type == ButtonType.Link)
             {
                 builder.Role("button")
                     .Href(To)
@@ -73,8 +70,30 @@ namespace BlazorBootstrap
                 }
             }
 
+
+            Attributes ??= new Dictionary<string, object>();
+
+            // tooltip
+            if (string.IsNullOrWhiteSpace(TooltipText))
+            {
+                if (Attributes.TryGetValue("title", out object title))
+                    Attributes.Remove("title");
+            }
+            else if (!Disabled)
+            {
+                builder.DataBootstrap("toggle", "toggle");
+                builder.DataBootstrap("placement", TooltipPlacement.ToTooltipPlacementName());
+
+                if (!Attributes.TryGetValue("title", out object title))
+                    Attributes.Add("title", TooltipText);
+                else
+                    Attributes["title"] = TooltipText;
+
+                ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
+            }
+
             builder.Attributes(Attributes);
-            
+
             if (Loading && LoadingTemplate != null)
                 builder.Content(LoadingTemplate);
             else
@@ -103,6 +122,9 @@ namespace BlazorBootstrap
 
         #region Properties
 
+        /// <inheritdoc/>
+        protected override bool ShouldAutoGenerateId => true;
+
         /// <summary>
         /// Defines the button type.
         /// </summary>
@@ -111,7 +133,7 @@ namespace BlazorBootstrap
         /// <summary>
         /// Gets or sets the button color.
         /// </summary>
-        [Parameter] 
+        [Parameter]
         public Color Color
         {
             get => color;
@@ -237,10 +259,23 @@ namespace BlazorBootstrap
         /// </summary>
         [Parameter] public RenderFragment ChildContent { get; set; }
 
+        /// <summary>
+        /// Displays informative text when users hover, focus, or tap an element.
+        /// </summary>
+        [Parameter] public string TooltipText { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Parameter] public BlazorBootstrap.TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
+
+        [Inject] IJSRuntime JS { get; set; }
+
         #endregion
 
         // TODO:
         // - Disable text wrapping: https://getbootstrap.com/docs/5.1/components/buttons/#disable-text-wrapping
         // - Toogle states: https://getbootstrap.com/docs/5.1/components/buttons/#toggle-states
+        // - IDispose
     }
 }

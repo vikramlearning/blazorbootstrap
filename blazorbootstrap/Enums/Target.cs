@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Enums
+﻿namespace BlazorBootstrap
 {
     /// <summary>
     /// The target attribute specifies where to open the linked document.
