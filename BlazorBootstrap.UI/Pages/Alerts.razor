@@ -1,17 +1,35 @@
 ﻿@using BlazorBootstrap
 @page "/alerts"
 
-<h4>Alerts</h4>
-<Alert Color="Color.Primary"> A simple primary alert—check it out! </Alert>
-<Alert Color="Color.Secondary"> A simple secondary alert—check it out! </Alert>
-<Alert Color="Color.Success"> A simple success alert—check it out! </Alert>
-<Alert Color="Color.Danger"> A simple danger alert—check it out! </Alert>
-<Alert Color="Color.Warning"> A simple warning alert—check it out! </Alert>
-<Alert Color="Color.Info"> A simple info alert—check it out! </Alert>
-<Alert Color="Color.Light" Dismisable="true" Visible="true"> A simple light alert—check it out! </Alert>
-<Alert @ref="darkAlert" Color="Color.Dark" Dismisable="true"> A simple dark alert—check it out! </Alert>
-
-<Button Color="Color.Dark" @onclick="onClick" > Show Alert </Button>
+<h4 class="my-4">Alerts</h4>
+<div>
+    <Alert Color="Color.Primary"> A simple primary alert—check it out! </Alert>
+    <Alert Color="Color.Secondary"> A simple secondary alert—check it out! </Alert>
+    <Alert Color="Color.Success"> A simple success alert—check it out! </Alert>
+    <Alert Color="Color.Danger"> A simple danger alert—check it out! </Alert>
+    <Alert Color="Color.Warning"> A simple warning alert—check it out! </Alert>
+    <Alert Color="Color.Info"> A simple info alert—check it out! </Alert>
+    <Alert Color="Color.Light" Dismisable="true" Visible="true"> A simple light alert—check it out! </Alert>
+    <Button Color="Color.Dark" @onclick="onClick"> Show Alert </Button>
+    <Alert @ref="darkAlert" Color="Color.Dark" Dismisable="true"> A simple dark alert—check it out! </Alert>
+</div>
+<h4 class="my-4">Additional Content</h4>
+<div>
+    <Alert Color="Color.Success" Dismisable="true" Visible="true">
+        <h4 class="alert-heading">Well done!</h4>
+        <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
+        <hr>
+        <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
+    </Alert>
+</div>
+<div>
+    <Alert Color="Color.Danger" Dismisable="true" Visible="true">
+        <h4 class="alert-heading">Well done!</h4>
+        <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
+        <hr>
+        <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
+    </Alert>
+</div>
 @code{
     Alert darkAlert;
 
