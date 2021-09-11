@@ -8,9 +8,10 @@
 <Alert Color="Color.Danger"> A simple danger alert—check it out! </Alert>
 <Alert Color="Color.Warning"> A simple warning alert—check it out! </Alert>
 <Alert Color="Color.Info"> A simple info alert—check it out! </Alert>
-<Alert Color="Color.Light"> A simple light alert—check it out! </Alert>
-<Alert @ref="darkAlert" Color="Color.Dark"> A simple dark alert—check it out! </Alert>
+<Alert Color="Color.Light" Dismisable="true" Visible="true"> A simple light alert—check it out! </Alert>
+<Alert @ref="darkAlert" Color="Color.Dark" Dismisable="true"> A simple dark alert—check it out! </Alert>
 
+<Button Color="Color.Dark" @onclick="onClick" > Show Alert </Button>
 @code{
     Alert darkAlert;
 

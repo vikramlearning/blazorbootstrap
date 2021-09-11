@@ -5,6 +5,10 @@
     <CascadingValue Value="@state">
         <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" role="alert" @attributes="@Attributes">
             @ChildContent
+            @if (Dismisable)
+            {
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            }
         </div>
     </CascadingValue>
 </CascadingValue>

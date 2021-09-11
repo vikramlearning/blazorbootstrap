@@ -45,11 +45,29 @@ namespace BlazorBootstrap
             base.BuildClasses(builder);
         }
 
-        public void Show() { }
+        public void Show()
+        {
+            if (Visible)
+                return;
 
-        public void Hide() { }
+            Visible = true;
+            InvokeAsync(StateHasChanged);
+        }
 
-        public void Toogle() { }
+        public void Hide()
+        {
+            if (!Visible)
+                return;
+
+            Visible = false;
+            InvokeAsync(StateHasChanged);
+        }
+
+        public void Toogle()
+        {
+            Visible = !Visible;
+            InvokeAsync(StateHasChanged);
+        }
 
         #endregion
 
@@ -114,6 +132,8 @@ namespace BlazorBootstrap
         /// Specifies the content to be rendered inside this <see cref="Alert"/>.
         /// </summary>
         [Parameter] public RenderFragment ChildContent { get; set; }
+
+        [Parameter] public bool ShowCloseButton { get; set; } = false;
 
         #endregion
     }
