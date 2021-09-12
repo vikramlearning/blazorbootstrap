@@ -13,7 +13,7 @@ namespace BlazorBootstrap
         /// </summary>
         private AlertState state = new()
         {
-            Color = Color.None,
+            Color = AlertColor.None,
         };
 
         /// <summary>
@@ -34,13 +34,13 @@ namespace BlazorBootstrap
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Alert());
-            builder.Append(BootstrapClassProvider.AlertColor(Color), Color != Color.None);
+            builder.Append(BootstrapClassProvider.AlertColor(Color), Color != AlertColor.None);
             builder.Append(BootstrapClassProvider.AlertDismisable(), Dismisable);
             builder.Append(BootstrapClassProvider.AlertFade(), Dismisable);
             builder.Append(BootstrapClassProvider.AlertShow(), Dismisable && Visible);
             // TODO: review below
-            builder.Append(BootstrapClassProvider.AlertHasMessage(), hasMessage);
-            builder.Append(BootstrapClassProvider.AlertHasDescription(), hasDescription);
+            //builder.Append(BootstrapClassProvider.AlertHasMessage(), hasMessage);
+            //builder.Append(BootstrapClassProvider.AlertHasDescription(), hasDescription);
 
             base.BuildClasses(builder);
         }
@@ -117,7 +117,7 @@ namespace BlazorBootstrap
         /// Gets or sets the alert color.
         /// </summary>
         [Parameter]
-        public Color Color
+        public AlertColor Color
         {
             get => state.Color;
             set
@@ -133,8 +133,10 @@ namespace BlazorBootstrap
         /// </summary>
         [Parameter] public RenderFragment ChildContent { get; set; }
 
-        [Parameter] public bool ShowCloseButton { get; set; } = false;
-
         #endregion
+
+        // TODO: 
+        // https://getbootstrap.com/docs/5.1/components/alerts/#live-example
+        // https://getbootstrap.com/docs/5.1/components/alerts/#additional-content
     }
 }

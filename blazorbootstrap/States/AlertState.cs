@@ -18,6 +18,6 @@
         /// <summary>
         /// Gets or sets the alert color.
         /// </summary>
-        public Color Color { get; init; }
+        public AlertColor Color { get; init; }
     }
 }

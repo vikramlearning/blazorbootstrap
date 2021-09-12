@@ -3,7 +3,7 @@
     /// <summary>
     /// Predefined set of contextual colors.
     /// </summary>
-    public enum Color
+    public enum LinkColor
     {
         /// <summary>
         /// No color will be applied to an element.
@@ -48,11 +48,6 @@
         /// <summary>
         /// Dark color.
         /// </summary>
-        Dark,
-
-        /// <summary>
-        /// Link color.
-        /// </summary>
-        Link,
+        Dark
     }
 }

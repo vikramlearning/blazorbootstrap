@@ -11,7 +11,7 @@ namespace BlazorBootstrap
     {
         #region Members
 
-        private Color color = Color.None;
+        private ButtonColor color = ButtonColor.None;
 
         private Size size = Size.None;
 
@@ -33,8 +33,8 @@ namespace BlazorBootstrap
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Button());
-            builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != Color.None && !Outline);
-            builder.Append(BootstrapClassProvider.ButtonOutline(Color), Color != Color.None && Outline);
+            builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
+            builder.Append(BootstrapClassProvider.ButtonOutline(Color), Color != ButtonColor.None && Outline);
             builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
             builder.Append(BootstrapClassProvider.ButtonDisabled(), disabled);
             builder.Append(BootstrapClassProvider.ButtonActive(), active);
@@ -134,7 +134,7 @@ namespace BlazorBootstrap
         /// Gets or sets the button color.
         /// </summary>
         [Parameter]
-        public Color Color
+        public ButtonColor Color
         {
             get => color;
             set
