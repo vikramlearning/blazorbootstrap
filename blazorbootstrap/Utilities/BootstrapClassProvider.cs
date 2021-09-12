@@ -94,7 +94,7 @@
 
         #endregion
 
-        #region Enums
+        #region Methods
 
         public string ToButtonColor(ButtonColor color)
         {

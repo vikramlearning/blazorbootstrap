@@ -19,12 +19,12 @@ namespace BlazorBootstrap
         /// <summary>
         /// Flag that indicates if <see cref="Alert"/> contains the <see cref="AlertMessage"/> component.
         /// </summary>
-        private bool hasMessage;
+        //private bool hasMessage;
 
         /// <summary>
         /// Flag that indicates if <see cref="Alert"/> contains the <see cref="AlertDescription"/> component.
         /// </summary>
-        private bool hasDescription;
+        //private bool hasDescription;
 
         #endregion
 

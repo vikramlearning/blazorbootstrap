@@ -1,0 +1,47 @@
+﻿@using BlazorBootstrap
+@page "/icons"
+
+<h4>Icons</h4>
+<p>
+    <Icon Name="IconName.Alarm"></Icon>
+    <Icon Name="IconName.AlarmFill"></Icon>
+</p>
+
+<h4>Icons - Different Sizes</h4>
+<p>
+    <Icon Name="IconName.Alarm" Size="IconSize.x2"></Icon>
+    <Icon Name="IconName.Alarm" Size="IconSize.x3"></Icon>
+    <Icon Name="IconName.Alarm" Size="IconSize.x4"></Icon>
+    <Icon Name="IconName.Alarm" Size="IconSize.x5"></Icon>
+</p>
+
+<h4>Inline text with icon</h4>
+<p>
+    Inline text <Icon Name="IconName.Alarm" />
+</p>
+
+<h4>Link with icon</h4>
+<p>
+    <a href="#" class="text-decoration-none">
+        Example link text <Icon Name="IconName.Alarm" />
+    </a>
+</p>
+
+<h4>Link with custom icon</h4>
+<p>
+    <a href="#" class="text-decoration-none">
+        Example link text <Icon CustomIconName="bi bi-bootstrap" />
+    </a>
+</p>
+
+<h4>Button with icon and text</h4>
+<p>
+    <Button Color="ButtonColor.Primary"><Icon Name="IconName.Alarm" /> Button </Button>
+    <Button Color="ButtonColor.Success"><Icon Name="IconName.Alarm" /> Button </Button>
+    <Button Color="ButtonColor.Danger" Outline="true"><Icon Name="IconName.AlarmFill" /> Button </Button>
+</p>
+
+<h4>Button with icon only</h4>
+<p>
+    <Button Color="ButtonColor.Secondary"><Icon Name="IconName.Alarm" /></Button>
+</p>
