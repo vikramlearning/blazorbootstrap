@@ -205,7 +205,7 @@ namespace BlazorBootstrap.Extensions
             return builder;
         }
 
-        public static RenderTreeBuilder MarkupContent(this RenderTreeBuilder builder, string? markupContent, [CallerLineNumber] int line = 0)
+        public static RenderTreeBuilder MarkupContent(this RenderTreeBuilder builder, string markupContent, [CallerLineNumber] int line = 0)
         {
             builder.AddMarkupContent(line, markupContent);
 

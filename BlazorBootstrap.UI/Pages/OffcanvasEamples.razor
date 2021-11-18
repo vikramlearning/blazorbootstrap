@@ -1,0 +1,36 @@
+﻿@using BlazorBootstrap
+@page "/offcanvas"
+
+@inject OffcanvasService OffcanvasService
+
+<h4 class="my-4">Offcanvas Examples</h4>
+<Button Color="ButtonColor.Primary" @onclick="ShowOffcanvas1">Show Offcanvas - Right</Button>
+
+<Offcanvas ElementId="@offcanvasElementId1"
+           OnOffcanvasShow="OnOffcanvasShow"
+           OnOffcanvasShown="OnOffcanvasShownAsync"
+           OnOffcanvasHide="OnOffcanvasHide"
+           OnOffcanvasHidden="OnOffcanvasHidden"></Offcanvas>
+
+@code {
+    private string offcanvasElementId1 = "offcanvasRight1";
+
+    private void ShowOffcanvas1()
+    {
+        OffcanvasService.Show(offcanvasElementId1);
+    }
+
+    private void OnOffcanvasShow() => Console.WriteLine("Event: Show");
+
+    private async Task OnOffcanvasShownAsync()
+    {
+        Console.WriteLine("Event: Shown");
+        Console.WriteLine("START: Delay 10 Seconds");
+        await Task.Delay(10000);
+        Console.WriteLine("END: Delay 10 Seconds");
+        OffcanvasService.Hide(offcanvasElementId1);
+    }
+
+    private void OnOffcanvasHide() => Console.WriteLine("Event: Hide");
+    private void OnOffcanvasHidden() => Console.WriteLine("Event: Hidden");
+}
