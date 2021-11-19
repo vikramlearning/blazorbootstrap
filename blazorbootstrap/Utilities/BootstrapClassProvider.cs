@@ -94,6 +94,14 @@
 
         #endregion
 
+        #region Offcanvas
+
+        public string Offcanvas() => "offcanvas";
+
+        public string Offcanvas(Placement placement) => $"{Offcanvas()}-{ToPlacement(placement)}";
+
+        #endregion Offcanvas
+
         #region Methods
 
         public string ToButtonColor(ButtonColor color)
@@ -251,6 +259,17 @@
                 BlazorBootstrap.Screenreader.Only => "sr-only",
                 BlazorBootstrap.Screenreader.OnlyFocusable => "sr-only-focusable",
                 _ => null,
+            };
+        }
+
+        public string ToPlacement(Placement placement)
+        {
+            return placement switch
+            {
+                BlazorBootstrap.Placement.Start => "start",
+                BlazorBootstrap.Placement.End => "end",
+                BlazorBootstrap.Placement.Top => "top",
+                _ => "bottom",
             };
         }
 

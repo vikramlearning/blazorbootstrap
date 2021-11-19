@@ -6,11 +6,11 @@
 <h4 class="my-4">Offcanvas Examples</h4>
 <Button Color="ButtonColor.Primary" @onclick="ShowOffcanvas1">Show Offcanvas - Right</Button>
 
-<Offcanvas ElementId="@offcanvasElementId1"
-           Showing="OnOffcanvasShowingAsync"
+<Offcanvas Showing="OnOffcanvasShowingAsync"
            Shown="OnOffcanvasShownAsync"
            Hiding="OnOffcanvasHidingAsync"
            Hidden="OnOffcanvasHiddenAsync">
+           Test Offcanvas component...
 </Offcanvas>
 
 @code {
@@ -28,7 +28,7 @@
 
     private async Task OnOffcanvasShownAsync()
     {
-        await Task.Run(() => { Console.WriteLine("Event: Show");});
+        await Task.Run(() => { Console.WriteLine("Event: Shown");});
     }
 
     private async Task OnOffcanvasHidingAsync()

@@ -1,15 +1,14 @@
 ﻿@namespace BlazorBootstrap
-@inherits LayoutComponentBase
+@inherits BaseComponent
 
-@if (isShown)
-{
-    <div class="offcanvas @offcanvasPlacement" tabindex="-1" id="@ElementId" aria-labelledby="offcanvasRightLabel">
-        <div class="offcanvas-header">
-            <h5 id="offcanvasRightLabel">Offcanvas right</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+<CascadingValue Value="@this" IsFixed="true">
+    <CascadingValue Value="@State">
+        <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+            @if (ShowBackdrop)
+            {
+                <_ModalBackdrop />
+            }
+            @ChildContent
         </div>
-        <div class="offcanvas-body">
-            ...
-        </div>
-    </div>
-}
+    </CascadingValue>
+</CascadingValue>

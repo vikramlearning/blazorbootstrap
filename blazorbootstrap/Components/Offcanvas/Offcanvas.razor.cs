@@ -1,18 +1,89 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using BlazorBootstrap.States;
+using BlazorBootstrap.Utilities;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
 
 namespace BlazorBootstrap
 {
-    public partial class Offcanvas : IDisposable
+    public partial class Offcanvas : BaseComponent, IDisposable
     {
-        [Inject] OffcanvasService OffcanvasService { get; set; }
-        [Inject] IJSRuntime JS { get; set; }
+        #region Members
 
-        public ElementReference ElementRef { get; set; }
-        [Parameter] public string ElementId { get; set; }
-        [Parameter] public Placement Placement { get; set; } = Placement.Right;
+        private OffcanvasState state = new OffcanvasState { Visible = false };
+
+        #endregion Members
+
+        #region Methods
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            objRef ??= DotNetObjectReference.Create(this);
+            base.OnAfterRender(firstRender);
+        }
+
+        protected override void BuildClasses(ClassBuilder builder)
+        {
+            builder.Append(BootstrapClassProvider.Offcanvas());
+            builder.Append(BootstrapClassProvider.Offcanvas(Placement));
+
+            base.BuildClasses(builder);
+        }
+
+        protected override void BuildStyles(StyleBuilder builder)
+        {
+            base.BuildStyles(builder);
+        }
+
+        protected override void OnInitialized()
+        {
+            OffcanvasService.OnShow += Show;
+            OffcanvasService.OnHide += Hide;
+
+            base.OnInitialized();
+        }
+
+        private void Show(string elementId)
+        {
+            Task.Run(async () =>
+            {
+                await JS.InvokeVoidAsync("blazorBootstrap.offcanvas.show", elementId, objRef);
+            });
+        }
+
+        private void Hide(string elementId)
+        {
+            Task.Run(async () =>
+            {
+                await JS.InvokeVoidAsync("blazorBootstrap.offcanvas.hide", elementId);
+            });
+        }
+
+        [JSInvokable] public async Task bsShowOffcanvas() => await Showing.InvokeAsync();
+        [JSInvokable] public async Task bsShownOffcanvas() => await Shown.InvokeAsync();
+        [JSInvokable] public async Task bsHideOffcanvas() => await Hiding.InvokeAsync();
+        [JSInvokable] public async Task bsHiddenOffcanvas() => await Hidden.InvokeAsync();
+
+        public void Dispose()
+        {
+            objRef?.Dispose();
+        }
+
+        #endregion Methods
+
+        #region Properties
+
+        protected internal bool IsVisible => State.Visible == true;
+
+        /// <inheritdoc/>
+        protected override bool ShouldAutoGenerateId => true;
+
+        [Parameter] public Placement Placement { get; set; } = Placement.End;
+
+        protected internal OffcanvasState State => state;
+
+        [Parameter] public bool Visible { get; set; }
 
         /// <summary>
         /// This event fires immediately when the show instance method is called.
@@ -34,67 +105,26 @@ namespace BlazorBootstrap
         /// </summary>
         [Parameter] public EventCallback Hidden { get; set; }
 
+        /// <summary>
+        /// Specifies the backdrop needs to be rendered for this.
+        /// </summary>
+        [Parameter] public bool ShowBackdrop { get; set; } = true;
+
+        /// <summary>
+        /// Specifies the content to be rendered inside this.
+        /// </summary>
+        [Parameter] public RenderFragment ChildContent { get; set; }
+
+        #endregion Properties
+
+        [Inject] OffcanvasService OffcanvasService { get; set; }
+
+        [Inject] IJSRuntime JS { get; set; }
+
         private DotNetObjectReference<Offcanvas> objRef;
 
         private string offcanvasPlacement = "offcanvas-end"; // default
+
         private bool isShown = false; // default
-
-        protected override void OnInitialized()
-        {
-            OffcanvasService.OnShow += Show;
-            OffcanvasService.OnHide += Hide;
-
-            base.OnInitialized();
-        }
-
-        private void Show(string elementId)
-        {
-            isShown = true;
-
-            offcanvasPlacement = Placement switch
-            {
-                Placement.Right => "offcanvas-end",
-                Placement.Top => "offcanvas-top",
-                Placement.Bottom => "offcanvas-bottom",
-                _ => "offcanvas-start",
-            };
-
-            Task.Run(async () =>
-            {
-                objRef ??= DotNetObjectReference.Create(this);
-                await JS.InvokeVoidAsync("blazorBootstrap.offcanvas.show", elementId, objRef);
-            });
-        }
-
-        private void Hide(string elementId)
-        {
-            Task.Run(async () =>
-            {
-                await JS.InvokeVoidAsync("blazorBootstrap.offcanvas.hide", elementId);
-                //isShown = false;
-            });
-        }
-
-        [JSInvokable] public async Task bsShowOffcanvas() => await Showing.InvokeAsync();
-        [JSInvokable] public async Task bsShownOffcanvas() => await Shown.InvokeAsync();
-        [JSInvokable] public async Task bsHideOffcanvas() => await Hiding.InvokeAsync();
-        [JSInvokable] public async Task bsHiddenOffcanvas() => await Hidden.InvokeAsync();
-
-        #region Implementations
-
-        public void Dispose()
-        {
-            objRef?.Dispose();
-        }
-
-        #endregion
-    }
-
-    public enum Placement
-    {
-        Left = 1,
-        Right,
-        Top,
-        Bottom,
-    }
+    }    
 }
