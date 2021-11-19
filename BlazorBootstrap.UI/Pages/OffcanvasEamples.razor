@@ -7,10 +7,11 @@
 <Button Color="ButtonColor.Primary" @onclick="ShowOffcanvas1">Show Offcanvas - Right</Button>
 
 <Offcanvas ElementId="@offcanvasElementId1"
-           OnOffcanvasShow="OnOffcanvasShow"
-           OnOffcanvasShown="OnOffcanvasShownAsync"
-           OnOffcanvasHide="OnOffcanvasHide"
-           OnOffcanvasHidden="OnOffcanvasHidden"></Offcanvas>
+           Showing="OnOffcanvasShowingAsync"
+           Shown="OnOffcanvasShownAsync"
+           Hiding="OnOffcanvasHidingAsync"
+           Hidden="OnOffcanvasHiddenAsync">
+</Offcanvas>
 
 @code {
     private string offcanvasElementId1 = "offcanvasRight1";
@@ -20,17 +21,23 @@
         OffcanvasService.Show(offcanvasElementId1);
     }
 
-    private void OnOffcanvasShow() => Console.WriteLine("Event: Show");
+    private async Task OnOffcanvasShowingAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Showing");});
+    }
 
     private async Task OnOffcanvasShownAsync()
     {
-        Console.WriteLine("Event: Shown");
-        Console.WriteLine("START: Delay 10 Seconds");
-        await Task.Delay(10000);
-        Console.WriteLine("END: Delay 10 Seconds");
-        OffcanvasService.Hide(offcanvasElementId1);
+        await Task.Run(() => { Console.WriteLine("Event: Show");});
     }
 
-    private void OnOffcanvasHide() => Console.WriteLine("Event: Hide");
-    private void OnOffcanvasHidden() => Console.WriteLine("Event: Hidden");
+    private async Task OnOffcanvasHidingAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Hiding");});
+    }
+
+    private async Task OnOffcanvasHiddenAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Hidden");});
+    }
 }
