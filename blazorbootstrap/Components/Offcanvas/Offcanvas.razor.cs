@@ -38,26 +38,17 @@ namespace BlazorBootstrap
 
         protected override void OnInitialized()
         {
-            OffcanvasService.OnShow += Show;
-            OffcanvasService.OnHide += Hide;
-
             base.OnInitialized();
         }
 
-        private void Show(string elementId)
+        public async Task ShowAsync()
         {
-            Task.Run(async () =>
-            {
-                await JS.InvokeVoidAsync("blazorBootstrap.offcanvas.show", elementId, objRef);
-            });
+            await JS.InvokeVoidAsync("blazorBootstrap.offcanvas.show", ElementId, objRef);
         }
 
-        private void Hide(string elementId)
+        public async Task HideAsync()
         {
-            Task.Run(async () =>
-            {
-                await JS.InvokeVoidAsync("blazorBootstrap.offcanvas.hide", elementId);
-            });
+            await JS.InvokeVoidAsync("blazorBootstrap.offcanvas.hide", ElementId);
         }
 
         [JSInvokable] public async Task bsShowOffcanvas() => await Showing.InvokeAsync();
@@ -79,7 +70,7 @@ namespace BlazorBootstrap
         /// <inheritdoc/>
         protected override bool ShouldAutoGenerateId => true;
 
-        [Parameter] public Placement Placement { get; set; } = Placement.End;
+        [Parameter] public Placement Placement { get; set; } = Placement.End; // default
 
         protected internal OffcanvasState State => state;
 
@@ -123,8 +114,6 @@ namespace BlazorBootstrap
 
         private DotNetObjectReference<Offcanvas> objRef;
 
-        private string offcanvasPlacement = "offcanvas-end"; // default
-
         private bool isShown = false; // default
-    }    
+    }
 }

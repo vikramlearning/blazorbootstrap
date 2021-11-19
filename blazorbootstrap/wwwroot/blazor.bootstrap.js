@@ -11,7 +11,7 @@ window.blazorBootstrap = {
     },
     offcanvas: {
         show: (elementId, dotNetHelper) => {
-            var myOffcanvas = document.getElementById(elementId);
+            let myOffcanvas = document.getElementById(elementId);
 
             myOffcanvas.addEventListener('show.bs.offcanvas', function () {
                 dotNetHelper.invokeMethodAsync('bsShowOffcanvas');
@@ -26,18 +26,12 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenOffcanvas');
             });
 
-            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+            let bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
             bsOffcanvas?.show();
         },
         hide: (elementId) => {
-            var myOffcanvas = document.getElementById(elementId);
-
-            //myOffcanvas.removeEventListener('show.bs.offcanvas', function () { }, false);
-            //myOffcanvas.removeEventListener('shown.bs.offcanvas', function () { }, false);
-            //myOffcanvas.removeEventListener('hide.bs.offcanvas', function () { }, false);
-            //myOffcanvas.removeEventListener('hidden.bs.offcanvas', function () { }, false);
-
-            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
+            let myOffcanvas = document.getElementById(elementId);
+            let bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
             bsOffcanvas?.hide();
         }
     }
