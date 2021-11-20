@@ -26,13 +26,10 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenOffcanvas');
             });
 
-            let bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-            bsOffcanvas?.show();
+            bootstrap?.Offcanvas?.getOrCreateInstance(myOffcanvas)?.show();
         },
         hide: (elementId) => {
-            let myOffcanvas = document.getElementById(elementId);
-            let bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas);
-            bsOffcanvas?.hide();
+            bootstrap?.Offcanvas?.getOrCreateInstance(document.getElementById(elementId))?.hide();
         }
     }
 }

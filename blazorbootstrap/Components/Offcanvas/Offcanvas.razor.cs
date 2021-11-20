@@ -108,8 +108,6 @@ namespace BlazorBootstrap
 
         #endregion Properties
 
-        [Inject] OffcanvasService OffcanvasService { get; set; }
-
         [Inject] IJSRuntime JS { get; set; }
 
         private DotNetObjectReference<Offcanvas> objRef;
