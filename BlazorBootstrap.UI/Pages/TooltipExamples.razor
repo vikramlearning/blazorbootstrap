@@ -1,0 +1,34 @@
+﻿@using BlazorBootstrap
+@page "/tooltips"
+
+<h4 class="my-4">Tooltip Examples</h4>
+<div>
+    <Tooltip TooltipTitle="Tooltip Left" TooltipPlacement="TooltipPlacement.Left">Tooltip Left</Tooltip>
+</div>
+<div>
+    <Tooltip TooltipTitle="Tooltip Top">Tooltip Top</Tooltip>
+</div>
+<div>
+    <Tooltip TooltipTitle="Tooltip Right" TooltipPlacement="TooltipPlacement.Right">Tooltip Right</Tooltip>
+</div>
+<div>
+    <Tooltip TooltipTitle="Tooltip Bottom" TooltipPlacement="TooltipPlacement.Bottom">Tooltip Bottom</Tooltip>
+</div>
+
+<h4 class="my-4">Disabled button with tootip</h4>
+<Tooltip Class="d-inline-block" TooltipTitle="Disabled button"role="button">
+    <button class="btn btn-primary" type="button" disabled>Disabled button</button>
+</Tooltip>
+
+<h4 class="my-4">Icon with click event</h4>
+<Tooltip TooltipTitle="Click here" @onclick="OnClick" role="button">
+    <i class="bi bi-arrow-repeat text-danger"></i>
+</Tooltip>
+
+@code {
+    private void OnClick()
+    {
+        Console.WriteLine($"clicked");
+
+    }
+}

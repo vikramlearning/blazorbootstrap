@@ -60,17 +60,17 @@
 
         #region Tooltip
 
-        //public string Tooltip() => "b-tooltip";
+        public string Tooltip() => "b-tooltip";
 
-        //public string TooltipPlacement(TooltipPlacement tooltipPlacement) => $"b-tooltip-{ToTooltipPlacement(tooltipPlacement)}";
+        public string TooltipPlacement(TooltipPlacement tooltipPlacement) => $"b-tooltip-{ToTooltipPlacement(tooltipPlacement)}";
 
-        //public string TooltipMultiline() => "b-tooltip-multiline";
+        public string TooltipMultiline() => "b-tooltip-multiline";
 
-        //public string TooltipAlwaysActive() => "b-tooltip-active";
+        public string TooltipAlwaysActive() => "b-tooltip-active";
 
-        //public string TooltipFade() => "b-tooltip-fade";
+        public string TooltipFade() => "b-tooltip-fade";
 
-        //public string TooltipInline() => "b-tooltip-inline";
+        public string TooltipInline() => "b-tooltip-inline";
 
         #endregion
 

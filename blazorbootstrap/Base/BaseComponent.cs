@@ -1,6 +1,7 @@
 ﻿using BlazorBootstrap.Base;
 using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System.Collections.Generic;
 
 namespace BlazorBootstrap
@@ -136,8 +137,7 @@ namespace BlazorBootstrap
         /// <summary>
         /// Gets or sets the classname provider.
         /// </summary>
-        [Inject]
-        protected BootstrapClassProvider BootstrapClassProvider { get; set; }
+        [Inject] protected BootstrapClassProvider BootstrapClassProvider { get; set; }
 
         /// <summary>
         /// Custom css classname.
@@ -170,10 +170,12 @@ namespace BlazorBootstrap
         }
 
         /// <summary>
-        /// Captures all the custom attribute that are not part of Blazorise component.
+        /// Captures all the custom attribute that are not part of BlazorBootstrap component.
         /// </summary>
         [Parameter(CaptureUnmatchedValues = true)]
         public Dictionary<string, object> Attributes { get; set; }
+
+        [Inject] protected IJSRuntime JS { get; set; }
 
         #endregion
     }

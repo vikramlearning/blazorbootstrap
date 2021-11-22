@@ -2,13 +2,7 @@
 @inherits BaseComponent
 
 <CascadingValue Value="@this" IsFixed="true">
-    <CascadingValue Value="@State">
-        <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">            
-            @if (ShowBackdrop)
-            {
-                <_ModalBackdrop />
-            }
-            @ChildContent
-        </div>
-    </CascadingValue>
+    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        @ChildContent
+    </div>
 </CascadingValue>

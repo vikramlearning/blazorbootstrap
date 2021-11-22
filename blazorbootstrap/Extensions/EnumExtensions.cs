@@ -47,7 +47,7 @@
         };
 
         /// <summary>
-        /// Gets the tooltip name.
+        /// Gets the tooltip placement.
         /// </summary>
         /// <param name="tooltipPlacement"></param>
         /// <returns>string</returns>

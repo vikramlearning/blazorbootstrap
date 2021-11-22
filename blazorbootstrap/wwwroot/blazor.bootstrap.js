@@ -6,7 +6,7 @@ window.blazorBootstrap = {
     tooltip: {
         initialize: (elementId) => {
             let ele = document.getElementById(elementId);
-            var tooltip = new bootstrap.Tooltip(ele);
+            var tooltip = bootstrap.Tooltip.getOrCreateInstance(ele);
         },
     },
     offcanvas: {

@@ -74,7 +74,7 @@ namespace BlazorBootstrap
             Attributes ??= new Dictionary<string, object>();
 
             // tooltip
-            if (string.IsNullOrWhiteSpace(TooltipText))
+            if (string.IsNullOrWhiteSpace(TooltipTitle))
             {
                 if (Attributes.TryGetValue("title", out object title))
                     Attributes.Remove("title");
@@ -85,9 +85,9 @@ namespace BlazorBootstrap
                 builder.DataBootstrap("placement", TooltipPlacement.ToTooltipPlacementName());
 
                 if (!Attributes.TryGetValue("title", out object title))
-                    Attributes.Add("title", TooltipText);
+                    Attributes.Add("title", TooltipTitle);
                 else
-                    Attributes["title"] = TooltipText;
+                    Attributes["title"] = TooltipTitle;
 
                 ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
             }
@@ -262,14 +262,12 @@ namespace BlazorBootstrap
         /// <summary>
         /// Displays informative text when users hover, focus, or tap an element.
         /// </summary>
-        [Parameter] public string TooltipText { get; set; }
+        [Parameter] public string TooltipTitle { get; set; }
 
         /// <summary>
-        /// 
+        /// Tooltip placement
         /// </summary>
         [Parameter] public BlazorBootstrap.TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
-
-        [Inject] IJSRuntime JS { get; set; }
 
         #endregion
 
