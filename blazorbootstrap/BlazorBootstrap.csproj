@@ -1,16 +1,32 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
+	
+	<PropertyGroup>
+		
+		<PackageId>Blazor.Bootstrap</PackageId>
+		<Version>0.0.9</Version>
+		<PackageVersion></PackageVersion>
 
-  <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
-  </PropertyGroup>
+		<!--<PackageIconUrl></PackageIconUrl>-->
+		<PackageProjectUrl>https://github.com/gvreddy04/blazorbootstrap</PackageProjectUrl>
+		<PackageTags>Blazor, Blazor WebAssembly, Bootstrap, Bootstrap 5.x</PackageTags>
+		
+		<Description>BlazorBootstrap is a component library built on top of Blazor and CSS framework Bootstrap.</Description>
+		<Authors>Vikram</Authors>
+		<!--<Company>your_company</Company>-->		
 
-  
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<OutputType>Library</OutputType>
+		<IsPackable>true</IsPackable>
+		<LangVersion>10.0</LangVersion>
+		
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.9" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.9" />
+	</ItemGroup>
 
 </Project>

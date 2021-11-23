@@ -1,0 +1,1 @@
+﻿Blazorise is a component library built on top of [Blazor](https://blazor.net/) and CSS framework Bootstrap.
