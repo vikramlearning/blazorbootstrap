@@ -24,8 +24,12 @@ namespace BlazorBootstrap
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Modal());
-            builder.Append(BootstrapClassProvider.Fade());
-            //builder.Append(BootstrapClassProvider.Offcanvas(Placement));
+            builder.Append(BootstrapClassProvider.ModalFade());
+
+            if (IsScrollable)
+            {
+
+            }
 
             base.BuildClasses(builder);
         }
@@ -68,7 +72,15 @@ namespace BlazorBootstrap
         /// <inheritdoc/>
         protected override bool ShouldAutoGenerateId => true;
 
-        [Parameter] public Placement Placement { get; set; } = Placement.End; // default
+        /// <summary>
+        /// Allows modal body scroll.
+        /// </summary>
+        [Parameter] public bool IsScrollable { get; set; }
+
+        /// <summary>
+        /// Shows the modal vertically in the center.
+        /// </summary>
+        [Parameter] public bool IsVerticallyCentered { get; set; }
 
         /// <summary>
         /// This event fires immediately when the show instance method is called.

@@ -105,6 +105,7 @@
         #region Modal
 
         public string Modal() => "modal";
+        public string ModalFade() => Fade();
 
         #endregion Modal
 
