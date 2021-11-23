@@ -102,6 +102,12 @@
 
         #endregion Offcanvas
 
+        #region Modal
+
+        public string Modal() => "modal";
+
+        #endregion Modal
+
         #region Methods
 
         public string ToButtonColor(ButtonColor color)

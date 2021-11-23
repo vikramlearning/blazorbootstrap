@@ -1,16 +1,15 @@
 ﻿using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System;
 using System.Threading.Tasks;
 
 namespace BlazorBootstrap
 {
-    public partial class Offcanvas : BaseComponent, IDisposable
+    public partial class Modal : BaseComponent
     {
         #region Members
 
-        private DotNetObjectReference<Offcanvas> objRef;
+        private DotNetObjectReference<Modal> objRef;
 
         #endregion Members
 
@@ -24,8 +23,9 @@ namespace BlazorBootstrap
 
         protected override void BuildClasses(ClassBuilder builder)
         {
-            builder.Append(BootstrapClassProvider.Offcanvas());
-            builder.Append(BootstrapClassProvider.Offcanvas(Placement));
+            builder.Append(BootstrapClassProvider.Modal());
+            builder.Append(BootstrapClassProvider.Fade());
+            //builder.Append(BootstrapClassProvider.Offcanvas(Placement));
 
             base.BuildClasses(builder);
         }
@@ -42,18 +42,19 @@ namespace BlazorBootstrap
 
         public async Task ShowAsync()
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", ElementId, objRef);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.modal.show", ElementId, objRef);
         }
 
         public async Task HideAsync()
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.hide", ElementId);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.modal.hide", ElementId);
         }
 
-        [JSInvokable] public async Task bsShowOffcanvas() => await Showing.InvokeAsync();
-        [JSInvokable] public async Task bsShownOffcanvas() => await Shown.InvokeAsync();
-        [JSInvokable] public async Task bsHideOffcanvas() => await Hiding.InvokeAsync();
-        [JSInvokable] public async Task bsHiddenOffcanvas() => await Hidden.InvokeAsync();
+        [JSInvokable] public async Task bsShowModal() => await Showing.InvokeAsync();
+        [JSInvokable] public async Task bsShownModal() => await Shown.InvokeAsync();
+        [JSInvokable] public async Task bsHideModal() => await Hiding.InvokeAsync();
+        [JSInvokable] public async Task bsHiddenModal() => await Hidden.InvokeAsync();
+        [JSInvokable] public async Task bsHidePreventedModal() => await HidePrevented.InvokeAsync();
 
         public void Dispose()
         {
@@ -88,6 +89,11 @@ namespace BlazorBootstrap
         /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete).
         /// </summary>
         [Parameter] public EventCallback Hidden { get; set; }
+
+        /// <summary>
+        /// This event is fired when the modal is shown, its backdrop is static and a click outside the modal or an escape key press is performed with the keyboard option or data-bs-keyboard set to false.
+        /// </summary>
+        [Parameter] public EventCallback HidePrevented { get; set; }
 
         /// <summary>
         /// Specifies the content to be rendered inside this.
