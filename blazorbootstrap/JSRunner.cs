@@ -11,7 +11,7 @@ namespace BlazorBootstrap
 
         private readonly IJSRuntime runtime;
 
-        private const string BLAZOR_BOOTSTRAP_NAMESPACE = "blazorise";
+        private const string BLAZOR_BOOTSTRAP_NAMESPACE = "blazorbootstrap";
 
         #endregion
 
