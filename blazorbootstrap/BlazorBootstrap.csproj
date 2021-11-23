@@ -9,7 +9,7 @@
 		<!--<PackageIconUrl></PackageIconUrl>-->
 		<PackageProjectUrl>https://github.com/gvreddy04/blazorbootstrap</PackageProjectUrl>
 		<PackageTags>Blazor, Blazor WebAssembly, Bootstrap, Bootstrap 5.x</PackageTags>
-		<PackageLicenseUrl>https://github.com/gvreddy04/blazorbootstrap/blob/master/LICENSE.txt</PackageLicenseUrl>
+		<PackageLicense>https://github.com/gvreddy04/blazorbootstrap/blob/master/LICENSE.txt</PackageLicense>
 		<Description>BlazorBootstrap is a component library built on top of Blazor and CSS framework Bootstrap.</Description>
 		<Authors>Vikram</Authors>
 		<!--<Company>your_company</Company>-->
