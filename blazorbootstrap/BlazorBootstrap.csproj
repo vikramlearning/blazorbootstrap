@@ -3,18 +3,17 @@
 	<PropertyGroup>
 
 		<PackageId>Blazor.Bootstrap</PackageId>
-		<Version>0.0.9</Version>
-		<PackageVersion></PackageVersion>
+		<Version>0.0.1</Version>
+		<PackageVersion>0.0.1</PackageVersion>
 
 		<!--<PackageIconUrl></PackageIconUrl>-->
 		<PackageProjectUrl>https://github.com/gvreddy04/blazorbootstrap</PackageProjectUrl>
 		<PackageTags>Blazor, Blazor WebAssembly, Bootstrap, Bootstrap 5.x</PackageTags>
-
+		<PackageLicenseUrl>https://github.com/gvreddy04/blazorbootstrap/blob/master/LICENSE.txt</PackageLicenseUrl>
 		<Description>BlazorBootstrap is a component library built on top of Blazor and CSS framework Bootstrap.</Description>
 		<Authors>Vikram</Authors>
 		<!--<Company>your_company</Company>-->
-
-
+		<Copyright>Copyright 2021 Vikram</Copyright>
 		
 		<TargetFramework>net5.0</TargetFramework>
 		<OutputType>Library</OutputType>
