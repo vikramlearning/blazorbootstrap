@@ -6,15 +6,17 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'My Site',
-  tagline: 'Dinosaurs are cool',
-  url: 'https://blazorbootstrap.com',
-  baseUrl: '/',
+  title: 'blazorbootstrap',
+  tagline: 'Blazer with bootstrap is cool',
+  url: 'https://gvreddy04.github.io',
+  baseUrl: '/blazorbootstrap',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'gvreddy04',
   projectName: 'blazorbootstrap',
+  trailingSlash: false,
+  deploymentBranch: 'gh-pages',
 
   presets: [
     [
