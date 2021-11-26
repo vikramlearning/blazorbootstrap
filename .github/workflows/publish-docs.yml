@@ -30,10 +30,11 @@ jobs:
       - name: Publish Content
         env:
           GIT_USER: gvreddy579
+          GIT_PASS: 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
         run: |
           cd docs
-          git config user.name gvreddy579
-          git config user.email gvreddy579@gmail.com
+          git config --global user.name "gvreddy579"
+          git config --global user.email "gvreddy579@gmail.com"
           if [ -e yarn.lock ]; then
             yarn install --frozen-lockfile
           elif [ -e package-lock.json ]; then
