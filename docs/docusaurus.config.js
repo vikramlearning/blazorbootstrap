@@ -9,7 +9,7 @@ const config = {
   title: 'blazorbootstrap',
   tagline: 'Blazer with bootstrap is cool',
   url: 'https://gvreddy04.github.io',
-  baseUrl: '/blazorbootstrap',
+  baseUrl: '/blazorbootstrap/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
