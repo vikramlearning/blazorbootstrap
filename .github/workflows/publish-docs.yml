@@ -29,11 +29,11 @@ jobs:
           npm run build
       - name: Publish Content
         env:
-          GIT_USER: github-actions
+          GIT_USER: gvreddy579
         run: |
           cd docs
-          git config --local user.name github-actions
-          git config --local user.email github-actions@github.com
+          git config user.name gvreddy579
+          git config user.email gvreddy579@gmail.com
           if [ -e yarn.lock ]; then
             yarn install --frozen-lockfile
           elif [ -e package-lock.json ]; then
