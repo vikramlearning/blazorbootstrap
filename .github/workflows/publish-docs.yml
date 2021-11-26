@@ -30,7 +30,7 @@ jobs:
       - name: Publish Content
         env:
           GIT_USER: gvreddy579
-          GIT_PASS: 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
+          GIT_PASS: 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
         run: |
           cd docs
           git config --global user.name "gvreddy579"
