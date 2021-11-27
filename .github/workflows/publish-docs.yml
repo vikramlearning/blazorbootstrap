@@ -1,10 +1,10 @@
 name: Publish Documentation to Github Pages
-on: push
+on:
   # Trigger the workflow on push,
-  # but only for the main branch // TODO: Enable below 3 lines once everything is setup
-  # push:
-  #  branches:
-  #    - master
+  # but only for the main branch
+  push:
+    branches:
+      - master
 jobs:
   Build-Deploy-Documentation:
     runs-on: ubuntu-latest
