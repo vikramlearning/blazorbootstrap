@@ -106,7 +106,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Blazor Bootstrap. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Blazor Bootstrap.`,
       },
       prism: {
         theme: lightCodeTheme,
