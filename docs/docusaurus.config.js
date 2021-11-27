@@ -8,12 +8,12 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'Blazor Bootstrap',
   tagline: 'Build fast, responsive sites with Blazor Bootstrap',
-  url: 'https://gvreddy04.github.io',
+  url: 'https://vikramlearning.github.io',
   baseUrl: '/blazorbootstrap/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  organizationName: 'gvreddy04',
+  organizationName: 'vikramlearning',
   projectName: 'blazorbootstrap',
   trailingSlash: false,
   deploymentBranch: 'gh-pages',
@@ -25,12 +25,12 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/gvreddy04/blazorbootstrap/edit/masters/docs/docs',
+          editUrl: 'https://github.com/vikramlearning/blazorbootstrap/edit/masters/docs/docs',
         },
         blog: {
           showReadingTime: true,
           editUrl:
-            'https://github.com/gvreddy04/blazorbootstrap/edit/master/docs/blog/',
+            'https://github.com/vikramlearning/blazorbootstrap/edit/master/docs/blog/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -57,7 +57,7 @@ const config = {
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
-            href: 'https://github.com/gvreddy04/blazorbootstrap',
+            href: 'https://github.com/vikramlearning/blazorbootstrap',
             label: 'GitHub',
             position: 'right',
           },
@@ -101,7 +101,7 @@ const config = {
               },
               {
                 label: 'GitHub',
-                href: 'https://github.com/gvreddy04/blazorbootstrap',
+                href: 'https://github.com/vikramlearning/blazorbootstrap',
               },
             ],
           },
