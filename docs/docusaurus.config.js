@@ -6,8 +6,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'blazorbootstrap',
-  tagline: 'Blazer with bootstrap is cool',
+  title: 'Blazor Bootstrap',
+  tagline: 'Build fast, responsive sites with Blazor Bootstrap',
   url: 'https://gvreddy04.github.io',
   baseUrl: '/blazorbootstrap/',
   onBrokenLinks: 'throw',
@@ -43,7 +43,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'My Site',
+        title: 'Blazor Bootstrap',
         logo: {
           alt: 'My Site Logo',
           src: 'img/logo.svg',
