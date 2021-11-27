@@ -10,7 +10,7 @@
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/vikramlearning/blazorbootstrap</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/vikramlearning/blazorbootstrap</RepositoryUrl>
-		<PackageTags>Blazor, Blazor WebAssembly, Bootstrap, Bootstrap 5.x</PackageTags>		
+		<PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap</PackageTags>		
 		<Description>BlazorBootstrap is a component library built on top of Blazor and CSS framework Bootstrap.</Description>
 		<Authors>Vikram</Authors>
 		<!--<Company>your_company</Company>-->
