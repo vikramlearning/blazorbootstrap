@@ -106,7 +106,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Blazor Bootstrap.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Vikram Learning.`,
       },
       prism: {
         theme: lightCodeTheme,
