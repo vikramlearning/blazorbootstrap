@@ -27,6 +27,7 @@ jobs:
             npm i
           fi
           npm run build
+      # Adding publshing content
       - name: Publish Content
         env:
           GIT_USER: ${{ secrets.GIT_USER }}
