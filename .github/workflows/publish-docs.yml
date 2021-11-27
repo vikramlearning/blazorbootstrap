@@ -1,0 +1,46 @@
+name: Publish Documentation to Github Pages
+on:
+  # Trigger the workflow on push,
+  # but only for the main branch
+  push:
+    branches:
+      - master
+jobs:
+  Build-Deploy-Documentation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check 🛎️
+        uses: actions/checkout@v2
+
+      - name: Install Node 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Build & Test Documentation
+        run: |
+          cd docs
+          if [ -e yarn.lock ]; then
+            yarn install --frozen-lockfile
+          elif [ -e package-lock.json ]; then
+            npm ci
+          else
+            npm i
+          fi
+          npm run build
+      # Adding publshing content
+      - name: Publish Content
+        env:
+          GIT_USER: ${{ secrets.GIT_USER }}
+          GIT_PASS: ${{ secrets.GIT_USER_TOKEN }}
+        run: |
+          cd docs
+          git config --global user.name "${{ secrets.GIT_USER }}"
+          git config --global user.email "${{ secrets.GIT_USER_EMAIL }}"
+          if [ -e yarn.lock ]; then
+            yarn install --frozen-lockfile
+          elif [ -e package-lock.json ]; then
+            npm ci
+          else
+            npm i
+          fi
+          npm run deploy
