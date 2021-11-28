@@ -1,8 +1,8 @@
-﻿BlazorBootstrap is a component library built on top of [Blazor](https://blazor.net/) and CSS framework [Bootstrap 5](https://getbootstrap.com/).
+﻿BlazorBootstrap is a component library built on top of [Blazor](https://blazor.net/) and CSS framework [Bootstrap 5](https://getbootstrap.com/). Build fast, responsive sites with BlazorBootstrap.
 
 ## Quick start
 
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 0.0.1` 
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 0.0.2` 
 
 ## What's Included
 
@@ -23,4 +23,4 @@ We will make sure the documentation is available in few days.
 
 ## Creators
 
-**Vikram**
+**Vikram Reddy**
