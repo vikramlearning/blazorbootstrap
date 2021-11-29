@@ -22,8 +22,10 @@ Documentation and examples for Bootstrap Icons in Blazor.
 ### Icons
 
 ```html
-<Icon Name="IconName.Alarm"></Icon>
-<Icon Name="IconName.AlarmFill"></Icon>
+<p>
+    <Icon Name="IconName.Alarm"></Icon>
+    <Icon Name="IconName.AlarmFill"></Icon>
+</p>
 ```
 
 ### Icons with different Sizes

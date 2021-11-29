@@ -25,7 +25,7 @@ const config = {
             ({
                 docs: {
                     sidebarPath: require.resolve('./sidebars.js'),
-                    editUrl: 'https://github.com/vikramlearning/blazorbootstrap/edit/masters/docs/docs',
+                    editUrl: 'https://github.com/vikramlearning/blazorbootstrap/edit/master/docs/',
                 },
                 blog: {
                     showReadingTime: true,
