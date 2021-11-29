@@ -1,8 +1,9 @@
 ---
+sidebar_label: Typography
 sidebar_position: 2
 ---
 
-# Translate your site
+# Typography
 
 Let's translate `docs/intro.md` to French.
 
