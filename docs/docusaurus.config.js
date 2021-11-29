@@ -86,10 +86,6 @@ const config = {
                                 href: 'https://stackoverflow.com/questions/tagged/blazorbootstrap',
                             },
                             {
-                                label: 'Discord',
-                                href: 'https://discordapp.com/invite/blazorbootstrap',
-                            },
-                            {
                                 label: 'Twitter',
                                 href: 'https://twitter.com/blazorbootstrap',
                             },
@@ -98,10 +94,10 @@ const config = {
                     {
                         title: 'More',
                         items: [
-                            {
-                                label: 'Blog',
-                                to: '/blog',
-                            },
+                            //{
+                            //    label: 'Blog',
+                            //    to: '/blog',
+                            //},
                             {
                                 label: 'GitHub',
                                 href: 'https://github.com/vikramlearning/blazorbootstrap',
@@ -116,6 +112,9 @@ const config = {
                 darkTheme: darkCodeTheme,
             },
         }),
+    customFields: {
+        version: '0.0.2'
+    }
 };
 
 module.exports = config;
