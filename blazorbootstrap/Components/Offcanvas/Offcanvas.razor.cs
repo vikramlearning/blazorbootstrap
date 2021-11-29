@@ -40,11 +40,17 @@ namespace BlazorBootstrap
             base.OnInitialized();
         }
 
+        /// <summary>
+        /// Shows an offcanvas.
+        /// </summary>
         public async Task ShowAsync()
         {
             await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", ElementId, objRef);
         }
 
+        /// <summary>
+        /// Hides an offcanvas.
+        /// </summary>
         public async Task HideAsync()
         {
             await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.hide", ElementId);
@@ -67,6 +73,10 @@ namespace BlazorBootstrap
         /// <inheritdoc/>
         protected override bool ShouldAutoGenerateId => true;
 
+        /// <summary>
+        /// Specifies the placement.
+        /// By default, offcanvas is placed on the right of the viewport.
+        /// </summary>
         [Parameter] public Placement Placement { get; set; } = Placement.End; // default
 
         /// <summary>
