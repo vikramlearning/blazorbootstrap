@@ -44,11 +44,17 @@ namespace BlazorBootstrap
             base.OnInitialized();
         }
 
+        /// <summary>
+        /// Shows an offcanvas.
+        /// </summary>
         public async Task ShowAsync()
         {
             await JS.InvokeVoidAsync("window.blazorBootstrap.modal.show", ElementId, objRef);
         }
 
+        /// <summary>
+        /// Hides an offcanvas.
+        /// </summary>
         public async Task HideAsync()
         {
             await JS.InvokeVoidAsync("window.blazorBootstrap.modal.hide", ElementId);
