@@ -10,7 +10,7 @@ Documentation and examples for Bootstrap Icons in Blazor.
 ## Prerequisites
 
 - Install Bootstrap Icons.
-  - Refer: ![Bootstrap Icons](https://icons.getbootstrap.com/)
+  - Refer: [Bootstrap Icons](https://icons.getbootstrap.com/)
 
 - Include the icon fonts stylesheet - in your website `<head>` or `@import` in CSS from CDN
 ```
