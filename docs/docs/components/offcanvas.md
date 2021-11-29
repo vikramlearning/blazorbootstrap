@@ -1,8 +1,9 @@
 ---
-sidebar_position: 5
+sidebar_label: Offcanvas
+sidebar_position: 4
 ---
 
-# Deploy your site
+# Offcanvas
 
 Docusaurus is a **static-site-generator** (also called **[Jamstack](https://jamstack.org/)**).
 

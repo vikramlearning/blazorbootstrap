@@ -1,8 +1,9 @@
 ---
+sidebar_label: Buttons
 sidebar_position: 2
 ---
 
-# Create a Document
+# Buttons
 
 Documents are **groups of pages** connected through:
 
