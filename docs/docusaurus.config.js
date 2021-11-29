@@ -54,11 +54,11 @@ const config = {
                         position: 'left',
                         label: 'Docs',
                     },
-                    {
-                        to: '/blog',
-                        position: 'left',
-                        label: 'Blog'
-                    },
+                    //{
+                    //    to: '/blog',
+                    //    position: 'left',
+                    //    label: 'Blog'
+                    //},
                     {
                         href: 'https://github.com/vikramlearning/blazorbootstrap',
                         position: 'right',
@@ -73,7 +73,7 @@ const config = {
                         title: 'Docs',
                         items: [
                             {
-                                label: 'Tutorial',
+                                label: 'Introduction',
                                 to: '/docs/intro',
                             },
                         ],
