@@ -5,52 +5,68 @@ sidebar_position: 1
 
 # Icons
 
-Docusaurus can manage multiple versions of your docs.
+Documentation and examples for Bootstrap Icons in Blazor.
 
-## Create a docs version
+## Prerequisites
 
-Release a version 1.0 of your project:
+- Install Bootstrap Icons.
+  - Refer: ![Bootstrap Icons](https://icons.getbootstrap.com/)
 
-```bash
-npm run docusaurus docs:version 1.0
+- Include the icon fonts stylesheet - in your website `<head>` or `@import` in CSS from CDN
+```
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
 ```
 
-The `docs` folder is copied into `versioned_docs/version-1.0` and `versions.json` is created.
+## Usage
 
-Your docs now have 2 versions:
+### Icons
 
-- `1.0` at `http://localhost:3000/docs/` for the version 1.0 docs
-- `current` at `http://localhost:3000/docs/next/` for the **upcoming, unreleased docs**
-
-## Add a Version Dropdown
-
-To navigate seamlessly across versions, add a version dropdown.
-
-Modify the `docusaurus.config.js` file:
-
-```js title="docusaurus.config.js"
-module.exports = {
-  themeConfig: {
-    navbar: {
-      items: [
-        // highlight-start
-        {
-          type: 'docsVersionDropdown',
-        },
-        // highlight-end
-      ],
-    },
-  },
-};
+```html
+<Icon Name="IconName.Alarm"></Icon>
+<Icon Name="IconName.AlarmFill"></Icon>
 ```
 
-The docs version dropdown appears in your navbar:
+### Icons with different Sizes
 
-![Docs Version Dropdown](/img/tutorial/docsVersionDropdown.png)
+<p>
+    <Icon Name="IconName.Alarm" Size="IconSize.x2"></Icon>
+    <Icon Name="IconName.Alarm" Size="IconSize.x3"></Icon>
+    <Icon Name="IconName.Alarm" Size="IconSize.x4"></Icon>
+    <Icon Name="IconName.Alarm" Size="IconSize.x5"></Icon>
+</p>
 
-## Update an existing version
+### Inline text with icon
 
-It is possible to edit versioned docs in their respective folder:
+<p>
+    Inline text <Icon Name="IconName.Alarm" />
+</p>
 
-- `versioned_docs/version-1.0/hello.md` updates `http://localhost:3000/docs/hello`
-- `docs/hello.md` updates `http://localhost:3000/docs/next/hello`
+### Link with icon
+
+<p>
+    <a href="#" class="text-decoration-none">
+        Example link text <Icon Name="IconName.Alarm" />
+    </a>
+</p>
+
+### Link with custom icon
+
+<p>
+    <a href="#" class="text-decoration-none">
+        Example link text <Icon CustomIconName="bi bi-bootstrap" />
+    </a>
+</p>
+
+### Button with icon and text
+
+<p>
+    <Button Color="ButtonColor.Primary"><Icon Name="IconName.Alarm" /> Button </Button>
+    <Button Color="ButtonColor.Success"><Icon Name="IconName.Alarm" /> Button </Button>
+    <Button Color="ButtonColor.Danger" Outline="true"><Icon Name="IconName.AlarmFill" /> Button </Button>
+</p>
+
+### Button with icon only
+
+<p>
+    <Button Color="ButtonColor.Secondary"><Icon Name="IconName.Alarm" /></Button>
+</p>
