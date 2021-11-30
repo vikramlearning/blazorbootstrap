@@ -6,8 +6,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'Blazor Bootstrap',
-    tagline: 'Build fast, responsive sites with Blazor Bootstrap',
+    title: 'BlazorBootstrap',
+    tagline: 'Build fast, responsive sites with BlazorBootstrap',
     url: 'https://vikramlearning.github.io',
     baseUrl: '/blazorbootstrap/',
     onBrokenLinks: 'throw',
@@ -42,9 +42,9 @@ const config = {
         /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         ({
             navbar: {
-                title: 'Blazor Bootstrap',
+                title: 'BlazorBootstrap',
                 logo: {
-                    alt: 'Blazor Bootstrap',
+                    alt: 'BlazorBootstrap',
                     src: 'img/logo.svg',
                 },
                 items: [
@@ -110,6 +110,7 @@ const config = {
             prism: {
                 theme: lightCodeTheme,
                 darkTheme: darkCodeTheme,
+                additionalLanguages: ['html', 'csharp', 'razor']
             },
         }),
     customFields: {

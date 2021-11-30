@@ -21,7 +21,7 @@ Documentation and examples for Bootstrap Icons in Blazor.
 
 ### Icons
 
-```html
+```razor
 <p>
     <Icon Name="IconName.Alarm"></Icon>
     <Icon Name="IconName.AlarmFill"></Icon>
