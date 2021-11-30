@@ -7,11 +7,11 @@ title: Introduction
 
 # Introduction
 
-Get started with Blazor Bootstrap, with ready made components.
+Get started with `Blazor Bootstrap`, with ready made components.
 
 ## Quick start
 
-Looking to quickly add Blazor Bootstrap to your project? Use NuGet package manager.
+Looking to quickly add `Blazor Bootstrap` to your project? Use NuGet package manager.
 
 ```shell
 Install-Package Blazor.Bootstrap -Version 0.0.2
@@ -19,25 +19,46 @@ Install-Package Blazor.Bootstrap -Version 0.0.2
 
 ## Starter template
 
-Generate a new Docusaurus site using the **classic template**:
+Change your `index.html` file and include the CSS and JS files:
+ - Add Bootstrap 5 CSS and JS files as recommended in the official Bootstrap website.
+ - Include `blazor.bootstrap.js` file
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Blazor Bootstrap - Starter Template</title>
-    <base href="/" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
-    <link href="BlazorBootstrap.UI.styles.css" rel="stylesheet" />
-</head>
-<body>
-    <div id="app">Loading...</div>
-    <script src="_framework/blazor.webassembly.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
-</body>
-</html>
-```
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+       <meta charset="utf-8" />
+       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+       <title>Blazor Bootstrap - Starter Template</title>
+       <base href="/" />
+       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
+       <link href="BlazorBootstrap.UI.styles.css" rel="stylesheet" />
+   </head>
+   <body>
+       <div id="app">Loading...</div>
+       <script src="_framework/blazor.webassembly.js"></script>
+       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+       <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+   </body>
+   </html>
+   ```
+ - Inject `Blazor Bootstrap` into services in the `Program.cs` file
+
+   ```csharp {11}
+   public class Program
+   {
+       public static async Task Main(string[] args)
+       {
+           var builder = WebAssemblyHostBuilder.CreateDefault(args);
+           builder.RootComponents.Add<App>("#app");
+   
+           builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+   
+           // Inject services           
+           builder.Services.AddBlazorBootstrap();
+   
+           await builder.Build().RunAsync();
+       }
+   }
+   ```
