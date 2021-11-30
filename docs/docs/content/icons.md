@@ -5,14 +5,14 @@ sidebar_position: 1
 
 # Icons
 
-Documentation and examples for Bootstrap Icons in Blazor.
+Documentation and examples for BlazorBootstrap Icons.
 
 ## Prerequisites
 
 - Install Bootstrap Icons.
   - Refer: [Bootstrap Icons](https://icons.getbootstrap.com/)
 
-- Include the icon fonts stylesheet - in your website `<head>` or `@import` in CSS from CDN
+- Include the icon fonts stylesheet in your website `<head>` or `@import` in CSS from CDN.
 ```
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
 ```
@@ -30,7 +30,7 @@ Documentation and examples for Bootstrap Icons in Blazor.
 
 ### Icons with different Sizes
 
-```html
+```cshtml
 <p>
     <Icon Name="IconName.Alarm" Size="IconSize.x2"></Icon>
     <Icon Name="IconName.Alarm" Size="IconSize.x3"></Icon>
@@ -41,7 +41,7 @@ Documentation and examples for Bootstrap Icons in Blazor.
 
 ### Inline text with icon
 
-```html
+```cshtml
 <p>
     Inline text <Icon Name="IconName.Alarm" />
 </p>
@@ -49,7 +49,7 @@ Documentation and examples for Bootstrap Icons in Blazor.
 
 ### Link with icon
 
-```html
+```cshtml
 <p>
     <a href="#" class="text-decoration-none">
         Example link text <Icon Name="IconName.Alarm" />
@@ -59,7 +59,7 @@ Documentation and examples for Bootstrap Icons in Blazor.
 
 ### Link with custom icon
 
-```html
+```cshtml
 <p>
     <a href="#" class="text-decoration-none">
         Example link text <Icon CustomIconName="bi bi-bootstrap" />
@@ -69,7 +69,7 @@ Documentation and examples for Bootstrap Icons in Blazor.
 
 ### Button with icon and text
 
-```html
+```cshtml
 <p>
     <Button Color="ButtonColor.Primary"><Icon Name="IconName.Alarm" /> Button </Button>
     <Button Color="ButtonColor.Success"><Icon Name="IconName.Alarm" /> Button </Button>
@@ -79,7 +79,7 @@ Documentation and examples for Bootstrap Icons in Blazor.
 
 ### Button with icon only
 
-```html
+```cshtml
 <p>
     <Button Color="ButtonColor.Secondary"><Icon Name="IconName.Alarm" /></Button>
 </p>
