@@ -110,7 +110,7 @@ const config = {
             prism: {
                 theme: lightCodeTheme,
                 darkTheme: darkCodeTheme,
-                additionalLanguages: ['html', 'csharp', 'razor']
+                additionalLanguages: ['csharp', 'razor'],
             },
         }),
     customFields: {
