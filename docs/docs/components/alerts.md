@@ -11,12 +11,12 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ```cshtml
 <div>
-    <Alert Color="AlertColor.Primary"> A simple primary alert—check it out! </Alert>
-    <Alert Color="AlertColor.Secondary"> A simple secondary alert—check it out! </Alert>
-    <Alert Color="AlertColor.Success"> A simple success alert—check it out! </Alert>
-    <Alert Color="AlertColor.Danger"> A simple danger alert—check it out! </Alert>
-    <Alert Color="AlertColor.Warning"> A simple warning alert—check it out! </Alert>
-    <Alert Color="AlertColor.Info"> A simple info alert—check it out! </Alert>
+    <Alert Color="AlertColor.Primary"> A simple primary alert. </Alert>
+    <Alert Color="AlertColor.Secondary"> A simple secondary alert. </Alert>
+    <Alert Color="AlertColor.Success"> A simple success alert. </Alert>
+    <Alert Color="AlertColor.Danger"> A simple danger alert. </Alert>
+    <Alert Color="AlertColor.Warning"> A simple warning alert. </Alert>
+    <Alert Color="AlertColor.Info"> A simple info alert. </Alert>
 </div>
 ```
 
@@ -24,7 +24,7 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ```cshtml
 <div>
-    <Alert Color="AlertColor.Light" Dismisable="true" Visible="true"> A simple light alert—check it out! </Alert>
+    <Alert Color="AlertColor.Light" Dismisable="true" Visible="true"> A simple light alert. </Alert>
 </div>
 ```
 
@@ -32,7 +32,7 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ```cshtml
 <div>
-    <Alert @ref="darkAlert" Color="AlertColor.Dark" Dismisable="true"> A simple light alert—check it out! </Alert>
+    <Alert @ref="darkAlert" Color="AlertColor.Dark" Dismisable="true"> A simple light alert. </Alert>
     <Button Color="ButtonColor.Dark" @onclick="onClick"> Toggle Alert </Button>
 </div>
 ```
