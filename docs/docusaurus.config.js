@@ -12,7 +12,7 @@ const config = {
     baseUrl: '/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
-    favicon: 'img/favicon.ico',
+    favicon: 'img/logo/16X16.png',
     organizationName: 'vikramlearning',
     projectName: 'blazorbootstrap',
     trailingSlash: false,
