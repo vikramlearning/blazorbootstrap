@@ -43,4 +43,6 @@ jobs:
           else
             npm i
           fi
+          echo 'getblazorbootstrap.com' > CNAME
+          cat CNAME
           npm run deploy
