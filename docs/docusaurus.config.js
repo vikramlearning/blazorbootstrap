@@ -8,7 +8,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
     title: 'BlazorBootstrap',
     tagline: 'Build fast, responsive sites with BlazorBootstrap',
-    url: 'https://vikramlearning.github.io',
+    url: 'https://getblazorbootstrap.com',
     baseUrl: '/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
