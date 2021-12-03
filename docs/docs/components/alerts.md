@@ -5,40 +5,69 @@ sidebar_position: 1
 
 # Alerts
 
-Add **Markdown or React** files to `src/pages` to create a **standalone page**:
+Documentation and examples for BlazorBootstrap Alerts.
 
-- `src/pages/index.js` -> `localhost:3000/`
-- `src/pages/foo.md` -> `localhost:3000/foo`
-- `src/pages/foo/bar.js` -> `localhost:3000/foo/bar`
+## Usage
 
-## Create your first React Page
+```cshtml
+<div>
+    <Alert Color="AlertColor.Primary"> A simple primary alert—check it out! </Alert>
+    <Alert Color="AlertColor.Secondary"> A simple secondary alert—check it out! </Alert>
+    <Alert Color="AlertColor.Success"> A simple success alert—check it out! </Alert>
+    <Alert Color="AlertColor.Danger"> A simple danger alert—check it out! </Alert>
+    <Alert Color="AlertColor.Warning"> A simple warning alert—check it out! </Alert>
+    <Alert Color="AlertColor.Info"> A simple info alert—check it out! </Alert>
+</div>
+```
 
-Create a file at `src/pages/my-react-page.js`:
+## Dismissable Alerts
 
-```jsx title="src/pages/my-react-page.js"
-import React from 'react';
-import Layout from '@theme/Layout';
+```cshtml
+<div>
+    <Alert Color="AlertColor.Light" Dismisable="true" Visible="true"> A simple light alert—check it out! </Alert>
+</div>
+```
 
-export default function MyReactPage() {
-  return (
-    <Layout>
-      <h1>My React page</h1>
-      <p>This is a React page</p>
-    </Layout>
-  );
+## Toogle Alerts
+
+```cshtml
+<div>
+    <Alert @ref="darkAlert" Color="AlertColor.Dark" Dismisable="true"> A simple light alert—check it out! </Alert>
+    <Button Color="ButtonColor.Dark" @onclick="onClick"> Toggle Alert </Button>
+</div>
+```
+
+```cs
+@code{
+    Alert darkAlert;
+
+    void onClick()
+    {
+        darkAlert.Toogle();
+    }
 }
 ```
 
-A new page is now available at `http://localhost:3000/my-react-page`.
+## Alerts with additional content
 
-## Create your first Markdown Page
-
-Create a file at `src/pages/my-markdown-page.md`:
-
-```mdx title="src/pages/my-markdown-page.md"
-# My Markdown page
-
-This is a Markdown page
+```cshtml
+<div>
+    <Alert Color="AlertColor.Success" Dismisable="true" Visible="true">
+        <h4 class="alert-heading">Well done!</h4>
+        <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
+        <hr>
+        <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
+    </Alert>
+</div>
 ```
 
-A new page is now available at `http://localhost:3000/my-markdown-page`.
+```cshtml
+<div>
+    <Alert Color="AlertColor.Success" Dismisable="true" Visible="true">
+        <h4 class="alert-heading">Well done!</h4>
+        <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
+        <hr>
+        <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
+    </Alert>
+</div>
+```
