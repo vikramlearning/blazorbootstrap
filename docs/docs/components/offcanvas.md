@@ -19,7 +19,7 @@ Documentation and examples for BlazorBootstrap Offcanvas.
 
 ## Methods
 
-| Method Name | Description |
+| Method | Description |
 |--|--|
 | Show | Shows an offcanvas element. Returns to the caller before the offcanvas element has actually been shown (i.e. before the shown event occurs). |
 | Hide | Hides an offcanvas element. Returns to the caller before the offcanvas element has actually been hidden (i.e. before the Hidden event occurs). |
@@ -43,6 +43,7 @@ Documentation and examples for BlazorBootstrap Offcanvas.
 ## Callback Events
 
 | Event | Description |
+|--|--|
 | Showing | This event fires immediately when the show instance method is called. |
 | Shown | This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to complete). |
 | Hiding | This event is fired immediately when the hide method has been called. |
