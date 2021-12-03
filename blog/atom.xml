@@ -6,7 +6,7 @@
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>BlazorBootstrap Blog</subtitle>
-    <icon>https://getblazorbootstrap.com/img/favicon.ico</icon>
+    <icon>https://getblazorbootstrap.com/img/logo/16X16.png</icon>
     <entry>
         <title type="html"><![CDATA[Welcome]]></title>
         <id>welcome</id>
