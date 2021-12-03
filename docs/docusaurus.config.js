@@ -9,7 +9,7 @@ const config = {
     title: 'BlazorBootstrap',
     tagline: 'Build fast, responsive sites with BlazorBootstrap',
     url: 'https://vikramlearning.github.io',
-    baseUrl: '/blazorbootstrap/',
+    baseUrl: '/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
     favicon: 'img/favicon.ico',
