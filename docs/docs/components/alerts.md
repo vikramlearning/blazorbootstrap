@@ -7,7 +7,9 @@ sidebar_position: 1
 
 Documentation and examples for BlazorBootstrap Alerts.
 
-## Usage
+## Examples
+
+### Alerts
 
 ```cshtml
 <div>
@@ -20,7 +22,7 @@ Documentation and examples for BlazorBootstrap Alerts.
 </div>
 ```
 
-## Dismissable Alerts
+### Dismissable Alerts
 
 ```cshtml
 <div>
@@ -28,7 +30,7 @@ Documentation and examples for BlazorBootstrap Alerts.
 </div>
 ```
 
-## Toogle Alerts
+### Toogle Alerts
 
 ```cshtml
 <div>
@@ -48,7 +50,7 @@ Documentation and examples for BlazorBootstrap Alerts.
 }
 ```
 
-## Alerts with additional content
+### Alerts with additional content
 
 ```cshtml
 <div>

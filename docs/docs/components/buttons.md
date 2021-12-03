@@ -7,7 +7,9 @@ sidebar_position: 2
 
 Documentation and examples for BlazorBootstrap Buttons.
 
-## Usage
+## Examples
+
+### Buttons
 
 ```cshtml
 <p>
@@ -23,7 +25,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 </p>
 ```
 
-## Button tags
+### Button tags
 
 ```cshtml
 <p>
@@ -32,7 +34,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 </p>
 ```
 
-## Outline Buttons
+### Outline Buttons
 
 ```cshtml
 <p>
@@ -46,7 +48,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 </p>
 ```
 
-## Sizes
+### Sizes
 
 ```cshtml
 <p>
@@ -59,7 +61,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 </p>
 ```
 
-## Disable State
+### Disable State
 
 ```cshtml
 <p>
@@ -72,7 +74,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 </p>
 ```
 
-## Block Buttons
+### Block Buttons
 
 ```cshtml
 <div class="d-grid gap-2">
@@ -102,7 +104,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 </div>
 ```
 
-## Button Toogle States
+### Button Toogle States
 
 ```cshtml
 <p>
@@ -112,7 +114,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 </p>
 ```
 
-## Loading
+### Button with Loading
 
 ```cshtml
 <p>
@@ -127,7 +129,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 </p>
 ```
 
-## Buttons with Tooltip
+### Buttons with Tooltip
 
 ```cshtml
 <p>
@@ -143,13 +145,13 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 :::note
 
-HTML tooltips not supported.
+HTML tooltips not supported at this moment.
 
 :::
 
-## Button Click Events
+### Events
 
-### Click event
+#### Click event
 
 ```cshtml
 <p>
@@ -168,7 +170,7 @@ HTML tooltips not supported.
 }
 ```
 
-### Double click event
+#### Double click event
 
 ```cshtml
 <p>
@@ -187,7 +189,7 @@ HTML tooltips not supported.
 }
 ```
 
-### Click event with arguments
+#### Click event with arguments
 
 ```cshtml
 <p>

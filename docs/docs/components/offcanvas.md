@@ -7,7 +7,9 @@ sidebar_position: 4
 
 Documentation and examples for BlazorBootstrap Offcanvas.
 
-## Usage
+## Examples
+
+### Offcanvas
 
 ```cshtml
 <Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowOffcanvasAsync(); })">Show Offcanvas</Button>
@@ -17,7 +19,7 @@ Documentation and examples for BlazorBootstrap Offcanvas.
 </Offcanvas>
 ```
 
-## Methods
+### Methods
 
 | Method | Description |
 |--|--|
@@ -40,7 +42,7 @@ Documentation and examples for BlazorBootstrap Offcanvas.
 }
 ```
 
-## Callback Events
+### Callback Events
 
 | Event | Description |
 |--|--|
@@ -87,7 +89,7 @@ Documentation and examples for BlazorBootstrap Offcanvas.
 }
 ```
 
-## Example
+### Full Example
 
 ```cshtml
 @using BlazorBootstrap
@@ -164,6 +166,6 @@ Documentation and examples for BlazorBootstrap Offcanvas.
 }
 ```
 
-## Screenshot
+### Screenshot
 
 <img src="https://i.imgur.com/J1mcowH.jpg" alt="BlazorBootstrap: Offcanvas Example" />

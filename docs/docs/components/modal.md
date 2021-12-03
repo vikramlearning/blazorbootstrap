@@ -7,7 +7,9 @@ sidebar_position: 3
 
 Documentation and examples for BlazorBootstrap Modal.
 
-## Usage
+## Examples
+
+### Modal
 
 ```cshtml
 <Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowModalAsync(); })">Show Modal</Button>
@@ -17,7 +19,7 @@ Documentation and examples for BlazorBootstrap Modal.
 </Modal>
 ```
 
-## Methods
+### Methods
 
 | Method | Description |
 |--|--|
@@ -41,7 +43,7 @@ Documentation and examples for BlazorBootstrap Modal.
 }
 ```
 
-## Callback Events
+### Callback Events
 
 | Event | Description | 
 |--|--|

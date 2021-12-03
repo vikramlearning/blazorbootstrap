@@ -5,9 +5,11 @@ sidebar_position: 5
 
 # Tooltips
 
-Documentation and examples for BlazorBootstrap Modal.
+Documentation and examples for BlazorBootstrap Tooltips.
 
-## Usage
+## Examples
+
+### Tooltips
 
 ```cshtml
 <div>
@@ -24,7 +26,7 @@ Documentation and examples for BlazorBootstrap Modal.
 </div>
 ```
 
-## Disabled button with tooltip
+### Disabled button with tooltip
 
 ```cshtml
 <Tooltip Class="d-inline-block" TooltipTitle="Disabled button"role="button">
@@ -32,7 +34,7 @@ Documentation and examples for BlazorBootstrap Modal.
 </Tooltip>
 ```
 
-## Icon with click event
+### Tooltip icon with click event
 
 ```cshtml
 <Tooltip TooltipTitle="Click here" @onclick="OnClick" role="button">
