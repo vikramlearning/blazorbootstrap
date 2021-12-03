@@ -5,28 +5,164 @@ sidebar_position: 4
 
 # Offcanvas
 
-Docusaurus is a **static-site-generator** (also called **[Jamstack](https://jamstack.org/)**).
+Documentation and examples for BlazorBootstrap Offcanvas.
 
-It builds your site as simple **static HTML, JavaScript and CSS files**.
+## Usage
 
-## Build your site
+```cshtml
+<Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowOffcanvasAsync(); })">Show Offcanvas</Button>
 
-Build your site **for production**:
-
-```bash
-npm run build
+<Offcanvas @ref="offcanvas">
+  ... design your header and body
+</Offcanvas>
 ```
 
-The static files are generated in the `build` folder.
+## Methods
 
-## Deploy your site
+| Method Name | Description |
+|--|--|
+| Show | Shows an offcanvas element. Returns to the caller before the offcanvas element has actually been shown (i.e. before the shown event occurs). |
+| Hide | Hides an offcanvas element. Returns to the caller before the offcanvas element has actually been hidden (i.e. before the Hidden event occurs). |
 
-Test your production build locally:
+```cs
+@code {
+    private Offcanvas offcanvas;
 
-```bash
-npm run serve
+    private async Task ShowOffcanvasAsync()
+    {
+        await offcanvas?.ShowAsync();
+    }
+
+    private async Task HideOffcanvasAsync()
+    {
+        await offcanvas?.HideAsync();
+    }
+}
 ```
 
-The `build` folder is now served at `http://localhost:3000/`.
+## Callback Events
 
-You can now deploy the `build` folder **almost anywhere** easily, **for free** or very small cost (read the **[Deployment Guide](https://docusaurus.io/docs/deployment)**).
+| Event | Description |
+| Showing | This event fires immediately when the show instance method is called. |
+| Shown | This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to complete). |
+| Hiding | This event is fired immediately when the hide method has been called. |
+| Hidden | This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete). |
+
+```cshtml
+<Offcanvas @ref="offcanvas"
+           Showing="OnOffcanvasShowingAsync"
+           Shown="OnOffcanvasShownAsync"
+           Hiding="OnOffcanvasHidingAsync"
+           Hidden="OnOffcanvasHiddenAsync">
+
+    ... add offcanvas header and body
+
+</Offcanvas>
+```
+
+```cs
+@code {
+    private Offcanvas offcanvas;
+
+    private async Task OnOffcanvasShowingAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Showing"); });
+    }
+
+    private async Task OnOffcanvasShownAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Shown"); });
+    }
+
+    private async Task OnOffcanvasHidingAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Hiding"); });
+    }
+
+    private async Task OnOffcanvasHiddenAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Hidden"); });
+    }
+}
+```
+
+## Example
+
+```cshtml
+@using BlazorBootstrap
+@page "/offcanvas"
+
+<h4 class="my-4">Offcanvas Examples</h4>
+<Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowOffcanvasAsync(); })">Show Offcanvas</Button>
+
+<Offcanvas @ref="offcanvas"
+           Showing="OnOffcanvasShowingAsync"
+           Shown="OnOffcanvasShownAsync"
+           Hiding="OnOffcanvasHidingAsync"
+           Hidden="OnOffcanvasHiddenAsync">
+
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div>
+            Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
+        </div>
+        <div class="dropdown mt-3">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+                Dropdown button
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="#">Action</a></li>
+                <li><a class="dropdown-item" href="#">Another action</a></li>
+                <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+        </div>
+        <div class="mt-3">
+            <Button Color="ButtonColor.Primary" @onclick="(async () => { await HideOffcanvasAsync(); })">Hide Offcanvas</Button>
+        </div>
+    </div>
+
+</Offcanvas>
+```
+
+```cs
+@code {
+    private Offcanvas offcanvas;
+
+    private async Task ShowOffcanvasAsync()
+    {
+        await offcanvas?.ShowAsync();
+    }
+
+    private async Task HideOffcanvasAsync()
+    {
+        await offcanvas?.HideAsync();
+    }
+
+    private async Task OnOffcanvasShowingAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Showing"); });
+    }
+
+    private async Task OnOffcanvasShownAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Shown"); });
+    }
+
+    private async Task OnOffcanvasHidingAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Hiding"); });
+    }
+
+    private async Task OnOffcanvasHiddenAsync()
+    {
+        await Task.Run(() => { Console.WriteLine("Event: Hidden"); });
+    }
+}
+```
+
+## Screenshot
+
+<img src="https://i.imgur.com/J1mcowH.jpg" alt="BlazorBootstrap: Offcanvas Example" />
