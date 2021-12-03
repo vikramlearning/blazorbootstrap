@@ -39,7 +39,7 @@ Documentation and examples for BlazorBootstrap Alerts.
 </div>
 ```
 
-```cs
+```cs {6}
 @code{
     Alert darkAlert;
 

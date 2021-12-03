@@ -26,7 +26,7 @@ Documentation and examples for BlazorBootstrap Modal.
 | Show | Shows an offcanvas. |
 | Hide | Hides an offcanvas. |
 
-```cs
+```cs {7,12}
 @code {
 
     private Modal modal;
