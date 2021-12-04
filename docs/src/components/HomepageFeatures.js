@@ -8,7 +8,7 @@ const FeatureList = [
     Svg: require('../../static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        BlazorBootstrap has designed to install easily and quickly get your website up and running.
+        BlazorBootstrap has been built with Blazor and Bootstrap CSS framework to use Bootstrap components with ease.
       </>
     ),
   },
@@ -17,7 +17,7 @@ const FeatureList = [
     Svg: require('../../static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        BlazorBootstrap lets you focus on your deliverables, and we'll do the chores. Go ahead and start building the website.
+        BlazorBootstrap lets you focus on your deliverables, and we'll build the Bootstrap components in Blazor.
       </>
     ),
   },
@@ -26,7 +26,7 @@ const FeatureList = [
     Svg: require('../../static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Free to use in a Non-Commercial-Manner, under the Apache License. Clone it, fork it, customize it… whatever!
+        BlazorBootstrap is licensed under the Apache License 2.0. Clone it, fork it, and customize it.
       </>
     ),
   },
