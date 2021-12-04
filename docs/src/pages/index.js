@@ -29,8 +29,8 @@ export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-          title={`${siteConfig.title} . Library built on top of Bootstrap 5 for Blazor.`}
-          description="BlazorBootstrap is a component library built on top of Blazor and Bootstrap 5 CSS framework.">
+          title={`${siteConfig.title} . A component library built on top of Blazor and Bootstrap 5 for Blazor.`}
+          description="BlazorBootstrap is a component library built on top of Blazor and Bootstrap 5 for Blazor.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />
