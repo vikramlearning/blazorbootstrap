@@ -18,8 +18,6 @@ const config = {
     trailingSlash: false,
     deploymentBranch: 'gh-pages',
 
-    plugins: ['@docusaurus/plugin-google-analytics'],
-
     presets: [
         [
             '@docusaurus/preset-classic',
