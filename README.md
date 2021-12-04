@@ -16,6 +16,7 @@
 ## Table of contents
 
 - [Quick start](#quick-start)
+- [Status](#status)
 - [Components](#components)
 - [Documentation](#documentation)
 - [Creators](#creators)
@@ -31,7 +32,7 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 
 ## Status
 
-[![NuGet](https://img.shields.io/nuget/vpre/bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
+[![NuGet](https://img.shields.io/nuget/vpre/blazor.bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 
 ## Components
 
