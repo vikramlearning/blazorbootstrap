@@ -20,6 +20,7 @@
 - [Components](#components)
 - [Documentation](#documentation)
 - [Creators](#creators)
+- [Copyright and license](#copyright-and-license)
 
 ## Quick start
 
