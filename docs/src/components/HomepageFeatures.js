@@ -8,8 +8,7 @@ const FeatureList = [
     Svg: require('../../static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        BlazorBootstrap has designed to install easily and quickly get your website up and running.
       </>
     ),
   },
@@ -18,18 +17,16 @@ const FeatureList = [
     Svg: require('../../static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        BlazorBootstrap lets you focus on your deliverables, and we'll do the chores. Go ahead and start building the website.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Open-source & free',
     Svg: require('../../static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Free to use in a Non-Commercial-Manner, under the Apache License. Clone it, fork it, customize it… whatever!
       </>
     ),
   },
