@@ -22,8 +22,16 @@
 
 ## Quick start
 
+Several quick start options are available:
+
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
 - Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 0.0.2` 
+
+Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
+
+## Status
+
+[![NuGet](https://img.shields.io/nuget/vpre/bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 
 ## Components
 
