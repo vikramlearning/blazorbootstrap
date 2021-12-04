@@ -47,7 +47,7 @@ More components coming...
 
 ## Documentation
 
-Bootstrap's documentation, included in this repo in the root directory, is built with [Docusaurus](https://docusaurus.io/) and publicly hosted on GitHub Pages at <https://getbootstrap.com/>. The docs may also be run locally.
+Bootstrap's documentation, included in this repo in the root directory, is built with [Docusaurus](https://docusaurus.io/) and publicly hosted on GitHub Pages at <https://getblazorbootstrap.com/>. The docs may also be run locally.
 
 ## Creators
 
