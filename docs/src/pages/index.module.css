@@ -21,8 +21,3 @@
   align-items: center;
   justify-content: center;
 }
-
-/* custom */
-.hero__title {
-    font-size: 2.1rem !important;
-}
