@@ -1,5 +1,5 @@
 ﻿<p align="center">
-  <a href="https://getbootstrap.com/">
+  <a href="https://getblazorbootstrap.com/">
     <img src="https://getblazorbootstrap.com/img/logo.svg" alt="BlazorBootstrap logo" width="200" height="200">
   </a>
 </p>
