@@ -23,8 +23,8 @@ Documentation and examples for BlazorBootstrap Offcanvas.
 
 | Method | Description |
 |--|--|
-| Show | Shows an offcanvas element. Returns to the caller before the offcanvas element has actually been shown (i.e. before the shown event occurs). |
-| Hide | Hides an offcanvas element. Returns to the caller before the offcanvas element has actually been hidden (i.e. before the Hidden event occurs). |
+| Show | Shows an offcanvas element. Returns to the caller before the offcanvas element has actually been shown (i.e. before the <code>Shown</code> event occurs). |
+| Hide | Hides an offcanvas element. Returns to the caller before the offcanvas element has actually been hidden (i.e. before the <code>Hidden</code> event occurs). |
 
 ```cs {6,11}
 @code {

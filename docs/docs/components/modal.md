@@ -23,8 +23,8 @@ Documentation and examples for BlazorBootstrap Modal.
 
 | Method | Description |
 |--|--|
-| Show | Shows an offcanvas. |
-| Hide | Hides an offcanvas. |
+| Show | Manually opens a modal. Returns to the caller before the modal has actually been shown (i.e. before the <code>Shown</code> event occurs). |
+| Hide | Manually hides a modal. Returns to the caller before the modal has actually been hidden (i.e. before the <code>Hidden</code> event occurs). |
 
 ```cs {7,12}
 @code {
