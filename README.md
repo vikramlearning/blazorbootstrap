@@ -7,7 +7,7 @@
 <h3 align="center">BlazorBootstrap</h3>
 
 <p align="center">
-  BlazorBootstrap is a component library built on top of [Blazor](https://blazor.net/) and [Bootstrap 5](https://getbootstrap.com/) CSS framework.
+  BlazorBootstrap is a component library built on top of Blazor and Bootstrap 5 CSS framework.
   <br>
   <a href="https://getblazorbootstrap.com/docs/intro"><strong>Explore BlazorBootstrap docs »</strong></a>
   <br>
@@ -26,8 +26,6 @@
 
 ## Components
 
-- Typography
-  - Heading
 - Alerts
 - Buttons
 - Icons
