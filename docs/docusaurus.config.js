@@ -113,7 +113,7 @@ const config = {
                 additionalLanguages: ['csharp', 'cshtml'],
             },
             googleAnalytics: {
-                trackingID: 'G-MPH6SHCQ21',
+                trackingID: 'UA-214301343-1',
                 // Optional fields.
                 anonymizeIP: true, // Should IPs be anonymized?
             },
