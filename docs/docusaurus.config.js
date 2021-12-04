@@ -18,6 +18,8 @@ const config = {
     trailingSlash: false,
     deploymentBranch: 'gh-pages',
 
+    plugins: ['@docusaurus/plugin-google-analytics'],
+
     presets: [
         [
             '@docusaurus/preset-classic',
@@ -111,6 +113,11 @@ const config = {
                 theme: lightCodeTheme,
                 darkTheme: darkCodeTheme,
                 additionalLanguages: ['csharp', 'cshtml'],
+            },
+            googleAnalytics: {
+                trackingID: 'G-44WRMLT74S',
+                // Optional fields.
+                anonymizeIP: true, // Should IPs be anonymized?
             },
         }),
     customFields: {
