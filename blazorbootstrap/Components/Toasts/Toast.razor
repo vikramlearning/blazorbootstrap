@@ -1,0 +1,23 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<CascadingValue Value="@this" IsFixed="true">
+    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        <div class="toast-header">
+            @if (!string.IsNullOrWhiteSpace(ToastMessage.ImageSource))
+            {
+                <img src="..." class="rounded me-2" alt="...">
+            }
+            else
+            {
+                <Icon Name="@ToastMessage.IconName" CustomIconName="@ToastMessage.CustomIconName" class="me-2"></Icon>
+            }
+            <strong class="me-auto">@ToastMessage.Title</strong>
+            <small class="text-muted">@ToastMessage.HelpText</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            @ToastMessage.Message
+        </div>
+    </div>
+</CascadingValue>

@@ -42,8 +42,7 @@ namespace BlazorBootstrap
         /// <summary>
         /// Icon name that can be either a string or <see cref="IconName"/>.
         /// </summary>
-        [Parameter]
-        public IconName Name
+        [Parameter] public IconName Name
         {
             get => name;
             set
@@ -57,8 +56,7 @@ namespace BlazorBootstrap
         /// <summary>
         /// Icon name that can be either a string or <see cref="IconName"/>.
         /// </summary>
-        [Parameter]
-        public string CustomIconName
+        [Parameter] public string CustomIconName
         {
             get => customName;
             set
@@ -72,8 +70,7 @@ namespace BlazorBootstrap
         /// <summary>
         /// Defines the icon size.
         /// </summary>
-        [Parameter]
-        public IconSize Size
+        [Parameter] public IconSize Size
         {
             get => size;
             set

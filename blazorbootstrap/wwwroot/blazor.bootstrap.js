@@ -3,35 +3,6 @@
 }
 
 window.blazorBootstrap = {
-    tooltip: {
-        initialize: (elementId) => {
-            let ele = document.getElementById(elementId);
-            var tooltip = bootstrap.Tooltip.getOrCreateInstance(ele);
-        },
-    },
-    offcanvas: {
-        show: (elementId, dotNetHelper) => {
-            let offcanvasEl = document.getElementById(elementId);
-
-            offcanvasEl.addEventListener('show.bs.offcanvas', function () {
-                dotNetHelper.invokeMethodAsync('bsShowOffcanvas');
-            });
-            offcanvasEl.addEventListener('shown.bs.offcanvas', function () {
-                dotNetHelper.invokeMethodAsync('bsShownOffcanvas');
-            });
-            offcanvasEl.addEventListener('hide.bs.offcanvas', function () {
-                dotNetHelper.invokeMethodAsync('bsHideOffcanvas');
-            });
-            offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
-                dotNetHelper.invokeMethodAsync('bsHiddenOffcanvas');
-            });
-
-            bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl)?.show();
-        },
-        hide: (elementId) => {
-            bootstrap?.Offcanvas?.getOrCreateInstance(document.getElementById(elementId))?.hide();
-        }
-    },
     modal: {
         show: (elementId, dotNetHelper) => {
             let modalEl = document.getElementById(elementId);
@@ -58,5 +29,64 @@ window.blazorBootstrap = {
         hide: (elementId) => {
             bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.hide();
         }
-    }
+    },
+    offcanvas: {
+        show: (elementId, dotNetHelper) => {
+            let offcanvasEl = document.getElementById(elementId);
+
+            offcanvasEl.addEventListener('show.bs.offcanvas', function () {
+                dotNetHelper.invokeMethodAsync('bsShowOffcanvas');
+            });
+            offcanvasEl.addEventListener('shown.bs.offcanvas', function () {
+                dotNetHelper.invokeMethodAsync('bsShownOffcanvas');
+            });
+            offcanvasEl.addEventListener('hide.bs.offcanvas', function () {
+                dotNetHelper.invokeMethodAsync('bsHideOffcanvas');
+            });
+            offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
+                dotNetHelper.invokeMethodAsync('bsHiddenOffcanvas');
+            });
+
+            bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl)?.show();
+        },
+        hide: (elementId) => {
+            bootstrap?.Offcanvas?.getOrCreateInstance(document.getElementById(elementId))?.hide();
+        }
+    },
+    toasts: {
+        show: (elementId, dotNetHelper) => {
+            var toastEl = document.getElementById(elementId);
+
+            toastEl.addEventListener('show.bs.toast', function () {
+                dotNetHelper.invokeMethodAsync('bsShowToast');
+                console.log('hidden');
+            });
+            toastEl.addEventListener('shown.bs.toast', function () {
+                dotNetHelper.invokeMethodAsync('bsShownToast');
+                console.log('hidden');
+            });
+            toastEl.addEventListener('hide.bs.toast', function () {
+                dotNetHelper.invokeMethodAsync('bsHideToast');
+                console.log('hidden');
+            });
+            toastEl.addEventListener('hidden.bs.toast', function () {
+                dotNetHelper.invokeMethodAsync('bsHiddenToast');
+                console.log('hidden');
+            });
+
+            bootstrap?.Toast?.getOrCreateInstance(toastEl)?.show();
+        },
+        hide: (elementId) => {
+            bootstrap?.Toast?.getOrCreateInstance(document.getElementById(elementId))?.hide();
+        },
+        dispose: (elementId) => {
+            bootstrap?.Toast?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
+        }
+    },
+    tooltip: {
+        initialize: (elementId) => {
+            let ele = document.getElementById(elementId);
+            var tooltip = bootstrap.Tooltip.getOrCreateInstance(ele);
+        },
+    },
 }

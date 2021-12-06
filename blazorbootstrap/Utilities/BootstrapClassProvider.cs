@@ -44,6 +44,48 @@
 
         #endregion
 
+        #region DisplayHeading
+
+        public string DisplayHeadingSize(DisplayHeadingSize displayHeadingSize) => $"display-{ToDisplayHeadingSize(displayHeadingSize)}";
+
+        #endregion
+
+        #region Divider
+
+        public string Divider() => "divider";
+
+        public string DividerType(DividerType dividerType) => $"{Divider()}-{ToDividerType(dividerType)}";
+
+        #endregion
+
+        #region Heading
+
+        public string HeadingSize(HeadingSize headingSize) => $"h{ToHeadingSize(headingSize)}";
+
+        #endregion
+
+        #region Modal
+
+        public string Modal() => "modal";
+        public string ModalFade() => Fade();
+
+        #endregion Modal
+
+        #region Offcanvas
+
+        public string Offcanvas() => "offcanvas";
+
+        public string Offcanvas(Placement placement) => $"{Offcanvas()}-{ToPlacement(placement)}";
+
+        #endregion Offcanvas
+
+        #region Position
+
+        public string Position() => "position";
+        public string PositionAbsolute() => $"{Position()}-absolute";
+
+        #endregion
+
         #region States
 
         public string Show() => "show";
@@ -55,6 +97,13 @@
         public string Disabled() => "disabled";
 
         public string Collapsed() => "collapsed";
+
+        #endregion
+
+        #region Toast
+
+        public string Toast() => "toast";
+        public string ToastContainer() => $"{Toast()}-container";
 
         #endregion
 
@@ -73,41 +122,6 @@
         public string TooltipInline() => "b-tooltip-inline";
 
         #endregion
-
-        #region Heading
-
-        public string HeadingSize(HeadingSize headingSize) => $"h{ToHeadingSize(headingSize)}";
-
-        #endregion
-
-        #region DisplayHeading
-
-        public string DisplayHeadingSize(DisplayHeadingSize displayHeadingSize) => $"display-{ToDisplayHeadingSize(displayHeadingSize)}";
-
-        #endregion
-
-        #region Divider
-
-        public string Divider() => "divider";
-
-        public string DividerType(DividerType dividerType) => $"{Divider()}-{ToDividerType(dividerType)}";
-
-        #endregion
-
-        #region Offcanvas
-
-        public string Offcanvas() => "offcanvas";
-
-        public string Offcanvas(Placement placement) => $"{Offcanvas()}-{ToPlacement(placement)}";
-
-        #endregion Offcanvas
-
-        #region Modal
-
-        public string Modal() => "modal";
-        public string ModalFade() => Fade();
-
-        #endregion Modal
 
         #region Methods
 
@@ -208,6 +222,23 @@
                 BlazorBootstrap.Size.Large => "lg",
                 BlazorBootstrap.Size.ExtraLarge => "xl",
                 _ => null,
+            };
+        }
+
+        public string ToToastsPlacement(ToastsPlacement toastsPlacement)
+        {
+            return toastsPlacement switch
+            {
+                BlazorBootstrap.ToastsPlacement.TopLeft => "top-0 start-0",
+                BlazorBootstrap.ToastsPlacement.TopCenter => "top-0 start-50 translate-middle-x",
+                BlazorBootstrap.ToastsPlacement.TopRight => "top-0 end-0",
+                BlazorBootstrap.ToastsPlacement.MiddleLeft => "top-50 start-0 translate-middle-y",
+                BlazorBootstrap.ToastsPlacement.MiddleCenter => "top-50 start-50 translate-middle",
+                BlazorBootstrap.ToastsPlacement.MiddleRight => "top-50 end-0 translate-middle-y",
+                BlazorBootstrap.ToastsPlacement.BottomLeft => "bottom-0 start-0",
+                BlazorBootstrap.ToastsPlacement.BottomCenter => "bottom-0 start-50 translate-middle-x",
+                BlazorBootstrap.ToastsPlacement.BottomRight => "bottom-0 end-0",
+                _ => "top-0 end-0", // default: Top right
             };
         }
 

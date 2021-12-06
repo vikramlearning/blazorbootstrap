@@ -1,0 +1,28 @@
+﻿@using BlazorBootstrap
+@page "/toasts"
+
+<h4 class="my-4">Toasts Examples</h4>
+
+<Button Color="ButtonColor.Primary" @onclick="AddToasts">Add Toasts</Button>
+
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight">
+</Toasts>
+
+@code {
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private void AddToasts()
+    {
+        messages?.Add(new ToastMessage { 
+            IconName = IconName.Alarm,
+            Title = "Blazor Bootstrap",
+            HelpText = $"{DateTime.Now}",
+            Message = "Hello, world! This is a toast message."
+        });
+    }
+}
