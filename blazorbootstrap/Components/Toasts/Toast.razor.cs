@@ -25,8 +25,8 @@ namespace BlazorBootstrap
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Toast());
-            builder.Append(BootstrapClassProvider.Fade());
-            builder.Append(BootstrapClassProvider.Show());
+            //builder.Append(BootstrapClassProvider.Fade());
+            //builder.Append(BootstrapClassProvider.Show());
 
             base.BuildClasses(builder);
         }
@@ -39,6 +39,8 @@ namespace BlazorBootstrap
         protected override void OnInitialized()
         {
             base.OnInitialized();
+
+            ExecuteAfterRender(async () => { await ShowAsync(); });
         }
 
         /// <summary>

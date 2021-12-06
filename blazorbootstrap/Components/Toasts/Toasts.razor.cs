@@ -12,10 +12,6 @@ namespace BlazorBootstrap
     {
         #region Members
 
-        //private DotNetObjectReference<Toasts> objRef;
-
-        //private List<Toast> ToastContainer;
-
         #endregion Members
 
         #region Methods
@@ -47,7 +43,7 @@ namespace BlazorBootstrap
 
         private void OnToastHiddenAsync(Guid toastId)
         {
-            if(Messages!= null && Messages.Any())
+            if (Messages != null && Messages.Any())
             {
                 var message = Messages.FirstOrDefault(x => x.Id == toastId);
                 Messages.Remove(message);
@@ -61,6 +57,9 @@ namespace BlazorBootstrap
         /// <inheritdoc/>
         protected override bool ShouldAutoGenerateId => true;
 
+        /// <summary>
+        /// Holds all the toasts.
+        /// </summary>
         [Parameter] public List<ToastMessage> Messages { get; set; }
 
         [Parameter] public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;

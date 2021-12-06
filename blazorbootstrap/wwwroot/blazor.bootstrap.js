@@ -59,19 +59,15 @@ window.blazorBootstrap = {
 
             toastEl.addEventListener('show.bs.toast', function () {
                 dotNetHelper.invokeMethodAsync('bsShowToast');
-                console.log('hidden');
             });
             toastEl.addEventListener('shown.bs.toast', function () {
                 dotNetHelper.invokeMethodAsync('bsShownToast');
-                console.log('hidden');
             });
             toastEl.addEventListener('hide.bs.toast', function () {
                 dotNetHelper.invokeMethodAsync('bsHideToast');
-                console.log('hidden');
             });
             toastEl.addEventListener('hidden.bs.toast', function () {
                 dotNetHelper.invokeMethodAsync('bsHiddenToast');
-                console.log('hidden');
             });
 
             bootstrap?.Toast?.getOrCreateInstance(toastEl)?.show();
