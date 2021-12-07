@@ -54,7 +54,12 @@ window.blazorBootstrap = {
         }
     },
     toasts: {
-        show: (elementId, dotNetHelper) => {
+        options: {
+            animation: true,
+            autohide: true,
+            delay: 5000
+        },
+        show: (elementId, dotNetHelper, autohide) => {
             var toastEl = document.getElementById(elementId);
 
             toastEl.addEventListener('show.bs.toast', function () {
@@ -70,7 +75,10 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenToast');
             });
 
-            bootstrap?.Toast?.getOrCreateInstance(toastEl)?.show();
+            let _options = window.blazorBootstrap.toasts.options;
+            _options.autohide = autohide;
+
+            bootstrap?.Toast?.getOrCreateInstance(toastEl, _options)?.show();
         },
         hide: (elementId) => {
             bootstrap?.Toast?.getOrCreateInstance(document.getElementById(elementId))?.hide();

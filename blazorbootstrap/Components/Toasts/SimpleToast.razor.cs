@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace BlazorBootstrap
 {
-    public partial class Toast : BaseComponent, IDisposable
+    public partial class SimpleToast : BaseComponent, IDisposable
     {
         #region Members
 
-        private DotNetObjectReference<Toast> objRef;
+        private DotNetObjectReference<SimpleToast> objRef;
 
         #endregion Members
 

@@ -1,10 +1,8 @@
 ﻿using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace BlazorBootstrap
 {
@@ -18,7 +16,6 @@ namespace BlazorBootstrap
 
         protected override void OnAfterRender(bool firstRender)
         {
-            //objRef ??= DotNetObjectReference.Create(this);
             base.OnAfterRender(firstRender);
         }
 
@@ -46,7 +43,10 @@ namespace BlazorBootstrap
             if (Messages != null && Messages.Any())
             {
                 var message = Messages.FirstOrDefault(x => x.Id == toastId);
-                Messages.Remove(message);
+                if (Messages.Remove(message))
+                {
+                    // message removed.
+                }
             }
         }
 

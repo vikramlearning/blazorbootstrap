@@ -18,11 +18,13 @@
 
     private void AddToasts()
     {
-        messages?.Add(new ToastMessage { 
-            IconName = IconName.Alarm,
-            Title = "Blazor Bootstrap",
-            HelpText = $"{DateTime.Now}",
-            Message = "Hello, world! This is a toast message."
-        });
+        messages?.Add(new ToastMessage
+            {
+                IconName = IconName.Alarm,
+                //Title = "Blazor Bootstrap",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Hello, world! This is a toast message. DateTime: {DateTime.Now}",
+                AutoHide = false
+            });
     }
 }

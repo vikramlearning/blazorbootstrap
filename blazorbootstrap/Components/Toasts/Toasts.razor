@@ -7,7 +7,14 @@
         {
             foreach (var item in Messages)
             {
-                <Toast ToastMessage="@item" Hidden="OnToastHiddenAsync"></Toast>
+                if (string.IsNullOrWhiteSpace(item.Title))
+                {
+                    <SimpleToast @key="@item" ToastMessage="@item" Hidden="OnToastHiddenAsync"></SimpleToast>
+                }
+                else
+                {
+                    <Toast @key="@item" ToastMessage="@item" Hidden="OnToastHiddenAsync"></Toast>
+                }
             }
         }
     </div>

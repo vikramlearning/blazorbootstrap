@@ -6,7 +6,7 @@
         <div class="toast-header">
             @if (!string.IsNullOrWhiteSpace(ToastMessage.ImageSource))
             {
-                <img src="..." class="rounded me-2" alt="...">
+                <img src="@ToastMessage.ImageSource" class="rounded me-2" alt="toast image">
             }
             else
             {
