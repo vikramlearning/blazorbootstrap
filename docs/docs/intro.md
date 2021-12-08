@@ -43,7 +43,7 @@ Change your `index.html` file and include the CSS and JS files:
    </body>
    </html>
    ```
- - Inject BlazorBootstrap into services in the `Program.cs` file
+ - Add BlazorBootstrap service in `Program.cs`
 
    ```cs {11}
    public class Program

@@ -16,8 +16,12 @@
         {
             return iconName switch
             {
+                BlazorBootstrap.IconName.OneTwoThree => "123",
+                BlazorBootstrap.IconName.Activity => "activity",
                 BlazorBootstrap.IconName.Alarm => "alarm",
                 BlazorBootstrap.IconName.AlarmFill => "alarm-fill",
+                BlazorBootstrap.IconName.AlignBottom => "align-bottom",
+                BlazorBootstrap.IconName.AlignCenter => "align-center",
                 // TODO: add all the icons
                 _ => null,
             };

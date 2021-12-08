@@ -7,7 +7,10 @@
             <div class="toast-body">
                 @ToastMessage.Message
             </div>
-            <button type="button" class="btn-close @CloseButtonClass me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            @if (!AutoHide)
+            {
+                <button type="button" class="btn-close @CloseButtonClass me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            }
         </div>
     </div>
 </CascadingValue>

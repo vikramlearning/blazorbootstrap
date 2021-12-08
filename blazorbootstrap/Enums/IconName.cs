@@ -2,7 +2,11 @@
 {
     public enum IconName
     {
+        OneTwoThree,
+        Activity,
         Alarm,
-        AlarmFill
+        AlarmFill,
+        AlignBottom,
+        AlignCenter
     }
 }

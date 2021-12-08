@@ -14,7 +14,10 @@
             }
             <strong class="me-auto">@ToastMessage.Title</strong>
             <small class="text-muted">@ToastMessage.HelpText</small>
-            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            @if (!AutoHide)
+            {
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            }
         </div>
         <div class="toast-body">
             @ToastMessage.Message

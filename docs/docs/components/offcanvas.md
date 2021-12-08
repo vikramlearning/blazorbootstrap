@@ -168,4 +168,4 @@ Documentation and examples for BlazorBootstrap Offcanvas.
 
 ### Screenshot
 
-<img src="https://i.imgur.com/J1mcowH.jpg" alt="BlazorBootstrap: Offcanvas Example" />
+<img src="https://i.imgur.com/J1mcowH.jpg" alt="BlazorBootstrap: Offcanvas Component Example" />
