@@ -60,7 +60,18 @@ namespace BlazorBootstrap
         /// <summary>
         /// Holds all the toasts.
         /// </summary>
-        [Parameter] public List<ToastMessage> Messages { get; set; }
+        [Parameter]
+        public List<ToastMessage> Messages { get; set; }
+
+        /// <summary>
+        /// Auto hide the toast
+        /// </summary>
+        [Parameter] public bool AutoHide { get; set; } = true;
+
+        /// <summary>
+        /// Delay hiding the toast (ms)
+        /// </summary>
+        [Parameter] public int Delay { get; set; } = 5000;
 
         [Parameter] public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
 

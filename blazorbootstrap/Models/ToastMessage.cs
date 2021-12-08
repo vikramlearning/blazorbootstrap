@@ -6,6 +6,8 @@ namespace BlazorBootstrap
     {
         public Guid Id { get; private set; }
 
+        public ToastType Type { get; set; }
+
         public string ImageSource { get; set; }
 
         public IconName IconName { get; set; }
@@ -17,8 +19,6 @@ namespace BlazorBootstrap
         public string HelpText { get; set; }
 
         public string Message { get; set; }
-
-        public bool AutoHide { get; set; } = true;
 
         public ToastMessage()
         {

@@ -41,12 +41,13 @@ namespace BlazorBootstrap
             ExecuteAfterRender(async () => { await ShowAsync(); });
         }
 
+
         /// <summary>
         /// Reveals an element’s toast.
         /// </summary>
         public async Task ShowAsync()
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.show", ElementId, objRef, ToastMessage.AutoHide);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.show", ElementId, AutoHide, Delay, objRef);
         }
 
         /// <summary>
@@ -90,6 +91,16 @@ namespace BlazorBootstrap
         /// This event is fired when the toast has finished being hidden from the user.
         /// </summary>
         [Parameter] public EventCallback<Guid> Hidden { get; set; }
+
+        /// <summary>
+        /// Auto hide the toast
+        /// </summary>
+        [Parameter] public bool AutoHide { get; set; } = true;
+
+        /// <summary>
+        /// Delay hiding the toast (ms)
+        /// </summary>
+        [Parameter] public int Delay { get; set; } = 5000;
 
         #endregion Properties
     }

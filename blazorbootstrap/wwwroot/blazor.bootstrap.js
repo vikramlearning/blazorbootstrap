@@ -59,7 +59,7 @@ window.blazorBootstrap = {
             autohide: true,
             delay: 5000
         },
-        show: (elementId, dotNetHelper, autohide) => {
+        show: (elementId, autohide, delay, dotNetHelper) => {
             var toastEl = document.getElementById(elementId);
 
             toastEl.addEventListener('show.bs.toast', function () {
@@ -77,6 +77,7 @@ window.blazorBootstrap = {
 
             let _options = window.blazorBootstrap.toasts.options;
             _options.autohide = autohide;
+            _options.delay = delay;
 
             bootstrap?.Toast?.getOrCreateInstance(toastEl, _options)?.show();
         },

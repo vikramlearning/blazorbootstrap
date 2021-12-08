@@ -25,6 +25,8 @@ namespace BlazorBootstrap
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Toast());
+            builder.Append($"text-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}");
+            builder.Append($"bg-{BootstrapClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
 
             base.BuildClasses(builder);
         }
@@ -46,7 +48,7 @@ namespace BlazorBootstrap
         /// </summary>
         public async Task ShowAsync()
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.show", ElementId, objRef, ToastMessage.AutoHide);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.show", ElementId, AutoHide, Delay, objRef);
         }
 
         /// <summary>
@@ -90,6 +92,21 @@ namespace BlazorBootstrap
         /// This event is fired when the toast has finished being hidden from the user.
         /// </summary>
         [Parameter] public EventCallback<Guid> Hidden { get; set; }
+
+        /// <summary>
+        /// Auto hide the toast
+        /// </summary>
+        [Parameter] public bool AutoHide { get; set; } = true;
+
+        /// <summary>
+        /// Delay hiding the toast (ms)
+        /// </summary>
+        [Parameter] public int Delay { get; set; } = 5000;
+
+        private string CloseButtonClass
+        {
+            get { return $"btn-close-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}"; }
+        }
 
         #endregion Properties
     }

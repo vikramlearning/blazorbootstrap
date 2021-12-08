@@ -180,6 +180,46 @@
             };
         }
 
+        public string ToToastBackgroundColor(ToastType toastType)
+        {
+            return toastType switch
+            {
+                BlazorBootstrap.ToastType.Primary => "primary",
+                BlazorBootstrap.ToastType.Secondary => "secondary",
+                BlazorBootstrap.ToastType.Success => "success",
+                BlazorBootstrap.ToastType.Danger => "danger",
+                BlazorBootstrap.ToastType.Warning => "warning",
+                BlazorBootstrap.ToastType.Info => "info",
+                BlazorBootstrap.ToastType.Light => "light",
+                BlazorBootstrap.ToastType.Dark => "dark",
+                BlazorBootstrap.ToastType.Body => "body",
+                BlazorBootstrap.ToastType.White => "white",
+                BlazorBootstrap.ToastType.Transparent => "transparent",
+                _ => null,
+            };
+        }
+
+        public string ToToastTextColor(ToastType toastType)
+        {
+            return toastType switch
+            {
+                BlazorBootstrap.ToastType.Primary 
+                or BlazorBootstrap.ToastType.Secondary
+                or BlazorBootstrap.ToastType.Success
+                or BlazorBootstrap.ToastType.Danger
+                or BlazorBootstrap.ToastType.Dark => "white",
+
+                BlazorBootstrap.ToastType.Warning
+                or BlazorBootstrap.ToastType.Info
+                or BlazorBootstrap.ToastType.Light
+                or BlazorBootstrap.ToastType.Body
+                or BlazorBootstrap.ToastType.White
+                or BlazorBootstrap.ToastType.Transparent => "dark",
+
+                _ => null,
+            };
+        }
+
         public string ToAlertColor(AlertColor color)
         {
             return color switch
