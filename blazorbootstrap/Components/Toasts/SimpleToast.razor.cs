@@ -59,9 +59,9 @@ namespace BlazorBootstrap
             await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", ElementId);
         }
 
-        [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync();
-        [JSInvokable] public async Task bsShownToast() => await Shown.InvokeAsync();
-        [JSInvokable] public async Task bsHideToast() => await Hiding.InvokeAsync();
+        [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync(this.ToastMessage.Id);
+        [JSInvokable] public async Task bsShownToast() => await Shown.InvokeAsync(this.ToastMessage.Id);
+        [JSInvokable] public async Task bsHideToast() => await Hiding.InvokeAsync(this.ToastMessage.Id);
         [JSInvokable] public async Task bsHiddenToast() => await Hidden.InvokeAsync(this.ToastMessage.Id);
 
         #endregion Methods
@@ -76,17 +76,17 @@ namespace BlazorBootstrap
         /// <summary>
         /// This event fires immediately when the show instance method is called.
         /// </summary>
-        [Parameter] public EventCallback Showing { get; set; }
+        [Parameter] public EventCallback<Guid> Showing { get; set; }
 
         /// <summary>
         /// This event is fired when the toast has been made visible to the user.
         /// </summary>
-        [Parameter] public EventCallback Shown { get; set; }
+        [Parameter] public EventCallback<Guid> Shown { get; set; }
 
         /// <summary>
         /// This event is fired immediately when the hide instance method has been called.
         /// </summary>
-        [Parameter] public EventCallback Hiding { get; set; }
+        [Parameter] public EventCallback<Guid> Hiding { get; set; }
 
         /// <summary>
         /// This event is fired when the toast has finished being hidden from the user.

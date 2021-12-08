@@ -9,11 +9,11 @@
             {
                 if (string.IsNullOrWhiteSpace(item.Title))
                 {
-                    <SimpleToast @key="@item" AutoHide="@AutoHide" Delay="@Delay" ToastMessage="@item" Hidden="OnToastHiddenAsync"></SimpleToast>
+                    <SimpleToast @key="@item" AutoHide="@AutoHide" Delay="@Delay" ToastMessage="@item" Shown="OnToastShownAsync" Hidden="OnToastHiddenAsync"></SimpleToast>
                 }
                 else
                 {
-                    <Toast @key="@item" AutoHide="@AutoHide" Delay="@Delay" ToastMessage="@item" Hidden="OnToastHiddenAsync"></Toast>
+                    <Toast @key="@item" AutoHide="@AutoHide" Delay="@Delay" ToastMessage="@item" Shown="OnToastShownAsync" Hidden="OnToastHiddenAsync"></Toast>
                 }
             }
         }

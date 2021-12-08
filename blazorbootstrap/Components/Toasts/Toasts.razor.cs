@@ -10,6 +10,11 @@ namespace BlazorBootstrap
     {
         #region Members
 
+        /// <summary>
+        /// Defines the maximum toast messages are allowed.
+        /// </summary>
+        private const int MaxLimit = 5;
+
         #endregion Members
 
         #region Methods
@@ -36,6 +41,14 @@ namespace BlazorBootstrap
         protected override void OnInitialized()
         {
             base.OnInitialized();
+        }
+
+        private void OnToastShownAsync(Guid toastId)
+        {
+            if (Messages != null && Messages.Any() && Messages.Count >= MaxLimit)
+            {
+                Messages.RemoveRange(0, Messages.Count - MaxLimit);
+            }
         }
 
         private void OnToastHiddenAsync(Guid toastId)
