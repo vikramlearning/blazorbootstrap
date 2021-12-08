@@ -10,11 +10,6 @@ namespace BlazorBootstrap
     {
         #region Members
 
-        /// <summary>
-        /// Defines the maximum toast messages are allowed.
-        /// </summary>
-        private const int MaxLimit = 5;
-
         #endregion Members
 
         #region Methods
@@ -45,9 +40,9 @@ namespace BlazorBootstrap
 
         private void OnToastShownAsync(Guid toastId)
         {
-            if (Messages != null && Messages.Any() && Messages.Count >= MaxLimit)
+            if (Messages != null && Messages.Any() && Messages.Count >= StackLength)
             {
-                Messages.RemoveRange(0, Messages.Count - MaxLimit);
+                Messages.RemoveRange(0, Messages.Count - StackLength);
             }
         }
 
@@ -77,15 +72,23 @@ namespace BlazorBootstrap
         public List<ToastMessage> Messages { get; set; }
 
         /// <summary>
-        /// Auto hide the toast
+        /// Auto hide the toast. Default is true.
         /// </summary>
         [Parameter] public bool AutoHide { get; set; } = true;
 
         /// <summary>
-        /// Delay hiding the toast (ms)
+        /// Delay hiding the toast (ms). Default is 5000 milli seconds.
         /// </summary>
         [Parameter] public int Delay { get; set; } = 5000;
 
+        /// <summary>
+        /// Stack length. Default is 5.
+        /// </summary>
+        [Parameter] public int StackLength { get; set; } = 5;
+
+        /// <summary>
+        /// Toasts placement. Default is top right.
+        /// </summary>
         [Parameter] public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
 
         #endregion Properties
