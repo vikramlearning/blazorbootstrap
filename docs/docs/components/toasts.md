@@ -44,7 +44,7 @@ private void ShowToast()
 }
 ```
 
-### Sample Toast
+### Simple Toast
 
 <img src="https://i.imgur.com/VRglJqU.jpg" alt="BlazorBootstrap: Toasts Component Example" />
 
@@ -66,7 +66,7 @@ private void ShowSimpleToast()
 {
     messages?.Add(new ToastMessage
         {
-            Type = (ToastType)int.Parse(ToastTypeAsString),
+            Type = ToastType.Success,
             IconName = IconName.Alarm,
             Message = $"Hello, world! This is a simple toast message. DateTime: {DateTime.Now}",
         });
