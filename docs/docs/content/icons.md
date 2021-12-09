@@ -17,6 +17,14 @@ Documentation and examples for BlazorBootstrap Icons.
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
 ```
 
+## Parameters
+
+| Name | Type | Descritpion | Default Value |
+|--|--|--|
+| Name | Enum | Icon Name | - |
+| CustomIconName | string | Specify custom icons of your own, like `fontawesome`. Example: `fas fa-alarm-clock` | - |
+| Size | Enum | Icon Size | - |
+
 ## Examples
 
 ### Icons
@@ -84,3 +92,7 @@ Documentation and examples for BlazorBootstrap Icons.
     <Button Color="ButtonColor.Secondary"><Icon Name="IconName.Alarm" /></Button>
 </p>
 ```
+
+### Articles
+
+- [BlazorBootstrap: Icon Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-icon-component-examples/88/156)
