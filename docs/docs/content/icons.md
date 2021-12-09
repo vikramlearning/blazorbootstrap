@@ -22,7 +22,7 @@ Documentation and examples for BlazorBootstrap Icons.
 | Name | Type | Descritpion | Default Value |
 |--|--|--|
 | Name | Enum | Icon Name | - |
-| CustomIconName | string | Specify cutom icon of your own like fontawesome. Example: `fas fa-alarm-clock` | - |
+| CustomIconName | string | Specify custom icons of your own, like `fontawesome`. Example: `fas fa-alarm-clock` | - |
 | Size | Enum | Icon Size | - |
 
 ## Examples
