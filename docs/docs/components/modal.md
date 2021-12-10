@@ -7,6 +7,31 @@ sidebar_position: 3
 
 Documentation and examples for BlazorBootstrap Modal.
 
+## Parameters
+
+| Name | Type | Descritpion | Default Value |
+|--|--|--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside the alert. | |
+| IsScrollable | bool | Allows modal body scroll. | |
+| IsVerticallyCentered | bool | Shows the modal vertically in the center. | |
+
+## Methods
+
+| Name | Description |
+|--|--|
+| ShowAsync | Opens a modal. |
+| HideAsync | Hides a modal. |
+
+## Callback Events
+
+| Event | Description | 
+|--|--|
+| OnShowing | This event fires immediately when the show instance method is called. |
+| OnShown | This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to complete). |
+| OnHiding | This event is fired immediately when the hide method has been called. |
+| OnHidden | This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete). |
+| OnHidePrevented | This event is fired when the modal is shown, its backdrop is static and a click outside the modal or an escape key press is performed with the keyboard option or data-bs-keyboard set to false. |
+
 ## Examples
 
 ### Modal
@@ -20,11 +45,6 @@ Documentation and examples for BlazorBootstrap Modal.
 ```
 
 ### Methods
-
-| Method | Description |
-|--|--|
-| Show | Manually opens a modal. Returns to the caller before the modal has actually been shown (i.e. before the <code>Shown</code> event occurs). |
-| Hide | Manually hides a modal. Returns to the caller before the modal has actually been hidden (i.e. before the <code>Hidden</code> event occurs). |
 
 ```cs {7,12}
 @code {
@@ -44,14 +64,6 @@ Documentation and examples for BlazorBootstrap Modal.
 ```
 
 ### Callback Events
-
-| Event | Description | 
-|--|--|
-| Showing | This event fires immediately when the show instance method is called. |
-| Shown | This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to complete). |
-| Hiding | This event is fired immediately when the hide method has been called. |
-| Hidden | This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete). |
-| HidePrevented | This event is fired when the modal is shown, its backdrop is static and a click outside the modal or an escape key press is performed with the keyboard option or data-bs-keyboard set to false. |
 
 ```cshtml
 <Modal @ref="modal"

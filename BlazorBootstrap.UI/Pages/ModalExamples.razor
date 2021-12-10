@@ -5,11 +5,11 @@
 <Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowModalAsync(); })">Show Modal</Button>
 
 <Modal @ref="modal"
-       Showing="OnModalShowingAsync"
-       Shown="OnModalShownAsync"
-       Hiding="OnModalHidingAsync"
-       Hidden="OnModalHiddenAsync"
-       HidePrevented="OnModalHidePreventedAsync">
+       OnShowing="OnModalShowingAsync"
+       OnShown="OnModalShownAsync"
+       OnHiding="OnModalHidingAsync"
+       OnHidden="OnModalHiddenAsync"
+       OnHidePrevented="OnModalHidePreventedAsync">
 
     <div class="modal-dialog">
         <div class="modal-content">

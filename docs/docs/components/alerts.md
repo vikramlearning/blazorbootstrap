@@ -18,13 +18,13 @@ Documentation and examples for BlazorBootstrap Alerts.
 ## Methods
 
 | Name | Description |
-|--|--|--|
+|--|--|
 | CloseAsync | Closes an alert by removing it from the DOM. |
 
 ## Callback Events
 
 | Name | Description |
-|--|--|--|
+|--|--|
 | OnClose | Fires immediately when the `close` instance method is called. |
 | OnClosed | Fired when the alert has been closed and CSS transitions have completed. |
 

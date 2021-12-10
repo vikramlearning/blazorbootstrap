@@ -45,7 +45,7 @@ namespace BlazorBootstrap
         }
 
         /// <summary>
-        /// Shows an offcanvas.
+        /// Opens a modal.
         /// </summary>
         public async Task ShowAsync()
         {
@@ -53,23 +53,18 @@ namespace BlazorBootstrap
         }
 
         /// <summary>
-        /// Hides an offcanvas.
+        /// Hides a modal.
         /// </summary>
         public async Task HideAsync()
         {
             await JS.InvokeVoidAsync("window.blazorBootstrap.modal.hide", ElementId);
         }
 
-        [JSInvokable] public async Task bsShowModal() => await Showing.InvokeAsync();
-        [JSInvokable] public async Task bsShownModal() => await Shown.InvokeAsync();
-        [JSInvokable] public async Task bsHideModal() => await Hiding.InvokeAsync();
-        [JSInvokable] public async Task bsHiddenModal() => await Hidden.InvokeAsync();
-        [JSInvokable] public async Task bsHidePreventedModal() => await HidePrevented.InvokeAsync();
-
-        public void Dispose()
-        {
-            objRef?.Dispose();
-        }
+        [JSInvokable] public async Task bsShowModal() => await OnShowing.InvokeAsync();
+        [JSInvokable] public async Task bsShownModal() => await OnShown.InvokeAsync();
+        [JSInvokable] public async Task bsHideModal() => await OnHiding.InvokeAsync();
+        [JSInvokable] public async Task bsHiddenModal() => await OnHidden.InvokeAsync();
+        [JSInvokable] public async Task bsHidePreventedModal() => await OnHidePrevented.InvokeAsync();
 
         #endregion Methods
 
@@ -91,27 +86,27 @@ namespace BlazorBootstrap
         /// <summary>
         /// This event fires immediately when the show instance method is called.
         /// </summary>
-        [Parameter] public EventCallback Showing { get; set; }
+        [Parameter] public EventCallback OnShowing { get; set; }
 
         /// <summary>
         /// This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to complete).
         /// </summary>
-        [Parameter] public EventCallback Shown { get; set; }
+        [Parameter] public EventCallback OnShown { get; set; }
 
         /// <summary>
         /// This event is fired immediately when the hide method has been called.
         /// </summary>
-        [Parameter] public EventCallback Hiding { get; set; }
+        [Parameter] public EventCallback OnHiding { get; set; }
 
         /// <summary>
         /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete).
         /// </summary>
-        [Parameter] public EventCallback Hidden { get; set; }
+        [Parameter] public EventCallback OnHidden { get; set; }
 
         /// <summary>
         /// This event is fired when the modal is shown, its backdrop is static and a click outside the modal or an escape key press is performed with the keyboard option or data-bs-keyboard set to false.
         /// </summary>
-        [Parameter] public EventCallback HidePrevented { get; set; }
+        [Parameter] public EventCallback OnHidePrevented { get; set; }
 
         /// <summary>
         /// Specifies the content to be rendered inside this.
