@@ -1,11 +1,11 @@
-import React from 'react';
+﻿import React from 'react';
 import clsx from 'clsx';
 import styles from './HomepageFeatures.module.css';
 
 const FeatureList = [
     {
         title: 'Easy to Use',
-        emoji: ':+1:',
+        emoji: '👍',
         description: (
             <>
                 BlazorBootstrap has been built with Blazor and Bootstrap CSS framework to use Bootstrap components with ease.
@@ -14,7 +14,7 @@ const FeatureList = [
     },
     {
         title: 'Focus on What Matters',
-        emoji: ':monocle_face:',
+        emoji: '🧐',
         description: (
             <>
                 BlazorBootstrap lets you focus on your deliverables, and we'll build the Bootstrap components in Blazor.
@@ -23,7 +23,7 @@ const FeatureList = [
     },
     {
         title: 'Open-source & free',
-        emoji: ':unlock:',
+        emoji: '🔓',
         description: (
             <>
                 BlazorBootstrap is licensed under the Apache License 2.0. Clone it, fork it, and customize it.
@@ -32,11 +32,11 @@ const FeatureList = [
     },
 ];
 
-function Feature({ Svg, title, description }) {
+function Feature({ emoji, title, description }) {
     return (
         <div className={clsx('col col--4')}>
             <div className="text--center">
-                <Svg className={styles.featureSvg} alt={title} />
+                <span className="feature-emoji">{emoji}</span>
             </div>
             <div className="text--center padding-horiz--md">
                 <h3>{title}</h3>
