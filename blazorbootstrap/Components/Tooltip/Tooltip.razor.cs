@@ -23,16 +23,6 @@ namespace BlazorBootstrap
             base.OnAfterRender(firstRender);
         }
 
-        protected override void BuildClasses(ClassBuilder builder)
-        {
-            base.BuildClasses(builder);
-        }
-
-        protected override void BuildStyles(StyleBuilder builder)
-        {
-            base.BuildStyles(builder);
-        }
-
         protected override void OnInitialized()
         {
             base.OnInitialized();

@@ -16,12 +16,6 @@ namespace BlazorBootstrap
 
         #region Methods
 
-        protected override void OnAfterRender(bool firstRender)
-        {
-            objRef ??= DotNetObjectReference.Create(this);
-            base.OnAfterRender(firstRender);
-        }
-
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Offcanvas());
@@ -30,14 +24,10 @@ namespace BlazorBootstrap
             base.BuildClasses(builder);
         }
 
-        protected override void BuildStyles(StyleBuilder builder)
+        protected override void OnAfterRender(bool firstRender)
         {
-            base.BuildStyles(builder);
-        }
-
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
+            objRef ??= DotNetObjectReference.Create(this);
+            base.OnAfterRender(firstRender);
         }
 
         /// <summary>

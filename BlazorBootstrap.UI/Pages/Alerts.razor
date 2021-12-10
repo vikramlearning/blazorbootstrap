@@ -10,8 +10,8 @@
     <Alert Color="AlertColor.Warning"> A simple warning alert - check it out! </Alert>
     <Alert Color="AlertColor.Info"> A simple info alert - check it out! </Alert>
     <Alert Color="AlertColor.Light" Dismisable="true" Visible="true"> A simple light alert - check it out! </Alert>
-    <Alert @ref="darkAlert" Color="AlertColor.Dark" Dismisable="true"> A simple light alert - check it out! </Alert>
-    <Button Color="ButtonColor.Dark" @onclick="onClick"> Toggle Alert </Button>
+    <Alert @ref="darkAlert" Color="AlertColor.Dark" Dismisable="false"> A simple light alert - check it out! </Alert>
+    <Button Color="ButtonColor.Dark" @onclick="CloseAlert"> Close Alert </Button>
 </div>
 <h4 class="my-4">Additional Content</h4>
 <div>
@@ -33,8 +33,8 @@
 @code{
     Alert darkAlert;
 
-    void onClick()
+    void CloseAlert()
     {
-        darkAlert.Toogle();
+        darkAlert?.CloseAsync();
     }
 }
