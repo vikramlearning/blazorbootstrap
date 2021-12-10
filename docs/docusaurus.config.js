@@ -43,7 +43,7 @@ const config = {
                     src: 'img/logo.svg',
                 },
                 items: [
-                    { type: 'doc', docId: 'intro', label: 'Doc', position: 'left' },
+                    { type: 'doc', docId: 'intro', label: 'Docs', position: 'left' },
                     //{ to: '/blog', label: 'Blog', position: 'left' },
                     { href: 'https://github.com/vikramlearning/blazorbootstrap', label: 'GitHub', position: 'right', },
                 ],
