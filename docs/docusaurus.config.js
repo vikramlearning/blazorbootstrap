@@ -36,6 +36,13 @@ const config = {
     themeConfig:
         /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         ({
+            announcementBar: {
+                id: 'support_us',
+                content: '⭐️ If you like BlazorBootstrap, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/vikramlearning/blazorbootstrap">GitHub</a>! ⭐️',
+                //backgroundColor: '#fafbfc',
+                //textColor: '#091E42',
+                isCloseable: true,
+            },
             navbar: {
                 title: 'BlazorBootstrap',
                 logo: {
