@@ -93,6 +93,6 @@ Documentation and examples for BlazorBootstrap Icons.
 </p>
 ```
 
-### Articles
+## Articles
 
 - [BlazorBootstrap: Icon Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-icon-component-examples/88/156)

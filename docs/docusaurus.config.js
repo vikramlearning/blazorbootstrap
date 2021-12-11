@@ -61,7 +61,7 @@ const config = {
                         title: 'Community',
                         items: [
                             { label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/blazorbootstrap', },
-                            { label: 'Twitter', href: 'https://twitter.com/blazorbootstrap', },
+                            //{ label: 'Twitter', href: 'https://twitter.com/blazorbootstrap', },
                         ],
                     },
                     {

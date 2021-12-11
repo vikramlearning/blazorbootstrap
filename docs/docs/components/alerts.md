@@ -51,7 +51,7 @@ Documentation and examples for BlazorBootstrap Alerts.
 </div>
 ```
 
-### Toogle Alerts
+### Close Alerts on button click
 
 ```cshtml
 <div>
@@ -94,3 +94,7 @@ Documentation and examples for BlazorBootstrap Alerts.
     </Alert>
 </div>
 ```
+
+## Articles
+
+- [Blazor Bootstrap: Alert Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-alert-component-examples/88/157)
