@@ -1,4 +1,4 @@
----
+﻿---
 sidebar_label: Tooltips
 sidebar_position: 6
 ---
@@ -6,6 +6,14 @@ sidebar_position: 6
 # Tooltips
 
 Documentation and examples for BlazorBootstrap Tooltips.
+
+## Parameters
+
+| Name | Type | Descritpion | Required | Default |
+|--|--|--|--|--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | |
+| Placement | Specifies the tooltip placement. Default is top right. | | `TooltipPlacement.Top` |
+| Title | string | Displays informative text when users hover, focus, or tap an element. | ✔️ | |
 
 ## Examples
 
@@ -50,3 +58,7 @@ Documentation and examples for BlazorBootstrap Tooltips.
     }
 }
 ```
+
+## Articles
+
+- [Blazor Bootstrap: Tooltip Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-tooltip-component-examples/88/158)
