@@ -46,10 +46,10 @@ namespace BlazorBootstrap
             await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.hide", ElementId);
         }
 
-        [JSInvokable] public async Task bsShowOffcanvas() => await Showing.InvokeAsync();
-        [JSInvokable] public async Task bsShownOffcanvas() => await Shown.InvokeAsync();
-        [JSInvokable] public async Task bsHideOffcanvas() => await Hiding.InvokeAsync();
-        [JSInvokable] public async Task bsHiddenOffcanvas() => await Hidden.InvokeAsync();
+        [JSInvokable] public async Task bsShowOffcanvas() => await OnShowing.InvokeAsync();
+        [JSInvokable] public async Task bsShownOffcanvas() => await OnShown.InvokeAsync();
+        [JSInvokable] public async Task bsHideOffcanvas() => await OnHiding.InvokeAsync();
+        [JSInvokable] public async Task bsHiddenOffcanvas() => await OnHidden.InvokeAsync();
 
         #endregion Methods
 
@@ -67,22 +67,22 @@ namespace BlazorBootstrap
         /// <summary>
         /// This event fires immediately when the show instance method is called.
         /// </summary>
-        [Parameter] public EventCallback Showing { get; set; }
+        [Parameter] public EventCallback OnShowing { get; set; }
 
         /// <summary>
         /// This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to complete).
         /// </summary>
-        [Parameter] public EventCallback Shown { get; set; }
+        [Parameter] public EventCallback OnShown { get; set; }
 
         /// <summary>
         /// This event is fired immediately when the hide method has been called.
         /// </summary>
-        [Parameter] public EventCallback Hiding { get; set; }
+        [Parameter] public EventCallback OnHiding { get; set; }
 
         /// <summary>
         /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete).
         /// </summary>
-        [Parameter] public EventCallback Hidden { get; set; }
+        [Parameter] public EventCallback OnHidden { get; set; }
 
         /// <summary>
         /// Specifies the content to be rendered inside this.

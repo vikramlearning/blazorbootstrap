@@ -84,7 +84,7 @@ namespace BlazorBootstrap
 
         #endregion
 
-        // TODO: review below
+        // TODO: Review
         // https://getbootstrap.com/docs/5.1/components/alerts/#live-example
         // https://getbootstrap.com/docs/5.1/components/alerts/#additional-content
     }

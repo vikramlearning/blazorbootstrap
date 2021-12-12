@@ -5,10 +5,10 @@
 <Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowOffcanvasAsync(); })">Show Offcanvas</Button>
 
 <Offcanvas @ref="offcanvas" 
-           Showing="OnOffcanvasShowingAsync"
-           Shown="OnOffcanvasShownAsync"
-           Hiding="OnOffcanvasHidingAsync"
-           Hidden="OnOffcanvasHiddenAsync">
+           OnShowing="OnOffcanvasShowingAsync"
+           OnShown="OnOffcanvasShownAsync"
+           OnHiding="OnOffcanvasHidingAsync"
+           OnHidden="OnOffcanvasHiddenAsync">
 
     <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>

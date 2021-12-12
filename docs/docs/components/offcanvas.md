@@ -18,8 +18,8 @@ Documentation and examples for BlazorBootstrap Offcanvas.
 
 | Method | Description |
 |--|--|
-| ShowAsync | Shows an offcanvas element. Returns to the caller before the offcanvas element has actually been shown (i.e. before the <code>Shown</code> event occurs). |
-| HideAsync | Hides an offcanvas element. Returns to the caller before the offcanvas element has actually been hidden (i.e. before the <code>Hidden</code> event occurs). |
+| ShowAsync | Shows an offcanvas element. Returns to the caller before the offcanvas element has actually been shown (i.e. before the `OnShown` event occurs). |
+| HideAsync | Hides an offcanvas element. Returns to the caller before the offcanvas element has actually been hidden (i.e. before the `OnHidden` event occurs). |
 
 :::danger Asynchronous methods and transitions
 
@@ -31,10 +31,10 @@ All API methods are **asynchronous** and start a **transition**. They return to 
 
 | Event | Description |
 |--|--|
-| Showing | This event fires immediately when the show instance method is called. |
-| Shown | This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to complete). |
-| Hiding | This event is fired immediately when the hide method has been called. |
-| Hidden | This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete). |
+| OnShowing | This event fires immediately when the show instance method is called. |
+| OnShown | This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to complete). |
+| OnHiding | This event is fired immediately when the hide method has been called. |
+| OnHidden | This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete). |
 
 ## Examples
 
@@ -71,10 +71,10 @@ All API methods are **asynchronous** and start a **transition**. They return to 
 
 ```cshtml
 <Offcanvas @ref="offcanvas"
-           Showing="OnOffcanvasShowingAsync"
-           Shown="OnOffcanvasShownAsync"
-           Hiding="OnOffcanvasHidingAsync"
-           Hidden="OnOffcanvasHiddenAsync">
+           OnShowing="OnOffcanvasShowingAsync"
+           OnShown="OnOffcanvasShownAsync"
+           OnHiding="OnOffcanvasHidingAsync"
+           OnHidden="OnOffcanvasHiddenAsync">
 
     ... add offcanvas header and body
 
