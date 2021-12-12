@@ -32,6 +32,8 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Buttons
 
+<img src="https://i.imgur.com/Ne7FJ5H.jpg" alt="Blazor Bootstrap: Button Component" />
+
 ```cshtml
 <p>
     <Button Color="ButtonColor.Primary"> Primary </Button>
@@ -48,6 +50,8 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Button tags
 
+<img src="https://i.imgur.com/ZscbcWh.jpg" alt="Blazor Bootstrap: Button Component" />
+
 ```cshtml
 <p>
     <Button Type="ButtonType.Link" Color="ButtonColor.Primary" To="#"> Link </Button>
@@ -56,6 +60,8 @@ Documentation and examples for BlazorBootstrap Buttons.
 ```
 
 ### Outline Buttons
+
+<img src="https://i.imgur.com/ta0Mgtk.jpg" alt="Blazor Bootstrap: Button Component" />
 
 ```cshtml
 <p>
@@ -71,6 +77,8 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Sizes
 
+<img src="https://i.imgur.com/Vdiyg6q.jpg" alt="Blazor Bootstrap: Button Component" />
+
 ```cshtml
 <p>
     <Button Color="ButtonColor.Primary" Size="Size.Large"> Large button </Button>
@@ -83,6 +91,8 @@ Documentation and examples for BlazorBootstrap Buttons.
 ```
 
 ### Disable State
+
+<img src="https://i.imgur.com/A0MlIha.jpg" alt="Blazor Bootstrap: Button Component" />
 
 ```cshtml
 <p>
@@ -97,12 +107,16 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Block Buttons
 
+<img src="https://i.imgur.com/jB7joKv.jpg" alt="Blazor Bootstrap: Button Component" />
+
 ```cshtml
 <div class="d-grid gap-2">
     <Button Color="ButtonColor.Primary"> Button </Button>
     <Button Color="ButtonColor.Primary"> Button </Button>
 </div>
 ```
+
+<img src="https://i.imgur.com/iSsEMgi.jpg" alt="Blazor Bootstrap: Button Component" />
 
 ```cshtml
 <div class="d-grid gap-2 d-md-block mt-2">
@@ -111,12 +125,16 @@ Documentation and examples for BlazorBootstrap Buttons.
 </div>
 ```
 
+<img src="https://i.imgur.com/20LuzVC.jpg" alt="Blazor Bootstrap: Button Component" />
+
 ```cshtml
 <div class="d-grid gap-2 col-6 mx-auto mt-2">
     <Button Color="ButtonColor.Primary"> Button </Button>
     <Button Color="ButtonColor.Primary"> Button </Button>
 </div>
 ```
+
+<img src="https://i.imgur.com/bJXgFkF.jpg" alt="Blazor Bootstrap: Button Component" />
 
 ```cshtml
 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
@@ -127,6 +145,8 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Button Toogle States
 
+<img src="https://i.imgur.com/JH9SZxQ.jpg" alt="Blazor Bootstrap: Button Component" />
+
 ```cshtml
 <p>
     <Button Color="ButtonColor.Primary"> Toggle button </Button>
@@ -136,6 +156,8 @@ Documentation and examples for BlazorBootstrap Buttons.
 ```
 
 ### Button with Loading
+
+<img src="https://i.imgur.com/ENKhcXR.jpg" alt="Blazor Bootstrap: Button Component" />
 
 ```cshtml
 <p>
@@ -152,6 +174,8 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Buttons with Tooltip
 
+<img src="https://i.imgur.com/zp3G6pZ.jpg" alt="Blazor Bootstrap: Button Component" />
+
 ```cshtml
 <p>
     <Button Color="ButtonColor.Primary" TooltipTitle="Tooltip text" TooltipPlacement="TooltipPlacement.Top"> Tooltip Top </Button>
@@ -164,7 +188,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 </p>
 ```
 
-:::note
+:::caution NOTE
 
 HTML tooltips not supported at this moment.
 

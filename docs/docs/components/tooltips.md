@@ -19,6 +19,22 @@ Documentation and examples for BlazorBootstrap Tooltips.
 
 ### Tooltips
 
+<div>
+    <img src="https://i.imgur.com/uqvqb2i.jpg" alt="Blazor Bootstrap: Tooltip Component" />
+</div>
+
+<div>
+    <img src="https://i.imgur.com/ZHLTCvX.jpg" alt="Blazor Bootstrap: Tooltip Component" />
+</div>
+
+<div>
+    <img src="https://i.imgur.com/jwJUhkV.jpg" alt="Blazor Bootstrap: Tooltip Component" />
+</div>
+
+<div>
+    <img src="https://i.imgur.com/T2YMw9p.jpg" alt="Blazor Bootstrap: Tooltip Component" />
+</div>
+
 ```cshtml
 <div>
     <Tooltip TooltipTitle="Tooltip Left" TooltipPlacement="TooltipPlacement.Left">Tooltip Left</Tooltip>
@@ -36,6 +52,8 @@ Documentation and examples for BlazorBootstrap Tooltips.
 
 ### Disabled button with tooltip
 
+<img src="https://i.imgur.com/PGlmZS3.jpg" alt="Blazor Bootstrap: Tooltip Component" />
+
 ```cshtml
 <Tooltip Class="d-inline-block" TooltipTitle="Disabled button"role="button">
     <button class="btn btn-primary" type="button" disabled>Disabled button</button>
@@ -43,6 +61,8 @@ Documentation and examples for BlazorBootstrap Tooltips.
 ```
 
 ### Tooltip icon with click event
+
+<img src="https://i.imgur.com/D3FrZba.jpg" alt="Blazor Bootstrap: Tooltip Component" />
 
 ```cshtml
 <Tooltip TooltipTitle="Click here" @onclick="OnClick" role="button">

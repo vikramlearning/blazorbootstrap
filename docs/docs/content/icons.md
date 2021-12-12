@@ -35,6 +35,8 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 ### Icons
 
+<img src="https://i.imgur.com/WClg4kQ.jpg" alt="Blazor Bootstrap: Icon Component" />
+
 ```cshtml
 <p>
     <Icon Name="IconName.Alarm"></Icon>
@@ -43,6 +45,8 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 ```
 
 ### Icons with different Sizes
+
+<img src="https://i.imgur.com/ko7c6k3.jpg" alt="Blazor Bootstrap: Icon Component" />
 
 ```cshtml
 <p>
@@ -55,6 +59,8 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 ### Inline text with icon
 
+<img src="https://i.imgur.com/eNKFAKg.jpg" alt="Blazor Bootstrap: Icon Component" />
+
 ```cshtml
 <p>
     Inline text <Icon Name="IconName.Alarm" />
@@ -62,6 +68,8 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 ```
 
 ### Link with icon
+
+<img src="https://i.imgur.com/pDpv29z.jpg" alt="Blazor Bootstrap: Icon Component" />
 
 ```cshtml
 <p>
@@ -73,6 +81,8 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 ### Link with custom icon
 
+<img src="https://i.imgur.com/KNFvgiS.jpg" alt="Blazor Bootstrap: Icon Component" />
+
 ```cshtml
 <p>
     <a href="#" class="text-decoration-none">
@@ -83,6 +93,8 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 ### Button with icon and text
 
+<img src="https://i.imgur.com/Pkzbm1Q.jpg" alt="Blazor Bootstrap: Icon Component" />
+
 ```cshtml
 <p>
     <Button Color="ButtonColor.Primary"><Icon Name="IconName.Alarm" /> Button </Button>
@@ -92,6 +104,8 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 ```
 
 ### Button with icon only
+
+<img src="https://i.imgur.com/3WClQmS.jpg" alt="Blazor Bootstrap: Icon Component" />
 
 ```cshtml
 <p>

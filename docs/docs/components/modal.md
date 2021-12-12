@@ -42,6 +42,8 @@ All API methods are **asynchronous** and start a **transition**. They return to 
 
 ### Modal
 
+<img src="https://i.imgur.com/kVDJBMx.jpg" alt="Blazor Bootstrap: Modal Component" />
+
 ```cshtml
 <Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowModalAsync(); })">Show Modal</Button>
 

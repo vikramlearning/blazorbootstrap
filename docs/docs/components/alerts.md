@@ -32,6 +32,8 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ### Alerts
 
+<img src="https://i.imgur.com/0NKd41O.jpg" alt="Blazor Bootstrap: Alert Component" />
+
 ```cshtml
 <div>
     <Alert Color="AlertColor.Primary"> A simple primary alert. </Alert>
@@ -45,6 +47,8 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ### Dismissable Alerts
 
+<img src="https://i.imgur.com/Rjyk3lH.jpg" alt="Blazor Bootstrap: Alert Component" />
+
 ```cshtml
 <div>
     <Alert Color="AlertColor.Light" Dismisable="true" Visible="true"> A simple light alert. </Alert>
@@ -52,6 +56,8 @@ Documentation and examples for BlazorBootstrap Alerts.
 ```
 
 ### Close Alerts on button click
+
+<img src="https://i.imgur.com/vSUUAgD.jpg" alt="Blazor Bootstrap: Alert Component" />
 
 ```cshtml
 <div>
@@ -72,6 +78,8 @@ Documentation and examples for BlazorBootstrap Alerts.
 ```
 
 ### Alerts with additional content
+
+<img src="https://i.imgur.com/nbybrGy.jpg" alt="Blazor Bootstrap: Alert Component" />
 
 ```cshtml
 <div>

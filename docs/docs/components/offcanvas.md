@@ -7,8 +7,6 @@ sidebar_position: 4
 
 Documentation and examples for BlazorBootstrap Offcanvas.
 
-<img src="https://i.imgur.com/J1mcowH.jpg" alt="BlazorBootstrap: Offcanvas Component Example" />
-
 ## Parameters
 
 | Name | Type | Descritpion | Required | Default |
@@ -40,7 +38,9 @@ All API methods are **asynchronous** and start a **transition**. They return to 
 
 ## Examples
 
-### Methods - Show / Hide
+### Offcanvas
+
+<img src="https://i.imgur.com/J1mcowH.jpg" alt="BlazorBootstrap: Offcanvas Component" />
 
 ```cshtml
 <Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowOffcanvasAsync(); })">Show Offcanvas</Button>
@@ -48,6 +48,8 @@ All API methods are **asynchronous** and start a **transition**. They return to 
 <Offcanvas @ref="offcanvas">
   ... design your header and body
 </Offcanvas>
+
+### Methods
 
 ```cs {6,11}
 @code {
