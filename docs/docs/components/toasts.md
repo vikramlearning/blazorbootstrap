@@ -17,7 +17,7 @@ Things to know when using the toasts component:
 |--|--|--|--|--|
 | AutoHide | bool | Auto hide the toast. | | `true` |
 | Delay | int | Delay hiding the toast (milli seconds). | | 5000 |
-| Messages | `List<ToastMessage>` | List of all the toasts. | ✔️ | |
+| Messages | `List\<ToastMessage\>` | List of all the toasts. | ✔️ | |
 | Placement | `ToastsPlacement` | Specifies the toasts placement. | | `ToastsPlacement.TopRight` |
 | StackLength | int | Specifies the toast container maximum capacity. | | 5 |
 
