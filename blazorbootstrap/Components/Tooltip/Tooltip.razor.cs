@@ -1,5 +1,4 @@
 ﻿using BlazorBootstrap.Extensions;
-using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -48,7 +47,7 @@ namespace BlazorBootstrap
         [Parameter] public string TooltipTitle { get; set; }
 
         /// <summary>
-        /// Tooltip placement
+        /// Tooltip placement. Default is top right.
         /// </summary>
         [Parameter] public BlazorBootstrap.TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
 

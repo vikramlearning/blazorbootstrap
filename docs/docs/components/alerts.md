@@ -9,11 +9,11 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ## Parameters
 
-| Name | Type | Descritpion | Default Value |
-|--|--|--|
-| ChildContent | RenderFragment | Specifies the content to be rendered inside the alert. | |
-| Color | Enum | Gets or sets the alert color. | |
-| Dismisable | bool | Enables the alert to be closed by placing the padding for close button. | |
+| Name | Type | Descritpion | Required | Default |
+|--|--|--|--|--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside the alert. | | |
+| Color | `AlertColor` | Gets or sets the alert color. | | `AlertColor.None` |
+| Dismisable | bool | Enables the alert to be closed by placing the padding for close button. | | false |
 
 ## Methods
 

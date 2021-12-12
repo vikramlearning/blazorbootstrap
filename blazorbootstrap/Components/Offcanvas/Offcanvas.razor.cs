@@ -51,11 +51,6 @@ namespace BlazorBootstrap
         [JSInvokable] public async Task bsHideOffcanvas() => await Hiding.InvokeAsync();
         [JSInvokable] public async Task bsHiddenOffcanvas() => await Hidden.InvokeAsync();
 
-        public void Dispose()
-        {
-            objRef?.Dispose();
-        }
-
         #endregion Methods
 
         #region Properties
@@ -67,7 +62,7 @@ namespace BlazorBootstrap
         /// Specifies the placement.
         /// By default, offcanvas is placed on the right of the viewport.
         /// </summary>
-        [Parameter] public Placement Placement { get; set; } = Placement.End; // default
+        [Parameter] public Placement Placement { get; set; } = Placement.End;
 
         /// <summary>
         /// This event fires immediately when the show instance method is called.

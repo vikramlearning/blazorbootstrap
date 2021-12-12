@@ -1,4 +1,4 @@
----
+﻿---
 sidebar_label: Buttons
 sidebar_position: 2
 ---
@@ -6,6 +6,27 @@ sidebar_position: 2
 # Buttons
 
 Documentation and examples for BlazorBootstrap Buttons.
+
+## Parameters
+
+| Name | Type | Descritpion | Required | Default |
+|--|--|--|--|--|
+| Active | bool | When set to `true`, places the component in the active state with active styling. | | false |
+| Block | bool | Makes the button to span the full width of a parent. | | false |
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this `Button`. | | |
+| Color | `ButtonColor` | Gets or sets the button color. | ✔️ | |
+| Disabled | bool | When set to `true`, disables the component's functionality and places it in a disabled state. | | false |
+| Loading | bool | Shows the loading spinner or a `LoadingTemplate`. | | false |
+| LoadingTemplate | RenderFragment | Gets or sets the component loading template. | | |
+| LoadingText | string | Gets or sets the loadgin text. | | `Loading...` |
+| Outline | bool | Makes the button to have the outlines. | | false |
+| Size | `Size` | Changes the size of a button. | | |
+| TabIndex | int? | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | |
+| Target | `Target` | The target attribute specifies where to open the linked document for a `ButtonType.Link`. | | `Target.None` |
+| To | string | Denotes the target route of the `ButtonType.Link` button. | | |
+| TooltipPlacement | `TooltipPlacement` | Tooltip placement | | `TooltipPlacement.Top` |
+| TooltipTitle | string | Displays informative text when users hover, focus, or tap an element. | | |
+| Type | `ButtonType` | Defines the button type. | | `ButtonType.Button` |
 
 ## Examples
 

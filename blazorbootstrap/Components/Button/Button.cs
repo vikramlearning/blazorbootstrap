@@ -271,7 +271,7 @@ namespace BlazorBootstrap
 
         #endregion
 
-        // TODO:
+        // TODO: Review
         // - Disable text wrapping: https://getbootstrap.com/docs/5.1/components/buttons/#disable-text-wrapping
         // - Toogle states: https://getbootstrap.com/docs/5.1/components/buttons/#toggle-states
         // - IDispose

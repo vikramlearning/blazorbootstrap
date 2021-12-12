@@ -9,11 +9,11 @@ Documentation and examples for BlazorBootstrap Modal.
 
 ## Parameters
 
-| Name | Type | Descritpion | Default Value |
-|--|--|--|
-| ChildContent | RenderFragment | Specifies the content to be rendered inside the alert. | |
-| IsScrollable | bool | Allows modal body scroll. | |
-| IsVerticallyCentered | bool | Shows the modal vertically in the center. | |
+| Name | Type | Descritpion | Required | Default |
+|--|--|--|--|--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside the alert. | | |
+| IsScrollable | bool | Allows modal body scroll. | | false |
+| IsVerticallyCentered | bool | Shows the modal vertically in the center. | | false |
 
 ## Methods
 
@@ -21,6 +21,12 @@ Documentation and examples for BlazorBootstrap Modal.
 |--|--|
 | ShowAsync | Opens a modal. |
 | HideAsync | Hides a modal. |
+
+:::danger Asynchronous methods and transitions
+
+All API methods are **asynchronous** and start a **transition**. They return to the caller as soon as the transition is started but **before it ends**. In addition, a method call on a **transitioning component will be ignored**.
+
+:::
 
 ## Callback Events
 
@@ -107,3 +113,7 @@ Documentation and examples for BlazorBootstrap Modal.
     }
 }
 ```
+
+## Articles
+
+- [Blazor Bootstrap: Modal Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-modal-component-examples/88/154)

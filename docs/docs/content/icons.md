@@ -1,4 +1,4 @@
----
+﻿---
 sidebar_label: Icons
 sidebar_position: 1
 ---
@@ -19,11 +19,17 @@ Documentation and examples for BlazorBootstrap Icons.
 
 ## Parameters
 
-| Name | Type | Descritpion | Default Value |
-|--|--|--|
-| Name | Enum | Icon Name | |
-| CustomIconName | string | Specify custom icons of your own, like `fontawesome`. Example: `fas fa-alarm-clock` | |
-| Size | Enum | Icon Size | |
+| Name | Type | Descritpion | Required | Default |
+|--|--|--|--|--|
+| CustomIconName | string | Specify custom icons of your own, like `fontawesome`. Example: `fas fa-alarm-clock` | ✔️ | |
+| Name | `IconName` | Gets or sets the icon name. | ✔️ | |
+| Size | `IconSize` | Gets or sets the icon size. | | `IconSize.None` |
+
+:::caution NOTE
+
+Either `Name` or `CustomIconName` parameter is mandatory.
+
+:::
 
 ## Examples
 

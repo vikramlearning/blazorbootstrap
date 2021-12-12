@@ -57,7 +57,8 @@
         /// </summary>
         Transparent,
 
-        // TODO: https://getbootstrap.com/docs/5.1/utilities/background/#background-gradient
-        // TODO: https://getbootstrap.com/docs/5.1/utilities/background/#opacity
+        // TODO: Review
+        // https://getbootstrap.com/docs/5.1/utilities/background/#background-gradient
+        // https://getbootstrap.com/docs/5.1/utilities/background/#opacity
     }
 }
