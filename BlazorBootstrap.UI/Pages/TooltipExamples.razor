@@ -3,25 +3,25 @@
 
 <h4 class="my-4">Tooltip Examples</h4>
 <div>
-    <Tooltip TooltipTitle="Tooltip Left" TooltipPlacement="TooltipPlacement.Left">Tooltip Left</Tooltip>
+    <Tooltip Title="Tooltip Left" Placement="TooltipPlacement.Left">Tooltip Left</Tooltip>
 </div>
 <div>
-    <Tooltip TooltipTitle="Tooltip Top">Tooltip Top</Tooltip>
+    <Tooltip Title="Tooltip Top">Tooltip Top</Tooltip>
 </div>
 <div>
-    <Tooltip TooltipTitle="Tooltip Right" TooltipPlacement="TooltipPlacement.Right">Tooltip Right</Tooltip>
+    <Tooltip Title="Tooltip Right" Placement="TooltipPlacement.Right">Tooltip Right</Tooltip>
 </div>
 <div>
-    <Tooltip TooltipTitle="Tooltip Bottom" TooltipPlacement="TooltipPlacement.Bottom">Tooltip Bottom</Tooltip>
+    <Tooltip Title="Tooltip Bottom" Placement="TooltipPlacement.Bottom">Tooltip Bottom</Tooltip>
 </div>
 
 <h4 class="my-4">Disabled button with tootip</h4>
-<Tooltip Class="d-inline-block" TooltipTitle="Disabled button"role="button">
+<Tooltip Class="d-inline-block" Title="Disabled button"role="button">
     <button class="btn btn-primary" type="button" disabled>Disabled button</button>
 </Tooltip>
 
 <h4 class="my-4">Icon with click event</h4>
-<Tooltip TooltipTitle="Click here" @onclick="OnClick" role="button">
+<Tooltip Title="Click here" @onclick="OnClick" role="button">
     <i class="bi bi-arrow-repeat text-danger"></i>
 </Tooltip>
 

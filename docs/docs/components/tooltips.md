@@ -1,4 +1,4 @@
----
+﻿---
 sidebar_label: Tooltips
 sidebar_position: 6
 ---
@@ -7,9 +7,33 @@ sidebar_position: 6
 
 Documentation and examples for BlazorBootstrap Tooltips.
 
+## Parameters
+
+| Name | Type | Descritpion | Required | Default |
+|--|--|--|--|--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | |
+| Placement | Specifies the tooltip placement. Default is top right. | | `TooltipPlacement.Top` |
+| Title | string | Displays informative text when users hover, focus, or tap an element. | ✔️ | |
+
 ## Examples
 
 ### Tooltips
+
+<div>
+    <img src="https://i.imgur.com/uqvqb2i.jpg" alt="Blazor Bootstrap: Tooltip Component" />
+</div>
+
+<div>
+    <img src="https://i.imgur.com/ZHLTCvX.jpg" alt="Blazor Bootstrap: Tooltip Component" />
+</div>
+
+<div>
+    <img src="https://i.imgur.com/jwJUhkV.jpg" alt="Blazor Bootstrap: Tooltip Component" />
+</div>
+
+<div>
+    <img src="https://i.imgur.com/T2YMw9p.jpg" alt="Blazor Bootstrap: Tooltip Component" />
+</div>
 
 ```cshtml
 <div>
@@ -28,6 +52,8 @@ Documentation and examples for BlazorBootstrap Tooltips.
 
 ### Disabled button with tooltip
 
+<img src="https://i.imgur.com/PGlmZS3.jpg" alt="Blazor Bootstrap: Tooltip Component" />
+
 ```cshtml
 <Tooltip Class="d-inline-block" TooltipTitle="Disabled button"role="button">
     <button class="btn btn-primary" type="button" disabled>Disabled button</button>
@@ -35,6 +61,8 @@ Documentation and examples for BlazorBootstrap Tooltips.
 ```
 
 ### Tooltip icon with click event
+
+<img src="https://i.imgur.com/D3FrZba.jpg" alt="Blazor Bootstrap: Tooltip Component" />
 
 ```cshtml
 <Tooltip TooltipTitle="Click here" @onclick="OnClick" role="button">
@@ -50,3 +78,7 @@ Documentation and examples for BlazorBootstrap Tooltips.
     }
 }
 ```
+
+## Articles
+
+- [Blazor Bootstrap: Tooltip Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-tooltip-component-examples/88/158)

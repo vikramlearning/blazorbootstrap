@@ -16,12 +16,6 @@ namespace BlazorBootstrap
 
         #region Methods
 
-        protected override void OnAfterRender(bool firstRender)
-        {
-            objRef ??= DotNetObjectReference.Create(this);
-            base.OnAfterRender(firstRender);
-        }
-
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Offcanvas());
@@ -30,14 +24,10 @@ namespace BlazorBootstrap
             base.BuildClasses(builder);
         }
 
-        protected override void BuildStyles(StyleBuilder builder)
+        protected override void OnAfterRender(bool firstRender)
         {
-            base.BuildStyles(builder);
-        }
-
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
+            objRef ??= DotNetObjectReference.Create(this);
+            base.OnAfterRender(firstRender);
         }
 
         /// <summary>
@@ -56,15 +46,10 @@ namespace BlazorBootstrap
             await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.hide", ElementId);
         }
 
-        [JSInvokable] public async Task bsShowOffcanvas() => await Showing.InvokeAsync();
-        [JSInvokable] public async Task bsShownOffcanvas() => await Shown.InvokeAsync();
-        [JSInvokable] public async Task bsHideOffcanvas() => await Hiding.InvokeAsync();
-        [JSInvokable] public async Task bsHiddenOffcanvas() => await Hidden.InvokeAsync();
-
-        public void Dispose()
-        {
-            objRef?.Dispose();
-        }
+        [JSInvokable] public async Task bsShowOffcanvas() => await OnShowing.InvokeAsync();
+        [JSInvokable] public async Task bsShownOffcanvas() => await OnShown.InvokeAsync();
+        [JSInvokable] public async Task bsHideOffcanvas() => await OnHiding.InvokeAsync();
+        [JSInvokable] public async Task bsHiddenOffcanvas() => await OnHidden.InvokeAsync();
 
         #endregion Methods
 
@@ -77,27 +62,27 @@ namespace BlazorBootstrap
         /// Specifies the placement.
         /// By default, offcanvas is placed on the right of the viewport.
         /// </summary>
-        [Parameter] public Placement Placement { get; set; } = Placement.End; // default
+        [Parameter] public Placement Placement { get; set; } = Placement.End;
 
         /// <summary>
         /// This event fires immediately when the show instance method is called.
         /// </summary>
-        [Parameter] public EventCallback Showing { get; set; }
+        [Parameter] public EventCallback OnShowing { get; set; }
 
         /// <summary>
         /// This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to complete).
         /// </summary>
-        [Parameter] public EventCallback Shown { get; set; }
+        [Parameter] public EventCallback OnShown { get; set; }
 
         /// <summary>
         /// This event is fired immediately when the hide method has been called.
         /// </summary>
-        [Parameter] public EventCallback Hiding { get; set; }
+        [Parameter] public EventCallback OnHiding { get; set; }
 
         /// <summary>
         /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete).
         /// </summary>
-        [Parameter] public EventCallback Hidden { get; set; }
+        [Parameter] public EventCallback OnHidden { get; set; }
 
         /// <summary>
         /// Specifies the content to be rendered inside this.

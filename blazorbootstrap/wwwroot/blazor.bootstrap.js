@@ -3,6 +3,23 @@
 }
 
 window.blazorBootstrap = {
+    alert: {
+        initialize: (elementId) => {
+            let ele = document.getElementById(elementId);
+
+            modalEl.addEventListener('close.bs.alert', function () {
+                dotNetHelper.invokeMethodAsync('bsCloseAlert');
+            });
+            modalEl.addEventListener('closed.bs.alert', function () {
+                dotNetHelper.invokeMethodAsync('bsClosedAlert');
+            });
+
+            let alert = bootstrap?.Alert?.getOrCreateInstance(ele);
+        },
+        close: (elementId) => {
+            bootstrap?.Alert?.getOrCreateInstance(document.getElementById(elementId))?.close();
+        }
+    },
     modal: {
         show: (elementId, dotNetHelper) => {
             let modalEl = document.getElementById(elementId);
@@ -91,7 +108,7 @@ window.blazorBootstrap = {
     tooltip: {
         initialize: (elementId) => {
             let ele = document.getElementById(elementId);
-            var tooltip = bootstrap.Tooltip.getOrCreateInstance(ele);
+            let tooltip = bootstrap.Tooltip.getOrCreateInstance(ele);
         },
     },
 }

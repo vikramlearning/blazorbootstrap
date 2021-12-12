@@ -1,6 +1,7 @@
-﻿using BlazorBootstrap.States;
-using BlazorBootstrap.Utilities;
+﻿using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using System.Threading.Tasks;
 
 namespace BlazorBootstrap
 {
@@ -8,23 +9,7 @@ namespace BlazorBootstrap
     {
         #region Members
 
-        /// <summary>
-        /// Holds the state of the <see cref="Alert"/> component.
-        /// </summary>
-        private AlertState state = new()
-        {
-            Color = AlertColor.None,
-        };
-
-        /// <summary>
-        /// Flag that indicates if <see cref="Alert"/> contains the <see cref="AlertMessage"/> component.
-        /// </summary>
-        //private bool hasMessage;
-
-        /// <summary>
-        /// Flag that indicates if <see cref="Alert"/> contains the <see cref="AlertDescription"/> component.
-        /// </summary>
-        //private bool hasDescription;
+        private DotNetObjectReference<Alert> objRef;
 
         #endregion
 
@@ -36,97 +21,61 @@ namespace BlazorBootstrap
             builder.Append(BootstrapClassProvider.Alert());
             builder.Append(BootstrapClassProvider.AlertColor(Color), Color != AlertColor.None);
             builder.Append(BootstrapClassProvider.AlertDismisable(), Dismisable);
-            builder.Append(BootstrapClassProvider.AlertFade(), Dismisable);
-            builder.Append(BootstrapClassProvider.AlertShow(), Dismisable && Visible);
-            // TODO: review below
-            //builder.Append(BootstrapClassProvider.AlertHasMessage(), hasMessage);
-            //builder.Append(BootstrapClassProvider.AlertHasDescription(), hasDescription);
 
             base.BuildClasses(builder);
         }
 
-        public void Show()
+        protected override void OnInitialized()
         {
-            if (Visible)
-                return;
+            base.OnInitialized();
 
-            Visible = true;
-            InvokeAsync(StateHasChanged);
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", ElementId); });
         }
 
-        public void Hide()
+        protected override void OnAfterRender(bool firstRender)
         {
-            if (!Visible)
-                return;
-
-            Visible = false;
-            InvokeAsync(StateHasChanged);
+            objRef ??= DotNetObjectReference.Create(this);
+            base.OnAfterRender(firstRender);
         }
 
-        public void Toogle()
+        /// <summary>
+        /// Closes an alert by removing it from the DOM.
+        /// </summary>
+        public async Task CloseAsync()
         {
-            Visible = !Visible;
-            InvokeAsync(StateHasChanged);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.alert.close", ElementId);
         }
+
+        [JSInvokable] public async Task bsCloseAlert() => await OnClose.InvokeAsync();
+        [JSInvokable] public async Task bsClosedAlert() => await OnClosed.InvokeAsync();
 
         #endregion
 
         #region Properties
 
-        /// <summary>
-        /// Enables the alert to be closed by placing the padding for close button.
-        /// </summary>
-        [Parameter]
-        public bool Dismisable
-        {
-            get => state.Dismisable;
-            set
-            {
-                state = state with { Dismisable = value };
-
-                DirtyClasses();
-            }
-        }
-
-        /// <summary>
-        /// Sets the alert visibility.
-        /// </summary>
-        [Parameter]
-        public bool Visible
-        {
-            get => state.Visible;
-            set
-            {
-                if (value == state.Visible)
-                    return;
-
-                state = state with { Visible = value };
-
-                // TODO: enable this
-                //HandleVisibilityState(value);
-                //RaiseEvents(value);
-            }
-        }
-
-        /// <summary>
-        /// Occurs when the alert visibility state changes.
-        /// </summary>
-        [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+        /// <inheritdoc/>
+        protected override bool ShouldAutoGenerateId => true;
 
         /// <summary>
         /// Gets or sets the alert color.
         /// </summary>
         [Parameter]
-        public AlertColor Color
-        {
-            get => state.Color;
-            set
-            {
-                state = state with { Color = value };
+        public AlertColor Color { get; set; } = AlertColor.None;
 
-                DirtyClasses();
-            }
-        }
+        /// <summary>
+        /// Enables the alert to be closed by placing the padding for close button.
+        /// </summary>
+        [Parameter] public bool Dismisable { get; set; }
+
+        /// <summary>
+        /// Fires immediately when the close instance method is called.
+        /// </summary>
+        [Parameter] public EventCallback OnClose { get; set; }
+
+        /// <summary>
+        /// Fired when the alert has been closed and CSS transitions have completed.
+        /// </summary>
+        [Parameter] public EventCallback OnClosed { get; set; }
 
         /// <summary>
         /// Specifies the content to be rendered inside this <see cref="Alert"/>.
@@ -135,7 +84,7 @@ namespace BlazorBootstrap
 
         #endregion
 
-        // TODO: 
+        // TODO: Review
         // https://getbootstrap.com/docs/5.1/components/alerts/#live-example
         // https://getbootstrap.com/docs/5.1/components/alerts/#additional-content
     }

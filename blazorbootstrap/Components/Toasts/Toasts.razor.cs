@@ -53,7 +53,7 @@ namespace BlazorBootstrap
                 var message = Messages.FirstOrDefault(x => x.Id == toastId);
                 if (Messages.Remove(message))
                 {
-                    // message removed.
+                    // toast message removed successfully.
                 }
             }
         }
@@ -66,7 +66,7 @@ namespace BlazorBootstrap
         protected override bool ShouldAutoGenerateId => true;
 
         /// <summary>
-        /// Holds all the toasts.
+        /// List of all the toasts.
         /// </summary>
         [Parameter]
         public List<ToastMessage> Messages { get; set; }
@@ -82,12 +82,12 @@ namespace BlazorBootstrap
         [Parameter] public int Delay { get; set; } = 5000;
 
         /// <summary>
-        /// Stack length. Default is 5.
+        /// Specifies the toast container maximum capacity. Default is 5.
         /// </summary>
         [Parameter] public int StackLength { get; set; } = 5;
 
         /// <summary>
-        /// Toasts placement. Default is top right.
+        /// Specifies the toasts placement. Default is top right.
         /// </summary>
         [Parameter] public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
 

@@ -1,5 +1,4 @@
 ﻿using BlazorBootstrap.Extensions;
-using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
@@ -11,7 +10,7 @@ namespace BlazorBootstrap
 
         private DotNetObjectReference<Tooltip> objRef;
 
-        private string placement => TooltipPlacement.ToTooltipPlacementName();
+        private string placement => Placement.ToTooltipPlacementName();
 
         #endregion Members
 
@@ -21,16 +20,6 @@ namespace BlazorBootstrap
         {
             objRef ??= DotNetObjectReference.Create(this);
             base.OnAfterRender(firstRender);
-        }
-
-        protected override void BuildClasses(ClassBuilder builder)
-        {
-            base.BuildClasses(builder);
-        }
-
-        protected override void BuildStyles(StyleBuilder builder)
-        {
-            base.BuildStyles(builder);
         }
 
         protected override void OnInitialized()
@@ -55,12 +44,12 @@ namespace BlazorBootstrap
         /// <summary>
         /// Displays informative text when users hover, focus, or tap an element.
         /// </summary>
-        [Parameter] public string TooltipTitle { get; set; }
+        [Parameter] public string Title { get; set; }
 
         /// <summary>
-        /// Tooltip placement
+        /// Specifies the tooltip placement. Default is top right.
         /// </summary>
-        [Parameter] public BlazorBootstrap.TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
+        [Parameter] public BlazorBootstrap.TooltipPlacement Placement { get; set; } = TooltipPlacement.Top;
 
         #endregion Properties
     }

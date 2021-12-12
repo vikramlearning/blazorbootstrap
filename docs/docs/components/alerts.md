@@ -7,9 +7,32 @@ sidebar_position: 1
 
 Documentation and examples for BlazorBootstrap Alerts.
 
+## Parameters
+
+| Name | Type | Descritpion | Required | Default |
+|--|--|--|--|--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside the alert. | | |
+| Color | `AlertColor` | Gets or sets the alert color. | | `AlertColor.None` |
+| Dismisable | bool | Enables the alert to be closed by placing the padding for close button. | | false |
+
+## Methods
+
+| Name | Description |
+|--|--|
+| CloseAsync | Closes an alert by removing it from the DOM. |
+
+## Callback Events
+
+| Name | Description |
+|--|--|
+| OnClose | Fires immediately when the `close` instance method is called. |
+| OnClosed | Fired when the alert has been closed and CSS transitions have completed. |
+
 ## Examples
 
 ### Alerts
+
+<img src="https://i.imgur.com/0NKd41O.jpg" alt="Blazor Bootstrap: Alert Component" />
 
 ```cshtml
 <div>
@@ -24,18 +47,22 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ### Dismissable Alerts
 
+<img src="https://i.imgur.com/Rjyk3lH.jpg" alt="Blazor Bootstrap: Alert Component" />
+
 ```cshtml
 <div>
     <Alert Color="AlertColor.Light" Dismisable="true" Visible="true"> A simple light alert. </Alert>
 </div>
 ```
 
-### Toogle Alerts
+### Close Alerts on button click
+
+<img src="https://i.imgur.com/vSUUAgD.jpg" alt="Blazor Bootstrap: Alert Component" />
 
 ```cshtml
 <div>
     <Alert @ref="darkAlert" Color="AlertColor.Dark" Dismisable="true"> A simple light alert. </Alert>
-    <Button Color="ButtonColor.Dark" @onclick="onClick"> Toggle Alert </Button>
+    <Button Color="ButtonColor.Dark" @onclick="CloseAlert"> Close Alert </Button>
 </div>
 ```
 
@@ -43,15 +70,17 @@ Documentation and examples for BlazorBootstrap Alerts.
 @code{
     Alert darkAlert;
 
-    void onClick()
+    void CloseAlert()
     {
-        darkAlert.Toogle();
+        darkAlert?.CloseAsync();
     }
 }
 ```
 
 ### Alerts with additional content
 
+<img src="https://i.imgur.com/nbybrGy.jpg" alt="Blazor Bootstrap: Alert Component" />
+
 ```cshtml
 <div>
     <Alert Color="AlertColor.Success" Dismisable="true" Visible="true">
@@ -73,3 +102,7 @@ Documentation and examples for BlazorBootstrap Alerts.
     </Alert>
 </div>
 ```
+
+## Articles
+
+- [Blazor Bootstrap: Alert Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-alert-component-examples/88/157)
