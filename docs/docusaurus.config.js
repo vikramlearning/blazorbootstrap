@@ -51,7 +51,7 @@ const config = {
                 },
                 items: [
                     { type: 'doc', docId: 'intro', label: 'Docs', position: 'left' },
-                    //{ to: '/blog', label: 'Blog', position: 'left' },
+                    { to: '/blog', label: 'Blog', position: 'left' },
                     { href: 'https://github.com/vikramlearning/blazorbootstrap', label: 'GitHub', position: 'right', },
                 ],
             },
@@ -68,13 +68,13 @@ const config = {
                         title: 'Community',
                         items: [
                             { label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/blazorbootstrap', },
-                            //{ label: 'Twitter', href: 'https://twitter.com/blazorbootstrap', },
+                            { label: 'Twitter', href: 'https://twitter.com/blazorbootstrap', },
                         ],
                     },
                     {
                         title: 'More',
                         items: [
-                            //{ label: 'Blog', to: '/blog', },
+                            { label: 'Blog', to: '/blog', },
                             { label: 'GitHub', href: 'https://github.com/vikramlearning/blazorbootstrap', },
                         ],
                     },
