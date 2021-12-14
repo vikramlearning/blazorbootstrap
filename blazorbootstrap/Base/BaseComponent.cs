@@ -66,7 +66,7 @@ namespace BlazorBootstrap
         /// </summary>
         internal protected virtual void DirtyClasses()
         {
-            ClassBuilder.Dirty();
+            ClassBuilder?.Dirty();
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace BlazorBootstrap
         /// </summary>
         protected virtual void DirtyStyles()
         {
-            StyleBuilder.Dirty();
+            StyleBuilder?.Dirty();
         }
 
         #endregion

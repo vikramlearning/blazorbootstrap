@@ -1,0 +1,31 @@
+﻿@using BlazorBootstrap
+@using System.Threading.Tasks
+@page "/page-loading"
+
+<h4 class="my-4">PageLoading Examples</h4>
+
+<PageLoading></PageLoading>
+
+<Button Color="ButtonColor.Primary" @onclick="(() => {pageLoadingService.Show(); })">Show loading</Button>
+
+@code {
+
+    [Inject] 
+    protected BlazorBootstrap.PageLoadingService pageLoadingService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        //pageLoadingService.Show();
+        //Task.Delay(5000);
+        //pageLoadingService.Hide();
+
+        this.StateHasChanged();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        //pageLoadingService.Show();
+
+        base.OnAfterRender(firstRender);
+    }
+}
