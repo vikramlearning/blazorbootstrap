@@ -1,6 +1,14 @@
 
 /* page loading component */
-.modal-content-loading{
+.modal-page-loading {
+    z-index: 2055 !important;
+}
+
+.modal-back-drop-page-loading {
+    z-index: 2050 !important;
+}
+
+.modal-content-page-loading {
     background-color: inherit !important;
     border: inherit !important;
 }

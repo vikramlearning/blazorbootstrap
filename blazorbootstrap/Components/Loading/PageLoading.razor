@@ -3,20 +3,27 @@
 
 <CascadingValue Value="@this" IsFixed="true">
     <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@Attributes">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content modal-content-loading">
+        <div class="modal-dialog @verticallyCentered">
+            <div class="modal-content modal-content-page-loading">
                 <div class="modal-body">
-                    <div class="text-center">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Loading...</span>
+                    @if (ChildContent != null)
+                    {
+                        @ChildContent
+                    }
+                    else
+                    {
+                        <div class="text-center @spinnerColor">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
         </div>
     </div>
     @if (showBackdrop)
     {
-        <div class="modal-backdrop fade show"></div>
+        <div class="modal-backdrop modal-back-drop-page-loading fade show"></div>
     }
 </CascadingValue>

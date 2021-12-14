@@ -71,6 +71,12 @@
 
         #endregion Modal
 
+        #region PageLoading
+
+        public string PageLoadingModal() => "modal-page-loading";
+
+        #endregion PageLoading
+
         #region Offcanvas
 
         public string Offcanvas() => "offcanvas";

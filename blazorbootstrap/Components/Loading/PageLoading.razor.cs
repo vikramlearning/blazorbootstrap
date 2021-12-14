@@ -1,4 +1,5 @@
 ﻿using BlazorBootstrap.Utilities;
+using BlazorBootstrap.Extensions;
 using Microsoft.AspNetCore.Components;
 
 namespace BlazorBootstrap
@@ -7,7 +8,9 @@ namespace BlazorBootstrap
     {
         #region Members
 
-        [Inject] PageLoadingService PageLoadingService { get; set; }
+        private string verticallyCentered => IsVerticallyCentered ? "modal-dialog-centered" : "";
+
+        private string spinnerColor => Color.ToSpinnerColor();
 
         private bool showBackdrop;
 
@@ -18,6 +21,7 @@ namespace BlazorBootstrap
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Modal());
+            builder.Append(BootstrapClassProvider.PageLoadingModal());
             builder.Append(BootstrapClassProvider.ModalFade());
             builder.Append(BootstrapClassProvider.Show(), showBackdrop);
 
@@ -77,9 +81,20 @@ namespace BlazorBootstrap
         protected override bool ShouldAutoGenerateId => true;
 
         /// <summary>
+        /// Gets or sets the <see cref="PageLoadingService" /> instance.
+        /// </summary>
+        [Inject] PageLoadingService PageLoadingService { get; set; }
+
+        /// <summary>
         /// Shows the modal vertically in the center.
         /// </summary>
-        [Parameter] public bool IsVerticallyCentered { get; set; }
+        [Parameter] public bool IsVerticallyCentered { get; set; } = true;
+
+        /// <summary>
+        /// Spinner color
+        /// </summary>
+        [Parameter]
+        public SpinnerColor Color { get; set; } = SpinnerColor.None;
 
         /// <summary>
         /// Specifies the content to be rendered inside this.
