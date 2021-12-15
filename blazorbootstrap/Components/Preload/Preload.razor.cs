@@ -86,12 +86,12 @@ namespace BlazorBootstrap
         [Inject] PreloadService PageLoadingService { get; set; }
 
         /// <summary>
-        /// Shows the modal vertically in the center.
+        /// Shows the preload vertically in the center.
         /// </summary>
         [Parameter] public bool IsVerticallyCentered { get; set; } = true;
 
         /// <summary>
-        /// Spinner color
+        /// Gets or sets the spinner color.
         /// </summary>
         [Parameter]
         public SpinnerColor Color { get; set; } = SpinnerColor.None;

@@ -42,6 +42,7 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 - Icons
 - Modal
 - Offcanvas
+- Preload
 - Toasts
 - Tooltips
 
