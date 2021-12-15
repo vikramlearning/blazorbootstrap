@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace BlazorBootstrap
 {
-    public partial class PageLoading : BaseComponent
+    public partial class Preload : BaseComponent
     {
         #region Members
 
@@ -83,7 +83,7 @@ namespace BlazorBootstrap
         /// <summary>
         /// Gets or sets the <see cref="PageLoadingService" /> instance.
         /// </summary>
-        [Inject] PageLoadingService PageLoadingService { get; set; }
+        [Inject] PreloadService PageLoadingService { get; set; }
 
         /// <summary>
         /// Shows the modal vertically in the center.

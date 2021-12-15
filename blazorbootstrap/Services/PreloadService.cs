@@ -2,7 +2,7 @@
 
 namespace BlazorBootstrap
 {
-    public class PageLoadingService
+    public class PreloadService
     {
         public event Action OnShow;
         public event Action OnHide;

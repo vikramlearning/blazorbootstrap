@@ -4,7 +4,7 @@
 
 <h4 class="my-4">PageLoading Examples</h4>
 
-<PageLoading Color="@Color"></PageLoading>
+<Preload Color="@Color"></Preload>
 
 <div class="row">
     <div class="mb-3 col-3">
@@ -28,7 +28,7 @@
     public string SpinnerColorAsString { get; set; } = "7";
     public SpinnerColor Color { get; set; } = SpinnerColor.Light;
 
-    [Inject] protected BlazorBootstrap.PageLoadingService PageLoadingService { get; set; }
+    [Inject] protected PreloadService PageLoadingService { get; set; }
 
     protected override void OnInitialized()
     {
