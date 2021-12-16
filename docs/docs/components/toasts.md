@@ -5,9 +5,11 @@ sidebar_position: 7
 
 # Toasts
 
-Documentation and examples for BlazorBootstrap Toasts.
+Push notifications to your visitors with a toast, a lightweight and easily customizable alert message.
 
-Things to know when using the toasts component:
+Toasts are lightweight notifications designed to mimic the push notifications that have been popularized by mobile and desktop operating systems. They’re built with flexbox, so they’re easy to align and position.
+
+**Things to know when using the toasts component:**
 
 - Toasts will automatically hide if you do not specify `AutoHide = false`.
 
@@ -38,6 +40,10 @@ Things to know when using the toasts component:
 
 ### Toast
 
+To encourage extensible and predictable toasts, we recommend a header and body.
+
+Toasts are as flexible as you need and have very little required markup. At a minimum, we require a single element to contain your “toasted” content and strongly encourage a dismiss button.
+
 <img src="https://i.imgur.com/8tcFedx.jpg" alt="BlazorBootstrap: Toasts Component Example" />
 
 ```cshtml
@@ -66,6 +72,10 @@ private void ShowToast()
 ```
 
 ### Simple Toast
+
+Customize your toasts by removing sub-components, tweaking them with utilities.
+
+Here we’ve created a simpler toast. You can create different toast color schemes with the `Color` parameter.
 
 <div>
 <img src="https://i.imgur.com/VRglJqU.jpg" alt="BlazorBootstrap: Toasts Component Example" />

@@ -5,7 +5,7 @@ sidebar_position: 8
 
 # Tooltips
 
-Documentation and examples for BlazorBootstrap Tooltips.
+Documentation and examples for adding custom BlazorBootstrap Tooltips.
 
 ## Parameters
 

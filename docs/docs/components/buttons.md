@@ -5,7 +5,7 @@ sidebar_position: 3
 
 # Buttons
 
-Documentation and examples for BlazorBootstrap Buttons.
+Use BlazorBootstrap's custom button styles for actions in forms, dialogs, and more with support for multiple sizes, states, and more.
 
 ## Parameters
 
@@ -32,6 +32,8 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Buttons
 
+BlazorBootstrap includes several predefined button styles, each serving its own semantic purpose, with a few extras thrown in for more control.
+
 <img src="https://i.imgur.com/Ne7FJ5H.jpg" alt="Blazor Bootstrap: Button Component" />
 
 ```cshtml
@@ -50,7 +52,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Button tags
 
-<img src="https://i.imgur.com/ZscbcWh.jpg" alt="Blazor Bootstrap: Button Component" />
+<img src="https://i.imgur.com/ZscbcWh.jpg" alt="Blazor Bootstrap: Button Component - Button tags" />
 
 ```cshtml
 <p>
@@ -61,7 +63,7 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Outline Buttons
 
-<img src="https://i.imgur.com/ta0Mgtk.jpg" alt="Blazor Bootstrap: Button Component" />
+<img src="https://i.imgur.com/ta0Mgtk.jpg" alt="Blazor Bootstrap: Button Component - Outline Buttons" />
 
 ```cshtml
 <p>
@@ -75,9 +77,15 @@ Documentation and examples for BlazorBootstrap Buttons.
 </p>
 ```
 
+:::info
+Some of the button styles use a relatively light foreground color, and should only be used on a dark background in order to have sufficient contrast.
+:::
+
 ### Sizes
 
-<img src="https://i.imgur.com/Vdiyg6q.jpg" alt="Blazor Bootstrap: Button Component" />
+Fancy larger or smaller buttons? Add `Size="Size.Large"` or `Size="Size.Small"` for additional sizes.
+
+<img src="https://i.imgur.com/Vdiyg6q.jpg" alt="Blazor Bootstrap: Button Component - Sizes" />
 
 ```cshtml
 <p>
@@ -92,7 +100,9 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Disable State
 
-<img src="https://i.imgur.com/A0MlIha.jpg" alt="Blazor Bootstrap: Button Component" />
+Make buttons look inactive by adding the `Disabled="true"` boolean parameter to any `<Button>` component. Disabled buttons have `pointer-events: none` applied to, preventing hover and active states from triggering.
+
+<img src="https://i.imgur.com/A0MlIha.jpg" alt="Blazor Bootstrap: Button Component - Disable State" />
 
 ```cshtml
 <p>
@@ -105,9 +115,15 @@ Documentation and examples for BlazorBootstrap Buttons.
 </p>
 ```
 
+:::info
+Disabled buttons using the `Type="ButtonType.Link"` parameter behave a bit different.
+:::
+
 ### Block Buttons
 
-<img src="https://i.imgur.com/jB7joKv.jpg" alt="Blazor Bootstrap: Button Component" />
+Create responsive stacks of full-width, "block buttons" like those in Bootstrap 4 with a mix of our display and gap utilities. By using utilities instead of button specific classes, we have much greater control over spacing, alignment, and responsive behaviors.
+
+<img src="https://i.imgur.com/jB7joKv.jpg" alt="Blazor Bootstrap: Button Component - Block Buttons" />
 
 ```cshtml
 <div class="d-grid gap-2">
@@ -145,7 +161,9 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Button Toogle States
 
-<img src="https://i.imgur.com/JH9SZxQ.jpg" alt="Blazor Bootstrap: Button Component" />
+If you''re pre-toggling a button, you must manually add the `Active="true"` parameter.
+
+<img src="https://i.imgur.com/JH9SZxQ.jpg" alt="Blazor Bootstrap: Button Component - Button Toogle States" />
 
 ```cshtml
 <p>
@@ -157,7 +175,9 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Button with Loading
 
-<img src="https://i.imgur.com/ENKhcXR.jpg" alt="Blazor Bootstrap: Button Component" />
+Use spinners within buttons to indicate an action is currently processing or taking place. You may also swap the text out of the spinner element and utilize button text as needed.
+
+<img src="https://i.imgur.com/ENKhcXR.jpg" alt="Blazor Bootstrap: Button Component - Button with Loading" />
 
 ```cshtml
 <p>
@@ -174,7 +194,9 @@ Documentation and examples for BlazorBootstrap Buttons.
 
 ### Buttons with Tooltip
 
-<img src="https://i.imgur.com/zp3G6pZ.jpg" alt="Blazor Bootstrap: Button Component" />
+Hover over the buttons below to see the four tooltips directions: top, right, bottom, and left.
+
+<img src="https://i.imgur.com/zp3G6pZ.jpg" alt="Blazor Bootstrap: Button Component - Buttons with Tooltip" />
 
 ```cshtml
 <p>

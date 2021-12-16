@@ -5,11 +5,11 @@ sidebar_position: 6
 
 # Preload
 
-Documentation and examples for BlazorBootstrap Preload.
+Indicate the loading state of a page with BlazorBootstrap Preload component.
 
-Things to know when using the preload component:
+**Things to know when using the `Preload` component:**
 
-- Add `Preload` component
+- Add the `Preload` component to your current page or your layout page.
 - Inject `PreloadService`
 - Call `preloadService.Show()` before you make any call to the API.
 - Call `preloadService.Hide()` after you get the response from the API.
@@ -32,6 +32,8 @@ Things to know when using the preload component:
 | Hide | Hides the preload. |
 
 ## Examples
+
+You can customize the color with `Color` parameter. You can use any of the `SpinnerColor` values.
 
 ```cshml
 <Preload Color="SpinnerColor.Light"></Preload>
