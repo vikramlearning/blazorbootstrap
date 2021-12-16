@@ -68,8 +68,7 @@ namespace BlazorBootstrap
         /// <summary>
         /// List of all the toasts.
         /// </summary>
-        [Parameter]
-        public List<ToastMessage> Messages { get; set; }
+        [Parameter] public List<ToastMessage> Messages { get; set; }
 
         /// <summary>
         /// Auto hide the toast. Default is true.

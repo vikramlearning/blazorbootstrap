@@ -86,7 +86,7 @@ namespace BlazorBootstrap
         [Inject] PreloadService PageLoadingService { get; set; }
 
         /// <summary>
-        /// Shows the preload vertically in the center.
+        /// Shows the preload vertically in the center of the page.
         /// </summary>
         [Parameter] public bool IsVerticallyCentered { get; set; } = true;
 
