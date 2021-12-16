@@ -19,7 +19,7 @@ Things to know when using the preload component:
 | Name | Type | Descritpion | Required | Default |
 |--|--|--|--|--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | |
-| Color | SpinnerColor | Gets or sets the spinner color. | | `SpinnerColor.None` |
+| Color | `SpinnerColor` | Gets or sets the spinner color. | | `SpinnerColor.None` |
 | IsVerticallyCentered | bool | Shows the preload vertically in the center of the page. |  | `true` |
 
 ## Preload Service
