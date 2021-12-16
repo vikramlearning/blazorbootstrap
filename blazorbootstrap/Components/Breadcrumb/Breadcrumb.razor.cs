@@ -1,6 +1,4 @@
-﻿using BlazorBootstrap.Utilities;
-using BlazorBootstrap.Extensions;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 
 namespace BlazorBootstrap
