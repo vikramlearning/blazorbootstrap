@@ -12,14 +12,14 @@ Our focus was on ensuring the component parameter names were consistent and docu
 
 <!--truncate-->
 
-## Changelog
+### Changelog
 
 - Code improvements
 - Documentation updates
 
-## Breaking changes
+### Breaking changes
 
-### Modal
+#### Modal
 
 - Callback events renamed 
   - `Showing` -> `OnShowing`
@@ -28,7 +28,7 @@ Our focus was on ensuring the component parameter names were consistent and docu
   - `Hidden` -> `OnHidden`
   - `HidePrevented` -> `OnHidePrevented`
 
-### Offcanvas
+#### Offcanvas
 
 - Callback events renamed 
   - `Showing` -> `OnShowing`
@@ -36,13 +36,13 @@ Our focus was on ensuring the component parameter names were consistent and docu
   - `Hiding` -> `OnHiding`
   - `Hidden` -> `OnHidden`
 
-### Tooltip
+#### Tooltip
 
 - Parameters renamed
   - `TooltipTitle` -> `Title`
   - `TooltipPlacement` -> `Placement`
 
-## Docs update
+### Docs update
 
 For the below components, documentation is updated.
 
