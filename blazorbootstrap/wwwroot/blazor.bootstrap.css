@@ -4,11 +4,20 @@
     z-index: 2055 !important;
 }
 
-.modal-back-drop-page-loading {
+.modal-backdrop-page-loading {
     z-index: 2050 !important;
 }
 
 .modal-content-page-loading {
     background-color: inherit !important;
     border: inherit !important;
+}
+
+/* confirmation modal component */
+.modal-confirmation {
+    z-index: 2045 !important;
+}
+
+.modal-backdrop-confirmation {
+    z-index: 2040 !important;
 }

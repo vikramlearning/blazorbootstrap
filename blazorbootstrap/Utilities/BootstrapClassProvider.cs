@@ -44,6 +44,12 @@
 
         #endregion
 
+        #region Confirmation Modal
+
+        public string ConfirmationModal() => "modal-confirmation";
+
+        #endregion
+
         #region DisplayHeading
 
         public string DisplayHeadingSize(DisplayHeadingSize displayHeadingSize) => $"display-{ToDisplayHeadingSize(displayHeadingSize)}";

@@ -3,6 +3,29 @@
     public static class EnumExtensions
     {
         /// <summary>
+        /// Gets the button class.
+        /// </summary>
+        /// <param name="buttonType"></param>
+        /// <returns>string</returns>
+        public static string ToButtonClass(this ButtonColor buttonColor)
+        {
+            return buttonColor switch
+            {
+                ButtonColor.Primary => "btn btn-primary",
+                ButtonColor.Secondary => "btn btn-secondary",
+                ButtonColor.Success => "btn btn-success",
+                ButtonColor.Danger => "btn btn-danger",
+                ButtonColor.Warning => "btn btn-warning",
+                ButtonColor.Info => "btn btn-info",
+                ButtonColor.Light => "btn btn-light",
+                ButtonColor.Dark => "btn btn-dark",
+                ButtonColor.Link => "btn btn-link",
+
+                _ => "btn btn-primary"
+            };
+        }
+
+        /// <summary>
         /// Gets the button tag name.
         /// </summary>
         /// <param name="buttonType"></param>
