@@ -1,13 +1,16 @@
 ﻿using BlazorBootstrap.Utilities;
 using BlazorBootstrap.Extensions;
 using Microsoft.AspNetCore.Components;
+using System.Threading.Tasks;
 
 namespace BlazorBootstrap
 {
-    public partial class ConfirmationModal : BaseComponent
+    public partial class ConfirmDialog : BaseComponent
     {
         #region Members
 
+        private string scrollable => IsScrollable ? "modal-dialog-scrollable" : "";
+        private string titleBackgroundColor => TitleBackgroundColor.ToBackgroundAndTextClass();
         private string verticallyCentered => IsVerticallyCentered ? "modal-dialog-centered" : "";
         private string yesButtonColor => YesButtonColor.ToButtonClass();
         private string noButtonColor => NoButtonColor.ToButtonClass();
@@ -36,10 +39,9 @@ namespace BlazorBootstrap
             base.BuildStyles(builder);
         }
 
-        protected override void OnInitialized()
-        {
-        }
-
+        /// <summary>
+        /// Shows confirm dialog.
+        /// </summary>
         public void Show()
         {
             showBackdrop = true;
@@ -50,6 +52,9 @@ namespace BlazorBootstrap
             StateHasChanged();
         }
 
+        /// <summary>
+        /// Hides confirm dialog.
+        /// </summary>
         public void Hide()
         {
             showBackdrop = false;
@@ -60,14 +65,16 @@ namespace BlazorBootstrap
             StateHasChanged();
         }
 
-        protected override void Dispose(bool disposing)
+        private async Task YesAsync()
         {
-            if (disposing)
-            {
-                // TODO: update this
-            }
+            Hide();
+            await OnYes.InvokeAsync();
+        }
 
-            base.Dispose(disposing);
+        private async Task NoAsync()
+        {
+            Hide();
+            await OnNo.InvokeAsync();
         }
 
         #endregion Methods
@@ -78,29 +85,69 @@ namespace BlazorBootstrap
         protected override bool ShouldAutoGenerateId => true;
 
         /// <summary>
-        /// Allows modal body scroll.
+        /// Allows confirm dialog body to be scrollable.
         /// </summary>
         [Parameter] public bool IsScrollable { get; set; }
 
         /// <summary>
-        /// Shows the preload vertically in the center of the page.
+        /// Shows the confirm dialog vertically in the center of the page.
         /// </summary>
-        [Parameter] public bool IsVerticallyCentered { get; set; } = true;
+        [Parameter] public bool IsVerticallyCentered { get; set; }
 
+        /// <summary>
+        /// Gets or sets the title of the confirm dialog.
+        /// </summary>
         [Parameter] public string Title { get; set; }
-        [Parameter] public string TitleBackgroundColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the background color of the confirm dialog title. <see cref="BackgroundColor"/>
+        /// </summary>
+        [Parameter] public BackgroundColor TitleBackgroundColor { get; set; } = BackgroundColor.None;
+
+        /// <summary>
+        /// Adds a dismissable close button to the confirm dialog.
+        /// </summary>
         [Parameter] public bool Dismissable { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the Message1 of the confirmation dialog.
+        /// </summary>
         [Parameter] public string Message1 { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Message2 of the confirmation dialog. This is optional.
+        /// </summary>
         [Parameter] public string Message2 { get; set; }
 
+        /// <summary>
+        /// Gets or sets the 'Yes' button text.
+        /// </summary>
         [Parameter] public string YesButtonText { get; set; } = "Yes";
-        [Parameter] public ButtonColor YesButtonColor { get; set; } = ButtonColor.Primary;
-        [Parameter] public string OnYes { get; set; }
 
+        /// <summary>
+        /// Gets or sets the 'Yes' button color. <see cref="ButtonColor"/>
+        /// </summary>
+        [Parameter] public ButtonColor YesButtonColor { get; set; } = ButtonColor.Primary;
+
+        /// <summary>
+        /// Triggers once the user confirms 'Yes'.
+        /// </summary>
+        [Parameter] public EventCallback OnYes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the 'No' button text.
+        /// </summary>
         [Parameter] public string NoButtonText { get; set; } = "No";
+
+        /// <summary>
+        /// Gets or sets the 'No' button color. <see cref="ButtonColor"/>
+        /// </summary>
         [Parameter] public ButtonColor NoButtonColor { get; set; } = ButtonColor.Secondary;
-        [Parameter] public string OnNo { get; set; }
+
+        /// <summary>
+        /// Triggers once the user confirms 'No'.
+        /// </summary>
+        [Parameter] public EventCallback OnNo { get; set; }
 
         #endregion Properties
     }

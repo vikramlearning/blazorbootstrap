@@ -1,6 +1,6 @@
 ---
 sidebar_label: Offcanvas
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 # Offcanvas
@@ -61,7 +61,7 @@ Below is an offcanvas example that is shown by default.
 
 ### Methods
 
-```cs {6,11}
+```cs {2,6,11}
 @code {
     private Offcanvas offcanvas;
 

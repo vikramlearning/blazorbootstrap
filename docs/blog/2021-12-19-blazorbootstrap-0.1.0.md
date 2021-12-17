@@ -16,4 +16,4 @@ We are excited to release three more new components and documentation improvemen
 
 - Preload
 - Breadcrumb
-- Confirmation Modal
+- Confirm Dialog

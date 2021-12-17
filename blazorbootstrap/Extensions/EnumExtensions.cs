@@ -3,9 +3,58 @@
     public static class EnumExtensions
     {
         /// <summary>
+        /// Get the background class.
+        /// </summary>
+        /// <param name="backgroundColor"></param>
+        /// <returns>string</returns>
+        public static string ToBackgroundClass(this BackgroundColor backgroundColor)
+        {
+            return backgroundColor switch
+            {
+                BackgroundColor.Primary => "bg-primary",
+                BackgroundColor.Secondary => "bg-secondary",
+                BackgroundColor.Success => "bg-success",
+                BackgroundColor.Danger => "bg-danger",
+                BackgroundColor.Warning => "bg-warning",
+                BackgroundColor.Info => "bg-info",
+                BackgroundColor.Light => "bg-light",
+                BackgroundColor.Dark => "bg-dark",
+                BackgroundColor.Body => "bg-body",
+                BackgroundColor.White => "bg-white",
+                BackgroundColor.Transparent => "bg-transparent",
+
+                _ => ""
+            };
+        }
+        /// <summary>
+        /// Get the background and text classes.
+        /// </summary>
+        /// <param name="backgroundColor"></param>
+        /// <returns>string</returns>
+        public static string ToBackgroundAndTextClass(this BackgroundColor backgroundColor)
+        {
+            return backgroundColor switch
+            {
+                BackgroundColor.Primary => "bg-primary text-white",
+                BackgroundColor.Secondary => "bg-secondary text-white",
+                BackgroundColor.Success => "bg-success text-white",
+                BackgroundColor.Danger => "bg-danger text-white",
+                BackgroundColor.Warning => "bg-warning text-dark",
+                BackgroundColor.Info => "bg-info text-dark",
+                BackgroundColor.Light => "bg-light text-dark",
+                BackgroundColor.Dark => "bg-dark text-white",
+                BackgroundColor.Body => "bg-body text-dark",
+                BackgroundColor.White => "bg-white text-dark",
+                BackgroundColor.Transparent => "bg-transparent text-dark",
+
+                _ => ""
+            };
+        }
+
+        /// <summary>
         /// Gets the button class.
         /// </summary>
-        /// <param name="buttonType"></param>
+        /// <param name="buttonColor"></param>
         /// <returns>string</returns>
         public static string ToButtonClass(this ButtonColor buttonColor)
         {
@@ -56,6 +105,27 @@
         }
 
         /// <summary>
+        /// Gets the spinner color.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns>string</returns>
+        public static string ToSpinnerColor(this SpinnerColor color)
+        {
+            return color switch
+            {
+                SpinnerColor.Primary => "text-primary",
+                SpinnerColor.Secondary => "text-secondary",
+                SpinnerColor.Success => "text-success",
+                SpinnerColor.Danger => "text-danger",
+                SpinnerColor.Warning => "text-warning",
+                SpinnerColor.Info => "text-info",
+                SpinnerColor.Light => "text-light",
+                SpinnerColor.Dark => "text-dark",
+                _ => ""
+            };
+        }
+
+        /// <summary>
         /// Gets the link target name.
         /// </summary>
         /// <param name="target"></param>
@@ -83,27 +153,6 @@
                 TooltipPlacement.Bottom => "bottom",
                 TooltipPlacement.Left => "left",
                 _ => "top"
-            };
-        }
-
-        /// <summary>
-        /// Gets the spinner color.
-        /// </summary>
-        /// <param name="color"></param>
-        /// <returns>string</returns>
-        public static string ToSpinnerColor(this SpinnerColor color)
-        {
-            return color switch
-            {
-                SpinnerColor.Primary => "text-primary",
-                SpinnerColor.Secondary => "text-secondary",
-                SpinnerColor.Success => "text-success",
-                SpinnerColor.Danger => "text-danger",
-                SpinnerColor.Warning => "text-warning",
-                SpinnerColor.Info => "text-info",
-                SpinnerColor.Light => "text-light",
-                SpinnerColor.Dark => "text-dark",
-                _ => ""
             };
         }
     }

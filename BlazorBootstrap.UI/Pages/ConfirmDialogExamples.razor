@@ -1,0 +1,33 @@
+﻿@using BlazorBootstrap
+@using System.Threading.Tasks
+@page "/confirm-dialog"
+
+<h4 class="my-4">Confirmation Modal Examples</h4>
+
+<Button Color="ButtonColor.Primary" @onclick="ShowConfirmationModal">Show confirmation</Button>
+
+<ConfirmDialog @ref="dialog"
+               Title="Are you sure you want to save this?"
+               Message1="This will save the details enterd in the form."
+               Message2="Do you want to proceed?"
+               OnYes="OnYesAsync"
+               OnNo="OnNoAsync"></ConfirmDialog>
+
+@code {
+    private ConfirmDialog dialog;
+
+    private void ShowConfirmationModal()
+    {
+        dialog.Show();
+    }
+
+    private async Task OnYesAsync()
+    {
+        Console.WriteLine("OnYesAsync");
+    }
+
+    private async Task OnNoAsync()
+    {
+        Console.WriteLine("OnNoAsync");
+    }
+}

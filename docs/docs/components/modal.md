@@ -1,6 +1,6 @@
 ---
 sidebar_label: Modal
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Modal
@@ -64,7 +64,7 @@ Clicking the **Show Modal** button below, the modal will slide down and fade in 
 
 ### Methods
 
-```cs {7,12}
+```cs {3,7,12}
 @code {
 
     private Modal modal;
