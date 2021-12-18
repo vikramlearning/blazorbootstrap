@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap", "blazorbootstrap\BlazorBootstrap.csproj", "{23D9E8D8-8F90-457A-96B5-4BDA599D37AE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.UI", "BlazorBootstrap.UI\BlazorBootstrap.UI.csproj", "{710E0A10-0567-495D-AA48-A99293D2EA62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.Demo", "BlazorBootstrap.Demo\BlazorBootstrap.Demo.csproj", "{710E0A10-0567-495D-AA48-A99293D2EA62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
