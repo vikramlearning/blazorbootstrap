@@ -4,17 +4,17 @@
 
 window.blazorBootstrap = {
     alert: {
-        initialize: (elementId) => {
-            let ele = document.getElementById(elementId);
+        initialize: (elementId, dotNetHelper) => {
+            let alertEl = document.getElementById(elementId);
 
-            modalEl.addEventListener('close.bs.alert', function () {
+            alertEl.addEventListener('close.bs.alert', function () {
                 dotNetHelper.invokeMethodAsync('bsCloseAlert');
             });
-            modalEl.addEventListener('closed.bs.alert', function () {
+            alertEl.addEventListener('closed.bs.alert', function () {
                 dotNetHelper.invokeMethodAsync('bsClosedAlert');
             });
 
-            let alert = bootstrap?.Alert?.getOrCreateInstance(ele);
+            let alert = bootstrap?.Alert?.getOrCreateInstance(alertEl);
         },
         close: (elementId) => {
             bootstrap?.Alert?.getOrCreateInstance(document.getElementById(elementId))?.close();

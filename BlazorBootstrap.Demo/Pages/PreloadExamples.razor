@@ -1,8 +1,10 @@
 ﻿@using BlazorBootstrap
 @using System.Threading.Tasks
-@page "/page-loading"
+@page "/preload"
 
-<h4 class="my-4">PageLoading Examples</h4>
+<PageTitle>Preload Demo - BlazorBootstrap</PageTitle>
+
+<h4 class="my-4">Preload Examples</h4>
 
 <Preload Color="@Color"></Preload>
 
@@ -28,7 +30,7 @@
     public string SpinnerColorAsString { get; set; } = "7";
     public SpinnerColor Color { get; set; } = SpinnerColor.Light;
 
-    [Inject] protected PreloadService PageLoadingService { get; set; }
+    [Inject] protected PreloadService PreloadService { get; set; }
 
     protected override void OnInitialized()
     {
@@ -47,7 +49,7 @@
     {
         try
         {
-            PageLoadingService.Show();
+            PreloadService.Show();
             await Task.Delay(5000);
         }
         catch
@@ -56,7 +58,7 @@
         }
         finally
         {
-            PageLoadingService.Hide();
+            PreloadService.Hide();
         }
     }
 }
