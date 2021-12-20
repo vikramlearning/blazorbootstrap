@@ -12,23 +12,40 @@
 		<RepositoryUrl>https://github.com/vikramlearning/blazorbootstrap</RepositoryUrl>
 		<PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap</PackageTags>		
 		<Description>BlazorBootstrap is a component library built on top of Blazor and Bootstrap5 CSS framework.</Description>
-		<Authors>Vikram</Authors>
+		<Authors>Vikram Reddy</Authors>
 		<!--<Company>your_company</Company>-->
 		<Copyright>Copyright © 2021 Vikram Learning</Copyright>
 		
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<OutputType>Library</OutputType>
 		<IsPackable>true</IsPackable>
-		<LangVersion>9.0</LangVersion>
+		<LangVersion>10.0</LangVersion>
+		<PackageIcon>128X128.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryType>git</RepositoryType>
+		<PackageReleaseNotes>https://github.com/vikramlearning/blazorbootstrap/releases</PackageReleaseNotes>
 
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="wwwroot\icon\128X128.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.9" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.1" />
 	</ItemGroup>
 
 </Project>

@@ -1,11 +1,11 @@
 ---
 sidebar_label: Offcanvas
-sidebar_position: 4
+sidebar_position: 7
 ---
 
 # Offcanvas
 
-Documentation and examples for BlazorBootstrap Offcanvas.
+Build hidden sidebars into your project for navigation, shopping carts, and more with our Offcanvas component.
 
 ## Parameters
 
@@ -36,9 +36,19 @@ All API methods are **asynchronous** and start a **transition**. They return to 
 | OnHiding | This event is fired immediately when the hide method has been called. |
 | OnHidden | This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete). |
 
+## How it works
+
+Offcanvas is a sidebar component that can be toggled to appear from the left, right, or bottom edge of the viewport.
+
+- Conceptually, they are quite similar to the Modal component, but they are separate components.
+- When shown, offcanvas includes a default backdrop that can be clicked to hide the offcanvas.
+- Similar to modals, only one offcanvas can be shown at a time.
+
 ## Examples
 
 ### Offcanvas
+
+Below is an offcanvas example that is shown by default.
 
 <img src="https://i.imgur.com/J1mcowH.jpg" alt="BlazorBootstrap: Offcanvas Component" />
 
@@ -51,7 +61,7 @@ All API methods are **asynchronous** and start a **transition**. They return to 
 
 ### Methods
 
-```cs {6,11}
+```cs {2,6,11}
 @code {
     private Offcanvas offcanvas;
 

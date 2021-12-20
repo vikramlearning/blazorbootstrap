@@ -1,0 +1,47 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<CascadingValue Value="@this" IsFixed="true">
+    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@Attributes">
+        <div class="modal-dialog @scrollable @verticallyCentered">
+            <div class="modal-content">
+                @if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <div class="modal-header @titleBackgroundColor">
+                        <h5 class="modal-title">@Title</h5>
+                        @if (Dismissable)
+                        {
+                            <button type="button" class="btn-close" @onclick="Hide"></button>
+                        }
+                    </div>
+                }
+                <div class="modal-body">
+                    @if (!string.IsNullOrWhiteSpace(Message1))
+                    {
+                        <div class="pb-2">@Message1</div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Message2))
+                    {
+                        <div class="pb-2">@Message2</div>
+                    }
+                </div>
+                <div class="modal-footer border-top-0">
+                    <div class="d-grid gap-2 d-flex justify-content-md-end">
+                        @if (!string.IsNullOrWhiteSpace(NoButtonText))
+                        {
+                            <button class="@noButtonColor me-md-2 px-4" type="button" @onclick="NoAsync">@NoButtonText</button>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(YesButtonText))
+                        {
+                            <button class="@yesButtonColor px-4" type="button" @onclick="YesAsync">@YesButtonText</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (showBackdrop)
+    {
+        <div class="modal-backdrop modal-backdrop-confirmation fade show"></div>
+    }
+</CascadingValue>

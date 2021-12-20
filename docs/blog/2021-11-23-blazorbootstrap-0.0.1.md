@@ -12,7 +12,7 @@ Welcome to BlazorBoostrap! This is our first release. We have created a few comp
 
 <!--truncate-->
 
-## Components
+### New Components
 
 - Alert
 - Button

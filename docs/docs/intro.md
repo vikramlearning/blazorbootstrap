@@ -22,6 +22,7 @@ Install-Package Blazor.Bootstrap -Version 0.0.4
 Change your `index.html` file and include the CSS and JS files:
  - Add Bootstrap 5 CSS and JS files as recommended in the official Bootstrap website.
  - Include `blazor.bootstrap.js` file
+ - Include `blazor.bootstrap.css` file
 
    ```html
    <!DOCTYPE html>
@@ -32,6 +33,7 @@ Change your `index.html` file and include the CSS and JS files:
        <title>BlazorBootstrap - Starter Template</title>
        <base href="/" />
        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+       <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
        <link href="BlazorBootstrap.UI.styles.css" rel="stylesheet" />
    </head>

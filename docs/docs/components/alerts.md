@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Alerts
 
-Documentation and examples for BlazorBootstrap Alerts.
+Provide contextual feedback messages for typical user actions with the handful of available and flexible alert messages.
 
 ## Parameters
 
@@ -32,6 +32,8 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ### Alerts
 
+Alerts are available for any length of text, as well as an optional close button. For proper styling, use one of the eight required `AlertColor`.
+
 <img src="https://i.imgur.com/0NKd41O.jpg" alt="Blazor Bootstrap: Alert Component" />
 
 ```cshtml
@@ -47,7 +49,9 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ### Dismissable Alerts
 
-<img src="https://i.imgur.com/Rjyk3lH.jpg" alt="Blazor Bootstrap: Alert Component" />
+It's possible to dismiss any alert inline. Here's how:
+
+<img src="https://i.imgur.com/Rjyk3lH.jpg" alt="Blazor Bootstrap: Alert Component - Dismissable Alerts" />
 
 ```cshtml
 <div>
@@ -57,7 +61,7 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ### Close Alerts on button click
 
-<img src="https://i.imgur.com/vSUUAgD.jpg" alt="Blazor Bootstrap: Alert Component" />
+<img src="https://i.imgur.com/vSUUAgD.jpg" alt="Blazor Bootstrap: Alert Component - Close Alerts on button click" />
 
 ```cshtml
 <div>
@@ -79,7 +83,9 @@ Documentation and examples for BlazorBootstrap Alerts.
 
 ### Alerts with additional content
 
-<img src="https://i.imgur.com/nbybrGy.jpg" alt="Blazor Bootstrap: Alert Component" />
+Alerts can also contain additional HTML elements like headings, paragraphs and dividers.
+
+<img src="https://i.imgur.com/nbybrGy.jpg" alt="Blazor Bootstrap: Alert Component - Alerts with additional content" />
 
 ```cshtml
 <div>

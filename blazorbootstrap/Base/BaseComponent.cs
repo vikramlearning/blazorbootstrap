@@ -2,7 +2,6 @@
 using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System.Collections.Generic;
 
 namespace BlazorBootstrap
 {
@@ -13,6 +12,8 @@ namespace BlazorBootstrap
         private string customClass;
 
         private string customStyle;
+
+        // TODO: update this
 
         #endregion
 
@@ -36,6 +37,30 @@ namespace BlazorBootstrap
             }
 
             base.OnInitialized();
+        }
+
+        /// <inheritdoc/>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                ClassBuilder = null;
+                StyleBuilder = null;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        /// <inheritdoc/>
+        protected override ValueTask DisposeAsync(bool disposing)
+        {
+            if (disposing)
+            {
+                ClassBuilder = null;
+                StyleBuilder = null;
+            }
+
+            return base.DisposeAsync(disposing);
         }
 
 
@@ -66,7 +91,7 @@ namespace BlazorBootstrap
         /// </summary>
         internal protected virtual void DirtyClasses()
         {
-            ClassBuilder.Dirty();
+            ClassBuilder?.Dirty();
         }
 
         /// <summary>
@@ -74,7 +99,7 @@ namespace BlazorBootstrap
         /// </summary>
         protected virtual void DirtyStyles()
         {
-            StyleBuilder.Dirty();
+            StyleBuilder?.Dirty();
         }
 
         #endregion

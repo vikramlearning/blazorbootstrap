@@ -1,11 +1,11 @@
 ---
 sidebar_label: Modal
-sidebar_position: 3
+sidebar_position: 6
 ---
 
 # Modal
 
-Documentation and examples for BlazorBootstrap Modal.
+Use BlazorBootstrap's modal component to add dialogs to your site for lightboxes, user notifications, or completely custom content.
 
 ## Parameters
 
@@ -38,9 +38,19 @@ All API methods are **asynchronous** and start a **transition**. They return to 
 | OnHidden | This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete). |
 | OnHidePrevented | This event is fired when the modal is shown, its backdrop is static and a click outside the modal or an escape key press is performed with the keyboard option or data-bs-keyboard set to false. |
 
+## How it works
+
+Before getting started with BlazorBootstrap's modal component, be sure to read the following as our menu options have recently changed.
+
+- Modals are built with HTML, CSS, and JavaScript. They're positioned over everything else in the document and remove scroll from the `<body>` so that modal content scrolls instead.
+- Clicking on the modal "backdrop" will automatically close the modal.
+- BlazorBootstrap only supports one modal window at a time. Nested modals aren't supported as we believe them to be poor user experiences.
+
 ## Examples
 
 ### Modal
+
+Clicking the **Show Modal** button below, the modal will slide down and fade in from the top of the page.
 
 <img src="https://i.imgur.com/kVDJBMx.jpg" alt="Blazor Bootstrap: Modal Component" />
 
@@ -54,7 +64,7 @@ All API methods are **asynchronous** and start a **transition**. They return to 
 
 ### Methods
 
-```cs {7,12}
+```cs {3,7,12}
 @code {
 
     private Modal modal;

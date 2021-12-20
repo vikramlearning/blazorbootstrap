@@ -1,0 +1,8 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<CascadingValue Value="@this" IsFixed="true">
+    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@Attributes">
+        @ChildContent
+    </div>
+</CascadingValue>

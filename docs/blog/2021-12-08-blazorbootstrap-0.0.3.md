@@ -12,6 +12,6 @@ In this release, we added the Toasts component and improved documentation.
 
 <!--truncate-->
 
-## Components
+### New Component
 
 - Toasts

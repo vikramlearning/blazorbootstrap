@@ -4,17 +4,17 @@
 
 window.blazorBootstrap = {
     alert: {
-        initialize: (elementId) => {
-            let ele = document.getElementById(elementId);
+        initialize: (elementId, dotNetHelper) => {
+            let alertEl = document.getElementById(elementId);
 
-            modalEl.addEventListener('close.bs.alert', function () {
+            alertEl.addEventListener('close.bs.alert', function () {
                 dotNetHelper.invokeMethodAsync('bsCloseAlert');
             });
-            modalEl.addEventListener('closed.bs.alert', function () {
+            alertEl.addEventListener('closed.bs.alert', function () {
                 dotNetHelper.invokeMethodAsync('bsClosedAlert');
             });
 
-            let alert = bootstrap?.Alert?.getOrCreateInstance(ele);
+            bootstrap?.Alert?.getOrCreateInstance(alertEl);
         },
         close: (elementId) => {
             bootstrap?.Alert?.getOrCreateInstance(document.getElementById(elementId))?.close();
@@ -41,7 +41,6 @@ window.blazorBootstrap = {
             });
 
             bootstrap?.Modal?.getOrCreateInstance(modalEl)?.show();
-
         },
         hide: (elementId) => {
             bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.hide();
@@ -107,8 +106,8 @@ window.blazorBootstrap = {
     },
     tooltip: {
         initialize: (elementId) => {
-            let ele = document.getElementById(elementId);
-            let tooltip = bootstrap.Tooltip.getOrCreateInstance(ele);
+            let tooltipEl = document.getElementById(elementId);
+            bootstrap?.Tooltip?.getOrCreateInstance(tooltipEl);
         },
     },
 }
