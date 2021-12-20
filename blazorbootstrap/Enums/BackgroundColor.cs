@@ -65,7 +65,7 @@
         /// </summary>
         Transparent,
 
-        // TODO:
+        // TODO:Review
         // https://getbootstrap.com/docs/5.1/utilities/background/#background-gradient
         // https://getbootstrap.com/docs/5.1/utilities/background/#opacity
     }

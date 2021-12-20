@@ -44,6 +44,12 @@
 
         #endregion
 
+        #region Callout
+
+        public string Callout() => "bb-callout";
+
+        #endregion
+
         #region Confirmation Modal
 
         public string ConfirmationModal() => "modal-confirmation";
@@ -245,6 +251,18 @@
                 BlazorBootstrap.AlertColor.Light => "light",
                 BlazorBootstrap.AlertColor.Dark => "dark",
                 _ => null,
+            };
+        }
+
+        public string ToCalloutColor(CalloutColor color)
+        {
+            return color switch
+            {
+                BlazorBootstrap.CalloutColor.None => "",
+                BlazorBootstrap.CalloutColor.Danger => "bb-callout-danger",
+                BlazorBootstrap.CalloutColor.Warning => "bb-callout-warning",
+                BlazorBootstrap.CalloutColor.Info => "bb-callout-info",
+                _ => "",
             };
         }
 

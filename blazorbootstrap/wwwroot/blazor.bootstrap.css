@@ -21,3 +21,41 @@
 .modal-backdrop-confirmation {
     z-index: 2040 !important;
 }
+
+/* callout component */
+.bb-callout {
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid #e9ecef;
+    border-left-width: .25rem;
+    border-radius: .25rem;
+}
+
+    .bb-callout h4 {
+        margin-bottom: .25rem;
+    }
+
+    .bb-callout p:last-child {
+        margin-bottom: 0 !important;
+    }
+
+    .bb-callout code {
+        border-radius: .25rem;
+    }
+
+    .bb-callout + .bb-callout {
+        margin-top: -.25rem;
+    }
+
+.bb-callout-info {
+    border-left-color: #5bc0de;
+}
+
+.bb-callout-warning {
+    border-left-color: #f0ad4e;
+}
+
+.bb-callout-danger {
+    border-left-color: #d9534f;
+}

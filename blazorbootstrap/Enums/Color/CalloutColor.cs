@@ -3,27 +3,12 @@
 /// <summary>
 /// Predefined set of contextual colors.
 /// </summary>
-public enum SpinnerColor
+public enum CalloutColor
 {
     /// <summary>
     /// No color will be applied to an element.
     /// </summary>
     None = 0,
-
-    /// <summary>
-    /// Primary color.
-    /// </summary>
-    Primary,
-
-    /// <summary>
-    /// Secondary color.
-    /// </summary>
-    Secondary,
-
-    /// <summary>
-    /// Success color.
-    /// </summary>
-    Success,
 
     /// <summary>
     /// Danger color.
@@ -38,15 +23,5 @@ public enum SpinnerColor
     /// <summary>
     /// Info color.
     /// </summary>
-    Info,
-
-    /// <summary>
-    /// Light color.
-    /// </summary>
-    Light,
-
-    /// <summary>
-    /// Dark color.
-    /// </summary>
-    Dark
+    Info
 }

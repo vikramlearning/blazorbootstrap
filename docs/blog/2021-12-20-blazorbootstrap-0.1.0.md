@@ -8,7 +8,7 @@ authors:
 tags: [v0.1.0, blazorbootstrap]
 ---
 
-We are excited to release `v.1.0.0` with more updates.
+We are excited to release `0.1.0` with lots of updates.
 
 <!--truncate-->
 

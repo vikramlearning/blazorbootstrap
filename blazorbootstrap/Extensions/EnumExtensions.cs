@@ -105,6 +105,23 @@
         }
 
         /// <summary>
+        /// Gets the callout color.
+        /// </summary>
+        /// <param name="color"></param>
+        /// <returns>string</returns>
+        public static string ToCalloutColor(this CalloutColor calloutColor)
+        {
+            return calloutColor switch
+            {
+                CalloutColor.None => "",
+                CalloutColor.Danger => "bb-callout-danger",
+                CalloutColor.Warning => "bb-callout-warning",
+                CalloutColor.Info => "bb-callout-info",
+                _ => ""
+            };
+        }
+
+        /// <summary>
         /// Gets the spinner color.
         /// </summary>
         /// <param name="color"></param>
