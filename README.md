@@ -38,7 +38,10 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 ## Components
 
 - Alerts
+- Breadcrumb
 - Buttons
+- Callout
+- Confirm Dialog
 - Icons
 - Modal
 - Offcanvas
