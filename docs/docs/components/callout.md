@@ -5,7 +5,7 @@ sidebar_position: 4
 
 # Callout
 
-Use BlazorBootstrap's custom button styles for actions in forms, dialogs, and more with support for multiple sizes, states, and more.
+Use BlazorBootstrap's callout component. Callouts give users a visual cue that the information is important from the rest of the page.
 
 
 ## Parameters
