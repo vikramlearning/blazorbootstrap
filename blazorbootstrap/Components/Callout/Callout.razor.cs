@@ -27,10 +27,9 @@ public partial class Callout : BaseComponent
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Gets or sets the spinner color.
+    /// Gets or sets the callout color.
     /// </summary>
-    [Parameter]
-    public CalloutColor Color { get; set; } = CalloutColor.None;
+    [Parameter] public CalloutColor Color { get; set; } = CalloutColor.None;
 
     /// <summary>
     /// Specifies the content to be rendered inside this.

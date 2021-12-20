@@ -18,11 +18,12 @@ We are excited to release `0.1.0` with lots of updates.
 - New components added
 - Demo website created
 
-### New Comoponents
+### Four New Comoponents
 
 - Preload
 - Breadcrumb
 - Confirm Dialog
+- Callout
 
 ### Demo Website
 
