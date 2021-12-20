@@ -2,18 +2,30 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>BlazorBootstrap Blog</title>
-    <updated>2021-12-12T00:00:00.000Z</updated>
+    <updated>2021-12-20T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>BlazorBootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/48X48.png</icon>
+    <entry>
+        <title type="html"><![CDATA[BlazorBootstrap v0.1.0]]></title>
+        <id>BlazorBootstrap v0.1.0</id>
+        <link href="https://getblazorbootstrap.com/blog/2021/12/20/blazorbootstrap-0.1.0"/>
+        <updated>2021-12-20T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 0.1.0 with lots of updates.]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.1.0</code> with lots of updates.</p><h3>Major changes</h3><ul><li>.NET 6 upgrade</li><li>New components added</li><li>Demo website created</li></ul><h3>Four New Comoponents</h3><ul><li>Preload</li><li>Breadcrumb</li><li>Confirm Dialog</li><li>Callout</li></ul><h3>Demo Website</h3><p>We are happy to share the demo website link.</p><ul><li><a href="https://demos.getblazorbootstrap.com/">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.0.4]]></title>
         <id>BlazorBootstrap v0.0.4</id>
         <link href="https://getblazorbootstrap.com/blog/2021/12/12/blazorbootstrap-0.0.4"/>
         <updated>2021-12-12T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Our focus was on ensuring the component parameter names were consistent and documentation improvements in this release.]]></summary>
-        <content type="html"><![CDATA[<p>Our focus was on ensuring the component parameter names were consistent and documentation improvements in this release.</p><h2>Changelog</h2><ul><li>Code improvements</li><li>Documentation updates</li></ul><h2>Breaking changes</h2><h3>Modal</h3><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li><li><code>HidePrevented</code> -&gt; <code>OnHidePrevented</code></li></ul></li></ul><h3>Offcanvas</h3><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li></ul></li></ul><h3>Tooltip</h3><ul><li>Parameters renamed<ul><li><code>TooltipTitle</code> -&gt; <code>Title</code></li><li><code>TooltipPlacement</code> -&gt; <code>Placement</code></li></ul></li></ul><h2>Docs update</h2><p>For the below components, documentation is updated.</p><ul><li>Alerts</li><li>Buttons</li><li>Icons</li><li>Modal</li><li>Offcanvas</li><li>Toasts</li><li>Tooltips</li></ul>]]></content>
+        <content type="html"><![CDATA[<p>Our focus was on ensuring the component parameter names were consistent and documentation improvements in this release.</p><h3>Changelog</h3><ul><li>Code improvements</li><li>Documentation updates</li></ul><h3>Breaking changes</h3><h4>Modal</h4><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li><li><code>HidePrevented</code> -&gt; <code>OnHidePrevented</code></li></ul></li></ul><h4>Offcanvas</h4><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li></ul></li></ul><h4>Tooltip</h4><ul><li>Parameters renamed<ul><li><code>TooltipTitle</code> -&gt; <code>Title</code></li><li><code>TooltipPlacement</code> -&gt; <code>Placement</code></li></ul></li></ul><h3>Docs update</h3><p>For the below components, documentation is updated.</p><ul><li>Alerts</li><li>Buttons</li><li>Icons</li><li>Modal</li><li>Offcanvas</li><li>Toasts</li><li>Tooltips</li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
@@ -25,7 +37,7 @@
         <link href="https://getblazorbootstrap.com/blog/2021/12/08/blazorbootstrap-0.0.3"/>
         <updated>2021-12-08T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[In this release, we added the Toasts component and improved documentation.]]></summary>
-        <content type="html"><![CDATA[<p>In this release, we added the Toasts component and improved documentation.</p><h2>Components</h2><ul><li>Toasts</li></ul>]]></content>
+        <content type="html"><![CDATA[<p>In this release, we added the Toasts component and improved documentation.</p><h3>New Component</h3><ul><li>Toasts</li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
@@ -49,7 +61,7 @@
         <link href="https://getblazorbootstrap.com/blog/2021/11/23/blazorbootstrap-0.0.1"/>
         <updated>2021-11-23T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Welcome to BlazorBoostrap! This is our first release. We have created a few components used most frequently by the developers.]]></summary>
-        <content type="html"><![CDATA[<p>Welcome to BlazorBoostrap! This is our first release. We have created a few components used most frequently by the developers.</p><h2>Components</h2><ul><li>Alert</li><li>Button</li><li>Icon</li><li>Modals</li><li>Offcanvas</li><li>Tooltip</li></ul>]]></content>
+        <content type="html"><![CDATA[<p>Welcome to BlazorBoostrap! This is our first release. We have created a few components used most frequently by the developers.</p><h3>New Components</h3><ul><li>Alert</li><li>Button</li><li>Icon</li><li>Modals</li><li>Offcanvas</li><li>Tooltip</li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
