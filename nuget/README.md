@@ -1,4 +1,6 @@
-﻿BlazorBootstrap is a component library built on top of Blazor and Bootstrap 5 CSS framework.
+﻿# BlazorBootstrap
+
+BlazorBootstrap is a component library built on top of Blazor and Bootstrap 5 CSS framework.
 
 ## Table of contents
 
