@@ -8,12 +8,24 @@ authors:
 tags: [v0.1.0, blazorbootstrap]
 ---
 
-We are excited to release three more new components and documentation improvements.
+We are excited to release `v.1.0.0` with more updates.
 
 <!--truncate-->
+
+### Major changes
+
+- .NET 6 upgrade
+- New components added
+- Demo website created
 
 ### New Comoponents
 
 - Preload
 - Breadcrumb
 - Confirm Dialog
+
+### Demo Website
+
+We are happy to share the demo website link.
+
+- https://demos.getblazorbootstrap.com/
