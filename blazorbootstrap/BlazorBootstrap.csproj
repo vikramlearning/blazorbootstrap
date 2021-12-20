@@ -34,7 +34,7 @@
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
-	  <None Include="wwwroot\icon\128X128.png">
+	  <None Include="..\BlazorBootstrap.Demo\wwwroot\images\logo\128X128.png">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
