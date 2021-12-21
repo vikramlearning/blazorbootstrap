@@ -1,15 +1,6 @@
 {
-  "routes": [
-    {
-      "route": "*",
-      "rewrite": "/"
-    }
-  ],
-  "mimeTypes": {
-    ".json": "text/json",
-    ".css": "text/css",
-    ".js": "application/javascript",
-    ".js.gz": "application/javascript",
-    ".css.gz": "text/css"
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": [ "/images/*.{png,jpg,gif}", "/css/*" ]
   }
 }
