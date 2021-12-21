@@ -48,7 +48,6 @@ Alerts are available for any length of text, as well as an optional close button
     <Alert Color="AlertColor.Dark"> A simple dark alert - check it out! </Alert>
 </div>
 ```
-[See alerts demo here.](https://demos.getblazorbootstrap.com/alerts#examples)
 
 ### Additional Content
 
@@ -66,7 +65,6 @@ Alerts can also contain additional HTML elements like headings, paragraphs and d
     </Alert>
 </div>
 ```
-[See alerts with additional content demo.](https://demos.getblazorbootstrap.com/alerts#additional-content)
 
 ### Icons
 
@@ -82,7 +80,6 @@ Similarly, you can use Bootstrap Icons to create alerts with icons.
     <Alert Color="AlertColor.Warning"> <Icon Name="IconName.ExclamationTriangleFill" class="me-2"></Icon>A simple warning alert with an icon </Alert>
 </div>
 ```
-[See alerts with an icon demo.](https://demos.getblazorbootstrap.com/alerts#icons)
 
 ### Dismissing
 
@@ -116,8 +113,13 @@ It's possible to dismiss any alert inline. Here's how:
     private async Task CloseAlert() => await warningAlert?.CloseAsync();
 }
 ```
-[See dismissable alerts demo.](https://demos.getblazorbootstrap.com/alerts#dismissing)
 
 :::caution NOTE
 When an alert is dismissed, the element is completely removed from the page structure. If a keyboard user dismisses the alert using the close button, their focus will suddenly be lost and, depending on the browser, reset to the start of the page/document. For this reason, we recommend subscribing to the `OnClosed` callback event and programmatically sets focus to the most appropriate location on the page.
 :::
+
+## Demos
+
+Check all the `Alert` component demos.
+
+- https://demos.getblazorbootstrap.com
