@@ -2,11 +2,23 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>BlazorBootstrap Blog</title>
-    <updated>2021-12-20T00:00:00.000Z</updated>
+    <updated>2021-12-21T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>BlazorBootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/48X48.png</icon>
+    <entry>
+        <title type="html"><![CDATA[BlazorBootstrap v0.1.1]]></title>
+        <id>BlazorBootstrap v0.1.1</id>
+        <link href="https://getblazorbootstrap.com/blog/2021/12/21/blazorbootstrap-0.1.1"/>
+        <updated>2021-12-21T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[In this release, we made minor updates to the Alert component parameter. Also, docs and demos are updated.]]></summary>
+        <content type="html"><![CDATA[<p>In this release, we made minor updates to the Alert component parameter. Also, docs and demos are updated.</p><h3>Component changes</h3><ul><li>Alert<ul><li>Parameter renamed from Dismisable to Dismissable</li><li>Docs update</li><li>Demos update</li></ul></li></ul><h3>Demo Website</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.1.0]]></title>
         <id>BlazorBootstrap v0.1.0</id>

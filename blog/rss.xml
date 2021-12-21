@@ -4,9 +4,17 @@
         <title>BlazorBootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>BlazorBootstrap Blog</description>
-        <lastBuildDate>Mon, 20 Dec 2021 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 21 Dec 2021 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
+        <item>
+            <title><![CDATA[BlazorBootstrap v0.1.1]]></title>
+            <link>https://getblazorbootstrap.com/blog/2021/12/21/blazorbootstrap-0.1.1</link>
+            <guid>BlazorBootstrap v0.1.1</guid>
+            <pubDate>Tue, 21 Dec 2021 00:00:00 GMT</pubDate>
+            <description><![CDATA[In this release, we made minor updates to the Alert component parameter. Also, docs and demos are updated.]]></description>
+            <content:encoded><![CDATA[<p>In this release, we made minor updates to the Alert component parameter. Also, docs and demos are updated.</p><h3>Component changes</h3><ul><li>Alert<ul><li>Parameter renamed from Dismisable to Dismissable</li><li>Docs update</li><li>Demos update</li></ul></li></ul><h3>Demo Website</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.1.0]]></title>
             <link>https://getblazorbootstrap.com/blog/2021/12/20/blazorbootstrap-0.1.0</link>
