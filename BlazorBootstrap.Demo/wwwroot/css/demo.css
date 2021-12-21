@@ -1,24 +1,25 @@
-﻿.anchorjs-link {
+﻿.anchor-link {
     font-weight: 400;
     color: rgba(13,110,253,0.5);
     transition: color 0.15s ease-in-out;
     opacity: 0;
+    padding-left: 0.375em;
     text-decoration: none;
     -webkit-font-smoothing: antialiased;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .anchorjs-link {
+    .anchor-link {
         transition: none
     }
 }
 
-.anchorjs-link:focus, .anchorjs-link:hover {
+.anchor-link:focus, .anchor-link:hover {
     color: #0d6efd;
     text-decoration: none
 }
 
-:hover > .anchorjs-link, .anchorjs-link:focus {
+:hover > .anchor-link, .anchor-link:focus {
     opacity: 1;
 }
 

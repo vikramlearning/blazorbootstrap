@@ -1,4 +1,5 @@
 ﻿@using BlazorBootstrap
+
 @page "/alerts"
 
 <PageTitle>Alerts Demo - BlazorBootstrap</PageTitle>
@@ -6,9 +7,7 @@
 <h1>Alerts</h1>
 <div class="mb-3">Provide contextual feedback messages for typical user actions with a handful of available and flexible alert messages.</div>
 
-<h2 id="examples">
-    Examples<a class="anchorjs-link" href="@pageUrl#examples" style="padding-left: 0.250em;">#</a>
-</h2>
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <div>Alerts are available for any length of text, as well as an optional close button. For proper styling, use one of the eight colors.</div>
 <div class="bb-example">
     <Alert Color="AlertColor.Primary"> A simple primary alert - check it out! </Alert>
@@ -21,9 +20,7 @@
     <Alert Color="AlertColor.Dark"> A simple dark alert - check it out! </Alert>
 </div>
 
-<h2 id="additional-content" class="mt-4 mb-3">
-    Additional Content<a class="anchorjs-link" href="@pageUrl#additional-content" style="padding-left: 0.250em;">#</a>
-</h2>
+<SectionHeading Size="HeadingSize.H2" Text="Additional Content" PageUrl="@pageUrl" HashTagName="additional-content" />
 <div>Alerts can also contain additional HTML elements like headings, paragraphs and dividers.</div>
 <div class="bb-example">
     <Alert Color="AlertColor.Success">
@@ -34,9 +31,7 @@
     </Alert>
 </div>
 
-<h2 id="icons" class="mt-4 mb-3">
-    Icons<a class="anchorjs-link" href="@pageUrl#icons" style="padding-left: 0.250em;">#</a>
-</h2>
+<SectionHeading Size="HeadingSize.H2" Text="Icons" PageUrl="@pageUrl" HashTagName="icons" />
 <div>Similarly, you can use Bootstrap Icons to create alerts with icons.</div>
 <div class="bb-example">
     <Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>An example alert with an icon </Alert>
@@ -45,12 +40,17 @@
     <Alert Color="AlertColor.Warning"> <Icon Name="IconName.ExclamationTriangleFill" class="me-2"></Icon>A simple warning alert with an icon </Alert>
 </div>
 
-<h2 id="dismissing" class="mt-4 mb-3">
-    Dismissing<a class="anchorjs-link" href="@pageUrl#dismissing" style="padding-left: 0.250em;">#</a>
-</h2>
-<div>Using the <code>Dismissable="true"</code>, it’s possible to dismiss any alert inline.</div>
+<SectionHeading Size="HeadingSize.H2" Text="Dismissing" PageUrl="@pageUrl" HashTagName="dismissing" />
+<div>1. Using the <code>Dismissable="true"</code>, it’s possible to dismiss any alert inline.</div>
 <div class="bb-example">
     <Alert Color="AlertColor.Warning" Dismissable="true"> <strong>Holy guacamole!</strong> You should check in on some of those fields below. </Alert>
+</div>
+
+<div class="mt-3">2. Manually we can close an alert with button click.</div>
+<div class="bb-example">
+    <Alert @ref="warningAlert" Color="AlertColor.Warning">
+        <strong>Holy guacamole!</strong> You should check in on some of those fields below. <Button Color="ButtonColor.Primary" @onclick="CloseAlert">Close</Button>
+    </Alert>
 </div>
 
 <Callout Color="CalloutColor.Warning">
@@ -61,10 +61,7 @@
 @code {
     private string pageUrl = "/alerts";
 
-    Alert darkAlert;
+    Alert warningAlert;
 
-    void CloseAlert()
-    {
-        darkAlert?.CloseAsync();
-    }
+    private async Task CloseAlert() => await warningAlert?.CloseAsync();
 }
