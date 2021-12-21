@@ -1,4 +1,8 @@
 {
-  "route": "*",
-  "rewrite": "index.html"
+  "routes": [
+    {
+      "route": "*",
+      "rewrite": "/"
+    }
+  ]
 }
