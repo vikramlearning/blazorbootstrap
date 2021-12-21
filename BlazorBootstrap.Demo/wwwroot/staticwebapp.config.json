@@ -8,6 +8,8 @@
   "mimeTypes": {
     ".json": "text/json",
     ".css": "text/css",
-    ".js": "text/javascript"
+    ".js": "application/javascript",
+    ".js.gz": "application/javascript",
+    ".css.gz": "text/css"
   }
 }
