@@ -26,7 +26,7 @@ namespace BlazorBootstrap
         {
             builder.Append(BootstrapClassProvider.Alert());
             builder.Append(BootstrapClassProvider.AlertColor(Color), Color != AlertColor.None);
-            builder.Append(BootstrapClassProvider.AlertDismisable(), Dismisable);
+            builder.Append(BootstrapClassProvider.AlertDismisable(), Dismissable);
 
             base.BuildClasses(builder);
         }
@@ -65,7 +65,7 @@ namespace BlazorBootstrap
         /// <summary>
         /// Enables the alert to be closed by placing the padding for close button.
         /// </summary>
-        [Parameter] public bool Dismisable { get; set; }
+        [Parameter] public bool Dismissable { get; set; }
 
         /// <summary>
         /// Fires immediately when the close instance method is called.

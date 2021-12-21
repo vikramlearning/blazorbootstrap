@@ -1,0 +1,57 @@
+﻿.anchorjs-link {
+    font-weight: 400;
+    color: rgba(13,110,253,0.5);
+    transition: color 0.15s ease-in-out;
+    opacity: 0;
+    text-decoration: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .anchorjs-link {
+        transition: none
+    }
+}
+
+.anchorjs-link:focus, .anchorjs-link:hover {
+    color: #0d6efd;
+    text-decoration: none
+}
+
+:hover > .anchorjs-link, .anchorjs-link:focus {
+    opacity: 1;
+}
+
+.bb-example {
+    position: relative;
+    padding: 1rem;
+    margin: 1rem -.75rem 0;
+    border: solid #dee2e6;
+    border-width: 1px 0 0
+}
+
+    .bb-example::after {
+        display: block;
+        clear: both;
+        content: ""
+    }
+
+@media (min-width: 576px) {
+    .bb-example {
+        padding: 1.5rem;
+        margin-right: 0;
+        margin-left: 0;
+        border-width: 1px;
+        border-top-left-radius: .25rem;
+        border-top-right-radius: .25rem
+    }
+
+        .bb-example + .bb-clipboard + .highlight {
+            border-bottom-right-radius: .25rem;
+            border-bottom-left-radius: .25rem
+        }
+}
+
+.bb-example + p {
+    margin-top: 2rem
+}

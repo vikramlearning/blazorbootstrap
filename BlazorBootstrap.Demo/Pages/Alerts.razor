@@ -3,36 +3,64 @@
 
 <PageTitle>Alerts Demo - BlazorBootstrap</PageTitle>
 
-<h4 class="my-4">Alerts</h4>
-<div>
+<h1>Alerts</h1>
+<div class="mb-3">Provide contextual feedback messages for typical user actions with a handful of available and flexible alert messages.</div>
+
+<h2 id="examples">
+    Examples<a class="anchorjs-link" href="@pageUrl#examples" style="padding-left: 0.250em;">#</a>
+</h2>
+<div>Alerts are available for any length of text, as well as an optional close button. For proper styling, use one of the eight colors.</div>
+<div class="bb-example">
     <Alert Color="AlertColor.Primary"> A simple primary alert - check it out! </Alert>
     <Alert Color="AlertColor.Secondary"> A simple secondary alert - check it out! </Alert>
     <Alert Color="AlertColor.Success"> A simple success alert - check it out! </Alert>
     <Alert Color="AlertColor.Danger"> A simple danger alert - check it out! </Alert>
     <Alert Color="AlertColor.Warning"> A simple warning alert - check it out! </Alert>
     <Alert Color="AlertColor.Info"> A simple info alert - check it out! </Alert>
-    <Alert Color="AlertColor.Light" Dismisable="true" Visible="true"> A simple light alert - check it out! </Alert>
-    <Alert @ref="darkAlert" Color="AlertColor.Dark" Dismisable="false"> A simple light alert - check it out! </Alert>
-    <Button Color="ButtonColor.Dark" @onclick="CloseAlert"> Close Alert </Button>
+    <Alert Color="AlertColor.Light"> A simple light alert - check it out! </Alert>
+    <Alert Color="AlertColor.Dark"> A simple dark alert - check it out! </Alert>
 </div>
-<h4 class="my-4">Additional Content</h4>
-<div>
-    <Alert Color="AlertColor.Success" Dismisable="true" Visible="true">
+
+<h2 id="additional-content" class="mt-4 mb-3">
+    Additional Content<a class="anchorjs-link" href="@pageUrl#additional-content" style="padding-left: 0.250em;">#</a>
+</h2>
+<div>Alerts can also contain additional HTML elements like headings, paragraphs and dividers.</div>
+<div class="bb-example">
+    <Alert Color="AlertColor.Success">
         <h4 class="alert-heading">Well done!</h4>
         <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
         <hr>
         <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
     </Alert>
 </div>
-<div>
-    <Alert Color="AlertColor.Success" Dismisable="true" Visible="true">
-        <h4 class="alert-heading">Well done!</h4>
-        <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
-        <hr>
-        <p class="mb-0">Whenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
-    </Alert>
+
+<h2 id="icons" class="mt-4 mb-3">
+    Icons<a class="anchorjs-link" href="@pageUrl#icons" style="padding-left: 0.250em;">#</a>
+</h2>
+<div>Similarly, you can use Bootstrap Icons to create alerts with icons.</div>
+<div class="bb-example">
+    <Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>An example alert with an icon </Alert>
+    <Alert Color="AlertColor.Success"> <Icon Name="IconName.CheckCircleFill" class="me-2"></Icon>A simple success alert with an icon </Alert>
+    <Alert Color="AlertColor.Danger"> <Icon Name="IconName.ExclamationTriangleFill" class="me-2"></Icon>A simple danger alert with an icon </Alert>
+    <Alert Color="AlertColor.Warning"> <Icon Name="IconName.ExclamationTriangleFill" class="me-2"></Icon>A simple warning alert with an icon </Alert>
 </div>
-@code{
+
+<h2 id="dismissing" class="mt-4 mb-3">
+    Dismissing<a class="anchorjs-link" href="@pageUrl#dismissing" style="padding-left: 0.250em;">#</a>
+</h2>
+<div>Using the <code>Dismissable="true"</code>, it’s possible to dismiss any alert inline.</div>
+<div class="bb-example">
+    <Alert Color="AlertColor.Warning" Dismissable="true"> <strong>Holy guacamole!</strong> You should check in on some of those fields below. </Alert>
+</div>
+
+<Callout Color="CalloutColor.Warning">
+    When an alert is dismissed, the element is completely removed from the page structure. If a keyboard user dismisses the alert using the close button, their focus will suddenly be lost and, depending on the browser, reset to the start of the page/document.
+    For this reason, we recommend subscribing to the <code>OnClosed</code> callback event and programmatically sets focus to the most appropriate location on the page.
+</Callout>
+
+@code {
+    private string pageUrl = "/alerts";
+
     Alert darkAlert;
 
     void CloseAlert()

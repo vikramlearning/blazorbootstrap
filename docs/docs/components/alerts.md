@@ -13,7 +13,7 @@ Provide contextual feedback messages for typical user actions with the handful o
 |--|--|--|--|--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside the alert. | | |
 | Color | `AlertColor` | Gets or sets the alert color. | | `AlertColor.None` |
-| Dismisable | bool | Enables the alert to be closed by placing the padding for close button. | | false |
+| Dismissable | bool | Enables the alert to be closed by placing the padding for close button. | | false |
 
 ## Methods
 
@@ -55,7 +55,7 @@ It's possible to dismiss any alert inline. Here's how:
 
 ```cshtml
 <div>
-    <Alert Color="AlertColor.Light" Dismisable="true" Visible="true"> A simple light alert. </Alert>
+    <Alert Color="AlertColor.Light" Dismissable="true"> A simple light alert. </Alert>
 </div>
 ```
 
@@ -65,7 +65,7 @@ It's possible to dismiss any alert inline. Here's how:
 
 ```cshtml
 <div>
-    <Alert @ref="darkAlert" Color="AlertColor.Dark" Dismisable="true"> A simple light alert. </Alert>
+    <Alert @ref="darkAlert" Color="AlertColor.Dark" Dismissable="true"> A simple light alert. </Alert>
     <Button Color="ButtonColor.Dark" @onclick="CloseAlert"> Close Alert </Button>
 </div>
 ```
@@ -89,7 +89,7 @@ Alerts can also contain additional HTML elements like headings, paragraphs and d
 
 ```cshtml
 <div>
-    <Alert Color="AlertColor.Success" Dismisable="true" Visible="true">
+    <Alert Color="AlertColor.Success" Dismissable="true" Visible="true">
         <h4 class="alert-heading">Well done!</h4>
         <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
         <hr>
@@ -100,7 +100,7 @@ Alerts can also contain additional HTML elements like headings, paragraphs and d
 
 ```cshtml
 <div>
-    <Alert Color="AlertColor.Success" Dismisable="true" Visible="true">
+    <Alert Color="AlertColor.Success" Dismissable="true" Visible="true">
         <h4 class="alert-heading">Well done!</h4>
         <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit longer so that you can see how spacing within an alert works with this kind of content.</p>
         <hr>

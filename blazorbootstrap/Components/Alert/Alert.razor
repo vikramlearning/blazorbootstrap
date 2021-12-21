@@ -4,7 +4,7 @@
 <CascadingValue Value="@this" IsFixed="true">
     <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" role="alert" @attributes="@Attributes">
         @ChildContent
-        @if (Dismisable)
+        @if (Dismissable)
         {
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         }
