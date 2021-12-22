@@ -5,7 +5,7 @@ sidebar_position: 4
 
 # Callout
 
-Use BlazorBootstrap's callout component. Callouts give users a visual cue that the information is important from the rest of the page.
+BlazorBootstrap callout component provides presentation of content in a visually distinct manner. Includes a heading, icon and typically text-based content.
 
 
 ## Parameters
@@ -27,6 +27,7 @@ Use BlazorBootstrap's callout component. Callouts give users a visual cue that t
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
 </Callout>
 ```
+[See callout default demo here.](https://demos.getblazorbootstrap.com/callout#default)
 
 ### Callout - Danger
 
@@ -38,6 +39,7 @@ Use BlazorBootstrap's callout component. Callouts give users a visual cue that t
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
 </Callout>
 ```
+[See callout danger demo here.](https://demos.getblazorbootstrap.com/callout#danger)
 
 ### Callout - Warning
 
@@ -49,6 +51,7 @@ Use BlazorBootstrap's callout component. Callouts give users a visual cue that t
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
 </Callout>
 ```
+[See callout warning demo here.](https://demos.getblazorbootstrap.com/callout#warning)
 
 ### Callout - Info
 
@@ -60,6 +63,7 @@ Use BlazorBootstrap's callout component. Callouts give users a visual cue that t
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
 </Callout>
 ```
+[See callout info demo here.](https://demos.getblazorbootstrap.com/callout#info)
 
 ## Articles
 

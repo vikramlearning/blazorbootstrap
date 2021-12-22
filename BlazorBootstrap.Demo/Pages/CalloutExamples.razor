@@ -3,28 +3,44 @@
 
 <PageTitle>Callout Demo - BlazorBootstrap</PageTitle>
 
-<h4 class="my-4">Callout Examples</h4>
+<h1 class="my-4">Callout</h1>
+<div class="mb-3">
+    BlazorBootstrap callout component provides presentation of content in a visually distinct manner. Includes a heading, icon and typically text-based content.
+</div>
 
-<h4 class="my-4">Callout - Default</h4>
-<Callout>
-    <h4>Conveying meaning to assistive technologies</h4>
-    <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
-</Callout>
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<SectionHeading Size="HeadingSize.H4" Text="Default" PageUrl="@pageUrl" HashTagName="default" />
+<div class="bb-example">
+    <Callout>
+        <h4>Conveying meaning to assistive technologies</h4>
+        <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
+    </Callout>
+</div>
 
-<h4 class="my-4">Callout - Danger</h4>
-<Callout Color="CalloutColor.Danger">
-    <h4>Conveying meaning to assistive technologies</h4>
-    <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
-</Callout>
+<SectionHeading Size="HeadingSize.H4" Text="Danger" PageUrl="@pageUrl" HashTagName="danger" />
+<div class="bb-example">
+    <Callout Color="CalloutColor.Danger">
+        <h4>Conveying meaning to assistive technologies</h4>
+        <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
+    </Callout>
+</div>
 
-<h4 class="my-4">Callout - Warning</h4>
-<Callout Color="CalloutColor.Warning">
-    <h4>Conveying meaning to assistive technologies</h4>
-    <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
-</Callout>
+<SectionHeading Size="HeadingSize.H4" Text="Warning" PageUrl="@pageUrl" HashTagName="warning" />
+<div class="bb-example">
+    <Callout Color="CalloutColor.Warning">
+        <h4>Conveying meaning to assistive technologies</h4>
+        <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
+    </Callout>
+</div>
 
-<h4 class="my-4">Callout - Info</h4>
-<Callout Color="CalloutColor.Info">
-    <h4>Conveying meaning to assistive technologies</h4>
-    <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
-</Callout>
+<SectionHeading Size="HeadingSize.H4" Text="Info" PageUrl="@pageUrl" HashTagName="info" />
+<div class="bb-example">
+    <Callout Color="CalloutColor.Info">
+        <h4>Conveying meaning to assistive technologies</h4>
+        <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
+    </Callout>
+</div>
+
+@code {
+    private string pageUrl = "/callout";
+}
