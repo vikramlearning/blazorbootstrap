@@ -5,11 +5,11 @@ sidebar_position: 1
 
 # Icons
 
-Documentation and examples for BlazorBootstrap Icons.
+The Icon component will display an icon from any icon font.
 
 ## Prerequisites
 
-- Install Bootstrap Icons.
+- Install Bootstrap Icons or other.
   - Refer: [Bootstrap Icons](https://icons.getbootstrap.com/)
 
 - Include the icon fonts stylesheet in your website `<head>` or `@import` in CSS from CDN.
@@ -43,8 +43,9 @@ Either `Name` or `CustomIconName` parameter is mandatory.
     <Icon Name="IconName.AlarmFill"></Icon>
 </p>
 ```
+[See icons demo here.](https://demos.getblazorbootstrap.com/icons#examples)
 
-### Icons with different Sizes
+### Sizes
 
 <img src="https://i.imgur.com/ko7c6k3.jpg" alt="Blazor Bootstrap: Icon Component" />
 
@@ -56,6 +57,7 @@ Either `Name` or `CustomIconName` parameter is mandatory.
     <Icon Name="IconName.Alarm" Size="IconSize.x5"></Icon>
 </p>
 ```
+[See icons with different size demo here.](https://demos.getblazorbootstrap.com/icons#sizes)
 
 ### Inline text with icon
 
@@ -66,6 +68,7 @@ Either `Name` or `CustomIconName` parameter is mandatory.
     Inline text <Icon Name="IconName.Alarm" />
 </p>
 ```
+[See inline text with icon demo here.](https://demos.getblazorbootstrap.com/icons#inline-text-with-icon)
 
 ### Link with icon
 
@@ -78,6 +81,7 @@ Either `Name` or `CustomIconName` parameter is mandatory.
     </a>
 </p>
 ```
+[See link with icon demo here.](https://demos.getblazorbootstrap.com/icons#link-with-icon)
 
 ### Link with custom icon
 
@@ -90,6 +94,7 @@ Either `Name` or `CustomIconName` parameter is mandatory.
     </a>
 </p>
 ```
+[See link with custom icon demo here.](https://demos.getblazorbootstrap.com/icons#link-with-custom-icon)
 
 ### Button with icon and text
 
@@ -102,6 +107,7 @@ Either `Name` or `CustomIconName` parameter is mandatory.
     <Button Color="ButtonColor.Danger" Outline="true"><Icon Name="IconName.AlarmFill" /> Button </Button>
 </p>
 ```
+[See button with icon and text demo here.](https://demos.getblazorbootstrap.com/icons#button-with-icon-and-text)
 
 ### Button with icon only
 
@@ -112,7 +118,4 @@ Either `Name` or `CustomIconName` parameter is mandatory.
     <Button Color="ButtonColor.Secondary"><Icon Name="IconName.Alarm" /></Button>
 </p>
 ```
-
-## Articles
-
-- [BlazorBootstrap: Icon Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-icon-component-examples/88/156)
+[See button with icon only demo here.](https://demos.getblazorbootstrap.com/icons#button-with-icon-only)

@@ -5,7 +5,7 @@ sidebar_position: 3
 
 # Buttons
 
-Use BlazorBootstrap's custom button styles for actions in forms, dialogs, and more with support for multiple sizes, states, and more.
+Use BlazorBootstrap's button styles for actions in forms, dialogs, and more with support for multiple sizes, states, and more.
 
 ## Parameters
 
@@ -218,7 +218,7 @@ HTML tooltips not supported at this moment.
 
 ### Events
 
-#### Click event
+#### Click events
 
 ```cshtml
 <p>

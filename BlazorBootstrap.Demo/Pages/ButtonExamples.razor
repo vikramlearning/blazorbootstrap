@@ -3,8 +3,14 @@
 
 <PageTitle>Buttons Demo - BlazorBootstrap</PageTitle>
 
-<h4>Buttons</h4>
-<p>
+<h1 class="my-4">Buttons</h1>
+<div class="mb-3">
+    Use BlazorBootstrap's button styles for actions in forms, dialogs, and more with support for multiple sizes, states, and more.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div>Bootstrap includes several predefined button styles, each serving its own semantic purpose, with a few extras thrown in for more control.</div>
+<div class="bb-example">
     <Button Color="ButtonColor.Primary"> Primary </Button>
     <Button Color="ButtonColor.Secondary"> Secondary </Button>
     <Button Color="ButtonColor.Success"> Success </Button>
@@ -14,16 +20,16 @@
     <Button Color="ButtonColor.Light"> Light </Button>
     <Button Color="ButtonColor.Dark"> Dark </Button>
     <Button Color="ButtonColor.Link"> Link </Button>
-</p>
+</div>
 
-<h4>Button tags</h4>
-<p>
+<SectionHeading Size="HeadingSize.H2" Text="Button tags" PageUrl="@pageUrl" HashTagName="button-tags" />
+<div class="bb-example">
     <Button Type="ButtonType.Link" Color="ButtonColor.Primary" To="#"> Link </Button>
     <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" To="#"> Button </Button>
-</p>
+</div>
 
-<h4>Outline buttons</h4>
-<p>
+<SectionHeading Size="HeadingSize.H2" Text="Outline buttons" PageUrl="@pageUrl" HashTagName="outline-buttons" />
+<div class="bb-example">
     <Button Color="ButtonColor.Primary" Outline="true"> Primary </Button>
     <Button Color="ButtonColor.Secondary" Outline="true"> Secondary </Button>
     <Button Color="ButtonColor.Success" Outline="true"> Success </Button>
@@ -31,63 +37,75 @@
     <Button Color="ButtonColor.Warning" Outline="true"> Warning </Button>
     <Button Color="ButtonColor.Info" Outline="true"> Info </Button>
     <Button Color="ButtonColor.Dark" Outline="true"> Dark </Button>
-</p>
+</div>
 
-<h4>Sizes</h4>
-<p>
+<Callout Color="CalloutColor.Info">
+    Some of the button styles use a relatively light foreground color, and should only be used on a dark background in order to have sufficient contrast.
+</Callout>
+
+<SectionHeading Size="HeadingSize.H2" Text="Sizes" PageUrl="@pageUrl" HashTagName="sizes" />
+<div>Fancy larger or smaller buttons? Add <code>Size="Size.Large"</code> or <code>Size="Size.Small"</code> for additional sizes.</div>
+<div class="bb-example">
     <Button Color="ButtonColor.Primary" Size="Size.Large"> Large button </Button>
     <Button Color="ButtonColor.Secondary" Size="Size.Large"> Large button </Button>
-</p>
-<p>
+</div>
+<div class="bb-example">
     <Button Color="ButtonColor.Primary" Size="Size.Small"> Small button </Button>
     <Button Color="ButtonColor.Secondary" Size="Size.Small"> Small button </Button>
-</p>
+</div>
 
-<h4>Disabled state</h4>
-<p>
+<SectionHeading Size="HeadingSize.H2" Text="Disabled state" PageUrl="@pageUrl" HashTagName="disabled-state" />
+<div>Make buttons look inactive by adding the <code>Disabled="true"</code> boolean parameter to any <code>Button</code> component. Disabled buttons have <code>pointer-events: none</code> applied to, preventing hover and active states from triggering.</div>
+<div class="bb-example">
     <Button Color="ButtonColor.Primary" Size="Size.Large" Disabled="true"> Large button </Button>
     <Button Color="ButtonColor.Secondary" Size="Size.Large" Disabled="true"> Large button </Button>
-</p>
-<p>
+</div>
+<div class="bb-example">
     <Button Type="ButtonType.Link" Color="ButtonColor.Primary" Size="Size.Large" Disabled="true"> Primary link </Button>
     <Button Type="ButtonType.Link" Color="ButtonColor.Secondary" Size="Size.Large" Disabled="true"> Link </Button>
-</p>
-
-<h4>Block buttons</h4>
-<div class="d-grid gap-2">
-    <Button Color="ButtonColor.Primary"> Button </Button>
-    <Button Color="ButtonColor.Primary"> Button </Button>
 </div>
 
-<div class="d-grid gap-2 d-md-block mt-2">
-    <Button Color="ButtonColor.Primary"> Button </Button>
-    <Button Color="ButtonColor.Primary"> Button </Button>
+<SectionHeading Size="HeadingSize.H2" Text="Block buttons" PageUrl="@pageUrl" HashTagName="block-buttons" />
+<div class="bb-example">
+    <div class="d-grid gap-2">
+        <Button Color="ButtonColor.Primary"> Button </Button>
+        <Button Color="ButtonColor.Primary"> Button </Button>
+    </div>
+</div>
+<div class="bb-example">
+    <div class="d-grid gap-2 d-md-block mt-2">
+        <Button Color="ButtonColor.Primary"> Button </Button>
+        <Button Color="ButtonColor.Primary"> Button </Button>
+    </div>
+</div>
+<div class="bb-example">
+    <div class="d-grid gap-2 col-6 mx-auto mt-2">
+        <Button Color="ButtonColor.Primary"> Button </Button>
+        <Button Color="ButtonColor.Primary"> Button </Button>
+    </div>
+</div>
+<div class="bb-example">
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+        <Button Color="ButtonColor.Primary"> Button </Button>
+        <Button Color="ButtonColor.Primary"> Button </Button>
+    </div>
 </div>
 
-<div class="d-grid gap-2 col-6 mx-auto mt-2">
-    <Button Color="ButtonColor.Primary"> Button </Button>
-    <Button Color="ButtonColor.Primary"> Button </Button>
-</div>
-
-<div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
-    <Button Color="ButtonColor.Primary"> Button </Button>
-    <Button Color="ButtonColor.Primary"> Button </Button>
-</div>
-
-<h4>Toggle states</h4>
-<p>
+<SectionHeading Size="HeadingSize.H2" Text="Toggle states" PageUrl="@pageUrl" HashTagName="toggle-states" />
+<div class="bb-example">
     <Button Color="ButtonColor.Primary"> Toggle button </Button>
     <Button Color="ButtonColor.Primary" Active="true"> Active toggle button </Button>
     <Button Color="ButtonColor.Primary" Disabled="true"> Disabled toggle button </Button>
-</p>
-<p>
+</div>
+<div class="bb-example">
     <Button Type="ButtonType.Link" Color="ButtonColor.Primary" To="#"> Toggle button </Button>
     <Button Type="ButtonType.Link" Color="ButtonColor.Primary" To="#" Active="true"> Active toggle button </Button>
     <Button Type="ButtonType.Link" Color="ButtonColor.Primary" To="#" Disabled="true"> Disabled toggle button </Button>
-</p>
+</div>
 
-<h4>Loading</h4>
-<p>
+<SectionHeading Size="HeadingSize.H2" Text="Loading spinner" PageUrl="@pageUrl" HashTagName="loading-spinner" />
+<div>Use spinners within buttons to indicate an action is currently processing or taking place. You may also swap the text out of the spinner element and utilize button text as needed.</div>
+<div class="bb-example">
     <Button Color="ButtonColor.Primary" Loading="true" />
     <Button Color="ButtonColor.Primary" Loading="true" LoadingText="Saving..." />
     <Button Color="ButtonColor.Primary" Loading="true">
@@ -96,10 +114,10 @@
             Loading...
         </LoadingTemplate>
     </Button>
-</p>
+</div>
 
-<h4>Button with Tooltip</h4>
-<p>
+<SectionHeading Size="HeadingSize.H2" Text="Tooltip" PageUrl="@pageUrl" HashTagName="tooltip" />
+<div class="bb-example">
     <Button Color="ButtonColor.Primary" TooltipTitle="Tooltip text" TooltipPlacement="TooltipPlacement.Top"> Tooltip Top </Button>
 
     <Button Color="ButtonColor.Primary" TooltipTitle="Tooltip text" TooltipPlacement="TooltipPlacement.Right"> Tooltip Right </Button>
@@ -107,23 +125,25 @@
     <Button Color="ButtonColor.Primary" TooltipTitle="Tooltip text" TooltipPlacement="TooltipPlacement.Bottom"> Tooltip Bottom </Button>
 
     <Button Color="ButtonColor.Primary" TooltipTitle="Tooltip text" TooltipPlacement="TooltipPlacement.Left"> Tooltip Left </Button>
-</p>
-<p class="alert alert-warning">
+</div>
+
+<Callout Color="CalloutColor.Warning">
     <strong>Note:</strong> HTML tooltips not supported.
-</p>
+</Callout>
 
-<h4>Native Click</h4>
-<p>
-    <Button Color="ButtonColor.Primary" @onclick="OnClick"> Click Event </Button>
-</p>
-<p>
-    <Button Color="ButtonColor.Primary" @ondblclick="OnDoubleClick"> Double Click Event </Button>
-</p>
-<p>
-    <Button Color="ButtonColor.Primary" @onclick="((args) => OnClickWithArgs(args, message))"> Click + Args </Button>
-</p>
+<SectionHeading Size="HeadingSize.H2" Text="Click events" PageUrl="@pageUrl" HashTagName="click-events" />
+<div class="bb-example">
+    <Button Color="ButtonColor.Primary" @onclick="OnClick"> Click here </Button>
+</div>
+<div class="bb-example">
+    <Button Color="ButtonColor.Primary" @ondblclick="OnDoubleClick"> Double click here </Button>
+</div>
+<div class="bb-example">
+    <Button Color="ButtonColor.Primary" @onclick="((args) => OnClickWithArgs(args, message))"> Click event with args </Button>
+</div>
 
-@code{
+@code {
+    private string pageUrl = "/buttons";
 
     public string message = "Test message";
 

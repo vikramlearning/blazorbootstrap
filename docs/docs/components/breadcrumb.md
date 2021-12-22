@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # Breadcrumb
 
-Indicate the current page's location within a navigational hierarchy that automatically adds separators via CSS.
+Indicate the current page's location within a navigational hierarchy that automatically adds separators.
 
 ## Parameters
 
@@ -22,9 +22,6 @@ Indicate the current page's location within a navigational hierarchy that automa
 ```cshtml
 <div>
     <Breadcrumb Items="NavItems1"></Breadcrumb>
-</div>
-
-<div>
     <Breadcrumb Items="NavItems2"></Breadcrumb>
 </div>
 ```
@@ -51,6 +48,7 @@ Indicate the current page's location within a navigational hierarchy that automa
     }
 }
 ```
+[See breadcrumb demo here.](https://demos.getblazorbootstrap.com/breadcrumb#examples)
 
 ### Dividers
 
@@ -79,6 +77,7 @@ Dividers are automatically added in CSS through `::before` and `content`. They c
     }
 }
 ```
+[See breadcrumb with dividers demo here.](https://demos.getblazorbootstrap.com/breadcrumb#dividers)
 
 ### Embedded SVG icon
 
@@ -106,7 +105,5 @@ It's also possible to use an embedded SVG icon. Apply it via our CSS custom prop
         };
     }
 }
-
-## Articles
-
-- [Blazor Bootstrap: Breadcrumb Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-breadcrumb-examples/88/160)
+```
+[See breadcrumb with embedded svg icon demo here.](https://demos.getblazorbootstrap.com/breadcrumb#embedded-svg-icon)
