@@ -78,7 +78,7 @@ BlazorBootstrap includes several predefined button styles, each serving its own 
     <Button Color="ButtonColor.Dark" Outline="true"> Dark </Button>
 </p>
 ```
-[See outline demo here.](https://demos.getblazorbootstrap.com/buttons#outline-buttons)
+[See outline button demo here.](https://demos.getblazorbootstrap.com/buttons#outline-buttons)
 
 :::info
 Some of the button styles use a relatively light foreground color, and should only be used on a dark background in order to have sufficient contrast.
