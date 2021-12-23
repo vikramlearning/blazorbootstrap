@@ -34,6 +34,7 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 ## Status
 
 [![NuGet](https://img.shields.io/nuget/vpre/blazor.bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
+[![NuGet](https://img.shields.io/nuget/dt/blazor.bootstrap.svg)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 
 ## Components
 
