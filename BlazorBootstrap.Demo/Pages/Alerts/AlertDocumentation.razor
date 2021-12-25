@@ -1,0 +1,36 @@
+﻿@using BlazorBootstrap
+
+@page "/alerts"
+
+<PageTitle>Alerts Demo - BlazorBootstrap</PageTitle>
+
+<h1>Alerts</h1>
+<div class="mb-3">Provide contextual feedback messages for typical user actions with a handful of available and flexible alert messages.</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div>Alerts are available for any length of text, as well as an optional close button. For proper styling, use one of the eight colors.</div>
+<Demo Type="typeof(Alert_Demo_01_Examples)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Additional Content" PageUrl="@pageUrl" HashTagName="additional-content" />
+<div>Alerts can also contain additional HTML elements like headings, paragraphs and dividers.</div>
+<Demo Type="typeof(Alert_Demo_02_Additional_Content)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Icons" PageUrl="@pageUrl" HashTagName="icons" />
+<div>Similarly, you can use Bootstrap Icons to create alerts with icons.</div>
+<Demo Type="typeof(Alert_Demo_03_Icons)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Dismissing" PageUrl="@pageUrl" HashTagName="dismissing" />
+<div>1. Using the <code>Dismissable="true"</code>, it’s possible to dismiss any alert inline.</div>
+<Demo Type="typeof(Alert_Demo_04_Dismissing_A)" />
+
+<div class="mt-3">2. Manually we can close an alert with button click.</div>
+<Demo Type="typeof(Alert_Demo_04_Dismissing_B)" />
+
+<Callout Color="CalloutColor.Warning">
+    When an alert is dismissed, the element is completely removed from the page structure. If a keyboard user dismisses the alert using the close button, their focus will suddenly be lost and, depending on the browser, reset to the start of the page/document.
+    For this reason, we recommend subscribing to the <code>OnClosed</code> callback event and programmatically sets focus to the most appropriate location on the page.
+</Callout>
+
+@code{    
+    private string pageUrl = "/alerts";
+}

@@ -25,10 +25,7 @@
 
 </Modal>
 
-
-
 @code {
-
     private Modal modal;
 
     private async Task ShowModalAsync()
@@ -65,20 +62,4 @@
     {
         await Task.Run(() => { Console.WriteLine("Event: Hide Prevented"); });
     }
-
-    #region Offcanvas
-
-    private Offcanvas offcanvas;
-
-    private async Task ShowOffcanvasAsync()
-    {
-        await offcanvas?.ShowAsync();
-    }
-
-    private async Task HideOffcanvasAsync()
-    {
-        await offcanvas?.HideAsync();
-    }
-
-    #endregion Offcanvas
 }
