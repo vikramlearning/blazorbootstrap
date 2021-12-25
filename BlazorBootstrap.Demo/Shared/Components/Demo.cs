@@ -15,7 +15,7 @@ public class Demo : ComponentBase
 {
 	[Parameter] public Type Type { get; set; }
 
-	[Parameter] public bool Tabs { get; set; } = true;
+	[Parameter] public bool Tabs { get; set; } = false;
 
 	[Inject] protected IJSRuntime JSRuntime { get; set; }
 
@@ -47,7 +47,15 @@ public class Demo : ComponentBase
 		builder.AddMarkupContent(0, "<!--googleoff: index-->"); // source: https://perishablepress.com/tell-google-to-not-index-certain-parts-of-your-page/
 
 		builder.OpenElement(100, "div");
-		builder.AddAttribute(101, "class", "card card-demo my-3");
+		builder.AddAttribute(101, "class", "bb-example");
+
+		//builder.OpenElement(200, "div");
+		//builder.AddAttribute(201, "class", "p-3");
+		builder.OpenComponent(202, Type);
+		builder.CloseComponent();
+		//builder.CloseElement();
+
+		builder.CloseElement();
 
 		//if (Tabs)
 		//{
@@ -75,35 +83,18 @@ public class Demo : ComponentBase
 		//	builder.CloseElement(); // card-header
 		//}
 
-		builder.OpenElement(400, "div");
-		builder.AddAttribute(401, "class", "card-body p-0");
 
-		if (showingDemo || !Tabs)
-		{
-			builder.OpenElement(500, "div");
-			builder.AddAttribute(501, "class", "p-3");
-			builder.OpenComponent(504, Type);
-			builder.CloseComponent();
-			builder.CloseElement();
-		}
-		if (!showingDemo || !Tabs)
-		{
-			builder.OpenElement(600, "pre");
-			if (!Tabs)
-			{
-				builder.AddAttribute(601, "class", "gray-background");
-			}
+		builder.OpenElement(300, "div");
+		builder.AddAttribute(301, "class", "highlight");
 
-			builder.OpenElement(602, "code");
-			builder.AddAttribute(603, "class", "language-cshtml");
-			builder.AddContent(604, code.Trim());
-			builder.CloseElement();
+		builder.OpenElement(400, "pre");
+		builder.OpenElement(401, "code");
+		builder.AddAttribute(402, "class", "language-cshtml");
+		builder.AddContent(403, code.Trim());
+		builder.CloseElement(); // end: code
+		builder.CloseElement(); // end: pre
 
-			builder.CloseElement();
-		}
-
-		builder.CloseElement(); // card-body
-		builder.CloseElement(); // card
+		builder.CloseElement();
 
 		builder.AddMarkupContent(700, "<!--googleon: index-->"); // source: https://perishablepress.com/tell-google-to-not-index-certain-parts-of-your-page/
 	}
