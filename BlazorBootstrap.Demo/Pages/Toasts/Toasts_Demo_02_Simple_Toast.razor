@@ -1,0 +1,47 @@
+﻿<div class="row">
+    <div class="mb-3 col-3">
+        Simple Toast Type:
+        <select class="form-select mb-2" value="@ToastTypeAsString" @onchange="OnToastTypeChanged">
+            <option value="1">Primary</option>
+            <option value="2">Secondary</option>
+            <option value="3">Success</option>
+            <option value="4">Danger</option>
+            <option value="5">Warning</option>
+            <option value="6">Info</option>
+            <option value="7">Light</option>
+            <option value="8">Dark</option>
+            <option value="9">Body</option>
+            <option value="10">White</option>
+            <option value="11">Transparent</option>
+        </select>
+    </div>
+</div>
+<div class="row">
+    <div class="col-3">
+        <Button Color="ButtonColor.Secondary" @onclick="ShowSimpleToast">Show Simple Toast</Button>
+    </div>
+</div>
+
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="false" />
+
+
+@code {
+    public string ToastTypeAsString { get; set; } = $"{(int)ToastType.Primary}";
+
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    private void OnToastTypeChanged(ChangeEventArgs args)
+    {
+        ToastTypeAsString = args.Value.ToString();
+    }
+
+    private void ShowSimpleToast()
+    {
+        messages?.Add(new ToastMessage
+            {
+                Type = (ToastType)int.Parse(ToastTypeAsString),
+                IconName = IconName.Alarm,
+                Message = $"Hello, world! This is a simple toast message. DateTime: {DateTime.Now}",
+            });
+    }
+}
