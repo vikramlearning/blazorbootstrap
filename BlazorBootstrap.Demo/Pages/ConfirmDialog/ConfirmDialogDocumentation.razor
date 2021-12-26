@@ -4,32 +4,11 @@
 
 <PageTitle>Confirm Dialog Demo - BlazorBootstrap</PageTitle>
 
-<h4 class="my-4">Confirmation Modal Examples</h4>
+<h1 class="my-4">Confirm Dialog</h1>
 
-<Button Color="ButtonColor.Primary" @onclick="ShowConfirmationModal">Show confirmation</Button>
-
-<ConfirmDialog @ref="dialog"
-               Title="Are you sure you want to save this?"
-               Message1="This will save the details enterd in the form."
-               Message2="Do you want to proceed?"
-               OnYes="OnYesAsync"
-               OnNo="OnNoAsync"></ConfirmDialog>
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(ConfirmDialog_Demo_01_Examples)" />
 
 @code {
-    private ConfirmDialog dialog;
-
-    private void ShowConfirmationModal()
-    {
-        dialog.Show();
-    }
-
-    private async Task OnYesAsync()
-    {
-        Console.WriteLine("OnYesAsync");
-    }
-
-    private async Task OnNoAsync()
-    {
-        Console.WriteLine("OnNoAsync");
-    }
+    private string pageUrl = "/confirm-dialog";
 }
