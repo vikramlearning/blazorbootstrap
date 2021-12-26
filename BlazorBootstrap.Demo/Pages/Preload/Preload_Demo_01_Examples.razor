@@ -1,12 +1,4 @@
-﻿@using BlazorBootstrap
-@using System.Threading.Tasks
-@page "/preload"
-
-<PageTitle>Preload Demo - BlazorBootstrap</PageTitle>
-
-<h4 class="my-4">Preload Examples</h4>
-
-<Preload Color="@Color"></Preload>
+﻿<Preload Color="@Color"></Preload>
 
 <div class="row">
     <div class="mb-3 col-3">
@@ -27,7 +19,7 @@
 
 @code {
 
-    public string SpinnerColorAsString { get; set; } = "7";
+    public string SpinnerColorAsString { get; set; } = $"{(int)SpinnerColor.Light}";
     public SpinnerColor Color { get; set; } = SpinnerColor.Light;
 
     [Inject] protected PreloadService PreloadService { get; set; }
@@ -61,4 +53,5 @@
             PreloadService.Hide();
         }
     }
+
 }

@@ -1,0 +1,18 @@
+﻿<Button Color="ButtonColor.Primary" @onclick="ShowToast">Show Toast</Button>
+
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="false" />
+@code {
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    private void ShowToast()
+    {
+        messages?.Add(new ToastMessage
+            {
+                Type = ToastType.Warning,
+                IconName = IconName.Alarm,
+                Title = "Blazor Bootstrap",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Hello, world! This is a toast message. DateTime: {DateTime.Now}",
+            });
+    }
+}

@@ -1,15 +1,4 @@
-﻿@using BlazorBootstrap
-@page "/toasts"
-
-<PageTitle>Toasts Demo - BlazorBootstrap</PageTitle>
-
-<h4 class="my-4">Toasts Examples</h4>
-
-<div class="mb-3">
-    <Button Color="ButtonColor.Primary" @onclick="ShowToast">Show Toast</Button>
-</div>
-
-<div class="row">
+﻿<div class="row">
     <div class="mb-3 col-3">
         Simple Toast Type:
         <select class="form-select mb-2" value="@ToastTypeAsString" @onchange="OnToastTypeChanged">
@@ -33,35 +22,17 @@
     </div>
 </div>
 
-<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="false">
-</Toasts>
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="false" />
+
 
 @code {
-
-    public string ToastTypeAsString { get; set; } = "1";
+    public string ToastTypeAsString { get; set; } = $"{(int)ToastType.Primary}";
 
     List<ToastMessage> messages = new List<ToastMessage>();
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
 
     private void OnToastTypeChanged(ChangeEventArgs args)
     {
         ToastTypeAsString = args.Value.ToString();
-    }
-
-    private void ShowToast()
-    {
-        messages?.Add(new ToastMessage
-            {
-                Type = ToastType.Warning,
-                IconName = IconName.Alarm,
-                Title = "Blazor Bootstrap",
-                HelpText = $"{DateTime.Now}",
-                Message = $"Hello, world! This is a toast message. DateTime: {DateTime.Now}",
-            });
     }
 
     private void ShowSimpleToast()

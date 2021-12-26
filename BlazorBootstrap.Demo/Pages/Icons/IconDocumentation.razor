@@ -1,0 +1,34 @@
+﻿@using BlazorBootstrap
+@page "/icons"
+
+<PageTitle>Icons Demo - BlazorBootstrap</PageTitle>
+
+<h1 class="my-4">Icons</h1>
+<div class="mb-3">
+    The Icon component will display an icon from any icon font.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Icon_Demo_01_Examples)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Sizes" PageUrl="@pageUrl" HashTagName="sizes" />
+<Demo Type="typeof(Icon_Demo_02_Sizes)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Inline text with icon" PageUrl="@pageUrl" HashTagName="inline-text-with-icon" />
+<Demo Type="typeof(Icon_Demo_03_Inline_Text_With_Icon)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Link with icon" PageUrl="@pageUrl" HashTagName="link-with-icon" />
+<Demo Type="typeof(Icon_Demo_04_Link_With_Icon)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Link with custom icon" PageUrl="@pageUrl" HashTagName="link-with-custom-icon" />
+<Demo Type="typeof(Icon_Demo_05_Link_With_Custom_Icon)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Button with icon and text" PageUrl="@pageUrl" HashTagName="button-with-icon-and-text" />
+<Demo Type="typeof(Icon_Demo_06_Button_With_Icon_And_Text)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Button with icon only" PageUrl="@pageUrl" HashTagName="button-with-icon-only" />
+<Demo Type="typeof(Icon_Demo_07_Button_With_Icon_Only)" />
+
+@code{
+    private string pageUrl = "/icons";
+}

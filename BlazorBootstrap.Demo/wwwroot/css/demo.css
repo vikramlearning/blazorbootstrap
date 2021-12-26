@@ -56,3 +56,31 @@
 .bb-example + p {
     margin-top: 2rem
 }
+
+
+.highlight {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #f8f9fa
+}
+
+@media (min-width: 576px) {
+    .highlight {
+        padding: 1rem 1.5rem
+    }
+}
+
+.highlight pre {
+    padding: 0;
+    margin-top: .65rem;
+    margin-bottom: .65rem;
+    white-space: pre;
+    background-color: transparent;
+    border: 0
+}
+
+    .highlight pre code {
+        font-size: inherit;
+        color: #212529;
+        word-wrap: normal
+    }

@@ -1,0 +1,23 @@
+﻿@using BlazorBootstrap
+@using System.Threading.Tasks
+@page "/breadcrumb"
+
+<PageTitle>Breadcrumb Demo - BlazorBootstrap</PageTitle>
+
+<h1 class="my-4">Breadcrumb</h1>
+<div class="mb-3">
+    Indicate the current page’s location within a navigational hierarchy that automatically adds separators.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Breadcrumb_Demo_01_Examples)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Dividers" PageUrl="@pageUrl" HashTagName="dividers" />
+<Demo Type="typeof(Breadcrumb_Demo_02_Dividers)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Embedded SVG icon" PageUrl="@pageUrl" HashTagName="embedded-svg-icon" />
+<Demo Type="typeof(Breadcrumb_Demo_03_Embedded_SVG)" />
+
+@code {
+    private string pageUrl = "/breadcrumb";
+}

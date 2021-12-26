@@ -1,0 +1,17 @@
+﻿@using BlazorBootstrap
+@page "/offcanvas"
+
+<PageTitle>Offcanvas Demo - BlazorBootstrap</PageTitle>
+
+<h1 class="my-4">Offcanvas</h1>
+<div class="mb-3">
+    Build hidden sidebars into your project for navigation, shopping carts, and more with a offcanvas component.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Offcanvas_Demo_01_Examples)" />
+
+
+@code {
+    private string pageUrl = "/offcanvas";
+}
