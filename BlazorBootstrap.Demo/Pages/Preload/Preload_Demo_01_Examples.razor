@@ -1,0 +1,57 @@
+﻿<Preload Color="@Color"></Preload>
+
+<div class="row">
+    <div class="mb-3 col-3">
+        Spinner Color:
+        <select class="form-select mb-2 mt-2" value="@SpinnerColorAsString" @onchange="(async (args) => { await OnSpinnerColorChangedAsync(args); })">
+            <option value="0">None</option>
+            <option value="1">Primary</option>
+            <option value="2">Secondary</option>
+            <option value="3">Success</option>
+            <option value="4">Danger</option>
+            <option value="5">Warning</option>
+            <option value="6">Info</option>
+            <option value="7">Light</option>
+            <option value="8">Dark</option>
+        </select>
+    </div>
+</div>
+
+@code {
+
+    public string SpinnerColorAsString { get; set; } = $"{(int)SpinnerColor.Light}";
+    public SpinnerColor Color { get; set; } = SpinnerColor.Light;
+
+    [Inject] protected PreloadService PreloadService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Task.Run(async () => await LoadSpinnerAsync());
+    }
+
+    private async Task OnSpinnerColorChangedAsync(ChangeEventArgs args)
+    {
+        SpinnerColorAsString = args.Value.ToString();
+        Color = (SpinnerColor)int.Parse(SpinnerColorAsString);
+
+        await LoadSpinnerAsync();
+    }
+
+    private async Task LoadSpinnerAsync()
+    {
+        try
+        {
+            PreloadService.Show();
+            await Task.Delay(5000);
+        }
+        catch
+        {
+            // catch exception
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
+    }
+
+}
