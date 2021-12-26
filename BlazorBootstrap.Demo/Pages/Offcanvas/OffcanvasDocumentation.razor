@@ -3,70 +3,15 @@
 
 <PageTitle>Offcanvas Demo - BlazorBootstrap</PageTitle>
 
-<h4 class="my-4">Offcanvas Examples</h4>
-<Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowOffcanvasAsync(); })">Show Offcanvas</Button>
+<h1 class="my-4">Offcanvas</h1>
+<div class="mb-3">
+    Build hidden sidebars into your project for navigation, shopping carts, and more with a offcanvas component.
+</div>
 
-<Offcanvas @ref="offcanvas" 
-           OnShowing="OnOffcanvasShowingAsync"
-           OnShown="OnOffcanvasShownAsync"
-           OnHiding="OnOffcanvasHidingAsync"
-           OnHidden="OnOffcanvasHiddenAsync">
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Offcanvas_Demo_01_Examples)" />
 
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <div>
-            Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
-        </div>
-        <div class="dropdown mt-3">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
-                Dropdown button
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-        </div>
-        <div class="mt-3">
-            <Button Color="ButtonColor.Primary" @onclick="(async () => { await HideOffcanvasAsync(); })">Hide Offcanvas</Button>
-        </div>
-    </div>
-
-</Offcanvas>
 
 @code {
-    private Offcanvas offcanvas;
-
-    private async Task ShowOffcanvasAsync()
-    {
-        await offcanvas?.ShowAsync();
-    }
-
-    private async Task HideOffcanvasAsync()
-    {
-        await offcanvas?.HideAsync();
-    }
-
-    private async Task OnOffcanvasShowingAsync()
-    {
-        await Task.Run(() => { Console.WriteLine("Event: Showing"); });
-    }
-
-    private async Task OnOffcanvasShownAsync()
-    {
-        await Task.Run(() => { Console.WriteLine("Event: Shown"); });
-    }
-
-    private async Task OnOffcanvasHidingAsync()
-    {
-        await Task.Run(() => { Console.WriteLine("Event: Hiding"); });
-    }
-
-    private async Task OnOffcanvasHiddenAsync()
-    {
-        await Task.Run(() => { Console.WriteLine("Event: Hidden"); });
-    }
+    private string pageUrl = "/offcanvas";
 }

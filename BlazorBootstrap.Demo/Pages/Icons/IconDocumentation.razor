@@ -9,51 +9,25 @@
 </div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<div class="bb-example">
-    <Icon Name="IconName.Alarm"></Icon>
-    <Icon Name="IconName.AlarmFill"></Icon>
-    <Icon Name="IconName.Window"></Icon>
-    <Icon Name="IconName.Apple"></Icon>
-</div>
+<Demo Type="typeof(Icon_Demo_01_Examples)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Sizes" PageUrl="@pageUrl" HashTagName="sizes" />
-<div class="bb-example">
-    <Icon Name="IconName.Alarm" Size="IconSize.x2"></Icon>
-    <Icon Name="IconName.Alarm" Size="IconSize.x3"></Icon>
-    <Icon Name="IconName.Alarm" Size="IconSize.x4"></Icon>
-    <Icon Name="IconName.Alarm" Size="IconSize.x5"></Icon>
-</div>
+<Demo Type="typeof(Icon_Demo_02_Sizes)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Inline text with icon" PageUrl="@pageUrl" HashTagName="inline-text-with-icon" />
-<div class="bb-example">
-    Inline text <Icon Name="IconName.Alarm" />
-</div>
+<Demo Type="typeof(Icon_Demo_03_Inline_Text_With_Icon)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Link with icon" PageUrl="@pageUrl" HashTagName="link-with-icon" />
-<div class="bb-example">
-    <a href="#" class="text-decoration-none">
-        Example link text <Icon Name="IconName.Alarm" />
-    </a>
-</div>
+<Demo Type="typeof(Icon_Demo_04_Link_With_Icon)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Link with custom icon" PageUrl="@pageUrl" HashTagName="link-with-custom-icon" />
-<div class="bb-example">
-    <a href="#" class="text-decoration-none">
-        Example link text <Icon CustomIconName="bi bi-bootstrap" />
-    </a>
-</div>
+<Demo Type="typeof(Icon_Demo_05_Link_With_Custom_Icon)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Button with icon and text" PageUrl="@pageUrl" HashTagName="button-with-icon-and-text" />
-<div class="bb-example">
-    <Button Color="ButtonColor.Primary"><Icon Name="IconName.Alarm" /> Button </Button>
-    <Button Color="ButtonColor.Success"><Icon Name="IconName.Alarm" /> Button </Button>
-    <Button Color="ButtonColor.Danger" Outline="true"><Icon Name="IconName.AlarmFill" /> Button </Button>
-</div>
+<Demo Type="typeof(Icon_Demo_06_Button_With_Icon_And_Text)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Button with icon only" PageUrl="@pageUrl" HashTagName="button-with-icon-only" />
-<div class="bb-example">
-    <Button Color="ButtonColor.Secondary"><Icon Name="IconName.Alarm" /></Button>
-</div>
+<Demo Type="typeof(Icon_Demo_07_Button_With_Icon_Only)" />
 
 @code{
     private string pageUrl = "/icons";
