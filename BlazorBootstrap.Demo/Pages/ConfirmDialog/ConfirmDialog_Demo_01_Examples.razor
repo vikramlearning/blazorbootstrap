@@ -1,16 +1,16 @@
-﻿<Button Color="ButtonColor.Primary" @onclick="ShowConfirmationModal">Show confirmation</Button>
-
-<ConfirmDialog @ref="dialog"
+﻿<ConfirmDialog @ref="dialog"
                Title="Are you sure you want to save this?"
                Message1="This will save the details enterd in the form."
                Message2="Do you want to proceed?"
                OnYes="OnYesAsync"
                OnNo="OnNoAsync"></ConfirmDialog>
 
+<Button Color="ButtonColor.Primary" @onclick="OnShowConfirmationModalClick">Show confirmation</Button>
+
 @code {
     private ConfirmDialog dialog;
 
-    private void ShowConfirmationModal()
+    private void OnShowConfirmationModalClick()
     {
         dialog.Show();
     }
