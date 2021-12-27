@@ -1,27 +1,24 @@
 ﻿<Modal @ref="modal" title="Modal title" IsVerticallyCentered="true">
-
-       <BodyTemplate>
-           This is a vertically centered modal.
-       </BodyTemplate>
-
-       <FooterTemplate>
-           <Button Color="ButtonColor.Secondary" @onclick="HideModalAsync">Close</Button>
-           <Button Color="ButtonColor.Primary">Save changes</Button>
-       </FooterTemplate>
-
+    <BodyTemplate>
+        This is a vertically centered modal.
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary">Save changes</Button>
+    </FooterTemplate>
 </Modal>
 
-<Button Color="ButtonColor.Primary" @onclick="ShowModalAsync">Vertically centered modal</Button>
+<Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Vertically centered modal</Button>
 
 @code {
     private Modal modal;
 
-    private async Task ShowModalAsync()
+    private async Task OnShowModalClick()
     {
         await modal?.ShowAsync();
     }
 
-    private async Task HideModalAsync()
+    private async Task OnHideModalClick()
     {
         await modal?.HideAsync();
     }

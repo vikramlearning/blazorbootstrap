@@ -1,27 +1,24 @@
 ﻿<Modal @ref="modal" title="Modal title" UseStaticBackdrop="true">
-
-       <BodyTemplate>
-           I will not close if you click outside me. Don't even try to press escape key.
-       </BodyTemplate>
-
-       <FooterTemplate>
-           <Button Color="ButtonColor.Secondary" @onclick="HideModalAsync">Close</Button>
-           <Button Color="ButtonColor.Primary">Understood</Button>
-       </FooterTemplate>
-
+    <BodyTemplate>
+        I will not close if you click outside me. Don't even try to press escape key.
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary">Understood</Button>
+    </FooterTemplate>
 </Modal>
 
-<Button Color="ButtonColor.Primary" @onclick="ShowModalAsync">Launch static backdrop modal</Button>
+<Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Launch static backdrop modal</Button>
 
 @code {
     private Modal modal;
 
-    private async Task ShowModalAsync()
+    private async Task OnShowModalClick()
     {
         await modal?.ShowAsync();
     }
 
-    private async Task HideModalAsync()
+    private async Task OnHideModalClick()
     {
         await modal?.HideAsync();
     }

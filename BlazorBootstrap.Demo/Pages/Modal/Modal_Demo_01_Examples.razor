@@ -1,59 +1,25 @@
-﻿<Modal @ref="modal"
-       title="Modal title"
-       OnShowing="OnModalShowingAsync"
-       OnShown="OnModalShownAsync"
-       OnHiding="OnModalHidingAsync"
-       OnHidden="OnModalHiddenAsync"
-       OnHidePrevented="OnModalHidePreventedAsync">
-
-       <BodyTemplate>
-           Modal body text goes here.
-       </BodyTemplate>
-
-       <FooterTemplate>
-           <Button Color="ButtonColor.Secondary" @onclick="HideModalAsync">Close</Button>
-           <Button Color="ButtonColor.Primary">Save changes</Button>
-       </FooterTemplate>
-
+﻿<Modal @ref="modal" Title="Modal title">
+    <BodyTemplate>
+        Modal body text goes here.
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary">Save changes</Button>
+    </FooterTemplate>
 </Modal>
 
-<Button Color="ButtonColor.Primary" @onclick="ShowModalAsync">Show Modal</Button>
+<Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Show Modal</Button>
 
 @code {
     private Modal modal;
 
-    private async Task ShowModalAsync()
+    private async Task OnShowModalClick()
     {
         await modal?.ShowAsync();
     }
 
-    private async Task HideModalAsync()
+    private async Task OnHideModalClick()
     {
         await modal?.HideAsync();
-    }
-
-    private async Task OnModalShowingAsync()
-    {
-        await Task.Run(() => { Console.WriteLine("Event: Showing"); });
-    }
-
-    private async Task OnModalShownAsync()
-    {
-        await Task.Run(() => { Console.WriteLine("Event: Show"); });
-    }
-
-    private async Task OnModalHidingAsync()
-    {
-        await Task.Run(() => { Console.WriteLine("Event: Hiding"); });
-    }
-
-    private async Task OnModalHiddenAsync()
-    {
-        await Task.Run(() => { Console.WriteLine("Event: Hide"); });
-    }
-
-    private async Task OnModalHidePreventedAsync()
-    {
-        await Task.Run(() => { Console.WriteLine("Event: Hide Prevented"); });
     }
 }
