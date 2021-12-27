@@ -1,29 +1,23 @@
-﻿<Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowModalAsync(); })">Show Modal</Button>
-
-<Modal @ref="modal"
+﻿<Modal @ref="modal"
+       title="Modal title"
        OnShowing="OnModalShowingAsync"
        OnShown="OnModalShownAsync"
        OnHiding="OnModalHidingAsync"
        OnHidden="OnModalHiddenAsync"
        OnHidePrevented="OnModalHidePreventedAsync">
 
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" @onclick="(async () => { await HideModalAsync(); })">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
+       <BodyTemplate>
+           Modal body text goes here.
+       </BodyTemplate>
+
+       <FooterTemplate>
+           <Button Color="ButtonColor.Secondary" @onclick="HideModalAsync">Close</Button>
+           <Button Color="ButtonColor.Primary">Save changes</Button>
+       </FooterTemplate>
 
 </Modal>
+
+<Button Color="ButtonColor.Primary" @onclick="ShowModalAsync">Show Modal</Button>
 
 @code {
     private Modal modal;

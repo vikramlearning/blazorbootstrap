@@ -11,6 +11,29 @@
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <Demo Type="typeof(Modal_Demo_01_Examples)" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Static backdrop" PageUrl="@pageUrl" HashTagName="static-backdrop" />
+<div>When <code>UseStaticBackdrop</code> is set to <code>true</code>, the modal will not close when clicking outside it. Click the button below to try it.</div>
+<Demo Type="typeof(Modal_Demo_02_Static_Backdrop)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Scrolling long content" PageUrl="@pageUrl" HashTagName="scrolling-long-content" />
+<div>When modals become too long for the user’s viewport or device, they scroll independent of the page itself. Try the demo below to see what we mean.</div>
+<Demo Type="typeof(Modal_Demo_03_Scrolling_Long_Content_A)" />
+
+<div>You can also create a scrollable modal that allows scroll the modal body by adding <code>IsScrollable="true"</code>.</div>
+<Demo Type="typeof(Modal_Demo_03_Scrolling_Long_Content_B)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Vertically centered" PageUrl="@pageUrl" HashTagName="vertically-centered" />
+<div>Add <code>IsVerticallyCentered="true"</code> to vertically center the modal.</div>
+<Demo Type="typeof(Modal_Demo_04_Vertically_Centered)" />
+<Demo Type="typeof(Modal_Demo_04_Vertically_Centered_And_Scrollable)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Optional sizes" PageUrl="@pageUrl" HashTagName="optional-sizes" />
+<div>Modals have three optional sizes. These sizes kick in at certain breakpoints to avoid horizontal scrollbars on narrower viewports.</div>
+<Demo Type="typeof(Modal_Demo_05_Optional_Sizes)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Fullscreen Modal" PageUrl="@pageUrl" HashTagName="fullscreen-modal" />
+<Demo Type="typeof(Modal_Demo_06_Fullscreen_Modal)" />
+
 @code {
     private string pageUrl = "/modals";
 }

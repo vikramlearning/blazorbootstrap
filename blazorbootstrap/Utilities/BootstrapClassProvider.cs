@@ -381,6 +381,33 @@
             };
         }
 
+        public string ToModalSize(ModalSize size)
+        {
+            return size switch
+            {
+                BlazorBootstrap.ModalSize.Regular => null,
+                BlazorBootstrap.ModalSize.Small => "modal-sm",
+                BlazorBootstrap.ModalSize.Large => "modal-lg",
+                BlazorBootstrap.ModalSize.ExtraLarge => "modal-xl",
+                _ => null,
+            };
+        }
+
+        public string ToModalFullscreen(ModalFullscreen fullscreen)
+        {
+            return fullscreen switch
+            {
+                BlazorBootstrap.ModalFullscreen.Disabled => null,
+                BlazorBootstrap.ModalFullscreen.Always => "modal-fullscreen",
+                BlazorBootstrap.ModalFullscreen.SmallDown => "modal-fullscreen-sm-down",
+                BlazorBootstrap.ModalFullscreen.MediumDown => "modal-fullscreen-md-down",
+                BlazorBootstrap.ModalFullscreen.LargeDown => "modal-fullscreen-lg-down",
+                BlazorBootstrap.ModalFullscreen.ExtraLargeDown => "modal-fullscreen-xl-down",
+                BlazorBootstrap.ModalFullscreen.ExtraExtraLargeDown => "modal-fullscreen-xxl-down",
+                _ => null,
+            };
+        }
+
         #endregion
     }
 }

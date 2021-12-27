@@ -57,6 +57,9 @@
     margin-top: 2rem
 }
 
+.bb-example > .btn, .bb-example > .btn-group {
+    margin: .25rem .125rem;
+}
 
 .highlight {
     padding: 1rem;

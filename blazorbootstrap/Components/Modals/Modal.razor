@@ -3,6 +3,39 @@
 
 <CascadingValue Value="@this" IsFixed="true">
     <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-        @ChildContent
+        <div class="modal-dialog @scrollable @verticallyCentered @modalSize @modalFullscreen @DialogCssClass">
+            <div class="modal-content">
+                @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
+                {
+                    <div class="modal-header @HeaderCssClass">
+                        @if (!string.IsNullOrWhiteSpace(Title))
+                        {
+                            <h5 class="modal-title">@Title</h5>
+                        }
+                        else if (HeaderTemplate != null)
+                        {
+                            @HeaderTemplate
+                        }
+
+                        @if (ShowCloseButton)
+                        {
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        }
+                    </div>
+                }
+                @if (BodyTemplate != null)
+                {
+                    <div class="modal-body @BodyCssClass">
+                        @BodyTemplate
+                    </div>
+                }
+                @if (FooterTemplate != null)
+                {
+                    <div class="modal-footer @FooterCssClass">
+                        @FooterTemplate
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </CascadingValue>

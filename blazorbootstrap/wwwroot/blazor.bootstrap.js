@@ -21,7 +21,7 @@ window.blazorBootstrap = {
         }
     },
     modal: {
-        show: (elementId, dotNetHelper) => {
+        show: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {
             let modalEl = document.getElementById(elementId);
 
             modalEl.addEventListener('show.bs.modal', function () {
@@ -40,7 +40,8 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHidePreventedModal');
             });
 
-            bootstrap?.Modal?.getOrCreateInstance(modalEl)?.show();
+            let modal = bootstrap?.Modal?.getOrCreateInstance(modalEl, { backdrop: useStaticBackdrop ? 'static' : true, keyboard: closeOnEscape });
+            modal?.show();
         },
         hide: (elementId) => {
             bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.hide();
