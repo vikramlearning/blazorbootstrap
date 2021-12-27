@@ -48,7 +48,7 @@ window.blazorBootstrap = {
         }
     },
     offcanvas: {
-        show: (elementId, dotNetHelper) => {
+        show: (elementId, useBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {
             let offcanvasEl = document.getElementById(elementId);
 
             offcanvasEl.addEventListener('show.bs.offcanvas', function () {
@@ -64,7 +64,8 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenOffcanvas');
             });
 
-            bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl)?.show();
+            let offcanvas = bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl, { backdrop: useBackdrop, keyboard: closeOnEscape, scroll: isScrollable });
+            offcanvas?.show();
         },
         hide: (elementId) => {
             bootstrap?.Offcanvas?.getOrCreateInstance(document.getElementById(elementId))?.hide();

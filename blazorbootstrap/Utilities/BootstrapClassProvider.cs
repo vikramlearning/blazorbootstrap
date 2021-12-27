@@ -408,6 +408,17 @@
             };
         }
 
+        public string ToOffcanvasSize(OffcanvasSize size)
+        {
+            return size switch
+            {
+                BlazorBootstrap.OffcanvasSize.Regular => null,
+                BlazorBootstrap.OffcanvasSize.Small => "bb-offcanvas-sm",
+                BlazorBootstrap.OffcanvasSize.Large => "bb-offcanvas-lg",
+                _ => null,
+            };
+        }
+
         #endregion
     }
 }

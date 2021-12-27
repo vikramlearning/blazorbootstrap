@@ -8,9 +8,45 @@
     Build hidden sidebars into your project for navigation, shopping carts, and more with a offcanvas component.
 </div>
 
+<Alert Color="AlertColor.Info">
+    <div class="row">
+        <div class="col-auto align-top"><Icon Name="IconName.InfoCircleFill"></Icon></div>
+        <div class="col">
+            Similar to modals, only one offcanvas can be shown at a time.
+        </div>
+    </div>
+</Alert>
+
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <Demo Type="typeof(Offcanvas_Demo_01_Examples)" />
 
+<Alert Color="AlertColor.Info">
+    <div class="row">
+        <div class="col-auto align-top"><Icon Name="IconName.InfoCircleFill"></Icon></div>
+        <div class="col">
+           Default placement for the offcanvas component is right.
+        </div>
+    </div>
+</Alert>
+
+<SectionHeading Size="HeadingSize.H2" Text="Placement" PageUrl="@pageUrl" HashTagName="placement" />
+<div>Try the top, bottom, and left examples out below.</div>
+<Demo Type="typeof(Offcanvas_Demo_02_Placement_Top)" />
+<Demo Type="typeof(Offcanvas_Demo_02_Placement_Bottom)" />
+<Demo Type="typeof(Offcanvas_Demo_02_Placement_Left)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Backdrop" PageUrl="@pageUrl" HashTagName="backdrop" />
+<div>By default backdrop is enabled, you can disable it using the <code>UseBackground="false"</code> parameter.</div>
+<Demo Type="typeof(Offcanvas_Demo_03_Placement_Backdrop)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Sizes" PageUrl="@pageUrl" HashTagName="sizes" />
+<div>Set the size of the <code>Offcanvas</code> with the Size parameter. The default value is <code>OffcanvasSize.Regular</code>.</div>
+<Demo Type="typeof(Offcanvas_Demo_04_Sizes_A_Small)" />
+<Demo Type="typeof(Offcanvas_Demo_04_Sizes_B_Large)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
+<div>BlazorBootstrap's offcanvas component exposes a few events for hooking into offcanvas functionality.</div>
+<Demo Type="typeof(Offcanvas_Demo_05_Events)" />
 
 @code {
     private string pageUrl = "/offcanvas";

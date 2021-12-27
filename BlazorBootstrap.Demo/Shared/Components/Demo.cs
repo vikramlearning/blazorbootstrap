@@ -28,8 +28,6 @@ public class Demo : ComponentBase
 		{
 			var resourceName = Type.FullName + ".razor";
 
-			Console.WriteLine(resourceName);
-
 			using (Stream stream = Type.Assembly.GetManifestResourceStream(resourceName))
 			{
 				using (StreamReader reader = new StreamReader(stream))
