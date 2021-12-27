@@ -1,6 +1,7 @@
 ﻿<Button Color="ButtonColor.Primary" @onclick="ShowToast">Show Toast</Button>
 
 <Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="false" />
+
 @code {
     List<ToastMessage> messages = new List<ToastMessage>();
 
