@@ -1,0 +1,17 @@
+﻿@using BlazorBootstrap
+@using System.Threading.Tasks
+@page "/grid"
+
+<PageTitle>Grid Demo - BlazorBootstrap</PageTitle>
+
+<h1 class="my-4">Grid</h1>
+<div class="mb-3">
+    Grid to display tabular data from data source. Includes support for client-side and server-side paging & sorting (or virtualized scrolling as needed).
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Grid_Demo_01_Examples)" />
+
+@code {
+    private string pageUrl = "/grid";
+}

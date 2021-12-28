@@ -1,0 +1,31 @@
+﻿<Grid TItem="Employee" Items="employees" class="table table-hover">
+    <GridColumn TItem="Employee" Context="employee" Title="Id">
+        @employee.Id
+    </GridColumn>
+    <GridColumn TItem="Employee" Context="employee" Title="FirstName">
+        @employee.FirstName
+    </GridColumn>
+    <GridColumn TItem="Employee" Context="employee" Title="LastName">
+        @employee.LastName
+    </GridColumn>
+    <GridColumn TItem="Employee" Context="employee" Title="Designation">
+        @employee.Designation
+    </GridColumn>
+</Grid>
+
+@code {
+    private List<Employee> employees = new List<Employee>
+    {
+        new Employee { Id = 101, FirstName = "Vikram Reddy", LastName = "G", Designation = "Associate Architect" },
+        new Employee { Id = 102, FirstName = "Vijay Reddy", LastName = "G", Designation = "Senior DevOps Engineer" },
+        new Employee { Id = 103, FirstName = "Vinod Reddy", LastName = "G", Designation = "Senior Data Engineer" }
+    };
+
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Designation { get; set; }
+    }
+}

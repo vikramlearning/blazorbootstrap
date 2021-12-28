@@ -1,0 +1,36 @@
+﻿@namespace BlazorBootstrap.Components
+@inherits BaseComponent
+@typeparam TItem
+
+<CascadingValue Value="@this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@if (columns.Any())
+{
+    <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        <thead>
+            <tr>
+                @foreach (var column in columns)
+                {
+                    @column.HeaderTemplate
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Items != null)
+            {
+                var index = 0;
+                foreach (var item in Items)
+                {
+                    <tr @key="item.GetHashCode()">
+                        @foreach (var column in columns)
+                        {
+                            @column.CellTemplate(item)
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}

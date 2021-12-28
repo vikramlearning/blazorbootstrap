@@ -4,7 +4,7 @@ using Microsoft.JSInterop;
 
 namespace BlazorBootstrap
 {
-    public partial class Offcanvas : BaseComponent, IDisposable
+    public partial class Offcanvas : BaseComponent
     {
         #region Members
 
