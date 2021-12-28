@@ -62,7 +62,8 @@ namespace BlazorBootstrap
             StateHasChanged();
         }
 
-        protected override void Dispose(bool disposing)
+        /// <inheritdoc />
+        protected override async ValueTask DisposeAsync(bool disposing)
         {
             if (disposing)
             {
@@ -70,7 +71,7 @@ namespace BlazorBootstrap
                 PageLoadingService.OnHide -= OnHide;
             }
 
-            base.Dispose(disposing);
+            await base.DisposeAsync(disposing);
         }
 
         #endregion Methods

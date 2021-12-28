@@ -18,6 +18,9 @@ window.blazorBootstrap = {
         },
         close: (elementId) => {
             bootstrap?.Alert?.getOrCreateInstance(document.getElementById(elementId))?.close();
+        },
+        dispose: (elementId) => {
+            bootstrap?.Alert?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
     modal: {
@@ -40,11 +43,14 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHidePreventedModal');
             });
 
-            let modal = bootstrap?.Modal?.getOrCreateInstance(modalEl, { backdrop: useStaticBackdrop ? 'static' : true, keyboard: closeOnEscape });
-            modal?.show();
+            let options = { backdrop: useStaticBackdrop ? 'static' : true, keyboard: closeOnEscape };
+            bootstrap?.Modal?.getOrCreateInstance(modalEl, options)?.show();
         },
         hide: (elementId) => {
             bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.hide();
+        },
+        dispose: (elementId) => {
+            bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
     offcanvas: {
@@ -64,19 +70,17 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenOffcanvas');
             });
 
-            let offcanvas = bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl, { backdrop: useBackdrop, keyboard: closeOnEscape, scroll: isScrollable });
-            offcanvas?.show();
+            let options = { backdrop: useBackdrop, keyboard: closeOnEscape, scroll: isScrollable };
+            bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl, options)?.show();
         },
         hide: (elementId) => {
             bootstrap?.Offcanvas?.getOrCreateInstance(document.getElementById(elementId))?.hide();
+        },
+        dispose: (elementId) => {
+            bootstrap?.Offcanvas?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
     toasts: {
-        options: {
-            animation: true,
-            autohide: true,
-            delay: 5000
-        },
         show: (elementId, autohide, delay, dotNetHelper) => {
             var toastEl = document.getElementById(elementId);
 
@@ -93,11 +97,8 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenToast');
             });
 
-            let _options = window.blazorBootstrap.toasts.options;
-            _options.autohide = autohide;
-            _options.delay = delay;
-
-            bootstrap?.Toast?.getOrCreateInstance(toastEl, _options)?.show();
+            let options = { animation: true, autohide: autohide, delay: delay }
+            bootstrap?.Toast?.getOrCreateInstance(toastEl, options)?.show();
         },
         hide: (elementId) => {
             bootstrap?.Toast?.getOrCreateInstance(document.getElementById(elementId))?.hide();

@@ -1,8 +1,5 @@
 ﻿using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace BlazorBootstrap
 {
@@ -14,11 +11,6 @@ namespace BlazorBootstrap
 
         #region Methods
 
-        protected override void OnAfterRender(bool firstRender)
-        {
-            base.OnAfterRender(firstRender);
-        }
-
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.ToastContainer());
@@ -26,16 +18,6 @@ namespace BlazorBootstrap
             builder.Append(BootstrapClassProvider.ToToastsPlacement(Placement));
 
             base.BuildClasses(builder);
-        }
-
-        protected override void BuildStyles(StyleBuilder builder)
-        {
-            base.BuildStyles(builder);
-        }
-
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
         }
 
         private void OnToastShownAsync(Guid toastId)
@@ -56,6 +38,17 @@ namespace BlazorBootstrap
                     // toast message removed successfully.
                 }
             }
+        }
+
+        /// <inheritdoc />
+        protected override async ValueTask DisposeAsync(bool disposing)
+        {
+            if (disposing)
+            {
+                Messages = null;
+            }
+
+            await base.DisposeAsync(disposing);
         }
 
         #endregion Methods

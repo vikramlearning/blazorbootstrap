@@ -45,6 +45,18 @@ namespace BlazorBootstrap
             await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.hide", ElementId);
         }
 
+        /// <inheritdoc />
+        protected override async ValueTask DisposeAsync(bool disposing)
+        {
+            if (disposing)
+            {
+                await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.dispose", ElementId);
+                objRef?.Dispose();
+            }
+
+            await base.DisposeAsync(disposing);
+        }
+
         [JSInvokable] public async Task bsShowOffcanvas() => await OnShowing.InvokeAsync();
         [JSInvokable] public async Task bsShownOffcanvas() => await OnShown.InvokeAsync();
         [JSInvokable] public async Task bsHideOffcanvas() => await OnHiding.InvokeAsync();

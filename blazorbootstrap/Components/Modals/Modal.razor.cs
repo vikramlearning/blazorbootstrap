@@ -62,6 +62,18 @@ namespace BlazorBootstrap
             await JS.InvokeVoidAsync("window.blazorBootstrap.modal.hide", ElementId);
         }
 
+        /// <inheritdoc />
+        protected override async ValueTask DisposeAsync(bool disposing)
+        {
+            if (disposing)
+            {
+                await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId);                
+                objRef?.Dispose();
+            }
+
+            await base.DisposeAsync(disposing);
+        }
+
         [JSInvokable] public async Task bsShowModal() => await OnShowing.InvokeAsync();
         [JSInvokable] public async Task bsShownModal() => await OnShown.InvokeAsync();
         [JSInvokable] public async Task bsHideModal() => await OnHiding.InvokeAsync();
