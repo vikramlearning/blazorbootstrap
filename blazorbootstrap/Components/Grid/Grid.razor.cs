@@ -26,7 +26,6 @@ public partial class Grid<TItem> : BaseComponent
 
     internal void HandleSort(Expression<Func<TItem, IComparable>> sortKeySelector, SortDirection sortDirection)
     {
-
         if (Items == null)
             return;
 
@@ -36,6 +35,8 @@ public partial class Grid<TItem> : BaseComponent
             : Items.OrderByDescending(sortKeySelector.Compile());
 
         Items = orderedItems.ToList();
+
+        // TODO: other than current grid column, set SortDirection = SortDirection.None
 
         StateHasChanged();
     }

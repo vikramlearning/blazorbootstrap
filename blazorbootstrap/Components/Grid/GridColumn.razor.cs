@@ -27,7 +27,7 @@ public partial class GridColumn<TItem> : BaseComponent
         if (currentSortDirection == SortDirection.Ascending)
             currentSortDirection = SortDirection = SortDirection.Descending;
         else if (currentSortDirection == SortDirection.Descending)
-            currentSortDirection = SortDirection = SortDirection.Ascending;
+            currentSortDirection = SortDirection = SortDirection.None;
         else if (currentSortDirection == SortDirection.None)
             currentSortDirection = SortDirection = SortDirection.Ascending;
 
@@ -39,7 +39,7 @@ public partial class GridColumn<TItem> : BaseComponent
     #region Properties
 
     /// <inheritdoc/>
-    protected override bool ShouldAutoGenerateId => true;
+    protected override bool ShouldAutoGenerateId => true; // TODO: check this is required or not?
 
     [CascadingParameter] public Grid<TItem> Parent { get; set; }
 
@@ -79,7 +79,13 @@ public partial class GridColumn<TItem> : BaseComponent
                     seq++;
                     builder.OpenElement(seq, "i");
                     seq++;
-                    var sortIcon = (SortDirection == SortDirection.Ascending) ? "bi bi-sort-alpha-down" : "bi bi-sort-alpha-down-alt"; // TODO: Add Parameter for this
+
+                    var sortIcon = ""; // TODO: Add Parameter for this
+                    if (SortDirection == SortDirection.Ascending)
+                        sortIcon = "bi bi-sort-alpha-down";
+                    else if (SortDirection == SortDirection.Descending)
+                        sortIcon = "bi bi-sort-alpha-down-alt";
+
                     builder.AddAttribute(seq, "class", sortIcon);
                     builder.CloseElement(); // close: i
                     builder.CloseElement(); // close: span
