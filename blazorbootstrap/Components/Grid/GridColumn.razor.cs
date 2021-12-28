@@ -72,14 +72,18 @@ public partial class GridColumn<TItem> : BaseComponent
                 builder.AddContent(seq, Title);
                 seq++;
                 builder.CloseElement(); // close: span
-                seq++;
-                builder.OpenElement(seq, "span");
-                seq++;
-                builder.OpenElement(seq, "i");
-                seq++;
-                builder.AddAttribute(seq, "class", "bi bi-sort-alpha-down");
-                builder.CloseElement(); // close: i
-                builder.CloseElement(); // close: span
+                if (SortDirection != SortDirection.None)
+                {
+                    seq++;
+                    builder.OpenElement(seq, "span");
+                    seq++;
+                    builder.OpenElement(seq, "i");
+                    seq++;
+                    var sortIcon = (SortDirection == SortDirection.Ascending) ? "bi bi-sort-alpha-down" : "bi bi-sort-alpha-down-alt"; // TODO: Add Parameter for this
+                    builder.AddAttribute(seq, "class", sortIcon);
+                    builder.CloseElement(); // close: i
+                    builder.CloseElement(); // close: span
+                }
                 builder.CloseElement(); // close: th
             });
         }
