@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using System.Linq.Expressions;
 
 namespace BlazorBootstrap.Components;
 
@@ -10,6 +11,8 @@ public partial class GridColumn<TItem> : BaseComponent
 
     private RenderFragment<TItem> cellTemplate;
 
+    private SortDirection currentSortDirection;
+
     #endregion Members
 
     #region Methods
@@ -17,6 +20,18 @@ public partial class GridColumn<TItem> : BaseComponent
     protected override void OnInitialized()
     {
         Parent.AddColumn(this);
+    }
+
+    private void OnSortClick()
+    {
+        if (currentSortDirection == SortDirection.Ascending)
+            currentSortDirection = SortDirection = SortDirection.Descending;
+        else if (currentSortDirection == SortDirection.Descending)
+            currentSortDirection = SortDirection = SortDirection.Ascending;
+        else if (currentSortDirection == SortDirection.None)
+            currentSortDirection = SortDirection = SortDirection.Ascending;
+
+        Parent.HandleSort(SortKeySelector, SortDirection);
     }
 
     #endregion Methods
@@ -30,6 +45,8 @@ public partial class GridColumn<TItem> : BaseComponent
 
     [Parameter] public string Title { get; set; }
 
+    [Parameter] public Expression<Func<TItem, IComparable>> SortKeySelector { get; set; }
+
     [Parameter] public SortDirection SortDirection { get; set; } = SortDirection.None;
 
     [Parameter] public RenderFragment<TItem> ChildContent { get; set; }
@@ -41,14 +58,26 @@ public partial class GridColumn<TItem> : BaseComponent
             return headerTemplate ??= (builder =>
             {
                 // th > span "title" , span > i "icon"
-                builder.OpenElement(0, "th");
-                builder.OpenElement(1, "span");
-                builder.AddAttribute(2, "class", "me-2");
-                builder.AddContent(3, Title);
+                var seq = 0;
+                builder.OpenElement(seq, "th");
+                seq++;
+                builder.AddAttribute(seq, "role", "button");
+                seq++;
+                builder.AddAttribute(seq, "onclick", OnSortClick);
+                seq++;
+                builder.OpenElement(seq, "span");
+                seq++;
+                builder.AddAttribute(seq, "class", "me-2");
+                seq++;
+                builder.AddContent(seq, Title);
+                seq++;
                 builder.CloseElement(); // close: span
-                builder.OpenElement(4, "span");
-                builder.OpenElement(5, "i");
-                builder.AddAttribute(6, "class", "bi bi-sort-alpha-down");
+                seq++;
+                builder.OpenElement(seq, "span");
+                seq++;
+                builder.OpenElement(seq, "i");
+                seq++;
+                builder.AddAttribute(seq, "class", "bi bi-sort-alpha-down");
                 builder.CloseElement(); // close: i
                 builder.CloseElement(); // close: span
                 builder.CloseElement(); // close: th
@@ -62,8 +91,12 @@ public partial class GridColumn<TItem> : BaseComponent
         {
             return cellTemplate ??= (rowData => builder =>
             {
-                builder.OpenElement(0, "td");
-                builder.AddContent(1, ChildContent, rowData);
+                var seq = 0;
+                builder.OpenElement(seq, "td");
+                seq++;
+                builder.AddAttribute(seq, "role", "button");
+                seq++;
+                builder.AddContent(seq, ChildContent, rowData);
                 builder.CloseElement();
             });
         }

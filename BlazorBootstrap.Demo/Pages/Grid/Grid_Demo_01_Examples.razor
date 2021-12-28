@@ -1,14 +1,14 @@
 ﻿<Grid TItem="Employee" Items="employees" class="table table-hover">
-    <GridColumn TItem="Employee" Context="employee" Title="Id">
+    <GridColumn TItem="Employee" Context="employee" Title="Id" SortKeySelector="@(item => item.Id)">
         @employee.Id
     </GridColumn>
-    <GridColumn TItem="Employee" Context="employee" Title="FirstName">
+    <GridColumn TItem="Employee" Context="employee" Title="FirstName" SortKeySelector="@(item => item.FirstName)">
         @employee.FirstName
     </GridColumn>
-    <GridColumn TItem="Employee" Context="employee" Title="LastName">
+    <GridColumn TItem="Employee" Context="employee" Title="LastName" SortKeySelector="@(item => item.LastName)">
         @employee.LastName
     </GridColumn>
-    <GridColumn TItem="Employee" Context="employee" Title="Designation">
+    <GridColumn TItem="Employee" Context="employee" Title="Designation" SortKeySelector="@(item => item.Designation)">
         @employee.Designation
     </GridColumn>
 </Grid>
@@ -16,9 +16,10 @@
 @code {
     private List<Employee> employees = new List<Employee>
     {
-        new Employee { Id = 101, FirstName = "Vikram Reddy", LastName = "G", Designation = "Associate Architect" },
-        new Employee { Id = 102, FirstName = "Vijay Reddy", LastName = "G", Designation = "Senior DevOps Engineer" },
-        new Employee { Id = 103, FirstName = "Vinod Reddy", LastName = "G", Designation = "Senior Data Engineer" }
+        new Employee { Id = 101, FirstName = "Alice Reddy", LastName = "G", Designation = "Associate Architect" },
+        new Employee { Id = 103, FirstName = "Bob Reddy", LastName = "G", Designation = "Senior DevOps Engineer" },
+        new Employee { Id = 104, FirstName = "John Reddy", LastName = "G", Designation = "Senior Data Engineer" },
+        new Employee { Id = 102, FirstName = "Pop Reddy", LastName = "G", Designation = "Senior AI Engineer" }
     };
 
     public class Employee
