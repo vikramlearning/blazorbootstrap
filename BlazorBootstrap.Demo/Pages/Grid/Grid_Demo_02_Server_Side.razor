@@ -1,0 +1,37 @@
+﻿<Grid TItem="Employee" class="table table-hover" DataProvider="ServerSideEmployeesDataProvider">
+    <GridColumn TItem="Employee" Context="employee" HeaderText="Id" SortKeySelector="@(item => item.Id)">
+        @employee.Id
+    </GridColumn>
+    <GridColumn TItem="Employee" Context="employee" HeaderText="FirstName" SortKeySelector="@(item => item.FirstName)" SortDirection="SortDirection.Descending">
+        @employee.FirstName
+    </GridColumn>
+    <GridColumn TItem="Employee" Context="employee" HeaderText="LastName" SortKeySelector="@(item => item.LastName)">
+        @employee.LastName
+    </GridColumn>
+    <GridColumn TItem="Employee" Context="employee" HeaderText="Designation" SortKeySelector="@(item => item.Designation)">
+        @employee.Designation
+    </GridColumn>
+</Grid>
+
+@code {
+    private Task<GridDataProviderResult<Employee>> ServerSideEmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {
+        var employees = new List<Employee>
+        {
+            new Employee { Id = 101, FirstName = "Alice Reddy", LastName = "G", Designation = "Associate Architect" },
+            new Employee { Id = 103, FirstName = "Bob Reddy", LastName = "G", Designation = "Senior DevOps Engineer" },
+            new Employee { Id = 104, FirstName = "John Reddy", LastName = "G", Designation = "Senior Data Engineer" },
+            new Employee { Id = 102, FirstName = "Pop Reddy", LastName = "G", Designation = "Senior AI Engineer" }
+        };
+
+        return Task.FromResult(new GridDataProviderResult<Employee> { Data = employees, TotalCount = employees.Count() });
+    }
+
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Designation { get; set; }
+    }
+}

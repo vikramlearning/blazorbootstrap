@@ -11,7 +11,7 @@ public partial class GridColumn<TItem> : BaseComponent
 
     private RenderFragment<TItem> cellTemplate;
 
-    private SortDirection currentSortDirection;
+    internal SortDirection currentSortDirection;
 
     #endregion Members
 
@@ -19,7 +19,19 @@ public partial class GridColumn<TItem> : BaseComponent
 
     protected override void OnInitialized()
     {
+        ElementId = IdGenerator.Generate;
+        currentSortDirection = SortDirection;
         Parent.AddColumn(this);
+    }
+
+    internal bool CanSort() => Parent.Sortable && SortKeySelector != null;
+
+    internal IEnumerable<SortingItem<TItem>> GetSorting()
+    {
+        if(SortKeySelector == null)
+            yield break;
+
+        yield return new SortingItem<TItem>(this.SortKeySelector, this.currentSortDirection);
     }
 
     private void OnSortClick()
@@ -31,7 +43,7 @@ public partial class GridColumn<TItem> : BaseComponent
         else if (currentSortDirection == SortDirection.None)
             currentSortDirection = SortDirection = SortDirection.Ascending;
 
-        Parent.HandleSort(SortKeySelector, SortDirection);
+        Parent.SortingChanged(this);
     }
 
     #endregion Methods
@@ -39,11 +51,11 @@ public partial class GridColumn<TItem> : BaseComponent
     #region Properties
 
     /// <inheritdoc/>
-    protected override bool ShouldAutoGenerateId => true; // TODO: check this is required or not?
+    protected override bool ShouldAutoGenerateId => true;
 
     [CascadingParameter] public Grid<TItem> Parent { get; set; }
 
-    [Parameter] public string Title { get; set; }
+    [Parameter] public string HeaderText { get; set; }
 
     [Parameter] public Expression<Func<TItem, IComparable>> SortKeySelector { get; set; }
 
@@ -69,10 +81,11 @@ public partial class GridColumn<TItem> : BaseComponent
                 seq++;
                 builder.AddAttribute(seq, "class", "me-2");
                 seq++;
-                builder.AddContent(seq, Title);
+                builder.AddContent(seq, HeaderText);
                 seq++;
                 builder.CloseElement(); // close: span
-                if (SortDirection != SortDirection.None)
+
+                if (Parent.Sortable && SortDirection != SortDirection.None)
                 {
                     seq++;
                     builder.OpenElement(seq, "span");
@@ -81,15 +94,16 @@ public partial class GridColumn<TItem> : BaseComponent
                     seq++;
 
                     var sortIcon = ""; // TODO: Add Parameter for this
-                    if (SortDirection == SortDirection.Ascending)
+                    if (currentSortDirection == SortDirection.Ascending)
                         sortIcon = "bi bi-sort-alpha-down";
-                    else if (SortDirection == SortDirection.Descending)
+                    else if (currentSortDirection == SortDirection.Descending)
                         sortIcon = "bi bi-sort-alpha-down-alt";
 
                     builder.AddAttribute(seq, "class", sortIcon);
                     builder.CloseElement(); // close: i
                     builder.CloseElement(); // close: span
                 }
+
                 builder.CloseElement(); // close: th
             });
         }
