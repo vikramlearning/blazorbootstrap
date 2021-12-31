@@ -18,38 +18,53 @@
             </tr>
         </thead>
         <tbody>
-            @if (items == null)
+            @if (totalCount == null)
             {
-                @if (LoadingTemplate == null)
+                // show placeholders
+                @for (var i = 0; i < 5; i++)
                 {
-                    @for (var i = 0; i < 5; i++)
+                    <tr>
+                        @for (var j = 0; j < columns.Count; j++)
+                        {
+                            <td class="placeholder-glow"><span class="placeholder col-12"></span></td>
+                        }
+                    </tr>
+                }
+            }
+            else if (totalCount == 0)
+            {
+                // show empty
+                <tr>
+                    <td colspan="@columns.Count">
+                        @if (EmptyDataTemplate == null)
+                        {
+                            <div class="text-center text-secondary my-5">
+                                <div class="fs-3"><Icon Name="IconName.Inbox" /></div>
+                                <div>No Data.</div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="my-3">
+                                @EmptyDataTemplate
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+            else if (totalCount > 0)
+            {
+                if (items != null)
+                {
+                    foreach (var item in items)
                     {
-                        <tr>
-                            @for (var j = 0; j < columns.Count; j++)
+                        <tr @key="item.GetHashCode()">
+                            @foreach (var column in columns)
                             {
-                                <td>
-                                    <p class="placeholder-glow"><span class="placeholder col-12"></span></p>
-                                </td>
+                                @column.CellTemplate(item)
                             }
                         </tr>
                     }
-                }
-                else
-                {
-                    @LoadingTemplate
-                }
-            }
-            else if (items != null)
-            {
-                var index = 0;
-                foreach (var item in items)
-                {
-                    <tr @key="item.GetHashCode()">
-                        @foreach (var column in columns)
-                        {
-                            @column.CellTemplate(item)
-                        }
-                    </tr>
                 }
             }
         </tbody>

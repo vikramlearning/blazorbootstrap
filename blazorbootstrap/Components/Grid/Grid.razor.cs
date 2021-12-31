@@ -106,7 +106,7 @@ public partial class Grid<TItem> : BaseComponent
 
     [Parameter] public RenderFragment ChildContent { get; set; }
 
-    [Parameter] public RenderFragment LoadingTemplate { get; set; }
+    [Parameter] public RenderFragment EmptyDataTemplate { get; set; }
 
     /// <summary>
     /// Data provider for items to render as a table.
