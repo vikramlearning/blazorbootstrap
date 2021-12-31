@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using System.Linq.Expressions;
 
-namespace BlazorBootstrap.Components;
+namespace BlazorBootstrap;
 
 public partial class GridColumn<TItem> : BaseComponent
 {

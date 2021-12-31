@@ -1,4 +1,4 @@
-﻿@namespace BlazorBootstrap.Components
+﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 @typeparam TItem
 
@@ -18,10 +18,31 @@
             </tr>
         </thead>
         <tbody>
-            @if (Items != null)
+            @if (items == null)
+            {
+                @if (LoadingTemplate == null)
+                {
+                    @for (var i = 0; i < 5; i++)
+                    {
+                        <tr>
+                            @for (var j = 0; j < columns.Count; j++)
+                            {
+                                <td>
+                                    <p class="placeholder-glow"><span class="placeholder col-12"></span></p>
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+                else
+                {
+                    @LoadingTemplate
+                }
+            }
+            else if (items != null)
             {
                 var index = 0;
-                foreach (var item in Items)
+                foreach (var item in items)
                 {
                     <tr @key="item.GetHashCode()">
                         @foreach (var column in columns)

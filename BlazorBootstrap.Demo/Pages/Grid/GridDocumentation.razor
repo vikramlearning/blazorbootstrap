@@ -1,5 +1,4 @@
-﻿@using BlazorBootstrap
-@using System.Threading.Tasks
+﻿@using System.Threading.Tasks
 @page "/grid"
 
 <PageTitle>Grid Demo - BlazorBootstrap</PageTitle>
@@ -12,8 +11,11 @@
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <Demo Type="typeof(Grid_Demo_01_Examples)" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Server side" PageUrl="@pageUrl" HashTagName="server-side" />
-<Demo Type="typeof(Grid_Demo_02_Server_Side)" />
+<SectionHeading Size="HeadingSize.H2" Text="Server side data" PageUrl="@pageUrl" HashTagName="server-side" />
+<Demo Type="typeof(Grid_Demo_02_Server_Side_Paging_And_Sorting)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Empty data" PageUrl="@pageUrl" HashTagName="empty-data" />
+<Demo Type="typeof(Grid_Demo_03_Empty_Data)" />
 
 @code {
     private string pageUrl = "/grid";

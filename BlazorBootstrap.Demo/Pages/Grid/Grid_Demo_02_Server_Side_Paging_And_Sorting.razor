@@ -1,4 +1,4 @@
-﻿<Grid TItem="Employee" class="table table-hover" DataProvider="EmployeesDataProvider">
+﻿<Grid TItem="Employee" class="table" DataProvider="EmployeesDataProvider">
     <GridColumn TItem="Employee" Context="employee" HeaderText="Id" SortKeySelector="@(item => item.Id)" SortDirection="SortDirection.Ascending">
         @employee.Id
     </GridColumn>
@@ -15,18 +15,23 @@
 
 @code {
     private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {        
+        var employees = GetEmployeesFromAPI(request.PageNumber, request.PageSize, "", "");
+
+        await Task.Delay(3000);
+
+        return new GridDataProviderResult<Employee> { Data = employees, TotalCount = employees.Count() };
+    }
+
+    private IEnumerable<Employee> GetEmployeesFromAPI(int pageNumber, int pageSize, string sortKey, string sortDirection)
     {
-        var employees = new List<Employee>
+        return new List<Employee>
         {
             new Employee { Id = 101, FirstName = "Alice Reddy", LastName = "G", Designation = "Associate Architect" },
             new Employee { Id = 103, FirstName = "Bob Reddy", LastName = "G", Designation = "Senior DevOps Engineer" },
             new Employee { Id = 104, FirstName = "John Reddy", LastName = "G", Designation = "Senior Data Engineer" },
             new Employee { Id = 102, FirstName = "Pop Reddy", LastName = "G", Designation = "Senior AI Engineer" }
         };
-
-        await Task.Delay(5000);
-
-        return request.ApplyTo(employees);
     }
 
     public class Employee

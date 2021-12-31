@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace BlazorBootstrap.Components;
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Item describes one sorting criteria.

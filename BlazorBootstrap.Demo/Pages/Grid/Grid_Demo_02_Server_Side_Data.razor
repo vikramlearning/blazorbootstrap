@@ -1,8 +1,8 @@
-﻿<Grid TItem="Employee" class="table table-hover" DataProvider="ServerSideEmployeesDataProvider">
-    <GridColumn TItem="Employee" Context="employee" HeaderText="Id" SortKeySelector="@(item => item.Id)">
+﻿<Grid TItem="Employee" class="table" DataProvider="EmployeesDataProvider">
+    <GridColumn TItem="Employee" Context="employee" HeaderText="Id" SortKeySelector="@(item => item.Id)" SortDirection="SortDirection.Ascending">
         @employee.Id
     </GridColumn>
-    <GridColumn TItem="Employee" Context="employee" HeaderText="FirstName" SortKeySelector="@(item => item.FirstName)" SortDirection="SortDirection.Descending">
+    <GridColumn TItem="Employee" Context="employee" HeaderText="FirstName" SortKeySelector="@(item => item.FirstName)">
         @employee.FirstName
     </GridColumn>
     <GridColumn TItem="Employee" Context="employee" HeaderText="LastName" SortKeySelector="@(item => item.LastName)">
@@ -14,17 +14,24 @@
 </Grid>
 
 @code {
-    private Task<GridDataProviderResult<Employee>> ServerSideEmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {        
+        var employees = GetEmployeesFromAPI(request.PageNumber, request.PageSize, "", "");
+
+        await Task.Delay(3000);
+
+        return new GridDataProviderResult<Employee> { Data = employees, TotalCount = employees.Count() };
+    }
+
+    private IEnumerable<Employee> GetEmployeesFromAPI(int pageNumber, int pageSize, string sortKey, string sortDirection)
     {
-        var employees = new List<Employee>
+        return new List<Employee>
         {
             new Employee { Id = 101, FirstName = "Alice Reddy", LastName = "G", Designation = "Associate Architect" },
             new Employee { Id = 103, FirstName = "Bob Reddy", LastName = "G", Designation = "Senior DevOps Engineer" },
             new Employee { Id = 104, FirstName = "John Reddy", LastName = "G", Designation = "Senior Data Engineer" },
             new Employee { Id = 102, FirstName = "Pop Reddy", LastName = "G", Designation = "Senior AI Engineer" }
         };
-
-        return Task.FromResult(new GridDataProviderResult<Employee> { Data = employees, TotalCount = employees.Count() });
     }
 
     public class Employee

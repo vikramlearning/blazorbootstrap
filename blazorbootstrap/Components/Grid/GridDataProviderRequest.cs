@@ -1,7 +1,17 @@
-﻿namespace BlazorBootstrap.Components;
+﻿namespace BlazorBootstrap;
 
 public class GridDataProviderRequest<TItem>
 {
+    /// <summary>
+    /// Page number.
+    /// </summary>
+    public int PageNumber { get; init; }
+
+    /// <summary>
+    /// Size of the page.
+    /// </summary>
+    public int PageSize { get; init; }
+
     /// <summary>
     /// Current sorting.
     /// </summary>
@@ -9,13 +19,13 @@ public class GridDataProviderRequest<TItem>
 
     public GridDataProviderResult<TItem> ApplyTo(IEnumerable<TItem> data)
     {
-        if(data == null)
+        if (data == null)
             return new GridDataProviderResult<TItem> { Data = null, TotalCount = null };
 
         IEnumerable<TItem> resultData = data;
 
         // sorting
-        if(Sorting != null && Sorting.Any())
+        if (Sorting != null && Sorting.Any())
         {
             IOrderedEnumerable<TItem> orderedData = (Sorting[0].SortDirection == SortDirection.Ascending)
                        ? resultData.OrderBy(Sorting[0].SortKeySelector.Compile())
@@ -29,6 +39,9 @@ public class GridDataProviderRequest<TItem>
             }
             resultData = orderedData;
         }
+
+        // paging
+        // TODO: future implementation
 
         return new GridDataProviderResult<TItem>
         {

@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Components;
+﻿namespace BlazorBootstrap;
 
 public class GridDataProviderResult<TItem>
 {

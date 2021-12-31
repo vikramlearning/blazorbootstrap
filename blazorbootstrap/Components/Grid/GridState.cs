@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Components;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
 /// User state of the <see cref="HxGrid"/>.

@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace BlazorBootstrap.Components;
+namespace BlazorBootstrap;
 
 public partial class Grid<TItem> : BaseComponent
 {
     #region Members
 
     private List<GridColumn<TItem>> columns = new List<GridColumn<TItem>>();
+
+    private List<TItem> items = null;
+
+    private int? totalCount = null;
 
     #endregion Members
 
@@ -23,16 +27,9 @@ public partial class Grid<TItem> : BaseComponent
                 Sorting = GridCurrentState.Sorting ?? GetDefaultSorting()
             };
 
-            if (Items == null || !Items.Any())
-            {
-                RefreshDataAsync(request);
-            }
-            else if(request.Sorting != null && request.Sorting.Any())
-            {
-                Items = request.ApplyTo(Items).Data.ToList();
-            }
+            RefreshDataAsync(request);
 
-            StateHasChanged();
+            StateHasChanged(); // This is mandatory
         }
     }
 
@@ -44,15 +41,15 @@ public partial class Grid<TItem> : BaseComponent
     internal void SortingChanged(GridColumn<TItem> column)
     {
         // TODO: refactor this method
-        if (Items == null)
+        if (items == null)
             return;
 
         IOrderedEnumerable<TItem> orderedItems =
             (column.currentSortDirection == SortDirection.Ascending)
-            ? Items.OrderBy(column.SortKeySelector.Compile())
-            : Items.OrderByDescending(column.SortKeySelector.Compile());
+            ? items.OrderBy(column.SortKeySelector.Compile())
+            : items.OrderByDescending(column.SortKeySelector.Compile());
 
-        Items = orderedItems.ToList();
+        items = orderedItems.ToList();
 
         // Reset other columns sorting
         columns.ForEach(c =>
@@ -80,8 +77,19 @@ public partial class Grid<TItem> : BaseComponent
         if (DataProvider != null)
         {
             var result = await DataProvider.Invoke(request);
-            Items = request.ApplyTo(result.Data).Data.ToList();
+            if (result != null)
+            {
+                items = request.ApplyTo(result.Data).Data.ToList();
+                totalCount = result.TotalCount ?? result.Data.Count();
+            }
+            else
+            {
+                items = new List<TItem> { };
+                totalCount = 0;
+            }
         }
+
+        StateHasChanged();
     }
 
     #endregion Methods
@@ -96,9 +104,9 @@ public partial class Grid<TItem> : BaseComponent
     /// </summary>
     [Parameter] public bool Sortable { get; set; } = true;
 
-    [Parameter] public List<TItem> Items { get; set; }
-
     [Parameter] public RenderFragment ChildContent { get; set; }
+
+    [Parameter] public RenderFragment LoadingTemplate { get; set; }
 
     /// <summary>
     /// Data provider for items to render as a table.
