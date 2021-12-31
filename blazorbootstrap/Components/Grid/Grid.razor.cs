@@ -66,8 +66,14 @@ public partial class Grid<TItem> : BaseComponent
         if (columns == null || !columns.Any())
             return null;
 
+        //foreach (var c in columns)
+        //{
+        //    if (c.IsDefaultSortColumn && c.SortDirection == SortDirection.None)
+        //        c.currentSortDirection = SortDirection.Ascending;
+        //}
+
         return columns?
-                .Where(item => item.currentSortDirection != SortDirection.None)?
+                .Where(item => item.IsDefaultSortColumn)? // item.currentSortDirection != SortDirection.None
                 .SelectMany(item => item.GetSorting())?
                 .ToArray();
     }

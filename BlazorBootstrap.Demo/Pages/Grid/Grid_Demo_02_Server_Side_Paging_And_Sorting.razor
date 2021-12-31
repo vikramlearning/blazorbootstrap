@@ -1,8 +1,8 @@
 ﻿<Grid TItem="Employee" class="table" DataProvider="EmployeesDataProvider">
-    <GridColumn TItem="Employee" Context="employee" HeaderText="Id" SortKeySelector="@(item => item.Id)" SortDirection="SortDirection.Ascending">
+    <GridColumn TItem="Employee" Context="employee" HeaderText="Id" SortKeySelector="@(item => item.Id)">
         @employee.Id
     </GridColumn>
-    <GridColumn TItem="Employee" Context="employee" HeaderText="FirstName" SortKeySelector="@(item => item.FirstName)">
+    <GridColumn TItem="Employee" Context="employee" HeaderText="FirstName" SortKeySelector="@(item => item.FirstName)" IsDefaultSortColumn="true">
         @employee.FirstName
     </GridColumn>
     <GridColumn TItem="Employee" Context="employee" HeaderText="LastName" SortKeySelector="@(item => item.LastName)">

@@ -28,7 +28,7 @@ public partial class GridColumn<TItem> : BaseComponent
 
     internal IEnumerable<SortingItem<TItem>> GetSorting()
     {
-        if(SortKeySelector == null)
+        if (SortKeySelector == null)
             yield break;
 
         yield return new SortingItem<TItem>(this.SortKeySelector, this.currentSortDirection);
@@ -57,9 +57,13 @@ public partial class GridColumn<TItem> : BaseComponent
 
     [Parameter] public string HeaderText { get; set; }
 
+    [Parameter] public string SortString { get; set; }
+
     [Parameter] public Expression<Func<TItem, IComparable>> SortKeySelector { get; set; }
 
     [Parameter] public SortDirection SortDirection { get; set; } = SortDirection.None;
+
+    [Parameter] public bool IsDefaultSortColumn { get; set; } = false;
 
     [Parameter] public RenderFragment<TItem> ChildContent { get; set; }
 
