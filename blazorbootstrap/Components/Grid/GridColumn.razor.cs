@@ -51,7 +51,7 @@ public partial class GridColumn<TItem> : BaseComponent
         else if (currentSortDirection == SortDirection.None)
             currentSortDirection = SortDirection = SortDirection.Ascending;
 
-        await Parent.SortingChanged(this);
+        Parent.SortingChanged(this);
     }
 
     #endregion Methods
