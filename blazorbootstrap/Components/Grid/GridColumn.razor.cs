@@ -13,6 +13,8 @@ public partial class GridColumn<TItem> : BaseComponent
 
     internal SortDirection currentSortDirection;
 
+    internal SortDirection defaultSortDirection;
+
     #endregion Members
 
     #region Methods
@@ -21,9 +23,10 @@ public partial class GridColumn<TItem> : BaseComponent
     {
         ElementId = IdGenerator.Generate;
         currentSortDirection = SortDirection;
+        defaultSortDirection = SortDirection;
 
-        if(IsDefaultSortColumn && SortDirection == SortDirection.None)
-            currentSortDirection |= SortDirection.Ascending;
+        if (IsDefaultSortColumn && SortDirection == SortDirection.None)
+            currentSortDirection = SortDirection = SortDirection.Ascending;
 
         Parent.AddColumn(this);
     }
@@ -38,8 +41,9 @@ public partial class GridColumn<TItem> : BaseComponent
         yield return new SortingItem<TItem>(this.SortKeySelector, this.currentSortDirection);
     }
 
-    private void OnSortClick()
+    private async Task OnSortClick()
     {
+        // toggle the direction
         if (currentSortDirection == SortDirection.Ascending)
             currentSortDirection = SortDirection = SortDirection.Descending;
         else if (currentSortDirection == SortDirection.Descending)
@@ -47,7 +51,7 @@ public partial class GridColumn<TItem> : BaseComponent
         else if (currentSortDirection == SortDirection.None)
             currentSortDirection = SortDirection = SortDirection.Ascending;
 
-        Parent.SortingChanged(this);
+        await Parent.SortingChanged(this);
     }
 
     #endregion Methods

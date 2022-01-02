@@ -14,16 +14,21 @@
 </Grid>
 
 @code {
-    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    private IEnumerable<Employee> employees;
+
+    protected override void OnInitialized()
     {
-        var employees = new List<Employee>
+        employees = new List<Employee>
         {
-            new Employee { Id = 101, FirstName = "Alice Reddy", LastName = "G", Designation = "Associate Architect" },
+            new Employee { Id = 101, FirstName = "Alice Reddy", LastName = "G", Designation = "Senior AI Engineer" },
             new Employee { Id = 103, FirstName = "Bob Reddy", LastName = "G", Designation = "Senior DevOps Engineer" },
             new Employee { Id = 104, FirstName = "John Reddy", LastName = "G", Designation = "Senior Data Engineer" },
-            new Employee { Id = 102, FirstName = "Pop Reddy", LastName = "G", Designation = "Senior AI Engineer" }
+            new Employee { Id = 102, FirstName = "Pop Reddy", LastName = "G", Designation = "Associate Architect" }
         };
+    }
 
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {
         await Task.Delay(5000);
 
         return request.ApplyTo(employees);

@@ -20,12 +20,7 @@ public partial class Grid<TItem> : BaseComponent
     {
         if (firstRender)
         {
-            var request = new GridDataProviderRequest<TItem>
-            {
-                Sorting = GridCurrentState.Sorting ?? GetDefaultSorting()
-            };
-
-            RefreshDataAsync(request); // for now sync call only
+            RefreshDataAsync(); // for now sync call only
 
             StateHasChanged(); // This is mandatory
         }
@@ -38,25 +33,33 @@ public partial class Grid<TItem> : BaseComponent
 
     internal void SortingChanged(GridColumn<TItem> column)
     {
-        // TODO: refactor this method
-        if (items == null)
+        if (columns == null || !columns.Any())
             return;
 
-        IOrderedEnumerable<TItem> orderedItems =
-            (column.currentSortDirection == SortDirection.Ascending)
-            ? items.OrderBy(column.SortKeySelector.Compile())
-            : items.OrderByDescending(column.SortKeySelector.Compile());
+        // check sorting enabled on any of the columns
+        var sortedColumn = columns.FirstOrDefault(c => c.currentSortDirection != SortDirection.None);
 
-        items = orderedItems.ToList();
-
-        // Reset other columns sorting
+        // reset other columns sorting
         columns.ForEach(c =>
         {
             if (c.ElementId != column.ElementId)
                 c.currentSortDirection = SortDirection.None;
+
+            // set default sorting
+            if (sortedColumn == null && c.IsDefaultSortColumn)
+            {
+                c.currentSortDirection = c.defaultSortDirection != SortDirection.None ? c.defaultSortDirection : SortDirection.Ascending;
+                GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting().ToList().AsReadOnly());
+            }
+            else if (c.ElementId == column.ElementId && c.SortDirection != SortDirection.None)
+            {
+                GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting().ToList().AsReadOnly());
+            }
         });
 
-        StateHasChanged();
+        RefreshDataAsync(); // for now sync call only
+
+        StateHasChanged(); // This is mandatory
     }
 
     private SortingItem<TItem>[] GetDefaultSorting()
@@ -65,13 +68,18 @@ public partial class Grid<TItem> : BaseComponent
             return null;
 
         return columns?
-                .Where(item => item.IsDefaultSortColumn)? // item.currentSortDirection != SortDirection.None
+                .Where(item => item.IsDefaultSortColumn)?
                 .SelectMany(item => item.GetSorting())?
                 .ToArray();
     }
 
-    private async Task RefreshDataAsync(GridDataProviderRequest<TItem> request)
+    private async Task RefreshDataAsync()
     {
+        var request = new GridDataProviderRequest<TItem>
+        {
+            Sorting = GridCurrentState.Sorting ?? GetDefaultSorting()
+        };
+
         if (DataProvider != null)
         {
             var result = await DataProvider.Invoke(request);
@@ -87,7 +95,7 @@ public partial class Grid<TItem> : BaseComponent
             }
         }
 
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     #endregion Methods
