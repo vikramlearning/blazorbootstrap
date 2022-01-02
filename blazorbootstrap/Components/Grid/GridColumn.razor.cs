@@ -21,6 +21,10 @@ public partial class GridColumn<TItem> : BaseComponent
     {
         ElementId = IdGenerator.Generate;
         currentSortDirection = SortDirection;
+
+        if(IsDefaultSortColumn && SortDirection == SortDirection.None)
+            currentSortDirection |= SortDirection.Ascending;
+
         Parent.AddColumn(this);
     }
 
@@ -76,8 +80,11 @@ public partial class GridColumn<TItem> : BaseComponent
                 // th > span "title" , span > i "icon"
                 var seq = 0;
                 builder.OpenElement(seq, "th");
-                seq++;
-                builder.AddAttribute(seq, "role", "button");
+                if (this.Parent.Sortable)
+                {
+                    seq++;
+                    builder.AddAttribute(seq, "role", "button");
+                }
                 seq++;
                 builder.AddAttribute(seq, "onclick", OnSortClick);
                 seq++;
@@ -89,7 +96,7 @@ public partial class GridColumn<TItem> : BaseComponent
                 seq++;
                 builder.CloseElement(); // close: span
 
-                if (Parent.Sortable && SortDirection != SortDirection.None)
+                if (Parent.Sortable && currentSortDirection != SortDirection.None)
                 {
                     seq++;
                     builder.OpenElement(seq, "span");
@@ -121,8 +128,8 @@ public partial class GridColumn<TItem> : BaseComponent
             {
                 var seq = 0;
                 builder.OpenElement(seq, "td");
-                seq++;
-                builder.AddAttribute(seq, "role", "button");
+                //seq++;
+                //builder.AddAttribute(seq, "role", "button");
                 seq++;
                 builder.AddContent(seq, ChildContent, rowData);
                 builder.CloseElement();

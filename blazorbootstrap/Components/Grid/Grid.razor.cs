@@ -18,8 +18,6 @@ public partial class Grid<TItem> : BaseComponent
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
-
         if (firstRender)
         {
             var request = new GridDataProviderRequest<TItem>
@@ -27,7 +25,7 @@ public partial class Grid<TItem> : BaseComponent
                 Sorting = GridCurrentState.Sorting ?? GetDefaultSorting()
             };
 
-            RefreshDataAsync(request);
+            RefreshDataAsync(request); // for now sync call only
 
             StateHasChanged(); // This is mandatory
         }
@@ -65,12 +63,6 @@ public partial class Grid<TItem> : BaseComponent
     {
         if (columns == null || !columns.Any())
             return null;
-
-        //foreach (var c in columns)
-        //{
-        //    if (c.IsDefaultSortColumn && c.SortDirection == SortDirection.None)
-        //        c.currentSortDirection = SortDirection.Ascending;
-        //}
 
         return columns?
                 .Where(item => item.IsDefaultSortColumn)? // item.currentSortDirection != SortDirection.None
