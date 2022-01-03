@@ -7,11 +7,9 @@ public partial class Pagination : BaseComponent
 {
     #region Members
 
-    private Size? size;
+    private PaginationSize size = PaginationSize.None;
 
     private Alignment alignment = Alignment.None;
-
-    private bool showFirstLast => ShowFirstLast();
 
     private string previousLinkText => string.IsNullOrWhiteSpace(PreviousLinkText) ? "Previous" : PreviousLinkText;
 
@@ -25,7 +23,8 @@ public partial class Pagination : BaseComponent
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Pagination());
-        //builder.Append(BootstrapClassProvider.FlexAlignment(Alignment), Alignment != Alignment.None);
+        builder.Append(BootstrapClassProvider.PaginationSize(Size), Size != PaginationSize.None);
+        builder.Append(BootstrapClassProvider.FlexAlignment(Alignment), Alignment != Alignment.None);
         //builder.Append(BootstrapClassProvider.BackgroundColor(BackgroundColor), BackgroundColor != BackgroundColor.None);
 
         base.BuildClasses(builder);
@@ -38,14 +37,12 @@ public partial class Pagination : BaseComponent
     {
         if (ActivePageNumber != newPageNumber)
         {
+            Console.WriteLine($"Before ActivePageNumber: {ActivePageNumber}");
+            Console.WriteLine($"newPageNumber: {newPageNumber}");
             ActivePageNumber = newPageNumber;
+            Console.WriteLine($"After ActivePageNumber: {ActivePageNumber}");
             await PageChanged.InvokeAsync(newPageNumber);
         }
-    }
-
-    private bool ShowFirstLast()
-    {
-        return true;
     }
 
     #endregion
@@ -56,7 +53,7 @@ public partial class Pagination : BaseComponent
     /// Gets or sets the pagination size.
     /// </summary>
     [Parameter]
-    public Size? Size
+    public PaginationSize Size
     {
         get => size;
         set
@@ -83,8 +80,7 @@ public partial class Pagination : BaseComponent
     }
 
     /// <summary>
-    /// Active page number. Zero based.
-    /// Displayed numbers start with 1.
+    /// Active page number. Starts with 1.
     /// </summary>
     [Parameter] public int ActivePageNumber { get; set; }
 

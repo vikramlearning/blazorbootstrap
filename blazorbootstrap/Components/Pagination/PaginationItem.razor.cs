@@ -16,6 +16,16 @@ public partial class PaginationItem : BaseComponent
 
     #region Methods
 
+    protected override void OnParametersSet()
+    {
+        if (Active)
+            Attributes?.Add("aria-current", "page");
+        else
+            Attributes?.Remove("aria-current");
+
+        base.OnParametersSet();
+    }
+
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {

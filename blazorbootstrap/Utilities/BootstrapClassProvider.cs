@@ -113,7 +113,7 @@
 
         public string Pagination() => "pagination";
 
-        public string PaginationSize(Size size) => $"{Pagination()}-{ToSize(size)}";
+        public string PaginationSize(PaginationSize size) => $"{Pagination()}-{ToPaginationSize(size)}";
 
         public string PaginationItem() => "page-item";
 
@@ -409,6 +409,16 @@
             {
                 BlazorBootstrap.Screenreader.Only => "sr-only",
                 BlazorBootstrap.Screenreader.OnlyFocusable => "sr-only-focusable",
+                _ => null,
+            };
+        }
+
+        public string ToPaginationSize(PaginationSize size)
+        {
+            return size switch
+            {
+                BlazorBootstrap.PaginationSize.Small => "sm",
+                BlazorBootstrap.PaginationSize.Large => "lg",
                 _ => null,
             };
         }

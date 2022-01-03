@@ -2,12 +2,13 @@
 @inherits BaseComponent
 
 <nav aria-label="Pagination links">
-    <ul id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-        <li class="page-item"><a class="page-link" href="#">@previousLinkText</a></li>
+    <ul id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="button">
+        <PaginationItem Disabled="ActivePageNumber == 1" Text="@previousLinkText" />
         @for (var i = 1; i <= TotalPages; i++)
         {
-            <PaginationItem Active="ActivePageNumber == i" Text="@i.ToString()" />
+            int j = i; // local scope
+            <PaginationItem Active="ActivePageNumber == j" Text="@i.ToString()" @onclick="() => SetPageNumberTo(j)" />
         }
-        <li class="page-item"><a class="page-link" href="#">@nextLinkText</a></li>
+        <PaginationItem Disabled="ActivePageNumber == TotalPages" Text="@nextLinkText" />
     </ul>
 </nav>
