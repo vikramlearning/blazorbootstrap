@@ -1,0 +1,8 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<CascadingValue Value="@State">
+    <li id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        <a class="page-link" href="#">@Text</a>
+    </li>
+</CascadingValue>
