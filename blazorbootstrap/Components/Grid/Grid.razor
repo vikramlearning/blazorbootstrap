@@ -18,7 +18,7 @@
             </tr>
         </thead>
         <tbody>
-            @if (totalCount == null)
+            @if (requestInProgress) // || totalCount == null
             {
                 // show placeholders
                 @for (var i = 0; i < 5; i++)

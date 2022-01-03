@@ -12,6 +12,8 @@ public partial class Grid<TItem> : BaseComponent
 
     private int? totalCount = null;
 
+    private bool requestInProgress = false;
+
     #endregion Members
 
     #region Methods
@@ -75,6 +77,8 @@ public partial class Grid<TItem> : BaseComponent
 
     private async Task RefreshDataAsync()
     {
+        requestInProgress = true;
+
         var request = new GridDataProviderRequest<TItem>
         {
             Sorting = GridCurrentState.Sorting ?? GetDefaultSorting()
@@ -94,6 +98,8 @@ public partial class Grid<TItem> : BaseComponent
                 totalCount = 0;
             }
         }
+
+        requestInProgress = false;
 
         await InvokeAsync(StateHasChanged);
     }

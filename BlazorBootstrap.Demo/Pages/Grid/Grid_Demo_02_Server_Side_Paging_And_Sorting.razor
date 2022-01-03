@@ -14,11 +14,11 @@
 </Grid>
 
 @code {
-    private Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
     {        
-        var employees = GetEmployeesFromAPI(request.PageNumber, request.PageSize, "", "");
+        var employees = GetEmployeesFromAPI(request.PageNumber, request.PageSize, "", ""); // TODO: update this
 
-        return Task.FromResult(new GridDataProviderResult<Employee> { Data = employees, TotalCount = employees.Count() });
+        return await Task.FromResult(new GridDataProviderResult<Employee> { Data = employees, TotalCount = employees.Count() });
     }
 
     private IEnumerable<Employee> GetEmployeesFromAPI(int pageNumber, int pageSize, string sortKey, string sortDirection)

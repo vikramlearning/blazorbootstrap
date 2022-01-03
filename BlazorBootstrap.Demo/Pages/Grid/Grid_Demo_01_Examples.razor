@@ -29,9 +29,7 @@
 
     private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
     {
-        await Task.Delay(5000);
-
-        return request.ApplyTo(employees);
+        return await Task.FromResult(request.ApplyTo(employees));
     }
 
     public class Employee
