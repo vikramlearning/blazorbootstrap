@@ -37,10 +37,9 @@ public partial class Pagination : BaseComponent
     {
         if (ActivePageNumber != newPageNumber)
         {
-            Console.WriteLine($"Before ActivePageNumber: {ActivePageNumber}");
-            Console.WriteLine($"newPageNumber: {newPageNumber}");
+            Console.WriteLine($"Before ActivePageNumber: {ActivePageNumber}"); // TODO: remove this
             ActivePageNumber = newPageNumber;
-            Console.WriteLine($"After ActivePageNumber: {ActivePageNumber}");
+            Console.WriteLine($"After ActivePageNumber: {ActivePageNumber}"); // TODO: remove this
             await PageChanged.InvokeAsync(newPageNumber);
         }
     }
@@ -82,7 +81,7 @@ public partial class Pagination : BaseComponent
     /// <summary>
     /// Active page number. Starts with 1.
     /// </summary>
-    [Parameter] public int ActivePageNumber { get; set; }
+    [Parameter] public int ActivePageNumber { get; set; } = 1;
 
     /// <summary>
     /// Page size.
