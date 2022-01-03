@@ -1,12 +1,10 @@
-﻿<Pagination TotalPages="5" PageChanged="OnPageChangedAsync" />
+﻿<Pagination ActivePageNumber="@currentPageNumber" TotalPages="5" PageChanged="OnPageChangedAsync" />
 
-@if (currentPageNumber.HasValue)
-{
-    <text>Current Page Number: @currentPageNumber</text>
-}
+<text>Current Page Number: @currentPageNumber</text>
+
 
 @code {
-    int? currentPageNumber;
+    int currentPageNumber = 2;
 
     private async Task OnPageChangedAsync(int newPageNumber)
     {
