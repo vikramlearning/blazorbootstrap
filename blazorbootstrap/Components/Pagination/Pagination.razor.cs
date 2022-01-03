@@ -37,9 +37,7 @@ public partial class Pagination : BaseComponent
     {
         if (ActivePageNumber != newPageNumber)
         {
-            Console.WriteLine($"Before ActivePageNumber: {ActivePageNumber}"); // TODO: remove this
             ActivePageNumber = newPageNumber;
-            Console.WriteLine($"After ActivePageNumber: {ActivePageNumber}"); // TODO: remove this
             await PageChanged.InvokeAsync(newPageNumber);
         }
     }
@@ -102,7 +100,7 @@ public partial class Pagination : BaseComponent
     [Parameter] public IconName NextLinkIcon { get; set; }
 
     /// <summary>
-    /// Event raised where page number is changed.
+    /// Event raised when the page number is changed.
     /// </summary>
     [Parameter] public EventCallback<int> PageChanged { get; set; }
 
