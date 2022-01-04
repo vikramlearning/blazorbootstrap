@@ -13,11 +13,9 @@ public partial class PaginationLink : BaseComponent
 
     protected override void OnParametersSet()
     {
-        // TODO: check this is not working
-        Console.WriteLine($"AriaLabel: {AriaLabel}");
-        if (!string.IsNullOrWhiteSpace(AriaLabel))
+        if (!string.IsNullOrWhiteSpace(LinkAriaLabel))
         {
-            Attributes?.Add("aria-label", AriaLabel);
+            Attributes?.Add("aria-label", LinkAriaLabel); // TODO: this is not working
         }
 
         base.OnParametersSet();
@@ -41,7 +39,7 @@ public partial class PaginationLink : BaseComponent
 
     [Parameter] public IconName LinkIcon { get; set; }
 
-    [Parameter] public string AriaLabel { get; set; }
+    [Parameter] public string LinkAriaLabel { get; set; }
 
     #endregion
 }

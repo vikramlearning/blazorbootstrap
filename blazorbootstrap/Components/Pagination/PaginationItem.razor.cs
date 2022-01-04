@@ -20,8 +20,6 @@ public partial class PaginationItem : BaseComponent
     {
         if (Active)
             Attributes?.Add("aria-current", "page");
-        else
-            Attributes?.Remove("aria-current");
 
         base.OnParametersSet();
     }

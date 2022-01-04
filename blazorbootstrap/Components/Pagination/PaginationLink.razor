@@ -1,15 +1,13 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-@*<CascadingValue Value="@this" IsFixed="true">*@
-    <a id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-        @if (Enum.IsDefined(typeof(IconName), LinkIcon))
-        {
-            <span aria-hidden="true"><Icon Name="LinkIcon" /></span>
-        }
-        else
-        {
-            @Text
-        }
-    </a>
-@*</CascadingValue>*@
+<a id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    @if (Enum.IsDefined(typeof(IconName), LinkIcon))
+    {
+        <span aria-hidden="true"><Icon Name="LinkIcon" /></span>
+    }
+    else
+    {
+        @Text
+    }
+</a>
