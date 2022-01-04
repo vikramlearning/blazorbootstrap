@@ -69,4 +69,15 @@
             }
         </tbody>
     </table>
+
+    @if (totalCount.HasValue && totalCount.Value > 0)
+    {
+        var totalPages = totalCount.Value / PageSize;
+
+        Console.WriteLine($"totalPages: {totalPages}");
+
+        <Pagination ActivePageNumber="@(GridCurrentState.PageIndex)"
+                    TotalPages="totalPages"
+                    PageChanged="OnPageChangedAsync" />
+    }
 }

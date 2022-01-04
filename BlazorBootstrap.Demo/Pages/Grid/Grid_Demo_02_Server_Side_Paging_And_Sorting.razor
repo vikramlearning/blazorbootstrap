@@ -15,21 +15,25 @@
 
 @code {
     private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
-    {        
-        var employees = GetEmployeesFromAPI(request.PageNumber, request.PageSize, "", ""); // TODO: update this
+    {
+        var result = GetEmployeesFromAPI(request.PageNumber, request.PageSize, "", ""); // TODO: update this
 
-        return await Task.FromResult(new GridDataProviderResult<Employee> { Data = employees, TotalCount = employees.Count() });
+        return await Task.FromResult(new GridDataProviderResult<Employee> { Data = result.Item1, TotalCount = result.Item2 });
     }
 
-    private IEnumerable<Employee> GetEmployeesFromAPI(int pageNumber, int pageSize, string sortKey, string sortDirection)
+    private Tuple<IEnumerable<Employee>, int> GetEmployeesFromAPI(int pageNumber, int pageSize, string sortKey, string sortDirection)
     {
-        return new List<Employee>
+        // TODO: apply sorting then paging
+
+        var employees = new List<Employee>
         {
             new Employee { Id = 101, FirstName = "Alice Reddy", LastName = "G", Designation = "Associate Architect" },
             new Employee { Id = 103, FirstName = "Bob Reddy", LastName = "G", Designation = "Senior DevOps Engineer" },
             new Employee { Id = 104, FirstName = "John Reddy", LastName = "G", Designation = "Senior Data Engineer" },
             new Employee { Id = 102, FirstName = "Pop Reddy", LastName = "G", Designation = "Senior AI Engineer" }
         };
+
+        return new (employees.Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
     }
 
     public class Employee

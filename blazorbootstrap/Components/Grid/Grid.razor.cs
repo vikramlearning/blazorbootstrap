@@ -64,6 +64,13 @@ public partial class Grid<TItem> : BaseComponent
         StateHasChanged(); // This is mandatory
     }
 
+    private async Task OnPageChangedAsync(int newPageNumber)
+    {
+        GridCurrentState = new GridState<TItem>(newPageNumber, GridCurrentState.Sorting);
+
+        await RefreshDataAsync();
+    }
+
     private SortingItem<TItem>[] GetDefaultSorting()
     {
         if (columns == null || !columns.Any())
@@ -81,6 +88,8 @@ public partial class Grid<TItem> : BaseComponent
 
         var request = new GridDataProviderRequest<TItem>
         {
+            PageNumber = GridCurrentState.PageIndex,
+            PageSize = this.PageSize,
             Sorting = GridCurrentState.Sorting ?? GetDefaultSorting()
         };
 
@@ -128,12 +137,14 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Current grid state (page, sorting).
     /// </summary>
-    [Parameter] public GridState<TItem> GridCurrentState { get; set; } = new GridState<TItem>(0, null);
+    [Parameter] public GridState<TItem> GridCurrentState { get; set; } = new GridState<TItem>(1, null);
 
     /// <summary>
     /// Event fires when grid state is changed.
     /// </summary>
     //[Parameter] public EventCallback<GridState<TItem>> GridCurrentStateChanged { get; set; }
+
+    [Parameter] public int PageSize { get; set; } = 2;
 
     #endregion Properties
 }
