@@ -7,9 +7,17 @@ public partial class Pagination : BaseComponent
 {
     #region Members
 
+    private int firstPageNumber => 1;
+
     private int previousPageNumber => GetPreviousPageNumber();
 
     private int nextPageNumber => GetNextPageNumber();
+
+    private int lastPageNumber => TotalPages == 0 ? 1 : TotalPages;
+
+    private int pageFromInclusive => GetPageFromInclusive();
+
+    private int pageToExclusive => GetPageToExclusive();
 
     private PaginationSize size = PaginationSize.None;
 
@@ -18,6 +26,10 @@ public partial class Pagination : BaseComponent
     private string previousLinkText => string.IsNullOrWhiteSpace(PreviousLinkText) ? "Previous" : PreviousLinkText;
 
     private string nextLinkText => string.IsNullOrWhiteSpace(NextLinkText) ? "Next" : NextLinkText;
+
+    private string firstLinkText => string.IsNullOrWhiteSpace(FirstLinkText) ? "First" : FirstLinkText;
+
+    private string lastLinkText => string.IsNullOrWhiteSpace(LastLinkText) ? "Last" : LastLinkText;
 
     #endregion
 
@@ -72,6 +84,28 @@ public partial class Pagination : BaseComponent
         return nextPageNumber;
     }
 
+    private int GetPageFromInclusive()
+    {
+        var q = ActivePageNumber / DisplayPages;
+        var r = ActivePageNumber % DisplayPages;
+
+        if (q < 1)
+            return 1;
+        else if (q > 0 && r == 0)
+            return (q - 1) * DisplayPages + 1;
+        else if (q > 1 && r < DisplayPages)
+            return (q * DisplayPages) + 1;
+
+        Console.WriteLine("end1");
+
+        return (ActivePageNumber / DisplayPages) * DisplayPages + 1;
+    }
+
+    private int GetPageToExclusive()
+    {
+        return Math.Min(TotalPages, pageFromInclusive + DisplayPages - 1);
+    }
+
     #endregion
 
     #region Properties
@@ -121,6 +155,12 @@ public partial class Pagination : BaseComponent
     /// </summary>
     [Parameter] public int TotalPages { get; set; }
 
+    [Parameter] public int DisplayPages { get; set; } = 5;
+
+    [Parameter] public string FirstLinkText { get; set; }
+
+    [Parameter] public IconName FirstLinkIcon { get; set; }
+
     [Parameter] public string PreviousLinkText { get; set; }
 
     [Parameter] public IconName PreviousLinkIcon { get; set; }
@@ -128,6 +168,10 @@ public partial class Pagination : BaseComponent
     [Parameter] public string NextLinkText { get; set; }
 
     [Parameter] public IconName NextLinkIcon { get; set; }
+
+    [Parameter] public string LastLinkText { get; set; }
+
+    [Parameter] public IconName LastLinkIcon { get; set; }
 
     /// <summary>
     /// Event raised when the page number is changed.

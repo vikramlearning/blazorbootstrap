@@ -15,7 +15,7 @@ public partial class PaginationLink : BaseComponent
     {
         if (!string.IsNullOrWhiteSpace(LinkAriaLabel))
         {
-            Attributes?.Add("aria-label", LinkAriaLabel); // TODO: this is not working
+            Attributes?.Add("aria-label", LinkAriaLabel); // TODO: this is not working revisit again
         }
 
         base.OnParametersSet();
