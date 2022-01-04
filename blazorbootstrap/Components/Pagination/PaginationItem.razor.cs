@@ -83,6 +83,12 @@ public partial class PaginationItem : BaseComponent
 
     [Parameter] public string Text { get; set; }
 
+    [Parameter] public string LinkText { get; set; }
+
+    [Parameter] public IconName LinkIcon { get; set; }
+
+    [Parameter] public string AriaLabel { get; set; }
+
     #endregion
 }
 
