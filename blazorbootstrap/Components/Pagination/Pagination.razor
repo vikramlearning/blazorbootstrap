@@ -3,12 +3,12 @@
 
 <nav aria-label="Pagination links">
     <ul id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="button">
-        <PaginationItem Disabled="ActivePageNumber == 1" Text="@previousLinkText" />
+        <PaginationItem Disabled="ActivePageNumber == 1" Text="@previousLinkText" @onclick="() => SetPageNumberTo(previousPageNumber)" />
         @for (var i = 1; i <= TotalPages; i++)
         {
             int j = i; // local scope
             <PaginationItem Active="ActivePageNumber == j" Text="@i.ToString()" @onclick="() => SetPageNumberTo(j)" />
         }
-        <PaginationItem Disabled="ActivePageNumber == TotalPages" Text="@nextLinkText" />
+        <PaginationItem Disabled="ActivePageNumber == TotalPages" Text="@nextLinkText" @onclick="() => SetPageNumberTo(nextPageNumber)" />
     </ul>
 </nav>

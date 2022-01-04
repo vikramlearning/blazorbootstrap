@@ -7,6 +7,10 @@ public partial class Pagination : BaseComponent
 {
     #region Members
 
+    private int previousPageNumber => GetPreviousPageNumber();
+
+    private int nextPageNumber => GetNextPageNumber();
+
     private PaginationSize size = PaginationSize.None;
 
     private Alignment alignment = Alignment.None;
@@ -40,6 +44,32 @@ public partial class Pagination : BaseComponent
             ActivePageNumber = newPageNumber;
             await PageChanged.InvokeAsync(newPageNumber);
         }
+    }
+
+    private int GetPreviousPageNumber()
+    {
+        var previousPageNUmber = 1;
+
+        if (TotalPages == 1 || ActivePageNumber == 0 | TotalPages == 0)
+            previousPageNUmber = 1;
+        else if (ActivePageNumber > 1 && TotalPages > 1)
+            previousPageNUmber = ActivePageNumber - 1;
+
+        return previousPageNUmber;
+    }
+
+    private int GetNextPageNumber()
+    {
+        var nextPageNumber = 1;
+
+        if (TotalPages == 1 || ActivePageNumber == 0 | TotalPages == 0)
+            nextPageNumber = 1;
+        if (ActivePageNumber == TotalPages)
+            nextPageNumber = TotalPages;
+        else if (TotalPages > 1 && ActivePageNumber >= 1 && ActivePageNumber < TotalPages)
+            nextPageNumber = ActivePageNumber + 1;
+
+        return nextPageNumber;
     }
 
     #endregion
