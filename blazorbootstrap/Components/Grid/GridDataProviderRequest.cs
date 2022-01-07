@@ -41,7 +41,15 @@ public class GridDataProviderRequest<TItem>
         }
 
         // paging
-        // TODO: future implementation
+        var skip = 0;
+        var take = data.Count();
+
+        if (PageNumber > 0 && PageSize > 0)
+        {
+            skip = (PageNumber - 1) * PageSize;
+            take = PageSize;
+        }
+        resultData = resultData.Skip(skip).Take(take);
 
         return new GridDataProviderResult<TItem>
         {

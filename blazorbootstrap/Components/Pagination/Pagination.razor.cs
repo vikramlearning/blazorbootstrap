@@ -96,13 +96,14 @@ public partial class Pagination : BaseComponent
         else if (q > 1 && r < DisplayPages)
             return (q * DisplayPages) + 1;
 
-        Console.WriteLine("end1");
-
         return (ActivePageNumber / DisplayPages) * DisplayPages + 1;
     }
 
     private int GetPageToExclusive()
     {
+        if (TotalPages == 0)
+            return 1;
+
         return Math.Min(TotalPages, pageFromInclusive + DisplayPages - 1);
     }
 

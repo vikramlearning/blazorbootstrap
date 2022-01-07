@@ -35,10 +35,10 @@ public partial class GridColumn<TItem> : BaseComponent
 
     internal IEnumerable<SortingItem<TItem>> GetSorting()
     {
-        if (SortKeySelector == null)
+        if (SortKeySelector == null && string.IsNullOrWhiteSpace(this.SortString))
             yield break;
 
-        yield return new SortingItem<TItem>(this.SortKeySelector, this.currentSortDirection);
+        yield return new SortingItem<TItem>(this.SortString, this.SortKeySelector, this.currentSortDirection);
     }
 
     private async Task OnSortClick()

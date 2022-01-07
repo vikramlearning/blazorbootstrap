@@ -12,6 +12,8 @@ public partial class Grid<TItem> : BaseComponent
 
     private int? totalCount = null;
 
+    private int totalPages => GetTotalPagesCount();
+
     private bool requestInProgress = false;
 
     #endregion Members
@@ -82,6 +84,22 @@ public partial class Grid<TItem> : BaseComponent
                 .ToArray();
     }
 
+    private int GetTotalPagesCount()
+    {
+        if (totalCount.HasValue && totalCount.Value > 0)
+        {
+            var q = totalCount.Value / PageSize;
+            var r = totalCount.Value % PageSize;
+
+            if (q < 1)
+                return 1;
+
+            return q + (r > 0 ? 1 : 0);
+        }
+
+        return 1;
+    }
+
     private async Task RefreshDataAsync()
     {
         requestInProgress = true;
@@ -98,7 +116,7 @@ public partial class Grid<TItem> : BaseComponent
             var result = await DataProvider.Invoke(request);
             if (result != null)
             {
-                items = request.ApplyTo(result.Data).Data.ToList();
+                items = result.Data.ToList();
                 totalCount = result.TotalCount ?? result.Data.Count();
             }
             else
@@ -144,7 +162,7 @@ public partial class Grid<TItem> : BaseComponent
     /// </summary>
     //[Parameter] public EventCallback<GridState<TItem>> GridCurrentStateChanged { get; set; }
 
-    [Parameter] public int PageSize { get; set; } = 2;
+    [Parameter] public int PageSize { get; set; } = 10;
 
     #endregion Properties
 }
