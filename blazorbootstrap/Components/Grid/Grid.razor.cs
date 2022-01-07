@@ -52,7 +52,13 @@ public partial class Grid<TItem> : BaseComponent
             // set default sorting
             if (sortedColumn == null && c.IsDefaultSortColumn)
             {
-                c.currentSortDirection = c.defaultSortDirection != SortDirection.None ? c.defaultSortDirection : SortDirection.Ascending;
+                if (c.ElementId == column.ElementId
+                && c.currentSortDirection == SortDirection.None
+                && c.defaultSortDirection == SortDirection.Descending)
+                    c.currentSortDirection = SortDirection.Ascending; // Default Sorting: DESC                
+                else
+                    c.currentSortDirection = (c.defaultSortDirection != SortDirection.None) ? c.defaultSortDirection : SortDirection.Ascending;
+
                 GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting().ToList().AsReadOnly());
             }
             else if (c.ElementId == column.ElementId && c.SortDirection != SortDirection.None)
