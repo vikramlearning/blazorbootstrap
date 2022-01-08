@@ -74,6 +74,10 @@
     {
         <Pagination ActivePageNumber="@(GridCurrentState.PageIndex)"
                     TotalPages="@totalPages"
-                    PageChanged="OnPageChangedAsync" />
+                    PageChanged="OnPageChangedAsync"
+                    FirstLinkIcon="IconName.ChevronDoubleLeft"
+                    PreviousLinkIcon="IconName.ChevronLeft"
+                    NextLinkIcon="IconName.ChevronRight"
+                    LastLinkIcon="IconName.ChevronDoubleRight" />
     }
 }
