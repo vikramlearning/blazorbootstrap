@@ -66,6 +66,5 @@ You can customize the color with `Color` parameter. You can use any of the `Spin
     }
 }
 ```
-## Articles
 
-- [Blazor Bootstrap: Preload Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-preload-component-examples/88/159)
+[See Preload demo here.](https://demos.getblazorbootstrap.com/preload#examples)
