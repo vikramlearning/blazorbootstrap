@@ -131,7 +131,7 @@ namespace BlazorBootstrap
 
         /// <summary>
         /// Indicates whether the modal uses a static backdrop.
-        /// Default value is true.
+        /// Default value is false.
         /// </summary>
         [Parameter] public bool UseStaticBackdrop { get; set; } = false;
 
