@@ -1,4 +1,4 @@
----
+﻿---
 sidebar_label: Offcanvas
 sidebar_position: 7
 ---
@@ -12,7 +12,7 @@ Build hidden sidebars into your project for navigation, shopping carts, and more
 | Name | Type | Descritpion | Required | Default |
 |--|--|--|--|--|
 | BodyCssClass | string | Additional body CSS class. | | |
-| BodyTemplate | RenderFragment | Body content. | | |
+| BodyTemplate | RenderFragment | Body content. | ✔️ | |
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | |
 | CloseOnEscape | bool | Indicates whether the offcanvas closes when escape key is pressed. | | true |
 | FooterCssClass | string | Additional footer CSS class. | | |
@@ -159,6 +159,8 @@ By default backdrop is enabled, you can disable it using the `UseBackground="fal
 ### Sizes
 
 Set the size of the `Offcanvas` with the Size parameter. The default value is `OffcanvasSize.Regular`.
+
+#### Small Offcanvas
 
 <img src="https://i.imgur.com/DJ09ngz.jpg" alt="Offcanvas - Small Size" />
 

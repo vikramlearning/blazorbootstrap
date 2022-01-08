@@ -64,7 +64,3 @@ BlazorBootstrap callout component provides presentation of content in a visually
 </Callout>
 ```
 [See callout info demo here.](https://demos.getblazorbootstrap.com/callout#info)
-
-## Articles
-
-- [Blazor Bootstrap: Callout Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-callout-component-examplesv/88/162)

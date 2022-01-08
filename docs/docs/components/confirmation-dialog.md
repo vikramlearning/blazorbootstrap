@@ -74,7 +74,4 @@ Use BlazorBootstrap's `Confirm Dialog` component if you want the user to verify 
     }
 }
 ```
-
-## Articles
-
-- [Blazor Bootstrap: Modal Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-confirm-dialog-component-examples/88/161)
+[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#examples)
