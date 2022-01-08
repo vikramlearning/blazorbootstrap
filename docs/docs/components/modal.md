@@ -321,7 +321,7 @@ Modals have three optional sizes. These sizes kick in at certain breakpoints to 
 
 [See demo here.](https://demos.getblazorbootstrap.com/modals#fullscreen-modal)
 
-### Events
+### Callback Events
 
 BlazorBootstrap's modal class exposes a few events for hooking into modal functionality.
 
