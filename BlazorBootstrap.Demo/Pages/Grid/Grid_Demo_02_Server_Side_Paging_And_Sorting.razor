@@ -14,77 +14,12 @@
 </Grid>
 
 @code {
+    [Inject] public IEmployeeService _employeeService { get; set; }
+
     private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
     {
-        var result = GetEmployeesFromAPI(request.PageNumber, request.PageSize, request.Sorting[0].SortString, request.Sorting[0].SortDirection); // TODO: update this
+        var result = _employeeService.GetEmployees(request.PageNumber, request.PageSize, request.Sorting[0].SortString, request.Sorting[0].SortDirection);
 
         return await Task.FromResult(new GridDataProviderResult<Employee> { Data = result.Item1, TotalCount = result.Item2 });
-    }
-
-    // Assume this is an API call
-    // code for demo purpose only
-    private Tuple<IEnumerable<Employee>, int> GetEmployeesFromAPI(int pageNumber, int pageSize, string sortKey, SortDirection sortDirection)
-    {
-        var employees = new List<Employee>
-        {
-            new Employee { Id = 101, FirstName = "Eathan", LastName = "Ellis", Designation = "Associate Architect" },
-            new Employee { Id = 103, FirstName = "Cohan", LastName = "Wheatley", Designation = "Senior DevOps Engineer" },
-            new Employee { Id = 104, FirstName = "Jody", LastName = "Frost", Designation = "Senior Data Engineer" },
-            new Employee { Id = 116, FirstName = "Charis", LastName = "Guerra", Designation = "Data Scientist" },
-            new Employee { Id = 110, FirstName = "Julian", LastName = "Walmsley", Designation = "Senior AI Engineer" },
-            new Employee { Id = 115, FirstName = "Emer", LastName = "Strickland", Designation = "AI Engineer" },
-            new Employee { Id = 102, FirstName = "Kornelia", LastName = "Lord", Designation = "Developer" },
-            new Employee { Id = 112, FirstName = "Loretta", LastName = "Koch", Designation = "Administrator" },
-            new Employee { Id = 105, FirstName = "Ivy", LastName = "Lloyd", Designation = "Solution Architect" },
-            new Employee { Id = 109, FirstName = "Isha", LastName = "Davison", Designation = "App Maker" },
-            new Employee { Id = 111, FirstName = "Glenda", LastName = "Potter", Designation = "Data Engineer" },
-            new Employee { Id = 106, FirstName = "Chance", LastName = "Bowler", Designation = "Auditor" },
-            new Employee { Id = 114, FirstName = "Ralphy", LastName = "Estrada", Designation = "" },
-            new Employee { Id = 108, FirstName = "Zayne", LastName = "Simmons", Designation = "Data Analyst" },
-            new Employee { Id = 118, FirstName = "Kristopher", LastName = "Lawrence", Designation = "" },
-            new Employee { Id = 107, FirstName = "Roisin", LastName = "Farmer", Designation = "Solutions Architect" },
-            new Employee { Id = 113, FirstName = "Merlin", LastName = "Correa", Designation = "" },
-            new Employee { Id = 117, FirstName = "Sharna", LastName = "Macleod", Designation = "Data Analyst" },
-        };
-
-        // apply sorting then paging
-        if (sortKey == "Id")
-        {
-            if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.Id).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.Id).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
-        }
-        else if (sortKey == "FirstName")
-        {
-            if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.FirstName).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.FirstName).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
-        }
-        else if (sortKey == "LastName")
-        {
-            if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.LastName).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.LastName).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
-        }
-        else if (sortKey == "Designation")
-        {
-            if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.Designation).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.Designation).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
-        }
-
-        return new(employees, employees.Count);
-    }
-
-    public class Employee
-    {
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Designation { get; set; }
     }
 }
