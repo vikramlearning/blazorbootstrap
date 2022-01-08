@@ -50,6 +50,8 @@ Documentation and examples for adding custom BlazorBootstrap Tooltips.
 </div>
 ```
 
+[See tooltips demo here.](https://demos.getblazorbootstrap.com/tooltips#examples)
+
 ### Disabled button with tooltip
 
 <img src="https://i.imgur.com/PGlmZS3.jpg" alt="Blazor Bootstrap: Tooltip Component" />
@@ -59,6 +61,8 @@ Documentation and examples for adding custom BlazorBootstrap Tooltips.
     <button class="btn btn-primary" type="button" disabled>Disabled button</button>
 </Tooltip>
 ```
+
+[See disabled button with tooltip demo here.](https://demos.getblazorbootstrap.com/tooltips#disabled-button-with-tootip)
 
 ### Tooltip icon with click event
 
@@ -79,6 +83,4 @@ Documentation and examples for adding custom BlazorBootstrap Tooltips.
 }
 ```
 
-## Articles
-
-- [Blazor Bootstrap: Tooltip Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-tooltip-component-examples/88/158)
+[See icon with tooltip demo here.](https://demos.getblazorbootstrap.com/tooltips#icon-with-click-event)
