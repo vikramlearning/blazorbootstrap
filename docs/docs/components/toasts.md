@@ -71,6 +71,8 @@ private void ShowToast()
 }
 ```
 
+[See toasts demo here.](https://demos.getblazorbootstrap.com/toasts#examples)
+
 ### Simple Toast
 
 Customize your toasts by removing sub-components, tweaking them with utilities.
@@ -108,6 +110,4 @@ private void ShowSimpleToast()
 }
 ```
 
-## Articles
-
-- [Blazor Bootstrap: Toasts Component Examples](https://vikramlearning.com/dotnet/article/blazor-bootstrap-toasts-component-examples/88/155)
+[See simple toasts demo here.](https://demos.getblazorbootstrap.com/toasts#simple-toast)
