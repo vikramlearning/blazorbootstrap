@@ -1,6 +1,6 @@
 ﻿---
 sidebar_label: Offcanvas
-sidebar_position: 7
+sidebar_position: 8
 ---
 
 # Offcanvas
