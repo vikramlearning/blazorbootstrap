@@ -96,6 +96,8 @@ Clicking the **Show Modal** button below, the modal will slide down and fade in 
 }
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/modals#examples)
+
 ### Static backdrop
 
 When `UseStaticBackdrop` is set to `true`, the modal will not close when clicking outside it. Click the button below to try it.
@@ -130,6 +132,8 @@ When `UseStaticBackdrop` is set to `true`, the modal will not close when clickin
     }
 }
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/modals#static-backdrop)
 
 ### Scrolling long content
 
@@ -167,6 +171,8 @@ When modals become too long for the user’s viewport or device, they scroll ind
 }
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/modals#scrolling-long-content)
+
 ### Vertically centered
 
 Add `IsVerticallyCentered="true"` to vertically center the modal.
@@ -202,6 +208,8 @@ Add `IsVerticallyCentered="true"` to vertically center the modal.
 }
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/modals#vertically-centered)
+
 ### Vertically centered and scrollable
 
 <img src="https://i.imgur.com/n0m4Fhq.jpg" alt="Modal - Vertically centered and scrollable" />
@@ -236,6 +244,8 @@ Add `IsVerticallyCentered="true"` to vertically center the modal.
 }
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/modals#vertically-centered)
+
 ### Optional sizes
 
 Modals have three optional sizes. These sizes kick in at certain breakpoints to avoid horizontal scrollbars on narrower viewports.
@@ -264,6 +274,8 @@ Modals have three optional sizes. These sizes kick in at certain breakpoints to 
     private Modal smModal;
 }
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/modals#optional-sizes)
 
 ### Fullscreen Modal
 
@@ -306,6 +318,8 @@ Modals have three optional sizes. These sizes kick in at certain breakpoints to 
     private Modal xxlModal;
 }
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/modals#fullscreen-modal)
 
 ### Events
 
@@ -363,3 +377,5 @@ BlazorBootstrap's modal class exposes a few events for hooking into modal functi
     }
 }
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/modals#events)
