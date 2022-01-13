@@ -23,11 +23,9 @@ We are excited to release `0.2.0` with lots of updates.
 - Grid
 - Pagination
 
-### Demo Website
+### Links
 
-We are happy to share the demo website link.
-
-- https://demos.getblazorbootstrap.com/
+- [Demo Website](https://demos.getblazorbootstrap.com/)
 - [Modals](https://demos.getblazorbootstrap.com/modals)
 - [Offcanvas](https://demos.getblazorbootstrap.com/offcanvas)
 - [Grid](https://demos.getblazorbootstrap.com/grid)
