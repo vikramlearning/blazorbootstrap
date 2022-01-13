@@ -53,6 +53,7 @@
     .sidebar {
         width: 250px;
         height: 100vh;
+        overflow-y: auto;
         position: sticky;
         top: 0;
     }
