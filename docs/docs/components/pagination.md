@@ -25,7 +25,6 @@ Documentation and examples for showing pagination to indicate a series of relate
 | Size | `PaginationSize` | Gets or sets the pagination size. | | |
 | TotalPages | int | Total pages of data items. | | |
 
-
 ## Callback Events
 
 | Event | Description | 
@@ -49,6 +48,8 @@ We use a large block of connected links for our pagination, making links hard to
 <Pagination TotalPages="100" />
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/pagination#examples)
+
 ### Working with icons
 
 <img src="https://i.imgur.com/nhfGHfy.jpg" alt="Pagination - Working with icons" />
@@ -63,6 +64,8 @@ We use a large block of connected links for our pagination, making links hard to
             LastLinkIcon="IconName.ChevronDoubleRight" />
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/pagination#working-with-icons)
+
 ### Disabled and active states
 
 <img src="https://i.imgur.com/SCbZVd4.jpg" alt="Pagination - Disabled and active states" />
@@ -72,6 +75,8 @@ We use a large block of connected links for our pagination, making links hard to
 <Pagination ActivePageNumber="3" TotalPages="10" />
 <Pagination ActivePageNumber="5" TotalPages="10" />
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/pagination#disabled-and-active-states)
 
 ### Sizing
 
@@ -85,6 +90,8 @@ Fancy larger or smaller pagination? Add `Size="PaginationSize.Small"` or `Size="
 <Pagination ActivePageNumber="5" TotalPages="5" Size="PaginationSize.Large" />
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/pagination#sizing)
+
 ### Alignment
 
 <img src="https://i.imgur.com/RkpUdJu.jpg" alt="Pagination - Alignment" />
@@ -94,6 +101,8 @@ Fancy larger or smaller pagination? Add `Size="PaginationSize.Small"` or `Size="
 <Pagination ActivePageNumber="2" TotalPages="5" Alignment="Alignment.Center" />
 <Pagination ActivePageNumber="2" TotalPages="5" Alignment="Alignment.End" />
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/pagination#alignment)
 
 ### Callback Events
 
@@ -116,3 +125,5 @@ Fancy larger or smaller pagination? Add `Size="PaginationSize.Small"` or `Size="
     }
 }
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/pagination#events)
