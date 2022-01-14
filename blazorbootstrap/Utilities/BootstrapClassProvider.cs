@@ -44,6 +44,12 @@
 
         #endregion
 
+        #region Colors
+
+        public string BackgroundColor(BackgroundColor backgroundColor) => $"bg-{ToBackgroundColor(backgroundColor)}";
+
+        #endregion
+
         #region Callout
 
         public string Callout() => "bb-callout";
@@ -67,6 +73,12 @@
         public string Divider() => "divider";
 
         public string DividerType(DividerType dividerType) => $"{Divider()}-{ToDividerType(dividerType)}";
+
+        #endregion
+
+        #region Flex
+
+        public string FlexAlignment(Alignment alignment) => $"justify-content-{ToAlignment(alignment)}";
 
         #endregion
 
@@ -96,6 +108,26 @@
         public string Offcanvas(Placement placement) => $"{Offcanvas()}-{ToPlacement(placement)}";
 
         #endregion Offcanvas
+
+        #region Pagination
+
+        public string Pagination() => "pagination";
+
+        public string PaginationSize(PaginationSize size) => $"{Pagination()}-{ToPaginationSize(size)}";
+
+        public string PaginationItem() => "page-item";
+
+        public string PaginationItemActive() => Active();
+
+        public string PaginationItemDisabled() => Disabled();
+
+        public string PaginationLink() => "page-link";
+
+        public string PaginationLinkActive() => null;
+
+        public string PaginationLinkDisabled() => null;
+
+        #endregion
 
         #region Position
 
@@ -143,6 +175,36 @@
 
         #region Methods
 
+        public string ToAlignment(Alignment alignment)
+        {
+            return alignment switch
+            {
+                BlazorBootstrap.Alignment.Start => "start",
+                BlazorBootstrap.Alignment.Center => "center",
+                BlazorBootstrap.Alignment.End => "end",
+                _ => null,
+            };
+        }
+
+        public string ToBackgroundColor(BackgroundColor color)
+        {
+            return color switch
+            {
+                BlazorBootstrap.BackgroundColor.Primary => "primary",
+                BlazorBootstrap.BackgroundColor.Secondary => "secondary",
+                BlazorBootstrap.BackgroundColor.Success => "success",
+                BlazorBootstrap.BackgroundColor.Danger => "danger",
+                BlazorBootstrap.BackgroundColor.Warning => "warning",
+                BlazorBootstrap.BackgroundColor.Info => "info",
+                BlazorBootstrap.BackgroundColor.Light => "light",
+                BlazorBootstrap.BackgroundColor.Dark => "dark",
+                BlazorBootstrap.BackgroundColor.Body => "body",
+                BlazorBootstrap.BackgroundColor.White => "white",
+                BlazorBootstrap.BackgroundColor.Transparent => "transparent",
+                _ => null,
+            };
+        }
+
         public string ToButtonColor(ButtonColor color)
         {
             return color switch
@@ -179,25 +241,6 @@
             };
         }
 
-        public string ToBackgroundColor(BackgroundColor color)
-        {
-            return color switch
-            {
-                BlazorBootstrap.BackgroundColor.Primary => "primary",
-                BlazorBootstrap.BackgroundColor.Secondary => "secondary",
-                BlazorBootstrap.BackgroundColor.Success => "success",
-                BlazorBootstrap.BackgroundColor.Danger => "danger",
-                BlazorBootstrap.BackgroundColor.Warning => "warning",
-                BlazorBootstrap.BackgroundColor.Info => "info",
-                BlazorBootstrap.BackgroundColor.Light => "light",
-                BlazorBootstrap.BackgroundColor.Dark => "dark",
-                BlazorBootstrap.BackgroundColor.Body => "body",
-                BlazorBootstrap.BackgroundColor.White => "white",
-                BlazorBootstrap.BackgroundColor.Transparent => "transparent",
-                _ => null,
-            };
-        }
-
         public string ToToastBackgroundColor(ToastType toastType)
         {
             return toastType switch
@@ -221,7 +264,7 @@
         {
             return toastType switch
             {
-                BlazorBootstrap.ToastType.Primary 
+                BlazorBootstrap.ToastType.Primary
                 or BlazorBootstrap.ToastType.Secondary
                 or BlazorBootstrap.ToastType.Success
                 or BlazorBootstrap.ToastType.Danger
@@ -370,6 +413,16 @@
             };
         }
 
+        public string ToPaginationSize(PaginationSize size)
+        {
+            return size switch
+            {
+                BlazorBootstrap.PaginationSize.Small => "sm",
+                BlazorBootstrap.PaginationSize.Large => "lg",
+                _ => null,
+            };
+        }
+
         public string ToPlacement(Placement placement)
         {
             return placement switch
@@ -378,6 +431,44 @@
                 BlazorBootstrap.Placement.End => "end",
                 BlazorBootstrap.Placement.Top => "top",
                 _ => "bottom",
+            };
+        }
+
+        public string ToModalSize(ModalSize size)
+        {
+            return size switch
+            {
+                BlazorBootstrap.ModalSize.Regular => null,
+                BlazorBootstrap.ModalSize.Small => "modal-sm",
+                BlazorBootstrap.ModalSize.Large => "modal-lg",
+                BlazorBootstrap.ModalSize.ExtraLarge => "modal-xl",
+                _ => null,
+            };
+        }
+
+        public string ToModalFullscreen(ModalFullscreen fullscreen)
+        {
+            return fullscreen switch
+            {
+                BlazorBootstrap.ModalFullscreen.Disabled => null,
+                BlazorBootstrap.ModalFullscreen.Always => "modal-fullscreen",
+                BlazorBootstrap.ModalFullscreen.SmallDown => "modal-fullscreen-sm-down",
+                BlazorBootstrap.ModalFullscreen.MediumDown => "modal-fullscreen-md-down",
+                BlazorBootstrap.ModalFullscreen.LargeDown => "modal-fullscreen-lg-down",
+                BlazorBootstrap.ModalFullscreen.ExtraLargeDown => "modal-fullscreen-xl-down",
+                BlazorBootstrap.ModalFullscreen.ExtraExtraLargeDown => "modal-fullscreen-xxl-down",
+                _ => null,
+            };
+        }
+
+        public string ToOffcanvasSize(OffcanvasSize size)
+        {
+            return size switch
+            {
+                BlazorBootstrap.OffcanvasSize.Regular => null,
+                BlazorBootstrap.OffcanvasSize.Small => "bb-offcanvas-sm",
+                BlazorBootstrap.OffcanvasSize.Large => "bb-offcanvas-lg",
+                _ => null,
             };
         }
 

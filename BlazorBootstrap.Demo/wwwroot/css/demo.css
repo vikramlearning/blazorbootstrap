@@ -57,6 +57,9 @@
     margin-top: 2rem
 }
 
+.bb-example > .btn, .bb-example > .btn-group {
+    margin: .25rem .125rem;
+}
 
 .highlight {
     padding: 1rem;
@@ -84,3 +87,20 @@
         color: #212529;
         word-wrap: normal
     }
+
+/* display */
+.display-7 {
+    font-size: 2rem
+}
+
+.display-8 {
+    font-size: 1.5rem
+}
+
+.display-9 {
+    font-size: 1.25rem
+}
+
+.display-10 {
+    font-size: 1rem
+}

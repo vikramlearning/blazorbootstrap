@@ -1,0 +1,14 @@
+﻿<Offcanvas @ref="offcanvas" Title="Offcanvas top" Placement="Placement.Top">
+    <BodyTemplate>...</BodyTemplate>
+</Offcanvas>
+
+<Button Color="ButtonColor.Primary" @onclick="OnShowOffcanvasClick">Show top offcanvas</Button>
+
+@code {
+    private Offcanvas offcanvas;
+
+    private async Task OnShowOffcanvasClick()
+    {
+        await offcanvas?.ShowAsync();
+    }
+}

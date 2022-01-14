@@ -6,7 +6,7 @@
     public enum IconSize
     {
         /// <summary>
-        /// The icon size will not be applied.
+        /// Default icon size will be applied.
         /// </summary>
         None,
 

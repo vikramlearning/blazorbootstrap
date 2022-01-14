@@ -3,7 +3,6 @@ using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.JSInterop;
-using System.Collections.Generic;
 
 namespace BlazorBootstrap
 {

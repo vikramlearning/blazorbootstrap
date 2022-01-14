@@ -1,0 +1,83 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+@typeparam TItem
+
+<CascadingValue Value="@this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@if (columns.Any())
+{
+    <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        <thead>
+            <tr>
+                @foreach (var column in columns)
+                {
+                    @column.HeaderTemplate
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (requestInProgress) // || totalCount == null
+            {
+                // show placeholders
+                @for (var i = 0; i < 5; i++)
+                {
+                    <tr>
+                        @for (var j = 0; j < columns.Count; j++)
+                        {
+                            <td class="placeholder-glow"><span class="placeholder col-12"></span></td>
+                        }
+                    </tr>
+                }
+            }
+            else if (totalCount == 0)
+            {
+                // show empty
+                <tr>
+                    <td colspan="@columns.Count">
+                        @if (EmptyDataTemplate == null)
+                        {
+                            <div class="text-center text-secondary my-5">
+                                <div class="fs-3"><Icon Name="IconName.Inbox" /></div>
+                                <div>No Data.</div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="my-3">
+                                @EmptyDataTemplate
+                            </div>
+                        }
+                    </td>
+                </tr>
+            }
+            else if (totalCount > 0)
+            {
+                if (items != null)
+                {
+                    foreach (var item in items)
+                    {
+                        <tr @key="item.GetHashCode()">
+                            @foreach (var column in columns)
+                            {
+                                @column.CellTemplate(item)
+                            }
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+    </table>
+
+    @if (totalCount.HasValue && totalCount.Value > 0)
+    {
+        <Pagination ActivePageNumber="@(GridCurrentState.PageIndex)"
+                    TotalPages="@totalPages"
+                    PageChanged="OnPageChangedAsync"
+                    FirstLinkIcon="IconName.ChevronDoubleLeft"
+                    PreviousLinkIcon="IconName.ChevronLeft"
+                    NextLinkIcon="IconName.ChevronRight"
+                    LastLinkIcon="IconName.ChevronDoubleRight" />
+    }
+}

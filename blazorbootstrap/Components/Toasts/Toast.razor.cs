@@ -1,8 +1,6 @@
 ﻿using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System;
-using System.Threading.Tasks;
 
 namespace BlazorBootstrap
 {
@@ -56,6 +54,18 @@ namespace BlazorBootstrap
         public async Task HideAsync()
         {
             await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", ElementId);
+        }
+
+        /// <inheritdoc />
+        protected override async ValueTask DisposeAsync(bool disposing)
+        {
+            if (disposing)
+            {
+                await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", ElementId);
+                objRef?.Dispose();
+            }
+
+            await base.DisposeAsync(disposing);
         }
 
         [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync(this.ToastMessage.Id);

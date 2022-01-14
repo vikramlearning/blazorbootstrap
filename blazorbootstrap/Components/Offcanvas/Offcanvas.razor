@@ -3,6 +3,35 @@
 
 <CascadingValue Value="@this" IsFixed="true">
     <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-        @ChildContent
+        @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
+        {
+            <div class="offcanvas-header @HeaderCssClass">
+                @if (!string.IsNullOrWhiteSpace(Title))
+                {
+                    <h5>@Title</h5>
+                }
+                else if (HeaderTemplate != null)
+                {
+                    @HeaderTemplate
+                }
+
+                @if (ShowCloseButton)
+                {
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                }
+            </div>
+        }
+        @if (BodyTemplate != null)
+        {
+            <div class="offcanvas-body @BodyCssClass">
+                @BodyTemplate
+            </div>
+        }
+        @if (FooterTemplate != null)
+        {
+            <div class="offcanvas-footer @FooterCssClass">
+                @FooterTemplate
+            </div>
+        }
     </div>
 </CascadingValue>

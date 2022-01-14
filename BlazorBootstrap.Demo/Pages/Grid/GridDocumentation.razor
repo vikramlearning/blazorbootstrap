@@ -1,0 +1,22 @@
+﻿@using System.Threading.Tasks
+@page "/grid"
+
+<PageTitle>Grid Demo - BlazorBootstrap</PageTitle>
+
+<h1 class="my-4">Grid</h1>
+<div class="mb-3">
+    Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Client side sorting and paging" PageUrl="@pageUrl" HashTagName="client-side-sorting-and-paging" />
+<Demo Type="typeof(Grid_Demo_01_Examples)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Server side sorting and paging" PageUrl="@pageUrl" HashTagName="server-side-sorting-and-paging" />
+<Demo Type="typeof(Grid_Demo_02_Server_Side_Paging_And_Sorting)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Empty data" PageUrl="@pageUrl" HashTagName="empty-data" />
+<Demo Type="typeof(Grid_Demo_03_Empty_Data)" />
+
+@code {
+    private string pageUrl = "/grid";
+}
