@@ -175,7 +175,7 @@ public partial class Pagination : BaseComponent
     [Parameter] public IconName LastLinkIcon { get; set; }
 
     /// <summary>
-    /// Event raised when the page number is changed.
+    /// This event fires immediately when the page number is changed.
     /// </summary>
     [Parameter] public EventCallback<int> PageChanged { get; set; }
 
