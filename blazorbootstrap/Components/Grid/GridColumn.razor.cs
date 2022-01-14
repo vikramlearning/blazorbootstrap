@@ -63,6 +63,9 @@ public partial class GridColumn<TItem> : BaseComponent
 
     [CascadingParameter] public Grid<TItem> Parent { get; set; }
 
+    /// <summary>
+    /// Gets or sets the table column header.
+    /// </summary>
     [Parameter] public string HeaderText { get; set; }
 
     [Parameter] public string SortString { get; set; }
@@ -71,6 +74,9 @@ public partial class GridColumn<TItem> : BaseComponent
 
     [Parameter] public SortDirection SortDirection { get; set; } = SortDirection.None;
 
+    /// <summary>
+    /// Gets or sets the default sort column.
+    /// </summary>
     [Parameter] public bool IsDefaultSortColumn { get; set; } = false;
 
     [Parameter] public RenderFragment<TItem> ChildContent { get; set; }
