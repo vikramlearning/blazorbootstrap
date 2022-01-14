@@ -26,7 +26,7 @@ Use BlazorBootstrap's Grid component to display tabular data from the data sourc
 | IsDefaultSortColumn | bool | Gets or sets the default sort column. | | false |
 | SortDirection | `SortDirection` | Gets or sets the default sort direction of a column. | | `SortDirection.None` |
 | SortKeySelector | `Expression<Func<TItem, IComparable>>` | Expression used for sorting. | | |
-| SortString | string | | | |
+| SortString | string | Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting. | | |
 
 ## Examples
 

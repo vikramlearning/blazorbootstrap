@@ -68,10 +68,19 @@ public partial class GridColumn<TItem> : BaseComponent
     /// </summary>
     [Parameter] public string HeaderText { get; set; }
 
+    /// <summary>
+    /// Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting.
+    /// </summary>
     [Parameter] public string SortString { get; set; }
 
+    /// <summary>
+    /// Expression used for sorting.
+    /// </summary>
     [Parameter] public Expression<Func<TItem, IComparable>> SortKeySelector { get; set; }
 
+    /// <summary>
+    /// Gets or sets the default sort direction of a column.
+    /// </summary>
     [Parameter] public SortDirection SortDirection { get; set; } = SortDirection.None;
 
     /// <summary>
@@ -79,6 +88,9 @@ public partial class GridColumn<TItem> : BaseComponent
     /// </summary>
     [Parameter] public bool IsDefaultSortColumn { get; set; } = false;
 
+    /// <summary>
+    /// Specifies the content to be rendered inside the grid column.
+    /// </summary>
     [Parameter] public RenderFragment<TItem> ChildContent { get; set; }
 
     internal RenderFragment HeaderTemplate
