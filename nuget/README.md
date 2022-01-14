@@ -1,4 +1,4 @@
-﻿# BlazorBootstrap
+﻿# Blazor.Bootstrap
 
 Blazor.Bootstrap is a component library built on top of Blazor and Bootstrap 5 CSS framework.
 
