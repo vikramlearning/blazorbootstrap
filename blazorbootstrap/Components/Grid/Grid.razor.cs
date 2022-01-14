@@ -149,26 +149,30 @@ public partial class Grid<TItem> : BaseComponent
     /// </summary>
     [Parameter] public bool Sortable { get; set; } = true;
 
+    /// <summary>
+    /// Specifies the content to be rendered inside the grid.
+    /// </summary>
     [Parameter] public RenderFragment ChildContent { get; set; }
 
+    /// <summary>
+    /// Template to render when there are no rows to display.
+    /// </summary>
     [Parameter] public RenderFragment EmptyDataTemplate { get; set; }
 
     /// <summary>
-    /// Data provider for items to render as a table.
+    /// DataProvider is for items to render. The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
     /// </summary>
     [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
 
     /// <summary>
-    /// Current grid state (page, sorting).
+    /// Gets or sets the page size of the grid.
     /// </summary>
-    [Parameter] public GridState<TItem> GridCurrentState { get; set; } = new GridState<TItem>(1, null);
+    [Parameter] public int PageSize { get; set; } = 10;
 
     /// <summary>
-    /// Event fires when grid state is changed.
+    /// Current grid state (page, sorting).
     /// </summary>
-    //[Parameter] public EventCallback<GridState<TItem>> GridCurrentStateChanged { get; set; }
-
-    [Parameter] public int PageSize { get; set; } = 10;
+    internal GridState<TItem> GridCurrentState { get; set; } = new GridState<TItem>(1, null);
 
     #endregion Properties
 }
