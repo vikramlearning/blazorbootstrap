@@ -11,6 +11,19 @@ Documentation and examples for showing pagination to indicate a series of relate
 
 | Name | Type | Descritpion | Required | Default |
 |--|--|--|--|--|
+| ActivePageNumber | int | Active page number. Starts with 1. | | 1 |
+| Alignment | `Alignment` | Gets or sets the pagination alignment. | | `Alignment.None` |
+| DisplayPages | int | Gets or sets the maximum page links to be displayed. | | 5 |
+| FirstLinkIcon | `IconName` | Gets or sets first link icon. | | |
+| FirstLinkText | string | Gets or sets first link text. `FirstLinkText` is ignored if `FirstLinkIcon` is specified. | | First |
+| LastLinkIcon | `IconName` | Gets or sets last link icon. | | |
+| LastLinkText | string | Gets or sets last link text. `LastLinkText` is ignored if `LastLinkIcon` is specified. | | Last |
+| NextLinkIcon | `IconName` | Gets or sets next link icon. | | |
+| NextLinkText | string | Gets or sets next link text. `NextLinkText` is ignored if `NextLinkIcon` is specified. | | Next |
+| PreviousLinkIcon | `IconName` | Gets or sets previous link icon. | | |
+| PreviousLinkText | string | Gets or sets previous link text. `PreviousLinkText` is ignored if `PreviousLinkIcon` is specified. | | Previous |
+| Size | `PaginationSize` | Gets or sets the pagination size. | | |
+| TotalPages | int | Total pages of data items. | | |
 
 
 ## Callback Events

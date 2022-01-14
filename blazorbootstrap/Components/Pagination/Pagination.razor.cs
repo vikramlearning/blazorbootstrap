@@ -147,31 +147,53 @@ public partial class Pagination : BaseComponent
     [Parameter] public int ActivePageNumber { get; set; } = 1;
 
     /// <summary>
-    /// Page size.
-    /// </summary>
-    [Parameter] public int PageSize { get; set; }
-
-    /// <summary>
     /// Total pages of data items.
     /// </summary>
     [Parameter] public int TotalPages { get; set; }
 
+    /// <summary>
+    /// Gets or sets the maximum page links to be displayed.
+    /// </summary>
     [Parameter] public int DisplayPages { get; set; } = 5;
 
+    /// <summary>
+    /// Gets or sets first link text. 'FirstLinkText' is ignored if 'FirstLinkIcon' is specified.
+    /// </summary>
     [Parameter] public string FirstLinkText { get; set; }
 
+    /// <summary>
+    /// Gets or sets first link icon.
+    /// </summary>
     [Parameter] public IconName FirstLinkIcon { get; set; }
 
+    /// <summary>
+    /// Gets or sets previous link text. 'PreviousLinkText' is ignored if 'PreviousLinkIcon' is specified.
+    /// </summary>
     [Parameter] public string PreviousLinkText { get; set; }
 
+    /// <summary>
+    /// Gets or sets previous link icon.
+    /// </summary>
     [Parameter] public IconName PreviousLinkIcon { get; set; }
 
+    /// <summary>
+    /// Gets or sets next link text. 'NextLinkText' is ignored if 'NextLinkIcon' is specified.
+    /// </summary>
     [Parameter] public string NextLinkText { get; set; }
 
+    /// <summary>
+    /// Gets or sets next link icon.
+    /// </summary>
     [Parameter] public IconName NextLinkIcon { get; set; }
 
+    /// <summary>
+    /// Gets or sets last link text. 'LastLinkText' is ignored if 'LastLinkIcon' is specified.
+    /// </summary>
     [Parameter] public string LastLinkText { get; set; }
 
+    /// <summary>
+    /// Gets or sets last link icon.
+    /// </summary>
     [Parameter] public IconName LastLinkIcon { get; set; }
 
     /// <summary>
