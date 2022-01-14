@@ -4,9 +4,17 @@
         <title>BlazorBootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>BlazorBootstrap Blog</description>
-        <lastBuildDate>Tue, 21 Dec 2021 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 15 Jan 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
+        <item>
+            <title><![CDATA[BlazorBootstrap v0.2.0]]></title>
+            <link>https://getblazorbootstrap.com/blog/2022/01/15/blazorbootstrap-0.2.0</link>
+            <guid>BlazorBootstrap v0.2.0</guid>
+            <pubDate>Sat, 15 Jan 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 0.2.0 with lots of updates.]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.0</code> with lots of updates.</p><h3>Major changes</h3><ul><li>Modal component enhancements</li><li>Offcanvas enhancements</li><li>Demo website updates</li></ul><h3>Two New Comoponents</h3><ul><li>Grid</li><li>Pagination</li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/modals">Modals</a></li><li><a href="https://demos.getblazorbootstrap.com/offcanvas">Offcanvas</a></li><li><a href="https://demos.getblazorbootstrap.com/grid">Grid</a></li><li><a href="https://demos.getblazorbootstrap.com/pagination">Pagination</a></li></ul>]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.1.1]]></title>
             <link>https://getblazorbootstrap.com/blog/2021/12/21/blazorbootstrap-0.1.1</link>
