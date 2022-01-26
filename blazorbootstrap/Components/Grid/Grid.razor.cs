@@ -106,7 +106,7 @@ public partial class Grid<TItem> : BaseComponent
         return 1;
     }
 
-    private async Task RefreshDataAsync()
+    public async Task RefreshDataAsync()
     {
         requestInProgress = true;
 
