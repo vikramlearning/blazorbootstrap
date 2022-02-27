@@ -5,7 +5,7 @@ sidebar_position: 12
 
 # Tooltips
 
-Documentation and examples for adding custom BlazorBootstrap Tooltips.
+Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages.
 
 ## Parameters
 

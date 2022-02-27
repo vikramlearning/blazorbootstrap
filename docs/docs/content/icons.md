@@ -5,7 +5,7 @@ sidebar_position: 1
 
 # Icons
 
-The Icon component will display an icon from any icon font.
+BlazorBootstrap's icon component will display an icon from any icon font.
 
 ## Prerequisites
 

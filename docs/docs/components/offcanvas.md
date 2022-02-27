@@ -5,7 +5,7 @@ sidebar_position: 8
 
 # Offcanvas
 
-Build hidden sidebars into your project for navigation, shopping carts, and more with our Offcanvas component.
+Build hidden sidebars into your project for navigation, shopping carts, and more with BlazorBootstrap's offcanvas component.
 
 ## Parameters
 

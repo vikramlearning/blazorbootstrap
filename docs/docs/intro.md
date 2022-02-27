@@ -7,7 +7,7 @@ title: Introduction
 
 # Introduction
 
-Get started with BlazorBootstrap, with ready made components.
+Get started with BlazorBootstrap, with ready-made components.
 
 ## Quick start
 

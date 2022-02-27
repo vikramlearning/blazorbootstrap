@@ -5,7 +5,7 @@ sidebar_position: 9
 
 # Pagination
 
-Documentation and examples for showing pagination to indicate a series of related content exists across multiple pages.
+Use BlazorBootstrap's pagination component to indicate a series of related content exists across multiple pages.
 
 ## Parameters
 

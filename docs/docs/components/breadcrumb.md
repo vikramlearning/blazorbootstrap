@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # Breadcrumb
 
-Indicate the current page's location within a navigational hierarchy that automatically adds separators.
+BlazorBootstrap's breadcrumb component indicates the current page's location within a navigational hierarchy that automatically adds separators.
 
 ## Parameters
 

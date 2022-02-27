@@ -10,7 +10,7 @@ tags: [v0.2.1, blazorbootstrap, icons, confirm dialog, Toasts]
 
 We are excited to release `0.2.1` with minor updates.
 
-## Bootstrap Icons update to v1.8.0
+## Bootstrap Icons updated to v1.8.0
 
 <img src="https://i.imgur.com/273TamX.png" alt="Blazor Bootstrap: Icon Component - Bootstrap Icons" />
 

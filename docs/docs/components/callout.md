@@ -5,7 +5,7 @@ sidebar_position: 4
 
 # Callout
 
-BlazorBootstrap callout component provides presentation of content in a visually distinct manner. Includes a heading, icon and typically text-based content.
+BlazorBootstrap's callout component provides content presentation in a visually distinct manner.
 
 
 ## Parameters

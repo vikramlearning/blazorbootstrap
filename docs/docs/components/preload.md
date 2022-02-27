@@ -5,7 +5,7 @@ sidebar_position: 10
 
 # Preload
 
-Indicate the loading state of a page with BlazorBootstrap Preload component.
+Indicate the loading state of a page with BlazorBootstrap's preload component.
 
 **Things to know when using the `Preload` component:**
 
