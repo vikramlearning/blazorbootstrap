@@ -124,8 +124,8 @@
                 BlazorBootstrap.IconName.BadgeCcFill => "badge-cc-fill",
                 BlazorBootstrap.IconName.BadgeHd => "badge-hd",
                 BlazorBootstrap.IconName.BadgeHdFill => "badge-hd-fill",
-                BlazorBootstrap.IconName.BadgeSd => "",
-                BlazorBootstrap.IconName.BadgeSdFill => "",
+                BlazorBootstrap.IconName.BadgeSd => "badge-sd",
+                BlazorBootstrap.IconName.BadgeSdFill => "badge-sd-fillv",
                 BlazorBootstrap.IconName.BadgeTm => "badge-tm",
                 BlazorBootstrap.IconName.BadgeTmFill => "badge-tm-fill",
                 BlazorBootstrap.IconName.BadgeVo => "badge-vo",
@@ -294,8 +294,8 @@
                 BlazorBootstrap.IconName.CalendarWeekFill => "calendar-week-fill",
                 BlazorBootstrap.IconName.CalendarX => "calendar-x",
                 BlazorBootstrap.IconName.CalendarXFill => "calendar-x-fill",
-                BlazorBootstrap.IconName.Calendar2 => "​calendar2",
-                BlazorBootstrap.IconName.Calendar2Check => "​calendar2-check",
+                BlazorBootstrap.IconName.Calendar2 => "​calendar2", // TODO: verify
+                BlazorBootstrap.IconName.Calendar2Check => "​calendar2-check", // TODO: verify
                 BlazorBootstrap.IconName.Calendar2CheckFill => "calendar2-check-fill",
                 BlazorBootstrap.IconName.Calendar2Date => "calendar2-date",
                 BlazorBootstrap.IconName.Calendar2DateFill => "calendar2-date-fill",
@@ -1667,8 +1667,8 @@
                 BlazorBootstrap.IconName.Wordpress => "wordpress",
                 BlazorBootstrap.IconName.Wrench => "wrench",
                 BlazorBootstrap.IconName.WrenchAdjustable => "wrench-adjustable",
-                BlazorBootstrap.IconName.WrenchAdjustableCircle => "wrench-adjustable-circle",
-                BlazorBootstrap.IconName.WrenchAdjustableCircleFill => "wrench-adjustable-circle-fill",
+                BlazorBootstrap.IconName.WrenchAdjustableCircle => "wrench-adjustable-circle", // TODO: verify
+                BlazorBootstrap.IconName.WrenchAdjustableCircleFill => "wrench-adjustable-circle-fill", // TODO: verify
                 BlazorBootstrap.IconName.X => "x",
                 BlazorBootstrap.IconName.XCircle => "x-circle",
                 BlazorBootstrap.IconName.XCircleFill => "x-circle-fill",
