@@ -20,7 +20,7 @@ We are excited to release `0.2.1` with minor updates.
 
 - Toasts component UI alignment fix
 - Confirm Dialog component docs update
-- 140+ icons added as part of Bootstrap Icons update to `v1.8.0`
+- Bootstrap Icons updated to `v1.8.0`
 
 ### Links
 
