@@ -14,7 +14,7 @@ namespace BlazorBootstrap
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.ToastContainer());
-            builder.Append(BootstrapClassProvider.PositionAbsolute());
+            builder.Append(BootstrapClassProvider.PositionFixed());
             builder.Append(BootstrapClassProvider.ToToastsPlacement(Placement));
 
             base.BuildClasses(builder);

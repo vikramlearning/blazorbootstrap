@@ -133,6 +133,7 @@
 
         public string Position() => "position";
         public string PositionAbsolute() => $"{Position()}-absolute";
+        public string PositionFixed() => $"{Position()}-fixed";
 
         #endregion
 

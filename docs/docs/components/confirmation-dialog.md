@@ -44,33 +44,45 @@ Use BlazorBootstrap's `Confirm Dialog` component if you want the user to verify 
 <img src="https://i.imgur.com/chdLk3D.jpg" alt="Blazor Bootstrap: Modal Component" />
 
 ```cshtml
-<Button Color="ButtonColor.Primary" @onclick="ShowConfirmationModal">Show confirmation</Button>
-
 <ConfirmDialog @ref="dialog"
                Title="Are you sure you want to save this?"
                Message1="This will save the details enterd in the form."
                Message2="Do you want to proceed?"
                OnYes="OnYesAsync"
                OnNo="OnNoAsync"></ConfirmDialog>
+
+<Button Color="ButtonColor.Primary" @onclick="OnShowConfirmationModalClick">Show confirmation</Button>
+
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" />
 ```
 
-```cs {2,6,9,14}
+```cs {2,8,11,20}
 @code {
     private ConfirmDialog dialog;
 
-    private void ShowConfirmationModal()
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    private void OnShowConfirmationModalClick()
     {
         dialog.Show();
     }
 
     private async Task OnYesAsync()
     {
-        Console.WriteLine("OnYesAsync");
+        messages?.Add(new ToastMessage
+            {
+                Type = ToastType.Success,
+                Message = $"Details saved successfully. DateTime: {DateTime.Now}",
+            });
     }
 
     private async Task OnNoAsync()
     {
-        Console.WriteLine("OnNoAsync");
+        messages?.Add(new ToastMessage
+            {
+                Type = ToastType.Secondary,
+                Message = $"Action canceled. DateTime: {DateTime.Now}",
+            });
     }
 }
 ```

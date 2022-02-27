@@ -36,7 +36,6 @@ public class Demo : ComponentBase
 				}
 			}
 		}
-
 	}
 
 	protected override void BuildRenderTree(RenderTreeBuilder builder)

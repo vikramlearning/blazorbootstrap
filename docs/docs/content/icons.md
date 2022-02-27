@@ -14,7 +14,7 @@ The Icon component will display an icon from any icon font.
 
 - Include the icon fonts stylesheet in your website `<head>` or `@import` in CSS from CDN.
 ```
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
 ```
 
 ## Parameters
@@ -61,7 +61,7 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 ### Inline text with icon
 
-<img src="https://i.imgur.com/eNKFAKg.jpg" alt="Blazor Bootstrap: Icon Component" />
+<img src="https://i.imgur.com/eNKFAKg.jpg" alt="Blazor Bootstrap: Icon Component - Inline text with icon" />
 
 ```cshtml
 <p>
@@ -72,7 +72,7 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 ### Link with icon
 
-<img src="https://i.imgur.com/pDpv29z.jpg" alt="Blazor Bootstrap: Icon Component" />
+<img src="https://i.imgur.com/pDpv29z.jpg" alt="Blazor Bootstrap: Icon Component - Link with icon" />
 
 ```cshtml
 <p>
@@ -85,7 +85,7 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 ### Link with custom icon
 
-<img src="https://i.imgur.com/KNFvgiS.jpg" alt="Blazor Bootstrap: Icon Component" />
+<img src="https://i.imgur.com/KNFvgiS.jpg" alt="Blazor Bootstrap: Icon Component - Link with custom icon" />
 
 ```cshtml
 <p>
@@ -98,7 +98,7 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 ### Button with icon and text
 
-<img src="https://i.imgur.com/Pkzbm1Q.jpg" alt="Blazor Bootstrap: Icon Component" />
+<img src="https://i.imgur.com/Pkzbm1Q.jpg" alt="Blazor Bootstrap: Icon Component - Button with icon and text" />
 
 ```cshtml
 <p>
@@ -111,7 +111,7 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 ### Button with icon only
 
-<img src="https://i.imgur.com/3WClQmS.jpg" alt="Blazor Bootstrap: Icon Component" />
+<img src="https://i.imgur.com/3WClQmS.jpg" alt="Blazor Bootstrap: Icon Component - Button with icon only" />
 
 ```cshtml
 <p>
@@ -119,3 +119,9 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 </p>
 ```
 [See button with icon only demo here.](https://demos.getblazorbootstrap.com/icons#button-with-icon-only)
+
+### Bootstrap Icons
+
+<img src="https://i.imgur.com/273TamX.png" alt="Blazor Bootstrap: Icon Component - Bootstrap Icons" />
+
+[See all bootstrap icons demo here.](https://demos.getblazorbootstrap.com/icons#bootstrap-icons)
