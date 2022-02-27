@@ -4,9 +4,17 @@
         <title>BlazorBootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>BlazorBootstrap Blog</description>
-        <lastBuildDate>Sat, 15 Jan 2022 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 27 Feb 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
+        <item>
+            <title><![CDATA[BlazorBootstrap v0.2.1]]></title>
+            <link>https://getblazorbootstrap.com/blog/2022/02/27/blazorbootstrap-0.2.1</link>
+            <guid>BlazorBootstrap v0.2.1</guid>
+            <pubDate>Sun, 27 Feb 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 0.2.1 with minor updates.]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.1</code> with minor updates.</p><h2>Bootstrap Icons update to v1.8.0</h2><img src="https://i.imgur.com/273TamX.png" alt="Blazor Bootstrap: Icon Component - Bootstrap Icons"/><h3>Minor Updates</h3><ul><li>Toasts component UI alignment fix</li><li>Confirm Dialog component docs update</li><li>140+ icons added as part of Bootstrap Icons update to <code>v1.8.0</code></li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/confirm-dialog">Confirm Dialog</a></li><li><a href="https://demos.getblazorbootstrap.com/icons">Icons</a></li><li><a href="https://demos.getblazorbootstrap.com/toasts">Toasts</a></li></ul>]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.2.0]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/01/15/blazorbootstrap-0.2.0</link>
