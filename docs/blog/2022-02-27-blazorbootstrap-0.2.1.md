@@ -5,7 +5,7 @@ authors:
   title: Creator
   url: https://github.com/gvreddy04
   image_url: https://avatars.githubusercontent.com/u/2337067
-tags: [v0.2.1, blazorbootstrap, icons, confirm dialog, Toasts]
+tags: [v0.2.1, blazorbootstrap, icons, confirm dialog, toasts]
 ---
 
 We are excited to release `0.2.1` with minor updates.

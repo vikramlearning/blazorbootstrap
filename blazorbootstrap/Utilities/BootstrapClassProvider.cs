@@ -95,12 +95,6 @@
 
         #endregion Modal
 
-        #region PageLoading
-
-        public string PageLoadingModal() => "modal-page-loading";
-
-        #endregion PageLoading
-
         #region Offcanvas
 
         public string Offcanvas() => "offcanvas";
@@ -108,6 +102,12 @@
         public string Offcanvas(Placement placement) => $"{Offcanvas()}-{ToPlacement(placement)}";
 
         #endregion Offcanvas
+
+        #region PageLoading
+
+        public string PageLoadingModal() => "modal-page-loading";
+
+        #endregion PageLoading
 
         #region Pagination
 
@@ -126,6 +126,16 @@
         public string PaginationLinkActive() => null;
 
         public string PaginationLinkDisabled() => null;
+
+        #endregion
+
+        #region Placeholder
+
+        public string Placeholder() => "placeholder";
+        public string PlaceholderAnimation(PlaceholderAnimation animation) => $"{Placeholder()}-{ToPlaceholderAnimation(animation)}";
+        public string PlaceholderWidth(PlaceholderWidth width) => $"{ToPlaceholderWidth(width)}";
+        public string PlaceholderColor(PlaceholderColor color) => $"bg-{ToPlaceholderColor(color)}";
+        public string PlaceholderSize(PlaceholderSize size) => $"{Placeholder()}-{ToPlaceholderSize(size)}";
 
         #endregion
 
@@ -469,6 +479,62 @@
                 BlazorBootstrap.OffcanvasSize.Regular => null,
                 BlazorBootstrap.OffcanvasSize.Small => "bb-offcanvas-sm",
                 BlazorBootstrap.OffcanvasSize.Large => "bb-offcanvas-lg",
+                _ => null,
+            };
+        }
+
+        public string ToPlaceholderAnimation(PlaceholderAnimation animation)
+        {
+            return animation switch
+            {
+                BlazorBootstrap.PlaceholderAnimation.Glow => "glow",
+                BlazorBootstrap.PlaceholderAnimation.Wave => "wave",
+                _ => null,
+            };
+        }
+
+        public string ToPlaceholderWidth(PlaceholderWidth width)
+        {
+            return width switch
+            {
+                BlazorBootstrap.PlaceholderWidth.Col1 => "col-1",
+                BlazorBootstrap.PlaceholderWidth.Col2 => "col-2",
+                BlazorBootstrap.PlaceholderWidth.Col3 => "col-3",
+                BlazorBootstrap.PlaceholderWidth.Col4 => "col-4",
+                BlazorBootstrap.PlaceholderWidth.Col5 => "col-5",
+                BlazorBootstrap.PlaceholderWidth.Col6 => "col-6",
+                BlazorBootstrap.PlaceholderWidth.Col7 => "col-7",
+                BlazorBootstrap.PlaceholderWidth.Col8 => "col-8",
+                BlazorBootstrap.PlaceholderWidth.Col9 => "col-9",
+                BlazorBootstrap.PlaceholderWidth.Col10 => "col-10",
+                BlazorBootstrap.PlaceholderWidth.Col11 => "col-11",
+                BlazorBootstrap.PlaceholderWidth.Col12 => "col-12",
+                _ => null,
+            };
+        }
+        public string ToPlaceholderColor(PlaceholderColor color)
+        {
+            return color switch
+            {
+                BlazorBootstrap.PlaceholderColor.Primary => "primary",
+                BlazorBootstrap.PlaceholderColor.Secondary => "secondary",
+                BlazorBootstrap.PlaceholderColor.Success => "success",
+                BlazorBootstrap.PlaceholderColor.Danger => "danger",
+                BlazorBootstrap.PlaceholderColor.Warning => "warning",
+                BlazorBootstrap.PlaceholderColor.Info => "info",
+                BlazorBootstrap.PlaceholderColor.Light => "light",
+                BlazorBootstrap.PlaceholderColor.Dark => "dark",
+                _ => null,
+            };
+        }
+
+        public string ToPlaceholderSize(PlaceholderSize size)
+        {
+            return size switch
+            {
+                BlazorBootstrap.PlaceholderSize.ExtraSmall => "xs",
+                BlazorBootstrap.PlaceholderSize.Small => "sm",
+                BlazorBootstrap.PlaceholderSize.Large => "lg",
                 _ => null,
             };
         }
