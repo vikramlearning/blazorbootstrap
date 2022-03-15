@@ -2,11 +2,23 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>BlazorBootstrap Blog</title>
-    <updated>2022-02-27T00:00:00.000Z</updated>
+    <updated>2022-03-15T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>BlazorBootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/48X48.png</icon>
+    <entry>
+        <title type="html"><![CDATA[BlazorBootstrap v0.2.2]]></title>
+        <id>BlazorBootstrap v0.2.2</id>
+        <link href="https://getblazorbootstrap.com/blog/2022/03/15/blazorbootstrap-0.2.2"/>
+        <updated>2022-03-15T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 0.2.2 with a new component and minor updates.]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.2</code> with a new component and minor updates.</p><h3>Updates</h3><ul><li>New <code>Placeholders</code> component</li><li>.NET version upgrade from v6.0.1 to v6.0.3</li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/placeholders">Placeholders Component</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.2.1]]></title>
         <id>BlazorBootstrap v0.2.1</id>
