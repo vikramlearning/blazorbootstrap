@@ -161,6 +161,13 @@
 
         #endregion
 
+        #region Tabs
+
+        public string Nav => "nav";
+        public string NavTabs => $"{Nav}-tabs";
+
+        #endregion
+
         #region Toast
 
         public string Toast() => "toast";
