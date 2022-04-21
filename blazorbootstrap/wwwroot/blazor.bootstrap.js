@@ -80,6 +80,28 @@ window.blazorBootstrap = {
             bootstrap?.Offcanvas?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
+    tabs: {
+        show: (elementId, dotNetHelper) => {
+            let tabEl = document.getElementById(elementId);
+
+            tabEl?.addEventListener('show.bs.tab', window.blazorBootstrap.invokeMethodAsync('bsShowTab', dotNetHelper));
+            tabEl?.addEventListener('shown.bs.tab', window.blazorBootstrap.invokeMethodAsync('bsShownTab', dotNetHelper));
+            tabEl?.addEventListener('hide.bs.tab', window.blazorBootstrap.invokeMethodAsync('bsHideTab', dotNetHelper));
+            tabEl?.addEventListener('hidden.bs.tab', window.blazorBootstrap.invokeMethodAsync('bsHiddenTab', dotNetHelper));
+
+            bootstrap?.Tab?.getOrCreateInstance(tabEl)?.show();
+        },
+        dispose: (elementId) => {
+            let tabEl = document.getElementById(elementId);
+
+            tabEl?.removeEventListener('show.bs.tab', window.blazorBootstrap.invokeMethodAsync);
+            tabEl?.removeEventListener('shown.bs.tab', window.blazorBootstrap.invokeMethodAsync);
+            tabEl?.removeEventListener('hide.bs.tab', window.blazorBootstrap.invokeMethodAsync);
+            tabEl?.removeEventListener('hidden.bs.tab', window.blazorBootstrap.invokeMethodAsync);
+
+            bootstrap?.Tab?.getOrCreateInstance(tabEl)?.dispose();
+        }
+    },
     toasts: {
         show: (elementId, autohide, delay, dotNetHelper) => {
             var toastEl = document.getElementById(elementId);
@@ -113,4 +135,8 @@ window.blazorBootstrap = {
             bootstrap?.Tooltip?.getOrCreateInstance(tooltipEl);
         },
     },
+    // gloal function
+    invokeMethodAsync: (callbackEventName, dotNetHelper) => {
+        dotNetHelper.invokeMethodAsync(callbackEventName);
+    }
 }
