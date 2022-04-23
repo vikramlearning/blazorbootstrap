@@ -50,7 +50,7 @@ public partial class Tab : BaseComponent
     /// <summary>
     /// Specifies the content to be rendered inside the grid column.
     /// </summary>
-    [Parameter] public RenderFragment Content { get; set; }
+    [Parameter, EditorRequired] public RenderFragment Content { get; set; }
 
     /// <summary>
     /// Gets or sets the active tab.

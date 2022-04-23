@@ -12,6 +12,8 @@ public partial class Tabs : BaseComponent
 
     private List<Tab> tabs = new List<Tab>();
 
+    private Tab activeTab;
+
     #endregion Members
 
     #region Methods
@@ -32,11 +34,37 @@ public partial class Tabs : BaseComponent
         ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        // Set active tab
+        if (firstRender)
+            await SetDefaultActiveTabAsync();
+    }
+
+    /// <summary>
+    /// Shows an offcanvas.
+    /// </summary>
+    public async Task SetDefaultActiveTabAsync()
+    {
+        activeTab = activeTab ?? tabs?.FirstOrDefault();
+
+        if (activeTab != null)
+            await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", activeTab.ElementId);
+    }
+
     internal void AddTab(Tab tab)
     {
-        if (tabs != null)
+        if (tab != null)
         {
-            tabs.Add(tab);
+            tabs?.Add(tab);
+
+            if (tab.IsActive)
+            {
+                activeTab = tab;
+            }
+
             StateHasChanged(); // This is mandatory
         }
     }

@@ -96,6 +96,9 @@ window.blazorBootstrap = {
                 tabEl?.addEventListener('hidden.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsHiddenTab'); });
             });
         },
+        show: (elementId) => {
+                (new bootstrap.Tab(document.getElementById(elementId)))?.show();
+        },
         dispose: (elementId) => {
             bootstrap?.Tab?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
