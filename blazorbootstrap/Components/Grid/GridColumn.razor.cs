@@ -21,7 +21,7 @@ public partial class GridColumn<TItem> : BaseComponent
 
     protected override void OnInitialized()
     {
-        ElementId = IdGenerator.Generate;
+        ElementId = IdGenerator.Generate; // Required
         currentSortDirection = SortDirection;
         defaultSortDirection = SortDirection;
 

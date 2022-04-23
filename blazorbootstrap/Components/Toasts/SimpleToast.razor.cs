@@ -16,12 +16,6 @@ namespace BlazorBootstrap
 
         #region Methods
 
-        protected override void OnAfterRender(bool firstRender)
-        {
-            objRef ??= DotNetObjectReference.Create(this);
-            base.OnAfterRender(firstRender);
-        }
-
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Toast());
@@ -36,9 +30,10 @@ namespace BlazorBootstrap
             base.BuildStyles(builder);
         }
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
+            objRef ??= DotNetObjectReference.Create(this);
+            await base.OnInitializedAsync();
 
             ExecuteAfterRender(async () => { await ShowAsync(); });
         }
@@ -57,6 +52,18 @@ namespace BlazorBootstrap
         public async Task HideAsync()
         {
             await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", ElementId);
+        }
+
+        /// <inheritdoc />
+        protected override async ValueTask DisposeAsync(bool disposing)
+        {
+            if (disposing)
+            {
+                await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", ElementId);
+                objRef?.Dispose();
+            }
+
+            await base.DisposeAsync(disposing);
         }
 
         [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync(this.ToastMessage.Id);

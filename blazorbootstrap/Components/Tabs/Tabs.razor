@@ -11,8 +11,12 @@
         <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
             @foreach (var t in tabs)
             {
-                <button class="nav-link" id="@t.ElementId"
-                        data-bs-toggle="tab" data-bs-target="#nav-@t.ElementId" type="button" role="tab" aria-selected="false"
+                <button class="nav-link" 
+                        id="@t.ElementId"
+                        data-bs-target="#nav-@t.ElementId"
+                        type="button" 
+                        role="tab" 
+                        aria-selected="false"
                         @onclick="(args) => OnTabClickAsync(args, t.ElementId)" @onclick:preventDefault>
 
                     @if (t.TitleTemplate != null)

@@ -1,6 +1,4 @@
-﻿using BlazorBootstrap.Utilities;
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace BlazorBootstrap;
 

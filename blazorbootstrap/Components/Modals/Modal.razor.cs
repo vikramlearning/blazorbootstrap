@@ -22,12 +22,6 @@ namespace BlazorBootstrap
 
         #region Methods
 
-        protected override void OnAfterRender(bool firstRender)
-        {
-            objRef ??= DotNetObjectReference.Create(this);
-            base.OnAfterRender(firstRender);
-        }
-
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Modal());
@@ -39,11 +33,12 @@ namespace BlazorBootstrap
         protected override void BuildStyles(StyleBuilder builder)
         {
             base.BuildStyles(builder);
-        }        
+        }
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
+            objRef ??= DotNetObjectReference.Create(this);
+            await base.OnInitializedAsync();
         }
 
         /// <summary>
@@ -67,7 +62,7 @@ namespace BlazorBootstrap
         {
             if (disposing)
             {
-                await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId);                
+                await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId);
                 objRef?.Dispose();
             }
 

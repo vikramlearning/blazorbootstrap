@@ -28,14 +28,17 @@ public partial class Tabs : BaseComponent
         base.BuildClasses(builder);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
+        await base.OnInitializedAsync();
 
-        if (firstRender)
-        {
-            StateHasChanged(); // This is mandatory
-        }
+        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task OnTabClickAsync(EventArgs args, string elementId)
@@ -43,15 +46,16 @@ public partial class Tabs : BaseComponent
         previousActiveTabId = currentActiveTabId;
         currentActiveTabId = elementId;
 
-        Console.WriteLine($"Previous: {previousActiveTabId}");
-        Console.WriteLine($"Current: {currentActiveTabId}");
-
-        await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", elementId, objRef);
+        //await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", elementId, objRef);
     }
 
     internal void AddTab(Tab tab)
     {
-        tabs.Add(tab);
+        if (tabs != null)
+        {
+            tabs.Add(tab);
+            StateHasChanged(); // This is mandatory
+        }
     }
 
     [JSInvokable] public async Task bsShowTab() => await OnShowing.InvokeAsync();
@@ -60,10 +64,10 @@ public partial class Tabs : BaseComponent
     [JSInvokable]
     public async Task bsHiddenTab()
     {
-        if (!string.IsNullOrWhiteSpace(previousActiveTabId))
-        {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", previousActiveTabId);
-        }
+        //if (!string.IsNullOrWhiteSpace(previousActiveTabId))
+        //{
+        //    await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", previousActiveTabId);
+        //}
         await OnHidden.InvokeAsync();
     }
 
@@ -71,28 +75,31 @@ public partial class Tabs : BaseComponent
 
     #region Properties
 
+    /// <inheritdoc/>
+    protected override bool ShouldAutoGenerateId => true;
+
     /// <summary>
     /// Specifies the content to be rendered inside this.
     /// </summary>
     [Parameter] public RenderFragment ChildContent { get; set; }
 
     /// <summary>
-    /// This event fires immediately when the show instance method is called.
+    /// This event fires on tab show, but before the new tab has been shown.
     /// </summary>
     [Parameter] public EventCallback OnShowing { get; set; }
 
     /// <summary>
-    /// This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to complete).
+    /// This event fires on tab show after a tab has been shown.
     /// </summary>
     [Parameter] public EventCallback OnShown { get; set; }
 
     /// <summary>
-    /// This event is fired immediately when the hide method has been called.
+    /// This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).
     /// </summary>
     [Parameter] public EventCallback OnHiding { get; set; }
 
     /// <summary>
-    /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete).
+    /// This event fires after a new tab is shown (and thus the previous active tab is hidden).
     /// </summary>
     [Parameter] public EventCallback OnHidden { get; set; }
 
