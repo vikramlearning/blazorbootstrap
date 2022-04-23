@@ -81,49 +81,24 @@ window.blazorBootstrap = {
         }
     },
     tabs: {
-        show: (elementId, dotNetHelper) => {
-            let tabEl = document.getElementById(elementId);
-
-            tabEl?.addEventListener('show.bs.tab', function () { dotNetHelper.invokeMethodAsync('bsShowTab'); console.log('show'); });
-            tabEl?.addEventListener('shown.bs.tab', function () { dotNetHelper.invokeMethodAsync('bsShownTab'); console.log('shown'); });
-            tabEl?.addEventListener('hide.bs.tab', function () { dotNetHelper.invokeMethodAsync('bsHideTab'); console.log('hide'); });
-            tabEl?.addEventListener('hidden.bs.tab', function () { dotNetHelper.invokeMethodAsync('bsHiddenTab'); console.log('hidden'); });
-
-            //tabEl?.addEventListener('show.bs.tab', window.blazorBootstrap.invokeMethodAsync('bsShowTab', dotNetHelper));
-            //tabEl?.addEventListener('shown.bs.tab', window.blazorBootstrap.invokeMethodAsync('bsShownTab', dotNetHelper));
-            //tabEl?.addEventListener('hide.bs.tab', window.blazorBootstrap.invokeMethodAsync('bsHideTab', dotNetHelper));
-            //tabEl?.addEventListener('hidden.bs.tab', window.blazorBootstrap.invokeMethodAsync('bsHiddenTab', dotNetHelper));
-
-            bootstrap?.Tab?.getOrCreateInstance(tabEl)?.show();
-        },
-        dispose: (elementId) => {
-            let tabEl = document.getElementById(elementId);
-
-            //tabEl?.removeEventListener('show.bs.tab', window.blazorBootstrap.invokeMethodAsync);
-            //tabEl?.removeEventListener('shown.bs.tab', window.blazorBootstrap.invokeMethodAsync);
-            //tabEl?.removeEventListener('hide.bs.tab', window.blazorBootstrap.invokeMethodAsync);
-            //tabEl?.removeEventListener('hidden.bs.tab', window.blazorBootstrap.invokeMethodAsync);
-
-            bootstrap?.Tab?.getOrCreateInstance(tabEl)?.dispose();
-        },
         initialize: (elementId, dotNetHelper) => {
             let navTabsEl = document.getElementById(elementId);
             var triggerTabList = [].slice.call(navTabsEl.querySelectorAll('button'));
             triggerTabList.forEach(function (tabEl) {
-                var tabTrigger = new bootstrap.Tab(tabEl);
-
+                let tabTrigger = new bootstrap.Tab(tabEl);
                 tabEl?.addEventListener('click', (event) => {
                     event.preventDefault();
                     tabTrigger?.show();
                 });
-
-                tabEl?.addEventListener('show.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsShowTab'); console.log('show'); });
-                tabEl?.addEventListener('shown.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsShownTab'); console.log('shown'); });
-                tabEl?.addEventListener('hide.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsHideTab'); console.log('hide'); });
-                tabEl?.addEventListener('hidden.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsHiddenTab'); console.log('hidden'); });
-
+                tabEl?.addEventListener('show.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsShowTab'); });
+                tabEl?.addEventListener('shown.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsShownTab'); });
+                tabEl?.addEventListener('hide.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsHideTab'); });
+                tabEl?.addEventListener('hidden.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsHiddenTab'); });
             });
         },
+        dispose: (elementId) => {
+            bootstrap?.Tab?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
+        }
     },
     toasts: {
         show: (elementId, autohide, delay, dotNetHelper) => {

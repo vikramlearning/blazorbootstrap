@@ -12,10 +12,6 @@ public partial class Tabs : BaseComponent
 
     private List<Tab> tabs = new List<Tab>();
 
-    private string previousActiveTabId;
-
-    private string currentActiveTabId;
-
     #endregion Members
 
     #region Methods
@@ -36,19 +32,6 @@ public partial class Tabs : BaseComponent
         ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private async Task OnTabClickAsync(EventArgs args, string elementId)
-    {
-        previousActiveTabId = currentActiveTabId;
-        currentActiveTabId = elementId;
-
-        //await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", elementId, objRef);
-    }
-
     internal void AddTab(Tab tab)
     {
         if (tabs != null)
@@ -61,15 +44,7 @@ public partial class Tabs : BaseComponent
     [JSInvokable] public async Task bsShowTab() => await OnShowing.InvokeAsync();
     [JSInvokable] public async Task bsShownTab() => await OnShown.InvokeAsync();
     [JSInvokable] public async Task bsHideTab() => await OnHiding.InvokeAsync();
-    [JSInvokable]
-    public async Task bsHiddenTab()
-    {
-        //if (!string.IsNullOrWhiteSpace(previousActiveTabId))
-        //{
-        //    await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", previousActiveTabId);
-        //}
-        await OnHidden.InvokeAsync();
-    }
+    [JSInvokable] public async Task bsHiddenTab() => await OnHidden.InvokeAsync();
 
     #endregion Methods
 

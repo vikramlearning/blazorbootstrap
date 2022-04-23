@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace BlazorBootstrap;
 
@@ -14,6 +15,17 @@ public partial class Tab : BaseComponent
     {
         ElementId = IdGenerator.Generate; // This is required
         Parent.AddTab(this);
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsync(bool disposing)
+    {
+        if (disposing)
+        {
+            await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", ElementId);
+        }
+
+        await base.DisposeAsync(disposing);
     }
 
     #endregion Methods
