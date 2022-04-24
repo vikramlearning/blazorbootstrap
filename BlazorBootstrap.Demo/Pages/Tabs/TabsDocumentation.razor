@@ -4,15 +4,19 @@
 <PageTitle>Tabs Demo - BlazorBootstrap</PageTitle>
 
 <h1 class="my-4">Tabs</h1>
-<Tabs>
-    <Tab Title="Tab 1">
-        <Content>Tab 1 - Sample Information</Content>
-    </Tab>
-    <Tab Title="Tab 2">
-        <TitleTemplate>Tab 2 from Template</TitleTemplate>
-        <Content>Tab 2 - Sample Information</Content>
-    </Tab>
-    <Tab Title="Tab 3">
-        <Content>Tab 3 - Content</Content>
-    </Tab>
-</Tabs>
+<div class="mb-3">
+    Push notifications to your visitors with a toast, a lightweight and easily customizable alert message.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Tabs_Demo_01_Examples)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Fade effect" PageUrl="@pageUrl" HashTagName="fade-effect" />
+<Demo Type="typeof(Tabs_Demo_02_Enable_FadeEffect)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Title Template" PageUrl="@pageUrl" HashTagName="title-template" />
+<Demo Type="typeof(Tabs_Demo_03_Title_Template)" />
+
+@code {
+    private string pageUrl = "/tabs";    
+}

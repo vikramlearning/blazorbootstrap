@@ -31,9 +31,9 @@
     <div class="tab-content">
         @foreach (var t in tabs)
         {
-            <div class="tab-pane" id="nav-@t.ElementId" role="tabpanel" aria-labelledby="@t.ElementId">
+            <div class="tab-pane @(EnableFadeEffect ? "fade": "")" id="nav-@t.ElementId" role="tabpanel" aria-labelledby="@t.ElementId">
                 @t.Content
             </div>
         }
     </div>
-}
+} 

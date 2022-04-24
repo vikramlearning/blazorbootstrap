@@ -48,10 +48,12 @@ public partial class Tabs : BaseComponent
     /// </summary>
     public async Task SetDefaultActiveTabAsync()
     {
-        activeTab = activeTab ?? tabs?.FirstOrDefault();
+        activeTab = activeTab ?? tabs.FirstOrDefault();
 
         if (activeTab != null)
+        {
             await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", activeTab.ElementId);
+        }
     }
 
     internal void AddTab(Tab tab)
@@ -85,6 +87,11 @@ public partial class Tabs : BaseComponent
     /// Specifies the content to be rendered inside this.
     /// </summary>
     [Parameter] public RenderFragment ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the tabs fade effect.
+    /// </summary>
+    [Parameter] public bool EnableFadeEffect { get; set; }
 
     /// <summary>
     /// This event fires on tab show, but before the new tab has been shown.

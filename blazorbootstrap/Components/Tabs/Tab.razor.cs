@@ -57,5 +57,10 @@ public partial class Tab : BaseComponent
     /// </summary>
     [Parameter] public bool IsActive { get; set; }
 
+    /// <summary>
+    /// Gets or sets the disabled.
+    /// </summary>
+    [Parameter] public bool Disabled { get; set; }
+
     #endregion Properties
 }

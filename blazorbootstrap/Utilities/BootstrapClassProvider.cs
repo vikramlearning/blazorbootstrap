@@ -44,7 +44,7 @@
 
         #endregion
 
-        #region Colors
+        #region Background Colors
 
         public string BackgroundColor(BackgroundColor backgroundColor) => $"bg-{ToBackgroundColor(backgroundColor)}";
 
@@ -144,6 +144,12 @@
         public string Position() => "position";
         public string PositionAbsolute() => $"{Position()}-absolute";
         public string PositionFixed() => $"{Position()}-fixed";
+
+        #endregion
+
+        #region Text Colors
+
+        public string TextColor(TextColor textColor) => $"bg-{ToTextColor(textColor)}";
 
         #endregion
 
@@ -519,6 +525,7 @@
                 _ => null,
             };
         }
+
         public string ToPlaceholderColor(PlaceholderColor color)
         {
             return color switch
@@ -542,6 +549,22 @@
                 BlazorBootstrap.PlaceholderSize.ExtraSmall => "xs",
                 BlazorBootstrap.PlaceholderSize.Small => "sm",
                 BlazorBootstrap.PlaceholderSize.Large => "lg",
+                _ => null,
+            };
+        }
+
+        public string ToTabColor(TabColor color)
+        {
+            return color switch
+            {
+                BlazorBootstrap.TabColor.Primary => "bg-primary text-white",
+                BlazorBootstrap.TabColor.Secondary => "bg-secondary text-white",
+                BlazorBootstrap.TabColor.Success => "bg-success text-white",
+                BlazorBootstrap.TabColor.Danger => "bg-danger text-white",
+                BlazorBootstrap.TabColor.Warning => "bg-warning text-dark",
+                BlazorBootstrap.TabColor.Info => "bg-info text-dark",
+                BlazorBootstrap.TabColor.Light => "bg-light text-dark",
+                BlazorBootstrap.TabColor.Dark => "bg-dark text-white",
                 _ => null,
             };
         }
