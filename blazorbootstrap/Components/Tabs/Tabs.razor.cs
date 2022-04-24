@@ -48,7 +48,7 @@ public partial class Tabs : BaseComponent
     /// </summary>
     public async Task SetDefaultActiveTabAsync()
     {
-        activeTab = activeTab ?? tabs.FirstOrDefault();
+        activeTab = activeTab ?? tabs.FirstOrDefault(x => !x.Disabled);
 
         if (activeTab != null)
         {
@@ -62,7 +62,7 @@ public partial class Tabs : BaseComponent
         {
             tabs?.Add(tab);
 
-            if (tab.IsActive)
+            if (tab.IsActive && !tab.Disabled)
             {
                 activeTab = tab;
             }
