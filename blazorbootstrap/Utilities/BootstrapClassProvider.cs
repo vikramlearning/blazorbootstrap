@@ -171,6 +171,7 @@
 
         public string Nav => "nav";
         public string NavTabs => $"{Nav}-tabs";
+        public string NavPills => $"{Nav}-pills";
 
         #endregion
 

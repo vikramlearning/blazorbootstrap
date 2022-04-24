@@ -21,7 +21,11 @@ public partial class Tabs : BaseComponent
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Nav);
-        builder.Append(BootstrapClassProvider.NavTabs);
+
+        if (this.NavStyle == NavStyle.Tabs)
+            builder.Append(BootstrapClassProvider.NavTabs);
+        else
+            builder.Append(BootstrapClassProvider.NavPills);
 
         base.BuildClasses(builder);
     }
@@ -82,6 +86,11 @@ public partial class Tabs : BaseComponent
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
+
+    /// <summary>
+    /// Get or sets the nav style.
+    /// </summary>
+    [Parameter] public NavStyle NavStyle { get; set; } = NavStyle.Tabs;
 
     /// <summary>
     /// Specifies the content to be rendered inside this.
