@@ -80,6 +80,17 @@ public partial class Tabs : BaseComponent
     [JSInvokable] public async Task bsHideTab() => await OnHiding.InvokeAsync();
     [JSInvokable] public async Task bsHiddenTab() => await OnHidden.InvokeAsync();
 
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsync(bool disposing)
+    {
+        if (disposing)
+        {
+            tabs = null;
+        }
+
+        await base.DisposeAsync(disposing);
+    }
+
     #endregion Methods
 
     #region Properties
