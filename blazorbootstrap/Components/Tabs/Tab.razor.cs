@@ -48,7 +48,7 @@ public partial class Tab : BaseComponent
     [Parameter] public RenderFragment TitleTemplate { get; set; }
 
     /// <summary>
-    /// Specifies the content to be rendered inside the grid column.
+    /// Specifies the content to be rendered inside the tab.
     /// </summary>
     [Parameter, EditorRequired] public RenderFragment Content { get; set; }
 

@@ -11,15 +11,204 @@ Documentation and examples for how to use BlazorBootstrap's <code>Tabs</code> co
 
 | Name | Type | Descritpion | Required | Default |
 |--|--|--|--|--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | |
+| EnableFadeEffect | bool | Gets or sets the tabs fade effect. | | false |
+| NavStyle | `NavStyle` | Get or sets the nav style. | | `NavStyle.Tabs` |
 
+## Examples
 
-## Methods
+### Tabs
 
-| Method | Description |
-|--|--|
+<img src="https://i.imgur.com/ranwriJ.png" alt="Tabs - Examples" />
 
-:::danger Asynchronous methods and transitions
+```cshtml
+<Tabs>
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+```
 
-All API methods are **asynchronous** and start a **transition**. They return to the caller as soon as the transition is started but **before it ends**. In addition, a method call on a **transitioning component will be ignored**.
+[See demo here.](https://demos.getblazorbootstrap.com/tabs#examples)
+
+### Fade effect
+
+To make tabs fade in, add `EnableFadeEffect="true"`. The first tab pane must also have `IsActive="true"` to make the initial content visible.
+
+<img src="https://i.imgur.com/ranwriJ.png" alt="Tabs - Fade effect" />
+
+```cshtml {1, 2}
+<Tabs EnableFadeEffect="true">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.getblazorbootstrap.com/tabs#fade-effect)
+
+### Title with icon
+
+<img src="https://i.imgur.com/KelXx6Z.png" alt="Tabs - Title with icon" />
+
+```cshtml {3-5,13-15,23-25}
+<Tabs EnableFadeEffect="true">
+    <Tab IsActive="true">
+        <TitleTemplate>
+            <Icon Name="IconName.HouseFill" /> Home
+        </TitleTemplate>
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab>
+        <TitleTemplate>
+            <Icon Name="IconName.PersonFill" /> Profile
+        </TitleTemplate>
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab>
+        <TitleTemplate>
+            <Icon Name="IconName.PhoneFill" /> Contact
+        </TitleTemplate>
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.getblazorbootstrap.com/tabs#title-with-icon)
+
+### Disable Tab
+
+<img src="https://i.imgur.com/TCG6gCz.png" alt="Tabs - Disable Tab" />
+
+```cshtml {16}
+<Tabs EnableFadeEffect="true">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Projects" Disabled="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Projects tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.getblazorbootstrap.com/tabs#disable-tab)
+
+### Pills
+
+<img src="https://i.imgur.com/IyRJ0PS.png" alt="Tabs - Pills" />
+
+```cshtml {1}
+<Tabs EnableFadeEffect="true" NavStyle="NavStyle.Pills">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.getblazorbootstrap.com/tabs#pills)
+
+# Tab 
+
+## Parameters
+
+| Name | Type | Descritpion | Required | Default |
+|--|--|--|--|--|
+| Title | string | Gets or sets the tab title. | | |
+| TitleTemplate | RenderFragment | Gets or sets the tab title template. | | |
+| Content | RenderFragment | Specifies the content to be rendered inside the tab. | ✔️ | |
+| IsActive | bool | Gets or sets the active tab. | | false |
+| Disabled | bool | Gets or sets the disabled. | | false |
+
+:::info Note
+
+**Title** or **TitleTemplate** is required.
 
 :::
