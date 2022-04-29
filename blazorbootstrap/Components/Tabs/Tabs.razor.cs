@@ -75,10 +75,45 @@ public partial class Tabs : BaseComponent
         }
     }
 
-    [JSInvokable] public async Task bsShowTab() => await OnShowing.InvokeAsync();
-    [JSInvokable] public async Task bsShownTab() => await OnShown.InvokeAsync();
-    [JSInvokable] public async Task bsHideTab() => await OnHiding.InvokeAsync();
-    [JSInvokable] public async Task bsHiddenTab() => await OnHidden.InvokeAsync();
+    [JSInvokable]
+    public async Task bsShowTab(string activeTabId, string previousActiveTabId)
+    {
+        string activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
+        string previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
+
+        args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        await OnShowing.InvokeAsync(args);
+    }
+
+    [JSInvokable]
+    public async Task bsShownTab(string activeTabId, string previousActiveTabId)
+    {
+        string activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
+        string previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
+
+        args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        await OnShown.InvokeAsync(args);
+    }
+
+    [JSInvokable]
+    public async Task bsHideTab(string activeTabId, string previousActiveTabId)
+    {
+        string activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
+        string previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
+
+        args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        await OnHiding.InvokeAsync(args);
+    }
+
+    [JSInvokable]
+    public async Task bsHiddenTab(string activeTabId, string previousActiveTabId)
+    {
+        string activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
+        string previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
+
+        args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        await OnHidden.InvokeAsync(args);
+    }
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
@@ -116,22 +151,24 @@ public partial class Tabs : BaseComponent
     /// <summary>
     /// This event fires on tab show, but before the new tab has been shown.
     /// </summary>
-    [Parameter] public EventCallback OnShowing { get; set; }
+    [Parameter] public EventCallback<TabsEventArgs> OnShowing { get; set; }
 
     /// <summary>
     /// This event fires on tab show after a tab has been shown.
     /// </summary>
-    [Parameter] public EventCallback OnShown { get; set; }
+    [Parameter] public EventCallback<TabsEventArgs> OnShown { get; set; }
 
     /// <summary>
     /// This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).
     /// </summary>
-    [Parameter] public EventCallback OnHiding { get; set; }
+    [Parameter] public EventCallback<TabsEventArgs> OnHiding { get; set; }
 
     /// <summary>
     /// This event fires after a new tab is shown (and thus the previous active tab is hidden).
     /// </summary>
-    [Parameter] public EventCallback OnHidden { get; set; }
+    [Parameter] public EventCallback<TabsEventArgs> OnHidden { get; set; }
+
+    public TabsEventArgs args { get; set; }
 
     #endregion Properties
 }

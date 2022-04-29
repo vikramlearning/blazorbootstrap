@@ -23,6 +23,29 @@
 <SectionHeading Size="HeadingSize.H2" Text="Pills" PageUrl="@pageUrl" HashTagName="pills" />
 <Demo Type="typeof(Tabs_Demo_05_Nav_Style_Pills)" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
+<div>
+    When showing a new tab, the events fire in the following order:
+    <p class="py-2 px-3">
+        1. <code>OnHiding</code> (on the current active tab)<br />
+        2. <code>OnShowing</code> (on the to-be-shown tab)<br />
+        3. <code>OnHidden</code> (on the previous active tab, the same one as for the <code>OnHiding</code> event)<br />
+        4. <code>OnShown</code> (on the newly-active just-shown tab, the same one as for the <code>OnShowing</code> event)<br />
+    </p>
+    <Alert Color="AlertColor.Info">
+        <div class="row">
+            <div class="col-auto align-top"><Icon Name="IconName.ExclamationTriangleFill"></Icon></div>
+            <div class="col ps-0">
+                If no tab was already active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
+            </div>
+        </div>
+    </Alert>
+</div>
+<Demo Type="typeof(Tabs_Demo_06_Events_Order)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Events - Example" PageUrl="@pageUrl" HashTagName="events-example" />
+<Demo Type="typeof(Tabs_Demo_07_Events_Example)" />
+
 @code {
     private string pageUrl = "/tabs";
 }

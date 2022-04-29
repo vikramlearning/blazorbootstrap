@@ -195,6 +195,21 @@ To make tabs fade in, add `EnableFadeEffect="true"`. The first tab pane must als
 
 [See demo here.](https://demos.getblazorbootstrap.com/tabs#pills)
 
+### Callback Events
+
+When showing a new tab, the events fire in the following order:
+
+1. `OnHiding` (on the current active tab)
+1. `OnShowing` (on the to-be-shown tab)
+1. `OnHidden` (on the previous active tab, the same one as for the `OnHiding` event)
+1. `OnShown` (on the newly-active just-shown tab, the same one as for the `OnShowing` event)
+
+:::info Note
+If no tab was already active, then the `OnHiding` and `OnHidden` events will not be fired.
+:::
+
+[See demo here.](https://demos.getblazorbootstrap.com/tabs#events)
+
 # Tab 
 
 ## Parameters
@@ -208,7 +223,5 @@ To make tabs fade in, add `EnableFadeEffect="true"`. The first tab pane must als
 | Disabled | bool | Gets or sets the disabled. | | false |
 
 :::info Note
-
 **Title** or **TitleTemplate** is required.
-
 :::

@@ -90,14 +90,30 @@ window.blazorBootstrap = {
                     event.preventDefault();
                     tabTrigger?.show();
                 });
-                tabEl?.addEventListener('show.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsShowTab'); });
-                tabEl?.addEventListener('shown.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsShownTab'); });
-                tabEl?.addEventListener('hide.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsHideTab'); });
-                tabEl?.addEventListener('hidden.bs.tab', () => { dotNetHelper.invokeMethodAsync('bsHiddenTab'); });
+                tabEl?.addEventListener('show.bs.tab', (event) => {
+                    // event.target --> active tab
+                    // event.relatedTarget --> previous active tab (if available)
+                    dotNetHelper.invokeMethodAsync('bsShowTab', event.target?.id, event.relatedTarget?.id);
+                });
+                tabEl?.addEventListener('shown.bs.tab', (event) => {
+                    // event.target --> active tab
+                    // event.relatedTarget --> previous active tab
+                    dotNetHelper.invokeMethodAsync('bsShownTab', event.target?.id, event.relatedTarget?.id);
+                });
+                tabEl?.addEventListener('hide.bs.tab', (event) => {
+                    // event.target --> current active tab
+                    // event.relatedTarget --> new soon-to-be-active tab
+                    dotNetHelper.invokeMethodAsync('bsHideTab', event.relatedTarget?.id, event.target?.id);
+                });
+                tabEl?.addEventListener('hidden.bs.tab', (event) => {
+                    // event.target --> previous active tab
+                    // event.relatedTarget --> new active tab
+                    dotNetHelper.invokeMethodAsync('bsHiddenTab', event.relatedTarget?.id, event.target?.id);
+                });
             });
         },
         show: (elementId) => {
-                (new bootstrap.Tab(document.getElementById(elementId)))?.show();
+            (new bootstrap.Tab(document.getElementById(elementId)))?.show();
         },
         dispose: (elementId) => {
             bootstrap?.Tab?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
@@ -142,3 +158,4 @@ window.blazorBootstrap = {
         console.log(callbackEventName);
     }
 }
+
