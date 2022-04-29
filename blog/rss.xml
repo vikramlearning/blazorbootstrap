@@ -4,9 +4,17 @@
         <title>BlazorBootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>BlazorBootstrap Blog</description>
-        <lastBuildDate>Tue, 15 Mar 2022 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 30 Apr 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
+        <item>
+            <title><![CDATA[BlazorBootstrap v0.2.3]]></title>
+            <link>https://getblazorbootstrap.com/blog/2022/04/30/blazorbootstrap-0.2.3</link>
+            <guid>BlazorBootstrap v0.2.3</guid>
+            <pubDate>Sat, 30 Apr 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 0.2.3 with a new component and minor updates.]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.3</code> with a new component and minor updates.</p><h3>Updates</h3><ul><li>New <code>Tabs</code> component</li><li>Other improvements</li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/tabs">Tabs Component</a></li></ul>]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.2.2]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/03/15/blazorbootstrap-0.2.2</link>
