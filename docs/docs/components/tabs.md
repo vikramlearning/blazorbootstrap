@@ -210,9 +210,9 @@ If no tab was already active, then the `OnHiding` and `OnHidden` events will not
 
 [See demo here.](https://demos.getblazorbootstrap.com/tabs#events)
 
-# Tab 
+## Tab 
 
-## Parameters
+### Parameters
 
 | Name | Type | Descritpion | Required | Default |
 |--|--|--|--|--|
