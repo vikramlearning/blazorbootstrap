@@ -14,12 +14,6 @@ namespace BlazorBootstrap
 
         #region Methods
 
-        protected override void OnAfterRender(bool firstRender)
-        {
-            objRef ??= DotNetObjectReference.Create(this);
-            base.OnAfterRender(firstRender);
-        }
-
         /// <inheritdoc/>
         protected override void BuildClasses(ClassBuilder builder)
         {
@@ -30,9 +24,10 @@ namespace BlazorBootstrap
             base.BuildClasses(builder);
         }
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
+            objRef ??= DotNetObjectReference.Create(this);
+            await base.OnInitializedAsync();
 
             ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", ElementId, objRef); });
         }

@@ -33,6 +33,7 @@ public partial class Grid<TItem> : BaseComponent
     internal void AddColumn(GridColumn<TItem> column)
     {
         columns.Add(column);
+        // TODO: call state changed here
     }
 
     internal void SortingChanged(GridColumn<TItem> column)

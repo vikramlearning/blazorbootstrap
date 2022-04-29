@@ -23,10 +23,10 @@ namespace BlazorBootstrap
             base.BuildClasses(builder);
         }
 
-        protected override void OnAfterRender(bool firstRender)
+        protected override async Task OnInitializedAsync()
         {
             objRef ??= DotNetObjectReference.Create(this);
-            base.OnAfterRender(firstRender);
+            await base.OnInitializedAsync();
         }
 
         /// <summary>

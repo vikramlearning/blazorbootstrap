@@ -1,0 +1,52 @@
+﻿<Tabs EnableFadeEffect="true"
+      OnShowing="@(args => OnTabShowingAsync(args))"
+      OnShown="@(args => OnTabShownAsync(args))"
+      OnHiding="@(args => OnTabHidingAsync(args))"
+      OnHidden="@(args => OnTabHiddenAsync(args))">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+
+<div>
+    @foreach (var item in messages)
+    {
+        <p>Event: @item.Event, Active Tab: @item.ActiveTabTitle, Previous Tab: @item.PreviousActiveTabTitle </p>
+    }
+</div>
+
+@code {
+    record TabMessage(string Event, string ActiveTabTitle, string PreviousActiveTabTitle);
+
+    List<TabMessage> messages = new List<TabMessage>();
+
+    private void OnTabShowingAsync(TabsEventArgs args)
+        => messages.Add(new("OnShowing", args.ActiveTabTitle, args.PreviousActiveTabTitle));
+
+    private void OnTabShownAsync(TabsEventArgs args)
+        => messages.Add(new("OnShown", args.ActiveTabTitle, args.PreviousActiveTabTitle));
+
+    private void OnTabHidingAsync(TabsEventArgs args)
+        => messages.Add(new("OnHiding", args.ActiveTabTitle, args.PreviousActiveTabTitle));
+
+    private void OnTabHiddenAsync(TabsEventArgs args)
+        => messages.Add(new("OnHidden", args.ActiveTabTitle, args.PreviousActiveTabTitle));
+}

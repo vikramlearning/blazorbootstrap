@@ -1,0 +1,39 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<CascadingValue Value="@this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@if (tabs.Any())
+{
+    <nav>
+        <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+            @foreach (var t in tabs)
+            {
+                <button class="nav-link @(t.Disabled ? "disabled": "")" id="@t.ElementId" data-bs-target="#nav-@t.ElementId" type="button" role="tab" aria-selected="false">
+                    @if (t.TitleTemplate != null)
+                    {
+                        @t.TitleTemplate
+                    }
+                    else if (!string.IsNullOrWhiteSpace(t.Title))
+                    {
+                        @t.Title
+                    }
+                    else
+                    {
+                        <text>No Title</text>
+                    }
+                </button>
+            }
+        </div>
+    </nav>
+    <div class="tab-content">
+        @foreach (var t in tabs)
+        {
+            <div class="tab-pane @(EnableFadeEffect ? "fade": "")" id="nav-@t.ElementId" role="tabpanel" aria-labelledby="@t.ElementId">
+                @t.Content
+            </div>
+        }
+    </div>
+} 

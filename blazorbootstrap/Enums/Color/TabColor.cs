@@ -3,7 +3,7 @@
 /// <summary>
 /// Predefined set of contextual colors.
 /// </summary>
-public enum ButtonColor
+public enum TabColor
 {
     /// <summary>
     /// No color will be applied to an element.
@@ -49,9 +49,5 @@ public enum ButtonColor
     /// Dark color.
     /// </summary>
     Dark,
-
-    /// <summary>
-    /// Link color.
-    /// </summary>
-    Link,
 }
+

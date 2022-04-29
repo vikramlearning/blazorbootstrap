@@ -44,7 +44,7 @@
 
         #endregion
 
-        #region Colors
+        #region Background Colors
 
         public string BackgroundColor(BackgroundColor backgroundColor) => $"bg-{ToBackgroundColor(backgroundColor)}";
 
@@ -147,6 +147,12 @@
 
         #endregion
 
+        #region Text Colors
+
+        public string TextColor(TextColor textColor) => $"bg-{ToTextColor(textColor)}";
+
+        #endregion
+
         #region States
 
         public string Show() => "show";
@@ -158,6 +164,14 @@
         public string Disabled() => "disabled";
 
         public string Collapsed() => "collapsed";
+
+        #endregion
+
+        #region Tabs
+
+        public string Nav => "nav";
+        public string NavTabs => $"{Nav}-tabs";
+        public string NavPills => $"{Nav}-pills";
 
         #endregion
 
@@ -512,6 +526,7 @@
                 _ => null,
             };
         }
+
         public string ToPlaceholderColor(PlaceholderColor color)
         {
             return color switch
@@ -535,6 +550,22 @@
                 BlazorBootstrap.PlaceholderSize.ExtraSmall => "xs",
                 BlazorBootstrap.PlaceholderSize.Small => "sm",
                 BlazorBootstrap.PlaceholderSize.Large => "lg",
+                _ => null,
+            };
+        }
+
+        public string ToTabColor(TabColor color)
+        {
+            return color switch
+            {
+                BlazorBootstrap.TabColor.Primary => "bg-primary text-white",
+                BlazorBootstrap.TabColor.Secondary => "bg-secondary text-white",
+                BlazorBootstrap.TabColor.Success => "bg-success text-white",
+                BlazorBootstrap.TabColor.Danger => "bg-danger text-white",
+                BlazorBootstrap.TabColor.Warning => "bg-warning text-dark",
+                BlazorBootstrap.TabColor.Info => "bg-info text-dark",
+                BlazorBootstrap.TabColor.Light => "bg-light text-dark",
+                BlazorBootstrap.TabColor.Dark => "bg-dark text-white",
                 _ => null,
             };
         }

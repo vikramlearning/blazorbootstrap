@@ -1,0 +1,59 @@
+﻿<Tabs EnableFadeEffect="true"
+      OnShowing="@(args => OnTabShowingAsync(args))"
+      OnShown="@(args => OnTabShownAsync(args))"
+      OnHiding="@(args => OnTabHidingAsync(args))"
+      OnHidden="@(args => OnTabHiddenAsync(args))">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+
+<p>Current Active Tab: <strong>@activeTabTitle</strong></p>
+<p>Previous Active Tab: <strong>@previousActiveTabTitle</strong></p>
+
+@code {
+    private string activeTabTitle;
+    private string previousActiveTabTitle;
+
+    private void OnTabShowingAsync(TabsEventArgs args)
+    {
+        //activeTabTitle = args.ActiveTabTitle;
+        //previousActiveTabTitle = args.PreviousActiveTabTitle;
+    }
+
+    private void OnTabShownAsync(TabsEventArgs args)
+    {
+        activeTabTitle = args.ActiveTabTitle;
+        previousActiveTabTitle = args.PreviousActiveTabTitle;
+    }
+
+    private void OnTabHidingAsync(TabsEventArgs args)
+    {
+        //activeTabTitle = args.ActiveTabTitle;
+        //previousActiveTabTitle = args.PreviousActiveTabTitle;
+    }
+
+    private void OnTabHiddenAsync(TabsEventArgs args)
+    {
+        //activeTabTitle = args.ActiveTabTitle;
+        //previousActiveTabTitle = args.PreviousActiveTabTitle;
+    }
+}

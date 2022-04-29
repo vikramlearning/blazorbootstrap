@@ -16,15 +16,10 @@ namespace BlazorBootstrap
 
         #region Methods
 
-        protected override void OnAfterRender(bool firstRender)
+        protected override async Task OnInitializedAsync()
         {
             objRef ??= DotNetObjectReference.Create(this);
-            base.OnAfterRender(firstRender);
-        }
-
-        protected override void OnInitialized()
-        {
-            base.OnInitialized();
+            await base.OnInitializedAsync();
 
             ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
         }

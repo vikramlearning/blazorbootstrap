@@ -14,12 +14,6 @@ namespace BlazorBootstrap
 
         #region Methods
 
-        protected override void OnAfterRender(bool firstRender)
-        {
-            objRef ??= DotNetObjectReference.Create(this);
-            base.OnAfterRender(firstRender);
-        }
-
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Toast());
@@ -32,13 +26,13 @@ namespace BlazorBootstrap
             base.BuildStyles(builder);
         }
 
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
+            objRef ??= DotNetObjectReference.Create(this);
+            await base.OnInitializedAsync();
 
             ExecuteAfterRender(async () => { await ShowAsync(); });
         }
-
 
         /// <summary>
         /// Reveals an element’s toast.
