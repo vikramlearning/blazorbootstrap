@@ -48,6 +48,8 @@ Change your `index.html` file and include the CSS and JS files:
  - Add BlazorBootstrap service in `Program.cs`
 
    ```cs {11}
+   using BlazorBootstrap;
+   
    public class Program
    {
        public static async Task Main(string[] args)
@@ -63,4 +65,8 @@ Change your `index.html` file and include the CSS and JS files:
            await builder.Build().RunAsync();
        }
    }
+   ```
+   - Register tag helpers in `_Imports.razor`
+   ```cs {12}
+   @using BlazorBootstrap;
    ```
