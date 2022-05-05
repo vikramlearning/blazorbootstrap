@@ -47,7 +47,7 @@ Change your `index.html` file and include the CSS and JS files:
    ```
  - Add BlazorBootstrap service in `Program.cs`
 
-   ```cs {11}
+   ```cs {1,13}
    using BlazorBootstrap;
    
    public class Program
@@ -66,7 +66,9 @@ Change your `index.html` file and include the CSS and JS files:
        }
    }
    ```
-   - Register tag helpers in `_Imports.razor`
-   ```cs {12}
+
+ - Register tag helpers in `_Imports.razor`
+
+   ```cs {1}
    @using BlazorBootstrap;
    ```
