@@ -54,7 +54,6 @@ namespace BlazorBootstrap
             set
             {
                 headingSize = value;
-
                 DirtyClasses();
             }
         }

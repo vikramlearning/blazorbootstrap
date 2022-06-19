@@ -7,6 +7,8 @@ namespace BlazorBootstrap
     {
         #region Members
 
+        private ToastsPlacement placement = ToastsPlacement.TopRight;
+
         #endregion Members
 
         #region Methods
@@ -81,7 +83,15 @@ namespace BlazorBootstrap
         /// <summary>
         /// Specifies the toasts placement. Default is top right.
         /// </summary>
-        [Parameter] public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
+        [Parameter]
+        public ToastsPlacement Placement
+        {
+            get => placement; set
+            {
+                placement = value;
+                DirtyClasses();
+            }
+        }
 
         #endregion Properties
     }

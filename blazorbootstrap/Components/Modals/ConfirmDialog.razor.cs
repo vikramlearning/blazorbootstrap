@@ -1,13 +1,16 @@
-﻿using BlazorBootstrap.Utilities;
-using BlazorBootstrap.Extensions;
+﻿using BlazorBootstrap.Extensions;
+using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components;
-using System.Threading.Tasks;
 
 namespace BlazorBootstrap
 {
     public partial class ConfirmDialog : BaseComponent
     {
         #region Members
+
+        private BackgroundColor _titleBackgroundColor = BackgroundColor.None;
+        private ButtonColor _yesButtonColor = ButtonColor.Primary;
+        private ButtonColor _noButtonColor = ButtonColor.Secondary;
 
         private string scrollable => IsScrollable ? "modal-dialog-scrollable" : "";
         private string titleBackgroundColor => TitleBackgroundColor.ToBackgroundAndTextClass();
@@ -102,7 +105,15 @@ namespace BlazorBootstrap
         /// <summary>
         /// Gets or sets the background color of the confirm dialog title. <see cref="BackgroundColor"/>
         /// </summary>
-        [Parameter] public BackgroundColor TitleBackgroundColor { get; set; } = BackgroundColor.None;
+        [Parameter]
+        public BackgroundColor TitleBackgroundColor
+        {
+            get => _titleBackgroundColor; set
+            {
+                _titleBackgroundColor = value;
+                DirtyClasses();
+            }
+        }
 
         /// <summary>
         /// Adds a dismissable close button to the confirm dialog.
@@ -127,7 +138,15 @@ namespace BlazorBootstrap
         /// <summary>
         /// Gets or sets the 'Yes' button color. <see cref="ButtonColor"/>
         /// </summary>
-        [Parameter] public ButtonColor YesButtonColor { get; set; } = ButtonColor.Primary;
+        [Parameter]
+        public ButtonColor YesButtonColor
+        {
+            get => _yesButtonColor; set
+            {
+                _yesButtonColor = value;
+                DirtyClasses();
+            }
+        }
 
         /// <summary>
         /// Triggers once the user confirms 'Yes'.
@@ -142,7 +161,15 @@ namespace BlazorBootstrap
         /// <summary>
         /// Gets or sets the 'No' button color. <see cref="ButtonColor"/>
         /// </summary>
-        [Parameter] public ButtonColor NoButtonColor { get; set; } = ButtonColor.Secondary;
+        [Parameter]
+        public ButtonColor NoButtonColor
+        {
+            get => _noButtonColor; set
+            {
+                _noButtonColor = value;
+                DirtyClasses();
+            }
+        }
 
         /// <summary>
         /// Triggers once the user confirms 'No'.
