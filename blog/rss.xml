@@ -4,88 +4,130 @@
         <title>BlazorBootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>BlazorBootstrap Blog</description>
-        <lastBuildDate>Sat, 30 Apr 2022 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 19 Jun 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
+        <language>en</language>
+        <item>
+            <title><![CDATA[BlazorBootstrap v0.2.4]]></title>
+            <link>https://getblazorbootstrap.com/blog/2022/06/19/blazorbootstrap-0.2.4</link>
+            <guid>/2022/06/19/blazorbootstrap-0.2.4</guid>
+            <pubDate>Sun, 19 Jun 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 0.2.4 with bug fixes and docs enhancement.]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.4</code> with bug fixes and docs enhancement.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li><code>Alert</code> component bug fixes</li><li>Docs enhancement</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/components/alerts" target="_blank" rel="noopener noreferrer">Alert Component</a></li></ul>]]></content:encoded>
+            <category>v0.2.4</category>
+            <category>blazorbootstrap</category>
+            <category>placeholders</category>
+        </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.2.3]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/04/30/blazorbootstrap-0.2.3</link>
-            <guid>BlazorBootstrap v0.2.3</guid>
+            <guid>/2022/04/30/blazorbootstrap-0.2.3</guid>
             <pubDate>Sat, 30 Apr 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[We are excited to release 0.2.3 with a new component and minor updates.]]></description>
-            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.3</code> with a new component and minor updates.</p><h3>Updates</h3><ul><li>New <code>Tabs</code> component</li><li>Other improvements</li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/tabs">Tabs Component</a></li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.3</code> with a new component and minor updates.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li>New <code>Tabs</code> component</li><li>Other improvements</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/tabs" target="_blank" rel="noopener noreferrer">Tabs Component</a></li></ul>]]></content:encoded>
+            <category>v0.2.3</category>
+            <category>blazorbootstrap</category>
+            <category>placeholders</category>
         </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.2.2]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/03/15/blazorbootstrap-0.2.2</link>
-            <guid>BlazorBootstrap v0.2.2</guid>
+            <guid>/2022/03/15/blazorbootstrap-0.2.2</guid>
             <pubDate>Tue, 15 Mar 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[We are excited to release 0.2.2 with a new component and minor updates.]]></description>
-            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.2</code> with a new component and minor updates.</p><h3>Updates</h3><ul><li>New <code>Placeholders</code> component</li><li>.NET version upgrade from v6.0.1 to v6.0.3</li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/placeholders">Placeholders Component</a></li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.2</code> with a new component and minor updates.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li>New <code>Placeholders</code> component</li><li>.NET version upgrade from v6.0.1 to v6.0.3</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/placeholders" target="_blank" rel="noopener noreferrer">Placeholders Component</a></li></ul>]]></content:encoded>
+            <category>v0.2.2</category>
+            <category>blazorbootstrap</category>
+            <category>placeholders</category>
         </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.2.1]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/02/27/blazorbootstrap-0.2.1</link>
-            <guid>BlazorBootstrap v0.2.1</guid>
+            <guid>/2022/02/27/blazorbootstrap-0.2.1</guid>
             <pubDate>Sun, 27 Feb 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[We are excited to release 0.2.1 with minor updates.]]></description>
-            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.1</code> with minor updates.</p><h2>Bootstrap Icons updated to v1.8.0</h2><img src="https://i.imgur.com/273TamX.png" alt="Blazor Bootstrap: Icon Component - Bootstrap Icons"/><h3>Minor Updates</h3><ul><li>Toasts component UI alignment fix</li><li>Confirm Dialog component docs update</li><li>Bootstrap Icons updated to <code>v1.8.0</code></li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/confirm-dialog">Confirm Dialog</a></li><li><a href="https://demos.getblazorbootstrap.com/icons">Icons</a></li><li><a href="https://demos.getblazorbootstrap.com/toasts">Toasts</a></li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.1</code> with minor updates.</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="bootstrap-icons-updated-to-v180">Bootstrap Icons updated to v1.8.0<a class="hash-link" href="#bootstrap-icons-updated-to-v180" title="Direct link to heading">​</a></h2><img loading="lazy" src="https://i.imgur.com/273TamX.png" alt="Blazor Bootstrap: Icon Component - Bootstrap Icons" class="img_ev3q"><h3 class="anchor anchorWithStickyNavbar_LWe7" id="minor-updates">Minor Updates<a class="hash-link" href="#minor-updates" title="Direct link to heading">​</a></h3><ul><li>Toasts component UI alignment fix</li><li>Confirm Dialog component docs update</li><li>Bootstrap Icons updated to <code>v1.8.0</code></li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/confirm-dialog" target="_blank" rel="noopener noreferrer">Confirm Dialog</a></li><li><a href="https://demos.getblazorbootstrap.com/icons" target="_blank" rel="noopener noreferrer">Icons</a></li><li><a href="https://demos.getblazorbootstrap.com/toasts" target="_blank" rel="noopener noreferrer">Toasts</a></li></ul>]]></content:encoded>
+            <category>v0.2.1</category>
+            <category>blazorbootstrap</category>
+            <category>icons</category>
+            <category>confirm dialog</category>
+            <category>toasts</category>
         </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.2.0]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/01/15/blazorbootstrap-0.2.0</link>
-            <guid>BlazorBootstrap v0.2.0</guid>
+            <guid>/2022/01/15/blazorbootstrap-0.2.0</guid>
             <pubDate>Sat, 15 Jan 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[We are excited to release 0.2.0 with lots of updates.]]></description>
-            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.0</code> with lots of updates.</p><h3>Major changes</h3><ul><li>Modal component enhancements</li><li>Offcanvas enhancements</li><li>Demo website updates</li></ul><h3>Two New Comoponents</h3><ul><li>Grid</li><li>Pagination</li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/modals">Modals</a></li><li><a href="https://demos.getblazorbootstrap.com/offcanvas">Offcanvas</a></li><li><a href="https://demos.getblazorbootstrap.com/grid">Grid</a></li><li><a href="https://demos.getblazorbootstrap.com/pagination">Pagination</a></li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.0</code> with lots of updates.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="major-changes">Major changes<a class="hash-link" href="#major-changes" title="Direct link to heading">​</a></h3><ul><li>Modal component enhancements</li><li>Offcanvas enhancements</li><li>Demo website updates</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="two-new-comoponents">Two New Comoponents<a class="hash-link" href="#two-new-comoponents" title="Direct link to heading">​</a></h3><ul><li>Grid</li><li>Pagination</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/modals" target="_blank" rel="noopener noreferrer">Modals</a></li><li><a href="https://demos.getblazorbootstrap.com/offcanvas" target="_blank" rel="noopener noreferrer">Offcanvas</a></li><li><a href="https://demos.getblazorbootstrap.com/grid" target="_blank" rel="noopener noreferrer">Grid</a></li><li><a href="https://demos.getblazorbootstrap.com/pagination" target="_blank" rel="noopener noreferrer">Pagination</a></li></ul>]]></content:encoded>
+            <category>v0.2.0</category>
+            <category>blazorbootstrap</category>
+            <category>modal</category>
+            <category>offcanvas</category>
+            <category>grid</category>
+            <category>pagination</category>
         </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.1.1]]></title>
             <link>https://getblazorbootstrap.com/blog/2021/12/21/blazorbootstrap-0.1.1</link>
-            <guid>BlazorBootstrap v0.1.1</guid>
+            <guid>/2021/12/21/blazorbootstrap-0.1.1</guid>
             <pubDate>Tue, 21 Dec 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[In this release, we made minor updates to the Alert component parameter. Also, docs and demos are updated.]]></description>
-            <content:encoded><![CDATA[<p>In this release, we made minor updates to the Alert component parameter. Also, docs and demos are updated.</p><h3>Component changes</h3><ul><li>Alert<ul><li>Parameter renamed from Dismisable to Dismissable</li><li>Docs update</li><li>Demos update</li></ul></li></ul><h3>Demo Website</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>In this release, we made minor updates to the Alert component parameter. Also, docs and demos are updated.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="component-changes">Component changes<a class="hash-link" href="#component-changes" title="Direct link to heading">​</a></h3><ul><li>Alert<ul><li>Parameter renamed from Dismisable to Dismissable</li><li>Docs update</li><li>Demos update</li></ul></li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="demo-website">Demo Website<a class="hash-link" href="#demo-website" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content:encoded>
+            <category>v0.1.1</category>
+            <category>blazorbootstrap</category>
+            <category>alert</category>
         </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.1.0]]></title>
             <link>https://getblazorbootstrap.com/blog/2021/12/20/blazorbootstrap-0.1.0</link>
-            <guid>BlazorBootstrap v0.1.0</guid>
+            <guid>/2021/12/20/blazorbootstrap-0.1.0</guid>
             <pubDate>Mon, 20 Dec 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[We are excited to release 0.1.0 with lots of updates.]]></description>
-            <content:encoded><![CDATA[<p>We are excited to release <code>0.1.0</code> with lots of updates.</p><h3>Major changes</h3><ul><li>.NET 6 upgrade</li><li>New components added</li><li>Demo website created</li></ul><h3>Four New Comoponents</h3><ul><li>Preload</li><li>Breadcrumb</li><li>Confirm Dialog</li><li>Callout</li></ul><h3>Demo Website</h3><p>We are happy to share the demo website link.</p><ul><li><a href="https://demos.getblazorbootstrap.com/">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.1.0</code> with lots of updates.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="major-changes">Major changes<a class="hash-link" href="#major-changes" title="Direct link to heading">​</a></h3><ul><li>.NET 6 upgrade</li><li>New components added</li><li>Demo website created</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="four-new-comoponents">Four New Comoponents<a class="hash-link" href="#four-new-comoponents" title="Direct link to heading">​</a></h3><ul><li>Preload</li><li>Breadcrumb</li><li>Confirm Dialog</li><li>Callout</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="demo-website">Demo Website<a class="hash-link" href="#demo-website" title="Direct link to heading">​</a></h3><p>We are happy to share the demo website link.</p><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content:encoded>
+            <category>v0.1.0</category>
+            <category>blazorbootstrap</category>
         </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.0.4]]></title>
             <link>https://getblazorbootstrap.com/blog/2021/12/12/blazorbootstrap-0.0.4</link>
-            <guid>BlazorBootstrap v0.0.4</guid>
+            <guid>/2021/12/12/blazorbootstrap-0.0.4</guid>
             <pubDate>Sun, 12 Dec 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[Our focus was on ensuring the component parameter names were consistent and documentation improvements in this release.]]></description>
-            <content:encoded><![CDATA[<p>Our focus was on ensuring the component parameter names were consistent and documentation improvements in this release.</p><h3>Changelog</h3><ul><li>Code improvements</li><li>Documentation updates</li></ul><h3>Breaking changes</h3><h4>Modal</h4><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li><li><code>HidePrevented</code> -&gt; <code>OnHidePrevented</code></li></ul></li></ul><h4>Offcanvas</h4><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li></ul></li></ul><h4>Tooltip</h4><ul><li>Parameters renamed<ul><li><code>TooltipTitle</code> -&gt; <code>Title</code></li><li><code>TooltipPlacement</code> -&gt; <code>Placement</code></li></ul></li></ul><h3>Docs update</h3><p>For the below components, documentation is updated.</p><ul><li>Alerts</li><li>Buttons</li><li>Icons</li><li>Modal</li><li>Offcanvas</li><li>Toasts</li><li>Tooltips</li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>Our focus was on ensuring the component parameter names were consistent and documentation improvements in this release.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="changelog">Changelog<a class="hash-link" href="#changelog" title="Direct link to heading">​</a></h3><ul><li>Code improvements</li><li>Documentation updates</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="breaking-changes">Breaking changes<a class="hash-link" href="#breaking-changes" title="Direct link to heading">​</a></h3><h4 class="anchor anchorWithStickyNavbar_LWe7" id="modal">Modal<a class="hash-link" href="#modal" title="Direct link to heading">​</a></h4><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li><li><code>HidePrevented</code> -&gt; <code>OnHidePrevented</code></li></ul></li></ul><h4 class="anchor anchorWithStickyNavbar_LWe7" id="offcanvas">Offcanvas<a class="hash-link" href="#offcanvas" title="Direct link to heading">​</a></h4><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li></ul></li></ul><h4 class="anchor anchorWithStickyNavbar_LWe7" id="tooltip">Tooltip<a class="hash-link" href="#tooltip" title="Direct link to heading">​</a></h4><ul><li>Parameters renamed<ul><li><code>TooltipTitle</code> -&gt; <code>Title</code></li><li><code>TooltipPlacement</code> -&gt; <code>Placement</code></li></ul></li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="docs-update">Docs update<a class="hash-link" href="#docs-update" title="Direct link to heading">​</a></h3><p>For the below components, documentation is updated.</p><ul><li>Alerts</li><li>Buttons</li><li>Icons</li><li>Modal</li><li>Offcanvas</li><li>Toasts</li><li>Tooltips</li></ul>]]></content:encoded>
+            <category>v0.0.4</category>
+            <category>blazorbootstrap</category>
         </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.0.3]]></title>
             <link>https://getblazorbootstrap.com/blog/2021/12/08/blazorbootstrap-0.0.3</link>
-            <guid>BlazorBootstrap v0.0.3</guid>
+            <guid>/2021/12/08/blazorbootstrap-0.0.3</guid>
             <pubDate>Wed, 08 Dec 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[In this release, we added the Toasts component and improved documentation.]]></description>
-            <content:encoded><![CDATA[<p>In this release, we added the Toasts component and improved documentation.</p><h3>New Component</h3><ul><li>Toasts</li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>In this release, we added the Toasts component and improved documentation.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new-component">New Component<a class="hash-link" href="#new-component" title="Direct link to heading">​</a></h3><ul><li>Toasts</li></ul>]]></content:encoded>
+            <category>v0.0.3</category>
+            <category>blazorbootstrap</category>
         </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.0.2]]></title>
             <link>https://getblazorbootstrap.com/blog/2021/11/27/blazorbootstrap-0.0.2</link>
-            <guid>BlazorBootstrap v0.0.2</guid>
+            <guid>/2021/11/27/blazorbootstrap-0.0.2</guid>
             <pubDate>Sat, 27 Nov 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[In this release, our focus was more on documenting the individual components.]]></description>
             <content:encoded><![CDATA[<p>In this release, our focus was more on documenting the individual components.</p><p>Initial documentation is available for the below components:</p><ul><li>Alert</li><li>Button</li><li>Icon</li><li>Modal</li><li>Offcanvas</li><li>Tooltip</li></ul>]]></content:encoded>
+            <category>v0.0.2</category>
+            <category>blazorbootstrap</category>
         </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.0.1]]></title>
             <link>https://getblazorbootstrap.com/blog/2021/11/23/blazorbootstrap-0.0.1</link>
-            <guid>BlazorBootstrap v0.0.1</guid>
+            <guid>/2021/11/23/blazorbootstrap-0.0.1</guid>
             <pubDate>Tue, 23 Nov 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[Welcome to BlazorBoostrap! This is our first release. We have created a few components used most frequently by the developers.]]></description>
-            <content:encoded><![CDATA[<p>Welcome to BlazorBoostrap! This is our first release. We have created a few components used most frequently by the developers.</p><h3>New Components</h3><ul><li>Alert</li><li>Button</li><li>Icon</li><li>Modals</li><li>Offcanvas</li><li>Tooltip</li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>Welcome to BlazorBoostrap! This is our first release. We have created a few components used most frequently by the developers.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new-components">New Components<a class="hash-link" href="#new-components" title="Direct link to heading">​</a></h3><ul><li>Alert</li><li>Button</li><li>Icon</li><li>Modals</li><li>Offcanvas</li><li>Tooltip</li></ul>]]></content:encoded>
+            <category>v0.0.1</category>
+            <category>blazorbootstrap</category>
         </item>
     </channel>
 </rss>

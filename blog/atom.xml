@@ -2,110 +2,151 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>BlazorBootstrap Blog</title>
-    <updated>2022-04-30T00:00:00.000Z</updated>
+    <updated>2022-06-19T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>BlazorBootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/48X48.png</icon>
     <entry>
+        <title type="html"><![CDATA[BlazorBootstrap v0.2.4]]></title>
+        <id>/2022/06/19/blazorbootstrap-0.2.4</id>
+        <link href="https://getblazorbootstrap.com/blog/2022/06/19/blazorbootstrap-0.2.4"/>
+        <updated>2022-06-19T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 0.2.4 with bug fixes and docs enhancement.]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.4</code> with bug fixes and docs enhancement.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li><code>Alert</code> component bug fixes</li><li>Docs enhancement</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/components/alerts" target="_blank" rel="noopener noreferrer">Alert Component</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v0.2.4" term="v0.2.4"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="placeholders" term="placeholders"/>
+    </entry>
+    <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.2.3]]></title>
-        <id>BlazorBootstrap v0.2.3</id>
+        <id>/2022/04/30/blazorbootstrap-0.2.3</id>
         <link href="https://getblazorbootstrap.com/blog/2022/04/30/blazorbootstrap-0.2.3"/>
         <updated>2022-04-30T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[We are excited to release 0.2.3 with a new component and minor updates.]]></summary>
-        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.3</code> with a new component and minor updates.</p><h3>Updates</h3><ul><li>New <code>Tabs</code> component</li><li>Other improvements</li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/tabs">Tabs Component</a></li></ul>]]></content>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.3</code> with a new component and minor updates.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li>New <code>Tabs</code> component</li><li>Other improvements</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/tabs" target="_blank" rel="noopener noreferrer">Tabs Component</a></li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
+        <category label="v0.2.3" term="v0.2.3"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="placeholders" term="placeholders"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.2.2]]></title>
-        <id>BlazorBootstrap v0.2.2</id>
+        <id>/2022/03/15/blazorbootstrap-0.2.2</id>
         <link href="https://getblazorbootstrap.com/blog/2022/03/15/blazorbootstrap-0.2.2"/>
         <updated>2022-03-15T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[We are excited to release 0.2.2 with a new component and minor updates.]]></summary>
-        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.2</code> with a new component and minor updates.</p><h3>Updates</h3><ul><li>New <code>Placeholders</code> component</li><li>.NET version upgrade from v6.0.1 to v6.0.3</li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/placeholders">Placeholders Component</a></li></ul>]]></content>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.2</code> with a new component and minor updates.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li>New <code>Placeholders</code> component</li><li>.NET version upgrade from v6.0.1 to v6.0.3</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/placeholders" target="_blank" rel="noopener noreferrer">Placeholders Component</a></li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
+        <category label="v0.2.2" term="v0.2.2"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="placeholders" term="placeholders"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.2.1]]></title>
-        <id>BlazorBootstrap v0.2.1</id>
+        <id>/2022/02/27/blazorbootstrap-0.2.1</id>
         <link href="https://getblazorbootstrap.com/blog/2022/02/27/blazorbootstrap-0.2.1"/>
         <updated>2022-02-27T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[We are excited to release 0.2.1 with minor updates.]]></summary>
-        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.1</code> with minor updates.</p><h2>Bootstrap Icons updated to v1.8.0</h2><img src="https://i.imgur.com/273TamX.png" alt="Blazor Bootstrap: Icon Component - Bootstrap Icons"/><h3>Minor Updates</h3><ul><li>Toasts component UI alignment fix</li><li>Confirm Dialog component docs update</li><li>Bootstrap Icons updated to <code>v1.8.0</code></li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/confirm-dialog">Confirm Dialog</a></li><li><a href="https://demos.getblazorbootstrap.com/icons">Icons</a></li><li><a href="https://demos.getblazorbootstrap.com/toasts">Toasts</a></li></ul>]]></content>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.1</code> with minor updates.</p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="bootstrap-icons-updated-to-v180">Bootstrap Icons updated to v1.8.0<a class="hash-link" href="#bootstrap-icons-updated-to-v180" title="Direct link to heading">​</a></h2><img loading="lazy" src="https://i.imgur.com/273TamX.png" alt="Blazor Bootstrap: Icon Component - Bootstrap Icons" class="img_ev3q"><h3 class="anchor anchorWithStickyNavbar_LWe7" id="minor-updates">Minor Updates<a class="hash-link" href="#minor-updates" title="Direct link to heading">​</a></h3><ul><li>Toasts component UI alignment fix</li><li>Confirm Dialog component docs update</li><li>Bootstrap Icons updated to <code>v1.8.0</code></li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/confirm-dialog" target="_blank" rel="noopener noreferrer">Confirm Dialog</a></li><li><a href="https://demos.getblazorbootstrap.com/icons" target="_blank" rel="noopener noreferrer">Icons</a></li><li><a href="https://demos.getblazorbootstrap.com/toasts" target="_blank" rel="noopener noreferrer">Toasts</a></li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
+        <category label="v0.2.1" term="v0.2.1"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="icons" term="icons"/>
+        <category label="confirm dialog" term="confirm dialog"/>
+        <category label="toasts" term="toasts"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.2.0]]></title>
-        <id>BlazorBootstrap v0.2.0</id>
+        <id>/2022/01/15/blazorbootstrap-0.2.0</id>
         <link href="https://getblazorbootstrap.com/blog/2022/01/15/blazorbootstrap-0.2.0"/>
         <updated>2022-01-15T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[We are excited to release 0.2.0 with lots of updates.]]></summary>
-        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.0</code> with lots of updates.</p><h3>Major changes</h3><ul><li>Modal component enhancements</li><li>Offcanvas enhancements</li><li>Demo website updates</li></ul><h3>Two New Comoponents</h3><ul><li>Grid</li><li>Pagination</li></ul><h3>Links</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/modals">Modals</a></li><li><a href="https://demos.getblazorbootstrap.com/offcanvas">Offcanvas</a></li><li><a href="https://demos.getblazorbootstrap.com/grid">Grid</a></li><li><a href="https://demos.getblazorbootstrap.com/pagination">Pagination</a></li></ul>]]></content>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.0</code> with lots of updates.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="major-changes">Major changes<a class="hash-link" href="#major-changes" title="Direct link to heading">​</a></h3><ul><li>Modal component enhancements</li><li>Offcanvas enhancements</li><li>Demo website updates</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="two-new-comoponents">Two New Comoponents<a class="hash-link" href="#two-new-comoponents" title="Direct link to heading">​</a></h3><ul><li>Grid</li><li>Pagination</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/modals" target="_blank" rel="noopener noreferrer">Modals</a></li><li><a href="https://demos.getblazorbootstrap.com/offcanvas" target="_blank" rel="noopener noreferrer">Offcanvas</a></li><li><a href="https://demos.getblazorbootstrap.com/grid" target="_blank" rel="noopener noreferrer">Grid</a></li><li><a href="https://demos.getblazorbootstrap.com/pagination" target="_blank" rel="noopener noreferrer">Pagination</a></li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
+        <category label="v0.2.0" term="v0.2.0"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="modal" term="modal"/>
+        <category label="offcanvas" term="offcanvas"/>
+        <category label="grid" term="grid"/>
+        <category label="pagination" term="pagination"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.1.1]]></title>
-        <id>BlazorBootstrap v0.1.1</id>
+        <id>/2021/12/21/blazorbootstrap-0.1.1</id>
         <link href="https://getblazorbootstrap.com/blog/2021/12/21/blazorbootstrap-0.1.1"/>
         <updated>2021-12-21T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[In this release, we made minor updates to the Alert component parameter. Also, docs and demos are updated.]]></summary>
-        <content type="html"><![CDATA[<p>In this release, we made minor updates to the Alert component parameter. Also, docs and demos are updated.</p><h3>Component changes</h3><ul><li>Alert<ul><li>Parameter renamed from Dismisable to Dismissable</li><li>Docs update</li><li>Demos update</li></ul></li></ul><h3>Demo Website</h3><ul><li><a href="https://demos.getblazorbootstrap.com/">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content>
+        <content type="html"><![CDATA[<p>In this release, we made minor updates to the Alert component parameter. Also, docs and demos are updated.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="component-changes">Component changes<a class="hash-link" href="#component-changes" title="Direct link to heading">​</a></h3><ul><li>Alert<ul><li>Parameter renamed from Dismisable to Dismissable</li><li>Docs update</li><li>Demos update</li></ul></li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="demo-website">Demo Website<a class="hash-link" href="#demo-website" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
+        <category label="v0.1.1" term="v0.1.1"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="alert" term="alert"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.1.0]]></title>
-        <id>BlazorBootstrap v0.1.0</id>
+        <id>/2021/12/20/blazorbootstrap-0.1.0</id>
         <link href="https://getblazorbootstrap.com/blog/2021/12/20/blazorbootstrap-0.1.0"/>
         <updated>2021-12-20T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[We are excited to release 0.1.0 with lots of updates.]]></summary>
-        <content type="html"><![CDATA[<p>We are excited to release <code>0.1.0</code> with lots of updates.</p><h3>Major changes</h3><ul><li>.NET 6 upgrade</li><li>New components added</li><li>Demo website created</li></ul><h3>Four New Comoponents</h3><ul><li>Preload</li><li>Breadcrumb</li><li>Confirm Dialog</li><li>Callout</li></ul><h3>Demo Website</h3><p>We are happy to share the demo website link.</p><ul><li><a href="https://demos.getblazorbootstrap.com/">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.1.0</code> with lots of updates.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="major-changes">Major changes<a class="hash-link" href="#major-changes" title="Direct link to heading">​</a></h3><ul><li>.NET 6 upgrade</li><li>New components added</li><li>Demo website created</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="four-new-comoponents">Four New Comoponents<a class="hash-link" href="#four-new-comoponents" title="Direct link to heading">​</a></h3><ul><li>Preload</li><li>Breadcrumb</li><li>Confirm Dialog</li><li>Callout</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="demo-website">Demo Website<a class="hash-link" href="#demo-website" title="Direct link to heading">​</a></h3><p>We are happy to share the demo website link.</p><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">https://demos.getblazorbootstrap.com/</a></li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
+        <category label="v0.1.0" term="v0.1.0"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.0.4]]></title>
-        <id>BlazorBootstrap v0.0.4</id>
+        <id>/2021/12/12/blazorbootstrap-0.0.4</id>
         <link href="https://getblazorbootstrap.com/blog/2021/12/12/blazorbootstrap-0.0.4"/>
         <updated>2021-12-12T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Our focus was on ensuring the component parameter names were consistent and documentation improvements in this release.]]></summary>
-        <content type="html"><![CDATA[<p>Our focus was on ensuring the component parameter names were consistent and documentation improvements in this release.</p><h3>Changelog</h3><ul><li>Code improvements</li><li>Documentation updates</li></ul><h3>Breaking changes</h3><h4>Modal</h4><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li><li><code>HidePrevented</code> -&gt; <code>OnHidePrevented</code></li></ul></li></ul><h4>Offcanvas</h4><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li></ul></li></ul><h4>Tooltip</h4><ul><li>Parameters renamed<ul><li><code>TooltipTitle</code> -&gt; <code>Title</code></li><li><code>TooltipPlacement</code> -&gt; <code>Placement</code></li></ul></li></ul><h3>Docs update</h3><p>For the below components, documentation is updated.</p><ul><li>Alerts</li><li>Buttons</li><li>Icons</li><li>Modal</li><li>Offcanvas</li><li>Toasts</li><li>Tooltips</li></ul>]]></content>
+        <content type="html"><![CDATA[<p>Our focus was on ensuring the component parameter names were consistent and documentation improvements in this release.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="changelog">Changelog<a class="hash-link" href="#changelog" title="Direct link to heading">​</a></h3><ul><li>Code improvements</li><li>Documentation updates</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="breaking-changes">Breaking changes<a class="hash-link" href="#breaking-changes" title="Direct link to heading">​</a></h3><h4 class="anchor anchorWithStickyNavbar_LWe7" id="modal">Modal<a class="hash-link" href="#modal" title="Direct link to heading">​</a></h4><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li><li><code>HidePrevented</code> -&gt; <code>OnHidePrevented</code></li></ul></li></ul><h4 class="anchor anchorWithStickyNavbar_LWe7" id="offcanvas">Offcanvas<a class="hash-link" href="#offcanvas" title="Direct link to heading">​</a></h4><ul><li>Callback events renamed <ul><li><code>Showing</code> -&gt; <code>OnShowing</code></li><li><code>Shown</code> -&gt; <code>OnShown</code></li><li><code>Hiding</code> -&gt; <code>OnHiding</code></li><li><code>Hidden</code> -&gt; <code>OnHidden</code></li></ul></li></ul><h4 class="anchor anchorWithStickyNavbar_LWe7" id="tooltip">Tooltip<a class="hash-link" href="#tooltip" title="Direct link to heading">​</a></h4><ul><li>Parameters renamed<ul><li><code>TooltipTitle</code> -&gt; <code>Title</code></li><li><code>TooltipPlacement</code> -&gt; <code>Placement</code></li></ul></li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="docs-update">Docs update<a class="hash-link" href="#docs-update" title="Direct link to heading">​</a></h3><p>For the below components, documentation is updated.</p><ul><li>Alerts</li><li>Buttons</li><li>Icons</li><li>Modal</li><li>Offcanvas</li><li>Toasts</li><li>Tooltips</li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
+        <category label="v0.0.4" term="v0.0.4"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.0.3]]></title>
-        <id>BlazorBootstrap v0.0.3</id>
+        <id>/2021/12/08/blazorbootstrap-0.0.3</id>
         <link href="https://getblazorbootstrap.com/blog/2021/12/08/blazorbootstrap-0.0.3"/>
         <updated>2021-12-08T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[In this release, we added the Toasts component and improved documentation.]]></summary>
-        <content type="html"><![CDATA[<p>In this release, we added the Toasts component and improved documentation.</p><h3>New Component</h3><ul><li>Toasts</li></ul>]]></content>
+        <content type="html"><![CDATA[<p>In this release, we added the Toasts component and improved documentation.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new-component">New Component<a class="hash-link" href="#new-component" title="Direct link to heading">​</a></h3><ul><li>Toasts</li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
+        <category label="v0.0.3" term="v0.0.3"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.0.2]]></title>
-        <id>BlazorBootstrap v0.0.2</id>
+        <id>/2021/11/27/blazorbootstrap-0.0.2</id>
         <link href="https://getblazorbootstrap.com/blog/2021/11/27/blazorbootstrap-0.0.2"/>
         <updated>2021-11-27T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[In this release, our focus was more on documenting the individual components.]]></summary>
@@ -114,17 +155,21 @@
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
+        <category label="v0.0.2" term="v0.0.2"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.0.1]]></title>
-        <id>BlazorBootstrap v0.0.1</id>
+        <id>/2021/11/23/blazorbootstrap-0.0.1</id>
         <link href="https://getblazorbootstrap.com/blog/2021/11/23/blazorbootstrap-0.0.1"/>
         <updated>2021-11-23T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[Welcome to BlazorBoostrap! This is our first release. We have created a few components used most frequently by the developers.]]></summary>
-        <content type="html"><![CDATA[<p>Welcome to BlazorBoostrap! This is our first release. We have created a few components used most frequently by the developers.</p><h3>New Components</h3><ul><li>Alert</li><li>Button</li><li>Icon</li><li>Modals</li><li>Offcanvas</li><li>Tooltip</li></ul>]]></content>
+        <content type="html"><![CDATA[<p>Welcome to BlazorBoostrap! This is our first release. We have created a few components used most frequently by the developers.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new-components">New Components<a class="hash-link" href="#new-components" title="Direct link to heading">​</a></h3><ul><li>Alert</li><li>Button</li><li>Icon</li><li>Modals</li><li>Offcanvas</li><li>Tooltip</li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
+        <category label="v0.0.1" term="v0.0.1"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
     </entry>
 </feed>
