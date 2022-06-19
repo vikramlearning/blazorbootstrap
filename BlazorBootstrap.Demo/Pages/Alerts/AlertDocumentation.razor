@@ -2,7 +2,9 @@
 
 @page "/alerts"
 
-<PageTitle>Alerts Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1>Alerts</h1>
 <div class="mb-3">Provide contextual feedback messages for typical user actions with a handful of available and flexible alert messages.</div>
@@ -31,6 +33,12 @@
     For this reason, we recommend subscribing to the <code>OnClosed</code> callback event and programmatically sets focus to the most appropriate location on the page.
 </Callout>
 
-@code{    
+<SectionHeading Size="HeadingSize.H2" Text="Switch alert type dynamically" PageUrl="@pageUrl" HashTagName="switch-alert-type-dynamically" />
+<Demo Type="typeof(Alert_Demo_05_Switch_Alert_Type_Dynamically)" />
+
+@code{
     private string pageUrl = "/alerts";
+    private string title = "Alerts";
+    private string description = "Provide contextual feedback messages for typical user actions with the handful of available and flexible BlazorBootstrap alert messages.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
 }

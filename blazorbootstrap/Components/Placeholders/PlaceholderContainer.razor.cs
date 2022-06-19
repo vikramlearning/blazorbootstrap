@@ -7,6 +7,8 @@ public partial class PlaceholderContainer : BaseComponent
 {
     #region Members
 
+    private PlaceholderAnimation animation = PlaceholderAnimation.Glow;
+
     #endregion
 
     #region Methods
@@ -25,7 +27,15 @@ public partial class PlaceholderContainer : BaseComponent
     /// <summary>
     /// Gets or sets the placeholder animation. Default is <see cref="PlaceholderAnimation.Glow"/>.
     /// </summary>
-    [Parameter] public PlaceholderAnimation Animation { get; set; } = PlaceholderAnimation.Glow;
+    [Parameter]
+    public PlaceholderAnimation Animation
+    {
+        get => animation; set
+        {
+            animation = value;
+            DirtyClasses();
+        }
+    }
 
     /// <summary>
     /// Specifies the content to be rendered inside this.

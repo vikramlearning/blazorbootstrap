@@ -7,6 +7,8 @@ public partial class Callout : BaseComponent
 {
     #region Members
 
+    private CalloutColor color = CalloutColor.None;
+
     #endregion Members
 
     #region Methods
@@ -29,7 +31,15 @@ public partial class Callout : BaseComponent
     /// <summary>
     /// Gets or sets the callout color.
     /// </summary>
-    [Parameter] public CalloutColor Color { get; set; } = CalloutColor.None;
+    [Parameter]
+    public CalloutColor Color
+    {
+        get => color; set
+        {
+            color = value;
+            DirtyClasses();
+        }
+    }
 
     /// <summary>
     /// Specifies the content to be rendered inside this.

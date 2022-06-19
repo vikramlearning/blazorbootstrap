@@ -1,7 +1,9 @@
 ﻿@using BlazorBootstrap
 @page "/tabs"
 
-<PageTitle>Tabs Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Tabs</h1>
 <div class="mb-3">
@@ -48,4 +50,7 @@
 
 @code {
     private string pageUrl = "/tabs";
+    private string title = "Tabs";
+    private string description = "Documentation and examples for how to use BlazorBootstrap's Tabs components.";
+    private string imageUrl = "https://i.imgur.com/ranwriJ.png";
 }

@@ -1,7 +1,9 @@
 ﻿@using BlazorBootstrap
 @page "/tooltips"
 
-<PageTitle>Tooltips Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Tooltips</h1>
 
@@ -25,5 +27,8 @@
 </Alert>
 
 @code {
-    private string pageUrl = "/tooltips";    
+    private string pageUrl = "/tooltips";
+    private string title = "Tooltips";
+    private string description = "Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages.";
+    private string imageUrl = "https://i.imgur.com/PGlmZS3.jpg";
 }

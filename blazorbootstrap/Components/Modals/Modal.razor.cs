@@ -8,6 +8,10 @@ namespace BlazorBootstrap
     {
         #region Members
 
+        private ModalSize size = ModalSize.Regular;
+
+        private ModalFullscreen fullscreen = ModalFullscreen.Disabled;
+
         private string scrollable => IsScrollable ? "modal-dialog-scrollable" : "";
 
         private string verticallyCentered => IsVerticallyCentered ? "modal-dialog-centered" : "";
@@ -105,12 +109,30 @@ namespace BlazorBootstrap
         /// <summary>
         /// Size of the modal. Default is <see cref="ModalSize.Regular"/>.
         /// </summary>
-        [Parameter] public ModalSize Size { get; set; } = ModalSize.Regular;
+        [Parameter]
+        public ModalSize Size
+        {
+            get => size; 
+            set
+            {
+                size = value;
+                DirtyClasses();
+            }
+        }
 
         /// <summary>
         /// Fullscreen behavior of the modal. Default is <see cref="ModalFullscreen.Disabled"/>.
         /// </summary>
-        [Parameter] public ModalFullscreen Fullscreen { get; set; } = ModalFullscreen.Disabled;
+        [Parameter]
+        public ModalFullscreen Fullscreen
+        {
+            get => fullscreen; 
+            set
+            {
+                fullscreen = value;
+                DirtyClasses();
+            }
+        }
 
         /// <summary>
         /// Indicates whether the modal shows close button in header.

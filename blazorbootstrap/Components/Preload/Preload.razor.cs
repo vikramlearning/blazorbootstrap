@@ -8,6 +8,8 @@ namespace BlazorBootstrap
     {
         #region Members
 
+        private SpinnerColor color = SpinnerColor.None;
+
         private string verticallyCentered => IsVerticallyCentered ? "modal-dialog-centered" : "";
 
         private string spinnerColor => Color.ToSpinnerColor();
@@ -95,7 +97,14 @@ namespace BlazorBootstrap
         /// Gets or sets the spinner color.
         /// </summary>
         [Parameter]
-        public SpinnerColor Color { get; set; } = SpinnerColor.None;
+        public SpinnerColor Color
+        {
+            get => color; set
+            {
+                color = value;
+                DirtyClasses();
+            }
+        }
 
         /// <summary>
         /// Specifies the content to be rendered inside this.

@@ -8,6 +8,8 @@ namespace BlazorBootstrap
     {
         #region Members
 
+        private TooltipPlacement _placement = TooltipPlacement.Top;
+
         private DotNetObjectReference<Tooltip> objRef;
 
         private string placement => Placement.ToTooltipPlacementName();
@@ -44,7 +46,15 @@ namespace BlazorBootstrap
         /// <summary>
         /// Specifies the tooltip placement. Default is top right.
         /// </summary>
-        [Parameter] public BlazorBootstrap.TooltipPlacement Placement { get; set; } = TooltipPlacement.Top;
+        [Parameter]
+        public TooltipPlacement Placement
+        {
+            get => _placement; set
+            {
+                _placement = value;
+                DirtyClasses();
+            }
+        }
 
         #endregion Properties
     }

@@ -2,11 +2,13 @@
 @using System.Threading.Tasks
 @page "/breadcrumb"
 
-<PageTitle>Breadcrumb Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Breadcrumb</h1>
 <div class="mb-3">
-    Indicate the current page’s location within a navigational hierarchy that automatically adds separators.
+    Indicate the current page's location within a navigational hierarchy that automatically adds separators.
 </div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
@@ -20,4 +22,7 @@
 
 @code {
     private string pageUrl = "/breadcrumb";
+    private string title = "Breadcrumb";
+    private string description = "Indicate the current page's location within a navigational hierarchy that automatically adds separators.";
+    private string imageUrl = "https://i.imgur.com/hO90HoC.jpg";
 }

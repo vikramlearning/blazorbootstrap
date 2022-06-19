@@ -121,7 +121,6 @@ public partial class Pagination : BaseComponent
         set
         {
             size = value;
-
             DirtyClasses();
         }
     }
@@ -136,7 +135,6 @@ public partial class Pagination : BaseComponent
         set
         {
             alignment = value;
-
             DirtyClasses();
         }
     }

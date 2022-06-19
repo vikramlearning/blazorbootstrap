@@ -1,11 +1,13 @@
 ﻿@using BlazorBootstrap
 @page "/callout"
 
-<PageTitle>Callout Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Callout</h1>
 <div class="mb-3">
-    BlazorBootstrap callout component provides presentation of content in a visually distinct manner. Includes a heading, icon and typically text-based content.
+    BlazorBootstrap's callout component provides presentation of content in a visually distinct manner. Includes a heading, icon and typically text-based content.
 </div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
@@ -23,4 +25,7 @@
 
 @code {
     private string pageUrl = "/callout";
+    private string title = "Callout";
+    private string description = "BlazorBootstrap's callout component provides content presentation in a visually distinct manner.";
+    private string imageUrl = "https://i.imgur.com/e9wy7fg.jpg";
 }

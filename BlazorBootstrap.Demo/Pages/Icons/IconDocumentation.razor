@@ -1,7 +1,9 @@
 ﻿@using BlazorBootstrap
 @page "/icons"
 
-<PageTitle>Icons Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Icons</h1>
 <div class="mb-3">
@@ -34,4 +36,7 @@
 
 @code{
     private string pageUrl = "/icons";
+    private string title = "Icons";
+    private string description = "BlazorBootstrap's icon component will display an icon from any icon font.";
+    private string imageUrl = "https://i.imgur.com/273TamX.png";
 }

@@ -1,7 +1,9 @@
 ﻿@using System.Threading.Tasks
 @page "/grid"
 
-<PageTitle>Grid Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Grid</h1>
 <div class="mb-3">
@@ -19,4 +21,7 @@
 
 @code {
     private string pageUrl = "/grid";
+    private string title = "Grid";
+    private string description = "Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.";
+    private string imageUrl = "https://i.imgur.com/wrHYKGd.jpg";
 }

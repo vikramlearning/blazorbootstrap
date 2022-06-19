@@ -1,7 +1,9 @@
 ﻿@using BlazorBootstrap
 @page "/buttons"
 
-<PageTitle>Buttons Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Buttons</h1>
 <div class="mb-3">
@@ -60,4 +62,7 @@
 
 @code {
     private string pageUrl = "/buttons";
+    private string title = "Buttons";
+    private string description = "Use BlazorBootstrap's button styles for actions in forms, dialogs, and more with support for multiple sizes, states, etc.";
+    private string imageUrl = "https://i.imgur.com/Ne7FJ5H.jpg";
 }

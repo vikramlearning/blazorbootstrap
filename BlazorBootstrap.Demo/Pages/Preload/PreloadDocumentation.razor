@@ -2,7 +2,9 @@
 @using System.Threading.Tasks
 @page "/preload"
 
-<PageTitle>Preload Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Preload</h1>
 @*<div class="mb-3">
@@ -14,4 +16,7 @@
 
 @code {
     private string pageUrl = "/preload";
+    private string title = "Preload";
+    private string description = "Indicate the loading state of a page with BlazorBootstrap's preload component.";
+    private string imageUrl = "https://demos.getblazorbootstrap.com/images/logo/128X128.png"; // TODO: update this
 }
