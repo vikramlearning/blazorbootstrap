@@ -8,6 +8,8 @@ namespace BlazorBootstrap
     {
         #region Members
 
+        private AlertColor color = AlertColor.None;
+
         private DotNetObjectReference<Alert> objRef;
 
         #endregion
@@ -66,7 +68,18 @@ namespace BlazorBootstrap
         /// Gets or sets the alert color.
         /// </summary>
         [Parameter]
-        public AlertColor Color { get; set; } = AlertColor.None;
+        //public AlertColor Color { get; set; } = AlertColor.None;
+
+        public AlertColor Color
+        {
+            get => color;
+            set
+            {
+                color = value;
+
+                DirtyClasses();
+            }
+        }
 
         /// <summary>
         /// Enables the alert to be closed by placing the padding for close button.

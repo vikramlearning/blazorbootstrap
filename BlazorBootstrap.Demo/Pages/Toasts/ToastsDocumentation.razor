@@ -1,7 +1,9 @@
 ﻿@using BlazorBootstrap
 @page "/toasts"
 
-<PageTitle>Toasts Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Toasts</h1>
 <div class="mb-3">
@@ -15,5 +17,8 @@
 <Demo Type="typeof(Toasts_Demo_02_Simple_Toast)" />
 
 @code {
-    private string pageUrl = "/toasts";    
+    private string pageUrl = "/toasts";
+    private string title = "Toasts";
+    private string description = "Push notifications to your visitors with a toast, a lightweight and easily customizable BlazorBootstrap alert message.";
+    private string imageUrl = "https://i.imgur.com/VRglJqU.jpg";
 }

@@ -2,7 +2,9 @@
 @using System.Threading.Tasks
 @page "/confirm-dialog"
 
-<PageTitle>Confirm Dialog Demo - BlazorBootstrap</PageTitle>
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Confirm Dialog</h1>
 <div class="mb-3">
@@ -14,4 +16,7 @@
 
 @code {
     private string pageUrl = "/confirm-dialog";
+    private string title = "Confirm Dialog";
+    private string description = "Use BlazorBootstrap's Confirm Dialog component if you want the user to verify or accept something.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
 }
