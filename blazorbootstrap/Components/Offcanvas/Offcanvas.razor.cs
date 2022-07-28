@@ -27,6 +27,8 @@ namespace BlazorBootstrap
         {
             objRef ??= DotNetObjectReference.Create(this);
             await base.OnInitializedAsync();
+
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseBackdrop, CloseOnEscape, IsScrollable, objRef); });
         }
 
         /// <summary>
@@ -34,7 +36,7 @@ namespace BlazorBootstrap
         /// </summary>
         public async Task ShowAsync()
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", ElementId, UseBackdrop, CloseOnEscape, IsScrollable, objRef);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", ElementId);
         }
 
         /// <summary>

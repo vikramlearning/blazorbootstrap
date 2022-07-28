@@ -43,6 +43,8 @@ namespace BlazorBootstrap
         {
             objRef ??= DotNetObjectReference.Create(this);
             await base.OnInitializedAsync();
+
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.modal.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, objRef); });
         }
 
         /// <summary>
@@ -50,7 +52,7 @@ namespace BlazorBootstrap
         /// </summary>
         public async Task ShowAsync()
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.modal.show", ElementId, UseStaticBackdrop, CloseOnEscape, objRef);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.modal.show", ElementId);
         }
 
         /// <summary>
