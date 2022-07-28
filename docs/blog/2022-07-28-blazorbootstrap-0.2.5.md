@@ -22,3 +22,4 @@ We are excited to release `0.2.5` with bug fixes and docs enhancement.
 
 - [Demo Website](https://demos.getblazorbootstrap.com/)
 - [Offcanvas Component](https://getblazorbootstrap.com/docs/components/offcanvas)
+- [Modal Component](https://getblazorbootstrap.com/docs/components/modal)
