@@ -35,7 +35,7 @@ namespace BlazorBootstrap
             if (Messages != null && Messages.Any())
             {
                 var message = Messages.FirstOrDefault(x => x.Id == toastId);
-                if (Messages.Remove(message))
+                if (message is not null && Messages.Remove(message))
                 {
                     // toast message removed successfully.
                 }

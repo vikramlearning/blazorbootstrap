@@ -24,7 +24,7 @@ window.blazorBootstrap = {
         }
     },
     modal: {
-        show: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {
+        initialize: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {
             let modalEl = document.getElementById(elementId);
 
             modalEl.addEventListener('show.bs.modal', function () {
@@ -44,7 +44,10 @@ window.blazorBootstrap = {
             });
 
             let options = { backdrop: useStaticBackdrop ? 'static' : true, keyboard: closeOnEscape };
-            bootstrap?.Modal?.getOrCreateInstance(modalEl, options)?.show();
+            bootstrap?.Modal?.getOrCreateInstance(modalEl, options);
+        },
+        show: (elementId) => {
+            bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.show();
         },
         hide: (elementId) => {
             bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.hide();
@@ -54,7 +57,7 @@ window.blazorBootstrap = {
         }
     },
     offcanvas: {
-        show: (elementId, useBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {
+        initialize: (elementId, useBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {
             let offcanvasEl = document.getElementById(elementId);
 
             offcanvasEl.addEventListener('show.bs.offcanvas', function () {
@@ -71,7 +74,10 @@ window.blazorBootstrap = {
             });
 
             let options = { backdrop: useBackdrop, keyboard: closeOnEscape, scroll: isScrollable };
-            bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl, options)?.show();
+            bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl, options);
+        },
+        show: (elementId) => {
+            bootstrap?.Offcanvas?.getOrCreateInstance(document.getElementById(elementId))?.show();
         },
         hide: (elementId) => {
             bootstrap?.Offcanvas?.getOrCreateInstance(document.getElementById(elementId))?.hide();
@@ -136,7 +142,7 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenToast');
             });
 
-            let options = { animation: true, autohide: autohide, delay: delay }
+            let options = { animation: true, autohide: autohide, delay: delay };
             bootstrap?.Toast?.getOrCreateInstance(toastEl, options)?.show();
         },
         hide: (elementId) => {
@@ -152,10 +158,9 @@ window.blazorBootstrap = {
             bootstrap?.Tooltip?.getOrCreateInstance(tooltipEl);
         },
     },
-    // gloal function
+    // global function
     invokeMethodAsync: (callbackEventName, dotNetHelper) => {
         dotNetHelper.invokeMethodAsync(callbackEventName);
-        console.log(callbackEventName);
     }
 }
 
