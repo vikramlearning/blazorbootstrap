@@ -4,10 +4,22 @@
         <title>BlazorBootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>BlazorBootstrap Blog</description>
-        <lastBuildDate>Sun, 19 Jun 2022 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 28 Jul 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[BlazorBootstrap v0.2.5]]></title>
+            <link>https://getblazorbootstrap.com/blog/2022/07/28/blazorbootstrap-0.2.5</link>
+            <guid>/2022/07/28/blazorbootstrap-0.2.5</guid>
+            <pubDate>Thu, 28 Jul 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 0.2.5 with bug fixes and docs enhancement.]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.5</code> with bug fixes and docs enhancement.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li><code>Offcanvas</code> component bug fix</li><li><code>Modal</code> component bug fix</li><li>Docs enhancement</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/components/offcanvas" target="_blank" rel="noopener noreferrer">Offcanvas Component</a></li><li><a href="https://getblazorbootstrap.com/docs/components/modal" target="_blank" rel="noopener noreferrer">Modal Component</a></li></ul>]]></content:encoded>
+            <category>v0.2.5</category>
+            <category>blazorbootstrap</category>
+            <category>offcanvas</category>
+            <category>modal</category>
+        </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.2.4]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/06/19/blazorbootstrap-0.2.4</link>

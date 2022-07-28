@@ -2,11 +2,27 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>BlazorBootstrap Blog</title>
-    <updated>2022-06-19T00:00:00.000Z</updated>
+    <updated>2022-07-28T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>BlazorBootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/48X48.png</icon>
+    <entry>
+        <title type="html"><![CDATA[BlazorBootstrap v0.2.5]]></title>
+        <id>/2022/07/28/blazorbootstrap-0.2.5</id>
+        <link href="https://getblazorbootstrap.com/blog/2022/07/28/blazorbootstrap-0.2.5"/>
+        <updated>2022-07-28T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 0.2.5 with bug fixes and docs enhancement.]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.2.5</code> with bug fixes and docs enhancement.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li><code>Offcanvas</code> component bug fix</li><li><code>Modal</code> component bug fix</li><li>Docs enhancement</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/components/offcanvas" target="_blank" rel="noopener noreferrer">Offcanvas Component</a></li><li><a href="https://getblazorbootstrap.com/docs/components/modal" target="_blank" rel="noopener noreferrer">Modal Component</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v0.2.5" term="v0.2.5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="offcanvas" term="offcanvas"/>
+        <category label="modal" term="modal"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.2.4]]></title>
         <id>/2022/06/19/blazorbootstrap-0.2.4</id>
