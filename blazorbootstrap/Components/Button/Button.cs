@@ -117,6 +117,19 @@ namespace BlazorBootstrap
             builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}");
         };
 
+        public void ShowLoading(string loadingText = "")
+        {
+            Loading = true;
+
+            if (!string.IsNullOrWhiteSpace(loadingText))
+                LoadingText = loadingText;
+        }
+
+        public void HideLoading()
+        {
+            Loading = false;
+        }
+
         #endregion
 
         #region Properties
