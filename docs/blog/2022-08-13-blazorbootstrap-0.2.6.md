@@ -1,5 +1,5 @@
 ---
-title: BlazorBootstrap v0.2.5
+title: BlazorBootstrap v0.2.6
 authors:
   name: Vikram Reddy
   title: Creator
