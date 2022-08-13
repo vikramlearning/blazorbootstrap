@@ -28,6 +28,13 @@ Use BlazorBootstrap's button styles for actions in forms, dialogs, and more with
 | TooltipTitle | string | Displays informative text when users hover, focus, or tap an element. | | |
 | Type | `ButtonType` | Defines the button type. | | `ButtonType.Button` |
 
+## Methods
+
+| Name | Description |
+|--|--|
+| ShowLoading | Shows the loading state and disables the button. |
+| HideLoading | Hides the loading state and enables the button. |
+
 ## Examples
 
 ### Buttons
@@ -199,6 +206,32 @@ Use spinners within buttons to indicate an action is currently processing or tak
 </p>
 ```
 [See button with loading spinner demo here.](https://demos.getblazorbootstrap.com/buttons#loading-spinner)
+
+### Show/Hide loading spinner
+
+Use `ShowLoading()` and `HideLoading()` methods to toggle the button state.
+
+<img src="https://i.imgur.com/WDjEylB.png" alt="Blazor Bootstrap: Button Component - Show/Hide loading spinner" />
+
+```cshtml
+<Button @ref="saveButton" Color="ButtonColor.Primary" @onclick="async () => await OnSaveClick()">Save</Button>
+```
+
+```csharp {2,6,10}
+@code {
+    private Button saveButton;
+
+    private async Task OnSaveClick()
+    {
+        saveButton?.ShowLoading("Saving details...");
+
+        await Task.Delay(5000); // API call
+
+        saveButton?.HideLoading();
+    }
+}
+```
+[See button with loading spinner demo here.](https://demos.getblazorbootstrap.com/buttons#show-hide-loading-spinner)
 
 ### Tooltip
 
