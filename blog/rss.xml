@@ -4,10 +4,21 @@
         <title>BlazorBootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>BlazorBootstrap Blog</description>
-        <lastBuildDate>Thu, 28 Jul 2022 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 13 Aug 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[BlazorBootstrap v0.2.6]]></title>
+            <link>https://getblazorbootstrap.com/blog/2022/08/13/blazorbootstrap-0.2.6</link>
+            <guid>/2022/08/13/blazorbootstrap-0.2.6</guid>
+            <pubDate>Sat, 13 Aug 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 0.2.6 with enhancements and bug fixes.]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.2.6</code> with enhancements and bug fixes.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li>Bootstrap Icons v1.9.1 support</li><li><code>Buttons</code> component enhancements</li><li>Docs enhancement</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/content/icons" target="_blank" rel="noopener noreferrer">Icons</a></li><li><a href="https://getblazorbootstrap.com/docs/components/buttons" target="_blank" rel="noopener noreferrer">Button Component</a></li></ul>]]></content:encoded>
+            <category>v0.2.6</category>
+            <category>blazorbootstrap</category>
+            <category>button</category>
+        </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.2.5]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/07/28/blazorbootstrap-0.2.5</link>
