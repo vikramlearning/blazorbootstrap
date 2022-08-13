@@ -37,16 +37,16 @@ Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages
 
 ```cshtml
 <div>
-    <Tooltip TooltipTitle="Tooltip Left" TooltipPlacement="TooltipPlacement.Left">Tooltip Left</Tooltip>
+    <Tooltip Title="Tooltip Left" Placement="TooltipPlacement.Left">Tooltip Left</Tooltip>
 </div>
 <div>
-    <Tooltip TooltipTitle="Tooltip Top">Tooltip Top</Tooltip>
+    <Tooltip Title="Tooltip Top">Tooltip Top</Tooltip>
 </div>
 <div>
-    <Tooltip TooltipTitle="Tooltip Right" TooltipPlacement="TooltipPlacement.Right">Tooltip Right</Tooltip>
+    <Tooltip Title="Tooltip Right" Placement="TooltipPlacement.Right">Tooltip Right</Tooltip>
 </div>
 <div>
-    <Tooltip TooltipTitle="Tooltip Bottom" TooltipPlacement="TooltipPlacement.Bottom">Tooltip Bottom</Tooltip>
+    <Tooltip Title="Tooltip Bottom" Placement="TooltipPlacement.Bottom">Tooltip Bottom</Tooltip>
 </div>
 ```
 
@@ -57,7 +57,7 @@ Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages
 <img src="https://i.imgur.com/PGlmZS3.jpg" alt="Blazor Bootstrap: Tooltip Component" />
 
 ```cshtml
-<Tooltip Class="d-inline-block" TooltipTitle="Disabled button"role="button">
+<Tooltip Class="d-inline-block" Title="Disabled button"role="button">
     <button class="btn btn-primary" type="button" disabled>Disabled button</button>
 </Tooltip>
 ```
@@ -69,7 +69,7 @@ Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages
 <img src="https://i.imgur.com/D3FrZba.jpg" alt="Blazor Bootstrap: Tooltip Component" />
 
 ```cshtml
-<Tooltip TooltipTitle="Click here" @onclick="OnClick" role="button">
+<Tooltip Title="Click here" @onclick="OnClick" role="button">
     <i class="bi bi-arrow-repeat text-danger"></i>
 </Tooltip>
 ```
