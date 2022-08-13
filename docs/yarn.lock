@@ -150,7 +150,7 @@
   "resolved" "https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.18.8.tgz"
   "version" "7.18.8"
 
-"@babel/core@^7.0.0", "@babel/core@^7.0.0-0", "@babel/core@^7.11.6", "@babel/core@^7.12.0", "@babel/core@^7.13.0", "@babel/core@^7.15.5", "@babel/core@^7.18.5", "@babel/core@^7.18.6", "@babel/core@^7.4.0-0":
+"@babel/core@^7.0.0", "@babel/core@^7.0.0-0", "@babel/core@^7.11.6", "@babel/core@^7.12.0", "@babel/core@^7.13.0", "@babel/core@^7.18.5", "@babel/core@^7.18.6", "@babel/core@^7.4.0-0":
   "integrity" "sha512-1LIb1eL8APMy91/IMW+31ckrfBM4yCoLaVzoDhZUKSM4cu1L1nIidyxkCgzPAgrC5WEz36IPEr/eSeSF9pIn+g=="
   "resolved" "https://registry.npmjs.org/@babel/core/-/core-7.18.9.tgz"
   "version" "7.18.9"
@@ -883,12 +883,12 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.18.6"
 
-"@babel/plugin-transform-react-constant-elements@^7.14.5":
-  "integrity" "sha512-OgtklS+p9t1X37eWA4XdvvbZG/3gqzX569gqmo3q4/Ui6qjfTQmOs5UTSrfdD9nVByHhX6Gbm/Pyc4KbwUXGWA=="
-  "resolved" "https://registry.npmjs.org/@babel/plugin-transform-react-constant-elements/-/plugin-transform-react-constant-elements-7.16.0.tgz"
-  "version" "7.16.0"
+"@babel/plugin-transform-react-constant-elements@^7.17.12":
+  "integrity" "sha512-Q99U9/ttiu+LMnRU8psd23HhvwXmKWDQIpocm0JKaICcZHnw+mdQbHm6xnSy7dOl8I5PELakYtNBubNQlBXbZw=="
+  "resolved" "https://registry.npmjs.org/@babel/plugin-transform-react-constant-elements/-/plugin-transform-react-constant-elements-7.18.12.tgz"
+  "version" "7.18.12"
   dependencies:
-    "@babel/helper-plugin-utils" "^7.14.5"
+    "@babel/helper-plugin-utils" "^7.18.9"
 
 "@babel/plugin-transform-react-display-name@^7.18.6":
   "integrity" "sha512-TV4sQ+T013n61uMoygyMRm+xf04Bd5oqFpv2jAEQwSZ8NwQA7zeRPg1LMVg2PWi3zWBz+CLKD+v5bcpZ/BS0aA=="
@@ -1010,7 +1010,7 @@
     "@babel/helper-create-regexp-features-plugin" "^7.18.6"
     "@babel/helper-plugin-utils" "^7.18.6"
 
-"@babel/preset-env@^7.15.6", "@babel/preset-env@^7.18.6":
+"@babel/preset-env@^7.18.2", "@babel/preset-env@^7.18.6":
   "integrity" "sha512-75pt/q95cMIHWssYtyfjVlvI+QEZQThQbKvR9xH+F/Agtw/s4Wfc2V9Bwd/P39VtixB7oWxGdH4GteTTwYJWMg=="
   "resolved" "https://registry.npmjs.org/@babel/preset-env/-/preset-env-7.18.9.tgz"
   "version" "7.18.9"
@@ -1102,7 +1102,7 @@
     "@babel/types" "^7.4.4"
     "esutils" "^2.0.2"
 
-"@babel/preset-react@^7.14.5", "@babel/preset-react@^7.18.6":
+"@babel/preset-react@^7.17.12", "@babel/preset-react@^7.18.6":
   "integrity" "sha512-zXr6atUmyYdiWRVLOZahakYmOBHtWc2WGCkP8PYTgZi0iJXDY2CN180TdrIW4OGOAdLc7TifzDIvtx6izaRIzg=="
   "resolved" "https://registry.npmjs.org/@babel/preset-react/-/preset-react-7.18.6.tgz"
   "version" "7.18.6"
@@ -1114,7 +1114,7 @@
     "@babel/plugin-transform-react-jsx-development" "^7.18.6"
     "@babel/plugin-transform-react-pure-annotations" "^7.18.6"
 
-"@babel/preset-typescript@^7.15.0", "@babel/preset-typescript@^7.18.6":
+"@babel/preset-typescript@^7.17.12", "@babel/preset-typescript@^7.18.6":
   "integrity" "sha512-s9ik86kXBAnD760aybBucdpnLsAt0jK1xqJn2juOn9lkOvSHV60os5hxoVJsPzMQxvnUJFAlkont2DvvaYEBtQ=="
   "resolved" "https://registry.npmjs.org/@babel/preset-typescript/-/preset-typescript-7.18.6.tgz"
   "version" "7.18.6"
@@ -1862,12 +1862,12 @@
     "@svgr/babel-plugin-transform-react-native-svg" "^6.3.1"
     "@svgr/babel-plugin-transform-svg-component" "^6.3.1"
 
-"@svgr/core@^6.0.0", "@svgr/core@^6.1.2", "@svgr/core@^6.2.1":
-  "integrity" "sha512-NWufjGI2WUyrg46mKuySfviEJ6IxHUOm/8a3Ph38VCWSp+83HBraCQrpEM3F3dB6LBs5x8OElS8h3C0oOJaJAA=="
-  "resolved" "https://registry.npmjs.org/@svgr/core/-/core-6.2.1.tgz"
-  "version" "6.2.1"
+"@svgr/core@^6.0.0", "@svgr/core@^6.3.1":
+  "integrity" "sha512-Sm3/7OdXbQreemf9aO25keerZSbnKMpGEfmH90EyYpj1e8wMD4TuwJIb3THDSgRMWk1kYJfSRulELBy4gVgZUA=="
+  "resolved" "https://registry.npmjs.org/@svgr/core/-/core-6.3.1.tgz"
+  "version" "6.3.1"
   dependencies:
-    "@svgr/plugin-jsx" "^6.2.1"
+    "@svgr/plugin-jsx" "^6.3.1"
     "camelcase" "^6.2.0"
     "cosmiconfig" "^7.0.1"
 
@@ -1879,7 +1879,7 @@
     "@babel/types" "^7.18.4"
     "entities" "^4.3.0"
 
-"@svgr/plugin-jsx@^6.1.2", "@svgr/plugin-jsx@^6.2.1":
+"@svgr/plugin-jsx@^6.3.1":
   "integrity" "sha512-r9+0mYG3hD4nNtUgsTXWGYJomv/bNd7kC16zvsM70I/bGeoCi/3lhTmYqeN6ChWX317OtQCSZZbH4wq9WwoXbw=="
   "resolved" "https://registry.npmjs.org/@svgr/plugin-jsx/-/plugin-jsx-6.3.1.tgz"
   "version" "6.3.1"
@@ -1889,7 +1889,7 @@
     "@svgr/hast-util-to-babel-ast" "^6.3.1"
     "svg-parser" "^2.0.4"
 
-"@svgr/plugin-svgo@^6.1.2", "@svgr/plugin-svgo@^6.2.0":
+"@svgr/plugin-svgo@^6.3.1":
   "integrity" "sha512-yJIjTDKPYqzFVjmsbH5EdIwEsmKxjxdXSGJVLeUgwZOZPAkNQmD1v7LDbOdOKbR44FG8465Du+zWPdbYGnbMbw=="
   "resolved" "https://registry.npmjs.org/@svgr/plugin-svgo/-/plugin-svgo-6.3.1.tgz"
   "version" "6.3.1"
@@ -1898,33 +1898,19 @@
     "deepmerge" "^4.2.2"
     "svgo" "^2.8.0"
 
-"@svgr/webpack@^6.2.1":
-  "integrity" "sha512-h09ngMNd13hnePwgXa+Y5CgOjzlCvfWLHg+MBnydEedAnuLRzUHUJmGS3o2OsrhxTOOqEsPOFt5v/f6C5Qulcw=="
-  "resolved" "https://registry.npmjs.org/@svgr/webpack/-/webpack-6.2.1.tgz"
-  "version" "6.2.1"
+"@svgr/webpack@^6.2.1", "@svgr/webpack@6.3.1":
+  "integrity" "sha512-eODxwIUShLxSMaRjzJtrj9wg89D75JLczvWg9SaB5W+OtVTkiC1vdGd8+t+pf5fTlBOy4RRXAq7x1E3DUl3D0A=="
+  "resolved" "https://registry.npmjs.org/@svgr/webpack/-/webpack-6.3.1.tgz"
+  "version" "6.3.1"
   dependencies:
-    "@babel/core" "^7.15.5"
-    "@babel/plugin-transform-react-constant-elements" "^7.14.5"
-    "@babel/preset-env" "^7.15.6"
-    "@babel/preset-react" "^7.14.5"
-    "@babel/preset-typescript" "^7.15.0"
-    "@svgr/core" "^6.2.1"
-    "@svgr/plugin-jsx" "^6.2.1"
-    "@svgr/plugin-svgo" "^6.2.0"
-
-"@svgr/webpack@6.1.2":
-  "integrity" "sha512-5RzzWxFquywENwvnsiGjZ7IED+0l2lnICR3OKQ6OUyGgxlu+ac73NmDSXp6EPBz/ZTArpMZtug7jiPMUkXxnlg=="
-  "resolved" "https://registry.npmjs.org/@svgr/webpack/-/webpack-6.1.2.tgz"
-  "version" "6.1.2"
-  dependencies:
-    "@babel/core" "^7.15.5"
-    "@babel/plugin-transform-react-constant-elements" "^7.14.5"
-    "@babel/preset-env" "^7.15.6"
-    "@babel/preset-react" "^7.14.5"
-    "@babel/preset-typescript" "^7.15.0"
-    "@svgr/core" "^6.1.2"
-    "@svgr/plugin-jsx" "^6.1.2"
-    "@svgr/plugin-svgo" "^6.1.2"
+    "@babel/core" "^7.18.5"
+    "@babel/plugin-transform-react-constant-elements" "^7.17.12"
+    "@babel/preset-env" "^7.18.2"
+    "@babel/preset-react" "^7.17.12"
+    "@babel/preset-typescript" "^7.17.12"
+    "@svgr/core" "^6.3.1"
+    "@svgr/plugin-jsx" "^6.3.1"
+    "@svgr/plugin-svgo" "^6.3.1"
 
 "@szmarczak/http-timer@^1.1.2":
   "integrity" "sha512-XIB2XbzHTN6ieIjfIMV9hlVcfPU26s2vafYWQcZHWXHOxiaRZYEDKEwdl129Zyg50+foYV2jCgtrqSA6qNuNSA=="
@@ -2320,9 +2306,9 @@
   "version" "8.2.0"
 
 "acorn@^8", "acorn@^8.0.4", "acorn@^8.4.1", "acorn@^8.5.0", "acorn@^8.7.1":
-  "integrity" "sha512-Xx54uLJQZ19lKygFXOWsscKUbsBZW0CPykPhVQdhIeIwrbPmJzqeASDInc8nKBnp/JT6igTs82qPXz069H8I/A=="
-  "resolved" "https://registry.npmjs.org/acorn/-/acorn-8.7.1.tgz"
-  "version" "8.7.1"
+  "integrity" "sha512-QOxyigPVrpZ2GXT+PFyZTl6TtOFc5egxHIP9IlQ+RbupQuX4RkT/Bee4/kQuC02Xkzg84JcT7oLYtDIQxp+v7w=="
+  "resolved" "https://registry.npmjs.org/acorn/-/acorn-8.8.0.tgz"
+  "version" "8.8.0"
 
 "address@^1.0.1", "address@^1.1.2":
   "integrity" "sha512-aT6camzM4xEA54YVJYSqxz1kv4IHnQZRtThJJHhUMRExaU5spC7jX5ugSwTaTgJliIgs4VhZOk7htClvQ/LmRA=="
@@ -5859,15 +5845,10 @@
   "resolved" "https://registry.npmjs.org/pretty-time/-/pretty-time-1.1.0.tgz"
   "version" "1.1.0"
 
-"prism-react-renderer@^1.3.5":
+"prism-react-renderer@^1.3.5", "prism-react-renderer@1.3.5":
   "integrity" "sha512-IJ+MSwBWKG+SM3b2SUfdrhC+gu01QkV2KmRQgREThBfSQRoufqRfxfHUxpG1WcaFjP+kojcFyO9Qqtpgt3qLCg=="
   "resolved" "https://registry.npmjs.org/prism-react-renderer/-/prism-react-renderer-1.3.5.tgz"
   "version" "1.3.5"
-
-"prism-react-renderer@1.3.3":
-  "integrity" "sha512-Viur/7tBTCH2HmYzwCHmt2rEFn+rdIWNIINXyg0StiISbDiIhHKhrFuEK8eMkKgvsIYSjgGqy/hNyucHp6FpoQ=="
-  "resolved" "https://registry.npmjs.org/prism-react-renderer/-/prism-react-renderer-1.3.3.tgz"
-  "version" "1.3.3"
 
 "prismjs@^1.28.0":
   "integrity" "sha512-8aaXdYvl1F7iC7Xm1spqSaY/OJBpYW3v+KJ+F17iYxvdc8sfjW194COK5wVhMZX45tGteiBQgdvD/nhxcRwylw=="
