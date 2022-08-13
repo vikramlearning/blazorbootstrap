@@ -117,17 +117,26 @@ namespace BlazorBootstrap
             builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}");
         };
 
+        /// <summary>
+        /// Shows the loading state and disables the button.
+        /// </summary>
+        /// <param name="loadingText"></param>
         public void ShowLoading(string loadingText = "")
         {
-            Loading = true;
+            this.Loading = true;
+            this.Disabled = true;
 
             if (!string.IsNullOrWhiteSpace(loadingText))
                 LoadingText = loadingText;
         }
 
+        /// <summary>
+        /// Hides the loading state and enables the button.
+        /// </summary>
         public void HideLoading()
         {
-            Loading = false;
+            this.Loading = false;
+            this.Disabled = false;
         }
 
         #endregion
