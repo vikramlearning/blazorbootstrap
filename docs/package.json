@@ -1,6 +1,6 @@
 {
   "name": "blazorbootstrap",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
@@ -14,12 +14,12 @@
     "write-heading-ids": "docusaurus write-heading-ids"
   },
   "dependencies": {
-    "@docusaurus/core": "2.0.0-rc.1",
-    "@docusaurus/plugin-google-analytics": "2.0.0-rc.1",
-    "@docusaurus/preset-classic": "2.0.0-rc.1",
-    "@easyops-cn/docusaurus-search-local": "0.27.1",
+    "@docusaurus/core": "2.0.1",
+    "@docusaurus/plugin-google-analytics": "2.0.1",
+    "@docusaurus/preset-classic": "2.0.1",
+    "@easyops-cn/docusaurus-search-local": "0.31.0",
     "@mdx-js/react": "1.6.22",
-    "@svgr/webpack": "5.5.0",
+    "@svgr/webpack": "6.1.2",
     "acorn": "^8.7.1",
     "clsx": "1.1.1",
     "file-loader": "6.2.0",
