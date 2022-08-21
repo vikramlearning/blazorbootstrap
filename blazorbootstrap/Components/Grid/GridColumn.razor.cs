@@ -31,7 +31,7 @@ public partial class GridColumn<TItem> : BaseComponent
         Parent.AddColumn(this);
     }
 
-    internal bool CanSort() => Parent.Sortable && SortKeySelector != null;
+    internal bool CanSort() => Parent.AllowSorting && SortKeySelector != null;
 
     internal IEnumerable<SortingItem<TItem>> GetSorting()
     {
@@ -69,6 +69,12 @@ public partial class GridColumn<TItem> : BaseComponent
     [Parameter] public string HeaderText { get; set; }
 
     /// <summary>
+    /// Enable or disble sorting on specific column.
+    /// By default sorting enabled on all columns.
+    /// </summary>
+    [Parameter] public bool Sortable { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the column sort string. 
     /// This value will be passed to the backend/API for sorting. 
     /// And this property is ignored for the client-side sorting.
@@ -104,7 +110,7 @@ public partial class GridColumn<TItem> : BaseComponent
                 // th > span "title" , span > i "icon"
                 var seq = 0;
                 builder.OpenElement(seq, "th");
-                if (this.Parent.Sortable)
+                if (this.Parent.AllowSorting && this.Sortable)
                 {
                     seq++;
                     builder.AddAttribute(seq, "role", "button");
@@ -120,7 +126,7 @@ public partial class GridColumn<TItem> : BaseComponent
                 seq++;
                 builder.CloseElement(); // close: span
 
-                if (Parent.Sortable && currentSortDirection != SortDirection.None)
+                if (Parent.AllowSorting && this.Sortable && currentSortDirection != SortDirection.None)
                 {
                     seq++;
                     builder.OpenElement(seq, "span");

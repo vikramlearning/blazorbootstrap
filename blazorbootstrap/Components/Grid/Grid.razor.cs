@@ -148,7 +148,7 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Gets or sets whether end-users can sort data by the column's values.
     /// </summary>
-    [Parameter] public bool Sortable { get; set; } = true;
+    [Parameter] public bool AllowSorting { get; set; } = true;
 
     /// <summary>
     /// Specifies the content to be rendered inside the grid.
