@@ -156,6 +156,11 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public RenderFragment ChildContent { get; set; }
 
     /// <summary>
+    /// Shows text on no records.
+    /// </summary>
+    [Parameter] public string EmptyText { get; set; } = "No records to display.";
+
+    /// <summary>
     /// Template to render when there are no rows to display.
     /// </summary>
     [Parameter] public RenderFragment EmptyDataTemplate { get; set; }
@@ -164,6 +169,11 @@ public partial class Grid<TItem> : BaseComponent
     /// DataProvider is for items to render. The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
     /// </summary>
     [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
+
+    /// <summary>
+    /// Gets or sets the pagination alignment.
+    /// </summary>
+    [Parameter] public Alignment PaginationAlignment { get; set; } = Alignment.Start;
 
     /// <summary>
     /// Gets or sets the page size of the grid.

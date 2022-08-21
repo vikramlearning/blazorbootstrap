@@ -69,7 +69,9 @@ public partial class GridColumn<TItem> : BaseComponent
     [Parameter] public string HeaderText { get; set; }
 
     /// <summary>
-    /// Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting.
+    /// Gets or sets the column sort string. 
+    /// This value will be passed to the backend/API for sorting. 
+    /// And this property is ignored for the client-side sorting.
     /// </summary>
     [Parameter] public string SortString { get; set; }
 

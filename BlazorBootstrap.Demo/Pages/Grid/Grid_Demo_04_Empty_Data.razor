@@ -1,0 +1,23 @@
+﻿<Grid TItem="Employee" class="table" DataProvider="EmployeesDataProvider">
+    <GridColumn TItem="Employee" HeaderText="Id" SortKeySelector="@(item => item.Id)" IsDefaultSortColumn="true">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="First Name" SortKeySelector="@(item => item.FirstName)">
+        @context.FirstName
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="Last Name" SortKeySelector="@(item => item.LastName)">
+        @context.LastName
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="Designation" SortKeySelector="@(item => item.Designation)">
+        @context.Designation
+    </GridColumn>
+</Grid>
+
+@code {
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {
+        await Task.Delay(3000);
+
+        return (new GridDataProviderResult<Employee> { Data = new List<Employee>(), TotalCount = 0 });
+    }
+}

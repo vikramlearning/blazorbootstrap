@@ -1,4 +1,4 @@
-﻿<Grid TItem="Employee" class="table" DataProvider="EmployeesDataProvider">
+﻿<Grid TItem="Employee" class="table" DataProvider="EmployeesDataProvider" PaginationAlignment="Alignment.Center">
     <GridColumn TItem="Employee" HeaderText="Id" SortString="Id" SortKeySelector="@(item => item.Id)">
         @context.Id
     </GridColumn>

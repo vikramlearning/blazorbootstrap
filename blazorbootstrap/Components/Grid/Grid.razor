@@ -40,7 +40,7 @@
                         {
                             <div class="text-center text-secondary my-5">
                                 <div class="fs-3"><Icon Name="IconName.Inbox" /></div>
-                                <div>No Data.</div>
+                                <div>@EmptyText</div>
                             </div>
                         }
                         else
@@ -73,11 +73,12 @@
     @if (totalCount.HasValue && totalCount.Value > 0)
     {
         <Pagination ActivePageNumber="@(GridCurrentState.PageIndex)"
-                    TotalPages="@totalPages"
-                    PageChanged="OnPageChangedAsync"
-                    FirstLinkIcon="IconName.ChevronDoubleLeft"
-                    PreviousLinkIcon="IconName.ChevronLeft"
-                    NextLinkIcon="IconName.ChevronRight"
-                    LastLinkIcon="IconName.ChevronDoubleRight" />
+            TotalPages="@totalPages"
+            PageChanged="OnPageChangedAsync"
+            FirstLinkIcon="IconName.ChevronDoubleLeft"
+            PreviousLinkIcon="IconName.ChevronLeft"
+            NextLinkIcon="IconName.ChevronRight"
+            LastLinkIcon="IconName.ChevronDoubleRight"
+            Alignment="@PaginationAlignment" />
     }
 }
