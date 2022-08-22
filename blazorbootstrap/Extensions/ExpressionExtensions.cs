@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 
 namespace BlazorBootstrap;
 
@@ -91,12 +87,12 @@ public static class ExpressionExtensions
 
     public static Expression<Func<TItem, bool>> GetStringContainsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
-        var containsMethodCallExpression = Expression.Call(
-            parameterExpression,
-            typeof(string).GetMethod("Contains", new Type[] { typeof(string) }), // Make a static field out of this
-            Expression.Constant(filterItem.Value) // Prepare a shared object before the loop
-        );
-        return Expression.Lambda<Func<TItem, bool>>(containsMethodCallExpression, parameterExpression);
+        var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
+        MethodInfo method = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) });
+        var someValue = Expression.Constant(filterItem.Value, typeof(string));
+        var containsMethodExp = Expression.Call(propertyExp, method, someValue);
+
+        return Expression.Lambda<Func<TItem, bool>>(containsMethodExp, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetStringEqualsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
@@ -117,22 +113,22 @@ public static class ExpressionExtensions
 
     public static Expression<Func<TItem, bool>> GetStringStartsWithExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
-        Expression containsMethodCallExpression = Expression.Call(
-            parameterExpression,
-            typeof(string).GetMethod(nameof(string.StartsWith), new Type[] { typeof(string) }), // Make a static field out of this
-            Expression.Constant(filterItem.Value) // Prepare a shared object before the loop
-        );
-        return Expression.Lambda<Func<TItem, bool>>(containsMethodCallExpression, parameterExpression);
+        var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
+        MethodInfo method = typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string) });
+        var someValue = Expression.Constant(filterItem.Value, typeof(string));
+        var containsMethodExp = Expression.Call(propertyExp, method, someValue);
+
+        return Expression.Lambda<Func<TItem, bool>>(containsMethodExp, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetStringEndsWithExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
-        Expression containsMethodCallExpression = Expression.Call(
-            parameterExpression,
-            typeof(string).GetMethod(nameof(string.EndsWith), new Type[] { typeof(string) }), // Make a static field out of this
-            Expression.Constant(filterItem.Value) // Prepare a shared object before the loop
-        );
-        return Expression.Lambda<Func<TItem, bool>>(containsMethodCallExpression, parameterExpression);
+        var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
+        MethodInfo method = typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string) });
+        var someValue = Expression.Constant(filterItem.Value, typeof(string));
+        var containsMethodExp = Expression.Call(propertyExp, method, someValue);
+
+        return Expression.Lambda<Func<TItem, bool>>(containsMethodExp, parameterExpression);
     }
 
     #endregion string

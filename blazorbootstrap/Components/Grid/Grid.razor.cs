@@ -46,7 +46,7 @@ public partial class Grid<TItem> : BaseComponent
         }
         else if (propertyInfo.PropertyType.Name == "String")
         {
-            column.FilterOperator = FilterOperator.Equals; // TODO: provide an option to select in the UI
+            column.FilterOperator = FilterOperator.Contains; // TODO: provide an option to select in the UI
         }
 
         #endregion TEMP Section
