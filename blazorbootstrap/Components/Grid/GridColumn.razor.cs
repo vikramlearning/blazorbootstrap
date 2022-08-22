@@ -31,7 +31,7 @@ public partial class GridColumn<TItem> : BaseComponent
         Parent.AddColumn(this);
     }
 
-    internal bool CanSort() => Parent.AllowSorting && SortKeySelector != null;
+    internal bool CanSort() => Parent.AllowSorting && this.Sortable && this.SortKeySelector != null;
 
     internal IEnumerable<SortingItem<TItem>> GetSorting()
     {
@@ -41,7 +41,7 @@ public partial class GridColumn<TItem> : BaseComponent
         yield return new SortingItem<TItem>(this.SortString, this.SortKeySelector, this.currentSortDirection);
     }
 
-    private async Task OnSortClick()
+    private void OnSortClick()
     {
         // toggle the direction
         if (currentSortDirection == SortDirection.Ascending)
@@ -67,6 +67,16 @@ public partial class GridColumn<TItem> : BaseComponent
     /// Gets or sets the table column header.
     /// </summary>
     [Parameter] public string HeaderText { get; set; }
+
+    /// <summary>
+    /// Gets or sets the property name.
+    /// This is required when `AllowFiltering` is true.
+    /// </summary>
+    [Parameter] public string PropertyName { get; set; }
+
+    [Parameter] public bool Filterable { get; set; } = true;
+
+    [Parameter] public string FilterValue { get; set; }
 
     /// <summary>
     /// Enable or disble sorting on specific column.
@@ -107,16 +117,16 @@ public partial class GridColumn<TItem> : BaseComponent
         {
             return headerTemplate ??= (builder =>
             {
-                // th > span "title" , span > i "icon"
+                // th > span "title", span > i "icon"
                 var seq = 0;
                 builder.OpenElement(seq, "th");
-                if (this.Parent.AllowSorting && this.Sortable)
+                if (this.CanSort())
                 {
                     seq++;
                     builder.AddAttribute(seq, "role", "button");
+                    seq++;
+                    builder.AddAttribute(seq, "onclick", OnSortClick);
                 }
-                seq++;
-                builder.AddAttribute(seq, "onclick", OnSortClick);
                 seq++;
                 builder.OpenElement(seq, "span");
                 seq++;
@@ -126,7 +136,7 @@ public partial class GridColumn<TItem> : BaseComponent
                 seq++;
                 builder.CloseElement(); // close: span
 
-                if (Parent.AllowSorting && this.Sortable && currentSortDirection != SortDirection.None)
+                if (this.CanSort() && currentSortDirection != SortDirection.None)
                 {
                     seq++;
                     builder.OpenElement(seq, "span");

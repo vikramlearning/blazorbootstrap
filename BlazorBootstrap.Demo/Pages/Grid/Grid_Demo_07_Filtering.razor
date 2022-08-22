@@ -1,14 +1,14 @@
-﻿<Grid TItem="Employee" class="table table-hover table-bordered" DataProvider="EmployeesDataProvider">
-    <GridColumn TItem="Employee" HeaderText="Id" SortKeySelector="@(item => item.Id)" IsDefaultSortColumn="true">
+﻿<Grid TItem="Employee" class="table table-hover table-bordered" DataProvider="EmployeesDataProvider" AllowFiltering="true">
+    <GridColumn TItem="Employee" HeaderText="Id" SortKeySelector="@(item => item.Id)" IsDefaultSortColumn="true" PropertyName="Id">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="First Name" SortKeySelector="@(item => item.FirstName)">
+    <GridColumn TItem="Employee" HeaderText="First Name" SortKeySelector="@(item => item.FirstName)" PropertyName="FirstName">
         @context.FirstName
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Last Name" SortKeySelector="@(item => item.LastName)">
+    <GridColumn TItem="Employee" HeaderText="Last Name" SortKeySelector="@(item => item.LastName)" PropertyName="LastName">
         @context.LastName
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Designation" SortKeySelector="@(item => item.Designation)">
+    <GridColumn TItem="Employee" HeaderText="Designation" SortKeySelector="@(item => item.Designation)" PropertyName="Designation">
         @context.Designation
     </GridColumn>
 </Grid>

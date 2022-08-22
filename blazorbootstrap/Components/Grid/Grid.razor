@@ -16,6 +16,20 @@
                     @column.HeaderTemplate
                 }
             </tr>
+            @if (AllowFiltering)
+            {
+                <tr>
+                    @foreach (var column in columns)
+                    {
+                        <th>
+                            @if (column.Filterable)
+                            {
+                                <input class="form-control" type="text" @bind="column.FilterValue" @oninput="@((args) => OnFilterChanged(args, column))" />
+                            }
+                        </th>
+                    }
+                </tr>
+            }
         </thead>
         <tbody>
             @if (requestInProgress) // || totalCount == null

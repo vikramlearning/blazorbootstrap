@@ -1,4 +1,4 @@
-﻿<Grid TItem="Employee" class="table table-hover table-bordered" DataProvider="EmployeesDataProvider">
+﻿<Grid TItem="Employee" class="table table-hover table-bordered" DataProvider="EmployeesDataProvider" PaginationAlignment="Alignment.End">
     <GridColumn TItem="Employee" HeaderText="Id" SortString="Id" SortKeySelector="@(item => item.Id)">
         @context.Id
     </GridColumn>
@@ -8,7 +8,7 @@
     <GridColumn TItem="Employee" HeaderText="Last Name" SortString="LastName" SortKeySelector="@(item => item.LastName)">
         @context.LastName
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Designation" SortString="Designation" SortKeySelector="@(item => item.Designation)">
+    <GridColumn TItem="Employee" HeaderText="Designation" SortString="Designation" SortKeySelector="@(item => item.Designation)" Sortable="false">
         @context.Designation
     </GridColumn>
 </Grid>

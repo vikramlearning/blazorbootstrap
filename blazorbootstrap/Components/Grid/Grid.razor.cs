@@ -36,6 +36,25 @@ public partial class Grid<TItem> : BaseComponent
         // TODO: call state changed here
     }
 
+    internal void OnFilterChanged(ChangeEventArgs args, GridColumn<TItem> column)
+    {
+        Console.WriteLine($"Column Name: {column.HeaderText}, Value: {args.Value}");
+
+        if (columns == null || !columns.Any() || !AllowFiltering || !column.Filterable) 
+            return;
+
+        RefreshDataAsync(); // for now sync call only
+        StateHasChanged(); // This is mandatory
+    }
+
+    private FilterItem[] GetFilters()
+    {
+        if (!AllowFiltering || columns == null || !columns.Any())
+            return null;
+
+        return columns?.Select(column => new FilterItem(column.PropertyName, column.FilterValue))?.ToArray();
+    }
+
     internal void SortingChanged(GridColumn<TItem> column)
     {
         if (columns == null || !columns.Any())
@@ -69,7 +88,6 @@ public partial class Grid<TItem> : BaseComponent
         });
 
         RefreshDataAsync(); // for now sync call only
-
         StateHasChanged(); // This is mandatory
     }
 
@@ -82,11 +100,11 @@ public partial class Grid<TItem> : BaseComponent
 
     private SortingItem<TItem>[] GetDefaultSorting()
     {
-        if (columns == null || !columns.Any())
+        if (!AllowSorting || columns == null || !columns.Any())
             return null;
 
         return columns?
-                .Where(item => item.IsDefaultSortColumn)?
+                .Where(column => column.CanSort() && column.IsDefaultSortColumn)?
                 .SelectMany(item => item.GetSorting())?
                 .ToArray();
     }
@@ -115,7 +133,8 @@ public partial class Grid<TItem> : BaseComponent
         {
             PageNumber = GridCurrentState.PageIndex,
             PageSize = this.PageSize,
-            Sorting = GridCurrentState.Sorting ?? GetDefaultSorting()
+            Sorting = GridCurrentState.Sorting ?? GetDefaultSorting(),
+            Filters = GetFilters()
         };
 
         if (DataProvider != null)
@@ -144,6 +163,8 @@ public partial class Grid<TItem> : BaseComponent
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
+
+    [Parameter] public bool AllowFiltering { get; set; }
 
     /// <summary>
     /// Gets or sets whether end-users can sort data by the column's values.

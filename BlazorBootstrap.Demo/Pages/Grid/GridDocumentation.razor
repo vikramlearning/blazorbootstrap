@@ -10,6 +10,9 @@
     Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
 </div>
 
+<SectionHeading Size="HeadingSize.H2" Text="Filtering" PageUrl="@pageUrl" HashTagName="filtering" />
+<Demo Type="typeof(Grid_Demo_07_Filtering)" />
+
 <SectionHeading Size="HeadingSize.H2" Text="Empty data" PageUrl="@pageUrl" HashTagName="empty-data" />
 <Demo Type="typeof(Grid_Demo_01_Empty_Data)" />
 
@@ -21,6 +24,12 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Pagination alignment" PageUrl="@pageUrl" HashTagName="pagination-alignment" />
 <Demo Type="typeof(Grid_Demo_04_Pagination_Alignment)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable sorting" PageUrl="@pageUrl" HashTagName="disable-sorting" />
+<Demo Type="typeof(Grid_Demo_05_Disable_Grid_Sorting)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable specific column sorting" PageUrl="@pageUrl" HashTagName="disable-specific-column-sorting" />
+<Demo Type="typeof(Grid_Demo_06_Disable_Specific_Column_Sorting)" />
 
 @code {
     private string pageUrl = "/grid";
