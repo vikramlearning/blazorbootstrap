@@ -25,7 +25,6 @@ public partial class Grid<TItem> : BaseComponent
         if (firstRender)
         {
             RefreshDataAsync(); // for now sync call only
-
             StateHasChanged(); // This is mandatory
         }
     }
@@ -38,9 +37,24 @@ public partial class Grid<TItem> : BaseComponent
 
     internal void OnFilterChanged(ChangeEventArgs args, GridColumn<TItem> column)
     {
-        Console.WriteLine($"Column Name: {column.HeaderText}, Value: {args.Value}");
+        #region TEMP Section
 
-        if (columns == null || !columns.Any() || !AllowFiltering || !column.Filterable) 
+        var propertyInfo = typeof(TItem).GetProperty(column.PropertyName);
+        if (propertyInfo.PropertyType.Name == "Int32")
+        {
+            column.FilterOperator = FilterOperator.Equals; // TODO: provide an option to select in the UI
+        }
+        else if (propertyInfo.PropertyType.Name == "String")
+        {
+            column.FilterOperator = FilterOperator.Equals; // TODO: provide an option to select in the UI
+        }
+
+        #endregion TEMP Section
+
+        if (column != null)
+            column.FilterValue = args.Value?.ToString();
+
+        if (columns == null || !columns.Any() || !AllowFiltering || !column.Filterable)
             return;
 
         RefreshDataAsync(); // for now sync call only
@@ -52,7 +66,10 @@ public partial class Grid<TItem> : BaseComponent
         if (!AllowFiltering || columns == null || !columns.Any())
             return null;
 
-        return columns?.Select(column => new FilterItem(column.PropertyName, column.FilterValue))?.ToArray();
+        return columns
+                ?.Where(column => column.Filterable && !string.IsNullOrWhiteSpace(column.FilterValue))
+                ?.Select(column => new FilterItem(column.PropertyName, column.FilterValue, column.FilterOperator))
+                ?.ToArray();
     }
 
     internal void SortingChanged(GridColumn<TItem> column)

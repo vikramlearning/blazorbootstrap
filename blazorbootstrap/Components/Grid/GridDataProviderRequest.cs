@@ -37,32 +37,24 @@ public class GridDataProviderRequest<TItem>
         // apply filter
         if (Filters != null && Filters.Any())
         {
-            var propertyInfo = typeof(TItem).GetProperty(Filters[3].PropertyName);
-            if (propertyInfo != null)
+            try
             {
-                try
+                var parameterExpression = Expression.Parameter(typeof(TItem)); // second param optional
+                Expression<Func<TItem, bool>> lambda = null;
+
+                foreach (var filter in Filters)
                 {
-                    var parameterExpression = Expression.Parameter(typeof(TItem)); // second param optional
-
-                    Console.WriteLine($"{Filters[0].PropertyName}");
-
-                    var property1 = Expression.Property(parameterExpression, Filters[0].PropertyName);
-                    var expression1 = Expression.Equal(property1, Expression.Constant(104)); // value conversion required.
-                    var lambda1 = Expression.Lambda<Func<TItem, bool>>(expression1, parameterExpression);
-
-                    Console.WriteLine($"{Filters[1].PropertyName}");
-                    var property2 = Expression.Property(parameterExpression, Filters[1].PropertyName);
-                    var expression2 = Expression.Equal(property2, Expression.Constant("Ronald")); // value conversion required.
-
-                    var lambda2 = Expression.Lambda<Func<TItem, bool>>(expression2, parameterExpression);
-                    var finalLambda = lambda1.And(lambda2);
-
-                    filteredData = resultData.Where(finalLambda.Compile());
+                    if (lambda is null)
+                        lambda = ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter);
+                    else
+                        lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter));
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+
+                filteredData = resultData.Where(lambda.Compile());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -98,45 +90,5 @@ public class GridDataProviderRequest<TItem>
             Data = resultData.ToList(),
             TotalCount = data.Count()
         };
-    }
-}
-
-public static class PredicateBuilder
-{
-    public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> a, Expression<Func<T, bool>> b)
-    {
-        ParameterExpression p = a.Parameters[0];
-
-        SubstExpressionVisitor visitor = new SubstExpressionVisitor();
-        visitor.subst[b.Parameters[0]] = p;
-
-        Expression body = Expression.AndAlso(a.Body, visitor.Visit(b.Body));
-        return Expression.Lambda<Func<T, bool>>(body, p);
-    }
-
-    public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> a, Expression<Func<T, bool>> b)
-    {
-        ParameterExpression p = a.Parameters[0];
-
-        SubstExpressionVisitor visitor = new SubstExpressionVisitor();
-        visitor.subst[b.Parameters[0]] = p;
-
-        Expression body = Expression.OrElse(a.Body, visitor.Visit(b.Body));
-        return Expression.Lambda<Func<T, bool>>(body, p);
-    }
-}
-
-internal class SubstExpressionVisitor : ExpressionVisitor
-{
-    public Dictionary<Expression, Expression> subst = new Dictionary<Expression, Expression>();
-
-    protected override Expression VisitParameter(ParameterExpression node)
-    {
-        Expression newValue;
-        if (subst.TryGetValue(node, out newValue))
-        {
-            return newValue;
-        }
-        return node;
     }
 }

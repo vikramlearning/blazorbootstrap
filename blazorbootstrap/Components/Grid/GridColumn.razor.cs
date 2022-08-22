@@ -78,6 +78,8 @@ public partial class GridColumn<TItem> : BaseComponent
 
     [Parameter] public string FilterValue { get; set; }
 
+    [Parameter] public FilterOperator FilterOperator { get; set; }
+
     /// <summary>
     /// Enable or disble sorting on specific column.
     /// By default sorting enabled on all columns.
