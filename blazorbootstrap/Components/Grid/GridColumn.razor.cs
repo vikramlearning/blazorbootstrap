@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace BlazorBootstrap;
@@ -57,6 +58,14 @@ public partial class GridColumn<TItem> : BaseComponent
     internal void SetFilterValue(string filterValue) => this.FilterValue = filterValue;
 
     internal void SetFilterOperator(FilterOperator filterOperator) => this.FilterOperator = filterOperator;
+
+    internal string GetPropertyTypeName()
+    {
+        if (string.IsNullOrWhiteSpace(this.PropertyName))
+            return string.Empty;
+
+        return typeof(TItem).GetProperty(this.PropertyName)?.PropertyType?.Name;
+    }
 
     #endregion Methods
 

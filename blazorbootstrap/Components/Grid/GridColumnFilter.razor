@@ -1,0 +1,31 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<div class="d-flex">
+    <button type="button" class="btn btn-light me-1 d-flex dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        @if (this.FilterOperator == defaultFilterOperator)
+        {
+            <span class="me-2"><Icon Name="IconName.Funnel" /></span>
+        }
+        else
+        {
+            <span class="me-2"><Icon Name="IconName.FunnelFill" /></span>
+        }
+        <span>@selectedFilterSymbol</span>
+    </button>
+    <ul class="dropdown-menu">
+        @if (filterOperators != null && filterOperators.Any())
+        {
+            foreach (var item in filterOperators)
+            {
+                <li class="mx-1 rounded-3">
+                    <div class="dropdown-item p-1" role="button" @onclick="((args) => FilterOperatorChanged(args, item))">
+                        <span class="filter-symbol">@item.Symbol</span> <span>@item.Text</span>
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+
+    <input class="form-control" type="text" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
+</div>

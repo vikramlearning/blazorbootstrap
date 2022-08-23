@@ -32,48 +32,52 @@ public static class ExpressionExtensions
     public static Expression<Func<TItem, bool>> GetExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyInfo = typeof(TItem).GetProperty(filterItem.PropertyName);
-        Console.WriteLine($"PropertyName: {filterItem.PropertyName}, Value: {filterItem.Value}, Type: {propertyInfo.PropertyType.Name}");
+        // TODO: remove below console log
+        Console.WriteLine($"PropertyName: {filterItem.PropertyName}, Value: {filterItem.Value}, Type: {propertyInfo.PropertyType.Name}, Operator={filterItem.Operator}");
 
-        Expression value = null;
         if (propertyInfo.PropertyType.Name == "Int32")
         {
-            var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-            _ = int.TryParse(filterItem.Value, out int filterValue);
-            value = Expression.Constant(filterValue);
-            var expression = Expression.Equal(property, value);
-            return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+            switch (filterItem.Operator)
+            {
+                case FilterOperator.Equals:
+                    return GetInt32EqualExpressionDelegate<TItem>(parameterExpression, filterItem);
+                case FilterOperator.NotEquals:
+                    return GetInt32NotEqualExpressionDelegate<TItem>(parameterExpression, filterItem);
+                case FilterOperator.LessThan:
+                    return GetInt32LessThanExpressionDelegate<TItem>(parameterExpression, filterItem);
+                case FilterOperator.LessThanOrEquals:
+                    return GetInt32LessThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem);
+                case FilterOperator.GreaterThan:
+                    return GetInt32GreaterThanExpressionDelegate<TItem>(parameterExpression, filterItem);
+                case FilterOperator.GreaterThanOrEquals:
+                    return GetInt32GreaterThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem);
+                default:
+                    break;
+            }
         }
         else if (propertyInfo.PropertyType.Name == "String")
         {
             switch (filterItem.Operator)
             {
-                case FilterOperator.Equals:
-                    return GetStringEqualsExpressionDelegate<TItem>(parameterExpression, filterItem);
-                case FilterOperator.NotEquals:
-                    return GetStringNotEqualsExpressionDelegate<TItem>(parameterExpression, filterItem);
-                case FilterOperator.LessThan:
-                    break;
-                case FilterOperator.LessThanOrEquals:
-                    break;
-                case FilterOperator.GreaterThan:
-                    break;
-                case FilterOperator.GreaterThanOrEquals:
-                    break;
                 case FilterOperator.Contains:
                     return GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem);
+                case FilterOperator.DoesNotContain:
+                    break;
                 case FilterOperator.StartsWith:
                     return GetStringStartsWithExpressionDelegate<TItem>(parameterExpression, filterItem);
                 case FilterOperator.EndsWith:
                     return GetStringEndsWithExpressionDelegate<TItem>(parameterExpression, filterItem);
-                case FilterOperator.DoesNotContain:
-                    break;
-                case FilterOperator.IsNull:
-                    break;
                 case FilterOperator.IsEmpty:
                     break;
-                case FilterOperator.IsNotNull:
-                    break;
                 case FilterOperator.IsNotEmpty:
+                    break;
+                case FilterOperator.Equals:
+                    return GetStringEqualsExpressionDelegate<TItem>(parameterExpression, filterItem);
+                case FilterOperator.NotEquals:
+                    return GetStringNotEqualsExpressionDelegate<TItem>(parameterExpression, filterItem);
+                case FilterOperator.IsNull:
+                    break;
+                case FilterOperator.IsNotNull:
                     break;
                 default:
                     break;
@@ -83,22 +87,79 @@ public static class ExpressionExtensions
         return null;
     }
 
+    #region Int32
+
+    public static Expression<Func<TItem, bool>> GetInt32EqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        _ = int.TryParse(filterItem.Value, out int filterValue);
+        var value = Expression.Constant(filterValue);
+        var expression = Expression.Equal(property, Expression.Constant(filterValue));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetInt32NotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        _ = int.TryParse(filterItem.Value, out int filterValue);
+        var value = Expression.Constant(filterValue);
+        var expression = Expression.NotEqual(property, Expression.Constant(filterValue));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetInt32LessThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        _ = int.TryParse(filterItem.Value, out int filterValue);
+        var value = Expression.Constant(filterValue);
+        var expression = Expression.LessThan(property, Expression.Constant(filterValue));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetInt32LessThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        _ = int.TryParse(filterItem.Value, out int filterValue);
+        var value = Expression.Constant(filterValue);
+        var expression = Expression.LessThanOrEqual(property, Expression.Constant(filterValue));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetInt32GreaterThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        _ = int.TryParse(filterItem.Value, out int filterValue);
+        var value = Expression.Constant(filterValue);
+        var expression = Expression.GreaterThan(property, Expression.Constant(filterValue));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetInt32GreaterThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        _ = int.TryParse(filterItem.Value, out int filterValue);
+        var value = Expression.Constant(filterValue);
+        var expression = Expression.GreaterThanOrEqual(property, Expression.Constant(filterValue));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    #endregion Int32
+
     #region string
 
     public static Expression<Func<TItem, bool>> GetStringContainsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
-        MethodInfo method = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) });
+        var method = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
-        var containsMethodExp = Expression.Call(propertyExp, method, someValue);
-
-        return Expression.Lambda<Func<TItem, bool>>(containsMethodExp, parameterExpression);
+        var expression = Expression.Call(propertyExp, method, someValue);
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetStringEqualsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        Expression value = Expression.Constant(filterItem.Value);
+        var value = Expression.Constant(filterItem.Value);
         var expression = Expression.Equal(property, value);
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
@@ -106,7 +167,7 @@ public static class ExpressionExtensions
     public static Expression<Func<TItem, bool>> GetStringNotEqualsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        Expression value = Expression.Constant(filterItem.Value);
+        var value = Expression.Constant(filterItem.Value);
         var expression = Expression.NotEqual(property, value);
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
@@ -114,21 +175,19 @@ public static class ExpressionExtensions
     public static Expression<Func<TItem, bool>> GetStringStartsWithExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
-        MethodInfo method = typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string) });
+        var method = typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
-        var containsMethodExp = Expression.Call(propertyExp, method, someValue);
-
-        return Expression.Lambda<Func<TItem, bool>>(containsMethodExp, parameterExpression);
+        var expression = Expression.Call(propertyExp, method, someValue);
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetStringEndsWithExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
-        MethodInfo method = typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string) });
+        var method = typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
-        var containsMethodExp = Expression.Call(propertyExp, method, someValue);
-
-        return Expression.Lambda<Func<TItem, bool>>(containsMethodExp, parameterExpression);
+        var expression = Expression.Call(propertyExp, method, someValue);
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
     #endregion string

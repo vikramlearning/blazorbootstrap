@@ -35,24 +35,13 @@ public partial class Grid<TItem> : BaseComponent
         // TODO: call state changed here
     }
 
-    internal void OnFilterChanged(ChangeEventArgs args, GridColumn<TItem> column)
+    internal void OnFilterChanged(FilterEventArgs args, GridColumn<TItem> column)
     {
-        #region TEMP Section
-
-        var propertyInfo = typeof(TItem).GetProperty(column.PropertyName);
-        if (propertyInfo.PropertyType.Name == "Int32")
-        {
-            column.SetFilterOperator(FilterOperator.Equals); // TODO: provide an option to select in the UI
-        }
-        else if (propertyInfo.PropertyType.Name == "String")
-        {
-            column.SetFilterOperator(FilterOperator.Contains); // TODO: provide an option to select in the UI
-        }
-
-        #endregion TEMP Section
-
         if (column != null)
-            column.SetFilterValue(args.Value?.ToString());
+        {
+            column.SetFilterValue(args.Text);
+            column.SetFilterOperator(args.FilterOperator);
+        }
 
         if (columns == null || !columns.Any() || !AllowFiltering || !column.Filterable)
             return;

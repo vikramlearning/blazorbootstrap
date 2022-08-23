@@ -24,10 +24,9 @@
                         <th>
                             @if (column.Filterable)
                             {
-                                <div class="d-flex">
-                                    <button type="button" class="btn btn-light me-1 d-flex"><span><i class="bi bi-funnel me-1"></i></span> <span>=</span> </button>
-                                    <input class="form-control" type="text" value="@column.FilterValue" @oninput="@((args) => OnFilterChanged(args, column))" />
-                                </div>
+                                <GridColumnFilter 
+                                    PropertyTypeName="@column.GetPropertyTypeName()"
+                                    GridColumnFilterChanged="((args) => OnFilterChanged(args, column))"/>
                             }
                         </th>
                     }
