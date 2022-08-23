@@ -42,17 +42,17 @@ public partial class Grid<TItem> : BaseComponent
         var propertyInfo = typeof(TItem).GetProperty(column.PropertyName);
         if (propertyInfo.PropertyType.Name == "Int32")
         {
-            column.FilterOperator = FilterOperator.Equals; // TODO: provide an option to select in the UI
+            column.SetFilterOperator(FilterOperator.Equals); // TODO: provide an option to select in the UI
         }
         else if (propertyInfo.PropertyType.Name == "String")
         {
-            column.FilterOperator = FilterOperator.Contains; // TODO: provide an option to select in the UI
+            column.SetFilterOperator(FilterOperator.Contains); // TODO: provide an option to select in the UI
         }
 
         #endregion TEMP Section
 
         if (column != null)
-            column.FilterValue = args.Value?.ToString();
+            column.SetFilterValue(args.Value?.ToString());
 
         if (columns == null || !columns.Any() || !AllowFiltering || !column.Filterable)
             return;

@@ -18,7 +18,15 @@
 
     private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
     {
-        var result = _employeeService.GetEmployees(request.PageNumber, request.PageSize, request.Sorting[0].SortString, request.Sorting[0].SortDirection);
+        var sortKey = "";
+        var sortDirection = SortDirection.None;
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            sortKey = request.Sorting[0].SortString;
+            sortDirection = request.Sorting[0].SortDirection;
+        }
+
+        var result = _employeeService.GetEmployees(request.PageNumber, request.PageSize, sortKey, sortDirection);
 
         return await Task.FromResult(new GridDataProviderResult<Employee> { Data = result.Item1, TotalCount = result.Item2 });
     }

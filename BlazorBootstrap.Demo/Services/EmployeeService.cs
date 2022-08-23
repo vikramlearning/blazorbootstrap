@@ -55,6 +55,10 @@ public class EmployeeService : IEmployeeService
             else if (sortDirection == SortDirection.Descending)
                 return new(employees.OrderByDescending(e => e.Designation).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
         }
+        else if (string.IsNullOrEmpty(sortKey))
+        {
+            return new(employees.Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count);
+        }
 
         return new(employees, employees.Count);
     }

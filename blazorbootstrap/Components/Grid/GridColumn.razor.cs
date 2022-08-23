@@ -54,6 +54,10 @@ public partial class GridColumn<TItem> : BaseComponent
         Parent.SortingChanged(this);
     }
 
+    internal void SetFilterValue(string filterValue) => this.FilterValue = filterValue;
+
+    internal void SetFilterOperator(FilterOperator filterOperator) => this.FilterOperator = filterOperator;
+
     #endregion Methods
 
     #region Properties
