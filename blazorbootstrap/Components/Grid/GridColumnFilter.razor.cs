@@ -117,7 +117,3 @@ public partial class GridColumnFilter : BaseComponent
 
     #endregion Properties
 }
-
-
-public record FilterOperatorInfo(string Symbol, string Text, FilterOperator FilterOperator);
-public record FilterEventArgs(string Text, FilterOperator FilterOperator);
