@@ -6,5 +6,5 @@ public class Employee
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Designation { get; set; }
+    public DateTime DOJ { get; set; }
 }
-

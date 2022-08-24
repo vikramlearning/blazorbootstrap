@@ -1,4 +1,4 @@
-﻿<Grid TItem="Employee" class="table table-hover table-bordered" DataProvider="EmployeesDataProvider" AllowFiltering="true">
+﻿<Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true">
     <GridColumn TItem="Employee" HeaderText="Id" SortKeySelector="@(item => item.Id)" IsDefaultSortColumn="true" PropertyName="Id">
         @context.Id
     </GridColumn>
@@ -11,6 +11,9 @@
     <GridColumn TItem="Employee" HeaderText="Designation" SortKeySelector="@(item => item.Designation)" PropertyName="Designation">
         @context.Designation
     </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="Salary" SortKeySelector="@(item => item.DOJ)" PropertyName="DOJ">
+        @context.DOJ
+    </GridColumn>
 </Grid>
 
 @code {
@@ -20,12 +23,12 @@
     {
         employees = new List<Employee>
         {
-            new Employee { Id = 101, FirstName = "Alice", LastName = "Reddy", Designation = "AI Engineer" },
-            new Employee { Id = 103, FirstName = "Bob", LastName = "Roy", Designation = "Senior DevOps Engineer" },
-            new Employee { Id = 104, FirstName = "John", LastName = "Papa", Designation = "Data Engineer" },
-            new Employee { Id = 105, FirstName = "Pop", LastName = "Two", Designation = "Associate Architect" },
-            new Employee { Id = 104, FirstName = "Ronald", LastName = "Dire", Designation = "Senior Data Engineer" },
-            new Employee { Id = 106, FirstName = "Line", LastName = "K", Designation = "Architect" }
+            new Employee { Id = 101, FirstName = "Alice", LastName = "Reddy", Designation = "AI Engineer", DOJ = new DateTime(1987, 8, 17) },
+            new Employee { Id = 103, FirstName = "Bob", LastName = "Roy", Designation = "Senior DevOps Engineer", DOJ = new DateTime(1987, 8, 17) },
+            new Employee { Id = 104, FirstName = "John", LastName = "Papa", Designation = "Data Engineer", DOJ = new DateTime(1987, 8, 17) },
+            new Employee { Id = 105, FirstName = "Pop", LastName = "Two", Designation = "Associate Architect", DOJ = new DateTime(1987, 8, 17) },
+            new Employee { Id = 104, FirstName = "Ronald", LastName = "Dire", Designation = "Senior Data Engineer", DOJ = new DateTime(1987, 8, 17) },
+            new Employee { Id = 106, FirstName = "Line", LastName = "K", Designation = "Architect", DOJ = new DateTime(1987, 8, 17) }
         };
     }
 

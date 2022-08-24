@@ -36,7 +36,12 @@ public static class ExpressionExtensions
         Console.WriteLine($"PropertyName: {filterItem.PropertyName}, Value: {filterItem.Value}, Type: {propertyInfo.PropertyType.Name}, Operator={filterItem.Operator}");
 
         var propertyTypeName = propertyInfo.PropertyType.Name;
-        if (propertyTypeName == StringConstants.PropertyTypeNameInt32)
+        if (propertyTypeName == StringConstants.PropertyTypeNameInt16
+            || propertyTypeName == StringConstants.PropertyTypeNameInt32
+            || propertyTypeName == StringConstants.PropertyTypeNameInt64
+            || propertyTypeName == StringConstants.PropertyTypeNameSingle
+            || propertyTypeName == StringConstants.PropertyTypeNameDecimal
+            || propertyTypeName == StringConstants.PropertyTypeNameDouble)
         {
             switch (filterItem.Operator)
             {
@@ -56,30 +61,42 @@ public static class ExpressionExtensions
                     break;
             }
         }
-        else if (propertyTypeName == StringConstants.PropertyTypeNameString)
+        else if (propertyTypeName == StringConstants.PropertyTypeNameString
+            || propertyTypeName == StringConstants.PropertyTypeNameChar)
         {
             switch (filterItem.Operator)
             {
                 case FilterOperator.Contains:
                     return GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem);
-                case FilterOperator.DoesNotContain:
-                    break;
                 case FilterOperator.StartsWith:
                     return GetStringStartsWithExpressionDelegate<TItem>(parameterExpression, filterItem);
                 case FilterOperator.EndsWith:
                     return GetStringEndsWithExpressionDelegate<TItem>(parameterExpression, filterItem);
-                case FilterOperator.IsEmpty:
-                    break;
-                case FilterOperator.IsNotEmpty:
-                    break;
                 case FilterOperator.Equals:
                     return GetStringEqualsExpressionDelegate<TItem>(parameterExpression, filterItem);
                 case FilterOperator.NotEquals:
                     return GetStringNotEqualsExpressionDelegate<TItem>(parameterExpression, filterItem);
-                case FilterOperator.IsNull:
+                default:
                     break;
-                case FilterOperator.IsNotNull:
-                    break;
+            }
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly
+            || propertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        {
+            switch (filterItem.Operator)
+            {
+                case FilterOperator.Equals:
+                    return GetDateEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
+                case FilterOperator.NotEquals:
+                    return GetDateNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
+                case FilterOperator.LessThan:
+                    return GetDateLessThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
+                case FilterOperator.LessThanOrEquals:
+                    return GetDateLessThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
+                case FilterOperator.GreaterThan:
+                    return GetDateGreaterThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
+                case FilterOperator.GreaterThanOrEquals:
+                    return GetDateGreaterThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
                 default:
                     break;
             }
@@ -136,9 +153,34 @@ public static class ExpressionExtensions
     {
         ConstantExpression value = null;
 
-        if (propertyTypeName == StringConstants.PropertyTypeNameInt32)
+        if (propertyTypeName == StringConstants.PropertyTypeNameInt16)
+        {
+            _ = short.TryParse(filterItem.Value, out short filterValue);
+            value = Expression.Constant(filterValue);
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameInt32)
         {
             _ = int.TryParse(filterItem.Value, out int filterValue);
+            value = Expression.Constant(filterValue);
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameInt64)
+        {
+            _ = long.TryParse(filterItem.Value, out long filterValue);
+            value = Expression.Constant(filterValue);
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameSingle)
+        {
+            _ = float.TryParse(filterItem.Value, out float filterValue);
+            value = Expression.Constant(filterValue);
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameDecimal)
+        {
+            _ = decimal.TryParse(filterItem.Value, out decimal filterValue);
+            value = Expression.Constant(filterValue);
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameDouble)
+        {
+            _ = double.TryParse(filterItem.Value, out double filterValue);
             value = Expression.Constant(filterValue);
         }
 
@@ -193,6 +235,70 @@ public static class ExpressionExtensions
     }
 
     #endregion string
+
+    #region Date
+
+    public static Expression<Func<TItem, bool>> GetDateEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.Equal(property, GetDateConstantExpression(filterItem, propertyTypeName));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetDateNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.NotEqual(property, GetDateConstantExpression(filterItem, propertyTypeName));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetDateLessThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.LessThan(property, GetDateConstantExpression(filterItem, propertyTypeName));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetDateLessThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.LessThanOrEqual(property, GetDateConstantExpression(filterItem, propertyTypeName));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetDateGreaterThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.GreaterThan(property, GetDateConstantExpression(filterItem, propertyTypeName));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetDateGreaterThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.GreaterThanOrEqual(property, GetDateConstantExpression(filterItem, propertyTypeName));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static ConstantExpression GetDateConstantExpression(FilterItem filterItem, string propertyTypeName)
+    {
+        ConstantExpression value = null;
+
+        if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly)
+        {
+            _ = DateOnly.TryParse(filterItem.Value, out DateOnly filterValue);
+            value = Expression.Constant(filterValue);
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        {
+            _ = DateTime.TryParse(filterItem.Value, out DateTime filterValue);
+            value = Expression.Constant(filterValue);
+        }
+
+        return value;
+    }
+
+    #endregion Date
 
     #endregion Expression Delegate
 }

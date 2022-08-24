@@ -16,10 +16,24 @@ public partial class GridColumnFilter : BaseComponent
 
     protected override void OnInitialized()
     {
-        if (PropertyTypeName == "Int32")
+        if (PropertyTypeName == StringConstants.PropertyTypeNameInt32
+            || PropertyTypeName == StringConstants.PropertyTypeNameInt64
+            || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
+            || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
+            || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
+        {
             this.FilterOperator = this.defaultFilterOperator = FilterOperator.Equals;
-        else if (PropertyTypeName == "String")
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameString
+            || PropertyTypeName == StringConstants.PropertyTypeNameChar)
+        {
             this.FilterOperator = this.defaultFilterOperator = FilterOperator.Contains;
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly
+            || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        {
+            this.FilterOperator = this.defaultFilterOperator = FilterOperator.Equals;
+        }
 
         SetSelectedFilterSymbol();
 
@@ -49,10 +63,24 @@ public partial class GridColumnFilter : BaseComponent
 
     private IEnumerable<FilterOperatorInfo> GetFilterOperators()
     {
-        if (PropertyTypeName == "Int32")
+        if (PropertyTypeName == StringConstants.PropertyTypeNameInt32
+            || PropertyTypeName == StringConstants.PropertyTypeNameInt64
+            || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
+            || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
+            || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
+        {
             return GetNumberFilterOperators();
-        else if (PropertyTypeName == "String")
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameString
+            || PropertyTypeName == StringConstants.PropertyTypeNameChar)
+        {
             return GetStringFilterOperators();
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly
+            || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        {
+            return GetDateFilterOperators();
+        }
 
         return null;
     }
@@ -91,15 +119,40 @@ public partial class GridColumnFilter : BaseComponent
         return result;
     }
 
+    private IEnumerable<FilterOperatorInfo> GetDateFilterOperators()
+    {
+        List<FilterOperatorInfo> result = new();
+
+        result.Add(new("=", "Equals", FilterOperator.Equals));
+        result.Add(new("!=", "Not equals", FilterOperator.NotEquals));
+        result.Add(new("<", "Less than", FilterOperator.LessThan));
+        result.Add(new("<=", "Less than or equals", FilterOperator.LessThanOrEquals));
+        result.Add(new(">", "Greater than", FilterOperator.GreaterThan));
+        result.Add(new(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals));
+        result.Add(new("x", "Clear", FilterOperator.Equals));
+
+        return result;
+    }
+
     private void SetSelectedFilterSymbol()
     {
-        if (PropertyTypeName == "Int32")
+        if (PropertyTypeName == StringConstants.PropertyTypeNameInt32
+            || PropertyTypeName == StringConstants.PropertyTypeNameInt64
+            || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
+            || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
+            || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
         {
             selectedFilterSymbol = GetNumberFilterOperators().FirstOrDefault(x => x.FilterOperator == this.FilterOperator)?.Symbol ?? "=";
         }
-        else if (PropertyTypeName == "String")
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameString
+            || PropertyTypeName == StringConstants.PropertyTypeNameChar)
         {
             selectedFilterSymbol = GetStringFilterOperators().FirstOrDefault(x => x.FilterOperator == this.FilterOperator)?.Symbol ?? "*a*";
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly
+            || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        {
+            selectedFilterSymbol = GetDateFilterOperators().FirstOrDefault(x => x.FilterOperator == this.FilterOperator)?.Symbol ?? "=";
         }
     }
 

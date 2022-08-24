@@ -27,5 +27,22 @@
         }
     </ul>
 
-    <input class="form-control" type="text" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
+    @if (PropertyTypeName == StringConstants.PropertyTypeNameInt32)
+    {
+        <input class="form-control" type="number" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))">
+
+        @*<input class="form-control" type="date" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />*@
+    }
+    else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly)
+    {
+        <input class="form-control" type="date" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
+    }
+    else if (PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
+    {
+        <input class="form-control" type="datetime-local" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
+    }
+    else
+    {
+        <input class="form-control" type="text" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
+    }
 </div>
