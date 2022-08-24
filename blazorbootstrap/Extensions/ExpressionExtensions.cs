@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using System.Reflection;
 
 namespace BlazorBootstrap;
 
@@ -32,30 +31,32 @@ public static class ExpressionExtensions
     public static Expression<Func<TItem, bool>> GetExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyInfo = typeof(TItem).GetProperty(filterItem.PropertyName);
+
         // TODO: remove below console log
         Console.WriteLine($"PropertyName: {filterItem.PropertyName}, Value: {filterItem.Value}, Type: {propertyInfo.PropertyType.Name}, Operator={filterItem.Operator}");
 
-        if (propertyInfo.PropertyType.Name == "Int32")
+        var propertyTypeName = propertyInfo.PropertyType.Name;
+        if (propertyTypeName == StringConstants.PropertyTypeNameInt32)
         {
             switch (filterItem.Operator)
             {
                 case FilterOperator.Equals:
-                    return GetInt32EqualExpressionDelegate<TItem>(parameterExpression, filterItem);
+                    return GetNumberEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
                 case FilterOperator.NotEquals:
-                    return GetInt32NotEqualExpressionDelegate<TItem>(parameterExpression, filterItem);
+                    return GetNumberNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
                 case FilterOperator.LessThan:
-                    return GetInt32LessThanExpressionDelegate<TItem>(parameterExpression, filterItem);
+                    return GetNumberLessThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
                 case FilterOperator.LessThanOrEquals:
-                    return GetInt32LessThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem);
+                    return GetNumberLessThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
                 case FilterOperator.GreaterThan:
-                    return GetInt32GreaterThanExpressionDelegate<TItem>(parameterExpression, filterItem);
+                    return GetNumberGreaterThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
                 case FilterOperator.GreaterThanOrEquals:
-                    return GetInt32GreaterThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem);
+                    return GetNumberGreaterThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
                 default:
                     break;
             }
         }
-        else if (propertyInfo.PropertyType.Name == "String")
+        else if (propertyTypeName == StringConstants.PropertyTypeNameString)
         {
             switch (filterItem.Operator)
             {
@@ -87,63 +88,64 @@ public static class ExpressionExtensions
         return null;
     }
 
-    #region Int32
+    #region Number
 
-    public static Expression<Func<TItem, bool>> GetInt32EqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    public static Expression<Func<TItem, bool>> GetNumberEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        _ = int.TryParse(filterItem.Value, out int filterValue);
-        var value = Expression.Constant(filterValue);
-        var expression = Expression.Equal(property, Expression.Constant(filterValue));
+        var expression = Expression.Equal(property, GetNumberConstantExpression(filterItem, propertyTypeName));
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
-    public static Expression<Func<TItem, bool>> GetInt32NotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    public static Expression<Func<TItem, bool>> GetNumberNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        _ = int.TryParse(filterItem.Value, out int filterValue);
-        var value = Expression.Constant(filterValue);
-        var expression = Expression.NotEqual(property, Expression.Constant(filterValue));
+        var expression = Expression.NotEqual(property, GetNumberConstantExpression(filterItem, propertyTypeName));
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
-    public static Expression<Func<TItem, bool>> GetInt32LessThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    public static Expression<Func<TItem, bool>> GetNumberLessThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        _ = int.TryParse(filterItem.Value, out int filterValue);
-        var value = Expression.Constant(filterValue);
-        var expression = Expression.LessThan(property, Expression.Constant(filterValue));
+        var expression = Expression.LessThan(property, GetNumberConstantExpression(filterItem, propertyTypeName));
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
-    public static Expression<Func<TItem, bool>> GetInt32LessThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    public static Expression<Func<TItem, bool>> GetNumberLessThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        _ = int.TryParse(filterItem.Value, out int filterValue);
-        var value = Expression.Constant(filterValue);
-        var expression = Expression.LessThanOrEqual(property, Expression.Constant(filterValue));
+        var expression = Expression.LessThanOrEqual(property, GetNumberConstantExpression(filterItem, propertyTypeName));
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
-    public static Expression<Func<TItem, bool>> GetInt32GreaterThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    public static Expression<Func<TItem, bool>> GetNumberGreaterThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        _ = int.TryParse(filterItem.Value, out int filterValue);
-        var value = Expression.Constant(filterValue);
-        var expression = Expression.GreaterThan(property, Expression.Constant(filterValue));
+        var expression = Expression.GreaterThan(property, GetNumberConstantExpression(filterItem, propertyTypeName));
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
-    public static Expression<Func<TItem, bool>> GetInt32GreaterThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    public static Expression<Func<TItem, bool>> GetNumberGreaterThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        _ = int.TryParse(filterItem.Value, out int filterValue);
-        var value = Expression.Constant(filterValue);
-        var expression = Expression.GreaterThanOrEqual(property, Expression.Constant(filterValue));
+        var expression = Expression.GreaterThanOrEqual(property, GetNumberConstantExpression(filterItem, propertyTypeName));
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
-    #endregion Int32
+    public static ConstantExpression GetNumberConstantExpression(FilterItem filterItem, string propertyTypeName)
+    {
+        ConstantExpression value = null;
+
+        if (propertyTypeName == StringConstants.PropertyTypeNameInt32)
+        {
+            _ = int.TryParse(filterItem.Value, out int filterValue);
+            value = Expression.Constant(filterValue);
+        }
+
+        return value;
+    }
+
+    #endregion Number
 
     #region string
 

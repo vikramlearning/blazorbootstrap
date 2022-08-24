@@ -77,15 +77,15 @@ public partial class GridColumnFilter : BaseComponent
         List<FilterOperatorInfo> result = new();
 
         result.Add(new("*a*", "Contains", FilterOperator.Contains));
-        result.Add(new("!*a*", "Does not contain", FilterOperator.DoesNotContain));
+        //result.Add(new("!*a*", "Does not contain", FilterOperator.DoesNotContain));
         result.Add(new("a**", "Starts with", FilterOperator.StartsWith));
         result.Add(new("**a", "Ends with", FilterOperator.EndsWith));
-        result.Add(new("=''", "Is empty", FilterOperator.IsEmpty));
-        result.Add(new("!=''", "Is not empty", FilterOperator.IsNotEmpty));
+        //result.Add(new("=''", "Is empty", FilterOperator.IsEmpty));
+        //result.Add(new("!=''", "Is not empty", FilterOperator.IsNotEmpty));
         result.Add(new("=", "Equals", FilterOperator.Equals));
         result.Add(new("!=", "Not equals", FilterOperator.NotEquals));
-        result.Add(new("null", "Is null", FilterOperator.IsNull));
-        result.Add(new("!null", "Is not null", FilterOperator.IsNotNull));
+        //result.Add(new("null", "Is null", FilterOperator.IsNull));
+        //result.Add(new("!null", "Is not null", FilterOperator.IsNotNull));
         result.Add(new("x", "Clear", FilterOperator.Contains));
 
         return result;
