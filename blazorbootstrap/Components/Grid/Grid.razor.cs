@@ -16,6 +16,8 @@ public partial class Grid<TItem> : BaseComponent
 
     private bool requestInProgress = false;
 
+    private string responsiveCssClass => this.Responsive ? "table-responsive" : "";
+
     #endregion Members
 
     #region Methods
@@ -211,6 +213,11 @@ public partial class Grid<TItem> : BaseComponent
     /// Current grid state (page, sorting).
     /// </summary>
     internal GridState<TItem> GridCurrentState { get; set; } = new GridState<TItem>(1, null);
+
+    /// <summary>
+    /// Gets or sets a value indicating whether Grid is responsive.
+    /// </summary>
+    [Parameter] public bool Responsive { get; set; }
 
     #endregion Properties
 }

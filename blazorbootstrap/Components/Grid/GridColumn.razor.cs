@@ -183,14 +183,22 @@ public partial class GridColumn<TItem> : BaseComponent
             {
                 var seq = 0;
                 builder.OpenElement(seq, "td");
-                //seq++;
-                //builder.AddAttribute(seq, "role", "button");
+                if (this.TextAlignment != Alignment.None)
+                {
+                    seq++;
+                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.TextAlignment));
+                }
                 seq++;
                 builder.AddContent(seq, ChildContent, rowData);
                 builder.CloseElement();
             });
         }
     }
+
+    /// <summary>
+    /// Gets or sets the text alignment.
+    /// </summary>
+    [Parameter] public Alignment TextAlignment { get; set; }
 
     #endregion Properties
 }

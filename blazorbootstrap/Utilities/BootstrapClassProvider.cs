@@ -147,6 +147,12 @@
 
         #endregion
 
+        #region TextAlignment
+
+        public string TextAlignment(Alignment alignment) => $"text-{ToAlignment(alignment)}";
+
+        #endregion
+
         #region Text Colors
 
         public string TextColor(TextColor textColor) => $"bg-{ToTextColor(textColor)}";
