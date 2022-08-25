@@ -27,11 +27,11 @@
         }
     </ul>
 
-    @if (PropertyTypeName == StringConstants.PropertyTypeNameInt32)
+    @if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
+        || PropertyTypeName == StringConstants.PropertyTypeNameInt32
+        || PropertyTypeName == StringConstants.PropertyTypeNameInt64)
     {
         <input class="form-control" type="number" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))">
-
-        @*<input class="form-control" type="date" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />*@
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly)
     {
@@ -41,7 +41,11 @@
     {
         <input class="form-control" type="datetime-local" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
     }
-    else
+    else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
+    {
+        <input class="form-check-input" type="checkbox" value="@FilterValue" @onchange="@((args) => OnFilterChanged(args))" />
+    }
+    else // string
     {
         <input class="form-control" type="text" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
     }

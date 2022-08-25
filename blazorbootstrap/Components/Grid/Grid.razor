@@ -24,8 +24,6 @@
                         <th>
                             @if (column.Filterable)
                             {
-                                Console.WriteLine($"PropertyTypeName={column.GetPropertyTypeName()}");
-
                                 <GridColumnFilter 
                                     PropertyTypeName="@column.GetPropertyTypeName()"
                                     GridColumnFilterChanged="((args) => OnFilterChanged(args, column))"/>

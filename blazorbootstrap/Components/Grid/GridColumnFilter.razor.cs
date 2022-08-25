@@ -16,7 +16,8 @@ public partial class GridColumnFilter : BaseComponent
 
     protected override void OnInitialized()
     {
-        if (PropertyTypeName == StringConstants.PropertyTypeNameInt32
+        if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
+            || PropertyTypeName == StringConstants.PropertyTypeNameInt32
             || PropertyTypeName == StringConstants.PropertyTypeNameInt64
             || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
             || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
@@ -31,6 +32,10 @@ public partial class GridColumnFilter : BaseComponent
         }
         else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly
             || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        {
+            this.FilterOperator = this.defaultFilterOperator = FilterOperator.Equals;
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
         {
             this.FilterOperator = this.defaultFilterOperator = FilterOperator.Equals;
         }
@@ -63,7 +68,8 @@ public partial class GridColumnFilter : BaseComponent
 
     private IEnumerable<FilterOperatorInfo> GetFilterOperators()
     {
-        if (PropertyTypeName == StringConstants.PropertyTypeNameInt32
+        if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
+            || PropertyTypeName == StringConstants.PropertyTypeNameInt32
             || PropertyTypeName == StringConstants.PropertyTypeNameInt64
             || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
             || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
@@ -80,6 +86,10 @@ public partial class GridColumnFilter : BaseComponent
             || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
         {
             return GetDateFilterOperators();
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            return GetBooleanFilterOperators();
         }
 
         return null;
@@ -134,9 +144,21 @@ public partial class GridColumnFilter : BaseComponent
         return result;
     }
 
+    private IEnumerable<FilterOperatorInfo> GetBooleanFilterOperators()
+    {
+        List<FilterOperatorInfo> result = new();
+
+        result.Add(new("=", "Equals", FilterOperator.Equals));
+        result.Add(new("!=", "Not equals", FilterOperator.NotEquals));
+        result.Add(new("x", "Clear", FilterOperator.Equals));
+
+        return result;
+    }
+
     private void SetSelectedFilterSymbol()
     {
-        if (PropertyTypeName == StringConstants.PropertyTypeNameInt32
+        if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
+            || PropertyTypeName == StringConstants.PropertyTypeNameInt32
             || PropertyTypeName == StringConstants.PropertyTypeNameInt64
             || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
             || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
@@ -153,6 +175,10 @@ public partial class GridColumnFilter : BaseComponent
             || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
         {
             selectedFilterSymbol = GetDateFilterOperators().FirstOrDefault(x => x.FilterOperator == this.FilterOperator)?.Symbol ?? "=";
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            selectedFilterSymbol = GetBooleanFilterOperators().FirstOrDefault(x => x.FilterOperator == this.FilterOperator)?.Symbol ?? "=";
         }
     }
 

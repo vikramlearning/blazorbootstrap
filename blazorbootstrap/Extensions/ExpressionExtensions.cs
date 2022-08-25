@@ -31,11 +31,8 @@ public static class ExpressionExtensions
     public static Expression<Func<TItem, bool>> GetExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyInfo = typeof(TItem).GetProperty(filterItem.PropertyName);
-
-        // TODO: remove below console log
-        Console.WriteLine($"PropertyName: {filterItem.PropertyName}, Value: {filterItem.Value}, Type: {propertyInfo.PropertyType.Name}, Operator={filterItem.Operator}");
-
         var propertyTypeName = propertyInfo.PropertyType.Name;
+
         if (propertyTypeName == StringConstants.PropertyTypeNameInt16
             || propertyTypeName == StringConstants.PropertyTypeNameInt32
             || propertyTypeName == StringConstants.PropertyTypeNameInt64
@@ -97,6 +94,18 @@ public static class ExpressionExtensions
                     return GetDateGreaterThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
                 case FilterOperator.GreaterThanOrEquals:
                     return GetDateGreaterThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
+                default:
+                    break;
+            }
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            switch (filterItem.Operator)
+            {
+                case FilterOperator.Equals:
+                    return GetBooleanEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
+                case FilterOperator.NotEquals:
+                    return GetBooleanNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName);
                 default:
                     break;
             }
@@ -299,6 +308,37 @@ public static class ExpressionExtensions
     }
 
     #endregion Date
+
+    #region Boolean
+
+    public static Expression<Func<TItem, bool>> GetBooleanEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.Equal(property, GetBooleanConstantExpression(filterItem, propertyTypeName));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetBooleanNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.NotEqual(property, GetBooleanConstantExpression(filterItem, propertyTypeName));
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static ConstantExpression GetBooleanConstantExpression(FilterItem filterItem, string propertyTypeName)
+    {
+        ConstantExpression value = null;
+
+        if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            _ = bool.TryParse(filterItem.Value, out bool filterValue);
+            value = Expression.Constant(filterValue);
+        }
+
+        return value;
+    }
+
+    #endregion Boolean
 
     #endregion Expression Delegate
 }

@@ -1,0 +1,45 @@
+﻿<div class="table-responsive">
+    <Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true">
+        <GridColumn TItem="Employee" HeaderText="Id" SortKeySelector="@(item => item.Id)" IsDefaultSortColumn="true" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="First Name" SortKeySelector="@(item => item.FirstName)" PropertyName="FirstName">
+            @context.FirstName
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Last Name" SortKeySelector="@(item => item.LastName)" PropertyName="LastName">
+            @context.LastName
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Designation" SortKeySelector="@(item => item.Designation)" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="DOJ" SortKeySelector="@(item => item.DOJ)" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Active" SortKeySelector="@(item => item.IsActive)" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </Grid>
+</div>
+
+@code {
+    private IEnumerable<Employee> employees;
+
+    protected override void OnInitialized()
+    {
+        employees = new List<Employee>
+        {
+            new Employee { Id = 107, FirstName = "Alice", LastName = "Reddy", Designation = "AI Engineer", DOJ = new DateTime(1998, 11, 17), IsActive = true },
+            new Employee { Id = 103, FirstName = "Bob", LastName = "Roy", Designation = "Senior DevOps Engineer", DOJ = new DateTime(1985, 1, 5), IsActive = true },
+            new Employee { Id = 106, FirstName = "John", LastName = "Papa", Designation = "Data Engineer", DOJ = new DateTime(1995, 4, 17), IsActive = true },
+            new Employee { Id = 104, FirstName = "Pop", LastName = "Two", Designation = "Associate Architect", DOJ = new DateTime(1985, 6, 8), IsActive = false },
+            new Employee { Id = 105, FirstName = "Ronald", LastName = "Dire", Designation = "Senior Data Engineer", DOJ = new DateTime(1991, 8, 23), IsActive = true },
+            new Employee { Id = 102, FirstName = "Line", LastName = "K", Designation = "Architect", DOJ = new DateTime(1977, 1, 12), IsActive = true },
+            new Employee { Id = 101, FirstName = "Daniel", LastName = "K", Designation = "Architect", DOJ = new DateTime(1977, 1, 12), IsActive = true }
+        };
+    }
+
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+}

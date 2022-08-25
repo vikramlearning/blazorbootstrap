@@ -12,4 +12,5 @@ internal class StringConstants
     public const string PropertyTypeNameDouble = "Double";
     public const string PropertyTypeNameDateOnly = "DateOnly";
     public const string PropertyTypeNameDateTime = "DateTime";
+    public const string PropertyTypeNameBoolean = "Boolean";
 }
