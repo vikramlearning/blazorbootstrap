@@ -25,8 +25,12 @@
                             <th>
                                 @if (column.Filterable)
                                 {
-                                    <GridColumnFilter PropertyTypeName="@column.GetPropertyTypeName()"
-                                      GridColumnFilterChanged="((args) => OnFilterChanged(args, column))" />
+                                    <GridColumnFilter 
+                                        PropertyTypeName="@column.GetPropertyTypeName()"
+                                        FilterOperator="@column.FilterOperator"
+                                        FilterValue="@column.FilterValue"
+                                        FilterWidth="@column.FilterTextboxWidth"
+                                        GridColumnFilterChanged="((args) => OnFilterChanged(args, column))" />
                                 }
                             </th>
                         }

@@ -9,6 +9,9 @@
         }
         else
         {
+            //Console.WriteLine($"GridColumnFilter.razor - FilterOperator: {this.FilterOperator}");
+            //Console.WriteLine($"GridColumnFilter.razor - defaultFilterOperator: {this.defaultFilterOperator}");
+
             <span class="me-2"><Icon Name="IconName.FunnelFill" /></span>
         }
         <span>@selectedFilterSymbol</span>
@@ -31,15 +34,15 @@
         || PropertyTypeName == StringConstants.PropertyTypeNameInt32
         || PropertyTypeName == StringConstants.PropertyTypeNameInt64)
     {
-        <input class="form-control" type="number" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))">
+        <input class="form-control" style="@filterStyle" type="number" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))">
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly)
     {
-        <input class="form-control" type="date" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
+        <input class="form-control" style="@filterStyle" type="date" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
     {
-        <input class="form-control" type="datetime-local" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
+        <input class="form-control" style="@filterStyle" type="datetime-local" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
     {
@@ -47,6 +50,6 @@
     }
     else // string
     {
-        <input class="form-control" type="text" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
+        <input class="form-control" style="@filterStyle" type="text" value="@FilterValue" @oninput="@((args) => OnFilterChanged(args))" />
     }
 </div>

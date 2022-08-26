@@ -22,6 +22,11 @@ public partial class Grid<TItem> : BaseComponent
 
     #region Methods
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -58,7 +63,7 @@ public partial class Grid<TItem> : BaseComponent
             return null;
 
         return columns
-                ?.Where(column => column.Filterable && !string.IsNullOrWhiteSpace(column.FilterValue))
+                ?.Where(column => column.Filterable && column.FilterOperator != FilterOperator.None && !string.IsNullOrWhiteSpace(column.FilterValue))
                 ?.Select(column => new FilterItem(column.PropertyName, column.FilterValue, column.FilterOperator))
                 ?.ToArray();
     }
@@ -210,7 +215,7 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public int PageSize { get; set; } = 10;
 
     /// <summary>
-    /// Current grid state (page, sorting).
+    /// Current grid state (filters, paging, sorting).
     /// </summary>
     internal GridState<TItem> GridCurrentState { get; set; } = new GridState<TItem>(1, null);
 

@@ -147,9 +147,11 @@
 
         #endregion
 
-        #region TextAlignment
+        #region Text
 
         public string TextAlignment(Alignment alignment) => $"text-{ToAlignment(alignment)}";
+
+        public string TextNoWrap() => "text-nowrap";
 
         #endregion
 

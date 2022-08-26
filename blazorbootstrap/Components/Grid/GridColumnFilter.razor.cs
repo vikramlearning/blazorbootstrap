@@ -2,13 +2,17 @@
 
 namespace BlazorBootstrap;
 
-public partial class GridColumnFilter : BaseComponent
+partial class GridColumnFilter : BaseComponent
 {
     #region Members
 
     private IEnumerable<FilterOperatorInfo> filterOperators => GetFilterOperators();
+
     private string selectedFilterSymbol;
+
     private FilterOperator defaultFilterOperator;
+
+    private string filterStyle => this.FilterWidth > 0 ? $"width:{this.FilterWidth}px;" : "";
 
     #endregion Members
 
@@ -16,29 +20,7 @@ public partial class GridColumnFilter : BaseComponent
 
     protected override void OnInitialized()
     {
-        if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
-            || PropertyTypeName == StringConstants.PropertyTypeNameInt32
-            || PropertyTypeName == StringConstants.PropertyTypeNameInt64
-            || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
-            || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
-            || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
-        {
-            this.FilterOperator = this.defaultFilterOperator = FilterOperator.Equals;
-        }
-        else if (PropertyTypeName == StringConstants.PropertyTypeNameString
-            || PropertyTypeName == StringConstants.PropertyTypeNameChar)
-        {
-            this.FilterOperator = this.defaultFilterOperator = FilterOperator.Contains;
-        }
-        else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly
-            || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
-        {
-            this.FilterOperator = this.defaultFilterOperator = FilterOperator.Equals;
-        }
-        else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
-        {
-            this.FilterOperator = this.defaultFilterOperator = FilterOperator.Equals;
-        }
+        SetDefaultFilter();
 
         SetSelectedFilterSymbol();
 
@@ -155,6 +137,45 @@ public partial class GridColumnFilter : BaseComponent
         return result;
     }
 
+    internal void SetDefaultFilter()
+    {
+        if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
+            || PropertyTypeName == StringConstants.PropertyTypeNameInt32
+            || PropertyTypeName == StringConstants.PropertyTypeNameInt64
+            || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
+            || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
+            || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
+        {
+            if (this.FilterOperator == FilterOperator.None)
+                this.FilterOperator = this.defaultFilterOperator = FilterOperator.Equals;
+            else
+                this.defaultFilterOperator = FilterOperator.Equals;
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameString
+            || PropertyTypeName == StringConstants.PropertyTypeNameChar)
+        {
+            if (this.FilterOperator == FilterOperator.None)
+                this.FilterOperator = this.defaultFilterOperator = FilterOperator.Contains;
+            else
+                this.defaultFilterOperator = FilterOperator.Contains;
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly
+            || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        {
+            if (this.FilterOperator == FilterOperator.None)
+                this.FilterOperator = this.defaultFilterOperator = FilterOperator.Equals;
+            else
+                this.defaultFilterOperator = FilterOperator.Equals;
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            if (this.FilterOperator == FilterOperator.None)
+                this.FilterOperator = this.defaultFilterOperator = FilterOperator.Equals;
+            else
+                this.defaultFilterOperator = FilterOperator.Equals;
+        }
+    }
+
     private void SetSelectedFilterSymbol()
     {
         if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
@@ -188,11 +209,25 @@ public partial class GridColumnFilter : BaseComponent
 
     [Parameter] public EventCallback<FilterEventArgs> GridColumnFilterChanged { get; set; }
 
+    /// <summary>
+    /// Gets or sets filter operator.
+    /// </summary>
     [Parameter] public FilterOperator FilterOperator { get; set; }
 
-    [Parameter] public string FilterValue { get; set; }
+    /// <summary>
+    /// Gets or sets filter value.
+    /// </summary>
+    [Parameter] public string FilterValue { get; set; } 
 
+    /// <summary>
+    /// Gets or sets the filter property name.
+    /// </summary>
     [Parameter] public string PropertyTypeName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the filter textbox width.
+    /// </summary>
+    [Parameter] public int FilterWidth { get; set; }
 
     #endregion Properties
 }

@@ -30,6 +30,8 @@ public partial class GridColumn<TItem> : BaseComponent
             currentSortDirection = SortDirection = SortDirection.Ascending;
 
         Parent.AddColumn(this);
+
+        SetDefaultFilter(this.FilterOperator, this.GetPropertyTypeName());
     }
 
     internal bool CanSort() => Parent.AllowSorting && this.Sortable && this.SortKeySelector != null;
@@ -53,6 +55,37 @@ public partial class GridColumn<TItem> : BaseComponent
             currentSortDirection = SortDirection = SortDirection.Ascending;
 
         Parent.SortingChanged(this);
+    }
+
+    internal void SetDefaultFilter(FilterOperator columnFilterOperator, string propertyTypeName)
+    {
+        if (propertyTypeName == StringConstants.PropertyTypeNameInt16
+            || propertyTypeName == StringConstants.PropertyTypeNameInt32
+            || propertyTypeName == StringConstants.PropertyTypeNameInt64
+            || propertyTypeName == StringConstants.PropertyTypeNameSingle // float
+            || propertyTypeName == StringConstants.PropertyTypeNameDecimal
+            || propertyTypeName == StringConstants.PropertyTypeNameDouble)
+        {
+            if (this.FilterOperator == FilterOperator.None)
+                this.FilterOperator = FilterOperator.Equals;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameString
+            || propertyTypeName == StringConstants.PropertyTypeNameChar)
+        {
+            if (this.FilterOperator == FilterOperator.None)
+                this.FilterOperator = FilterOperator.Contains;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly
+            || propertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        {
+            if (this.FilterOperator == FilterOperator.None)
+                this.FilterOperator = FilterOperator.Equals;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            if (this.FilterOperator == FilterOperator.None)
+                this.FilterOperator = FilterOperator.Equals;
+        }
     }
 
     internal void SetFilterValue(string filterValue) => this.FilterValue = filterValue;
@@ -142,6 +175,11 @@ public partial class GridColumn<TItem> : BaseComponent
                     seq++;
                     builder.AddAttribute(seq, "onclick", OnSortClick);
                 }
+                if (this.HeaderTextAlignment != Alignment.None)
+                {
+                    seq++;
+                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.TextAlignment));
+                }
                 seq++;
                 builder.OpenElement(seq, "span");
                 seq++;
@@ -188,6 +226,11 @@ public partial class GridColumn<TItem> : BaseComponent
                     seq++;
                     builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.TextAlignment));
                 }
+                if (this.TextNoWrap)
+                {
+                    seq++;
+                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextNoWrap());
+                }
                 seq++;
                 builder.AddContent(seq, ChildContent, rowData);
                 builder.CloseElement();
@@ -196,9 +239,24 @@ public partial class GridColumn<TItem> : BaseComponent
     }
 
     /// <summary>
+    /// Gets or sets the header text alignment.
+    /// </summary>
+    [Parameter] public Alignment HeaderTextAlignment { get; set; }
+
+    /// <summary>
     /// Gets or sets the text alignment.
     /// </summary>
     [Parameter] public Alignment TextAlignment { get; set; }
+
+    /// <summary>
+    /// Gets or sets text nowrap.
+    /// </summary>
+    [Parameter] public bool TextNoWrap { get; set; }
+
+    /// <summary>
+    /// Gets or sets the filter textbox width in pixels.
+    /// </summary>
+    [Parameter] public int FilterTextboxWidth { get; set; }
 
     #endregion Properties
 }

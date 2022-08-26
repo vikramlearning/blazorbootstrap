@@ -5,6 +5,7 @@
 /// </summary>
 public enum FilterOperator
 {
+    None,
     /// <summary>
     /// Satisfied if the current value equals the specified value.
     /// </summary>

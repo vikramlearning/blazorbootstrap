@@ -1,18 +1,23 @@
 ﻿
 <Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
-    <GridColumn TItem="Employee" HeaderText="Id" SortKeySelector="@(item => item.Id)" IsDefaultSortColumn="true" PropertyName="Id" TextAlignment="Alignment.Center">
+    <GridColumn TItem="Employee"
+                HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center"
+                SortKeySelector="@(item => item.Id)" IsDefaultSortColumn="true"
+                PropertyName="Id" FilterValue="103" FilterOperator="FilterOperator.GreaterThan" FilterTextboxWidth="80">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="First Name" SortKeySelector="@(item => item.FirstName)" PropertyName="FirstName">
+    <GridColumn TItem="Employee" HeaderText="First Name"
+                SortKeySelector="@(item => item.FirstName)"
+                PropertyName="FirstName" FilterTextboxWidth="80">
         @context.FirstName
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Last Name" SortKeySelector="@(item => item.LastName)" PropertyName="LastName">
+    <GridColumn TItem="Employee" HeaderText="Last Name" SortKeySelector="@(item => item.LastName)" PropertyName="LastName" FilterTextboxWidth="80">
         @context.LastName
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Designation" SortKeySelector="@(item => item.Designation)" PropertyName="Designation">
+    <GridColumn TItem="Employee" HeaderText="Designation" TextNoWrap="true" SortKeySelector="@(item => item.Designation)" PropertyName="Designation" FilterTextboxWidth="80">
         @context.Designation
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Salary" SortKeySelector="@(item => item.Salary)" PropertyName="Salary" TextAlignment="Alignment.End">
+    <GridColumn TItem="Employee" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" SortKeySelector="@(item => item.Salary)" PropertyName="Salary" FilterTextboxWidth="80">
         @context.Salary.ToString("N2")
     </GridColumn>
     <GridColumn TItem="Employee" HeaderText="DOJ" SortKeySelector="@(item => item.DOJ)" PropertyName="DOJ">

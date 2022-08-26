@@ -48,6 +48,8 @@ public class GridDataProviderRequest<TItem>
                         lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter));
                 }
 
+                Console.WriteLine($"GridDataProviderRequest.ApplyTo: {lambda}");
+
                 filteredData = resultData.Where(lambda.Compile());
             }
             catch (Exception ex)
