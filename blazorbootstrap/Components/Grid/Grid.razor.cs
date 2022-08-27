@@ -144,10 +144,10 @@ public partial class Grid<TItem> : BaseComponent
 
         var request = new GridDataProviderRequest<TItem>
         {
-            PageNumber = GridCurrentState.PageIndex,
-            PageSize = this.PageSize,
-            Sorting = GridCurrentState.Sorting ?? GetDefaultSorting(),
-            Filters = GetFilters()
+            PageNumber = this.AllowPaging ? GridCurrentState.PageIndex : 0,
+            PageSize = this.AllowPaging ? this.PageSize : 0,
+            Sorting = this.AllowSorting ? (GridCurrentState.Sorting ?? GetDefaultSorting()) : null,
+            Filters = this.AllowFiltering ? GetFilters() : null
         };
 
         if (DataProvider != null)
@@ -179,10 +179,12 @@ public partial class Grid<TItem> : BaseComponent
 
     [Parameter] public bool AllowFiltering { get; set; }
 
+    [Parameter] public bool AllowPaging { get; set; }
+
     /// <summary>
     /// Gets or sets whether end-users can sort data by the column's values.
     /// </summary>
-    [Parameter] public bool AllowSorting { get; set; } = true;
+    [Parameter] public bool AllowSorting { get; set; }
 
     /// <summary>
     /// Specifies the content to be rendered inside the grid.

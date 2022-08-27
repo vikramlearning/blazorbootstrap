@@ -91,7 +91,7 @@
         </table>
     </div>
 
-    @if (totalCount.HasValue && totalCount.Value > 0)
+    @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0)
     {
         <Pagination ActivePageNumber="@(GridCurrentState.PageIndex)"
             TotalPages="@totalPages"

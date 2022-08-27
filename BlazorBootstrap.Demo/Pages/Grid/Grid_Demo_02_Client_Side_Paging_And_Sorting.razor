@@ -1,4 +1,4 @@
-﻿<Grid TItem="Employee" class="table table-hover table-bordered" DataProvider="EmployeesDataProvider">
+﻿<Grid TItem="Employee" class="table table-hover table-bordered" DataProvider="EmployeesDataProvider" AllowPaging="true" AllowSorting="true">
     <GridColumn TItem="Employee" HeaderText="Id" SortKeySelector="@(item => item.Id)" IsDefaultSortColumn="true">
         @context.Id
     </GridColumn>
@@ -20,12 +20,24 @@
     {
         employees = new List<Employee>
         {
-            new Employee { Id = 101, FirstName = "Alice", LastName = "Reddy", Designation = "AI Engineer" },
-            new Employee { Id = 103, FirstName = "Bob", LastName = "Roy", Designation = "Senior DevOps Engineer" },
-            new Employee { Id = 104, FirstName = "John", LastName = "Papa", Designation = "Data Engineer" },
-            new Employee { Id = 105, FirstName = "Pop", LastName = "Two", Designation = "Associate Architect" },
-            new Employee { Id = 104, FirstName = "Ronald", LastName = "Dire", Designation = "Senior Data Engineer" },
-            new Employee { Id = 106, FirstName = "Line", LastName = "K", Designation = "Architect" }
+            new Employee { Id = 101, FirstName = "Eathan", LastName = "Ellis", Designation = "Associate Architect" },
+            new Employee { Id = 103, FirstName = "Cohan", LastName = "Wheatley", Designation = "Senior DevOps Engineer" },
+            new Employee { Id = 104, FirstName = "Jody", LastName = "Frost", Designation = "Senior Data Engineer" },
+            new Employee { Id = 116, FirstName = "Charis", LastName = "Guerra", Designation = "Data Scientist" },
+            new Employee { Id = 110, FirstName = "Julian", LastName = "Walmsley", Designation = "Senior AI Engineer" },
+            new Employee { Id = 115, FirstName = "Emer", LastName = "Strickland", Designation = "AI Engineer" },
+            new Employee { Id = 102, FirstName = "Kornelia", LastName = "Lord", Designation = "Developer" },
+            new Employee { Id = 112, FirstName = "Loretta", LastName = "Koch", Designation = "Administrator" },
+            new Employee { Id = 105, FirstName = "Ivy", LastName = "Lloyd", Designation = "Solution Architect" },
+            new Employee { Id = 109, FirstName = "Isha", LastName = "Davison", Designation = "App Maker" },
+            new Employee { Id = 111, FirstName = "Glenda", LastName = "Potter", Designation = "Data Engineer" },
+            new Employee { Id = 106, FirstName = "Chance", LastName = "Bowler", Designation = "Auditor" },
+            new Employee { Id = 114, FirstName = "Ralphy", LastName = "Estrada", Designation = "" },
+            new Employee { Id = 108, FirstName = "Zayne", LastName = "Simmons", Designation = "Data Analyst" },
+            new Employee { Id = 118, FirstName = "Kristopher", LastName = "Lawrence", Designation = "" },
+            new Employee { Id = 107, FirstName = "Roisin", LastName = "Farmer", Designation = "Solutions Architect" },
+            new Employee { Id = 113, FirstName = "Merlin", LastName = "Correa", Designation = "" },
+            new Employee { Id = 117, FirstName = "Sharna", LastName = "Macleod", Designation = "Data Analyst" },
         };
     }
 

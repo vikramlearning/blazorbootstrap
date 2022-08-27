@@ -80,8 +80,8 @@ public class GridDataProviderRequest<TItem>
         {
             skip = (PageNumber - 1) * PageSize;
             take = PageSize;
+            resultData = resultData.Skip(skip).Take(take);
         }
-        resultData = resultData.Skip(skip).Take(take);
 
         return new GridDataProviderResult<TItem>
         {
