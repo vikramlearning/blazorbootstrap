@@ -44,14 +44,14 @@ public partial class Grid<TItem> : BaseComponent
 
     internal void OnFilterChanged(FilterEventArgs args, GridColumn<TItem> column)
     {
+        if (columns == null || !columns.Any() || !AllowFiltering || !column.Filterable)
+            return;
+
         if (column != null)
         {
             column.SetFilterValue(args.Text);
             column.SetFilterOperator(args.FilterOperator);
         }
-
-        if (columns == null || !columns.Any() || !AllowFiltering || !column.Filterable)
-            return;
 
         RefreshDataAsync(); // for now sync call only
         StateHasChanged(); // This is mandatory

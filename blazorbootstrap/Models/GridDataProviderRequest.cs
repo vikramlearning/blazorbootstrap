@@ -29,8 +29,7 @@ public class GridDataProviderRequest<TItem>
         if (data == null)
             return new GridDataProviderResult<TItem> { Data = null, TotalCount = null };
 
-        IEnumerable<TItem> resultData;
-        IEnumerable<TItem> filteredData = resultData = data;
+        IEnumerable<TItem> resultData = data;
 
         // apply filter
         if (Filters != null && Filters.Any())
@@ -48,7 +47,7 @@ public class GridDataProviderRequest<TItem>
                         lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter));
                 }
 
-                filteredData = resultData.Where(lambda.Compile());
+                resultData = resultData.Where(lambda.Compile());
             }
             catch (Exception ex)
             {
@@ -60,8 +59,8 @@ public class GridDataProviderRequest<TItem>
         if (Sorting != null && Sorting.Any())
         {
             IOrderedEnumerable<TItem> orderedData = (Sorting[0].SortDirection == SortDirection.Ascending)
-                       ? (filteredData ?? resultData).OrderBy(Sorting[0].SortKeySelector.Compile())
-                       : (filteredData ?? resultData).OrderByDescending(Sorting[0].SortKeySelector.Compile());
+                       ? resultData.OrderBy(Sorting[0].SortKeySelector.Compile())
+                       : resultData.OrderByDescending(Sorting[0].SortKeySelector.Compile());
 
             for (int i = 1; i < Sorting.Count; i++)
             {
