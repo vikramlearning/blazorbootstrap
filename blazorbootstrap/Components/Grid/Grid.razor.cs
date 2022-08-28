@@ -53,6 +53,11 @@ public partial class Grid<TItem> : BaseComponent
                 ?.ToArray();
     }
 
+    internal void ResetPageNumber()
+    {
+        GridCurrentState = new GridState<TItem>(1, GridCurrentState.Sorting);
+    }
+
     internal void SortingChanged(GridColumn<TItem> column)
     {
         if (columns == null || !columns.Any())

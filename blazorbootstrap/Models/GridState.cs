@@ -1,7 +1,7 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// User state of the <see cref="HxGrid"/>.
+/// User state of the <see cref="Grid"/>.
 /// </summary>
 public class GridState<TItem>
 {

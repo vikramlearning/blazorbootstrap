@@ -58,6 +58,9 @@ public partial class GridColumn<TItem> : BaseComponent
 
     internal void OnFilterChanged(FilterEventArgs args, GridColumn<TItem> column)
     {
+        if (this.filterValue != args.Text || this.filterOperator != args.FilterOperator)
+            this.Parent.ResetPageNumber();
+
         this.filterValue = args.Text;
         this.filterOperator = args.FilterOperator;
 

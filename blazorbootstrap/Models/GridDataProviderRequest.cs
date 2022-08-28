@@ -74,6 +74,12 @@ public class GridDataProviderRequest<TItem>
         // apply paging
         var skip = 0;
         var take = data.Count();
+        var totalCount = resultData.Count(); // before paging
+
+        //if(PageNumber > 0 && resultData.Count() < data.Count())
+        //{
+        //    PageNumber = 0;
+        //}
 
         if (PageNumber > 0 && PageSize > 0)
         {
@@ -85,7 +91,7 @@ public class GridDataProviderRequest<TItem>
         return new GridDataProviderResult<TItem>
         {
             Data = resultData.ToList(),
-            TotalCount = data.Count()
+            TotalCount = totalCount
         };
     }
 }
