@@ -30,7 +30,7 @@
                                         FilterOperator="@column.FilterOperator"
                                         FilterValue="@column.FilterValue"
                                         FilterWidth="@column.FilterTextboxWidth"
-                                      GridColumnFilterChanged="((args) => OnFilterChanged(args, column))" />
+                                        GridColumnFilterChanged="((args) => OnFilterChanged(args, column))" />
                                 }
                             </th>
                         }
@@ -78,7 +78,7 @@
                     {
                         foreach (var item in items)
                         {
-                            <tr @key="item.GetHashCode()">
+                            <tr @key="item?.GetHashCode()">
                                 @foreach (var column in columns)
                                 {
                                     @column.CellTemplate(item)

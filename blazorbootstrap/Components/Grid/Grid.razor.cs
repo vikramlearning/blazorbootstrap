@@ -140,6 +140,9 @@ public partial class Grid<TItem> : BaseComponent
 
     public async Task RefreshDataAsync()
     {
+        if (requestInProgress)
+            return;
+
         requestInProgress = true;
 
         var request = new GridDataProviderRequest<TItem>

@@ -27,7 +27,7 @@ partial class GridColumnFilter : BaseComponent
         base.OnInitialized();
     }
 
-    private void FilterOperatorChanged(EventArgs args, FilterOperatorInfo filterOperatorInfo)
+    private void OnFilterOperatorChanged(EventArgs args, FilterOperatorInfo filterOperatorInfo)
     {
         this.FilterOperator = filterOperatorInfo.FilterOperator;
         if (filterOperatorInfo.Symbol == "x")

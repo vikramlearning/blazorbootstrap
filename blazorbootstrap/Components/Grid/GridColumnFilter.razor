@@ -19,7 +19,7 @@
             foreach (var item in filterOperators)
             {
                 <li class="mx-1 rounded-3">
-                    <div class="dropdown-item p-1" role="button" @onclick="((args) => FilterOperatorChanged(args, item))">
+                    <div class="dropdown-item p-1" role="button" @onclick="((args) => OnFilterOperatorChanged(args, item))">
                         <span class="filter-symbol">@item.Symbol</span> <span>@item.Text</span>
                     </div>
                 </li>
