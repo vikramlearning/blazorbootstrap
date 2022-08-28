@@ -12,6 +12,10 @@ public partial class GridColumn<TItem> : BaseComponent
 
     private RenderFragment<TItem> cellTemplate;
 
+    private FilterOperator filterOperator;
+
+    private string filterValue;
+
     internal SortDirection currentSortDirection;
 
     internal SortDirection defaultSortDirection;
@@ -25,13 +29,15 @@ public partial class GridColumn<TItem> : BaseComponent
         ElementId = IdGenerator.Generate; // Required
         currentSortDirection = SortDirection;
         defaultSortDirection = SortDirection;
+        filterOperator = FilterOperator;
+        filterValue = FilterValue;
 
         if (IsDefaultSortColumn && SortDirection == SortDirection.None)
             currentSortDirection = SortDirection = SortDirection.Ascending;
 
         Parent.AddColumn(this);
 
-        SetDefaultFilter(this.FilterOperator, this.GetPropertyTypeName());
+        SetDefaultFilter(this.filterOperator, this.GetPropertyTypeName());
     }
 
     internal bool CanSort() => Parent.AllowSorting && this.Sortable && this.SortKeySelector != null;
@@ -57,7 +63,7 @@ public partial class GridColumn<TItem> : BaseComponent
         Parent.SortingChanged(this);
     }
 
-    internal void SetDefaultFilter(FilterOperator columnFilterOperator, string propertyTypeName)
+    private void SetDefaultFilter(FilterOperator columnFilterOperator, string propertyTypeName)
     {
         if (propertyTypeName == StringConstants.PropertyTypeNameInt16
             || propertyTypeName == StringConstants.PropertyTypeNameInt32
@@ -66,31 +72,32 @@ public partial class GridColumn<TItem> : BaseComponent
             || propertyTypeName == StringConstants.PropertyTypeNameDecimal
             || propertyTypeName == StringConstants.PropertyTypeNameDouble)
         {
-            if (this.FilterOperator == FilterOperator.None)
-                this.FilterOperator = FilterOperator.Equals;
+            this.filterOperator = this.filterOperator == FilterOperator.None ? FilterOperator.Equals : this.filterOperator;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameString
             || propertyTypeName == StringConstants.PropertyTypeNameChar)
         {
-            if (this.FilterOperator == FilterOperator.None)
-                this.FilterOperator = FilterOperator.Contains;
+            this.filterOperator = this.filterOperator == FilterOperator.None ? FilterOperator.Contains : this.filterOperator;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly
             || propertyTypeName == StringConstants.PropertyTypeNameDateTime)
         {
-            if (this.FilterOperator == FilterOperator.None)
-                this.FilterOperator = FilterOperator.Equals;
+            this.filterOperator = this.filterOperator == FilterOperator.None ? FilterOperator.Equals : this.filterOperator;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
         {
-            if (this.FilterOperator == FilterOperator.None)
-                this.FilterOperator = FilterOperator.Equals;
+            this.filterOperator = this.filterOperator == FilterOperator.None ? FilterOperator.Equals : this.filterOperator;
         }
     }
 
-    internal void SetFilterValue(string filterValue) => this.FilterValue = filterValue;
+    internal void OnFilterChanged(FilterEventArgs args, GridColumn<TItem> column)
+    {
+        this.filterValue = args.Text;
+        this.filterOperator = args.FilterOperator;
 
-    internal void SetFilterOperator(FilterOperator filterOperator) => this.FilterOperator = filterOperator;
+        this.Parent.RefreshDataAsync();
+        //StateHasChanged();
+    }
 
     internal string GetPropertyTypeName()
     {
@@ -99,6 +106,10 @@ public partial class GridColumn<TItem> : BaseComponent
 
         return typeof(TItem).GetProperty(this.PropertyName)?.PropertyType?.Name;
     }
+
+    internal string GetFilterValue() => this.filterValue;
+
+    internal FilterOperator GetFilterOperator() => this.filterOperator;
 
     #endregion Methods
 
@@ -122,9 +133,9 @@ public partial class GridColumn<TItem> : BaseComponent
 
     [Parameter] public bool Filterable { get; set; } = true;
 
-    [Parameter] public string FilterValue { get; set; }
-
     [Parameter] public FilterOperator FilterOperator { get; set; }
+
+    [Parameter] public string FilterValue { get; set; }
 
     /// <summary>
     /// Enable or disble sorting on specific column.

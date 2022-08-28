@@ -30,7 +30,7 @@
                                         FilterOperator="@column.FilterOperator"
                                         FilterValue="@column.FilterValue"
                                         FilterWidth="@column.FilterTextboxWidth"
-                                        GridColumnFilterChanged="((args) => OnFilterChanged(args, column))" />
+                                        GridColumnFilterChanged="((args) => column.OnFilterChanged(args, column))" />
                                 }
                             </th>
                         }

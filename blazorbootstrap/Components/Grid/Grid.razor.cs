@@ -42,20 +42,20 @@ public partial class Grid<TItem> : BaseComponent
         // TODO: call state changed here
     }
 
-    internal void OnFilterChanged(FilterEventArgs args, GridColumn<TItem> column)
-    {
-        if (columns == null || !columns.Any() || !AllowFiltering || !column.Filterable)
-            return;
+    //internal void OnFilterChanged(FilterEventArgs args, GridColumn<TItem> column)
+    //{
+    //    if (columns == null || !columns.Any() || !AllowFiltering || !column.Filterable)
+    //        return;
 
-        if (column != null)
-        {
-            column.SetFilterValue(args.Text);
-            column.SetFilterOperator(args.FilterOperator);
-        }
+    //    if (column != null)
+    //    {
+    //        column.SetFilterValue(args.Text);
+    //        column.SetFilterOperator(args.FilterOperator);
+    //    }
 
-        RefreshDataAsync(); // for now sync call only
-        StateHasChanged(); // This is mandatory
-    }
+    //    RefreshDataAsync(); // for now sync call only
+    //    StateHasChanged(); // This is mandatory
+    //}
 
     private FilterItem[] GetFilters()
     {
@@ -63,8 +63,8 @@ public partial class Grid<TItem> : BaseComponent
             return null;
 
         return columns
-                ?.Where(column => column.Filterable && column.FilterOperator != FilterOperator.None && !string.IsNullOrWhiteSpace(column.FilterValue))
-                ?.Select(column => new FilterItem(column.PropertyName, column.FilterValue, column.FilterOperator))
+                ?.Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
+                ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator()))
                 ?.ToArray();
     }
 
