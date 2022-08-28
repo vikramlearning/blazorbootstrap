@@ -3,7 +3,7 @@
 
 <div class="d-flex">
     <button type="button" class="btn btn-light me-1 d-flex dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-        @if (this.filterOperator == defaultFilterOperator)
+        @if (string.IsNullOrWhiteSpace(this.filterValue))
         {
             <span class="me-2"><Icon Name="IconName.Funnel" /></span>
         }
@@ -29,7 +29,10 @@
 
     @if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
         || PropertyTypeName == StringConstants.PropertyTypeNameInt32
-        || PropertyTypeName == StringConstants.PropertyTypeNameInt64)
+        || PropertyTypeName == StringConstants.PropertyTypeNameInt64
+        || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
+        || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
+        || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
     {
         <input class="form-control" style="@filterStyle" type="number" value="@filterValue" @oninput="@((args) => OnFilterChanged(args))">
     }

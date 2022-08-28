@@ -27,10 +27,12 @@ public partial class GridColumn<TItem> : BaseComponent
     protected override void OnInitialized()
     {
         ElementId = IdGenerator.Generate; // Required
-        currentSortDirection = SortDirection;
-        defaultSortDirection = SortDirection;
+
         filterOperator = FilterOperator;
         filterValue = FilterValue;
+
+        currentSortDirection = SortDirection;
+        defaultSortDirection = SortDirection;
 
         if (IsDefaultSortColumn && SortDirection == SortDirection.None)
             currentSortDirection = SortDirection = SortDirection.Ascending;
@@ -38,6 +40,63 @@ public partial class GridColumn<TItem> : BaseComponent
         Parent.AddColumn(this);
 
         SetDefaultFilter(this.filterOperator, this.GetPropertyTypeName());
+    }
+
+    internal string GetPropertyTypeName()
+    {
+        if (string.IsNullOrWhiteSpace(this.PropertyName))
+            return string.Empty;
+
+        return typeof(TItem).GetProperty(this.PropertyName)?.PropertyType?.Name;
+    }
+
+    #region Filters
+
+    internal FilterOperator GetFilterOperator() => this.filterOperator;
+
+    internal string GetFilterValue() => this.filterValue;
+
+    internal void OnFilterChanged(FilterEventArgs args, GridColumn<TItem> column)
+    {
+        this.filterValue = args.Text;
+        this.filterOperator = args.FilterOperator;
+
+        this.Parent.RefreshDataAsync();
+    }
+
+    #endregion Filters
+
+    #region Sorting
+
+    private void SetDefaultFilter(FilterOperator columnFilterOperator, string propertyTypeName)
+    {
+        if (propertyTypeName == StringConstants.PropertyTypeNameInt16
+            || propertyTypeName == StringConstants.PropertyTypeNameInt32
+            || propertyTypeName == StringConstants.PropertyTypeNameInt64
+            || propertyTypeName == StringConstants.PropertyTypeNameSingle // float
+            || propertyTypeName == StringConstants.PropertyTypeNameDecimal
+            || propertyTypeName == StringConstants.PropertyTypeNameDouble)
+        {
+            if (this.filterOperator == FilterOperator.None)
+                this.filterOperator = FilterOperator.Equals;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameString
+            || propertyTypeName == StringConstants.PropertyTypeNameChar)
+        {
+            if (this.filterOperator == FilterOperator.None)
+                this.filterOperator = FilterOperator.Contains;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly
+            || propertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        {
+            if (this.filterOperator == FilterOperator.None)
+                this.filterOperator = FilterOperator.Equals;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            if (this.filterOperator == FilterOperator.None)
+                this.filterOperator = FilterOperator.Equals;
+        }
     }
 
     internal bool CanSort() => Parent.AllowSorting && this.Sortable && this.SortKeySelector != null;
@@ -63,53 +122,7 @@ public partial class GridColumn<TItem> : BaseComponent
         Parent.SortingChanged(this);
     }
 
-    private void SetDefaultFilter(FilterOperator columnFilterOperator, string propertyTypeName)
-    {
-        if (propertyTypeName == StringConstants.PropertyTypeNameInt16
-            || propertyTypeName == StringConstants.PropertyTypeNameInt32
-            || propertyTypeName == StringConstants.PropertyTypeNameInt64
-            || propertyTypeName == StringConstants.PropertyTypeNameSingle // float
-            || propertyTypeName == StringConstants.PropertyTypeNameDecimal
-            || propertyTypeName == StringConstants.PropertyTypeNameDouble)
-        {
-            this.filterOperator = this.filterOperator == FilterOperator.None ? FilterOperator.Equals : this.filterOperator;
-        }
-        else if (propertyTypeName == StringConstants.PropertyTypeNameString
-            || propertyTypeName == StringConstants.PropertyTypeNameChar)
-        {
-            this.filterOperator = this.filterOperator == FilterOperator.None ? FilterOperator.Contains : this.filterOperator;
-        }
-        else if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly
-            || propertyTypeName == StringConstants.PropertyTypeNameDateTime)
-        {
-            this.filterOperator = this.filterOperator == FilterOperator.None ? FilterOperator.Equals : this.filterOperator;
-        }
-        else if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
-        {
-            this.filterOperator = this.filterOperator == FilterOperator.None ? FilterOperator.Equals : this.filterOperator;
-        }
-    }
-
-    internal void OnFilterChanged(FilterEventArgs args, GridColumn<TItem> column)
-    {
-        this.filterValue = args.Text;
-        this.filterOperator = args.FilterOperator;
-
-        this.Parent.RefreshDataAsync();
-        //StateHasChanged();
-    }
-
-    internal string GetPropertyTypeName()
-    {
-        if (string.IsNullOrWhiteSpace(this.PropertyName))
-            return string.Empty;
-
-        return typeof(TItem).GetProperty(this.PropertyName)?.PropertyType?.Name;
-    }
-
-    internal string GetFilterValue() => this.filterValue;
-
-    internal FilterOperator GetFilterOperator() => this.filterOperator;
+    #endregion Sorting
 
     #endregion Methods
 

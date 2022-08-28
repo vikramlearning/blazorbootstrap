@@ -154,32 +154,24 @@ partial class GridColumnFilter : BaseComponent
             || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = this.defaultFilterOperator = FilterOperator.Equals;
-            else
-                this.defaultFilterOperator = FilterOperator.Equals;
+                this.filterOperator = FilterOperator.Equals;
         }
         else if (PropertyTypeName == StringConstants.PropertyTypeNameString
             || PropertyTypeName == StringConstants.PropertyTypeNameChar)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = this.defaultFilterOperator = FilterOperator.Contains;
-            else
-                this.defaultFilterOperator = FilterOperator.Equals;
+                this.filterOperator = FilterOperator.Contains;
         }
         else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly
             || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = this.defaultFilterOperator = FilterOperator.Equals;
-            else
-                this.defaultFilterOperator = FilterOperator.Equals;
+                this.filterOperator = FilterOperator.Equals;
         }
         else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = this.defaultFilterOperator = FilterOperator.Equals;
-            else
-                this.defaultFilterOperator = FilterOperator.Equals;
+                this.filterOperator = FilterOperator.Equals;
         }
     }
 
