@@ -205,7 +205,7 @@ public partial class GridColumn<TItem> : BaseComponent
                 if (this.HeaderTextAlignment != Alignment.None)
                 {
                     seq++;
-                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.TextAlignment));
+                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
                 }
                 seq++;
                 builder.OpenElement(seq, "span");
