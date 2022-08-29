@@ -1,25 +1,42 @@
-﻿<Grid TItem="Employee" class="table table-hover table-bordered" DataProvider="EmployeesDataProvider" AllowSorting="true" AllowPaging="true" PaginationAlignment="Alignment.End">
-    <GridColumn TItem="Employee" HeaderText="Id" SortString="Id" SortKeySelector="@(item => item.Id)">
+﻿<Grid TItem="Employee1" class="table table-hover table-bordered" DataProvider="EmployeesDataProvider" AllowSorting="true">
+    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="@(item => item.Id)">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Firs tName" SortString="FirstName" SortKeySelector="@(item => item.FirstName)" IsDefaultSortColumn="true" SortDirection="SortDirection.Descending">
-        @context.FirstName
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="@(item => item.Name)">
+        @context.Name
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Last Name" SortString="LastName" SortKeySelector="@(item => item.LastName)">
-        @context.LastName
-    </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Designation" SortString="Designation" SortKeySelector="@(item => item.Designation)" Sortable="false">
+    <GridColumn TItem="Employee1" HeaderText="Designation" Sortable="false">
         @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="@(item => item.DOJ)">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="@(item => item.IsActive)">
+        @context.IsActive
     </GridColumn>
 </Grid>
 
 @code {
-    [Inject] public IEmployeeService _employeeService { get; set; }
+    private IEnumerable<Employee1> employees;
 
-    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    protected override void OnInitialized()
     {
-        var result = _employeeService.GetEmployees(request.PageNumber, request.PageSize, request.Sorting[0].SortString, request.Sorting[0].SortDirection);
+        employees = new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+        };
+    }
 
-        return await Task.FromResult(new GridDataProviderResult<Employee> { Data = result.Item1, TotalCount = result.Item2 });
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        return await Task.FromResult(request.ApplyTo(employees));
     }
 }
