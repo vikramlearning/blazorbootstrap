@@ -11,21 +11,30 @@
 </div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
+<div>For filtering, <code>AllowFiltering</code> and <code>PropertyName</code> required.</div>
+<div>Add <code>AllowFiltering="true"</code> property on Grid. Add <code>PropertyName</code> to all the GridColumns.</div>
 <Demo Type="typeof(Grid_Demo_01_Client_Side_Filtering)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side paging" PageUrl="@pageUrl" HashTagName="client-side-paging" />
+<div>For paging, <code>AllowPaging</code> and <code>PageSize</code> are required.</div>
+<div>Add <code>AllowPaging="true"</code> and <code>PageSize="20"</code> to the Grid. PageSize is optional. The default page size is 10.</div>
 <Demo Type="typeof(Grid_Demo_02_Client_Side_Paging)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side sorting" PageUrl="@pageUrl" HashTagName="client-side-sorting" />
+<div>For sorting, <code>AllowSorting</code> and <code>SortKeySelector</code> are required.</div>
+<div>Add <code>AllowSorting="true"</code> on Grid. Add <code>SortKeySelector</code> to all the GridColumns.</div>
 <Demo Type="typeof(Grid_Demo_03_Client_Side_Sorting)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side filtering, paging, and sorting" PageUrl="@pageUrl" HashTagName="client-side-filtering-paging-sorting" />
 <Demo Type="typeof(Grid_Demo_04_Client_Side_Filtering_Paging_And_Sorting)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Set default filter" PageUrl="@pageUrl" HashTagName="set-default-filter" />
+<div><code>FilterOperator</code> and <code>FilterValue</code> are required to set the default filter. You can set the default filter on more than one column.</div>
 <Demo Type="typeof(Grid_Demo_05_Client_Side_Filtering_Set_Default_Filter)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Increase filter textbox width" PageUrl="@pageUrl" HashTagName="increase-filter-textbox-width" />
+<div><code>FilterTextboxWidth</code> is required to increase or decrease the filter textbox width. Add <code>FilterTextboxWidth</code> to the GridColumn.</div>
+<div><strong>Note:</strong> Width measured in pixels.</div>
 <Demo Type="typeof(Grid_Demo_06_Client_Side_Filtering_Increase_Filter_Textbox_Width)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Server side filtering, paging and sorting" PageUrl="@pageUrl" HashTagName="server-side-filtering-paging-sorting" />
@@ -40,14 +49,14 @@
 <SectionHeading Size="HeadingSize.H2" Text="Header text alignment" PageUrl="@pageUrl" HashTagName="header-text-alignment" />
 <Demo Type="typeof(Grid_Demo_10_Header_Text_Alignment)" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Data Alignment" PageUrl="@pageUrl" HashTagName="data-alignment" />
-<Demo Type="typeof(Grid_Demo_11_Grid_Data_Alignment)" />
+<SectionHeading Size="HeadingSize.H2" Text="Cell Alignment" PageUrl="@pageUrl" HashTagName="cell-alignment" />
+<Demo Type="typeof(Grid_Demo_11_Grid_Cell_Alignment)" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Data formating" PageUrl="@pageUrl" HashTagName="data-formating" />
-<Demo Type="typeof(Grid_Demo_12_Grid_Data_Formating)" />
+<SectionHeading Size="HeadingSize.H2" Text="Cell formating" PageUrl="@pageUrl" HashTagName="cell-formating" />
+<Demo Type="typeof(Grid_Demo_12_Grid_Cell_Formating)" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Data nowrap" PageUrl="@pageUrl" HashTagName="data-nowrap" />
-<Demo Type="typeof(Grid_Demo_13_Grid_Data_Nowrap)" />
+<SectionHeading Size="HeadingSize.H2" Text="Cell nowrap" PageUrl="@pageUrl" HashTagName="data-nowrap" />
+<Demo Type="typeof(Grid_Demo_13_Grid_Cell_Nowrap)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Pagination alignment" PageUrl="@pageUrl" HashTagName="pagination-alignment" />
 <Demo Type="typeof(Grid_Demo_14_Pagination_Alignment)" />
@@ -61,7 +70,7 @@
     private string description = "Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
     private string imageUrl = "https://i.imgur.com/wrHYKGd.jpg";
 
-    /*
+      /*
       - Client Side filtering
       - Client Side paging
       - Client Side sorting
@@ -77,6 +86,6 @@
       - Grid data formating
       - Grid data nowrap
       - Pagination alignment
-      - Empty data
+    - Empty data
     */
 }

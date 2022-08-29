@@ -1,11 +1,11 @@
 ﻿<Grid TItem="Employee3" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
-    <GridColumn TItem="Employee3" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" PropertyName="Id" FilterTextboxWidth="80">
+    <GridColumn TItem="Employee3" HeaderText="Id" PropertyName="Id" FilterTextboxWidth="80">
         @context.Id
     </GridColumn>
     <GridColumn TItem="Employee3" HeaderText="First Name" PropertyName="FirstName" FilterTextboxWidth="80">
         @context.FirstName
     </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="First Name" PropertyName="LastName" FilterTextboxWidth="80">
+    <GridColumn TItem="Employee3" HeaderText="Last Name" PropertyName="LastName" FilterTextboxWidth="80">
         @context.LastName
     </GridColumn>
     <GridColumn TItem="Employee3" HeaderText="Email" PropertyName="Email">
