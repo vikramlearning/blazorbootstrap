@@ -5,7 +5,7 @@
         let el = document.getElementById(hashTagName);
         if (el) {
             // do the scroll
-            el.scrollIntoView();
+            el.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
         }
     }
 }
