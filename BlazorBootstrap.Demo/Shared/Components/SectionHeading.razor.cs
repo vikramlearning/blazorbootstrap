@@ -14,7 +14,7 @@ public partial class SectionHeading : ComponentBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await Task.Delay(400);
+        await Task.Delay(200);
         await JS.InvokeVoidAsync("navigateToHeading");
         await base.OnAfterRenderAsync(firstRender);
     }
