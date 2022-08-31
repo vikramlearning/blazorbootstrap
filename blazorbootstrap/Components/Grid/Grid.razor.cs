@@ -187,12 +187,12 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Shows text on no records.
     /// </summary>
-    [Parameter] public string EmptyText { get; set; } = "No records to display.";
+    [Parameter] public string EmptyText { get; set; } = "No records to display";
 
     /// <summary>
     /// Template to render when there are no rows to display.
     /// </summary>
-    [Parameter] public RenderFragment EmptyDataTemplate { get; set; }
+    public RenderFragment EmptyDataTemplate { get; set; } // TODO: support this in the next release
 
     /// <summary>
     /// DataProvider is for items to render. The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
