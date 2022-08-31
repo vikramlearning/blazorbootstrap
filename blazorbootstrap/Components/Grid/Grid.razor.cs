@@ -170,12 +170,18 @@ public partial class Grid<TItem> : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
+    /// <summary>
+    /// Gets or sets the grid filtering.
+    /// </summary>
     [Parameter] public bool AllowFiltering { get; set; }
 
+    /// <summary>
+    /// Gets or sets the grid paging.
+    /// </summary>
     [Parameter] public bool AllowPaging { get; set; }
 
     /// <summary>
-    /// Gets or sets whether end-users can sort data by the column's values.
+    /// Gets or sets the grid sorting.
     /// </summary>
     [Parameter] public bool AllowSorting { get; set; }
 

@@ -147,15 +147,25 @@ public partial class GridColumn<TItem> : BaseComponent
     /// </summary>
     [Parameter] public string PropertyName { get; set; }
 
+    /// <summary>
+    /// Enable or disable the filter on a specific column.
+    /// The filter is enabled or disabled based on the grid `AllowFiltering` parameter.
+    /// </summary>
     [Parameter] public bool Filterable { get; set; } = true;
 
+    /// <summary>
+    /// Gets or sets the filter operator.
+    /// </summary>
     [Parameter] public FilterOperator FilterOperator { get; set; }
 
+    /// <summary>
+    /// Gets or sets the filter value.
+    /// </summary>
     [Parameter] public string FilterValue { get; set; }
 
     /// <summary>
-    /// Enable or disble sorting on specific column.
-    /// By default sorting enabled on all columns.
+    /// Enable or disable the sorting on a specific column.
+    /// The sorting is enabled or disabled based on the `AllowSorting` parameter on the grid.
     /// </summary>
     [Parameter] public bool Sortable { get; set; } = true;
 
