@@ -873,5 +873,5 @@ You can change this message by adding the `EmptyText` parameter to the Grid.
 ```
 
 :::tip TIP
-We recommend enabling the horizontal scrolling to the grid by adding `Responsive="true"` to the grid.
+Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.
 :::
