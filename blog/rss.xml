@@ -4,10 +4,21 @@
         <title>BlazorBootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>BlazorBootstrap Blog</description>
-        <lastBuildDate>Sat, 13 Aug 2022 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 31 Aug 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[BlazorBootstrap v0.3.0]]></title>
+            <link>https://getblazorbootstrap.com/blog/2022/08/31/blazorbootstrap-0.3.0</link>
+            <guid>/2022/08/31/blazorbootstrap-0.3.0</guid>
+            <pubDate>Wed, 31 Aug 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 0.3.0 with significant enhancements to the grid component.]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.3.0</code> with significant enhancements to the grid component.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li><code>Grid</code> component enhancements</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="grid-component-enhancements">Grid component enhancements<a class="hash-link" href="#grid-component-enhancements" title="Direct link to heading">​</a></h3><ul><li>Multiple columns filtering (client side and server side)</li><li>Set default filtering</li><li>Disable specific column filter</li><li>Increase filter textbox width</li><li>Set default sorting</li><li>Disable specific column sorting</li><li>Header text alignment</li><li>Cell alignment</li><li>Cell formatting</li><li>Cell nowrap</li><li>Pagination alignment</li><li>Empty data</li><li>Responsive grid with horizontal scrolling</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/grid" target="_blank" rel="noopener noreferrer">Grid Demos</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Grid Component Documentation</a></li></ul>]]></content:encoded>
+            <category>v0.3.0</category>
+            <category>blazorbootstrap</category>
+            <category>grid</category>
+        </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.2.6]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/08/13/blazorbootstrap-0.2.6</link>
