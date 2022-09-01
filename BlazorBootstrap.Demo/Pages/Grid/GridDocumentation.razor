@@ -17,7 +17,8 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side paging" PageUrl="@pageUrl" HashTagName="client-side-paging" />
 <div>For paging, <code>AllowPaging</code> and <code>PageSize</code> parameters are required.</div>
-<div>Add <code>AllowPaging="true"</code> and <code>PageSize="20"</code> parameters to the Grid. <code>PageSize</code> parameter is optional. The default page size is 10.</div>
+<div class="mb-2">Add <code>AllowPaging="true"</code> and <code>PageSize="20"</code> parameters to the Grid. <code>PageSize</code> parameter is optional.</div>
+<Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>The default page size is 10.</Alert>
 <Demo Type="typeof(Grid_Demo_02_Client_Side_Paging)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side sorting" PageUrl="@pageUrl" HashTagName="client-side-sorting" />
@@ -29,7 +30,8 @@
 <Demo Type="typeof(Grid_Demo_04_Client_Side_Filtering_Paging_And_Sorting)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Set default filter" PageUrl="@pageUrl" HashTagName="set-default-filter" />
-<div><code>FilterOperator</code> and <code>FilterValue</code> parameters are required to set the default filter. You can set the default filter on more than one GridColumn.</div>
+<div class="mb-2"><code>FilterOperator</code> and <code>FilterValue</code> parameters are required to set the default filter.</div>
+<Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>You can set the default filter on more than one GridColumn.</Alert>
 <Demo Type="typeof(Grid_Demo_05_Set_Default_Filter)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Disable specific column filter" PageUrl="@pageUrl" HashTagName="disable-specific-column-filter" />
@@ -37,8 +39,8 @@
 <Demo Type="typeof(Grid_Demo_06_Disable_Specific_Column_Filter)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Increase filter textbox width" PageUrl="@pageUrl" HashTagName="increase-filter-textbox-width" />
-<div>Add <code>FilterTextboxWidth</code> parameter to the GridColumn to increase or decrease the filter textbox width, <code>FilterTextboxWidth</code> parameter is optional.</div>
-<div><strong>Note:</strong> Filter textbox width measured in pixels.</div>
+<div class="mb-2">Add <code>FilterTextboxWidth</code> parameter to the GridColumn to increase or decrease the filter textbox width, <code>FilterTextboxWidth</code> parameter is optional.</div>
+<Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>Filter textbox width measured in pixels.</Alert>
 <Demo Type="typeof(Grid_Demo_06_Increase_Filter_Textbox_Width)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Server side filtering, paging and sorting" PageUrl="@pageUrl" HashTagName="server-side-filtering-paging-sorting" />
@@ -46,8 +48,8 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Set default sorting" PageUrl="@pageUrl" HashTagName="set-default-sorting" />
 <div><code>IsDefaultSortColumn</code> parameter is required to set the default sorting. Add <code>IsDefaultSortColumn="true"</code> parameter to the GridColumn.</div>
-<div>The default sort direction will be ascending. To change the default sorting of a column, add <code>SortDirection="SortDirection.Descending"</code> to the GridColumn.</div>
-<div><strong>Note: </strong>If more than one GridColumn has the <code>IsDefaultSortColumn</code> paramter, it will pick the first column as the default sorting column.</div>
+<div class="mb-2">The default sort direction will be ascending. To change the default sorting of a column, add <code>SortDirection="SortDirection.Descending"</code> to the GridColumn.</div>
+<Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>If more than one GridColumn has the <strong>IsDefaultSortColumn</strong> paramter, it will pick the first column as the default sorting column.</Alert>
 <Demo Type="typeof(Grid_Demo_08_Default_Sorting)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Disable specific column sorting" PageUrl="@pageUrl" HashTagName="disable-specific-column-sorting" />
@@ -63,8 +65,8 @@
 <Demo Type="typeof(Grid_Demo_11_Grid_Cell_Alignment)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Cell formating" PageUrl="@pageUrl" HashTagName="cell-formating" />
-<div>To format the cell data, use <code>ToString method and format strings</code>. Refer: <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types" target="_blank">How to format numbers, dates, enums, and other types in .NET</a></div>
-<div><strong>Example: </strong> @@context.Salary.ToString("N2").</div>
+<div class="mb-3">To format the cell data, use <code>ToString method and format strings</code>. Refer: <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types" target="_blank">How to format numbers, dates, enums, and other types in .NET</a></div>
+<Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon><strong>Example: </strong>@@context.Salary.ToString("N2").</Alert>
 <Demo Type="typeof(Grid_Demo_12_Grid_Cell_Formating)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Cell nowrap" PageUrl="@pageUrl" HashTagName="cell-nowrap" />

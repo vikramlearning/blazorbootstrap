@@ -475,8 +475,25 @@ For server-side sorting, we need the `SortString` parameter on GridColumn along 
     </GridColumn>
 </Grid>
 ```
-```cs
-// TODO: pending
+```cs {11}
+@code {
+    [Inject] public IEmployeeService _employeeService { get; set; }
+
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {
+        string sortString = "";
+        SortDirection sortDirection = SortDirection.None;
+
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting[0].SortString;
+            sortDirection = request.Sorting[0].SortDirection;
+        }
+        var result = _employeeService.GetEmployees(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection);
+        return await Task.FromResult(new GridDataProviderResult<Employee> { Data = result.Item1, TotalCount = result.Item2 });
+    }
+}
 ```
 
 ### Set default sorting

@@ -25,12 +25,11 @@
                             <th>
                                 @if (column.Filterable)
                                 {
-                                    <GridColumnFilter 
-                                        PropertyTypeName="@column.GetPropertyTypeName()"
-                                        FilterOperator="@column.FilterOperator"
-                                        FilterValue="@column.FilterValue"
-                                        FilterWidth="@column.FilterTextboxWidth"
-                                        GridColumnFilterChanged="((args) => column.OnFilterChanged(args, column))" />
+                                    <GridColumnFilter PropertyTypeName="@column.GetPropertyTypeName()"
+                                      FilterOperator="@column.FilterOperator"
+                                      FilterValue="@column.FilterValue"
+                                      FilterWidth="@column.FilterTextboxWidth"
+                                      GridColumnFilterChanged="((args) => column.OnFilterChanged(args, column))" />
                                 }
                             </th>
                         }
@@ -93,13 +92,15 @@
 
     @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0)
     {
-        <Pagination ActivePageNumber="@(GridCurrentState.PageIndex)"
-            TotalPages="@totalPages"
-            PageChanged="OnPageChangedAsync"
-            FirstLinkIcon="IconName.ChevronDoubleLeft"
-            PreviousLinkIcon="IconName.ChevronLeft"
-            NextLinkIcon="IconName.ChevronRight"
-            LastLinkIcon="IconName.ChevronDoubleRight"
-            Alignment="@PaginationAlignment" />
+        <div class="mt-2">
+            <Pagination ActivePageNumber="@(GridCurrentState.PageIndex)"
+                TotalPages="@totalPages"
+                PageChanged="OnPageChangedAsync"
+                FirstLinkIcon="IconName.ChevronDoubleLeft"
+                PreviousLinkIcon="IconName.ChevronLeft"
+                NextLinkIcon="IconName.ChevronRight"
+                LastLinkIcon="IconName.ChevronDoubleRight"
+                Alignment="@PaginationAlignment" />
+        </div>
     }
 }

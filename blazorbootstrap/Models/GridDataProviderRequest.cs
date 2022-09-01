@@ -76,11 +76,6 @@ public class GridDataProviderRequest<TItem>
         var take = data.Count();
         var totalCount = resultData.Count(); // before paging
 
-        //if(PageNumber > 0 && resultData.Count() < data.Count())
-        //{
-        //    PageNumber = 0;
-        //}
-
         if (PageNumber > 0 && PageSize > 0)
         {
             skip = (PageNumber - 1) * PageSize;
