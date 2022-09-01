@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using System.Data.Common;
 using System.Linq.Expressions;
 
 namespace BlazorBootstrap;
@@ -11,6 +12,10 @@ public partial class GridColumn<TItem> : BaseComponent
 
     private RenderFragment<TItem> cellTemplate;
 
+    private FilterOperator filterOperator;
+
+    private string filterValue;
+
     internal SortDirection currentSortDirection;
 
     internal SortDirection defaultSortDirection;
@@ -22,6 +27,10 @@ public partial class GridColumn<TItem> : BaseComponent
     protected override void OnInitialized()
     {
         ElementId = IdGenerator.Generate; // Required
+
+        filterOperator = FilterOperator;
+        filterValue = FilterValue;
+
         currentSortDirection = SortDirection;
         defaultSortDirection = SortDirection;
 
@@ -29,9 +38,71 @@ public partial class GridColumn<TItem> : BaseComponent
             currentSortDirection = SortDirection = SortDirection.Ascending;
 
         Parent.AddColumn(this);
+
+        SetDefaultFilter(this.filterOperator, this.GetPropertyTypeName());
     }
 
-    internal bool CanSort() => Parent.Sortable && SortKeySelector != null;
+    internal string GetPropertyTypeName()
+    {
+        if (string.IsNullOrWhiteSpace(this.PropertyName))
+            return string.Empty;
+
+        return typeof(TItem).GetProperty(this.PropertyName)?.PropertyType?.Name;
+    }
+
+    #region Filters
+
+    internal FilterOperator GetFilterOperator() => this.filterOperator;
+
+    internal string GetFilterValue() => this.filterValue;
+
+    internal void OnFilterChanged(FilterEventArgs args, GridColumn<TItem> column)
+    {
+        if (this.filterValue != args.Text || this.filterOperator != args.FilterOperator)
+            this.Parent.ResetPageNumber();
+
+        this.filterValue = args.Text;
+        this.filterOperator = args.FilterOperator;
+
+        this.Parent.RefreshDataAsync();
+    }
+
+    #endregion Filters
+
+    #region Sorting
+
+    private void SetDefaultFilter(FilterOperator columnFilterOperator, string propertyTypeName)
+    {
+        if (propertyTypeName == StringConstants.PropertyTypeNameInt16
+            || propertyTypeName == StringConstants.PropertyTypeNameInt32
+            || propertyTypeName == StringConstants.PropertyTypeNameInt64
+            || propertyTypeName == StringConstants.PropertyTypeNameSingle // float
+            || propertyTypeName == StringConstants.PropertyTypeNameDecimal
+            || propertyTypeName == StringConstants.PropertyTypeNameDouble)
+        {
+            if (this.filterOperator == FilterOperator.None)
+                this.filterOperator = FilterOperator.Equals;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameString
+            || propertyTypeName == StringConstants.PropertyTypeNameChar)
+        {
+            if (this.filterOperator == FilterOperator.None)
+                this.filterOperator = FilterOperator.Contains;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly
+            || propertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        {
+            if (this.filterOperator == FilterOperator.None)
+                this.filterOperator = FilterOperator.Equals;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            if (this.filterOperator == FilterOperator.None)
+                this.filterOperator = FilterOperator.Equals;
+        }
+    }
+
+    internal bool CanSort() => Parent.AllowSorting && this.Sortable && this.SortKeySelector != null;
 
     internal IEnumerable<SortingItem<TItem>> GetSorting()
     {
@@ -41,7 +112,7 @@ public partial class GridColumn<TItem> : BaseComponent
         yield return new SortingItem<TItem>(this.SortString, this.SortKeySelector, this.currentSortDirection);
     }
 
-    private async Task OnSortClick()
+    private void OnSortClick()
     {
         // toggle the direction
         if (currentSortDirection == SortDirection.Ascending)
@@ -53,6 +124,8 @@ public partial class GridColumn<TItem> : BaseComponent
 
         Parent.SortingChanged(this);
     }
+
+    #endregion Sorting
 
     #endregion Methods
 
@@ -69,7 +142,37 @@ public partial class GridColumn<TItem> : BaseComponent
     [Parameter] public string HeaderText { get; set; }
 
     /// <summary>
-    /// Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting.
+    /// Gets or sets the property name.
+    /// This is required when `AllowFiltering` is true.
+    /// </summary>
+    [Parameter] public string PropertyName { get; set; }
+
+    /// <summary>
+    /// Enable or disable the filter on a specific column.
+    /// The filter is enabled or disabled based on the grid `AllowFiltering` parameter.
+    /// </summary>
+    [Parameter] public bool Filterable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the filter operator.
+    /// </summary>
+    [Parameter] public FilterOperator FilterOperator { get; set; }
+
+    /// <summary>
+    /// Gets or sets the filter value.
+    /// </summary>
+    [Parameter] public string FilterValue { get; set; }
+
+    /// <summary>
+    /// Enable or disable the sorting on a specific column.
+    /// The sorting is enabled or disabled based on the `AllowSorting` parameter on the grid.
+    /// </summary>
+    [Parameter] public bool Sortable { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the column sort string. 
+    /// This value will be passed to the backend/API for sorting. 
+    /// And this property is ignored for the client-side sorting.
     /// </summary>
     [Parameter] public string SortString { get; set; }
 
@@ -99,16 +202,21 @@ public partial class GridColumn<TItem> : BaseComponent
         {
             return headerTemplate ??= (builder =>
             {
-                // th > span "title" , span > i "icon"
+                // th > span "title", span > i "icon"
                 var seq = 0;
                 builder.OpenElement(seq, "th");
-                if (this.Parent.Sortable)
+                if (this.CanSort())
                 {
                     seq++;
                     builder.AddAttribute(seq, "role", "button");
+                    seq++;
+                    builder.AddAttribute(seq, "onclick", OnSortClick);
                 }
-                seq++;
-                builder.AddAttribute(seq, "onclick", OnSortClick);
+                if (this.HeaderTextAlignment != Alignment.None)
+                {
+                    seq++;
+                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
+                }
                 seq++;
                 builder.OpenElement(seq, "span");
                 seq++;
@@ -118,7 +226,7 @@ public partial class GridColumn<TItem> : BaseComponent
                 seq++;
                 builder.CloseElement(); // close: span
 
-                if (Parent.Sortable && currentSortDirection != SortDirection.None)
+                if (this.CanSort() && currentSortDirection != SortDirection.None)
                 {
                     seq++;
                     builder.OpenElement(seq, "span");
@@ -150,14 +258,42 @@ public partial class GridColumn<TItem> : BaseComponent
             {
                 var seq = 0;
                 builder.OpenElement(seq, "td");
-                //seq++;
-                //builder.AddAttribute(seq, "role", "button");
+                if (this.TextAlignment != Alignment.None)
+                {
+                    seq++;
+                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.TextAlignment));
+                }
+                if (this.TextNoWrap)
+                {
+                    seq++;
+                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextNoWrap());
+                }
                 seq++;
                 builder.AddContent(seq, ChildContent, rowData);
                 builder.CloseElement();
             });
         }
     }
+
+    /// <summary>
+    /// Gets or sets the header text alignment.
+    /// </summary>
+    [Parameter] public Alignment HeaderTextAlignment { get; set; }
+
+    /// <summary>
+    /// Gets or sets the text alignment.
+    /// </summary>
+    [Parameter] public Alignment TextAlignment { get; set; }
+
+    /// <summary>
+    /// Gets or sets text nowrap.
+    /// </summary>
+    [Parameter] public bool TextNoWrap { get; set; }
+
+    /// <summary>
+    /// Gets or sets the filter textbox width in pixels.
+    /// </summary>
+    [Parameter] public int FilterTextboxWidth { get; set; }
 
     #endregion Properties
 }

@@ -147,6 +147,14 @@
 
         #endregion
 
+        #region Text
+
+        public string TextAlignment(Alignment alignment) => $"text-{ToAlignment(alignment)}";
+
+        public string TextNoWrap() => "text-nowrap";
+
+        #endregion
+
         #region Text Colors
 
         public string TextColor(TextColor textColor) => $"bg-{ToTextColor(textColor)}";

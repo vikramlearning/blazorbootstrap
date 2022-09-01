@@ -8,76 +8,99 @@
 
 @if (columns.Any())
 {
-    <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-        <thead>
-            <tr>
-                @foreach (var column in columns)
-                {
-                    @column.HeaderTemplate
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @if (requestInProgress) // || totalCount == null
-            {
-                // show placeholders
-                @for (var i = 0; i < 5; i++)
+    <div class="@responsiveCssClass">
+        <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+            <thead>
+                <tr>
+                    @foreach (var column in columns)
+                    {
+                        @column.HeaderTemplate
+                    }
+                </tr>
+                @if (AllowFiltering)
                 {
                     <tr>
-                        @for (var j = 0; j < columns.Count; j++)
+                        @foreach (var column in columns)
                         {
-                            <td class="placeholder-glow"><span class="placeholder col-12"></span></td>
+                            <th>
+                                @if (column.Filterable)
+                                {
+                                    <GridColumnFilter PropertyTypeName="@column.GetPropertyTypeName()"
+                                      FilterOperator="@column.FilterOperator"
+                                      FilterValue="@column.FilterValue"
+                                      FilterWidth="@column.FilterTextboxWidth"
+                                      GridColumnFilterChanged="((args) => column.OnFilterChanged(args, column))" />
+                                }
+                            </th>
                         }
                     </tr>
                 }
-            }
-            else if (totalCount == 0)
-            {
-                // show empty
-                <tr>
-                    <td colspan="@columns.Count">
-                        @if (EmptyDataTemplate == null)
-                        {
-                            <div class="text-center text-secondary my-5">
-                                <div class="fs-3"><Icon Name="IconName.Inbox" /></div>
-                                <div>No Data.</div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="my-3">
-                                @EmptyDataTemplate
-                            </div>
-                        }
-                    </td>
-                </tr>
-            }
-            else if (totalCount > 0)
-            {
-                if (items != null)
+            </thead>
+            <tbody>
+                @if (requestInProgress) // || totalCount == null
                 {
-                    foreach (var item in items)
+                    // show placeholders
+                    @for (var i = 0; i < 5; i++)
                     {
-                        <tr @key="item.GetHashCode()">
-                            @foreach (var column in columns)
+                        <tr>
+                            @for (var j = 0; j < columns.Count; j++)
                             {
-                                @column.CellTemplate(item)
+                                <td class="placeholder-glow"><span class="placeholder col-12"></span></td>
                             }
                         </tr>
                     }
                 }
-            }
-        </tbody>
-    </table>
+                else if (totalCount == 0)
+                {
+                    // show empty
+                    <tr>
+                        <td colspan="@columns.Count">
+                            @if (EmptyDataTemplate == null)
+                            {
+                                <div class="text-center text-secondary my-5">
+                                    <div class="fs-3"><Icon Name="IconName.Inbox" /></div>
+                                    <div>@EmptyText</div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="my-3">
+                                    @EmptyDataTemplate
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+                else if (totalCount > 0)
+                {
+                    if (items != null)
+                    {
+                        foreach (var item in items)
+                        {
+                            <tr @key="item?.GetHashCode()">
+                                @foreach (var column in columns)
+                                {
+                                    @column.CellTemplate(item)
+                                }
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 
-    @if (totalCount.HasValue && totalCount.Value > 0)
+    @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0)
     {
-        <Pagination ActivePageNumber="@(GridCurrentState.PageIndex)"
-                    TotalPages="@totalPages"
-                    PageChanged="OnPageChangedAsync"
-                    FirstLinkIcon="IconName.ChevronDoubleLeft"
-                    PreviousLinkIcon="IconName.ChevronLeft"
-                    NextLinkIcon="IconName.ChevronRight"
-                    LastLinkIcon="IconName.ChevronDoubleRight" />
+        <div class="mt-2">
+            <Pagination ActivePageNumber="@(GridCurrentState.PageIndex)"
+                TotalPages="@totalPages"
+                PageChanged="OnPageChangedAsync"
+                FirstLinkIcon="IconName.ChevronDoubleLeft"
+                PreviousLinkIcon="IconName.ChevronLeft"
+                NextLinkIcon="IconName.ChevronRight"
+                LastLinkIcon="IconName.ChevronDoubleRight"
+                Alignment="@PaginationAlignment" />
+        </div>
     }
 }

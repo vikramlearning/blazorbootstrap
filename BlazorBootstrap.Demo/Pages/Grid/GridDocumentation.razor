@@ -10,18 +10,80 @@
     Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
 </div>
 
-<SectionHeading Size="HeadingSize.H2" Text="Client side sorting and paging" PageUrl="@pageUrl" HashTagName="client-side-sorting-and-paging" />
-<Demo Type="typeof(Grid_Demo_01_Examples)" />
+<SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
+<div>For filtering, <code>AllowFiltering</code> and <code>PropertyName</code> parameters are required.</div>
+<div>Add <code>AllowFiltering="true"</code> parameter to Grid and <code>PropertyName</code> parameter to all the GridColumns.</div>
+<Demo Type="typeof(Grid_Demo_01_Client_Side_Filtering)" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Server side sorting and paging" PageUrl="@pageUrl" HashTagName="server-side-sorting-and-paging" />
-<Demo Type="typeof(Grid_Demo_02_Server_Side_Paging_And_Sorting)" />
+<SectionHeading Size="HeadingSize.H2" Text="Client side paging" PageUrl="@pageUrl" HashTagName="client-side-paging" />
+<div>For paging, <code>AllowPaging</code> and <code>PageSize</code> parameters are required.</div>
+<div class="mb-2">Add <code>AllowPaging="true"</code> and <code>PageSize="20"</code> parameters to the Grid. <code>PageSize</code> parameter is optional.</div>
+<Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>The default page size is 10.</Alert>
+<Demo Type="typeof(Grid_Demo_02_Client_Side_Paging)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Client side sorting" PageUrl="@pageUrl" HashTagName="client-side-sorting" />
+<div>For sorting, <code>AllowSorting</code> and <code>SortKeySelector</code> parameters are required.</div>
+<div>Add <code>AllowSorting="true"</code> parameter to Grid and <code>SortKeySelector</code> to all the GridColumns.</div>
+<Demo Type="typeof(Grid_Demo_03_Client_Side_Sorting)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Client side filtering, paging, and sorting" PageUrl="@pageUrl" HashTagName="client-side-filtering-paging-sorting" />
+<Demo Type="typeof(Grid_Demo_04_Client_Side_Filtering_Paging_And_Sorting)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Set default filter" PageUrl="@pageUrl" HashTagName="set-default-filter" />
+<div class="mb-2"><code>FilterOperator</code> and <code>FilterValue</code> parameters are required to set the default filter.</div>
+<Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>You can set the default filter on more than one GridColumn.</Alert>
+<Demo Type="typeof(Grid_Demo_05_Set_Default_Filter)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable specific column filter" PageUrl="@pageUrl" HashTagName="disable-specific-column-filter" />
+<div><code>Filterable</code> parameter is required to disable the filter on a specific column. Add <code>Filterable="false"</code> parameter to GridColumn.</div>
+<Demo Type="typeof(Grid_Demo_06_Disable_Specific_Column_Filter)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Increase filter textbox width" PageUrl="@pageUrl" HashTagName="increase-filter-textbox-width" />
+<div class="mb-2">Add <code>FilterTextboxWidth</code> parameter to the GridColumn to increase or decrease the filter textbox width, <code>FilterTextboxWidth</code> parameter is optional.</div>
+<Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>Filter textbox width measured in pixels.</Alert>
+<Demo Type="typeof(Grid_Demo_06_Increase_Filter_Textbox_Width)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Server side filtering, paging and sorting" PageUrl="@pageUrl" HashTagName="server-side-filtering-paging-sorting" />
+<Demo Type="typeof(Grid_Demo_07_Server_Side_Filtering_Paging_And_Sorting)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Set default sorting" PageUrl="@pageUrl" HashTagName="set-default-sorting" />
+<div><code>IsDefaultSortColumn</code> parameter is required to set the default sorting. Add <code>IsDefaultSortColumn="true"</code> parameter to the GridColumn.</div>
+<div class="mb-2">The default sort direction will be ascending. To change the default sorting of a column, add <code>SortDirection="SortDirection.Descending"</code> to the GridColumn.</div>
+<Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>If more than one GridColumn has the <strong>IsDefaultSortColumn</strong> paramter, it will pick the first column as the default sorting column.</Alert>
+<Demo Type="typeof(Grid_Demo_08_Default_Sorting)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable specific column sorting" PageUrl="@pageUrl" HashTagName="disable-specific-column-sorting" />
+<div>Add <code>Sortable="false"</code>parameter the GridColumn to disable the sorting. If sorting is disabled, then the <code>SortKeySelector</code> parameter is not required.</div>
+<Demo Type="typeof(Grid_Demo_09_Disable_Specific_Column_Sorting)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Header text alignment" PageUrl="@pageUrl" HashTagName="header-text-alignment" />
+<div>Use the <code>HeaderTextAlignment</code> parameter to change the header column alignment. By default, <code>HeaderTextAlignment</code> is set to <code>Alignment.Start</code>. Other options you can use are <code>Alignment.Center</code> and <code>Alignment.End</code>.</div>
+<Demo Type="typeof(Grid_Demo_10_Header_Text_Alignment)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell alignment" PageUrl="@pageUrl" HashTagName="cell-alignment" />
+<div>Use the <code>TextAlignment</code> parameter to change the cell data alignment. By default, <code>TextAlignment</code> is set to <code>Alignment.Start</code>. Other options you can use are <code>Alignment.Center</code> and <code>Alignment.End</code>.</div>
+<Demo Type="typeof(Grid_Demo_11_Grid_Cell_Alignment)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell formating" PageUrl="@pageUrl" HashTagName="cell-formating" />
+<div class="mb-3">To format the cell data, use <code>ToString method and format strings</code>. Refer: <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types" target="_blank">How to format numbers, dates, enums, and other types in .NET</a></div>
+<Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon><strong>Example: </strong>@@context.Salary.ToString("N2").</Alert>
+<Demo Type="typeof(Grid_Demo_12_Grid_Cell_Formating)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell nowrap" PageUrl="@pageUrl" HashTagName="cell-nowrap" />
+<div>To prevent text from wrapping, add <code>TextNoWrap="true"</code> to the GridColumn.</div>
+<Demo Type="typeof(Grid_Demo_13_Grid_Cell_Nowrap)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Pagination alignment" PageUrl="@pageUrl" HashTagName="pagination-alignment" />
+<div>Change the alignment of pagination by adding the <code>PaginationAlignment</code> parameter to the Grid. By default, <code>PaginationAlignment</code> is set to <code>Alignment.Start</code>. Other options you can use are <code>Alignment.Center</code> and <code>Alignment.End</code>.</div>
+<Demo Type="typeof(Grid_Demo_14_Pagination_Alignment)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Empty data" PageUrl="@pageUrl" HashTagName="empty-data" />
-<Demo Type="typeof(Grid_Demo_03_Empty_Data)" />
+<div>If there are no records to display in the Grid, by default, it will display the <strong>No records to display</strong> message. You can change this message by adding the <code>EmptyText</code> parameter to the Grid.</div>
+<Demo Type="typeof(Grid_Demo_15_Empty_Data)" />
 
 @code {
     private string pageUrl = "/grid";
-    private string title = "Grid";
-    private string description = "Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.";
+    private string title = "Grid - Filtering, Paging, and Sorting";
+    private string description = "Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
     private string imageUrl = "https://i.imgur.com/wrHYKGd.jpg";
 }

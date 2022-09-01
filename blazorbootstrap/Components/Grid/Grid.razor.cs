@@ -16,16 +16,22 @@ public partial class Grid<TItem> : BaseComponent
 
     private bool requestInProgress = false;
 
+    private string responsiveCssClass => this.Responsive ? "table-responsive" : "";
+
     #endregion Members
 
     #region Methods
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             RefreshDataAsync(); // for now sync call only
-
             StateHasChanged(); // This is mandatory
         }
     }
@@ -34,6 +40,22 @@ public partial class Grid<TItem> : BaseComponent
     {
         columns.Add(column);
         // TODO: call state changed here
+    }
+
+    private FilterItem[] GetFilters()
+    {
+        if (!AllowFiltering || columns == null || !columns.Any())
+            return null;
+
+        return columns
+                ?.Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
+                ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator()))
+                ?.ToArray();
+    }
+
+    internal void ResetPageNumber()
+    {
+        GridCurrentState = new GridState<TItem>(1, GridCurrentState.Sorting);
     }
 
     internal void SortingChanged(GridColumn<TItem> column)
@@ -69,7 +91,6 @@ public partial class Grid<TItem> : BaseComponent
         });
 
         RefreshDataAsync(); // for now sync call only
-
         StateHasChanged(); // This is mandatory
     }
 
@@ -82,11 +103,11 @@ public partial class Grid<TItem> : BaseComponent
 
     private SortingItem<TItem>[] GetDefaultSorting()
     {
-        if (columns == null || !columns.Any())
+        if (!AllowSorting || columns == null || !columns.Any())
             return null;
 
         return columns?
-                .Where(item => item.IsDefaultSortColumn)?
+                .Where(column => column.CanSort() && column.IsDefaultSortColumn)?
                 .SelectMany(item => item.GetSorting())?
                 .ToArray();
     }
@@ -109,13 +130,17 @@ public partial class Grid<TItem> : BaseComponent
 
     public async Task RefreshDataAsync()
     {
+        if (requestInProgress)
+            return;
+
         requestInProgress = true;
 
         var request = new GridDataProviderRequest<TItem>
         {
-            PageNumber = GridCurrentState.PageIndex,
-            PageSize = this.PageSize,
-            Sorting = GridCurrentState.Sorting ?? GetDefaultSorting()
+            PageNumber = this.AllowPaging ? GridCurrentState.PageIndex : 0,
+            PageSize = this.AllowPaging ? this.PageSize : 0,
+            Sorting = this.AllowSorting ? (GridCurrentState.Sorting ?? GetDefaultSorting()) : null,
+            Filters = this.AllowFiltering ? GetFilters() : null
         };
 
         if (DataProvider != null)
@@ -146,9 +171,19 @@ public partial class Grid<TItem> : BaseComponent
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Gets or sets whether end-users can sort data by the column's values.
+    /// Gets or sets the grid filtering.
     /// </summary>
-    [Parameter] public bool Sortable { get; set; } = true;
+    [Parameter] public bool AllowFiltering { get; set; }
+
+    /// <summary>
+    /// Gets or sets the grid paging.
+    /// </summary>
+    [Parameter] public bool AllowPaging { get; set; }
+
+    /// <summary>
+    /// Gets or sets the grid sorting.
+    /// </summary>
+    [Parameter] public bool AllowSorting { get; set; }
 
     /// <summary>
     /// Specifies the content to be rendered inside the grid.
@@ -156,9 +191,14 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public RenderFragment ChildContent { get; set; }
 
     /// <summary>
+    /// Shows text on no records.
+    /// </summary>
+    [Parameter] public string EmptyText { get; set; } = "No records to display";
+
+    /// <summary>
     /// Template to render when there are no rows to display.
     /// </summary>
-    [Parameter] public RenderFragment EmptyDataTemplate { get; set; }
+    public RenderFragment EmptyDataTemplate { get; set; } // TODO: support this in the next release
 
     /// <summary>
     /// DataProvider is for items to render. The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
@@ -166,14 +206,24 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
 
     /// <summary>
+    /// Gets or sets the pagination alignment.
+    /// </summary>
+    [Parameter] public Alignment PaginationAlignment { get; set; } = Alignment.Start;
+
+    /// <summary>
     /// Gets or sets the page size of the grid.
     /// </summary>
     [Parameter] public int PageSize { get; set; } = 10;
 
     /// <summary>
-    /// Current grid state (page, sorting).
+    /// Current grid state (filters, paging, sorting).
     /// </summary>
     internal GridState<TItem> GridCurrentState { get; set; } = new GridState<TItem>(1, null);
+
+    /// <summary>
+    /// Gets or sets a value indicating whether Grid is responsive.
+    /// </summary>
+    [Parameter] public bool Responsive { get; set; }
 
     #endregion Properties
 }

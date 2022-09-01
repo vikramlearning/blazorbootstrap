@@ -84,3 +84,13 @@
 .offcanvas-end.bb-offcanvas-lg {
     width: var(--bb-offcanvas-horizontal-width-lg);
 }
+
+/* grid */
+table button.dropdown-toggle::after {
+    content: none;
+}
+
+.filter-symbol {
+    width: 2.25rem;
+    display: inline-block;
+}

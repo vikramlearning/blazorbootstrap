@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Linq.Expressions;
+
+namespace BlazorBootstrap;
 
 public class GridDataProviderRequest<TItem>
 {
@@ -17,6 +19,11 @@ public class GridDataProviderRequest<TItem>
     /// </summary>
     public IReadOnlyList<SortingItem<TItem>> Sorting { get; init; }
 
+    /// <summary>
+    /// Current filters.
+    /// </summary>
+    public IReadOnlyList<FilterItem> Filters { get; init; }
+
     public GridDataProviderResult<TItem> ApplyTo(IEnumerable<TItem> data)
     {
         if (data == null)
@@ -24,7 +31,31 @@ public class GridDataProviderRequest<TItem>
 
         IEnumerable<TItem> resultData = data;
 
-        // sorting
+        // apply filter
+        if (Filters != null && Filters.Any())
+        {
+            try
+            {
+                var parameterExpression = Expression.Parameter(typeof(TItem)); // second param optional
+                Expression<Func<TItem, bool>> lambda = null;
+
+                foreach (var filter in Filters)
+                {
+                    if (lambda is null)
+                        lambda = ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter);
+                    else
+                        lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter));
+                }
+
+                resultData = resultData.Where(lambda.Compile());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        // apply sorting
         if (Sorting != null && Sorting.Any())
         {
             IOrderedEnumerable<TItem> orderedData = (Sorting[0].SortDirection == SortDirection.Ascending)
@@ -40,21 +71,22 @@ public class GridDataProviderRequest<TItem>
             resultData = orderedData;
         }
 
-        // paging
+        // apply paging
         var skip = 0;
         var take = data.Count();
+        var totalCount = resultData.Count(); // before paging
 
         if (PageNumber > 0 && PageSize > 0)
         {
             skip = (PageNumber - 1) * PageSize;
             take = PageSize;
+            resultData = resultData.Skip(skip).Take(take);
         }
-        resultData = resultData.Skip(skip).Take(take);
 
         return new GridDataProviderResult<TItem>
         {
             Data = resultData.ToList(),
-            TotalCount = data.Count()
+            TotalCount = totalCount
         };
     }
 }
