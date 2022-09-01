@@ -7,6 +7,8 @@ sidebar_position: 6
 
 Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
 
+<img src="https://i.imgur.com/36RsWZ3.png" alt="Blazor Bootstrap: Grid Component" />
+
 ## Grid Parameters
 
 | Name | Type | Descritpion | Required | Default |
@@ -48,6 +50,8 @@ Use BlazorBootstrap's grid component to display tabular data from the data sourc
 
 For filtering, `AllowFiltering` and `PropertyName` parameters are required.
 Add `AllowFiltering="true"` parameter to Grid and `PropertyName` parameter to all the GridColumns.
+
+<img src="https://i.imgur.com/Clr8W11.png" alt="Blazor Bootstrap: Grid Component - Client side filtering" />
 
 ```cshtml {1,2,5,8,11,14}
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
@@ -99,6 +103,8 @@ Add `AllowFiltering="true"` parameter to Grid and `PropertyName` parameter to al
 
 For paging, `AllowPaging` and `PageSize` parameters are required.
 Add `AllowPaging="true"` and `PageSize="20"` parameters to the Grid. `PageSize` parameter is optional. 
+
+<img src="https://i.imgur.com/WXwUqgX.png" alt="Blazor Bootstrap: Grid Component - Client side paging" />
 
 :::info INFO
 The default page size is 10.
@@ -157,6 +163,8 @@ The default page size is 10.
 For sorting, `AllowSorting` and `SortKeySelector` parameters are required.
 Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the GridColumns.
 
+<img src="https://i.imgur.com/wkIWG5S.png" alt="Blazor Bootstrap: Grid Component - Client side sorting" />
+
 ```cshtml {1,2,5,8,11,14}
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowSorting="true" Responsive="true">
     <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
@@ -203,6 +211,8 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
 }
 ```
 ### Client side filtering, paging, and sorting
+
+<img src="https://i.imgur.com/wZ0cQiO.png" alt="Blazor Bootstrap: Grid Component - Client side filtering, paging, and sorting" />
 
 ```cshtml {1,2,5,8,11,14}
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
@@ -255,6 +265,8 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
 ### Set default filter
 
 `FilterOperator` and `FilterValue` parameters are required to set the default filter. 
+
+<img src="https://i.imgur.com/jog5EA4.png" alt="Blazor Bootstrap: Grid Component - Set default filter" />
 
 :::tip TIP
 You can set the default filter on more than one GridColumn.
@@ -311,6 +323,8 @@ You can set the default filter on more than one GridColumn.
 `Filterable` parameter is required to disable the filter on a specific column. 
 Add `Filterable="false"` parameter to GridColumn.
 
+<img src="https://i.imgur.com/oGeA4VO.png" alt="Blazor Bootstrap: Grid Component - Disable specific column filter" />
+
 :::info INFO
 By default, `Filterable="true"` on all the columns if the `AllowFiltering` parameter is set to `true` on the grid.
 :::
@@ -363,6 +377,8 @@ By default, `Filterable="true"` on all the columns if the `AllowFiltering` param
 ### Increase filter textbox width
 
 Add `FilterTextboxWidth` parameter to the GridColumn to increase or decrease the filter textbox width, `FilterTextboxWidth` parameter is optional.
+
+<img src="https://i.imgur.com/eWXiHr0.png" alt="Blazor Bootstrap: Grid Component - Increase filter textbox width" />
 
 :::note NOTE
 Filter textbox width measured in pixels.
@@ -461,6 +477,8 @@ Filter textbox width measured in pixels.
 
 `IsDefaultSortColumn` parameter is required to set the default sorting. Add `IsDefaultSortColumn="true"` parameter to the GridColumn.
 The default sort direction will be **ascending**. To change the default sorting of a column, add `SortDirection="SortDirection.Descending"` to the GridColumn.
+
+<img src="https://i.imgur.com/WxULPS6.png" alt="Blazor Bootstrap: Grid Component - Set default sorting" />
 
 :::info INFO
 If more than one GridColumn has the `IsDefaultSortColumn` paramter, it will pick the first column as the default sorting column.
@@ -571,6 +589,8 @@ If sorting is disabled, then the `SortKeySelector` parameter is not required.
 Use the `HeaderTextAlignment` parameter to change the header column alignment. 
 By default, `HeaderTextAlignment` is set to Alignment.Start. Other options you can use are `Alignment.Center` and `Alignment.End`.
 
+<img src="https://i.imgur.com/gWgIESD.png" alt="Blazor Bootstrap: Grid Component - Header text alignment" />
+
 ```cshtml {8,11,14}
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider">
     <GridColumn TItem="Employee1" HeaderText="Id" HeaderTextAlignment="Alignment.Center">
@@ -622,6 +642,8 @@ By default, `HeaderTextAlignment` is set to Alignment.Start. Other options you c
 Use the `TextAlignment` parameter to change the cell data alignment. 
 By default, `TextAlignment` is set to `Alignment.Start`. Other options you can use are `Alignment.Center` and `Alignment.End`.
 
+<img src="https://i.imgur.com/0OKp4yd.png" alt="Blazor Bootstrap: Grid Component - Cell alignment" />
+
 ```cshtml {11,14}
 <Grid TItem="Employee2" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider">
     <GridColumn TItem="Employee2" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
@@ -670,6 +692,8 @@ By default, `TextAlignment` is set to `Alignment.Start`. Other options you can u
 
 ### Cell formating
 To format the cell data, use `ToString` method and format strings. Refer: [How to format numbers, dates, enums, and other types in .NET](https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types)
+
+<img src="https://i.imgur.com/MitfasL.png" alt="Blazor Bootstrap: Grid Component - Cell formating" />
 
 :::tip EXAMPLE
 @context.Salary.ToString("N2")
@@ -724,6 +748,8 @@ To format the cell data, use `ToString` method and format strings. Refer: [How t
 ### Cell nowrap
 
 To prevent text from wrapping, add `TextNoWrap="true"` parameter to the GridColumn.
+
+<img src="https://i.imgur.com/Wzc3AUF.png" alt="Blazor Bootstrap: Grid Component - Cell nowrap" />
 
 :::tip TIP
 Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.
@@ -791,6 +817,8 @@ Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.
 Change the alignment of pagination by adding the `PaginationAlignment` parameter to the Grid. 
 By default, `PaginationAlignment` is set to `Alignment.Start`. Other options you can use are `Alignment.Center` and `Alignment.End`.
 
+<img src="https://i.imgur.com/CtSqfJb.png" alt="Blazor Bootstrap: Grid Component - Pagination alignment" />
+
 ```cshtml {1}
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped table-striped" DataProvider="EmployeesDataProvider" AllowPaging="true" PageSize="5" PaginationAlignment="Alignment.End" Responsive="true">
     <GridColumn TItem="Employee1" HeaderText="Id">
@@ -844,6 +872,8 @@ By default, `PaginationAlignment` is set to `Alignment.Start`. Other options you
 
 If there are no records to display in the Grid, by default, it will display the **No records to display** message. 
 You can change this message by adding the `EmptyText` parameter to the Grid.
+
+<img src="https://i.imgur.com/cLuvfmD.png" alt="Blazor Bootstrap: Grid Component - Empty data" />
 
 ```cshtml {1}
 <Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" EmptyText="No records to display">
