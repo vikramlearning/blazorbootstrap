@@ -442,35 +442,41 @@ Filter textbox width measured in pixels.
 }
 ```
 
-### Server side filtering, paging and sorting (TODO: Update this section)
+### Server side filtering, paging and sorting
+
+<img src="https://i.imgur.com/xHVXTew.png" alt="Blazor Bootstrap: Grid Component - Server side filtering, paging and sorting" />
+
+:::note NOTE
+For server-side sorting, we need the `SortString` parameter on GridColumn along with the `SortKeySelector` parameter.
+:::
 
 ```cshtml
-<Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowPaging="true" AllowSorting="true">
-    <GridColumn TItem="Employee" HeaderText="Id" SortString="Id" SortKeySelector="@(item => item.Id)">
+<Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
+    <GridColumn TItem="Employee" HeaderText="Id" PropertyName="Id" SortString="Id" SortKeySelector="item => item.Id">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Firs tName" SortString="FirstName" SortKeySelector="@(item => item.FirstName)" IsDefaultSortColumn="true" SortDirection="SortDirection.Descending">
+    <GridColumn TItem="Employee" HeaderText="First Name" PropertyName="FirstName" SortString="FirstName" SortKeySelector="item => item.FirstName">
         @context.FirstName
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Last Name" SortString="LastName" SortKeySelector="@(item => item.LastName)">
+    <GridColumn TItem="Employee" HeaderText="Last Name" PropertyName="LastName" SortString="LastName" SortKeySelector="item => item.LastName">
         @context.LastName
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Designation" SortString="Designation" SortKeySelector="@(item => item.Designation)">
+    <GridColumn TItem="Employee" HeaderText="Designation" PropertyName="Designation" SortString="Designation" SortKeySelector="item => item.Designation">
         @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="Salary" PropertyName="Salary" SortString="Salary" SortKeySelector="item => item.Salary">
+        @context.Salary
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="DOJ" PropertyName="DOJ" SortString="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="Active" PropertyName="IsActive" SortString="IsActive" SortKeySelector="item => item.IsActive">
+        @context.IsActive
     </GridColumn>
 </Grid>
 ```
 ```cs
-@code {
-    [Inject] public IEmployeeService _employeeService { get; set; }
-
-    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
-    {
-        var result = _employeeService.GetEmployees(request.PageNumber, request.PageSize, request.Sorting[0].SortString, request.Sorting[0].SortDirection);
-
-        return await Task.FromResult(new GridDataProviderResult<Employee> { Data = result.Item1, TotalCount = result.Item2 });
-    }
-}
+// TODO: pending
 ```
 
 ### Set default sorting

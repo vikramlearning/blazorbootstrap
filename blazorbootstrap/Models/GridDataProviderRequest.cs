@@ -46,7 +46,7 @@ public class GridDataProviderRequest<TItem>
                     else
                         lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter));
                 }
-                Console.WriteLine($"{lambda}");
+
                 resultData = resultData.Where(lambda.Compile());
             }
             catch (Exception ex)
