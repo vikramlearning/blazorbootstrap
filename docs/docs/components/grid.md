@@ -99,6 +99,8 @@ Add `AllowFiltering="true"` parameter to Grid and `PropertyName` parameter to al
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/grid#client-side-filtering)
+
 ### Client side paging
 
 For paging, `AllowPaging` and `PageSize` parameters are required.
@@ -158,6 +160,9 @@ The default page size is 10.
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#client-side-paging)
+
 ### Client side sorting
 
 For sorting, `AllowSorting` and `SortKeySelector` parameters are required.
@@ -210,6 +215,9 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#client-side-sorting)
+
 ### Client side filtering, paging, and sorting
 
 <img src="https://i.imgur.com/wZ0cQiO.png" alt="Blazor Bootstrap: Grid Component - Client side filtering, paging, and sorting" />
@@ -262,6 +270,9 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#client-side-filtering-paging-sorting)
+
 ### Set default filter
 
 `FilterOperator` and `FilterValue` parameters are required to set the default filter. 
@@ -318,6 +329,8 @@ You can set the default filter on more than one GridColumn.
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/grid#set-default-filter)
+
 ### Disable specific column filter
 
 `Filterable` parameter is required to disable the filter on a specific column. 
@@ -373,6 +386,8 @@ By default, `Filterable="true"` on all the columns if the `AllowFiltering` param
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#disable-specific-column-filter)
 
 ### Increase filter textbox width
 
@@ -442,6 +457,8 @@ Filter textbox width measured in pixels.
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/grid#increase-filter-textbox-width)
+
 ### Server side filtering, paging and sorting
 
 <img src="https://i.imgur.com/xHVXTew.png" alt="Blazor Bootstrap: Grid Component - Server side filtering, paging and sorting" />
@@ -495,6 +512,8 @@ For server-side sorting, we need the `SortString` parameter on GridColumn along 
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#server-side-filtering-paging-sorting)
 
 ### Set default sorting
 
@@ -553,6 +572,8 @@ If more than one GridColumn has the `IsDefaultSortColumn` paramter, it will pick
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/grid#set-default-sorting)
+
 ### Disable specific column sorting
 
 Add `Sortable="false"` parameter the GridColumn to disable the sorting. 
@@ -607,6 +628,8 @@ If sorting is disabled, then the `SortKeySelector` parameter is not required.
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/grid#disable-specific-column-sorting)
+
 ### Header text alignment
 
 Use the `HeaderTextAlignment` parameter to change the header column alignment. 
@@ -660,6 +683,8 @@ By default, `HeaderTextAlignment` is set to Alignment.Start. Other options you c
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/grid#header-text-alignment)
+
 ### Cell alignment
 
 Use the `TextAlignment` parameter to change the cell data alignment. 
@@ -712,6 +737,8 @@ By default, `TextAlignment` is set to `Alignment.Start`. Other options you can u
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#cell-alignment)
 
 ### Cell formating
 To format the cell data, use `ToString` method and format strings. Refer: [How to format numbers, dates, enums, and other types in .NET](https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types)
@@ -767,6 +794,8 @@ To format the cell data, use `ToString` method and format strings. Refer: [How t
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#cell-formating)
 
 ### Cell nowrap
 
@@ -835,6 +864,9 @@ Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#cell-nowrap)
+
 ### Pagination alignment
 
 Change the alignment of pagination by adding the `PaginationAlignment` parameter to the Grid. 
@@ -891,6 +923,8 @@ By default, `PaginationAlignment` is set to `Alignment.Start`. Other options you
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/grid#pagination-alignment)
+
 ### Empty data
 
 If there are no records to display in the Grid, by default, it will display the **No records to display** message. 
@@ -924,6 +958,8 @@ You can change this message by adding the `EmptyText` parameter to the Grid.
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#empty-data)
 
 :::tip TIP
 Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.

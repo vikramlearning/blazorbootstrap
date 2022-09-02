@@ -105,6 +105,15 @@
     font-size: 1rem
 }
 
+/* position */
+.top-30 {
+    top: 30% !important;
+}
+
+.top-40 {
+    top: 40% !important;
+}
+
 /* icons */
 .list div:hover, .list div:hover .name, .list div:focus, .list div:focus .name {
     color: #0d6efd !important;
