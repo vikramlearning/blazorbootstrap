@@ -1,0 +1,29 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<div class="autocomplete position-relative">
+    <div class="input-group">
+        <input class="form-control" placeholder=" @Placeholder" type="text" value="@inputValue" @oninput="async (args) => await OnInputChanged(args)" />
+        @if (inputHasValue)
+        {
+            <Button @ref="closeButton" Style="margin-left: -42px; z-index: 100; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" @onclick="ClearInputText">
+                <Icon Class="" Name="IconName.X"></Icon>
+            </Button>
+        }
+    </div>
+    <div class="autocomplete-panel @panelCSS position-absolute top-100 start-0">
+        <ul class="autocomplete-list px-0 py-1 mb-0">
+            @if (customers is not null && customers.Any())
+            {
+                foreach (var customer in customers)
+                {
+                    <li class="autocomplete-item" @onclick="() => OnItemSelected(customer.CustomerName)">@customer.CustomerName</li>
+                }
+            }
+            else
+            {
+                <li class="autocomplete-item">No records found.</li>
+            }
+        </ul>
+    </div>
+</div>

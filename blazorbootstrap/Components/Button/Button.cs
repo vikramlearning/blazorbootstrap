@@ -24,6 +24,7 @@ namespace BlazorBootstrap
 
         private bool loading;
 
+        private string loadingText;
         #endregion
 
         #region Methods
@@ -105,7 +106,9 @@ namespace BlazorBootstrap
 
         protected override void OnInitialized()
         {
-            LoadingTemplate ??= ProvideDefaultLoadingTemplate();
+            this.loadingText = LoadingText;
+
+            this.LoadingTemplate ??= ProvideDefaultLoadingTemplate();
 
             base.OnInitialized();
         }
@@ -114,20 +117,18 @@ namespace BlazorBootstrap
 
         protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder =>
         {
-            builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}");
+            builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {this.loadingText}");
         };
 
         /// <summary>
         /// Shows the loading state and disables the button.
         /// </summary>
-        /// <param name="loadingText"></param>
-        public void ShowLoading(string loadingText = "")
+        /// <param name="text"></param>
+        public void ShowLoading(string text = "")
         {
+            this.loadingText = text;
             this.Loading = true;
             this.Disabled = true;
-
-            if (!string.IsNullOrWhiteSpace(loadingText))
-                LoadingText = loadingText;
         }
 
         /// <summary>
