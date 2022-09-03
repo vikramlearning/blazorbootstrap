@@ -121,6 +121,10 @@ public partial class Grid<TItem> : BaseComponent
         return 1;
     }
 
+    /// <summary>
+    /// Refresh the grid data.
+    /// </summary>
+    /// <returns>Task</returns>
     public async Task RefreshDataAsync()
     {
         if (requestInProgress)

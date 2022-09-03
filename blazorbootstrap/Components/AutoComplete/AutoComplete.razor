@@ -4,7 +4,7 @@
 
 <div class="autocomplete position-relative">
     <div class="input-group">
-        <input class="form-control" placeholder=" @Placeholder" type="text" value="@inputValue" @oninput="async (args) => await OnInputChangedAsync(args)" />
+        <input @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" placeholder=" @Placeholder" type="text" value="@inputValue" @oninput="async (args) => await OnInputChangedAsync(args)" disabled="@disabled" />
         @if (inputHasValue)
         {
             <Button @ref="closeButton" Style="margin-left: -42px; z-index: 100; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" @onclick="ClearInputText">

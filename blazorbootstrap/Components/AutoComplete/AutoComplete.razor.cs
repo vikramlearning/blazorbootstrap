@@ -12,12 +12,34 @@ public partial class AutoComplete<TItem> : BaseComponent
     private IEnumerable<TItem> items = null;
     private int totalCount;
     private TItem? selectedItem;
+    private ValidationState state = ValidationState.UnModified;
+    private bool disabled;
 
+    /// <summary>
+    /// Gets selected item.
+    /// </summary>
     public TItem SelectedItem => selectedItem;
 
     #endregion Members
 
     #region Methods
+
+    protected override void OnInitialized()
+    {
+        this.disabled = this.Disabled;
+
+        base.OnInitialized();
+    }
+
+    protected override void BuildClasses(ClassBuilder builder)
+    {
+        builder.Append(BootstrapClassProvider.FormControl());
+        builder.Append(BootstrapClassProvider.ToAutoCompleteSize(this.Size));
+        builder.Append(BootstrapClassProvider.IsInValid(), state == ValidationState.InValid);
+        builder.Append(BootstrapClassProvider.IsValid(), state == ValidationState.Valid);
+
+        base.BuildClasses(builder);
+    }
 
     private async Task OnInputChangedAsync(ChangeEventArgs args)
     {
@@ -36,7 +58,7 @@ public partial class AutoComplete<TItem> : BaseComponent
 
         closeButton?.ShowLoading();
 
-        await FilterDataAsync(this.inputValue);
+        await FilterDataAsync();
 
         closeButton?.HideLoading();
     }
@@ -90,8 +112,12 @@ public partial class AutoComplete<TItem> : BaseComponent
         return propertyInfo?.GetValue(item)?.ToString();
     }
 
-    private async Task FilterDataAsync(string searchKey)
+    private async Task FilterDataAsync()
     {
+        string searchKey = this.inputValue;
+        if (string.IsNullOrWhiteSpace(searchKey))
+            return;
+
         var request = new AutoCompleteDataProviderRequest<TItem>
         {
             Filter = new FilterItem(this.PropertyName, searchKey, FilterOperator.Contains)
@@ -100,7 +126,7 @@ public partial class AutoComplete<TItem> : BaseComponent
         if (DataProvider != null)
         {
             var result = await DataProvider.Invoke(request);
-            if(result is not null)
+            if (result is not null)
             {
                 items = result.Data;
                 totalCount = result.TotalCount ?? result.Data.Count();
@@ -113,6 +139,55 @@ public partial class AutoComplete<TItem> : BaseComponent
         }
     }
 
+    /// <summary>
+    /// Disable autocomplete.
+    /// </summary>
+    public void Disable()
+    {
+        this.disabled = true;
+    }
+
+    /// <summary>
+    /// Enable autocomplete.
+    /// </summary>
+    public void Enable()
+    {
+        this.disabled = false;
+    }
+
+    /// <summary>
+    /// Mark autocomplete validation state as in-valid.
+    /// </summary>
+    public void MarkAsInValid()
+    {
+        state = ValidationState.InValid;
+        DirtyClasses();
+    }
+
+    /// <summary>
+    /// Mark autocomplete validation state as valid.
+    /// </summary>
+    public void MarkAsValid()
+    {
+        state = ValidationState.Valid;
+        DirtyClasses();
+    }
+
+    /// <summary>
+    /// Mark autocomplete validation state as unmodified.
+    /// </summary>
+    public void MarkAsUnModified()
+    {
+        state = ValidationState.UnModified;
+        DirtyClasses();
+    }
+
+    /// <summary>
+    /// Refresh the autocomplete data.
+    /// </summary>
+    /// <returns>Task</returns>
+    public async Task RefreshDataAsync() => await this.FilterDataAsync();
+
     #endregion Methods
 
     #region Properties
@@ -124,6 +199,11 @@ public partial class AutoComplete<TItem> : BaseComponent
     [Parameter, EditorRequired] public AutoCompleteDataProviderDelegate<TItem> DataProvider { get; set; } = null!;
 
     /// <summary>
+    /// Gets or sets the disabled.
+    /// </summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
@@ -132,6 +212,11 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// Gets or sets the property name.
     /// </summary>
     [Parameter, EditorRequired] public string PropertyName { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the autocomplete size.
+    /// </summary>
+    [Parameter] public AutoCompleteSize Size { get; set; }
 
     [Parameter] public EventCallback<TItem> OnChanged { get; set; }
 

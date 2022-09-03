@@ -82,6 +82,16 @@
 
         #endregion
 
+        #region FormControl
+
+        public string FormControl() => "form-control";
+
+        public string IsValid() => "is-valid";
+
+        public string IsInValid() => "is-invalid";
+
+        #endregion FormControl
+
         #region Heading
 
         public string HeadingSize(HeadingSize headingSize) => $"h{ToHeadingSize(headingSize)}";
@@ -396,6 +406,16 @@
                 BlazorBootstrap.TooltipPlacement.Left => "left",
                 BlazorBootstrap.TooltipPlacement.Right => "right",
                 _ => "top",
+            };
+        }
+
+        public string ToAutoCompleteSize(AutoCompleteSize size)
+        {
+            return size switch
+            {
+                BlazorBootstrap.AutoCompleteSize.Large => "form-control-lg",
+                BlazorBootstrap.AutoCompleteSize.Small => "form-control-sm",
+                _ => ""
             };
         }
 
