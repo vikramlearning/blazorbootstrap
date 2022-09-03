@@ -20,11 +20,6 @@ public partial class Grid<TItem> : BaseComponent
 
     #region Methods
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -199,7 +194,8 @@ public partial class Grid<TItem> : BaseComponent
     public RenderFragment EmptyDataTemplate { get; set; } // TODO: support this in the next release
 
     /// <summary>
-    /// DataProvider is for items to render. The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
+    /// DataProvider is for items to render. 
+    /// The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
     /// </summary>
     [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
 

@@ -4,7 +4,7 @@
 
 <div class="autocomplete position-relative">
     <div class="input-group">
-        <input class="form-control" placeholder=" @Placeholder" type="text" value="@inputValue" @oninput="async (args) => await OnInputChanged(args)" />
+        <input class="form-control" placeholder=" @Placeholder" type="text" value="@inputValue" @oninput="async (args) => await OnInputChangedAsync(args)" />
         @if (inputHasValue)
         {
             <Button @ref="closeButton" Style="margin-left: -42px; z-index: 100; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" @onclick="ClearInputText">
@@ -18,7 +18,7 @@
             {
                 foreach (var item in items)
                 {
-                    <li class="autocomplete-item" @onclick="() => OnItemSelected(item)">@GetPropertyValue(item)</li>
+                    <li class="autocomplete-item" @onclick="async () => await OnItemSelectedAsync(item)">@GetPropertyValue(item)</li>
                 }
             }
             else

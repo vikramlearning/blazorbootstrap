@@ -1,8 +1,6 @@
-﻿using System.Reflection;
+﻿namespace BlazorBootstrap;
 
-namespace BlazorBootstrap;
-
-public partial class AutoComplete<TItem> : BaseComponent 
+public partial class AutoComplete<TItem> : BaseComponent
 {
     #region Members
 
@@ -12,7 +10,8 @@ public partial class AutoComplete<TItem> : BaseComponent
     private bool showPanel;
     private string panelCSS => showPanel ? "show" : "";
     private IEnumerable<TItem> items = null;
-    private TItem? selectedItem;    
+    private int totalCount;
+    private TItem? selectedItem;
 
     public TItem SelectedItem => selectedItem;
 
@@ -20,18 +19,12 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     #region Methods
 
-    protected override void OnInitialized()
-    {
-        if (this.Items is not null && this.Items.Any())
-            this.items = this.Items;
-
-        base.OnInitialized();
-    }
-
-    private async Task OnInputChanged(ChangeEventArgs args)
+    private async Task OnInputChangedAsync(ChangeEventArgs args)
     {
         this.inputValue = args.Value.ToString();
+
         SetInputHasValue();
+
         if (inputHasValue)
         {
             ShowPanel();
@@ -40,21 +33,26 @@ public partial class AutoComplete<TItem> : BaseComponent
         {
             HidePanel();
         }
+
         closeButton?.ShowLoading();
-        FilterData(this.inputValue);
+
+        await FilterDataAsync(this.inputValue);
 
         closeButton?.HideLoading();
     }
 
-    private void OnItemSelected(TItem item)
+    private async Task OnItemSelectedAsync(TItem item)
     {
         this.inputValue = GetPropertyValue(item);
+
         this.selectedItem = item;
+
         HidePanel();
+
         SetInputHasValue();
 
-        if(OnChanged.HasDelegate)
-            OnChanged.InvokeAsync(item);
+        if (OnChanged.HasDelegate)
+            await OnChanged.InvokeAsync(item);
     }
 
     /// <summary>
@@ -63,9 +61,15 @@ public partial class AutoComplete<TItem> : BaseComponent
     private void ClearInputText()
     {
         this.inputValue = string.Empty;
+
         this.selectedItem = default(TItem);
+
         HidePanel();
+
         SetInputHasValue();
+
+        if (OnChanged.HasDelegate)
+            OnChanged.InvokeAsync(default(TItem));
     }
 
     /// <summary>
@@ -79,28 +83,54 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     private string? GetPropertyValue(TItem item)
     {
-        if(string.IsNullOrWhiteSpace(this.PropertyName))
+        if (string.IsNullOrWhiteSpace(this.PropertyName))
             return string.Empty;
 
         var propertyInfo = typeof(TItem).GetProperty(this.PropertyName);
         return propertyInfo?.GetValue(item)?.ToString();
     }
 
-    private void FilterData(string searchKey)
+    private async Task FilterDataAsync(string searchKey)
     {
+        var request = new AutoCompleteDataProviderRequest<TItem>
+        {
+            Filter = new FilterItem(this.PropertyName, searchKey, FilterOperator.Contains)
+        };
+
+        if (DataProvider != null)
+        {
+            var result = await DataProvider.Invoke(request);
+            if(result is not null)
+            {
+                items = result.Data;
+                totalCount = result.TotalCount ?? result.Data.Count();
+            }
+            else
+            {
+                items = new List<TItem> { };
+                totalCount = 0;
+            }
+        }
     }
 
     #endregion Methods
 
     #region Properties
 
-    [Parameter] public IEnumerable<TItem> Items { get; set; }
+    /// <summary>
+    /// DataProvider is for items to render. 
+    /// The provider should always return an instance of 'AutoCompleteDataProviderResult', and 'null' is not allowed.
+    /// </summary>
+    [Parameter, EditorRequired] public AutoCompleteDataProviderDelegate<TItem> DataProvider { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
 
+    /// <summary>
+    /// Gets or sets the property name.
+    /// </summary>
     [Parameter, EditorRequired] public string PropertyName { get; set; } = null!;
 
     [Parameter] public EventCallback<TItem> OnChanged { get; set; }

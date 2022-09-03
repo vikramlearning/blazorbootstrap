@@ -8,7 +8,7 @@
             <div class="card-body">
                 <h5 class="card-title">AutoComplete Demo 1</h5>
                 <AutoComplete TItem="Customer"
-                              Items="customers"
+                              DataProvider="CustomersDataProvider"
                               PropertyName="CustomerName"
                               Placeholder="Search a customer..."
                               OnChanged="(args) => OnAutoCompleteChanged(args)"></AutoComplete>
@@ -19,7 +19,7 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">AutoComplete Demo 2</h5>
-                <AutoComplete TItem="Customer" Items="customers" PropertyName="CustomerName"></AutoComplete>
+                <AutoComplete TItem="Customer" DataProvider="CustomersDataProvider" PropertyName="CustomerName"></AutoComplete>
             </div>
         </div>
     </div>
@@ -29,7 +29,7 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">AutoComplete Demo 3</h5>
-                <AutoComplete TItem="Customer" Items="customers" PropertyName="CustomerName"></AutoComplete>
+                <AutoComplete TItem="Customer" DataProvider="CustomersDataProvider" PropertyName="CustomerName"></AutoComplete>
             </div>
         </div>
     </div>
@@ -37,7 +37,7 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">AutoComplete Demo 4</h5>
-                <AutoComplete TItem="Customer" Items="@customers" PropertyName="CustomerName"></AutoComplete>
+                <AutoComplete TItem="Customer" DataProvider="CustomersDataProvider" PropertyName="CustomerName"></AutoComplete>
             </div>
         </div>
     </div>
@@ -48,6 +48,8 @@
 
     protected override void OnInitialized()
     {
+        #region Customers
+
         customers = new List<Customer> {
             new(1, "Pich S"),
             new(2, "sfh Sobi"),
@@ -72,12 +74,21 @@
             new(21, "Laura L"),
             new(22, "Punith ES"),
         };
+
+        #endregion Customers
+    }
+
+    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
+    {
+        return await Task.FromResult(request.ApplyTo(customers));
     }
 
     private void OnAutoCompleteChanged(object value)
     {
         if (value is Customer customer)
             Console.WriteLine($"{customer.CustomerName} selected.");
+        else
+            Console.WriteLine($"Data null: {value is null}.");
     }
 
     public record class Customer(int CustomerId, string CustomerName);
