@@ -1,0 +1,29 @@
+﻿<div class="row">
+    <div class="col-md-5 col-sm-12">
+        <AutoComplete TItem="Customer"
+                      DataProvider="CustomersDataProvider"
+                      PropertyName="CustomerName"
+                      Placeholder="Search a customer..."
+                      OnChanged="(args) => OnAutoCompleteChanged(args)" />
+    </div>
+</div>
+
+@code {
+    [Inject] ICustomerService _customerService { get; set; }
+
+    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
+    {
+        var customers = await _customerService.GetCustomers(request.Filter); // API call
+        return await Task.FromResult(new AutoCompleteDataProviderResult<Customer> { Data = customers, TotalCount = customers.Count() });
+    }
+
+    private void OnAutoCompleteChanged(object value)
+    {
+        // TODO: handle your own logic
+
+        if (value is Customer customer)
+            Console.WriteLine($"{customer.CustomerName} selected.");
+        else
+            Console.WriteLine($"Data null: {value is null}.");
+    }
+}

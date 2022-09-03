@@ -1,0 +1,56 @@
+﻿<div class="row">
+    <div class="col-md-5 col-sm-12">
+        <AutoComplete TItem="Customer"
+                      DataProvider="CustomersDataProvider"
+                      PropertyName="CustomerName"
+                      Placeholder="Search a customer..."
+                      OnChanged="(args) => OnAutoCompleteChanged(args)" />
+    </div>
+</div>
+
+@code {
+    public IEnumerable<Customer> customers;
+
+    protected override void OnInitialized()
+    {
+        customers = new List<Customer> {
+            new(1, "Pich S"),
+            new(2, "sfh Sobi"),
+            new(3, "Jojo chan"),
+            new(4, "Jee ja"),
+            new(5, "Rose Canon"),
+            new(6, "Manju A"),
+            new(7, "Bandita PA"),
+            new(8, "Sagar Adil"),
+            new(9, "Isha Wang"),
+            new(10, "Daina JJ"),
+            new(11, "Komala Mug"),
+            new(12, "Dikshita BD"),
+            new(13, "Neha Gosar"),
+            new(14, "Preeti S"),
+            new(15, "Sagar Seth"),
+            new(16, "Vinayak MM"),
+            new(17, "Vijaya Lakhsmi"),
+            new(18, "Jahan K"),
+            new(19, "Joy B"),
+            new(20, "Zaraiah C"),
+            new(21, "Laura L"),
+            new(22, "Punith ES")
+        };
+    }
+
+    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
+    {
+        return await Task.FromResult(request.ApplyTo(customers.OrderBy(customer => customer.CustomerName)));
+    }
+
+    private void OnAutoCompleteChanged(object value)
+    {
+        // TODO: handle your own logic
+
+        if (value is Customer customer)
+            Console.WriteLine($"{customer.CustomerName} selected.");
+        else
+            Console.WriteLine($"Data null: {value is null}.");
+    }
+}

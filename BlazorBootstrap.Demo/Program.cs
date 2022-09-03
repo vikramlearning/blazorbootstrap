@@ -12,5 +12,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 // Inject services
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 await builder.Build().RunAsync();
