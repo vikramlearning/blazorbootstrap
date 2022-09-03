@@ -188,6 +188,11 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// <returns>Task</returns>
     public async Task RefreshDataAsync() => await this.FilterDataAsync();
 
+    /// <summary>
+    /// Resets the autocomplete selection.
+    /// </summary>
+    public void Reset() => ClearInputText();
+
     #endregion Methods
 
     #region Properties
