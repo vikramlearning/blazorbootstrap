@@ -1,6 +1,8 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Reflection;
 
-public partial class AutoComplete : BaseComponent
+namespace BlazorBootstrap;
+
+public partial class AutoComplete<TItem> : BaseComponent 
 {
     #region Members
 
@@ -9,11 +11,22 @@ public partial class AutoComplete : BaseComponent
     private bool inputHasValue;
     private bool showPanel;
     private string panelCSS => showPanel ? "show" : "";
-    private IEnumerable<Customer> customers;
+    private IEnumerable<TItem> items = null;
+    private TItem? selectedItem;    
+
+    public TItem SelectedItem => selectedItem;
 
     #endregion Members
 
     #region Methods
+
+    protected override void OnInitialized()
+    {
+        if (this.Items is not null && this.Items.Any())
+            this.items = this.Items;
+
+        base.OnInitialized();
+    }
 
     private async Task OnInputChanged(ChangeEventArgs args)
     {
@@ -28,18 +41,20 @@ public partial class AutoComplete : BaseComponent
             HidePanel();
         }
         closeButton?.ShowLoading();
-        BindData(this.inputValue);
-
-        await Task.Delay(1000); // API call
+        FilterData(this.inputValue);
 
         closeButton?.HideLoading();
     }
 
-    private void OnItemSelected(string selectedValue)
+    private void OnItemSelected(TItem item)
     {
-        this.inputValue = selectedValue;
+        this.inputValue = GetPropertyValue(item);
+        this.selectedItem = item;
         HidePanel();
         SetInputHasValue();
+
+        if(OnChanged.HasDelegate)
+            OnChanged.InvokeAsync(item);
     }
 
     /// <summary>
@@ -48,6 +63,7 @@ public partial class AutoComplete : BaseComponent
     private void ClearInputText()
     {
         this.inputValue = string.Empty;
+        this.selectedItem = default(TItem);
         HidePanel();
         SetInputHasValue();
     }
@@ -61,35 +77,33 @@ public partial class AutoComplete : BaseComponent
 
     private void HidePanel() => showPanel = false;
 
-    private void BindData(string searchKey)
+    private string? GetPropertyValue(TItem item)
     {
-        var c = new List<Customer>
-        {
-            new(){ CustomerId = 1, CustomerName = "ABC LLC"},
-            new(){ CustomerId = 1, CustomerName = "Aruna LLC"},
-            new(){ CustomerId = 1, CustomerName = "Badri LLC"},
-            new(){ CustomerId = 1, CustomerName = "Get Blazor Bootstrap India Private Limited, Badri LLC, Badri LLC, Badri LLC"},
-            new(){ CustomerId = 1, CustomerName = "Nithay LLC"},
-            new(){ CustomerId = 1, CustomerName = "Vikram LLC"}
-        };
+        if(string.IsNullOrWhiteSpace(this.PropertyName))
+            return string.Empty;
 
-        customers = c.Where(x => x.CustomerName.Contains(searchKey));
+        var propertyInfo = typeof(TItem).GetProperty(this.PropertyName);
+        return propertyInfo?.GetValue(item)?.ToString();
+    }
+
+    private void FilterData(string searchKey)
+    {
     }
 
     #endregion Methods
 
     #region Properties
 
+    [Parameter] public IEnumerable<TItem> Items { get; set; }
+
     /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
 
-    #endregion Properties
-}
+    [Parameter, EditorRequired] public string PropertyName { get; set; } = null!;
 
-public class Customer
-{
-    public int CustomerId { get; set; }
-    public string CustomerName { get; set; }
+    [Parameter] public EventCallback<TItem> OnChanged { get; set; }
+
+    #endregion Properties
 }

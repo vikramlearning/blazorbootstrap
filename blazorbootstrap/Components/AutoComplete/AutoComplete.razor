@@ -1,5 +1,6 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
+@typeparam TItem
 
 <div class="autocomplete position-relative">
     <div class="input-group">
@@ -7,17 +8,17 @@
         @if (inputHasValue)
         {
             <Button @ref="closeButton" Style="margin-left: -42px; z-index: 100; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" @onclick="ClearInputText">
-                <Icon Class="" Name="IconName.X"></Icon>
+                <Icon Name="IconName.X"></Icon>
             </Button>
         }
     </div>
     <div class="autocomplete-panel @panelCSS position-absolute top-100 start-0">
         <ul class="autocomplete-list px-0 py-1 mb-0">
-            @if (customers is not null && customers.Any())
+            @if (items is not null && items.Any())
             {
-                foreach (var customer in customers)
+                foreach (var item in items)
                 {
-                    <li class="autocomplete-item" @onclick="() => OnItemSelected(customer.CustomerName)">@customer.CustomerName</li>
+                    <li class="autocomplete-item" @onclick="() => OnItemSelected(item)">@GetPropertyValue(item)</li>
                 }
             }
             else

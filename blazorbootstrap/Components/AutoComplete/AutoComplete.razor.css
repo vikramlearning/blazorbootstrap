@@ -23,6 +23,8 @@
     }
 
 .autocomplete-list {
+    max-height: 200px;
+    overflow-y: auto;
 }
 
 .autocomplete-item {
