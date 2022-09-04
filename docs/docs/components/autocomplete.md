@@ -1,6 +1,6 @@
----
+﻿---
 title: Blazor AutoComplete Component
-description: Use BlazorBootstrap's autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
+description: BlazorBootstrap's autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: AutoComplete
@@ -9,38 +9,40 @@ sidebar_position: 2
 
 # AutoComplete
 
-Use BlazorBootstrap's autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
+BlazorBootstrap's autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
 
 ## Parameters
-| Name | Type | Descritpion | Required | Default |
+| Name | Type | Default | Required | Descritpion |
 |--|--|--|--|--|
-| DataProvider | `AutoCompleteDataProviderDelegate<TItem>` | | | |
-| Disabled | bool | | | |
-| Placeholder | string | | | |
-| PropertyName | string | | | |
-| Size | `AutoCompleteSize` |  | | |
-| Value | string | | | |
-| ValueExpression | `Expression<Func<string?>>` | | | |
+| DataProvider | delegate | null | ✔️ | DataProvider is for items to render. The provider should always return an instance of `AutoCompleteDataProviderResult`, and null is not allowed. |
+| Disabled | bool | false | | Is AutoComplete disabled. |
+| Placeholder | string | null | | AutoComplete placeholder. |
+| PropertyName | string | null | ✔️ | AutoComplete data text property name. |
+| Size | enum | `AutoCompleteSize.Default` | | `AutoCompleteSize.Default` or `AutoCompleteSize.Large` or `AutoCompleteSize.Small` |
+| Value | string | null | ✔️ | AutoComplete value. |
+| ValueExpression | expression | null | | AutoComplete value expression. |
 
 ## Methods
-| Name | Description |
-|--|--|
-| Disable | |
-| Enable | |
-| RefreshDataAsync | |
-| ResetAsync | |
+| Name | Returns | Arguments | Description |
+|--|--|--|
+| Disable() | void | N/A | Disables autocomplete. |
+| Enable() | void | N/A | Enables autocomplete. |
+| RefreshDataAsync() | Task | N/A | Refresh the autocomplete data. |
+| ResetAsync() | Task | N/A | Resets the autocomplete selection. |
 
 ## Callback Events
 | Name | Description |
 |--|--|
-| OnChanged | |
-
+| OnChanged | This event fires immediately when the autocomplete selection changes by the user. |
+| ValueChanged | This event fires on every user keystroke that changes the textbox value. |
 
 ## Examples
 
 ### Client side data
 
-```cshtml  showLineNumbers
+<img src="https://i.imgur.com/gRcdvc0.png" alt="Blazor Bootstrap AutoComplete Component - Client side data" />
+
+```cshtml {3-8} showLineNumbers
 <div class="row">
     <div class="col-md-5 col-sm-12">
         <AutoComplete @bind-Value="customerName"
@@ -52,7 +54,7 @@ Use BlazorBootstrap's autocomplete component is a textbox that offers the users 
     </div>
 </div>
 ```
-```cs  showLineNumbers
+```cs {34,36,39,41} showLineNumbers
 @code {
     private string customerName;
 
@@ -102,9 +104,17 @@ Use BlazorBootstrap's autocomplete component is a textbox that offers the users 
 }
 ```
 
+```cs showLineNumbers
+public record Customer(int CustomerId, string CustomerName);
+```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#client-side-data)
+
 ### Server side data
 
-```cshtml showLineNumbers
+<img src="https://i.imgur.com/D5ox9um.png" alt="Blazor Bootstrap AutoComplete Component - Server side data" />
+
+```cshtml {3-8} showLineNumbers
 <div class="row">
     <div class="col-md-5 col-sm-12">
         <AutoComplete @bind-Value="customerName"
@@ -116,7 +126,7 @@ Use BlazorBootstrap's autocomplete component is a textbox that offers the users 
     </div>
 </div>
 ```
-```cs showLineNumbers
+```cs {6,8-9,12,14} showLineNumbers
 @code {
     private string customerName;
 
@@ -139,13 +149,19 @@ Use BlazorBootstrap's autocomplete component is a textbox that offers the users 
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/grid#server-side-data)
+
 ### Validations
+
+<img src="https://i.imgur.com/sMQ7Uc6.png" alt="Blazor Bootstrap AutoComplete Component - Validations - Data empty" />
+
+<img src="https://i.imgur.com/4IzNcdp.png" alt="Blazor Bootstrap AutoComplete Component - Validations - Item selected" />
 
 ```cs showLineNumbers
 @using System.ComponentModel.DataAnnotations
 ```
 
-```css showLineNumbers
+```html showLineNumbers
 <style>
     .valid.modified:not([type=checkbox]) {
         outline: 1px solid #26b050;
@@ -161,7 +177,7 @@ Use BlazorBootstrap's autocomplete component is a textbox that offers the users 
 </style>
 ```
 
-```cshtml showLineNumbers
+```cshtml {7-13} showLineNumbers
 <EditForm EditContext="@_editContext" OnValidSubmit="HandleOnValidSubmit">
     <DataAnnotationsValidator />
 
@@ -194,7 +210,7 @@ Use BlazorBootstrap's autocomplete component is a textbox that offers the users 
 </EditForm>
 ```
 
-```cs showLineNumbers
+```cs {18,20-21,24,26} showLineNumbers
 @code {
     private CustomerAddress customerAddress = new();
     private EditContext _editContext;
@@ -237,3 +253,5 @@ Use BlazorBootstrap's autocomplete component is a textbox that offers the users 
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#validations)

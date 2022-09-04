@@ -22,7 +22,7 @@ Use BlazorBootstrap's grid component to display tabular data from the data sourc
 | AllowSorting | bool | Gets or sets the grid sorting. | | false |
 | ChildContent | RenderFragment | Specifies the content to be rendered inside the grid. | ✔️ | |
 | EmptyText | string | Shows text on no records. | | No records to display |
-| DataProvider | `GridDataProviderDelegate<TItem>` | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | | |
+| DataProvider | `GridDataProviderDelegate<TItem>` | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | ✔️ | |
 | PageSize | int | Gets or sets the page size of the grid. | | 10 |
 | PaginationAlignment | `Alignment` | Gets or sets the pagination alignment. | | `Alignment.Start` |
 | Responsive | bool | Gets or sets a value indicating whether Grid is responsive. | | false |

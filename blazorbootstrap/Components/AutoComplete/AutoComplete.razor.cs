@@ -7,8 +7,14 @@ public partial class AutoComplete<TItem> : BaseComponent
 {
     #region Events
 
+    /// <summary>
+    /// This event fires immediately when the autocomplete selection changes by the user.
+    /// </summary>
     [Parameter] public EventCallback<TItem> OnChanged { get; set; }
 
+    /// <summary>
+    /// This is event fires on every user keystroke that changes the textbox value.
+    /// </summary>
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
 
     #endregion Events
@@ -155,7 +161,7 @@ public partial class AutoComplete<TItem> : BaseComponent
     }
 
     /// <summary>
-    /// Disable autocomplete.
+    /// Disables autocomplete.
     /// </summary>
     public void Disable()
     {
@@ -163,7 +169,7 @@ public partial class AutoComplete<TItem> : BaseComponent
     }
 
     /// <summary>
-    /// Enable autocomplete.
+    /// Enables autocomplete.
     /// </summary>
     public void Enable()
     {

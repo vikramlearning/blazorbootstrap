@@ -201,7 +201,7 @@ public partial class Grid<TItem> : BaseComponent
     /// DataProvider is for items to render. 
     /// The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
     /// </summary>
-    [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
+    [Parameter, EditorRequired] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
 
     /// <summary>
     /// Gets or sets the pagination alignment.

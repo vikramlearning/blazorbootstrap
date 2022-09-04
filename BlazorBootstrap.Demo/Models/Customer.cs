@@ -1,3 +1,3 @@
 ﻿namespace BlazorBootstrap.Demo;
 
-public record class Customer(int CustomerId, string CustomerName);
+public record Customer(int CustomerId, string CustomerName);
