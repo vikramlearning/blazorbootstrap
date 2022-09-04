@@ -86,9 +86,9 @@
 
         public string FormControl() => "form-control";
 
-        public string IsValid() => "is-valid";
+        public string IsValid() => "valid";
 
-        public string IsInValid() => "is-invalid";
+        public string IsInValid() => "invalid";
 
         #endregion FormControl
 

@@ -1,19 +1,31 @@
-﻿namespace BlazorBootstrap;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using System.Linq.Expressions;
+
+namespace BlazorBootstrap;
 
 public partial class AutoComplete<TItem> : BaseComponent
 {
+    #region Events
+
+    [Parameter] public EventCallback<TItem> OnChanged { get; set; }
+
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    #endregion Events
+
     #region Members
 
-    private Button closeButton;
-    private string inputValue;
+    private FieldIdentifier fieldIdentifier;
+    private string fieldCssClasses => CascadedEditContext?.FieldCssClass(fieldIdentifier) ?? "";
+
     private bool inputHasValue;
     private bool showPanel;
     private string panelCSS => showPanel ? "show" : "";
     private IEnumerable<TItem> items = null;
     private int totalCount;
     private TItem? selectedItem;
-    private ValidationState state = ValidationState.UnModified;
     private bool disabled;
+    private Button closeButton;
 
     /// <summary>
     /// Gets selected item.
@@ -26,6 +38,7 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     protected override void OnInitialized()
     {
+        fieldIdentifier = FieldIdentifier.Create(ValueExpression);
         this.disabled = this.Disabled;
 
         base.OnInitialized();
@@ -35,15 +48,13 @@ public partial class AutoComplete<TItem> : BaseComponent
     {
         builder.Append(BootstrapClassProvider.FormControl());
         builder.Append(BootstrapClassProvider.ToAutoCompleteSize(this.Size));
-        builder.Append(BootstrapClassProvider.IsInValid(), state == ValidationState.InValid);
-        builder.Append(BootstrapClassProvider.IsValid(), state == ValidationState.Valid);
 
         base.BuildClasses(builder);
     }
 
     private async Task OnInputChangedAsync(ChangeEventArgs args)
     {
-        this.inputValue = args.Value.ToString();
+        this.Value = args.Value.ToString();
 
         SetInputHasValue();
 
@@ -65,13 +76,15 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     private async Task OnItemSelectedAsync(TItem item)
     {
-        this.inputValue = GetPropertyValue(item);
-
         this.selectedItem = item;
+        this.Value = this.GetPropertyValue(item);
+        await ValueChanged.InvokeAsync(this.Value);
 
         HidePanel();
 
         SetInputHasValue();
+
+        CascadedEditContext?.NotifyFieldChanged(fieldIdentifier);
 
         if (OnChanged.HasDelegate)
             await OnChanged.InvokeAsync(item);
@@ -80,24 +93,26 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// <summary>
     /// Clears the input test value.
     /// </summary>
-    private void ClearInputText()
+    private async Task ClearInputTextAsync()
     {
-        this.inputValue = string.Empty;
-
         this.selectedItem = default(TItem);
+        this.Value = string.Empty;
+        await ValueChanged.InvokeAsync(this.Value);
 
         HidePanel();
 
         SetInputHasValue();
 
+        CascadedEditContext?.NotifyFieldChanged(fieldIdentifier);
+
         if (OnChanged.HasDelegate)
-            OnChanged.InvokeAsync(default(TItem));
+            await OnChanged.InvokeAsync(default(TItem));
     }
 
     /// <summary>
     /// Checks whether the input has value.
     /// </summary>
-    private void SetInputHasValue() => this.inputHasValue = inputValue.Length > 0;
+    private void SetInputHasValue() => this.inputHasValue = Value.Length > 0;
 
     private void ShowPanel() => showPanel = true;
 
@@ -114,7 +129,7 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     private async Task FilterDataAsync()
     {
-        string searchKey = this.inputValue;
+        string searchKey = this.Value;
         if (string.IsNullOrWhiteSpace(searchKey))
             return;
 
@@ -156,33 +171,6 @@ public partial class AutoComplete<TItem> : BaseComponent
     }
 
     /// <summary>
-    /// Mark autocomplete validation state as in-valid.
-    /// </summary>
-    public void MarkAsInValid()
-    {
-        state = ValidationState.InValid;
-        DirtyClasses();
-    }
-
-    /// <summary>
-    /// Mark autocomplete validation state as valid.
-    /// </summary>
-    public void MarkAsValid()
-    {
-        state = ValidationState.Valid;
-        DirtyClasses();
-    }
-
-    /// <summary>
-    /// Mark autocomplete validation state as unmodified.
-    /// </summary>
-    public void MarkAsUnModified()
-    {
-        state = ValidationState.UnModified;
-        DirtyClasses();
-    }
-
-    /// <summary>
     /// Refresh the autocomplete data.
     /// </summary>
     /// <returns>Task</returns>
@@ -191,11 +179,13 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// <summary>
     /// Resets the autocomplete selection.
     /// </summary>
-    public void Reset() => ClearInputText();
+    public async Task ResetAsync() => await ClearInputTextAsync();
 
     #endregion Methods
 
     #region Properties
+
+    [CascadingParameter] private EditContext CascadedEditContext { get; set; }
 
     /// <summary>
     /// DataProvider is for items to render. 
@@ -223,7 +213,9 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// </summary>
     [Parameter] public AutoCompleteSize Size { get; set; }
 
-    [Parameter] public EventCallback<TItem> OnChanged { get; set; }
+    [Parameter] public string Value { get; set; }
+
+    [Parameter] public Expression<Func<string?>> ValueExpression { get; set; }
 
     #endregion Properties
 }

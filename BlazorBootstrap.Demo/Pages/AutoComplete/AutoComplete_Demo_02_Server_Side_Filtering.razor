@@ -1,14 +1,17 @@
 ﻿<div class="row">
     <div class="col-md-5 col-sm-12">
-        <AutoComplete TItem="Customer"
+        <AutoComplete @bind-Value="customerName"
+                      TItem="Customer"
                       DataProvider="CustomersDataProvider"
                       PropertyName="CustomerName"
                       Placeholder="Search a customer..."
-                      OnChanged="(args) => OnAutoCompleteChanged(args)" />
+                      OnChanged="(Customer customer) => OnAutoCompleteChanged(customer)" />
     </div>
 </div>
 
 @code {
+    private string customerName;
+
     [Inject] ICustomerService _customerService { get; set; }
 
     private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
@@ -17,13 +20,12 @@
         return await Task.FromResult(new AutoCompleteDataProviderResult<Customer> { Data = customers, TotalCount = customers.Count() });
     }
 
-    private void OnAutoCompleteChanged(object value)
+    private void OnAutoCompleteChanged(Customer customer)
     {
         // TODO: handle your own logic
 
-        if (value is Customer customer)
-            Console.WriteLine($"{customer.CustomerName} selected.");
-        else
-            Console.WriteLine($"Data null: {value is null}.");
+        // NOTE: do null check
+        Console.WriteLine($"'{customer?.CustomerName}' selected.");
+        Console.WriteLine($"Data null: {customer is null}.");
     }
 }
