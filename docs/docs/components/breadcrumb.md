@@ -19,14 +19,14 @@ BlazorBootstrap's breadcrumb component indicates the current page's location wit
 
 <img src="https://i.imgur.com/hO90HoC.jpg" alt="Blazor Bootstrap: Breadcrumb Component" />
 
-```cshtml
+```cshtml showLineNumbers
 <div>
     <Breadcrumb Items="NavItems1"></Breadcrumb>
     <Breadcrumb Items="NavItems2"></Breadcrumb>
 </div>
 ```
 
-```cs
+```cs showLineNumbers
 @code {
     private List<BreadcrumbItem> NavItems1 { get; set; }
     private List<BreadcrumbItem> NavItems2 { get; set; }
@@ -56,13 +56,13 @@ Dividers are automatically added in CSS through `::before` and `content`. They c
 
 <img src="https://i.imgur.com/oUqUOY1.jpg" alt="Blazor Bootstrap: Breadcrumb Component - Dividers" />
 
-```cshtml
+```cshtml showLineNumbers
 <div>
     <Breadcrumb style="--bs-breadcrumb-divider: '>';" Items="NavItems2"></Breadcrumb>
 </div>
 ```
 
-```cs
+```cs showLineNumbers
 @code {
     private List<BreadcrumbItem> NavItems2 { get; set; }
 
@@ -85,13 +85,13 @@ It's also possible to use an embedded SVG icon. Apply it via our CSS custom prop
 
 <img src="https://i.imgur.com/mZaXqgZ.jpg" alt="Blazor Bootstrap: Breadcrumb Component - Embedded SVG icon" />
 
-```cshtml
+```cshtml showLineNumbers
 <div>
     <Breadcrumb style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" Items="NavItems2"></Breadcrumb>
 </div>
 ```
 
-```cs
+```cs showLineNumbers
 @code {
     private List<BreadcrumbItem> NavItems2 { get; set; }
 

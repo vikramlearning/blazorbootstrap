@@ -7,7 +7,7 @@ sidebar_position: 13
 
 Documentation and examples for how to use BlazorBootstrap's <code>Tabs</code> components.
 
-## Parameters
+## Tabs Parameters
 
 | Name | Type | Descritpion | Required | Default |
 |--|--|--|--|--|
@@ -15,13 +15,27 @@ Documentation and examples for how to use BlazorBootstrap's <code>Tabs</code> co
 | EnableFadeEffect | bool | Gets or sets the tabs fade effect. | | false |
 | NavStyle | `NavStyle` | Get or sets the nav style. | | `NavStyle.Tabs` |
 
+## Tab Parameters
+
+| Name | Type | Descritpion | Required | Default |
+|--|--|--|--|--|
+| Title | string | Gets or sets the tab title. | | |
+| TitleTemplate | RenderFragment | Gets or sets the tab title template. | | |
+| Content | RenderFragment | Specifies the content to be rendered inside the tab. | ✔️ | |
+| IsActive | bool | Gets or sets the active tab. | | false |
+| Disabled | bool | Gets or sets the disabled. | | false |
+
+:::info Note
+**Title** or **TitleTemplate** is required.
+:::
+
 ## Examples
 
 ### Tabs
 
 <img src="https://i.imgur.com/ranwriJ.png" alt="Tabs - Examples" />
 
-```cshtml
+```cshtml showLineNumbers
 <Tabs>
     <Tab Title="Home" IsActive="true">
         <Content>
@@ -55,7 +69,7 @@ To make tabs fade in, add `EnableFadeEffect="true"`. The first tab pane must als
 
 <img src="https://i.imgur.com/ranwriJ.png" alt="Tabs - Fade effect" />
 
-```cshtml {1, 2}
+```cshtml {1, 2} showLineNumbers
 <Tabs EnableFadeEffect="true">
     <Tab Title="Home" IsActive="true">
         <Content>
@@ -87,7 +101,7 @@ To make tabs fade in, add `EnableFadeEffect="true"`. The first tab pane must als
 
 <img src="https://i.imgur.com/KelXx6Z.png" alt="Tabs - Title with icon" />
 
-```cshtml {3-5,13-15,23-25}
+```cshtml {3-5,13-15,23-25} showLineNumbers
 <Tabs EnableFadeEffect="true">
     <Tab IsActive="true">
         <TitleTemplate>
@@ -128,7 +142,7 @@ To make tabs fade in, add `EnableFadeEffect="true"`. The first tab pane must als
 
 <img src="https://i.imgur.com/TCG6gCz.png" alt="Tabs - Disable Tab" />
 
-```cshtml {16}
+```cshtml {16} showLineNumbers
 <Tabs EnableFadeEffect="true">
     <Tab Title="Home" IsActive="true">
         <Content>
@@ -167,7 +181,7 @@ To make tabs fade in, add `EnableFadeEffect="true"`. The first tab pane must als
 
 <img src="https://i.imgur.com/IyRJ0PS.png" alt="Tabs - Pills" />
 
-```cshtml {1}
+```cshtml {1} showLineNumbers
 <Tabs EnableFadeEffect="true" NavStyle="NavStyle.Pills">
     <Tab Title="Home" IsActive="true">
         <Content>
@@ -209,19 +223,3 @@ If no tab was already active, then the `OnHiding` and `OnHidden` events will not
 :::
 
 [See demo here.](https://demos.getblazorbootstrap.com/tabs#events)
-
-## Tab 
-
-### Parameters
-
-| Name | Type | Descritpion | Required | Default |
-|--|--|--|--|--|
-| Title | string | Gets or sets the tab title. | | |
-| TitleTemplate | RenderFragment | Gets or sets the tab title template. | | |
-| Content | RenderFragment | Specifies the content to be rendered inside the tab. | ✔️ | |
-| IsActive | bool | Gets or sets the active tab. | | false |
-| Disabled | bool | Gets or sets the disabled. | | false |
-
-:::info Note
-**Title** or **TitleTemplate** is required.
-:::

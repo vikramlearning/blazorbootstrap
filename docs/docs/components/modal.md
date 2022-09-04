@@ -67,7 +67,7 @@ Clicking the **Show Modal** button below, the modal will slide down and fade in 
 
 <img src="https://i.imgur.com/aWbURjD.jpg" alt="Modal" />
 
-```cshtml
+```cshtml showLineNumbers
 <Modal @ref="modal" Title="Modal title">
     <BodyTemplate>
         Modal body text goes here.
@@ -80,7 +80,8 @@ Clicking the **Show Modal** button below, the modal will slide down and fade in 
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Show Modal</Button>
 ```
-```cs {2,6,11}
+
+```cs {2,6,11} showLineNumbers
 @code {
     private Modal modal;
 
@@ -104,7 +105,7 @@ When `UseStaticBackdrop` is set to `true`, the modal will not close when clickin
 
 <img src="https://i.imgur.com/NeSfMIn.jpg" alt=" Modal with static backdrop " />
 
-```cshtml {1}
+```cshtml {1} showLineNumbers
 <Modal @ref="modal" title="Modal title" UseStaticBackdrop="true">
     <BodyTemplate>
         I will not close if you click outside me. Don't even try to press escape key.
@@ -117,7 +118,8 @@ When `UseStaticBackdrop` is set to `true`, the modal will not close when clickin
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Launch static backdrop modal</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Modal modal;
 
@@ -141,7 +143,7 @@ When modals become too long for the user’s viewport or device, they scroll ind
 
 <img src="https://i.imgur.com/7lrxeON.jpg" alt="Modal - Scrolling long content" />
 
-```cshtml {1}
+```cshtml {1} showLineNumbers
 <Modal @ref="modal" title="Modal title" IsScrollable="true">
     <BodyTemplate>
         <p style="margin-bottom: 100vh;">This is some placeholder content to show the scrolling behavior for modals. Instead of repeating the text the modal, we use an inline style set a minimum height, thereby extending the length of the overall modal and demonstrating the overflow scrolling. When content becomes longer than the height of the viewport, scrolling will move the modal as needed.</p>
@@ -155,7 +157,8 @@ When modals become too long for the user’s viewport or device, they scroll ind
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Launch demo modal</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Modal modal;
 
@@ -179,7 +182,7 @@ Add `IsVerticallyCentered="true"` to vertically center the modal.
 
 <img src="https://i.imgur.com/tLiaEs6.jpg" alt="Modal - Vertically centered" />
 
-```cshtml {1}
+```cshtml {1} showLineNumbers
 <Modal @ref="modal" title="Modal title" IsVerticallyCentered="true">
     <BodyTemplate>
         This is a vertically centered modal.
@@ -192,7 +195,8 @@ Add `IsVerticallyCentered="true"` to vertically center the modal.
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Vertically centered modal</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Modal modal;
 
@@ -214,7 +218,7 @@ Add `IsVerticallyCentered="true"` to vertically center the modal.
 
 <img src="https://i.imgur.com/n0m4Fhq.jpg" alt="Modal - Vertically centered and scrollable" />
 
-```cshtml {1}
+```cshtml {1} showLineNumbers
 <Modal @ref="modal" title="Modal title" IsVerticallyCentered="true" IsScrollable="true">
     <BodyTemplate>
         <p style="margin-bottom: 100vh;">This is some placeholder content to show the scrolling behavior for modals. Instead of repeating the text the modal, we use an inline style set a minimum height, thereby extending the length of the overall modal and demonstrating the overflow scrolling. When content becomes longer than the height of the viewport, scrolling will move the modal as needed.</p>
@@ -228,7 +232,8 @@ Add `IsVerticallyCentered="true"` to vertically center the modal.
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Vertically centered scrollable modal</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Modal modal;
 
@@ -252,7 +257,7 @@ Modals have three optional sizes. These sizes kick in at certain breakpoints to 
 
 <img src="https://i.imgur.com/5vKfJQC.jpg" alt="Modal - Optional sizes" />
 
-```cshtml {1,4,7}
+```cshtml {1,4,7} showLineNumbers
 <Modal @ref="xlModal" title="Extra large modal" Size="ModalSize.ExtraLarge">
     <BodyTemplate>...</BodyTemplate>
 </Modal>
@@ -267,7 +272,8 @@ Modals have three optional sizes. These sizes kick in at certain breakpoints to 
 <Button Color="ButtonColor.Primary" @onclick="() => lgModal?.ShowAsync()">Large modal</Button>
 <Button Color="ButtonColor.Primary" @onclick="() => smModal?.ShowAsync()">Small modal</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Modal xlModal;
     private Modal lgModal;
@@ -281,7 +287,7 @@ Modals have three optional sizes. These sizes kick in at certain breakpoints to 
 
 <img src="https://i.imgur.com/3dFUzMz.jpg" alt="Modal - Fullscreen Modal" />
 
-```cshtml {1,4,7,10,13,16}
+```cshtml {1,4,7,10,13,16} showLineNumbers
 <Modal @ref="modal" title="Full screen" Fullscreen="ModalFullscreen.Always">
     <BodyTemplate>...</BodyTemplate>
 </Modal>
@@ -308,7 +314,8 @@ Modals have three optional sizes. These sizes kick in at certain breakpoints to 
 <Button Color="ButtonColor.Primary" @onclick="() => xlModal?.ShowAsync()">Full screen below xl</Button>
 <Button Color="ButtonColor.Primary" @onclick="() => xxlModal?.ShowAsync()">Full screen below xxl</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Modal modal;
     private Modal smModal;
@@ -325,7 +332,7 @@ Modals have three optional sizes. These sizes kick in at certain breakpoints to 
 
 BlazorBootstrap's modal class exposes a few events for hooking into modal functionality.
 
-```cshtml {3-7}
+```cshtml {3-7} showLineNumbers
 <Modal @ref="modal"
        title="Modal title"
        OnShowing="OnModalShowingAsync"
@@ -347,7 +354,8 @@ BlazorBootstrap's modal class exposes a few events for hooking into modal functi
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Show Modal</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Modal modal;
 

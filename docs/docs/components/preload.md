@@ -35,11 +35,11 @@ Indicate the loading state of a page with BlazorBootstrap's preload component.
 
 You can customize the color with `Color` parameter. You can use any of the `SpinnerColor` values.
 
-```cshml
+```cshml showLineNumbers
 <Preload Color="SpinnerColor.Light"></Preload>
 ```
 
-```cs {6,13,22}
+```cs {6,13,22} showLineNumbers
 @code {
     [Inject] protected PreloadService PageLoadingService { get; set; }
 

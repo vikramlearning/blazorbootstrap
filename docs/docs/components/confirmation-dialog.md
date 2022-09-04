@@ -43,7 +43,7 @@ Use BlazorBootstrap's `Confirm Dialog` component if you want the user to verify 
 
 <img src="https://i.imgur.com/chdLk3D.jpg" alt="Blazor Bootstrap: Modal Component" />
 
-```cshtml
+```cshtml showLineNumbers
 <ConfirmDialog @ref="dialog"
                Title="Are you sure you want to save this?"
                Message1="This will save the details enterd in the form."
@@ -56,7 +56,7 @@ Use BlazorBootstrap's `Confirm Dialog` component if you want the user to verify 
 <Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" />
 ```
 
-```cs {2,8,11,20}
+```cs {2,8,11,20} showLineNumbers
 @code {
     private ConfirmDialog dialog;
 
