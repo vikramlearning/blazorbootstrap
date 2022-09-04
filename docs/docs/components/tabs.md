@@ -1,4 +1,8 @@
 ﻿---
+title: Blazor Tabs Component
+description: Documentation and examples for how to use BlazorBootstrap's Tabs components.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Tabs
 sidebar_position: 13
 ---

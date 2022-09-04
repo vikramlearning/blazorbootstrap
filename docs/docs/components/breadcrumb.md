@@ -1,4 +1,8 @@
 ﻿---
+title: Blazor Breadcrumb Component
+description: BlazorBootstrap's breadcrumb component indicates the current page's location within a navigational hierarchy that automatically adds separators.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Breadcrumb
 sidebar_position: 3
 ---

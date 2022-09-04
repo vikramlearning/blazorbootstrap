@@ -1,4 +1,8 @@
 ---
+title: Blazor AutoComplete Component
+description: Use BlazorBootstrap's autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: AutoComplete
 sidebar_position: 2
 ---
@@ -14,7 +18,7 @@ Use BlazorBootstrap's autocomplete component is a textbox that offers the users 
 | Disabled | bool | | | |
 | Placeholder | string | | | |
 | PropertyName | string | | | |
-| Size | string | `AutoCompleteSize` | | |
+| Size | `AutoCompleteSize` |  | | |
 | Value | string | | | |
 | ValueExpression | `Expression<Func<string?>>` | | | |
 

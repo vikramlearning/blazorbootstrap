@@ -1,4 +1,8 @@
 ﻿---
+title: Blazor Callout Component
+description: BlazorBootstrap's callout component provides content presentation in a visually distinct manner.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Callout
 sidebar_position: 5
 ---
@@ -6,7 +10,6 @@ sidebar_position: 5
 # Callout
 
 BlazorBootstrap's callout component provides content presentation in a visually distinct manner.
-
 
 ## Parameters
 

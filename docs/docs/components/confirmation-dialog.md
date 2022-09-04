@@ -1,4 +1,8 @@
 ﻿---
+title: Blazor Confirm Dialog Component
+description: Use BlazorBootstrap's `Confirm Dialog` component if you want the user to verify or accept something.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Confirm Dialog
 sidebar_position: 6
 ---

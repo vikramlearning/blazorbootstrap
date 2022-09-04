@@ -1,4 +1,8 @@
 ---
+title: Blazor Alert Component
+description: Provide contextual feedback messages for typical user actions with the handful of available and flexible BlazorBootstrap alert messages.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Alerts
 sidebar_position: 1
 ---

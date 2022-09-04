@@ -1,4 +1,8 @@
 ﻿---
+title: Blazor Placeholder Component
+description: Use BlazorBootstrap's loading placeholders for your components or pages to indicate something may still be loading. 
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Placeholders
 sidebar_position: 11
 ---
