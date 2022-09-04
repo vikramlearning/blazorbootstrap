@@ -2,18 +2,34 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>BlazorBootstrap Blog</title>
-    <updated>2022-08-31T00:00:00.000Z</updated>
+    <updated>2022-09-04T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>BlazorBootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/48X48.png</icon>
+    <entry>
+        <title type="html"><![CDATA[BlazorBootstrap v0.4.0]]></title>
+        <id>/2022/09/04/blazorbootstrap-0.4.0</id>
+        <link href="https://getblazorbootstrap.com/blog/2022/09/04/blazorbootstrap-0.4.0"/>
+        <updated>2022-09-04T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 0.4.0 with new autocomplete component.]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.4.0</code> with new autocomplete component.</p><img loading="lazy" src="https://i.imgur.com/D5ox9um.png" alt="Blazor Bootstrap AutoComplete Component - Server side data" class="img_ev3q"><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new-components">New Components<a class="hash-link" href="#new-components" title="Direct link to heading">​</a></h3><ul><li><code>AutoComplete</code> component</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="autocomplete-component-features">AutoComplete component features<a class="hash-link" href="#autocomplete-component-features" title="Direct link to heading">​</a></h3><ul><li>Client side data filtering</li><li>Server side data filtering</li><li>Validations</li></ul><img loading="lazy" src="https://i.imgur.com/sMQ7Uc6.png" alt="Blazor Bootstrap AutoComplete Component - Validations - Data empty" class="img_ev3q"><img loading="lazy" src="https://i.imgur.com/4IzNcdp.png" alt="Blazor Bootstrap AutoComplete Component - Validations - Item selected" class="img_ev3q"><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/autocomplete" target="_blank" rel="noopener noreferrer">Blazor AutoComplete Component Demos</a></li><li><a href="https://getblazorbootstrap.com/docs/components/autocomplete" target="_blank" rel="noopener noreferrer">Blazor AutoComplete Component Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v0.4.0" term="v0.4.0"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="autocomplete" term="autocomplete"/>
+        <category label="docs" term="docs"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.3.0]]></title>
         <id>/2022/08/31/blazorbootstrap-0.3.0</id>
         <link href="https://getblazorbootstrap.com/blog/2022/08/31/blazorbootstrap-0.3.0"/>
         <updated>2022-08-31T00:00:00.000Z</updated>
         <summary type="html"><![CDATA[We are excited to release 0.3.0 with significant enhancements to the grid component.]]></summary>
-        <content type="html"><![CDATA[<p>We are excited to release <code>0.3.0</code> with significant enhancements to the grid component.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li><code>Grid</code> component enhancements</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="grid-component-enhancements">Grid component enhancements<a class="hash-link" href="#grid-component-enhancements" title="Direct link to heading">​</a></h3><ul><li>Multiple columns filtering (client side and server side)</li><li>Set default filtering</li><li>Disable specific column filter</li><li>Increase filter textbox width</li><li>Set default sorting</li><li>Disable specific column sorting</li><li>Header text alignment</li><li>Cell alignment</li><li>Cell formatting</li><li>Cell nowrap</li><li>Pagination alignment</li><li>Empty data</li><li>Responsive grid with horizontal scrolling</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/grid" target="_blank" rel="noopener noreferrer">Grid Demos</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Grid Component Documentation</a></li></ul>]]></content>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.3.0</code> with significant enhancements to the grid component.</p><img loading="lazy" src="https://i.imgur.com/36RsWZ3.png" alt="Blazor Bootstrap: Grid Component" class="img_ev3q"><h3 class="anchor anchorWithStickyNavbar_LWe7" id="updates">Updates<a class="hash-link" href="#updates" title="Direct link to heading">​</a></h3><ul><li><code>Grid</code> component enhancements</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="grid-component-enhancements">Grid component enhancements<a class="hash-link" href="#grid-component-enhancements" title="Direct link to heading">​</a></h3><ul><li>Multiple columns filtering (client side and server side)</li><li>Set default filtering</li><li>Disable specific column filter</li><li>Increase filter textbox width</li><li>Set default sorting</li><li>Disable specific column sorting</li><li>Header text alignment</li><li>Cell alignment</li><li>Cell formatting</li><li>Cell nowrap</li><li>Pagination alignment</li><li>Empty data</li><li>Responsive grid with horizontal scrolling</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/grid" target="_blank" rel="noopener noreferrer">Grid Demos</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Grid Component Documentation</a></li></ul>]]></content>
         <author>
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
