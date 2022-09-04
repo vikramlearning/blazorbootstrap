@@ -1,6 +1,10 @@
 ﻿---
+title: Blazor Placeholder Component
+description: Use BlazorBootstrap's loading placeholders for your components or pages to indicate something may still be loading. 
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Placeholders
-sidebar_position: 10
+sidebar_position: 11
 ---
 
 # Placeholders
@@ -28,7 +32,7 @@ Use BlazorBootstrap's loading placeholders for your components or pages to indic
 
 <img src="https://i.imgur.com/Mw13qfX.png" alt="Placeholders - Example" />
 
-```cshtml
+```cshtml showLineNumbers
 <PlaceholderContainer Animation="PlaceholderAnimation.Glow">
     <Placeholder Width="PlaceholderWidth.Col7" />
     <Placeholder Width="PlaceholderWidth.Col9" />
@@ -45,7 +49,7 @@ You can change the width through `PlaceholderWidth`, width utilities, or inline 
 
 <img src="https://i.imgur.com/JcLisSd.png" alt="Placeholders - Width Example" />
 
-```cshtml
+```cshtml showLineNumbers
 <Placeholder Width="PlaceholderWidth.Col6" />
 <Placeholder Class="w-75" />
 <Placeholder Style="width: 25%;" />
@@ -59,7 +63,7 @@ By default, the placeholder uses currentColor. This can be overridden with the `
 
 <img src="https://i.imgur.com/g8m05MQ.png" alt="Placeholders - Color Example" />
 
-```cshtml
+```cshtml showLineNumbers
 <Placeholder Width="PlaceholderWidth.Col12" />
 <Placeholder Width="PlaceholderWidth.Col12" Color="PlaceholderColor.Primary" />
 <Placeholder Width="PlaceholderWidth.Col12" Color="PlaceholderColor.Secondary" />
@@ -79,7 +83,7 @@ The size of placeholders are based on the typographic style of the parent elemen
 
 <img src="https://i.imgur.com/udkkloE.png" alt="Placeholders - Sizing Example" />
 
-```cshtml
+```cshtml showLineNumbers
 <Placeholder Width="PlaceholderWidth.Col12" />
 <Placeholder Width="PlaceholderWidth.Col12" Size="PlaceholderSize.Large" />
 <Placeholder Width="PlaceholderWidth.Col12" Size="PlaceholderSize.Small" />
@@ -94,7 +98,7 @@ Animate placeholders with `PlaceholderAnimation.Glow` or `PlaceholderAnimation.W
 
 <img src="https://i.imgur.com/loMuJzD.png" alt="Placeholders - Animation Example" />
 
-```cshtml
+```cshtml showLineNumbers
 <PlaceholderContainer Animation="PlaceholderAnimation.Glow">
     <Placeholder Width="PlaceholderWidth.Col12" />
     <Placeholder Width="PlaceholderWidth.Col12" Size="PlaceholderSize.Large" />

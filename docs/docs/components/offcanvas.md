@@ -1,6 +1,10 @@
 ﻿---
+title: Blazor Offcanvas Component
+description: Build hidden sidebars into your project for navigation, shopping carts, and more with BlazorBootstrap's offcanvas component.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Offcanvas
-sidebar_position: 8
+sidebar_position: 9
 ---
 
 # Offcanvas
@@ -64,14 +68,15 @@ Below is an offcanvas example that is shown by default.
 
 <img src="https://i.imgur.com/1vNz5Ci.jpg" alt="Offcanvas - Example" />
 
-```cshtml
+```cshtml showLineNumbers
 <Button Color="ButtonColor.Primary" @onclick="(async () => { await ShowOffcanvasAsync(); })">Show Offcanvas</Button>
 
 <Offcanvas @ref="offcanvas">
   ... design your header and body
 </Offcanvas>
 ```
-```cs {2,6,11}
+
+```cs {2,6,11} showLineNumbers
 @code {
     private Offcanvas offcanvas;
 
@@ -101,14 +106,15 @@ Try the top, bottom, and left examples out below.
 
 <img src="https://i.imgur.com/dJpJYpX.jpg" alt="Offcanvas - Top Placement" />
 
-```cshtml
+```cshtml showLineNumbers
 <Offcanvas @ref="offcanvas" Title="Offcanvas top" Placement="Placement.Top">
     <BodyTemplate>...</BodyTemplate>
 </Offcanvas>
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowOffcanvasClick">Show top offcanvas</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Offcanvas offcanvas;
 
@@ -127,7 +133,7 @@ By default backdrop is enabled, you can disable it using the `UseBackground="fal
 
 <img src="https://i.imgur.com/ev2Q8ON.jpg" alt="Offcanvas - Backdrop" />
 
-```cshtml
+```cshtml showLineNumbers
 <Offcanvas @ref="offcanvas" Title="Offcanvas title" UseBackdrop="false">
     <BodyTemplate>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt blandit mauris. Aliquam sit amet lorem laoreet, laoreet elit ut, placerat tellus. In mollis ultricies elit, volutpat maximus ipsum sodales interdum. Suspendisse eget tellus mollis, rutrum mauris ac, vulputate enim. Cras porta neque vitae lacinia elementum. Nunc sit amet pulvinar nibh. Curabitur interdum eget odio in tempor. Nulla dictum orci quis ligula auctor fermentum. Pellentesque finibus tellus ac massa convallis malesuada. Nam id pharetra velit, sed eleifend mi. Sed sed justo lorem. Quisque et nulla ut dolor feugiat vestibulum. Nunc at porttitor orci, at dignissim metus. Donec vitae metus vitae felis semper placerat.</p>
@@ -143,7 +149,8 @@ By default backdrop is enabled, you can disable it using the `UseBackground="fal
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowOffcanvasClick">Show offcanvas</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Offcanvas offcanvas;
 
@@ -164,7 +171,7 @@ Set the size of the `Offcanvas` with the Size parameter. The default value is `O
 
 <img src="https://i.imgur.com/DJ09ngz.jpg" alt="Offcanvas - Small Size" />
 
-```cshtml
+```cshtml showLineNumbers
 <Offcanvas @ref="offcanvas" Title="Offcanvas title" Size="OffcanvasSize.Small">
     <BodyTemplate>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt blandit mauris. Aliquam sit amet lorem laoreet, laoreet elit ut, placerat tellus. In mollis ultricies elit, volutpat maximus ipsum sodales interdum. Suspendisse eget tellus mollis, rutrum mauris ac, vulputate enim. Cras porta neque vitae lacinia elementum. Nunc sit amet pulvinar nibh. Curabitur interdum eget odio in tempor. Nulla dictum orci quis ligula auctor fermentum. Pellentesque finibus tellus ac massa convallis malesuada. Nam id pharetra velit, sed eleifend mi. Sed sed justo lorem. Quisque et nulla ut dolor feugiat vestibulum. Nunc at porttitor orci, at dignissim metus. Donec vitae metus vitae felis semper placerat.</p>
@@ -180,7 +187,8 @@ Set the size of the `Offcanvas` with the Size parameter. The default value is `O
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowOffcanvasClick">Show small offcanvas</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Offcanvas offcanvas;
 
@@ -197,7 +205,7 @@ Set the size of the `Offcanvas` with the Size parameter. The default value is `O
 
 <img src="https://i.imgur.com/MG0NFrU.jpg" alt="Large Offcanvas" />
 
-```cshtml
+```cshtml showLineNumbers
 <Offcanvas @ref="offcanvas" Title="Offcanvas title" Size="OffcanvasSize.Large">
     <BodyTemplate>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt blandit mauris. Aliquam sit amet lorem laoreet, laoreet elit ut, placerat tellus. In mollis ultricies elit, volutpat maximus ipsum sodales interdum. Suspendisse eget tellus mollis, rutrum mauris ac, vulputate enim. Cras porta neque vitae lacinia elementum. Nunc sit amet pulvinar nibh. Curabitur interdum eget odio in tempor. Nulla dictum orci quis ligula auctor fermentum. Pellentesque finibus tellus ac massa convallis malesuada. Nam id pharetra velit, sed eleifend mi. Sed sed justo lorem. Quisque et nulla ut dolor feugiat vestibulum. Nunc at porttitor orci, at dignissim metus. Donec vitae metus vitae felis semper placerat.</p>
@@ -213,7 +221,8 @@ Set the size of the `Offcanvas` with the Size parameter. The default value is `O
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowOffcanvasClick">Show large offcanvas</Button>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private Offcanvas offcanvas;
 
@@ -228,7 +237,7 @@ Set the size of the `Offcanvas` with the Size parameter. The default value is `O
 
 BlazorBootstrap's offcanvas component exposes a few events for hooking into offcanvas functionality.
 
-```cshtml
+```cshtml showLineNumbers
 <Offcanvas @ref="offcanvas" 
            title="Offcanvas title"
            OnShowing="OnOffcanvasShowingAsync"
@@ -248,7 +257,9 @@ BlazorBootstrap's offcanvas component exposes a few events for hooking into offc
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowOffcanvasClick">Show offcanvas</Button>
 ```
-```cs@code {
+
+```cs showLineNumbers
+@code {
     private Offcanvas offcanvas;
 
     private async Task OnShowOffcanvasClick()

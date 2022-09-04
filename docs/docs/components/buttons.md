@@ -1,6 +1,10 @@
 ﻿---
+title: Blazor Button Component
+description: Use BlazorBootstrap's button styles for actions in forms, dialogs, and more with support for multiple sizes, states, etc.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Buttons
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Buttons
@@ -43,7 +47,7 @@ BlazorBootstrap includes several predefined button styles, each serving its own 
 
 <img src="https://i.imgur.com/Ne7FJ5H.jpg" alt="Blazor Bootstrap: Button Component" />
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Color="ButtonColor.Primary"> Primary </Button>
     <Button Color="ButtonColor.Secondary"> Secondary </Button>
@@ -62,7 +66,7 @@ BlazorBootstrap includes several predefined button styles, each serving its own 
 
 <img src="https://i.imgur.com/ZscbcWh.jpg" alt="Blazor Bootstrap: Button Component - Button tags" />
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Type="ButtonType.Link" Color="ButtonColor.Primary" To="#"> Link </Button>
     <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" To="#"> Button </Button>
@@ -74,7 +78,7 @@ BlazorBootstrap includes several predefined button styles, each serving its own 
 
 <img src="https://i.imgur.com/ta0Mgtk.jpg" alt="Blazor Bootstrap: Button Component - Outline Buttons" />
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Color="ButtonColor.Primary" Outline="true"> Primary </Button>
     <Button Color="ButtonColor.Secondary" Outline="true"> Secondary </Button>
@@ -97,7 +101,7 @@ Fancy larger or smaller buttons? Add `Size="Size.Large"` or `Size="Size.Small"` 
 
 <img src="https://i.imgur.com/Vdiyg6q.jpg" alt="Blazor Bootstrap: Button Component - Sizes" />
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Color="ButtonColor.Primary" Size="Size.Large"> Large button </Button>
     <Button Color="ButtonColor.Secondary" Size="Size.Large"> Large button </Button>
@@ -115,7 +119,7 @@ Make buttons look inactive by adding the `Disabled="true"` boolean parameter to 
 
 <img src="https://i.imgur.com/A0MlIha.jpg" alt="Blazor Bootstrap: Button Component - Disable State" />
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Color="ButtonColor.Primary" Size="Size.Large" Disabled="true"> Large button </Button>
     <Button Color="ButtonColor.Secondary" Size="Size.Large" Disabled="true"> Large button </Button>
@@ -137,7 +141,7 @@ Create responsive stacks of full-width, "block buttons" like those in Bootstrap 
 
 <img src="https://i.imgur.com/jB7joKv.jpg" alt="Blazor Bootstrap: Button Component - Block Buttons" />
 
-```cshtml
+```cshtml showLineNumbers
 <div class="d-grid gap-2">
     <Button Color="ButtonColor.Primary"> Button </Button>
     <Button Color="ButtonColor.Primary"> Button </Button>
@@ -146,7 +150,7 @@ Create responsive stacks of full-width, "block buttons" like those in Bootstrap 
 
 <img src="https://i.imgur.com/iSsEMgi.jpg" alt="Blazor Bootstrap: Button Component - Block Buttons" />
 
-```cshtml
+```cshtml showLineNumbers
 <div class="d-grid gap-2 d-md-block mt-2">
     <Button Color="ButtonColor.Primary"> Button </Button>
     <Button Color="ButtonColor.Primary"> Button </Button>
@@ -155,7 +159,7 @@ Create responsive stacks of full-width, "block buttons" like those in Bootstrap 
 
 <img src="https://i.imgur.com/20LuzVC.jpg" alt="Blazor Bootstrap: Button Component - Block Buttons" />
 
-```cshtml
+```cshtml showLineNumbers
 <div class="d-grid gap-2 col-6 mx-auto mt-2">
     <Button Color="ButtonColor.Primary"> Button </Button>
     <Button Color="ButtonColor.Primary"> Button </Button>
@@ -164,7 +168,7 @@ Create responsive stacks of full-width, "block buttons" like those in Bootstrap 
 
 <img src="https://i.imgur.com/bJXgFkF.jpg" alt="Blazor Bootstrap: Button Component - Block Buttons" />
 
-```cshtml
+```cshtml showLineNumbers
 <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
     <Button Color="ButtonColor.Primary"> Button </Button>
     <Button Color="ButtonColor.Primary"> Button </Button>
@@ -178,7 +182,7 @@ If you''re pre-toggling a button, you must manually add the `Active="true"` para
 
 <img src="https://i.imgur.com/JH9SZxQ.jpg" alt="Blazor Bootstrap: Button Component - Button Toogle States" />
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Color="ButtonColor.Primary"> Toggle button </Button>
     <Button Color="ButtonColor.Primary" Active="true"> Active toggle button </Button>
@@ -193,7 +197,7 @@ Use spinners within buttons to indicate an action is currently processing or tak
 
 <img src="https://i.imgur.com/ENKhcXR.jpg" alt="Blazor Bootstrap: Button Component - Button with Loading Spinner" />
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Color="ButtonColor.Primary" Loading="true" />
     <Button Color="ButtonColor.Primary" Loading="true" LoadingText="Saving..." />
@@ -213,11 +217,11 @@ Use `ShowLoading()` and `HideLoading()` methods to toggle the button state.
 
 <img src="https://i.imgur.com/WDjEylB.png" alt="Blazor Bootstrap: Button Component - Show/Hide loading spinner" />
 
-```cshtml
+```cshtml showLineNumbers
 <Button @ref="saveButton" Color="ButtonColor.Primary" @onclick="async () => await OnSaveClick()">Save</Button>
 ```
 
-```csharp {2,6,10}
+```csharp {2,6,10} showLineNumbers
 @code {
     private Button saveButton;
 
@@ -239,7 +243,7 @@ Hover over the buttons below to see the four tooltips directions: top, right, bo
 
 <img src="https://i.imgur.com/zp3G6pZ.jpg" alt="Blazor Bootstrap: Button Component - Buttons with Tooltip" />
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Color="ButtonColor.Primary" TooltipTitle="Tooltip text" TooltipPlacement="TooltipPlacement.Top"> Tooltip Top </Button>
 
@@ -262,13 +266,13 @@ HTML tooltips not supported at this moment.
 
 #### Click events
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Color="ButtonColor.Primary" @onclick="OnClick"> Click Event </Button>
 </p>
 ```
 
-```cs
+```cs showLineNumbers
 @code{
 
     protected void OnClick(EventArgs args)
@@ -281,13 +285,13 @@ HTML tooltips not supported at this moment.
 
 #### Double click event
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Color="ButtonColor.Primary" @ondblclick="OnDoubleClick"> Double Click Event </Button>
 </p>
 ```
 
-```cs
+```cs showLineNumbers
 @code{
 
     protected void OnDoubleClick(EventArgs args)
@@ -300,13 +304,13 @@ HTML tooltips not supported at this moment.
 
 #### Click event with arguments
 
-```cshtml
+```cshtml showLineNumbers
 <p>
     <Button Color="ButtonColor.Primary" @onclick="((args) => OnClickWithArgs(args, message))"> Click   Args </Button>
 </p>
 ```
 
-```cs
+```cs showLineNumbers
 @code{
 
     public string message = "Test message";

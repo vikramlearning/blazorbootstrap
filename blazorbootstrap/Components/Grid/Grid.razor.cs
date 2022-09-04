@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Grid<TItem> : BaseComponent
 {
@@ -21,11 +19,6 @@ public partial class Grid<TItem> : BaseComponent
     #endregion Members
 
     #region Methods
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -128,6 +121,10 @@ public partial class Grid<TItem> : BaseComponent
         return 1;
     }
 
+    /// <summary>
+    /// Refresh the grid data.
+    /// </summary>
+    /// <returns>Task</returns>
     public async Task RefreshDataAsync()
     {
         if (requestInProgress)
@@ -201,9 +198,10 @@ public partial class Grid<TItem> : BaseComponent
     public RenderFragment EmptyDataTemplate { get; set; } // TODO: support this in the next release
 
     /// <summary>
-    /// DataProvider is for items to render. The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
+    /// DataProvider is for items to render. 
+    /// The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
     /// </summary>
-    [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
+    [Parameter, EditorRequired] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
 
     /// <summary>
     /// Gets or sets the pagination alignment.

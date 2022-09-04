@@ -1,6 +1,10 @@
 ---
+title: Blazor Pagination Component
+description: Use BlazorBootstrap's pagination component to indicate a series of related content exists across multiple pages.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Pagination
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 # Pagination
@@ -40,7 +44,7 @@ We use a large block of connected links for our pagination, making links hard to
 
 <img src="https://i.imgur.com/6wDZ4zP.jpg" alt="Pagination - Examples" />
 
-```cshtml
+```cshtml showLineNumbers
 <Pagination TotalPages="8" />
 <Pagination TotalPages="10" />
 <Pagination TotalPages="13" />
@@ -54,7 +58,7 @@ We use a large block of connected links for our pagination, making links hard to
 
 <img src="https://i.imgur.com/nhfGHfy.jpg" alt="Pagination - Working with icons" />
 
-```cshtml
+```cshtml showLineNumbers
 <Pagination ActivePageNumber="1"
             TotalPages="15"
             DisplayPages="5"
@@ -70,7 +74,7 @@ We use a large block of connected links for our pagination, making links hard to
 
 <img src="https://i.imgur.com/SCbZVd4.jpg" alt="Pagination - Disabled and active states" />
 
-```cshtml
+```cshtml showLineNumbers
 <Pagination ActivePageNumber="1" TotalPages="10" />
 <Pagination ActivePageNumber="3" TotalPages="10" />
 <Pagination ActivePageNumber="5" TotalPages="10" />
@@ -84,7 +88,7 @@ Fancy larger or smaller pagination? Add `Size="PaginationSize.Small"` or `Size="
 
 <img src="https://i.imgur.com/2kMVncQ.jpg" alt="Pagination - Sizing" />
 
-```cshtml
+```cshtml showLineNumbers
 <Pagination ActivePageNumber="5" TotalPages="5" Size="PaginationSize.Small" />
 <Pagination ActivePageNumber="5" TotalPages="5" />
 <Pagination ActivePageNumber="5" TotalPages="5" Size="PaginationSize.Large" />
@@ -96,7 +100,7 @@ Fancy larger or smaller pagination? Add `Size="PaginationSize.Small"` or `Size="
 
 <img src="https://i.imgur.com/RkpUdJu.jpg" alt="Pagination - Alignment" />
 
-```cshtml
+```cshtml showLineNumbers
 <Pagination ActivePageNumber="2" TotalPages="5" />
 <Pagination ActivePageNumber="2" TotalPages="5" Alignment="Alignment.Center" />
 <Pagination ActivePageNumber="2" TotalPages="5" Alignment="Alignment.End" />
@@ -108,14 +112,15 @@ Fancy larger or smaller pagination? Add `Size="PaginationSize.Small"` or `Size="
 
 <img src="https://i.imgur.com/VsB3ZYW.jpg" alt="Pagination - Callback Events" />
 
-```cshtml
+```cshtml showLineNumbers
 <Pagination ActivePageNumber="@currentPageNumber"
             TotalPages="10"
             PageChanged="OnPageChangedAsync" />
 
 <text>Current Page Number: @currentPageNumber</text>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     int currentPageNumber = 2;
 

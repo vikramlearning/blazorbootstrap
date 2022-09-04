@@ -1,6 +1,10 @@
 ﻿---
+title: Blazor Tooltip Component
+description: Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Tooltips
-sidebar_position: 14
+sidebar_position: 15
 ---
 
 # Tooltips
@@ -35,7 +39,7 @@ Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages
     <img src="https://i.imgur.com/T2YMw9p.jpg" alt="Blazor Bootstrap: Tooltip Component" />
 </div>
 
-```cshtml
+```cshtml showLineNumbers
 <div>
     <Tooltip Title="Tooltip Left" Placement="TooltipPlacement.Left">Tooltip Left</Tooltip>
 </div>
@@ -56,7 +60,7 @@ Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages
 
 <img src="https://i.imgur.com/PGlmZS3.jpg" alt="Blazor Bootstrap: Tooltip Component" />
 
-```cshtml
+```cshtml showLineNumbers
 <Tooltip Class="d-inline-block" Title="Disabled button"role="button">
     <button class="btn btn-primary" type="button" disabled>Disabled button</button>
 </Tooltip>
@@ -68,13 +72,13 @@ Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages
 
 <img src="https://i.imgur.com/D3FrZba.jpg" alt="Blazor Bootstrap: Tooltip Component" />
 
-```cshtml
+```cshtml showLineNumbers
 <Tooltip Title="Click here" @onclick="OnClick" role="button">
     <i class="bi bi-arrow-repeat text-danger"></i>
 </Tooltip>
 ```
 
-```cs
+```cs showLineNumbers
 @code {
     private void OnClick()
     {

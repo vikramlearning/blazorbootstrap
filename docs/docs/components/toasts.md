@@ -1,11 +1,15 @@
 ﻿---
+title: Blazor Toasts Component
+description: Push notifications to your visitors with a toast, a lightweight and easily customizable BlazorBootstrap toast message.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Toasts
-sidebar_position: 13
+sidebar_position: 14
 ---
 
 # Toasts
 
-Push notifications to your visitors with a toast, a lightweight and easily customizable BlazorBootstrap alert message.
+Push notifications to your visitors with a toast, a lightweight and easily customizable BlazorBootstrap toast message.
 
 Toasts are lightweight notifications designed to mimic the push notifications that have been popularized by mobile and desktop operating systems. They’re built with flexbox, so they’re easy to align and position.
 
@@ -13,7 +17,7 @@ Toasts are lightweight notifications designed to mimic the push notifications th
 
 - Toasts will automatically hide if you do not specify `AutoHide = false`.
 
-## Parameters
+## Toasts Parameters
 
 | Name | Type | Descritpion | Required | Default |
 |--|--|--|--|--|
@@ -23,7 +27,7 @@ Toasts are lightweight notifications designed to mimic the push notifications th
 | Placement | `ToastsPlacement` | Specifies the toasts placement. | | `ToastsPlacement.TopRight` |
 | StackLength | int | Specifies the toast container maximum capacity. | | 5 |
 
-### ToastMessage Properties
+## ToastMessage Properties
 
 | Name | Type | Description | Required | Default |
 |--|--|--|--|--|
@@ -46,7 +50,7 @@ Toasts are as flexible as you need and have very little required markup. At a mi
 
 <img src="https://i.imgur.com/8tcFedx.jpg" alt="BlazorBootstrap: Toasts Component Example" />
 
-```cshtml
+```cshtml showLineNumbers
 <Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="false">
 </Toasts>
 
@@ -55,7 +59,7 @@ Toasts are as flexible as you need and have very little required markup. At a mi
 </div>
 ```
 
-```cs {5-12}
+```cs {5-12} showLineNumbers
 List<ToastMessage> messages = new List<ToastMessage>();
 
 private void ShowToast()
@@ -87,7 +91,7 @@ Here we’ve created a simpler toast. You can create different toast color schem
 <img src="https://i.imgur.com/SUB90wN.jpg" alt="BlazorBootstrap: Toasts Component Example" />
 </div>
 
-```cshtml
+```cshtml showLineNumbers
 <Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="false">
 </Toasts>
 
@@ -96,7 +100,7 @@ Here we’ve created a simpler toast. You can create different toast color schem
 </div>
 ```
 
-```cs {5-10}
+```cs {5-10} showLineNumbers
 List<ToastMessage> messages = new List<ToastMessage>();
 
 private void ShowSimpleToast()

@@ -1,12 +1,15 @@
 ﻿---
+title: Blazor Callout Component
+description: BlazorBootstrap's callout component provides content presentation in a visually distinct manner.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Callout
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Callout
 
 BlazorBootstrap's callout component provides content presentation in a visually distinct manner.
-
 
 ## Parameters
 
@@ -21,7 +24,7 @@ BlazorBootstrap's callout component provides content presentation in a visually 
 
 <img src="https://i.imgur.com/MT3utK8.jpg" alt="Blazor Bootstrap: Callout Component - Default" />
 
-```cshtml
+```cshtml showLineNumbers
 <Callout>
     <h4>Conveying meaning to assistive technologies</h4>
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
@@ -33,7 +36,7 @@ BlazorBootstrap's callout component provides content presentation in a visually 
 
 <img src="https://i.imgur.com/0EAmQcp.jpg" alt="Blazor Bootstrap: Callout Component - Danger" />
 
-```cshtml
+```cshtml showLineNumbers
 <Callout Color="CalloutColor.Danger">
     <h4>Conveying meaning to assistive technologies</h4>
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
@@ -45,7 +48,7 @@ BlazorBootstrap's callout component provides content presentation in a visually 
 
 <img src="https://i.imgur.com/e9wy7fg.jpg" alt="Blazor Bootstrap: Callout Component - Warning" />
 
-```cshtml
+```cshtml showLineNumbers
 <Callout Color="CalloutColor.Warning">
     <h4>Conveying meaning to assistive technologies</h4>
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
@@ -57,7 +60,7 @@ BlazorBootstrap's callout component provides content presentation in a visually 
 
 <img src="https://i.imgur.com/b4hecTm.jpg" alt="Blazor Bootstrap: Callout Component - Info" />
 
-```cshtml
+```cshtml showLineNumbers
 <Callout Color="CalloutColor.Info">
     <h4>Conveying meaning to assistive technologies</h4>
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>

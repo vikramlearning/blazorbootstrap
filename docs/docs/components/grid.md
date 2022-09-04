@@ -1,6 +1,10 @@
 ﻿---
+title: Blazor Grid Component
+description: Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Grid
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 # Grid
@@ -18,7 +22,7 @@ Use BlazorBootstrap's grid component to display tabular data from the data sourc
 | AllowSorting | bool | Gets or sets the grid sorting. | | false |
 | ChildContent | RenderFragment | Specifies the content to be rendered inside the grid. | ✔️ | |
 | EmptyText | string | Shows text on no records. | | No records to display |
-| DataProvider | `GridDataProviderDelegate<TItem>` | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | | |
+| DataProvider | `GridDataProviderDelegate<TItem>` | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | ✔️ | |
 | PageSize | int | Gets or sets the page size of the grid. | | 10 |
 | PaginationAlignment | `Alignment` | Gets or sets the pagination alignment. | | `Alignment.Start` |
 | Responsive | bool | Gets or sets a value indicating whether Grid is responsive. | | false |
@@ -53,7 +57,7 @@ Add `AllowFiltering="true"` parameter to Grid and `PropertyName` parameter to al
 
 <img src="https://i.imgur.com/Clr8W11.png" alt="Blazor Bootstrap: Grid Component - Client side filtering" />
 
-```cshtml {1,2,5,8,11,14}
+```cshtml {1,2,5,8,11,14} showLineNumbers
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
     <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
         @context.Id
@@ -72,7 +76,8 @@ Add `AllowFiltering="true"` parameter to Grid and `PropertyName` parameter to al
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -112,7 +117,7 @@ Add `AllowPaging="true"` and `PageSize="20"` parameters to the Grid. `PageSize` 
 The default page size is 10.
 :::
 
-```cshtml {1}
+```cshtml {1} showLineNumbers
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowPaging="true" PageSize="5" Responsive="true">
     <GridColumn TItem="Employee1" HeaderText="Id">
         @context.Id
@@ -131,7 +136,8 @@ The default page size is 10.
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -170,7 +176,7 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
 
 <img src="https://i.imgur.com/wkIWG5S.png" alt="Blazor Bootstrap: Grid Component - Client side sorting" />
 
-```cshtml {1,2,5,8,11,14}
+```cshtml {1,2,5,8,11,14} showLineNumbers
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowSorting="true" Responsive="true">
     <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
         @context.Id
@@ -189,7 +195,8 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -222,7 +229,7 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
 
 <img src="https://i.imgur.com/wZ0cQiO.png" alt="Blazor Bootstrap: Grid Component - Client side filtering, paging, and sorting" />
 
-```cshtml {1,2,5,8,11,14}
+```cshtml {1,2,5,8,11,14} showLineNumbers
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
     <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
         @context.Id
@@ -241,7 +248,8 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -283,7 +291,7 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
 You can set the default filter on more than one GridColumn.
 :::
 
-```cshtml {2}
+```cshtml {2} showLineNumbers
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
     <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" FilterOperator="FilterOperator.GreaterThanOrEquals" FilterValue="105">
         @context.Id
@@ -302,7 +310,8 @@ You can set the default filter on more than one GridColumn.
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -341,7 +350,7 @@ Add `Filterable="false"` parameter to GridColumn.
 :::info INFO
 By default, `Filterable="true"` on all the columns if the `AllowFiltering` parameter is set to `true` on the grid.
 :::
-```cshtml {14}
+```cshtml {14} showLineNumbers
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
     <GridColumn TItem="Employee1" HeaderText="Id" Filterable="false">
         @context.Id
@@ -360,7 +369,8 @@ By default, `Filterable="true"` on all the columns if the `AllowFiltering` param
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -399,7 +409,7 @@ Add `FilterTextboxWidth` parameter to the GridColumn to increase or decrease the
 Filter textbox width measured in pixels.
 :::
 
-```cshtml {2,5,8}
+```cshtml {2,5,8} showLineNumbers
 <Grid TItem="Employee3" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
     <GridColumn TItem="Employee3" HeaderText="Id" PropertyName="Id" FilterTextboxWidth="80">
         @context.Id
@@ -430,7 +440,8 @@ Filter textbox width measured in pixels.
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee3> employees;
 
@@ -467,7 +478,7 @@ Filter textbox width measured in pixels.
 For server-side sorting, we need the `SortString` parameter on GridColumn along with the `SortKeySelector` parameter.
 :::
 
-```cshtml
+```cshtml showLineNumbers
 <Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
     <GridColumn TItem="Employee" HeaderText="Id" PropertyName="Id" SortString="Id" SortKeySelector="item => item.Id">
         @context.Id
@@ -492,7 +503,8 @@ For server-side sorting, we need the `SortString` parameter on GridColumn along 
     </GridColumn>
 </Grid>
 ```
-```cs {11}
+
+```cs {11} showLineNumbers
 @code {
     [Inject] public IEmployeeService _employeeService { get; set; }
 
@@ -526,7 +538,7 @@ The default sort direction will be **ascending**. To change the default sorting 
 If more than one GridColumn has the `IsDefaultSortColumn` paramter, it will pick the first column as the default sorting column.
 :::
 
-```cshtml {5}
+```cshtml {5} showLineNumbers
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowSorting="true">
     <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="@(item => item.Id)">
         @context.Id
@@ -545,7 +557,8 @@ If more than one GridColumn has the `IsDefaultSortColumn` paramter, it will pick
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -582,7 +595,7 @@ Add `Sortable="false"` parameter the GridColumn to disable the sorting.
 If sorting is disabled, then the `SortKeySelector` parameter is not required.
 :::
 
-```cshtml {8}
+```cshtml {8} showLineNumbers
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowSorting="true">
     <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="@(item => item.Id)">
         @context.Id
@@ -601,7 +614,8 @@ If sorting is disabled, then the `SortKeySelector` parameter is not required.
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -637,7 +651,7 @@ By default, `HeaderTextAlignment` is set to Alignment.Start. Other options you c
 
 <img src="https://i.imgur.com/gWgIESD.png" alt="Blazor Bootstrap: Grid Component - Header text alignment" />
 
-```cshtml {8,11,14}
+```cshtml {8,11,14} showLineNumbers
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider">
     <GridColumn TItem="Employee1" HeaderText="Id" HeaderTextAlignment="Alignment.Center">
         @context.Id
@@ -656,7 +670,8 @@ By default, `HeaderTextAlignment` is set to Alignment.Start. Other options you c
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -692,7 +707,7 @@ By default, `TextAlignment` is set to `Alignment.Start`. Other options you can u
 
 <img src="https://i.imgur.com/0OKp4yd.png" alt="Blazor Bootstrap: Grid Component - Cell alignment" />
 
-```cshtml {11,14}
+```cshtml {11,14} showLineNumbers
 <Grid TItem="Employee2" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider">
     <GridColumn TItem="Employee2" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
         @context.Id
@@ -711,7 +726,8 @@ By default, `TextAlignment` is set to `Alignment.Start`. Other options you can u
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee2> employees;
 
@@ -749,7 +765,7 @@ To format the cell data, use `ToString` method and format strings. Refer: [How t
 @context.Salary.ToString("N2")
 :::
 
-```cshtml {12}
+```cshtml {12} showLineNumbers
 <Grid TItem="Employee2" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider">
     <GridColumn TItem="Employee2" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
         @context.Id
@@ -768,7 +784,8 @@ To format the cell data, use `ToString` method and format strings. Refer: [How t
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee2> employees;
 
@@ -807,7 +824,7 @@ To prevent text from wrapping, add `TextNoWrap="true"` parameter to the GridColu
 Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.
 :::
 
-```cshtml {14,17}
+```cshtml {14,17} showLineNumbers
 <Grid TItem="Employee3" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" Responsive="true">
     <GridColumn TItem="Employee3" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
         @context.Id
@@ -838,7 +855,8 @@ Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee3> employees;
 
@@ -874,7 +892,7 @@ By default, `PaginationAlignment` is set to `Alignment.Start`. Other options you
 
 <img src="https://i.imgur.com/CtSqfJb.png" alt="Blazor Bootstrap: Grid Component - Pagination alignment" />
 
-```cshtml {1}
+```cshtml {1} showLineNumbers
 <Grid TItem="Employee1" class="table table-hover table-bordered table-striped table-striped" DataProvider="EmployeesDataProvider" AllowPaging="true" PageSize="5" PaginationAlignment="Alignment.End" Responsive="true">
     <GridColumn TItem="Employee1" HeaderText="Id">
         @context.Id
@@ -893,7 +911,8 @@ By default, `PaginationAlignment` is set to `Alignment.Start`. Other options you
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -932,7 +951,7 @@ You can change this message by adding the `EmptyText` parameter to the Grid.
 
 <img src="https://i.imgur.com/cLuvfmD.png" alt="Blazor Bootstrap: Grid Component - Empty data" />
 
-```cshtml {1}
+```cshtml {1} showLineNumbers
 <Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" EmptyText="No records to display">
     <GridColumn TItem="Employee" HeaderText="Id">
         @context.Id
@@ -948,7 +967,8 @@ You can change this message by adding the `EmptyText` parameter to the Grid.
     </GridColumn>
 </Grid>
 ```
-```cs
+
+```cs showLineNumbers
 @code {
     private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
     {

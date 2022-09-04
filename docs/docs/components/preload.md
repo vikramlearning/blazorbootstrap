@@ -1,6 +1,10 @@
 ---
+title: Blazor Preload Component
+description: Indicate the loading state of a page with BlazorBootstrap's preload component.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Preload
-sidebar_position: 11
+sidebar_position: 12
 ---
 
 # Preload
@@ -35,11 +39,11 @@ Indicate the loading state of a page with BlazorBootstrap's preload component.
 
 You can customize the color with `Color` parameter. You can use any of the `SpinnerColor` values.
 
-```cshml
+```cshml showLineNumbers
 <Preload Color="SpinnerColor.Light"></Preload>
 ```
 
-```cs {6,13,22}
+```cs {6,13,22} showLineNumbers
 @code {
     [Inject] protected PreloadService PageLoadingService { get; set; }
 

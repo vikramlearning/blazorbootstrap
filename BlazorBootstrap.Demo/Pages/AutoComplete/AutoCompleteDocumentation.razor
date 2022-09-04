@@ -1,0 +1,28 @@
+﻿@using BlazorBootstrap
+
+@page "/autocomplete"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1 class="my-4">AutoComplete</h1>
+<div class="mb-3">
+    BlazorBootstrap's autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Client side data" PageUrl="@pageUrl" HashTagName="client-side-data" />
+<Demo Type="typeof(AutoComplete_Demo_01_Client_Side_Filtering)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Server side data" PageUrl="@pageUrl" HashTagName="server-side-data" />
+<Demo Type="typeof(AutoComplete_Demo_02_Server_Side_Filtering)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Validations" PageUrl="@pageUrl" HashTagName="validations" />
+<Demo Type="typeof(AutoComplete_Demo_03_Validations)" />
+
+@code {
+    private string pageUrl = "/autocomplete";
+    private string title = "Blazor AutoComplete Component | BlazorBootstrap";
+    private string description = "BlazorBootstrap's autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.";
+    private string imageUrl = "https://i.imgur.com/36RsWZ3.png";
+}

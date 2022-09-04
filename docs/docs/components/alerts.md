@@ -1,4 +1,8 @@
 ---
+title: Blazor Alert Component
+description: Provide contextual feedback messages for typical user actions with the handful of available and flexible BlazorBootstrap alert messages.
+image: https://getblazorbootstrap.com/img/logo.svg
+
 sidebar_label: Alerts
 sidebar_position: 1
 ---
@@ -36,7 +40,7 @@ Alerts are available for any length of text, as well as an optional close button
 
 <img src="https://i.imgur.com/FGgEMp6.jpg" alt="Blazor Bootstrap: Alert Component" />
 
-```cshtml
+```cshtml showLineNumbers
 <div>
     <Alert Color="AlertColor.Primary"> A simple primary alert - check it out! </Alert>
     <Alert Color="AlertColor.Secondary"> A simple secondary alert - check it out! </Alert>
@@ -56,7 +60,7 @@ Alerts can also contain additional HTML elements like headings, paragraphs and d
 
 <img src="https://i.imgur.com/OaQ7Ydj.jpg" alt="Blazor Bootstrap: Alert Component - Alerts with additional content" />
 
-```cshtml
+```cshtml showLineNumbers
 <div>
     <Alert Color="AlertColor.Success">
         <h4 class="alert-heading">Well done!</h4>
@@ -74,7 +78,7 @@ Similarly, you can use Bootstrap Icons to create alerts with icons.
 
 <img src="https://i.imgur.com/wjCs7bZ.jpg" alt="Blazor Bootstrap: Alert Component - Alerts with an icon" />
 
-```cshtml
+```cshtml showLineNumbers
 <div>
     <Alert Color="AlertColor.Primary"> <Icon Name="IconName.InfoCircleFill" class="me-2"></Icon>An example alert with an icon </Alert>
     <Alert Color="AlertColor.Success"> <Icon Name="IconName.CheckCircleFill" class="me-2"></Icon>A simple success alert with an icon </Alert>
@@ -92,7 +96,7 @@ It's possible to dismiss any alert inline. Here's how:
 
 <img src="https://i.imgur.com/D9tJpSl.jpg" alt="Blazor Bootstrap: Alert Component - Dismissing" />
 
-```cshtml
+```cshtml showLineNumbers
 <div>
     <Alert Color="AlertColor.Warning" Dismissable="true"> <strong>Holy guacamole!</strong> You should check in on some of those fields below. </Alert>
 </div>
@@ -101,7 +105,7 @@ It's possible to dismiss any alert inline. Here's how:
 
 <img src="https://i.imgur.com/dq48mYF.jpg" alt="Blazor Bootstrap: Alert Component - Dismissing manually" />
 
-```cshtml
+```cshtml showLineNumbers
 <div>
     <Alert @ref="warningAlert" Color="AlertColor.Warning">
         <strong>Holy guacamole!</strong> You should check in on some of those fields below. <Button Color="ButtonColor.Primary" @onclick="CloseAlert">Close</Button>
@@ -109,7 +113,7 @@ It's possible to dismiss any alert inline. Here's how:
 </div>
 ```
 
-```cs {4}
+```cs {4} showLineNumbers
 @code {
     Alert warningAlert;
 
