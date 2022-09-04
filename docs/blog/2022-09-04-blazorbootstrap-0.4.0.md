@@ -12,6 +12,8 @@ We are excited to release `0.4.0` with new autocomplete component.
 
 <!--truncate-->
 
+<img src="https://i.imgur.com/D5ox9um.png" alt="Blazor Bootstrap AutoComplete Component - Server side data" />
+
 ### New Components
 
 - `AutoComplete` component
@@ -20,6 +22,10 @@ We are excited to release `0.4.0` with new autocomplete component.
 - Client side data filtering
 - Server side data filtering
 - Validations
+
+<img src="https://i.imgur.com/sMQ7Uc6.png" alt="Blazor Bootstrap AutoComplete Component - Validations - Data empty" />
+
+<img src="https://i.imgur.com/4IzNcdp.png" alt="Blazor Bootstrap AutoComplete Component - Validations - Item selected" />
 
 ### Links
 

@@ -12,6 +12,8 @@ We are excited to release `0.3.0` with significant enhancements to the grid comp
 
 <!--truncate-->
 
+<img src="https://i.imgur.com/36RsWZ3.png" alt="Blazor Bootstrap: Grid Component" />
+
 ### Updates
 
 - `Grid` component enhancements
