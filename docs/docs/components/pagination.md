@@ -1,6 +1,6 @@
 ---
 sidebar_label: Pagination
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 # Pagination

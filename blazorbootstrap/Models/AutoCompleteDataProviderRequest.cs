@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public class AutoCompleteDataProviderRequest<TItem>
 {
