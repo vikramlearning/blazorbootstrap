@@ -6,6 +6,8 @@
 
 .main {
     flex: 1;
+    overflow-x: auto;
+    width: 100%;
 }
 
 .sidebar {

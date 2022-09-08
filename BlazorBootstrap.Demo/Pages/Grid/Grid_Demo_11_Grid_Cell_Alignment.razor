@@ -19,9 +19,17 @@
 @code {
     private IEnumerable<Employee2> employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee2>> EmployeesDataProvider(GridDataProviderRequest<Employee2> request)
     {
-        employees = new List<Employee2>
+        if (employees is null)
+            employees = GetEmployees(); // call a service or an API
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee2> GetEmployees()
+    {
+        return new List<Employee2>
         {
             new Employee2 { Id = 107, Name = "Alice", Designation = "AI Engineer", Salary = 7700, IsActive = true },
             new Employee2 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", Salary = 19000, IsActive = true },
@@ -33,10 +41,5 @@
             new Employee2 { Id = 108, Name = "Zayne", Designation = "Data Analyst", Salary = 17850, IsActive = true },
             new Employee2 { Id = 109, Name = "Isha", Designation = "App Maker", Salary = 8000, IsActive = true },
         };
-    }
-
-    private async Task<GridDataProviderResult<Employee2>> EmployeesDataProvider(GridDataProviderRequest<Employee2> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
     }
 }

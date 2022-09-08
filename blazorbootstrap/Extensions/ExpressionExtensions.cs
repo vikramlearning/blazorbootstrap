@@ -203,9 +203,10 @@ public static class ExpressionExtensions
     public static Expression<Func<TItem, bool>> GetStringContainsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var method = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) });
+        var methodInfo = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
-        var expression = Expression.Call(propertyExp, method, someValue);
+        var comparisonExpression = Expression.Constant(StringComparison.OrdinalIgnoreCase);
+        var expression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
@@ -228,18 +229,20 @@ public static class ExpressionExtensions
     public static Expression<Func<TItem, bool>> GetStringStartsWithExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var method = typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string) });
+        var methodInfo = typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string), typeof(StringComparison) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
-        var expression = Expression.Call(propertyExp, method, someValue);
+        var comparisonExpression = Expression.Constant(StringComparison.OrdinalIgnoreCase);
+        var expression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetStringEndsWithExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var method = typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string) });
+        var method = typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string), typeof(StringComparison) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
-        var expression = Expression.Call(propertyExp, method, someValue);
+        var comparisonExpression = Expression.Constant(StringComparison.OrdinalIgnoreCase);
+        var expression = Expression.Call(propertyExp, method, someValue, comparisonExpression);
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
