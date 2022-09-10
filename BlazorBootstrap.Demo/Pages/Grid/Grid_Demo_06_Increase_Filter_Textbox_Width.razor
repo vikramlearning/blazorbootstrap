@@ -33,8 +33,8 @@
 
     private async Task<GridDataProviderResult<Employee3>> EmployeesDataProvider(GridDataProviderRequest<Employee3> request)
     {
-        if (employees is null)
-            employees = GetEmployees(); // call a service or an API
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
 
         return await Task.FromResult(request.ApplyTo(employees));
     }
