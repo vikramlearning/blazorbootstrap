@@ -23,6 +23,35 @@ window.blazorBootstrap = {
             bootstrap?.Alert?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
+    autocomplete: {        
+        initialize: (elementRef, dotNetHelper) => {
+            let dropdownToggleEl = elementRef;
+
+            dropdownToggleEl.addEventListener('show.bs.dropdown', function () {
+                dotNetHelper.invokeMethodAsync('bsShowAutocomplete');
+            });
+            dropdownToggleEl.addEventListener('shown.bs.dropdown', function () {
+                dotNetHelper.invokeMethodAsync('bsShownAutocomplete');
+            });
+            dropdownToggleEl.addEventListener('hide.bs.dropdown', function () {
+                dotNetHelper.invokeMethodAsync('bsHideAutocomplete');
+            });
+            dropdownToggleEl.addEventListener('hidden.bs.dropdown', function () {
+                dotNetHelper.invokeMethodAsync('bsHiddenAutocomplete');
+            });
+
+            bootstrap?.Dropdown?.getOrCreateInstance(elementRef);
+        },
+        show: (elementRef) => {
+            bootstrap?.Dropdown?.getOrCreateInstance(elementRef)?.show();
+        },
+        hide: (elementRef) => {
+            bootstrap?.Dropdown?.getOrCreateInstance(elementRef)?.hide();
+        },
+        dispose: (elementRef) => {
+            bootstrap?.Dropdown?.getOrCreateInstance(elementRef)?.dispose();
+        }
+    },
     modal: {
         initialize: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {
             let modalEl = document.getElementById(elementId);

@@ -76,6 +76,12 @@
 
         #endregion
 
+        #region Dropdown
+
+        public string DropdownToggle() => "dropdown-toggle";
+
+        #endregion Dropdown
+
         #region Flex
 
         public string FlexAlignment(Alignment alignment) => $"justify-content-{ToAlignment(alignment)}";

@@ -2,28 +2,26 @@
 @inherits BaseComponent
 @typeparam TItem
 
-<div class="autocomplete position-relative">
+<div class="autocomplete">
     <div class="input-group">
-        <input @ref="@ElementRef" id="@ElementId" class="@ClassNames @fieldCssClasses" style="@StyleNames" @attributes="@Attributes" type="text" value="@Value" @oninput="async (args) => await OnInputChangedAsync(args)" placeholder=" @Placeholder" disabled="@disabled" autocomplete="off" />
+        <input @ref="@ElementRef" type="text" id="@ElementId" class="@ClassNames @fieldCssClasses" style="@StyleNames" @attributes="@Attributes" value="@Value" @oninput="async (args) => await OnInputChangedAsync(args)" placeholder=" @Placeholder" disabled="@disabled" autocomplete="off" />
         @if (inputHasValue)
         {
             <Button @ref="closeButton" Style="margin-left: -42px; z-index: 100; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" @onclick="async () => await ClearInputTextAsync()">
                 <Icon Name="IconName.X"></Icon>
             </Button>
         }
-    </div>
-    <div class="autocomplete-panel @panelCSS position-absolute top-100 start-0">
-        <ul class="autocomplete-list px-0 py-1 mb-0">
+        <ul class="dropdown-menu autocomplete-list" data-popper-placement="bottom-start">
             @if (items is not null && items.Any())
             {
                 foreach (var item in items)
                 {
-                    <li class="autocomplete-item" @onclick="async () => await OnItemSelectedAsync(item)">@GetPropertyValue(item)</li>
+                    <li class="dropdown-item" @onclick="async () => await OnItemSelectedAsync(item)">@GetPropertyValue(item)</li>
                 }
             }
             else
             {
-                <li class="autocomplete-item">No records found.</li>
+                <li class="dropdown-item">No records found.</li>
             }
         </ul>
     </div>

@@ -31,6 +31,9 @@ public static class ExpressionExtensions
     public static Expression<Func<TItem, bool>> GetExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyInfo = typeof(TItem).GetProperty(filterItem.PropertyName);
+        if (propertyInfo == null)
+            return null;
+
         var propertyTypeName = propertyInfo.PropertyType.Name;
 
         if (propertyTypeName == StringConstants.PropertyTypeNameInt16

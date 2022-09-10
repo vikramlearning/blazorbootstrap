@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
 namespace BlazorBootstrap;
@@ -21,12 +22,13 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     #region Members
 
+    private DotNetObjectReference<AutoComplete<TItem>> objRef;
+
     private FieldIdentifier fieldIdentifier;
     private string fieldCssClasses => CascadedEditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     private bool inputHasValue;
-    private bool showPanel;
-    private string panelCSS => showPanel ? "show" : "";
+    private bool isDropdownShown;
     private IEnumerable<TItem> items = null;
     private int totalCount;
     private TItem? selectedItem;
@@ -42,20 +44,81 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     #region Methods
 
-    protected override void OnInitialized()
-    {
-        fieldIdentifier = FieldIdentifier.Create(ValueExpression);
-        this.disabled = this.Disabled;
-
-        base.OnInitialized();
-    }
-
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.FormControl());
         builder.Append(BootstrapClassProvider.ToAutoCompleteSize(this.Size));
 
         base.BuildClasses(builder);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        objRef ??= DotNetObjectReference.Create(this);
+
+        Attributes ??= new Dictionary<string, object>();
+
+        fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        this.disabled = this.Disabled;
+
+        await base.OnInitializedAsync();
+
+        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", ElementRef, objRef); });
+    }
+
+    /// <summary>
+    /// Shows autocomplete dropdown.
+    /// </summary>
+    private async Task ShowAsync()
+    {
+        isDropdownShown = true;
+
+        if (Attributes is not null && !Attributes.TryGetValue(StringConstants.DataBootstrapToggle, out object? toggle))
+            Attributes.Add(StringConstants.DataBootstrapToggle, "dropdown");
+
+        await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.show", ElementRef);
+    }
+
+    /// <summary>
+    /// Hides autocomplete dropdown.
+    /// </summary>
+    private async Task HideAsync()
+    {
+        isDropdownShown = false;
+
+        if (Attributes is not null && Attributes.TryGetValue(StringConstants.DataBootstrapToggle, out object? toggle))
+            Attributes.Remove(StringConstants.DataBootstrapToggle);
+
+        await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", ElementRef);
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsync(bool disposing)
+    {
+        if (disposing)
+        {
+            await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementId);
+            objRef?.Dispose();
+        }
+
+        await base.DisposeAsync(disposing);
+    }
+
+    [JSInvokable] public async Task bsShowAutocomplete() { }
+    [JSInvokable] public async Task bsShownAutocomplete() { }
+    [JSInvokable] public async Task bsHideAutocomplete() { }
+    [JSInvokable]
+    public async Task bsHiddenAutocomplete()
+    {
+        if (isDropdownShown)
+        {
+            isDropdownShown = false;
+
+            if (Attributes is not null && Attributes.TryGetValue(StringConstants.DataBootstrapToggle, out object? toggle))
+                Attributes.Remove(StringConstants.DataBootstrapToggle);
+
+            StateHasChanged();
+        }
     }
 
     private async Task OnInputChangedAsync(ChangeEventArgs args)
@@ -66,11 +129,11 @@ public partial class AutoComplete<TItem> : BaseComponent
 
         if (inputHasValue)
         {
-            ShowPanel();
+            await ShowAsync();
         }
         else
         {
-            HidePanel();
+            await HideAsync();
         }
 
         closeButton?.ShowLoading();
@@ -86,7 +149,7 @@ public partial class AutoComplete<TItem> : BaseComponent
         this.Value = this.GetPropertyValue(item);
         await ValueChanged.InvokeAsync(this.Value);
 
-        HidePanel();
+        await HideAsync();
 
         SetInputHasValue();
 
@@ -105,7 +168,7 @@ public partial class AutoComplete<TItem> : BaseComponent
         this.Value = string.Empty;
         await ValueChanged.InvokeAsync(this.Value);
 
-        HidePanel();
+        await HideAsync();
 
         SetInputHasValue();
 
@@ -119,10 +182,6 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// Checks whether the input has value.
     /// </summary>
     private void SetInputHasValue() => this.inputHasValue = Value.Length > 0;
-
-    private void ShowPanel() => showPanel = true;
-
-    private void HidePanel() => showPanel = false;
 
     private string? GetPropertyValue(TItem item)
     {
@@ -190,6 +249,9 @@ public partial class AutoComplete<TItem> : BaseComponent
     #endregion Methods
 
     #region Properties
+
+    /// <inheritdoc/>
+    protected override bool ShouldAutoGenerateId => true;
 
     [CascadingParameter] private EditContext CascadedEditContext { get; set; }
 

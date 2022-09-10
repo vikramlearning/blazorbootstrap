@@ -18,7 +18,7 @@
     <DataAnnotationsValidator />
 
     <div class="form-group row mb-2">
-        <label for="supplier" class="col-md-2 col-form-label">Customer:</label>
+        <label class="col-md-2 col-form-label">Customer:</label>
         <div class="col-md-10">
             <AutoComplete @bind-Value="customerAddress.CustomerName"
                           TItem="Customer"
@@ -31,9 +31,9 @@
     </div>
 
     <div class="form-group row mb-3">
-        <label for="name" class="col-md-2 col-form-label">Address:</label>
+        <label class="col-md-2 col-form-label">Address:</label>
         <div class="col-md-10">
-            <InputText id="name" class="form-control" @bind-Value="customerAddress.Address" />
+            <InputText class="form-control" @bind-Value="customerAddress.Address" />
             <ValidationMessage For="@(() => customerAddress.Address)" />
         </div>
     </div>
