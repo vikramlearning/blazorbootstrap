@@ -1,13 +1,16 @@
-﻿using BlazorBootstrap.Utilities;
-using Microsoft.AspNetCore.Components;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Callout : BaseComponent
 {
     #region Members
 
-    private CalloutColor color = CalloutColor.None;
+    private CalloutType color = CalloutType.Default;
+
+    private string CalloutHeadingCSSClass => BootstrapClassProvider.CalloutHeading();
+
+    private string heading => GetHeading();
+
+    private IconName iconName => GetIconName();
 
     #endregion Members
 
@@ -16,9 +19,40 @@ public partial class Callout : BaseComponent
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Callout());
-        builder.Append(BootstrapClassProvider.ToCalloutColor(Color));
+        builder.Append(BootstrapClassProvider.ToCalloutType(Type));
 
         base.BuildClasses(builder);
+    }
+
+    private string GetHeading()
+    {
+        if (string.IsNullOrWhiteSpace(this.Heading))
+        {
+            return this.color switch
+            {
+                CalloutType.Default => "NOTE",
+                CalloutType.Info => "INFO",
+                CalloutType.Warning => "WARNING",
+                CalloutType.Danger => "DANGER",
+                CalloutType.Tip => "TIP",
+                _ => "",
+            };
+        }
+
+        return this.Heading;
+    }
+
+    private IconName GetIconName()
+    {
+        return this.color switch
+        {
+            CalloutType.Default => IconName.InfoCircleFill,
+            CalloutType.Info => IconName.InfoCircleFill,
+            CalloutType.Warning => IconName.ExclamationTriangleFill,
+            CalloutType.Danger => IconName.Fire,
+            CalloutType.Tip => IconName.Lightbulb,
+            _ => IconName.InfoCircleFill,
+        };
     }
 
     #endregion Methods
@@ -32,7 +66,7 @@ public partial class Callout : BaseComponent
     /// Gets or sets the callout color.
     /// </summary>
     [Parameter]
-    public CalloutColor Color
+    public CalloutType Type
     {
         get => color; set
         {
@@ -40,6 +74,8 @@ public partial class Callout : BaseComponent
             DirtyClasses();
         }
     }
+
+    [Parameter] public string Heading { get; set; }
 
     /// <summary>
     /// Specifies the content to be rendered inside this.

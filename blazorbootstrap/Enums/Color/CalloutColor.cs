@@ -3,12 +3,12 @@
 /// <summary>
 /// Predefined set of contextual colors.
 /// </summary>
-public enum CalloutColor
+public enum CalloutType
 {
     /// <summary>
     /// No color will be applied to an element.
     /// </summary>
-    None = 0,
+    Default = 0,
 
     /// <summary>
     /// Danger color.
@@ -23,5 +23,10 @@ public enum CalloutColor
     /// <summary>
     /// Info color.
     /// </summary>
-    Info
+    Info,
+
+    /// <summary>
+    /// Success color.
+    /// </summary>
+    Tip
 }

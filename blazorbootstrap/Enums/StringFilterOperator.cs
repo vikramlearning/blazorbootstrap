@@ -7,10 +7,6 @@ public enum StringFilterOperator
     /// </summary>
     Equals,
     /// <summary>
-    /// Satisfied if the current value does not equal the specified value.
-    /// </summary>
-    NotEquals,
-    /// <summary>
     /// Satisfied if the current value contains the specified value.
     /// </summary>
     Contains,

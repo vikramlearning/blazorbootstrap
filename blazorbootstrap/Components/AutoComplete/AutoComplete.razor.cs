@@ -201,7 +201,6 @@ public partial class AutoComplete<TItem> : BaseComponent
         return this.StringFilterOperator switch
         {
             BlazorBootstrap.StringFilterOperator.Equals => FilterOperator.Equals,
-            BlazorBootstrap.StringFilterOperator.NotEquals => FilterOperator.NotEquals,
             BlazorBootstrap.StringFilterOperator.Contains => FilterOperator.Contains,
             BlazorBootstrap.StringFilterOperator.StartsWith => FilterOperator.StartsWith,
             BlazorBootstrap.StringFilterOperator.EndsWith => FilterOperator.EndsWith,
