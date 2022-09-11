@@ -12,7 +12,14 @@
 </div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side data" PageUrl="@pageUrl" HashTagName="client-side-data" />
-<Demo Type="typeof(AutoComplete_Demo_01_Client_Side_Filtering)" />
+<Demo Type="typeof(AutoComplete_Demo_01_A_Client_Side_Filtering)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Client side data with StringComparision" PageUrl="@pageUrl" HashTagName="client-side-data-with-string-comparision" />
+<div>In the below example, <code>StringComparision.Ordinal</code> is used to make the filter case-sensitive.</div>
+<Callout Color="CalloutType.Info">
+    <div>By default, <code>StringComparison.OrdinalIgnoreCase</code> is used to compare culture-agnostic and case-insensitive string matching.</div>
+</Callout>
+<Demo Type="typeof(AutoComplete_Demo_01_B_Client_Side_Filtering_With_StringComparision)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Server side data" PageUrl="@pageUrl" HashTagName="server-side-data" />
 <Demo Type="typeof(AutoComplete_Demo_02_Server_Side_Filtering)" />
