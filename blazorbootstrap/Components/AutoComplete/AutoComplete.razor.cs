@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
-using System.Linq.Expressions;
 
 namespace BlazorBootstrap;
 
@@ -107,6 +106,7 @@ public partial class AutoComplete<TItem> : BaseComponent
     [JSInvokable] public async Task bsShowAutocomplete() { }
     [JSInvokable] public async Task bsShownAutocomplete() { }
     [JSInvokable] public async Task bsHideAutocomplete() { }
+
     [JSInvokable]
     public async Task bsHiddenAutocomplete()
     {
@@ -192,6 +192,23 @@ public partial class AutoComplete<TItem> : BaseComponent
         return propertyInfo?.GetValue(item)?.ToString();
     }
 
+    /// <summary>
+    /// Get equivalent filter operator.
+    /// </summary>
+    /// <returns>FilterOperator</returns>
+    private FilterOperator GetFilterOperator()
+    {
+        return this.StringFilterOperator switch
+        {
+            BlazorBootstrap.StringFilterOperator.Equals => FilterOperator.Equals,
+            BlazorBootstrap.StringFilterOperator.NotEquals => FilterOperator.NotEquals,
+            BlazorBootstrap.StringFilterOperator.Contains => FilterOperator.Contains,
+            BlazorBootstrap.StringFilterOperator.StartsWith => FilterOperator.StartsWith,
+            BlazorBootstrap.StringFilterOperator.EndsWith => FilterOperator.EndsWith,
+            _ => FilterOperator.Contains,
+        };
+    }
+
     private async Task FilterDataAsync()
     {
         string searchKey = this.Value;
@@ -200,7 +217,7 @@ public partial class AutoComplete<TItem> : BaseComponent
 
         var request = new AutoCompleteDataProviderRequest<TItem>
         {
-            Filter = new FilterItem(this.PropertyName, searchKey, FilterOperator.Contains)
+            Filter = new FilterItem(this.PropertyName, searchKey, GetFilterOperator(), this.StringComparison)
         };
 
         if (DataProvider != null)
@@ -267,6 +284,11 @@ public partial class AutoComplete<TItem> : BaseComponent
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
+    /// Gets or sets the string filter operator.
+    /// </summary>
+    [Parameter] public StringFilterOperator StringFilterOperator { get; set; } = StringFilterOperator.Contains;
+
+    /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
@@ -280,6 +302,11 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// Gets or sets the autocomplete size.
     /// </summary>
     [Parameter] public AutoCompleteSize Size { get; set; }
+
+    /// <summary>
+    /// Gets or sets the StringComparison.
+    /// </summary>
+    [Parameter] public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
 
     [Parameter] public string Value { get; set; }
 

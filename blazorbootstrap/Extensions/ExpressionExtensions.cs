@@ -208,7 +208,7 @@ public static class ExpressionExtensions
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
         var methodInfo = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
-        var comparisonExpression = Expression.Constant(StringComparison.OrdinalIgnoreCase);
+        var comparisonExpression = Expression.Constant(filterItem.StringComparison);
         var expression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
@@ -234,7 +234,7 @@ public static class ExpressionExtensions
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
         var methodInfo = typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string), typeof(StringComparison) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
-        var comparisonExpression = Expression.Constant(StringComparison.OrdinalIgnoreCase);
+        var comparisonExpression = Expression.Constant(filterItem.StringComparison);
         var expression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
@@ -244,7 +244,7 @@ public static class ExpressionExtensions
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
         var method = typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string), typeof(StringComparison) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
-        var comparisonExpression = Expression.Constant(StringComparison.OrdinalIgnoreCase);
+        var comparisonExpression = Expression.Constant(filterItem.StringComparison);
         var expression = Expression.Call(propertyExp, method, someValue, comparisonExpression);
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }

@@ -65,6 +65,7 @@
     private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
     {
         var customers = await _customerService.GetCustomers(request.Filter); // API call
+        await Task.Delay(500); // Added 500 milliseconds delay to simulate the real-time API response
         return await Task.FromResult(new AutoCompleteDataProviderResult<Customer> { Data = customers, TotalCount = customers.Count() });
     }
 

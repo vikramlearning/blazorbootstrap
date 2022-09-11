@@ -15,7 +15,6 @@ public class CustomerService : ICustomerService
 
         var parameterExpression = Expression.Parameter(typeof(Customer)); // second param optional
         var lambda = ExpressionExtensions.GetExpressionDelegate<Customer>(parameterExpression, filter);
-
         return customers.Where(lambda.Compile()).OrderBy(customer => customer.CustomerName);
     }
 }

@@ -1,3 +1,3 @@
 ﻿namespace BlazorBootstrap;
 
-public sealed record class FilterItem(string PropertyName, string Value, FilterOperator Operator);
+public sealed record class FilterItem(string PropertyName, string Value, FilterOperator Operator, StringComparison StringComparison);

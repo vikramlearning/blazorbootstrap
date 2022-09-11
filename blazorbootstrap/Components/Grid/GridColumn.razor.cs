@@ -164,6 +164,11 @@ public partial class GridColumn<TItem> : BaseComponent
     [Parameter] public string FilterValue { get; set; }
 
     /// <summary>
+    /// Gets or sets the StringComparison.
+    /// </summary>
+    [Parameter] public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
+
+    /// <summary>
     /// Enable or disable the sorting on a specific column.
     /// The sorting is enabled or disabled based on the `AllowSorting` parameter on the grid.
     /// </summary>
