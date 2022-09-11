@@ -50,7 +50,11 @@
     }
 
     .bb-callout code {
+        border: 0.1rem solid rgba(0,0,0,.05);
+        color: rgba(var(--bs-dark-rgb), 1);
+        background-color: rgba(var(--bs-dark-rgb), .15);
         border-radius: .25rem;
+        padding: 0.1rem;
     }
 
     .bb-callout + .bb-callout {
@@ -66,6 +70,11 @@
         color: rgba(var(--bs-info-rgb), 0.75);
     }
 
+    .bb-callout-info code {
+        color: rgba(var(--bs-info-rgb), 1);
+        background-color: rgba(var(--bs-info-rgb), .15);
+    }
+
 .bb-callout-warning {
     border-left: 0.25rem solid rgba(var(--bs-warning-rgb), .5);
     background-color: rgba(var(--bs-warning-rgb), .075);
@@ -73,6 +82,11 @@
 
     .bb-callout-warning .bb-callout-heading {
         color: rgba(var(--bs-warning-rgb), 0.75);
+    }
+
+    .bb-callout-warning code {
+        color: rgba(var(--bs-warning-rgb), 1);
+        background-color: rgba(var(--bs-warning-rgb), .15);
     }
 
 .bb-callout-danger {
@@ -84,6 +98,11 @@
         color: rgba(var(--bs-danger-rgb), 0.75);
     }
 
+    .bb-callout-danger code {
+        color: rgba(var(--bs-danger-rgb), 1);
+        background-color: rgba(var(--bs-danger-rgb), .15);
+    }
+
 .bb-callout-success {
     border-left: 0.25rem solid rgba(var(--bs-success-rgb), .5);
     background-color: rgba(var(--bs-success-rgb), .075);
@@ -91,6 +110,11 @@
 
     .bb-callout-success .bb-callout-heading {
         color: rgba(var(--bs-success-rgb), 0.75);
+    }
+
+    .bb-callout-success code {
+        color: rgba(var(--bs-success-rgb), 1);
+        background-color: rgba(var(--bs-success-rgb), .15);
     }
 
 /* offcanvas component */
