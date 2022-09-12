@@ -2,11 +2,29 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>BlazorBootstrap Blog</title>
-    <updated>2022-09-04T00:00:00.000Z</updated>
+    <updated>2022-09-12T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>BlazorBootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/48X48.png</icon>
+    <entry>
+        <title type="html"><![CDATA[BlazorBootstrap v0.4.1]]></title>
+        <id>/2022/09/12/blazorbootstrap-0.4.1</id>
+        <link href="https://getblazorbootstrap.com/blog/2022/09/12/blazorbootstrap-0.4.1"/>
+        <updated>2022-09-12T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 0.4.1 with enhancements.]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.4.1</code> with enhancements.</p><img loading="lazy" src="https://i.imgur.com/vmibzEu.png" alt="Blazor Bootstrap: Callout Component - Examples" class="img_ev3q"><h3 class="anchor anchorWithStickyNavbar_LWe7" id="enhancements">Enhancements<a class="hash-link" href="#enhancements" title="Direct link to heading">​</a></h3><ul><li><code>AutoComplete</code> component</li><li><code>Callout</code> component</li><li><code>Grid</code> component</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="autocomplete-enhancements">AutoComplete enhancements<a class="hash-link" href="#autocomplete-enhancements" title="Direct link to heading">​</a></h3><ul><li>StringComparison support</li><li>StringFilterOperator support</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="callout-enhancements">Callout enhancements<a class="hash-link" href="#callout-enhancements" title="Direct link to heading">​</a></h3><ul><li>The default heading and default icon are displayed based on the callout type.</li><li>Change the callout header according to your context.</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="callout-breaking-changes">Callout breaking changes<a class="hash-link" href="#callout-breaking-changes" title="Direct link to heading">​</a></h3><ul><li>Renamed enum <code>CalloutColor</code> to <code>CalloutType</code></li><li>Renamed parameter <code>Color</code> to <code>Type</code></li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="grid-enhancements">Grid enhancements<a class="hash-link" href="#grid-enhancements" title="Direct link to heading">​</a></h3><ul><li>StringComparison support</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/components/autocomplete" target="_blank" rel="noopener noreferrer">Blazor AutoComplete Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/callout" target="_blank" rel="noopener noreferrer">Blazor Callout Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Blazor Grid Component Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v0.4.1" term="v0.4.1"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="callout" term="callout"/>
+        <category label="autocomplete" term="autocomplete"/>
+        <category label="grid" term="grid"/>
+        <category label="docs" term="docs"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.4.0]]></title>
         <id>/2022/09/04/blazorbootstrap-0.4.0</id>
