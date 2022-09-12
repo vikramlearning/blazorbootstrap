@@ -109,14 +109,14 @@
         /// </summary>
         /// <param name="color"></param>
         /// <returns>string</returns>
-        public static string ToCalloutColor(this CalloutColor calloutColor)
+        public static string ToCalloutColor(this CalloutType calloutColor)
         {
             return calloutColor switch
             {
-                CalloutColor.None => "",
-                CalloutColor.Danger => "bb-callout-danger",
-                CalloutColor.Warning => "bb-callout-warning",
-                CalloutColor.Info => "bb-callout-info",
+                CalloutType.Default => "",
+                CalloutType.Danger => "bb-callout-danger",
+                CalloutType.Warning => "bb-callout-warning",
+                CalloutType.Info => "bb-callout-info",
                 _ => ""
             };
         }

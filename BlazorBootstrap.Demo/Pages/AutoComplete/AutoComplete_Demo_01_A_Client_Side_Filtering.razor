@@ -14,9 +14,17 @@
 
     public IEnumerable<Customer> customers;
 
-    protected override void OnInitialized()
+    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
     {
-        customers = new List<Customer> {
+        if (customers is null) // pull customers only one time for client-side autocomplete
+            customers = GetCustomers(); // call a service or an API to pull the customers
+
+        return await Task.FromResult(request.ApplyTo(customers.OrderBy(customer => customer.CustomerName)));
+    }
+
+    private IEnumerable<Customer> GetCustomers()
+    {
+        return new List<Customer> {
             new(1, "Pich S"),
             new(2, "sfh Sobi"),
             new(3, "Jojo chan"),
@@ -40,11 +48,6 @@
             new(21, "Laura L"),
             new(22, "Punith ES")
         };
-    }
-
-    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
-    {
-        return await Task.FromResult(request.ApplyTo(customers.OrderBy(customer => customer.CustomerName)));
     }
 
     private void OnAutoCompleteChanged(Customer customer)

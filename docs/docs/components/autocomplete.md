@@ -18,7 +18,9 @@ BlazorBootstrap's autocomplete component is a textbox that offers the users sugg
 | Disabled | bool | false | | Is AutoComplete disabled. |
 | Placeholder | string | null | | AutoComplete placeholder. |
 | PropertyName | string | null | ✔️ | AutoComplete data text property name. |
-| Size | enum | `AutoCompleteSize.Default` | | `AutoCompleteSize.Default` or `AutoCompleteSize.Large` or `AutoCompleteSize.Small` |
+| Size | enum | `AutoCompleteSize.Default` | | Use `AutoCompleteSize.Default` or `AutoCompleteSize.Large` or `AutoCompleteSize.Small` |
+| StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Specifies the culture, case, and sort rules to be used. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 
+| StringFilterOperator | enum | `StringFilterOperator.Contains` | | Use `StringFilterOperator.Equals` or `StringFilterOperator.Contains` or `StringFilterOperator.StartsWith` or `StringFilterOperator.EndsWith` |
 | Value | string | null | ✔️ | AutoComplete value. |
 | ValueExpression | expression | null | | AutoComplete value expression. |
 
@@ -109,6 +111,82 @@ public record Customer(int CustomerId, string CustomerName);
 ```
 
 [See demo here](https://demos.getblazorbootstrap.com/grid#client-side-data)
+
+### Client side data with StringComparision
+
+In the below example, `StringComparision.Ordinal` is used to make the filter case-sensitive.
+
+<img src="https://i.imgur.com/8YZzW9f.png" alt="Blazor Bootstrap AutoComplete Component - Client side data with StringComparision" />
+
+```cshtml {8} showLineNumbers
+<div class="row">
+    <div class="col-md-5 col-sm-12">
+        <AutoComplete @bind-Value="customerName"
+                      TItem="Customer"
+                      DataProvider="CustomersDataProvider"
+                      PropertyName="CustomerName"
+                      Placeholder="Search a customer..."
+                      StringComparison="StringComparison.Ordinal"
+                      OnChanged="(Customer customer) => OnAutoCompleteChanged(customer)" />
+    </div>
+</div>
+```
+```cs {34,36,39,41} showLineNumbers
+@code {
+    private string customerName;
+
+    public IEnumerable<Customer> customers;
+
+    protected override void OnInitialized()
+    {
+        customers = new List<Customer> {
+            new(1, "Pich S"),
+            new(2, "sfh Sobi"),
+            new(3, "Jojo chan"),
+            new(4, "Jee ja"),
+            new(5, "Rose Canon"),
+            new(6, "Manju A"),
+            new(7, "Bandita PA"),
+            new(8, "Sagar Adil"),
+            new(9, "Isha Wang"),
+            new(10, "Daina JJ"),
+            new(11, "Komala Mug"),
+            new(12, "Dikshita BD"),
+            new(13, "Neha Gosar"),
+            new(14, "Preeti S"),
+            new(15, "Sagar Seth"),
+            new(16, "Vinayak MM"),
+            new(17, "Vijaya Lakhsmi"),
+            new(18, "Jahan K"),
+            new(19, "Joy B"),
+            new(20, "Zaraiah C"),
+            new(21, "Laura L"),
+            new(22, "Punith ES")
+        };
+    }
+
+    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
+    {
+        return await Task.FromResult(request.ApplyTo(customers.OrderBy(customer => customer.CustomerName)));
+    }
+
+    private void OnAutoCompleteChanged(Customer customer)
+    {
+        // TODO: handle your own logic
+
+        // NOTE: do null check
+        Console.WriteLine($"'{customer?.CustomerName}' selected.");
+        Console.WriteLine($"Data null: {customer is null}.");
+    }
+}
+```
+
+```cs showLineNumbers
+public record Customer(int CustomerId, string CustomerName);
+```
+:::info
+By default, `StringComparison.OrdinalIgnoreCase` is used to compare culture-agnostic and case-insensitive string matching.
+:::
 
 ### Server side data
 

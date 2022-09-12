@@ -53,6 +53,7 @@
         #region Callout
 
         public string Callout() => "bb-callout";
+        public string CalloutHeading() => $"{Callout()}-heading";
 
         #endregion
 
@@ -75,6 +76,12 @@
         public string DividerType(DividerType dividerType) => $"{Divider()}-{ToDividerType(dividerType)}";
 
         #endregion
+
+        #region Dropdown
+
+        public string DropdownToggle() => "dropdown-toggle";
+
+        #endregion Dropdown
 
         #region Flex
 
@@ -340,14 +347,15 @@
             };
         }
 
-        public string ToCalloutColor(CalloutColor color)
+        public string ToCalloutType(CalloutType type)
         {
-            return color switch
+            return type switch
             {
-                BlazorBootstrap.CalloutColor.None => "",
-                BlazorBootstrap.CalloutColor.Danger => "bb-callout-danger",
-                BlazorBootstrap.CalloutColor.Warning => "bb-callout-warning",
-                BlazorBootstrap.CalloutColor.Info => "bb-callout-info",
+                BlazorBootstrap.CalloutType.Default => "",
+                BlazorBootstrap.CalloutType.Danger => $"{Callout()}-danger",
+                BlazorBootstrap.CalloutType.Warning => $"{Callout()}-warning",
+                BlazorBootstrap.CalloutType.Info => $"{Callout()}-info",
+                BlazorBootstrap.CalloutType.Tip => $"{Callout()}-success",
                 _ => "",
             };
         }

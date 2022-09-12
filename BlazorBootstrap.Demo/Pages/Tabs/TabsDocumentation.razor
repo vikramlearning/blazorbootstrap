@@ -34,14 +34,9 @@
         3. <code>OnHidden</code> (on the previous active tab, the same one as for the <code>OnHiding</code> event)<br />
         4. <code>OnShown</code> (on the newly-active just-shown tab, the same one as for the <code>OnShowing</code> event)<br />
     </p>
-    <Alert Color="AlertColor.Info">
-        <div class="row">
-            <div class="col-auto align-top"><Icon Name="IconName.ExclamationTriangleFill"></Icon></div>
-            <div class="col ps-0">
-                If no tab was already active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
-            </div>
-        </div>
-    </Alert>
+    <Callout Type="CalloutType.Info">
+        If no tab was already active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
+    </Callout>
 </div>
 <Demo Type="typeof(Tabs_Demo_06_Events_Order)" />
 

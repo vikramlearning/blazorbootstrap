@@ -31,9 +31,17 @@
 @code {
     private IEnumerable<Employee3> employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee3>> EmployeesDataProvider(GridDataProviderRequest<Employee3> request)
     {
-        employees = new List<Employee3>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee3> GetEmployees()
+    {
+        return new List<Employee3>
         {
             new Employee3 { Id = 107, FirstName = "Alice", LastName = "Reddy", Email = "alice@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), Salary = 7700, IsActive = true },
             new Employee3 { Id = 103, FirstName = "Bob", LastName = "Roy", Email = "bob@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), Salary = 19000, IsActive = true },
@@ -45,10 +53,5 @@
             new Employee3 { Id = 108, FirstName = "Zayne", LastName = "Simmons", Email = "zayne@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), Salary = 17850, IsActive = true },
             new Employee3 { Id = 109, FirstName = "Isha", LastName = "Davison", Email = "isha@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), Salary = 8000, IsActive = true },
         };
-    }
-
-    private async Task<GridDataProviderResult<Employee3>> EmployeesDataProvider(GridDataProviderRequest<Employee3> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
     }
 }

@@ -42,7 +42,7 @@ public partial class Grid<TItem> : BaseComponent
 
         return columns
                 ?.Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
-                ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator()))
+                ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison))
                 ?.ToArray();
     }
 
