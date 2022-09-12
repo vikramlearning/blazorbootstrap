@@ -10,21 +10,14 @@
     BlazorBootstrap's callout component provides presentation of content in a visually distinct manner. Includes a heading, icon and typically text-based content.
 </div>
 
-<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<SectionHeading Size="HeadingSize.H4" Text="Default" PageUrl="@pageUrl" HashTagName="default" />
-<Demo Type="typeof(Callout_Demo_01_Default)" />
+<SectionHeading Size="HeadingSize.H4" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Callout_Demo_01_Examples)" />
 
-<SectionHeading Size="HeadingSize.H4" Text="Danger" PageUrl="@pageUrl" HashTagName="danger" />
-<Demo Type="typeof(Callout_Demo_02_Danger)" />
+<SectionHeading Size="HeadingSize.H4" Text="Custom callout heading" PageUrl="@pageUrl" HashTagName="custom-callout-heading" />
+<Demo Type="typeof(Callout_Demo_02_Change_Heading)" />
 
-<SectionHeading Size="HeadingSize.H4" Text="Warning" PageUrl="@pageUrl" HashTagName="warning" />
-<Demo Type="typeof(Callout_Demo_03_Warning)" />
-
-<SectionHeading Size="HeadingSize.H4" Text="Info" PageUrl="@pageUrl" HashTagName="info" />
-<Demo Type="typeof(Callout_Demo_04_Info)" />
-
-<SectionHeading Size="HeadingSize.H4" Text="Tip" PageUrl="@pageUrl" HashTagName="tip" />
-<Demo Type="typeof(Callout_Demo_05_Tip)" />
+<SectionHeading Size="HeadingSize.H4" Text="Large text" PageUrl="@pageUrl" HashTagName="large-text" />
+<Demo Type="typeof(Callout_Demo_03_Large_Text)" />
 
 @code {
     private string pageUrl = "/callout";
