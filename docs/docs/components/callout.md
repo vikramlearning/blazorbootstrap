@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Callout Component
 description: BlazorBootstrap's callout component provides content presentation in a visually distinct manner.
-image: https://getblazorbootstrap.com/img/logo.svg
+image: https://i.imgur.com/vmibzEu.png
 
 sidebar_label: Callout
 sidebar_position: 5
@@ -21,62 +21,88 @@ BlazorBootstrap's callout component provides content presentation in a visually 
 
 ## Examples
 
-### Callout - Default
+### Callout
 
-<img src="https://i.imgur.com/y2SYI6u.png" alt="Blazor Bootstrap: Callout Component - Default" />
+<img src="https://i.imgur.com/vmibzEu.png" alt="Blazor Bootstrap: Callout Component - Examples" />
+
+```cshtml {1,5,9,13,17} showLineNumbers
+<Callout>
+    <strong>This is an default callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
+</Callout>
+
+<Callout Type="CalloutType.Danger">
+    <strong>This is an danger callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
+</Callout>
+
+<Callout Type="CalloutType.Warning">
+    <strong>This is an warning callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
+</Callout>
+
+<Callout Type="CalloutType.Info">
+    <strong>This is an info callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
+</Callout>
+
+<Callout Type="CalloutType.Tip">
+    <strong>This is an tip callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
+</Callout>
+```
+[See callout default demo here.](https://demos.getblazorbootstrap.com/callout#examples)
+
+### Custom callout heading
+
+<img src="https://i.imgur.com/gaZkJqo.png" alt="Blazor Bootstrap: Callout Component - Custom callout heading" />
+
+```cshtml {1,5,9,13,17} showLineNumbers
+<Callout Heading="Important">
+    <strong>This is an default callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
+</Callout>
+
+<Callout Type="CalloutType.Danger" Heading="Important">
+    <strong>This is an danger callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
+</Callout>
+
+<Callout Type="CalloutType.Warning" Heading="Important">
+    <strong>This is an warning callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
+</Callout>
+
+<Callout Type="CalloutType.Info" Heading="Important">
+    <strong>This is an info callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
+</Callout>
+
+<Callout Type="CalloutType.Tip" Heading="Important">
+    <strong>This is an tip callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
+</Callout>
+```
+[See callout danger demo here.](https://demos.getblazorbootstrap.com/callout#custom-callout-heading)
+
+### Large text
+
+<img src="https://i.imgur.com/m4LeerM.png" alt="Blazor Bootstrap: Callout Component - Large text" />
 
 ```cshtml showLineNumbers
 <Callout>
     <h4>Conveying meaning to assistive technologies</h4>
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
 </Callout>
-```
-[See callout default demo here.](https://demos.getblazorbootstrap.com/callout#default)
 
-### Callout - Danger
-
-<img src="https://i.imgur.com/r8qs6l6.png" alt="Blazor Bootstrap: Callout Component - Danger" />
-
-```cshtml{1} showLineNumbers
 <Callout Type="CalloutType.Danger">
     <h4>Conveying meaning to assistive technologies</h4>
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
 </Callout>
-```
-[See callout danger demo here.](https://demos.getblazorbootstrap.com/callout#danger)
 
-### Callout - Warning
-
-<img src="https://i.imgur.com/7UxLMlb.png" alt="Blazor Bootstrap: Callout Component - Warning" />
-
-```cshtml{1} showLineNumbers
 <Callout Type="CalloutType.Warning">
     <h4>Conveying meaning to assistive technologies</h4>
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
 </Callout>
-```
-[See callout warning demo here.](https://demos.getblazorbootstrap.com/callout#warning)
 
-### Callout - Info
-
-<img src="https://i.imgur.com/7FOMpJl.png" alt="Blazor Bootstrap: Callout Component - Info" />
-
-```cshtml{1} showLineNumbers
 <Callout Type="CalloutType.Info">
     <h4>Conveying meaning to assistive technologies</h4>
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
 </Callout>
-```
-[See callout info demo here.](https://demos.getblazorbootstrap.com/callout#info)
 
-### Callout - Tip
-
-<img src="https://i.imgur.com/6iYeZyK.png" alt="Blazor Bootstrap: Callout Component - Tip" />
-
-```cshtml{1} showLineNumbers
 <Callout Type="CalloutType.Tip">
     <h4>Conveying meaning to assistive technologies</h4>
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
 </Callout>
 ```
-[See callout info demo here.](https://demos.getblazorbootstrap.com/callout#tip)
+[See callout warning demo here.](https://demos.getblazorbootstrap.com/callout#large-text)
