@@ -12,7 +12,7 @@ We are excited to release `0.4.1` with enhancements.
 
 <!--truncate-->
 
-<img src="https://i.imgur.com/6iYeZyK.png" alt="Blazor Bootstrap: Callout Component - Tip" />
+<img src="https://i.imgur.com/vmibzEu.png" alt="Blazor Bootstrap: Callout Component - Examples" />
 
 ### Enhancements
 
