@@ -283,11 +283,6 @@ public partial class AutoComplete<TItem> : BaseComponent
     [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the string filter operator.
-    /// </summary>
-    [Parameter] public StringFilterOperator StringFilterOperator { get; set; } = StringFilterOperator.Contains;
-
-    /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
@@ -306,6 +301,11 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// Gets or sets the StringComparison.
     /// </summary>
     [Parameter] public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
+
+    /// <summary>
+    /// Gets or sets the string filter operator.
+    /// </summary>
+    [Parameter] public StringFilterOperator StringFilterOperator { get; set; } = StringFilterOperator.Contains;
 
     [Parameter] public string Value { get; set; }
 

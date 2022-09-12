@@ -15,38 +15,39 @@ Use BlazorBootstrap's grid component to display tabular data from the data sourc
 
 ## Grid Parameters
 
-| Name | Type | Descritpion | Required | Default |
+| Name | Type | Default | Required | Descritpion |
 |--|--|--|--|--|
-| AllowFiltering | bool | Gets or sets the grid filtering. | | false |
-| AllowPaging | bool | Gets or sets the grid paging. | | false |
-| AllowSorting | bool | Gets or sets the grid sorting. | | false |
-| ChildContent | RenderFragment | Specifies the content to be rendered inside the grid. | ✔️ | |
-| EmptyText | string | Shows text on no records. | | No records to display |
-| DataProvider | `GridDataProviderDelegate<TItem>` | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | ✔️ | |
+| AllowFiltering | bool | false | | Gets or sets the grid filtering. |
+| AllowPaging | bool | false | | Gets or sets the grid paging. |
+| AllowSorting | bool | false | | Gets or sets the grid sorting. |
+| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid. |
+| EmptyText | string | No records to display | | Shows text on no records. |
+| DataProvider | `GridDataProviderDelegate<TItem>` | | ✔️ | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. |
 | PageSize | int | Gets or sets the page size of the grid. | | 10 |
-| PaginationAlignment | `Alignment` | Gets or sets the pagination alignment. | | `Alignment.Start` |
-| Responsive | bool | Gets or sets a value indicating whether Grid is responsive. | | false |
-| Sortable | bool | Gets or sets whether end-users can sort data by the column's values. | | true |
+| PaginationAlignment | enum | `Alignment.Start` | | Gets or sets the pagination alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. |
+| Responsive | bool | false | | Gets or sets a value indicating whether Grid is responsive. |
+| Sortable | bool | true | | Gets or sets whether end-users can sort data by the column's values. |
 
 ## GridColumn Parameters
 
-| Name | Type | Descritpion | Required | Default |
+| Name | Type | Default | Required | Descritpion |
 |--|--|--|--|--|
-| ChildContent | RenderFragment | Specifies the content to be rendered inside the grid column. | ✔️ | |
-| Filterable | bool | Enable or disable the filter on a specific column. The filter is enabled or disabled based on the grid `AllowFiltering` parameter. | | true |
-| FilterOperator | `FilterOperator` | Gets or sets the filter operator. | | Assigend based on the property type. |
-| FilterTextboxWidth | int | Gets or sets the filter textbox width in pixels. | | |
-| FilterValue | string | Gets or sets the filter value. | | |
-| HeaderText | string | Gets or sets the table column header. | ✔️ | |
-| HeaderTextAlignment | `Alignment` | Gets or sets the header text alignment. | | `Alignment.Start` |
-| IsDefaultSortColumn | bool | Gets or sets the default sort column. | | false |
-| PropertyName | string | Gets or sets the property name. This is required when `AllowFiltering` is true. | | |
-| Sortable | bool | Enable or disable the sorting on a specific column. The sorting is enabled or disabled based on the grid `AllowSorting` parameter. | | false |
-| SortDirection | `SortDirection` | Gets or sets the default sort direction of a column. | | `SortDirection.None` |
-| SortKeySelector | `Expression<Func<TItem, IComparable>>` | Expression used for sorting. | | |
-| SortString | string | Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting. | | |
-| TextAlignment | `Alignment` | Gets or sets the text alignment. | | `Alignment.Start` |
-| TextNoWrap | bool | Gets or sets text nowrap. | | false |
+| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid column. |
+| Filterable | bool | true | | Enable or disable the filter on a specific column. The filter is enabled or disabled based on the grid `AllowFiltering` parameter. |
+| FilterOperator | enum | Assigned based on the property type. | | Gets or sets the filter operator. |
+| FilterTextboxWidth | int | | | Gets or sets the filter textbox width in pixels. |
+| FilterValue | string | | | Gets or sets the filter value. |
+| HeaderText | string | | ✔️ | Gets or sets the table column header. |
+| HeaderTextAlignment | enum | `Alignment.Start` | | Gets or sets the header text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. |
+| IsDefaultSortColumn | bool | false | | Gets or sets the default sort column. |
+| PropertyName | string | | | Gets or sets the property name. This is required when `AllowFiltering` is true. |
+| Sortable | bool | false | | Enable or disable the sorting on a specific column. The sorting is enabled or disabled based on the grid `AllowSorting` parameter. |
+| SortDirection | enum | `SortDirection.None` | | Gets or sets the default sort direction of a column. Use `SortDirection.Ascending` or `SortDirection.Descending` |
+| SortKeySelector | `Expression<Func<TItem, IComparable>>` | | | Expression used for sorting. |
+| SortString | string | | | Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting. |
+| StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Gets or sets the StringComparison. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. |
+| TextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. |
+| TextNoWrap | bool | false | | Gets or sets text nowrap. |
 
 ## Examples
 
@@ -105,6 +106,65 @@ Add `AllowFiltering="true"` parameter to Grid and `PropertyName` parameter to al
 ```
 
 [See demo here](https://demos.getblazorbootstrap.com/grid#client-side-filtering)
+
+### Client side filtering with string comparision
+
+In the below example, `StringComparision.Ordinal` is used on the **Employee Name** column to make the filter case-sensitive.
+
+<img src="https://i.imgur.com/yLzUB8I.png" alt="Blazor Bootstrap: Grid Component - Client side filtering with string comparision" />
+
+```cshtml {5} showLineNumbers
+<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" StringComparison="StringComparison.Ordinal">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+</Grid>
+```
+
+```cs showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees;
+
+    protected override void OnInitialized()
+    {
+        employees = new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+        };
+    }
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+}
+```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#client-side-filtering-with-string-comparision)
+
+:::info
+By default, <code>StringComparison.OrdinalIgnoreCase</code> is used to compare culture-agnostic and case-insensitive string matching.
+:::
 
 ### Client side paging
 
