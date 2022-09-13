@@ -193,3 +193,31 @@ window.blazorBootstrap = {
     }
 }
 
+window.blazorChart = {
+    barchart: {
+        initialize: (elementId, type, data, options) => {
+            let chartEl = document.getElementById(elementId);
+
+            console.log(elementId);
+            console.log(type);
+            console.log(data);
+            console.log(options); // NOTE: this gives more details in the chrome dev tools
+
+            const _data = {
+                labels: data.labels,
+                datasets: data.datasets
+            };
+
+            const config = {
+                type: type,
+                data: _data,
+                options: options
+            };
+
+            const myChart = new Chart(
+                chartEl,
+                config
+            );
+        }
+    }
+}

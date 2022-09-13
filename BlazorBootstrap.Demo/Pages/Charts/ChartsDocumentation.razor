@@ -1,0 +1,17 @@
+﻿@using BlazorBootstrap
+@page "/charts"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1 class="my-4">Charts</h1>
+
+<BarChart></BarChart>
+
+@code {
+    private string pageUrl = "/charts";
+    private string title = "Blazor Charts | BlazorBootstrap";
+    private string description = "<<TODO: Update this>>";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
+}
