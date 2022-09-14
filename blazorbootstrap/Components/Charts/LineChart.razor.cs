@@ -1,12 +1,12 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class BarChart : BaseChart
+public partial class LineChart : BaseChart
 {
     #region Constructors
 
-    public BarChart()
+    public LineChart()
     {
-        chartType = ChartType.Bar;
+        chartType = ChartType.Line;
     }
 
     #endregion Constructors

@@ -8,6 +8,8 @@ public class BaseChart : BaseComponent
 
     internal ChartType chartType;
 
+    internal string chartContainerStyle => GetChartContainerSizeAsStyle();
+
     private DotNetObjectReference<BaseChart> objRef;
 
     #endregion Members
@@ -18,40 +20,23 @@ public class BaseChart : BaseComponent
     {
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
-
-        ExecuteAfterRender(async () =>
-        {
-            var data = new ChartData
-            {
-                Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6", "Team 7" },
-                Datasets = new List<ChartDataset>()
-                {
-                    new ChartDataset()
-                    {
-                        Label = "Test 1",
-                        Data = new List<int>{ 189, 170, 111, 215, 89, 155, 198},
-                        BackgroundColor = new List<string> { "rgb(255, 99, 132)" },
-                        BorderColor = new List<string> { "rgb(255, 99, 132)" },
-                        BorderWidth = 1,
-                    }
-                }
-            };
-
-            var options = new ChartOptions();
-
-            await JS.InvokeVoidAsync("window.blazorChart.barchart.initialize", ElementId, GetChartType(), data, options);
-        });
     }
 
-    public async Task Clear() {  }
+    public async Task Clear() { }
+
+    public async Task Initialize(ChartData data, ChartOptions options)
+    {
+        await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), data, options);
+    }
 
     public async Task Render() { }
 
     public async Task Reset() { }
 
-    public async Task Resize() { }
-
-    public async Task Resize(int width, int height) { }
+    public async Task Resize(int width, int height)
+    {
+        await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, width, height);
+    }
 
     public async Task Stop() { }
 
@@ -59,17 +44,37 @@ public class BaseChart : BaseComponent
 
     public async Task ToBase64Image(string type, double quality) { }
 
-    public async Task Update() { }
+    public async Task Update(ChartData data, ChartOptions options)
+    {
+        await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), data, options);
+    }
 
     private string GetChartType()
     {
         return chartType switch
         {
             ChartType.Bar => "bar",
+            ChartType.Bubble => "bubble",
+            ChartType.Doughnut => "doughnut",
             ChartType.Line => "line",
-            //TODO: update this
-            _ => ""
+            ChartType.Pie => "pie",
+            ChartType.PolarArea => "polarArea",
+            ChartType.Radar => "radar",
+            ChartType.Scatter => "scatter",
+            _ => "line" // default
         };
+    }
+
+    private string GetChartContainerSizeAsStyle()
+    {
+        var style = "";
+        if (Width > 0)
+            style += $"width:{Width}px;";
+
+        if (Height > 0)
+            style += $"height:{Height}px;";
+
+        return style;
     }
 
     #endregion Methods
@@ -79,12 +84,14 @@ public class BaseChart : BaseComponent
     /// <summary>
     /// Get or sets chart width.
     /// </summary>
-    [Parameter] public int Width { get; set; }
+    [Parameter]
+    public int Width { get; set; }
 
     /// <summary>
     /// Gets or sets chart height.
     /// </summary>
-    [Parameter] public int Height { get; set; }
+    [Parameter]
+    public int Height { get; set; }
 
     #endregion Properties
 }

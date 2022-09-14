@@ -23,7 +23,7 @@ window.blazorBootstrap = {
             bootstrap?.Alert?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
-    autocomplete: {        
+    autocomplete: {
         initialize: (elementRef, dotNetHelper) => {
             let dropdownToggleEl = elementRef;
 
@@ -194,30 +194,62 @@ window.blazorBootstrap = {
 }
 
 window.blazorChart = {
-    barchart: {
-        initialize: (elementId, type, data, options) => {
-            let chartEl = document.getElementById(elementId);
+    create: (elementId, type, data, options) => {
+        let chartEl = document.getElementById(elementId);
 
-            console.log(elementId);
-            console.log(type);
-            console.log(data);
-            console.log(options); // NOTE: this gives more details in the chrome dev tools
+        //console.log(elementId);
+        //console.log(type);
+        //console.log(data);
+        //console.log(options); // NOTE: this gives more details in the chrome dev tools
 
-            const _data = {
-                labels: data.labels,
-                datasets: data.datasets
-            };
+        const _data = {
+            labels: data.labels,
+            datasets: data.datasets
+        };
 
-            const config = {
-                type: type,
-                data: _data,
-                options: options
-            };
+        const config = {
+            type: type,
+            data: _data,
+            options: options,
+            plugins: []
+        };
 
-            const myChart = new Chart(
-                chartEl,
-                config
-            );
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.create(elementId, type, data, options);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
         }
-    }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        } else {
+            window.blazorChart.create(elementId, type, data, options);
+        }
+    },
 }
