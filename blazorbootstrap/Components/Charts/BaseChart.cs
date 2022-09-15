@@ -96,18 +96,6 @@ public class BaseChart : BaseComponent
     #endregion Properties
 }
 
-public enum ChartType
-{
-    Line,
-    Bar,
-    Pie,
-    Doughnut,
-    PolarArea,
-    Radar,
-    Scatter,
-    Bubble,
-}
-
 public class ChartData
 {
     public List<string> Labels { get; set; }

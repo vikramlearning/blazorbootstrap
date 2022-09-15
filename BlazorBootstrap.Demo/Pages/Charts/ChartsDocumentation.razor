@@ -6,76 +6,25 @@
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Charts</h1>
+<div class="mb-3">
+    BlazorBootstrap's callout component provides presentation of content in a visually distinct manner. Includes a heading, icon and typically text-based content.
+</div>
 
-<div class="row">
-    <div class="col-6">
-        <BarChart @ref="barChart" />
-    </div>
-    <div class="col-6">
-        <DoughnutChart @ref="doughnutChart" Width="300" Height="300" />
-    </div>
-</div>
-<div class="row">
-    <div class="col-6">
-        <LineChart @ref="lineChart" />
-    </div>
-    <div class="col-6">
-        <PieChart @ref="pieChart" Width="300" Height="300" />
-    </div>
-</div>
+<SectionHeading Size="HeadingSize.H4" Text="Bar Chart" PageUrl="@pageUrl" HashTagName="bar-chart" />
+<Demo Type="typeof(Charts_Demo_01_A_BarChart_Examples)" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Doughnut Chart" PageUrl="@pageUrl" HashTagName="doughnut-chart" />
+<Demo Type="typeof(Charts_Demo_03_DoughnutChart_Examples)" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Line Chart" PageUrl="@pageUrl" HashTagName="line-chart" />
+<Demo Type="typeof(Charts_Demo_04_LineChart_Examples)" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Pie Chart" PageUrl="@pageUrl" HashTagName="pie-chart" />
+<Demo Type="typeof(Charts_Demo_05_PieChart_Examples)" />
 
 @code {
     private string pageUrl = "/charts";
     private string title = "Blazor Charts | BlazorBootstrap";
     private string description = "<<TODO: Update this>>";
     private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
-
-    BarChart barChart;
-    DoughnutChart doughnutChart;
-    LineChart lineChart;
-    PieChart pieChart;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        var data = new ChartData
-            {
-                Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
-                Datasets = new List<ChartDataset>()
-                {
-                    new ChartDataset()
-                    {
-                        Label = "Test 1",
-                        Data = new List<int>{ 189, 170, 111, 215, 89, 155},
-                        BackgroundColor = new List<string>
-                        {
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(255, 206, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
-                            "rgba(255, 159, 64, 0.2)"
-                        },
-                        BorderColor = new List<string>
-                        {
-                            "rgba(255, 99, 132, 1)",
-                            "rgba(54, 162, 235, 1)",
-                            "rgba(255, 206, 86, 1)",
-                            "rgba(75, 192, 192, 1)",
-                            "rgba(153, 102, 255, 1)",
-                            "rgba(255, 159, 64, 1)"
-                        },
-                        BorderWidth = 1,
-                    }
-                }
-            };
-
-        var options = new ChartOptions();
-
-        await barChart.Update(data, options);
-        await doughnutChart.Update(data, options);
-        await lineChart.Update(data, options);
-        await pieChart.Update(data, options);
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
 }
