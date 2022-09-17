@@ -96,7 +96,7 @@ public partial class AutoComplete<TItem> : BaseComponent
     {
         if (disposing)
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementId);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementRef);
             objRef?.Dispose();
         }
 
