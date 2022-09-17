@@ -1,16 +1,16 @@
-﻿<PieChart @ref="pieChart" Width="300" Height="300" />
+﻿<PieChart @ref="pieChart" TChartDataset="PieChartDataset" Width="300" Height="300" />
 
 @code {
-    private PieChart pieChart;
+    private PieChart<PieChartDataset> pieChart;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var data = new ChartData
+        var data = new ChartData<PieChartDataset>
             {
                 Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
-                Datasets = new List<ChartDataset>()
+                Datasets = new List<PieChartDataset>()
                 {
-                    new ChartDataset()
+                    new PieChartDataset()
                     {
                         Label = "Test 1",
                         Data = new List<int>{ 189, 170, 111, 215, 89, 155},

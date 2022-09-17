@@ -2,7 +2,7 @@
 
 namespace BlazorBootstrap;
 
-public class BaseChart : BaseComponent
+public class BaseChart<TChartDataset> : BaseComponent where TChartDataset : ChartDataset
 {
     #region Members
 
@@ -10,7 +10,7 @@ public class BaseChart : BaseComponent
 
     internal string chartContainerStyle => GetChartContainerSizeAsStyle();
 
-    private DotNetObjectReference<BaseChart> objRef;
+    private DotNetObjectReference<BaseChart<TChartDataset>> objRef;
 
     #endregion Members
 
@@ -24,7 +24,7 @@ public class BaseChart : BaseComponent
 
     public async Task Clear() { }
 
-    public async Task Initialize(ChartData data, ChartOptions options)
+    public async Task Initialize(ChartData<TChartDataset> data, ChartOptions options)
     {
         await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), data, options);
     }
@@ -44,7 +44,7 @@ public class BaseChart : BaseComponent
 
     public async Task ToBase64Image(string type, double quality) { }
 
-    public async Task Update(ChartData data, ChartOptions options)
+    public async Task Update(ChartData<TChartDataset> data, ChartOptions options)
     {
         await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), data, options);
     }
@@ -96,28 +96,15 @@ public class BaseChart : BaseComponent
     #endregion Properties
 }
 
-public class ChartData
-{
-    public List<string> Labels { get; set; }
-    public List<ChartDataset> Datasets { get; set; }
-}
 
-public class ChartOptions
-{
 
-}
 
-public class ChartLabel { }
 
-public class ChartDataset
-{
-    public string Label { get; set; }
-    public List<int> Data { get; set; }
-    public List<string> BackgroundColor { get; set; }
-    public List<string> BorderColor { get; set; }
-    public double BorderWidth { get; set; }
-}
 
-public record ChartRGB(int R, int G, int B);
 
-public record ChartRGBA(int R, int G, int B, double A);
+
+
+
+
+
+

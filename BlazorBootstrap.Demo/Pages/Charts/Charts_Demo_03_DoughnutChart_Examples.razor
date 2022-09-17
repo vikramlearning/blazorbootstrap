@@ -1,16 +1,16 @@
-﻿<DoughnutChart @ref="doughnutChart" Width="300" Height="300" />
+﻿<DoughnutChart @ref="doughnutChart" TChartDataset="DoughnutChartDataset" Width="300" Height="300" />
 
 @code {
-    private DoughnutChart doughnutChart;
+    private DoughnutChart<DoughnutChartDataset> doughnutChart;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var data = new ChartData
+        var data = new ChartData<DoughnutChartDataset>
             {
                 Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
-                Datasets = new List<ChartDataset>()
+                Datasets = new List<DoughnutChartDataset>()
                 {
-                    new ChartDataset()
+                    new DoughnutChartDataset()
                     {
                         Label = "Test 1",
                         Data = new List<int>{ 189, 170, 111, 215, 89, 155},

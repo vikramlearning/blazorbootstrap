@@ -1,16 +1,16 @@
-﻿<LineChart @ref="lineChart" Width="500" />
+﻿<LineChart @ref="lineChart" TChartDataset="LineChartDataset" Width="500" />
 
 @code {
-    private LineChart lineChart;
+    private LineChart<LineChartDataset> lineChart;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var data = new ChartData
+        var data = new ChartData<LineChartDataset>
             {
                 Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
-                Datasets = new List<ChartDataset>()
+                Datasets = new List<LineChartDataset>()
                 {
-                    new ChartDataset()
+                    new LineChartDataset()
                     {
                         Label = "Test 1",
                         Data = new List<int>{ 189, 170, 111, 215, 89, 155},

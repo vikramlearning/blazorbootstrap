@@ -1,16 +1,16 @@
-﻿<BarChart @ref="barChart" Width="500" />
+﻿<BarChart @ref="barChart" TChartDataset="BarChartDataset" Width="500" />
 
 @code {
-    private BarChart barChart;
+    private BarChart<BarChartDataset> barChart;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var data = new ChartData
+        var data = new ChartData<BarChartDataset>
             {
                 Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
-                Datasets = new List<ChartDataset>()
+                Datasets = new List<BarChartDataset>()
                 {
-                    new ChartDataset()
+                    new BarChartDataset()
                     {
                         Label = "Test 1",
                         Data = new List<int>{ 189, 170, 111, 215, 89, 155},
@@ -33,6 +33,8 @@
                             "rgba(255, 159, 64, 1)"
                         },
                         BorderWidth = 1,
+                        //BarPercentage = 1,
+                        CategoryPercentage = 1
                     }
                 }
             };

@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class BarChart : BaseChart
+public partial class BarChart<TChartDataset> : BaseChart<TChartDataset> where TChartDataset : ChartDataset
 {
     #region Constructors
 
