@@ -1,0 +1,61 @@
+﻿<BarChart @ref="barChart" TChartDataset="BarChartDataset" Width="1000" />
+
+@code {
+    private BarChart<BarChartDataset> barChart;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var data = new ChartData<BarChartDataset>
+            {
+                Labels = new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" },
+                Datasets = new List<BarChartDataset>()
+                {
+                    new BarChartDataset()
+                    {
+                        Label = "India",
+                        //Type = "bar",
+                        Data = new List<int>{ 9, 11, 9, 4, 17, 16, 9, 11, 5, 14, 15, 6, 15, 9, 6, 18, 13, 3, 4, 11 },
+                        BackgroundColor = new List<string>{ "rgb(88, 80, 141)" },
+                        CategoryPercentage = 0.5,
+                        BarPercentage = 1
+                    },
+                    new BarChartDataset()
+                    {
+                        Label = "England",
+                        //Type = "bar",
+                        Data = new List<int>{ 1, 0, 7, 11, 5, 2, 13, 8, 9, 10, 7, 13, 7, 5, 9, 5, 10, 5, 11, 2 },
+                        BackgroundColor = new List<string> { "rgb(255, 166, 0)" },
+                        CategoryPercentage = 0.5,
+                        BarPercentage = 1
+                    },
+                    //new LineChartDataset()
+                    //{
+                    //    Type = "line",
+                    //    Data = new List<int>{ 189, 170, 111, 215, 89, 155},
+                    //    BackgroundColor = "rgba(255, 99, 132, 0.2)",
+                    //    BorderColor = "rgba(255, 99, 132, 1)",
+                    //    BorderWidth = 1
+                    //}
+                }
+            };
+
+        var options = new ChartOptions
+            {
+                Scales = new Scales
+                {
+                    X = new X
+                    {
+                        Title = new Title
+                        {
+                            Display = true,
+                            Text = "Overs"
+                        }
+                    }
+                }
+            };
+
+        await barChart.Update(data, options);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
