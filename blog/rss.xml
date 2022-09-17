@@ -4,10 +4,21 @@
         <title>BlazorBootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>BlazorBootstrap Blog</description>
-        <lastBuildDate>Mon, 12 Sep 2022 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 17 Sep 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[BlazorBootstrap v0.4.2]]></title>
+            <link>https://getblazorbootstrap.com/blog/2022/09/17/blazorbootstrap-0.4.2</link>
+            <guid>/2022/09/17/blazorbootstrap-0.4.2</guid>
+            <pubDate>Sat, 17 Sep 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 0.4.2 with bug fixes.]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.4.2</code> with bug fixes.</p><h3 class="anchor anchorWithStickyNavbar_LWe7" id="bug-fixes">Bug fixes<a class="hash-link" href="#bug-fixes" title="Direct link to heading">​</a></h3><ul><li><code>AutoComplete</code> component bug fix</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/components/autocomplete" target="_blank" rel="noopener noreferrer">Blazor AutoComplete Component Documentation</a></li></ul>]]></content:encoded>
+            <category>v0.4.2</category>
+            <category>blazorbootstrap</category>
+            <category>autocomplete</category>
+        </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.4.1]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/09/12/blazorbootstrap-0.4.1</link>
