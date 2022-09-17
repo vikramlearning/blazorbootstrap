@@ -2,6 +2,6 @@
 
 public class DoughnutChartDataset : ChartDataset
 {
-    public decimal BarPercentage { get; set; }
-    public decimal CategoryPercentage { get; set; }
+    public double BarPercentage { get; set; } = 0.8;
+    public double CategoryPercentage { get; set; } = 0.8;
 }
