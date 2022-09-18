@@ -211,7 +211,7 @@ window.blazorChart = {
             type: type,
             data: _data,
             options: options,
-            plugins: [ChartDataLabels]
+            //plugins: [ChartDataLabels]
         };
 
         const chart = new Chart(

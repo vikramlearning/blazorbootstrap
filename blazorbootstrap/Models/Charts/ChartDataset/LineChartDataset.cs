@@ -23,4 +23,6 @@ public class LineChartDataset : ChartDataset
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Label { get; set; }
+
+    public double Tension { get; set; } = 0.5;
 }
