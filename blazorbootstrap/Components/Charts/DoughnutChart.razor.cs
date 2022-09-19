@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DoughnutChart<TChartDataset> : BaseChart<TChartDataset> where TChartDataset : ChartDataset
+public partial class DoughnutChart<TChartDataset> : BaseChart<TChartDataset> where TChartDataset : IChartDataset
 {
     #region Constructors
 

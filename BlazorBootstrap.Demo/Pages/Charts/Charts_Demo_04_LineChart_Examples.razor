@@ -5,10 +5,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var data = new ChartData<LineChartDataset>
+        var data = new ChartData
             {
                 Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
-                Datasets = new List<LineChartDataset>()
+                Datasets = new List<IChartDataset>()
                 {
                     new LineChartDataset()
                     {

@@ -1,8 +1,8 @@
-﻿using System.Text.Json.Serialization;
+﻿namespace BlazorBootstrap;
 
-namespace BlazorBootstrap;
+public interface IChartDataset { }
 
-public class ChartDataset
+public class ChartDataset : IChartDataset
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Type { get; set; }

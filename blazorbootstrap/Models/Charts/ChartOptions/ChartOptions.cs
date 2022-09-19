@@ -57,6 +57,7 @@ public class ChartAxes
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Title? Title { get; set; } = new Title();
     // Stacked
+    public bool BeginAtZero { get; set; } = true;
 }
 
 /// <summary>

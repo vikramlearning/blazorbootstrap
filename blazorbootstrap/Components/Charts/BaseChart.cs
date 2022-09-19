@@ -2,7 +2,7 @@
 
 namespace BlazorBootstrap;
 
-public class BaseChart<TChartDataset> : BaseComponent where TChartDataset : ChartDataset
+public class BaseChart<TChartDataset> : BaseComponent where TChartDataset : IChartDataset
 {
     #region Members
 
@@ -24,9 +24,13 @@ public class BaseChart<TChartDataset> : BaseComponent where TChartDataset : Char
 
     public async Task Clear() { }
 
-    public async Task Initialize(ChartData<TChartDataset> data, ChartOptions options)
+    public async Task Initialize(ChartData data, ChartOptions options)
     {
-        await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), data, options);
+        if (data is not null && data.Datasets is not null && data.Datasets.Any())
+        {
+            var _data = GetChartDataObject(data);
+            await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), _data, options);
+        }
     }
 
     public async Task Render() { }
@@ -44,9 +48,42 @@ public class BaseChart<TChartDataset> : BaseComponent where TChartDataset : Char
 
     public async Task ToBase64Image(string type, double quality) { }
 
-    public async Task Update(ChartData<TChartDataset> data, ChartOptions options)
+    public async Task Update(ChartData data, ChartOptions options)
     {
-        await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), data, options);
+        if (data is not null && data.Datasets is not null && data.Datasets.Any())
+        {
+            var _data = GetChartDataObject(data);
+            await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, options);
+        }
+    }
+
+    private object GetChartDataObject(ChartData chartData)
+    {
+        var datasets = new List<object>();
+        if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
+        {
+            foreach (var dataset in chartData.Datasets)
+            {
+                if (dataset is BarChartDataset)
+                    datasets.Add((BarChartDataset)dataset);
+                else if (dataset is BubbleChartDataset)
+                    datasets.Add((BubbleChartDataset)dataset);
+                else if (dataset is DoughnutChartDataset)
+                    datasets.Add((DoughnutChartDataset)dataset);
+                else if (dataset is LineChartDataset)
+                    datasets.Add((LineChartDataset)dataset);
+                else if (dataset is PieChartDataset)
+                    datasets.Add((PieChartDataset)dataset);
+            }
+        }
+
+        var data = new
+        {
+            Labels = chartData.Labels,
+            Datasets = datasets
+        };
+
+        return data;
     }
 
     private string GetChartType()

@@ -1,9 +1,9 @@
 ﻿<BarChart @ref="barChart" Class="mb-4" TChartDataset="BarChartDataset" />
-<LineChart @ref="lineChart" TChartDataset="LineChartDataset" />
+<LineChart @ref="lineChart" TChartDataset="ChartDataset" />
 
 @code {
     private BarChart<BarChartDataset> barChart;
-    private LineChart<LineChartDataset> lineChart;
+    private LineChart<ChartDataset> lineChart;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -15,10 +15,10 @@
 
     private async Task RenderManhattanAsync()
     {
-        var data = new ChartData<BarChartDataset>
+        var data = new ChartData
             {
                 Labels = new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" },
-                Datasets = new List<BarChartDataset>()
+                Datasets = new List<IChartDataset>()
                 {
                     new BarChartDataset()
                     {
@@ -27,7 +27,7 @@
                         Data = new List<int>{ 9, 11, 9, 4, 17, 16, 9, 11, 5, 14, 15, 6, 15, 9, 6, 8, 13, 3, 4, 11 },
                         BackgroundColor = new List<string>{ "rgb(88, 80, 141)" },
                         CategoryPercentage = 0.8,
-                        BarPercentage = 1
+                        BarPercentage = 1,
                     },
                     new BarChartDataset()
                     {
@@ -36,19 +36,10 @@
                         Data = new List<int>{ 1, 0, 7, 11, 5, 2, 13, 8, 9, 10, 7, 13, 7, 5, 9, 5, 10, 5, 11, 2 },
                         BackgroundColor = new List<string> { "rgb(255, 166, 0)" },
                         CategoryPercentage = 0.8,
-                        BarPercentage = 1
-                    },
-                    //new LineChartDataset()
-                    //{
-                    //    Type = "line",
-                    //    Data = new List<int>{ 189, 170, 111, 215, 89, 155},
-                    //    BackgroundColor = "rgba(255, 99, 132, 0.2)",
-                    //    BorderColor = "rgba(255, 99, 132, 1)",
-                    //    BorderWidth = 1
-                    //}
+                        BarPercentage = 1,
+                    }
                 }
             };
-
 
         var options = new ChartOptions();
 
@@ -69,37 +60,42 @@
 
     private async Task RenderWormAsync()
     {
-        var data = new ChartData<LineChartDataset>
+        var data = new ChartData
             {
                 Labels = new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" },
-                Datasets = new List<LineChartDataset>()
+                Datasets = new List<IChartDataset>()
                 {
                     new LineChartDataset()
                     {
                         Label = "India",
-                        //Type = "bar",
+                        Type = "line",
                         Data = new List<int>{ 9, 20, 29, 33, 50, 66, 75, 86, 91, 105, 120, 126, 141, 150, 156, 164, 177, 180, 184, 195 },
                         BackgroundColor = "rgb(88, 80, 141)",
                         BorderColor = "rgb(88, 80, 141)",
-                        BorderWidth = 2
+                        BorderWidth = 2,
+                        PointRadius = new List<int>{0}
                     },
                     new LineChartDataset()
                     {
                         Label = "England",
-                        //Type = "bar",
+                        Type = "line",
                         Data = new List<int>{ 1, 1, 8, 19, 24, 26, 39, 47, 56, 66, 75, 88, 95, 100, 109, 114, 124, 129, 140, 142 },
                         BackgroundColor = "rgb(255, 166, 0)",
                         BorderColor = "rgb(255, 166, 0)",
-                        BorderWidth = 2
+                        BorderWidth = 2,
+                        PointRadius = new List<int>{0},
+                        //PointBackgroundColor = new List<string>{ "rgb(255, 0, 0)" },
+                        //PointBorderColor = new List<string>{ "rgb(255, 0, 0)" },
                     },
-                    //new LineChartDataset()
-                    //{
-                    //    Type = "line",
-                    //    Data = new List<int>{ 189, 170, 111, 215, 89, 155},
-                    //    BackgroundColor = "rgba(255, 99, 132, 0.2)",
-                    //    BorderColor = "rgba(255, 99, 132, 1)",
-                    //    BorderWidth = 1
-                    //}
+                    new BubbleChartDataset()
+                    {
+                        Label = "Wickets",
+                        Type = "bubble",
+                        Data = new List<BubbleData>{ new (1, 1, 3), new (5, 24, 3), new (5, 24, 3),  new (5, 25, 3)},
+                        BackgroundColor = "rgb(255, 0, 0)",
+                        BorderColor = "rgb(255, 0, 0)",
+                        BorderWidth = 1,
+                    }
                 }
             };
 

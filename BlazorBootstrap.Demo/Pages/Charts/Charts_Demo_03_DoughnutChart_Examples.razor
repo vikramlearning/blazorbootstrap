@@ -5,10 +5,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var data = new ChartData<DoughnutChartDataset>
+        var data = new ChartData
             {
                 Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
-                Datasets = new List<DoughnutChartDataset>()
+                Datasets = new List<IChartDataset>()
                 {
                     new DoughnutChartDataset()
                     {
@@ -42,5 +42,4 @@
 
         await base.OnAfterRenderAsync(firstRender);
     }
-
 }

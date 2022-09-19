@@ -1,7 +1,7 @@
 ﻿namespace BlazorBootstrap;
 
-public class ChartData<TChartDataset> where TChartDataset : ChartDataset
+public class ChartData
 {
     public List<string> Labels { get; set; }
-    public List<TChartDataset> Datasets { get; set; }
+    public List<IChartDataset> Datasets { get; set; }
 }

@@ -1,12 +1,12 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class LineChart<TChartDataset> : BaseChart<TChartDataset> where TChartDataset : IChartDataset
+public partial class BubbleChart<TChartDataset> : BaseChart<TChartDataset> where TChartDataset : IChartDataset
 {
     #region Constructors
 
-    public LineChart()
+    public BubbleChart()
     {
-        chartType = ChartType.Line;
+        chartType = ChartType.Bubble;
     }
 
     #endregion Constructors
