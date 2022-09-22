@@ -71,6 +71,11 @@ namespace BlazorBootstrap
         [Parameter] public bool AutoHide { get; set; } = true;
 
         /// <summary>
+        /// Force show the close button
+        /// </summary>
+        [Parameter] public bool ShowCloseButton { get; set; } = true;
+
+        /// <summary>
         /// Delay hiding the toast (ms). Default is 5000 milli seconds.
         /// </summary>
         [Parameter] public int Delay { get; set; } = 5000;

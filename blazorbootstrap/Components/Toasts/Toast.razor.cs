@@ -17,6 +17,8 @@ namespace BlazorBootstrap
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Toast());
+            builder.Append($"text-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}");
+            builder.Append($"bg-{BootstrapClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
 
             base.BuildClasses(builder);
         }
@@ -100,6 +102,11 @@ namespace BlazorBootstrap
         /// Auto hide the toast
         /// </summary>
         [Parameter] public bool AutoHide { get; set; } = true;
+
+        /// <summary>
+        /// Force show the close button
+        /// </summary>
+        [Parameter] public bool ShowCloseButton { get; set; } = true;
 
         /// <summary>
         /// Delay hiding the toast (ms)
