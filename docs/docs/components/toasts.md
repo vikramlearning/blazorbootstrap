@@ -23,6 +23,7 @@ Toasts are lightweight notifications designed to mimic the push notifications th
 |--|--|--|--|--|
 | AutoHide | bool | Auto hide the toast. | | `true` |
 | Delay | int | Delay hiding the toast (milli seconds). | | 5000 |
+| ShowCloseButton | bool | Force show close butto. | | `true` |
 | Messages | `List<ToastMessage>` | List of all the toasts. | ✔️ | |
 | Placement | `ToastsPlacement` | Specifies the toasts placement. | | `ToastsPlacement.TopRight` |
 | StackLength | int | Specifies the toast container maximum capacity. | | 5 |
