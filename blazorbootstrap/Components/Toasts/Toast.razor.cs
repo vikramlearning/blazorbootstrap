@@ -17,8 +17,6 @@ namespace BlazorBootstrap
         protected override void BuildClasses(ClassBuilder builder)
         {
             builder.Append(BootstrapClassProvider.Toast());
-            builder.Append($"text-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}");
-            builder.Append($"bg-{BootstrapClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
 
             base.BuildClasses(builder);
         }
