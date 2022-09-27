@@ -19,7 +19,7 @@ public class ChartDataset : IChartDataset
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Clip { get; set; }
 
-    public List<int> Data { get; set; }
+    public List<double> Data { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string> HoverBackgroundColor { get; set; }
