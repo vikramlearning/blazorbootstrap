@@ -2,7 +2,7 @@
 
 namespace BlazorBootstrap;
 
-public class BaseChart<TChartDataset> : BaseComponent where TChartDataset : IChartDataset
+public class BaseChart : BaseComponent
 {
     #region Members
 
@@ -10,7 +10,7 @@ public class BaseChart<TChartDataset> : BaseComponent where TChartDataset : ICha
 
     internal string chartContainerStyle => GetChartContainerSizeAsStyle();
 
-    private DotNetObjectReference<BaseChart<TChartDataset>> objRef;
+    private DotNetObjectReference<BaseChart> objRef;
 
     #endregion Members
 
@@ -132,16 +132,3 @@ public class BaseChart<TChartDataset> : BaseComponent where TChartDataset : ICha
 
     #endregion Properties
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

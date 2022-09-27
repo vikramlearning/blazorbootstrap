@@ -1,6 +1,5 @@
 ﻿@namespace BlazorBootstrap
-@inherits BaseChart<TChartDataset>
-@typeparam TChartDataset
+@inherits BaseChart
 
 <div style="@chartContainerStyle">
     <canvas @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes"></canvas>
