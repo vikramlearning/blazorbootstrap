@@ -1,4 +1,4 @@
-﻿<LineChart @ref="lineChart" Width="500" />
+﻿<LineChart @ref="lineChart" />
 
 @code {
     private LineChart lineChart;
@@ -13,15 +13,16 @@
                     new LineChartDataset()
                     {
                         Label = "Test 1",
-                        Data = new List<double>{ 189, 170, 111, 215, 89, 155},
+                        Data = new List<double>{ 19, 70, 191, 75, 89, 55},
                         BackgroundColor = "rgba(255, 99, 132, 0.2)",
                         BorderColor = "rgba(255, 99, 132, 1)",
-                        BorderWidth = 1
+                        BorderWidth = 2
                     }
                 }
             };
 
         var options = new ChartOptions();
+        options.Responsive = true;
 
         await lineChart.Update(data, options);
 

@@ -2,6 +2,14 @@
     window.blazorBootstrap = {};
 }
 
+if (!window.blazorChart) {
+    window.blazorChart = {};
+}
+
+if (!window.blazorChart.line) {
+    window.blazorChart.line = {};
+}
+
 window.blazorBootstrap = {
     alert: {
         initialize: (elementId, dotNetHelper) => {
@@ -250,6 +258,97 @@ window.blazorChart = {
             chart.update();
         } else {
             window.blazorChart.create(elementId, type, data, options);
+        }
+    },
+}
+
+window.blazorChart.line = {
+    create: (elementId, type, data, options) => {
+        let chartEl = document.getElementById(elementId);
+
+        //console.log(options); // NOTE: this gives more details in the chrome dev tools
+
+        const _data = {
+            labels: data.labels,
+            datasets: data.datasets
+        };
+
+        const config = {
+            type: type,
+            data: _data,
+            options: options,
+        };
+
+        if (type === 'line') {
+            // tooltipLine block
+            const tooltipLine = {
+                id: 'tooltipLine',
+                beforeDraw: chart => {
+                    if (chart.tooltip._active && chart.tooltip._active.length) {
+                        const ctx = chart.ctx;
+                        ctx.save();
+                        const activePoint = chart.tooltip._active[0];
+
+                        ctx.beginPath();
+                        ctx.setLineDash([5, 5]);
+                        ctx.moveTo(activePoint.element.x, chart.chartArea.top);
+                        ctx.lineTo(activePoint.element.x, activePoint.element.y);
+                        ctx.linewidth = 2;
+                        ctx.strokeStyle = 'grey';
+                        ctx.stroke();
+                        ctx.restore();
+
+                        ctx.beginPath();
+                        ctx.setLineDash([5, 5]);
+                        ctx.moveTo(activePoint.element.x, activePoint.element.y);
+                        ctx.lineTo(activePoint.element.x, chart.chartArea.bottom);
+                        ctx.linewidth = 2;
+                        ctx.strokeStyle = 'grey';
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                },
+            };
+
+            config.plugins = [tooltipLine];
+        }
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.line.create(elementId, type, data, options);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
+        }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        } else {
+            window.blazorChart.line.create(elementId, type, data, options);
         }
     },
 }

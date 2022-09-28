@@ -29,7 +29,11 @@ public class BaseChart : BaseComponent
         if (data is not null && data.Datasets is not null && data.Datasets.Any())
         {
             var _data = GetChartDataObject(data);
-            await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), _data, options);
+
+            if (chartType == ChartType.Line)
+                await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), _data, options);
+            else
+                await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), _data, options);
         }
     }
 
@@ -53,7 +57,11 @@ public class BaseChart : BaseComponent
         if (data is not null && data.Datasets is not null && data.Datasets.Any())
         {
             var _data = GetChartDataObject(data);
-            await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, options);
+
+            if (chartType == ChartType.Line)
+                await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), _data, options);
+            else
+                await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, options);
         }
     }
 
