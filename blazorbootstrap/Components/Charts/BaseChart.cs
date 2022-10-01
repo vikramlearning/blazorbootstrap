@@ -24,18 +24,18 @@ public class BaseChart : BaseComponent
 
     public async Task Clear() { }
 
-    public async Task Initialize(ChartData data, ChartOptions options)
-    {
-        if (data is not null && data.Datasets is not null && data.Datasets.Any())
-        {
-            var _data = GetChartDataObject(data);
+    //public virtual async Task InitializeAsync(ChartData data, ChartOptions options)
+    //{
+    //    if (data is not null && data.Datasets is not null && data.Datasets.Any())
+    //    {
+    //        var _data = GetChartDataObject(data);
 
-            if (chartType == ChartType.Line)
-                await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), _data, options);
-            else
-                await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), _data, options);
-        }
-    }
+    //        if (chartType == ChartType.Line)
+    //            await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), _data, options);
+    //        else
+    //            await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), _data, options);
+    //    }
+    //}
 
     public async Task Render() { }
 
@@ -52,7 +52,7 @@ public class BaseChart : BaseComponent
 
     public async Task ToBase64Image(string type, double quality) { }
 
-    public async Task Update(ChartData data, ChartOptions options)
+    public virtual async Task UpdateAsync(ChartData data, ChartOptions options)
     {
         if (data is not null && data.Datasets is not null && data.Datasets.Any())
         {
@@ -94,7 +94,7 @@ public class BaseChart : BaseComponent
         return data;
     }
 
-    private string GetChartType()
+    protected string GetChartType()
     {
         return chartType switch
         {

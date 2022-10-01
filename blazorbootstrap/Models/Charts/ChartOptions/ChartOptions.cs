@@ -9,6 +9,8 @@ public class ChartOptions
     //maintainAspectRatio
     //plugins -> title -> display, text
 
+    public Interaction Interaction { get; set; } = new Interaction();
+
     public ChartLayout Layout { get; set; } = new ChartLayout();
 
     public Plugins Plugins { get; set; } = new Plugins();
@@ -33,6 +35,66 @@ public class ChartLayout
     /// The padding to add inside the chart.
     /// </summary>
     public int Padding { get; set; } = 0;
+}
+
+public class Interaction
+{
+
+    private InteractionMode mode;
+
+    /// <summary>
+    /// Sets which elements appear in the tooltip. See Interaction Modes for details.
+    /// </summary>
+    [JsonIgnore]
+    public InteractionMode Mode
+    {
+        get { return mode; }
+        set
+        {
+            mode = value;
+            SetMode(value);
+        }
+    }
+
+    /// <summary>
+    /// if true, the interaction mode only applies when the mouse position intersects an item on the chart.
+    /// </summary>
+    public bool Intersect { get; set; }
+
+    /// <summary>
+    /// Sets which elements appear in the interaction.
+    /// </summary>
+    [JsonPropertyName("mode")]
+    public string ChartInteractionMode { get; private set; }
+
+    public Interaction()
+    {
+        Mode = InteractionMode.Nearest;
+    }
+
+    private void SetMode(InteractionMode interactionMode)
+    {
+        ChartInteractionMode = interactionMode switch
+        {
+            InteractionMode.Dataset => "dataset",
+            InteractionMode.Index => "index",
+            InteractionMode.Nearest => "nearest",
+            InteractionMode.Point => "point",
+            InteractionMode.X => "x",
+            InteractionMode.Y => "y",
+            _ => ""
+        };
+    }
+}
+
+public enum InteractionMode
+{
+    Dataset,
+    Index,
+    Nearest,
+    Point,
+    X,
+    Y
 }
 
 public class Plugins

@@ -2,22 +2,29 @@
 
 public class LineChartDataset : ChartDataset
 {
+    /// <summary>
+    /// Line dash
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new string BackgroundColor { get; set; }
+    public List<int> BorderDash { get; set; }
 
+    /// <summary>
+    /// Both line and radar charts support a fill option on the dataset object 
+    /// which can be used to create area between two datasets or a dataset and 
+    /// a boundary, i.e. the scale origin, start or end
+    /// </summary>
+    public bool Fill { get; set; }
+
+    /// <summary>
+    /// Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart.
+    /// </summary>
+    public bool Hidden { get; set; }
+
+    /// <summary>
+    /// Line dash
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new string BorderColor { get; set; }
-
-    public new double BorderWidth { get; set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new string HoverBackgroundColor { get; set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new string HoverBorderColor { get; set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new string HoverBorderWidth { get; set; }
+    public List<int> HoverBorderDash { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Label { get; set; }
@@ -26,39 +33,75 @@ public class LineChartDataset : ChartDataset
     /// The fill color for points.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new List<string> PointBackgroundColor { get; set; } = new List<string> { "rgba(0, 0, 0, 0.1)" };
+    public List<string> PointBackgroundColor { get; set; } = new List<string> { "rgba(0, 0, 0, 0.1)" };
 
     /// <summary>
     /// The border color for points.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new List<string> PointBorderColor { get; set; } = new List<string> { "rgba(0, 0, 0, 0.1)" };
+    public List<string> PointBorderColor { get; set; } = new List<string> { "rgba(0, 0, 0, 0.1)" };
 
     /// <summary>
     /// The width of the point border in pixels
     /// </summary>
-    public new List<int> PointBorderWidth { get; set; } = new List<int> { 1 };
+    public List<double> PointBorderWidth { get; set; } = new List<double> { 1 };
 
+    /// <summary>
+    /// The pixel size of the non-displayed point that reacts to mouse events.
+    /// </summary>
+    public List<double> PointHitRadius { get; set; } = new List<double> { 1 };
+
+    /// <summary>
+    /// Point background color when hovered.
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new string PointHoverBackgroundColor { get; set; }
+    public List<string> PointHoverBackgroundColor { get; set; }
 
+    /// <summary>
+    /// Point border color when hovered.
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new string PointHoverBorderColor { get; set; }
+    public List<string> PointHoverBorderColor { get; set; }
 
+    /// <summary>
+    /// Border width of point when hovered.
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new List<int> PointHoverBorderWidth { get; set; } = new List<int> { 1 };
+    public List<double> PointHoverBorderWidth { get; set; } = new List<double> { 1 };
 
-    public List<int> PointHoverRadius { get; set; } = new List<int> { 4 };
+    /// <summary>
+    /// The radius of the point when hovered.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<int> PointHoverRadius { get; set; } = new List<int> { 1 }; // 4
 
     /// <summary>
     /// The radius of the point shape. If set to 0, the point is not rendered.
     /// Default: 3
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int> PointRadius { get; set; } = new List<int> { 3 };
+    public List<int> PointRadius { get; set; } = new List<int> { 1 }; // 3
 
+    /// <summary>
+    /// The rotation of the point in degrees.
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<int> PointRotation { get; set; } = new List<int> { 0 };
+
+    /// <summary>
+    /// Style of the point.
+    /// </summary>
+    public List<string> PointStyle { get; set; } = new List<string> { "circle" };
+
+    // Segment
+    // https://www.chartjs.org/docs/latest/api/interfaces/LineControllerDatasetOptions.html#segment
+
+    public bool ShowLine { get; set; } = true;
+
+    /// <summary>
+    /// true to show the line as a stepped line (tension will be ignored).
+    /// </summary>
+    public bool Stepped { get; set; }
 
     public double Tension { get; set; } = 0.5;
 }

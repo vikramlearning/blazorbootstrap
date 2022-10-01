@@ -28,5 +28,5 @@ public class ChartDataset : IChartDataset
     public List<string> HoverBorderColor { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string> HoverBorderWidth { get; set; }
+    public List<double> HoverBorderWidth { get; set; }
 }
