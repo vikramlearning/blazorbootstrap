@@ -10,6 +10,10 @@ if (!window.blazorChart.line) {
     window.blazorChart.line = {};
 }
 
+if (!window.blazorChart.bar) {
+    window.blazorChart.bar = {};
+}
+
 window.blazorBootstrap = {
     alert: {
         initialize: (elementId, dotNetHelper) => {
@@ -262,11 +266,65 @@ window.blazorChart = {
     },
 }
 
-window.blazorChart.line = {
+window.blazorChart.bar = {
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
-        //console.log(options); // NOTE: this gives more details in the chrome dev tools
+        const _data = {
+            labels: data.labels,
+            datasets: data.datasets
+        };
+
+        const config = {
+            type: type,
+            data: _data,
+            options: options,
+            //plugins: [ChartDataLabels]
+        };
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options) => {
+        let chart = window.blazorChart.bar.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.bar.create(elementId, type, data, options);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.bar.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
+        }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.bar.get(elementId);
+        if (chart) {
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        } else {
+            window.blazorChart.bar.create(elementId, type, data, options);
+        }
+    },
+}
+
+window.blazorChart.line = {
+    create: (elementId, type, data, options) => {
+        let chartEl = document.getElementById(elementId);
 
         const _data = {
             labels: data.labels,

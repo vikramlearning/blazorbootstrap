@@ -96,6 +96,9 @@ public class LineChartDataset : ChartDataset
     // Segment
     // https://www.chartjs.org/docs/latest/api/interfaces/LineControllerDatasetOptions.html#segment
 
+    /// <summary>
+    /// If false, the lines between points are not drawn.
+    /// </summary>
     public bool ShowLine { get; set; } = true;
 
     /// <summary>
@@ -104,4 +107,9 @@ public class LineChartDataset : ChartDataset
     public bool Stepped { get; set; }
 
     public double Tension { get; set; } = 0.5;
+
+    public LineChartDataset()
+    {
+        this.Type = "line";
+    }
 }

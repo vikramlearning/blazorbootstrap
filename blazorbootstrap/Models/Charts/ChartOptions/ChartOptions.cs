@@ -1,5 +1,7 @@
 ﻿namespace BlazorBootstrap;
 
+public interface IChartOptions { }
+
 /// <summary>
 /// <see cref="https://www.chartjs.org/docs/latest/general/options.html"/>
 /// </summary>
@@ -21,6 +23,7 @@ public class ChartOptions
     public bool Responsive { get; set; }
 
     public Scales Scales { get; set; } = new Scales();
+
     //tooltips -> mode, intersect
 }
 
