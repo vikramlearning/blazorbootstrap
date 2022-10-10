@@ -104,6 +104,9 @@ public class Plugins
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Title? Title { get; set; } = new Title();
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ChartTooltip Tooltip { get; set; }
 }
 
 public class Scales
@@ -193,4 +196,108 @@ public class ChartFont
     /// <see cref="https://developer.mozilla.org/en-US/docs/Web/CSS/line-height"/>
     /// </summary>
     public double LineHeight { get; set; } = 1.2;
+}
+
+/// <summary>
+/// Tooltip for bubble, doughnut, pie, polar area, and scatter charts
+/// <see cref="https://www.chartjs.org/docs/latest/configuration/tooltip.html"/>
+/// </summary>
+public class ChartTooltip
+{
+    /// <summary>
+    /// Are on-canvas tooltips enabled?
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// Background color of the tooltip.
+    /// </summary>
+    public string BackgroundColor { get; set; } = "rgba(0, 0, 0, 0.8)";
+
+    /// <summary>
+    /// Color of title text.
+    /// </summary>
+    public string TitleColor { get; set; } = "#fff";
+
+    public ChartFont TitleFont { get; set; } = new ChartFont();
+
+    /// <summary>
+    /// Horizontal alignment of the title text lines. left/right/center.
+    /// </summary>
+    public string TitleAlign { get; set; } = "left";
+
+    /// <summary>
+    /// Spacing to add to top and bottom of each title line.
+    /// </summary>
+    public int TitleSpacing { get; set; } = 2;
+
+    /// <summary>
+    /// Margin to add on bottom of title section.
+    /// </summary>
+    public int TitleMarginBottom { get; set; } = 6;
+
+    /// <summary>
+    /// Color of body text.
+    /// </summary>
+    public string BodyColor { get; set; } = "#fff";
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ChartFont BodyFont { get; set; }
+
+    /// <summary>
+    /// Horizontal alignment of the body text lines. left/right/center.
+    /// </summary>
+    public string BodyAlign { get; set; } = "left";
+
+    /// <summary>
+    /// Spacing to add to top and bottom of each tooltip item.
+    /// </summary>
+    public int BodySpacing { get; set; } = 2;
+
+    /// <summary>
+    /// Color of footer text.
+    /// </summary>
+    public string FooterColor { get; set; } = "#fff";
+
+    public ChartFont FooterFont { get; set; } = new ChartFont();
+
+    /// <summary>
+    /// Horizontal alignment of the footer text lines. left/right/center.
+    /// </summary>
+    public string FooterAlign { get; set; } = "left";
+
+    /// <summary>
+    /// Spacing to add to top and bottom of each footer line.
+    /// </summary>
+    public int FooterSpacing { get; set; } = 2;
+
+    /// <summary>
+    /// Margin to add before drawing the footer.
+    /// </summary>
+    public int FooterMarginTop { get; set; } = 6;
+
+    /// <summary>
+    /// Extra distance to move the end of the tooltip arrow away from the tooltip point.
+    /// </summary>
+    public int CaretPadding { get; set; } = 2;
+
+    /// <summary>
+    /// Size, in px, of the tooltip arrow.
+    /// </summary>
+    public int CaretSize { get; set; } = 5;
+
+    /// <summary>
+    /// If true, color boxes are shown in the tooltip.
+    /// </summary>
+    public bool DisplayColors { get; set; } = true;
+
+    /// <summary>
+    /// Position of the tooltip caret in the X direction. left/center/right.
+    /// </summary>
+    public string XAlign { get; set; }
+
+    /// <summary>
+    /// Position of the tooltip caret in the Y direction. top/center/bottom.
+    /// </summary>
+    public string YAlign { get; set; }
 }

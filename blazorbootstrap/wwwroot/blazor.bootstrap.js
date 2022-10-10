@@ -214,14 +214,9 @@ window.blazorChart = {
         //console.log(data);
         //console.log(options); // NOTE: this gives more details in the chrome dev tools
 
-        const _data = {
-            labels: data.labels,
-            datasets: data.datasets
-        };
-
         const config = {
             type: type,
-            data: _data,
+            data: data,
             options: options,
             //plugins: [ChartDataLabels]
         };
@@ -270,14 +265,9 @@ window.blazorChart.bar = {
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
-        const _data = {
-            labels: data.labels,
-            datasets: data.datasets
-        };
-
         const config = {
             type: type,
-            data: _data,
+            data: data,
             options: options,
             //plugins: [ChartDataLabels]
         };
@@ -326,14 +316,9 @@ window.blazorChart.line = {
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
-        const _data = {
-            labels: data.labels,
-            datasets: data.datasets
-        };
-
         const config = {
             type: type,
-            data: _data,
+            data: data,
             options: options,
         };
 

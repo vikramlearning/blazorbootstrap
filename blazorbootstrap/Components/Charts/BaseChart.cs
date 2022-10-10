@@ -24,18 +24,20 @@ public class BaseChart : BaseComponent
 
     public async Task Clear() { }
 
-    //public virtual async Task InitializeAsync(ChartData data, ChartOptions options)
-    //{
-    //    if (data is not null && data.Datasets is not null && data.Datasets.Any())
-    //    {
-    //        var _data = GetChartDataObject(data);
+    public virtual async Task InitializeAsync(ChartData data, ChartOptions options)
+    {
+        if (data is not null && data.Datasets is not null && data.Datasets.Any())
+        {
+            var _data = GetChartDataObject(data);
 
-    //        if (chartType == ChartType.Line)
-    //            await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), _data, options);
-    //        else
-    //            await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), _data, options);
-    //    }
-    //}
+            if (chartType == ChartType.Bar)
+                await JS.InvokeVoidAsync("window.blazorChart.bar.initialize", ElementId, GetChartType(), _data, options);
+            else if (chartType == ChartType.Line)
+                await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), _data, options);
+            else
+                await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), _data, options);
+        }
+    }
 
     public async Task Render() { }
 
@@ -58,7 +60,9 @@ public class BaseChart : BaseComponent
         {
             var _data = GetChartDataObject(data);
 
-            if (chartType == ChartType.Line)
+            if (chartType == ChartType.Bar)
+                await JS.InvokeVoidAsync("window.blazorChart.bar.update", ElementId, GetChartType(), _data, options);
+            else if (chartType == ChartType.Line)
                 await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), _data, options);
             else
                 await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, options);
