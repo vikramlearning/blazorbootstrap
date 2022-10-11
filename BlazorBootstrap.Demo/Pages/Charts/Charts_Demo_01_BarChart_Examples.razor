@@ -73,5 +73,10 @@
         await barChart.UpdateAsync(chartData, chartOptions);
     }
 
-    private string GetRandomBackgroundColor() => Color.FromArgb(random.Next(256), random.Next(256), random.Next(256)).ToRgbString();
+    private string GetRandomBackgroundColor()
+    {
+        var c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+        Console.WriteLine($"Color Name: {c.Name}, HEX: {c.ToHexString()}, RGB: {c.ToRgbString()}, IsNamedColor: {c.IsNamedColor}");
+        return c.ToRgbString();
+    }
 }
