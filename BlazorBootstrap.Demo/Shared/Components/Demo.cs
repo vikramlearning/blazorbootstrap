@@ -23,9 +23,16 @@ public class Demo : ComponentBase
 
 			using (Stream stream = Type.Assembly.GetManifestResourceStream(resourceName))
 			{
-				using (StreamReader reader = new StreamReader(stream))
+				try
 				{
-					code = await reader.ReadToEndAsync();
+					using (StreamReader reader = new StreamReader(stream))
+					{
+						code = await reader.ReadToEndAsync();
+					}
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex.Message);
 				}
 			}
 		}
@@ -47,40 +54,43 @@ public class Demo : ComponentBase
 
 		builder.CloseElement();
 
-		//if (Tabs)
-		//{
-		//	builder.OpenElement(200, "div");
-		//	builder.AddAttribute(201, "class", "card-header");
+        //if (Tabs)
+        //{
+        //	builder.OpenElement(200, "div");
+        //	builder.AddAttribute(201, "class", "card-header");
 
-		//	builder.OpenComponent<HxTabPanel>(300);
-		//	builder.AddAttribute(301, nameof(HxTabPanel.CssClass), "card-header-tabs");
-		//	builder.AddAttribute(302, "ChildContent", (RenderFragment)((builder2) =>
-		//	{
-		//		builder2.OpenComponent<HxTab>(303);
-		//		builder2.AddAttribute(304, "Id", "demo");
-		//		builder2.AddAttribute(305, "Title", "Demo");
-		//		builder2.AddAttribute(306, "OnTabActivated", EventCallback.Factory.Create(this, () => { showingDemo = true; }));
-		//		builder2.CloseComponent();
+        //	builder.OpenComponent<Tabs>(300);
+        //	builder.AddAttribute(301, nameof(Tabs.CssClass), "card-header-tabs");
+        //	builder.AddAttribute(302, "ChildContent", (RenderFragment)((builder2) =>
+        //	{
+        //		builder2.OpenComponent<Tab>(303);
+        //		builder2.AddAttribute(304, "Id", "demo");
+        //		builder2.AddAttribute(305, "Title", "Demo");
+        //		builder2.AddAttribute(306, "OnTabActivated", EventCallback.Factory.Create(this, () => { showingDemo = true; }));
+        //		builder2.CloseComponent();
 
-		//		builder2.OpenComponent<HxTab>(354);
-		//		builder2.AddAttribute(356, "Id", "source");
-		//		builder2.AddAttribute(357, "Title", "Source");
-		//		builder2.AddAttribute(358, "OnTabActivated", EventCallback.Factory.Create(this, () => { showingDemo = false; }));
-		//		builder2.CloseComponent();
-		//	}));
-		//	builder.CloseComponent();
+        //		builder2.OpenComponent<Tab>(354);
+        //		builder2.AddAttribute(356, "Id", "source");
+        //		builder2.AddAttribute(357, "Title", "Source");
+        //		builder2.AddAttribute(358, "OnTabActivated", EventCallback.Factory.Create(this, () => { showingDemo = false; }));
+        //		builder2.CloseComponent();
+        //	}));
+        //	builder.CloseComponent();
 
-		//	builder.CloseElement(); // card-header
-		//}
+        //	builder.CloseElement(); // card-header
+        //}
 
 
-		builder.OpenElement(300, "div");
+        builder.OpenElement(300, "div");
 		builder.AddAttribute(301, "class", "highlight");
 
 		builder.OpenElement(400, "pre");
 		builder.OpenElement(401, "code");
 		builder.AddAttribute(402, "class", "language-cshtml");
-		builder.AddContent(403, code.Trim());
+		if (code != null)
+		{
+			builder.AddContent(403, code.Trim());
+		}
 		builder.CloseElement(); // end: code
 		builder.CloseElement(); // end: pre
 

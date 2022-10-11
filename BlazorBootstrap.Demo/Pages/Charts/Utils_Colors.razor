@@ -1,0 +1,199 @@
+﻿@using BlazorBootstrap.Extensions
+@using Color = System.Drawing.Color
+
+<table class="table table-hover table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Color</th>
+            <th>Color Name</th>
+            <th>Hexa</th>
+            <th>Rgb</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int i = 1;
+            foreach (var color in chartColors)
+            {
+                <tr>
+                    <td>@i</td>
+                    <td style="background-color:@color.Hex"></td>
+                    <td>@color.Name</td>
+                    <td>@color.Hex</td>
+                    <td>@color.Rgb</td>
+                </tr>
+
+                i++;
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    List<ChartColor> chartColors = new List<ChartColor>();
+
+    protected override void OnInitialized()
+    {
+        chartColors.Add(new ChartColor(Color.AliceBlue));
+        chartColors.Add(new ChartColor(Color.AntiqueWhite));
+        chartColors.Add(new ChartColor(Color.Aqua));
+        chartColors.Add(new ChartColor(Color.Aquamarine));
+        chartColors.Add(new ChartColor(Color.Azure));
+        chartColors.Add(new ChartColor(Color.Beige));
+        chartColors.Add(new ChartColor(Color.Bisque));
+        chartColors.Add(new ChartColor(Color.Black));
+        chartColors.Add(new ChartColor(Color.BlanchedAlmond));
+        chartColors.Add(new ChartColor(Color.Blue));
+        chartColors.Add(new ChartColor(Color.BlueViolet));
+        chartColors.Add(new ChartColor(Color.Brown));
+        chartColors.Add(new ChartColor(Color.BurlyWood));
+        chartColors.Add(new ChartColor(Color.CadetBlue));
+        chartColors.Add(new ChartColor(Color.Chartreuse));
+        chartColors.Add(new ChartColor(Color.Chocolate));
+        chartColors.Add(new ChartColor(Color.Coral));
+        chartColors.Add(new ChartColor(Color.CornflowerBlue));
+        chartColors.Add(new ChartColor(Color.Cornsilk));
+        chartColors.Add(new ChartColor(Color.Crimson));
+        chartColors.Add(new ChartColor(Color.Cyan));
+        chartColors.Add(new ChartColor(Color.DarkBlue));
+        chartColors.Add(new ChartColor(Color.DarkCyan));
+        chartColors.Add(new ChartColor(Color.DarkGoldenrod));
+        chartColors.Add(new ChartColor(Color.DarkGray));
+        chartColors.Add(new ChartColor(Color.DarkGreen));
+        chartColors.Add(new ChartColor(Color.DarkKhaki));
+        chartColors.Add(new ChartColor(Color.DarkMagenta));
+        chartColors.Add(new ChartColor(Color.DarkOliveGreen));
+        chartColors.Add(new ChartColor(Color.DarkOrange));
+        chartColors.Add(new ChartColor(Color.DarkOrchid));
+        chartColors.Add(new ChartColor(Color.DarkRed));
+        chartColors.Add(new ChartColor(Color.DarkSalmon));
+        chartColors.Add(new ChartColor(Color.DarkSeaGreen));
+        chartColors.Add(new ChartColor(Color.DarkSlateBlue));
+        chartColors.Add(new ChartColor(Color.DarkSlateGray));
+        chartColors.Add(new ChartColor(Color.DarkTurquoise));
+        chartColors.Add(new ChartColor(Color.DarkViolet));
+        chartColors.Add(new ChartColor(Color.DeepPink));
+        chartColors.Add(new ChartColor(Color.DeepSkyBlue));
+        chartColors.Add(new ChartColor(Color.DimGray));
+        chartColors.Add(new ChartColor(Color.DodgerBlue));
+        chartColors.Add(new ChartColor(Color.Firebrick));
+        chartColors.Add(new ChartColor(Color.FloralWhite));
+        chartColors.Add(new ChartColor(Color.ForestGreen));
+        chartColors.Add(new ChartColor(Color.Fuchsia));
+        chartColors.Add(new ChartColor(Color.Gainsboro));
+        chartColors.Add(new ChartColor(Color.GhostWhite));
+        chartColors.Add(new ChartColor(Color.Gold));
+        chartColors.Add(new ChartColor(Color.Goldenrod));
+        chartColors.Add(new ChartColor(Color.Gray));
+        chartColors.Add(new ChartColor(Color.Green));
+        chartColors.Add(new ChartColor(Color.GreenYellow));
+        chartColors.Add(new ChartColor(Color.Honeydew));
+        chartColors.Add(new ChartColor(Color.HotPink));
+        chartColors.Add(new ChartColor(Color.IndianRed));
+        chartColors.Add(new ChartColor(Color.Indigo));
+        chartColors.Add(new ChartColor(Color.Ivory));
+        chartColors.Add(new ChartColor(Color.Khaki));
+        chartColors.Add(new ChartColor(Color.Lavender));
+        chartColors.Add(new ChartColor(Color.LavenderBlush));
+        chartColors.Add(new ChartColor(Color.LawnGreen));
+        chartColors.Add(new ChartColor(Color.LemonChiffon));
+        chartColors.Add(new ChartColor(Color.LightBlue));
+        chartColors.Add(new ChartColor(Color.LightCoral));
+        chartColors.Add(new ChartColor(Color.LightCyan));
+        chartColors.Add(new ChartColor(Color.LightGoldenrodYellow));
+        chartColors.Add(new ChartColor(Color.LightGray));
+        chartColors.Add(new ChartColor(Color.LightGreen));
+        chartColors.Add(new ChartColor(Color.LightPink));
+        chartColors.Add(new ChartColor(Color.LightSalmon));
+        chartColors.Add(new ChartColor(Color.LightSeaGreen));
+        chartColors.Add(new ChartColor(Color.LightSkyBlue));
+        chartColors.Add(new ChartColor(Color.LightSlateGray));
+        chartColors.Add(new ChartColor(Color.LightSteelBlue));
+        chartColors.Add(new ChartColor(Color.LightYellow));
+        chartColors.Add(new ChartColor(Color.Lime));
+        chartColors.Add(new ChartColor(Color.LimeGreen));
+        chartColors.Add(new ChartColor(Color.Linen));
+        chartColors.Add(new ChartColor(Color.Magenta));
+        chartColors.Add(new ChartColor(Color.Maroon));
+        chartColors.Add(new ChartColor(Color.MediumAquamarine));
+        chartColors.Add(new ChartColor(Color.MediumBlue));
+        chartColors.Add(new ChartColor(Color.MediumOrchid));
+        chartColors.Add(new ChartColor(Color.MediumPurple));
+        chartColors.Add(new ChartColor(Color.MediumSeaGreen));
+        chartColors.Add(new ChartColor(Color.MediumSlateBlue));
+        chartColors.Add(new ChartColor(Color.MediumSpringGreen));
+        chartColors.Add(new ChartColor(Color.MediumTurquoise));
+        chartColors.Add(new ChartColor(Color.MediumVioletRed));
+        chartColors.Add(new ChartColor(Color.MidnightBlue));
+        chartColors.Add(new ChartColor(Color.MintCream));
+        chartColors.Add(new ChartColor(Color.MistyRose));
+        chartColors.Add(new ChartColor(Color.Moccasin));
+        chartColors.Add(new ChartColor(Color.NavajoWhite));
+        chartColors.Add(new ChartColor(Color.Navy));
+        chartColors.Add(new ChartColor(Color.OldLace));
+        chartColors.Add(new ChartColor(Color.Olive));
+        chartColors.Add(new ChartColor(Color.OliveDrab));
+        chartColors.Add(new ChartColor(Color.Orange));
+        chartColors.Add(new ChartColor(Color.OrangeRed));
+        chartColors.Add(new ChartColor(Color.Orchid));
+        chartColors.Add(new ChartColor(Color.PaleGoldenrod));
+        chartColors.Add(new ChartColor(Color.PaleGreen));
+        chartColors.Add(new ChartColor(Color.PaleTurquoise));
+        chartColors.Add(new ChartColor(Color.PaleVioletRed));
+        chartColors.Add(new ChartColor(Color.PapayaWhip));
+        chartColors.Add(new ChartColor(Color.PeachPuff));
+        chartColors.Add(new ChartColor(Color.Peru));
+        chartColors.Add(new ChartColor(Color.Pink));
+        chartColors.Add(new ChartColor(Color.Plum));
+        chartColors.Add(new ChartColor(Color.PowderBlue));
+        chartColors.Add(new ChartColor(Color.Purple));
+        chartColors.Add(new ChartColor(Color.RebeccaPurple));
+        chartColors.Add(new ChartColor(Color.Red));
+        chartColors.Add(new ChartColor(Color.RosyBrown));
+        chartColors.Add(new ChartColor(Color.RoyalBlue));
+        chartColors.Add(new ChartColor(Color.SaddleBrown));
+        chartColors.Add(new ChartColor(Color.Salmon));
+        chartColors.Add(new ChartColor(Color.SandyBrown));
+        chartColors.Add(new ChartColor(Color.SeaGreen));
+        chartColors.Add(new ChartColor(Color.SeaShell));
+        chartColors.Add(new ChartColor(Color.Sienna));
+        chartColors.Add(new ChartColor(Color.Silver));
+        chartColors.Add(new ChartColor(Color.SkyBlue));
+        chartColors.Add(new ChartColor(Color.SlateBlue));
+        chartColors.Add(new ChartColor(Color.SlateGray));
+        chartColors.Add(new ChartColor(Color.Snow));
+        chartColors.Add(new ChartColor(Color.SpringGreen));
+        chartColors.Add(new ChartColor(Color.SteelBlue));
+        chartColors.Add(new ChartColor(Color.Tan));
+        chartColors.Add(new ChartColor(Color.Teal));
+        chartColors.Add(new ChartColor(Color.Thistle));
+        chartColors.Add(new ChartColor(Color.Tomato));
+        chartColors.Add(new ChartColor(Color.Transparent));
+        chartColors.Add(new ChartColor(Color.Turquoise));
+        chartColors.Add(new ChartColor(Color.Violet));
+        chartColors.Add(new ChartColor(Color.Wheat));
+        chartColors.Add(new ChartColor(Color.White));
+        chartColors.Add(new ChartColor(Color.WhiteSmoke));
+        chartColors.Add(new ChartColor(Color.Yellow));
+        chartColors.Add(new ChartColor(Color.YellowGreen));
+    }
+
+    public class ChartColor
+    {
+        public ChartColor(System.Drawing.Color color)
+        {
+            Name = color.Name;
+            Hex = color.ToHexString();
+            Hexa = color.ToHexaString();
+            Rgb = color.ToRgbString();
+            Rgba = color.ToRgbaString();
+        }
+
+        public string Name { get; set; }
+        public string Hex { get; set; }
+        public string Hexa { get; set; }
+        public string Rgb { get; set; }
+        public string Rgba { get; set; }
+    }
+}

@@ -1,174 +1,77 @@
-﻿<BarChart @ref="barChart" Width="500" />
+﻿@using BlazorBootstrap.Extensions
+@using Color = System.Drawing.Color
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="async () => await AddData()">Add Data</Button>
+<BarChart @ref="barChart" Class="mb-4" />
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddData()">Add Data</Button>
+
 @code {
     private BarChart barChart;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private ChartData chartData;
+    private ChartOptions chartOptions;
+
+    Random random = new Random();
+
+    protected override void OnInitialized()
     {
-        var data = new ChartData
+        chartData = new ChartData
             {
                 Labels = new List<string> { "January", "February", "March", "April", "May", "June", "July" },
                 Datasets = new List<IChartDataset>()
                 {
                     new BarChartDataset()
                     {
-                        Label = "Bar chart dataset",
-                        Data = new List<double>{ 65, 59, 80, 81, 56, 55, 40 },
-                        BackgroundColor = new List<string>
-                        {
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(255, 159, 64, 0.2)",
-                            "rgba(255, 205, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
-                            "rgba(201, 203, 207, 0.2)"
-                        },
-                        BorderColor = new List<string>
-                        {
-                            "rgb(255, 99, 132)",
-                            "rgb(255, 159, 64)",
-                            "rgb(255, 205, 86)",
-                            "rgb(75, 192, 192)",
-                            "rgb(54, 162, 235)",
-                            "rgb(153, 102, 255)",
-                            "rgb(201, 203, 207)"
-                        },
-                        BorderWidth = new List<double>{2},
+                        Label = "Bar chart dataset 1",
+                        Data = new List<double> { random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120) },
+                        BackgroundColor = new List<string> { GetRandomBackgroundColor() },
+                        BorderWidth = new List<double>{ 0 },
                         CategoryPercentage = 0.8,
                         BarPercentage = 1,
                     },
                     new BarChartDataset()
                     {
-                        Label = "Bar chart dataset",
-                        Data = new List<double>{ 65, 59, 80, 81, 56, 55, 40 },
-                        BackgroundColor = new List<string>
-                        {
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(255, 159, 64, 0.2)",
-                            "rgba(255, 205, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
-                            "rgba(201, 203, 207, 0.2)"
-                        },
-                        BorderColor = new List<string>
-                        {
-                            "rgb(255, 99, 132)",
-                            "rgb(255, 159, 64)",
-                            "rgb(255, 205, 86)",
-                            "rgb(75, 192, 192)",
-                            "rgb(54, 162, 235)",
-                            "rgb(153, 102, 255)",
-                            "rgb(201, 203, 207)"
-                        },
-                        BorderWidth = new List<double>{2},
+                        Label = "Bar chart dataset 2",
+                        Data = new List<double> { random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120) },
+                        BackgroundColor = new List<string> { GetRandomBackgroundColor() },
+                        BorderWidth = new List<double>{ 0 },
+                    },
+                    new BarChartDataset()
+                    {
+                        Label = "Bar chart dataset 3",
+                        Data = new List<double> { random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120) },
+                        BackgroundColor = new List<string> { GetRandomBackgroundColor() },
+                        BorderWidth = new List<double> { 0 },
                     }
                 }
             };
+        chartOptions = new ChartOptions { Responsive = true };
+    }
 
-        var options = new ChartOptions();
-        options.Responsive = true;
-
-        await barChart.UpdateAsync(data, options);
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await barChart.InitializeAsync(chartData, chartOptions);
+        }
         await base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task AddData()
     {
-        var data = new ChartData
-            {
-                Labels = new List<string> { "January", "February", "March", "April", "May", "June", "July" },
-                Datasets = new List<IChartDataset>()
+        if (chartData is null) return;
+
+        chartData.Datasets.Add(
+            new BarChartDataset()
                 {
-                    new BarChartDataset()
-                    {
-                        Label = "Bar chart dataset",
-                        Data = new List<double>{ 65, 59, 80, 81, 56, 55, 40 },
-                        BackgroundColor = new List<string>
-                        {
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(255, 159, 64, 0.2)",
-                            "rgba(255, 205, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
-                            "rgba(201, 203, 207, 0.2)"
-                        },
-                        BorderColor = new List<string>
-                        {
-                            "rgb(255, 99, 132)",
-                            "rgb(255, 159, 64)",
-                            "rgb(255, 205, 86)",
-                            "rgb(75, 192, 192)",
-                            "rgb(54, 162, 235)",
-                            "rgb(153, 102, 255)",
-                            "rgb(201, 203, 207)"
-                        },
-                        BorderWidth = new List<double>{2},
-                        CategoryPercentage = 0.8,
-                        BarPercentage = 1,
-                    },
-                    new BarChartDataset()
-                    {
-                        Label = "Bar chart dataset",
-                        Data = new List<double>{ 65, 59, 80, 81, 56, 55, 40 },
-                        BackgroundColor = new List<string>
-                        {
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(255, 159, 64, 0.2)",
-                            "rgba(255, 205, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
-                            "rgba(201, 203, 207, 0.2)"
-                        },
-                        BorderColor = new List<string>
-                        {
-                            "rgb(255, 99, 132)",
-                            "rgb(255, 159, 64)",
-                            "rgb(255, 205, 86)",
-                            "rgb(75, 192, 192)",
-                            "rgb(54, 162, 235)",
-                            "rgb(153, 102, 255)",
-                            "rgb(201, 203, 207)"
-                        },
-                        BorderWidth = new List<double>{2},
-                    },
-                    new BarChartDataset()
-                    {
-                        Label = "Bar chart dataset",
-                        Data = new List<double>{ 65, 59, 80, 81, 56, 55, 40 },
-                        BackgroundColor = new List<string>
-                        {
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(255, 159, 64, 0.2)",
-                            "rgba(255, 205, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
-                            "rgba(201, 203, 207, 0.2)"
-                        },
-                        BorderColor = new List<string>
-                        {
-                            "rgb(255, 99, 132)",
-                            "rgb(255, 159, 64)",
-                            "rgb(255, 205, 86)",
-                            "rgb(75, 192, 192)",
-                            "rgb(54, 162, 235)",
-                            "rgb(153, 102, 255)",
-                            "rgb(201, 203, 207)"
-                        },
-                        BorderWidth = new List<double>{2},
-                    }
-                }
-            };
+                    Label = $"Bar chart dataset {chartData.Datasets.Count + 1}",
+                    Data = new List<double> { random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120) },
+                    BackgroundColor = new List<string> { GetRandomBackgroundColor() },
+                    BorderWidth = new List<double> { 0 },
+                });
 
-        var options = new ChartOptions();
-        options.Responsive = true;
-
-        await barChart.UpdateAsync(data, options);
+        await barChart.UpdateAsync(chartData, chartOptions);
     }
+
+    private string GetRandomBackgroundColor() => Color.FromArgb(random.Next(256), random.Next(256), random.Next(256)).ToRgbString();
 }
