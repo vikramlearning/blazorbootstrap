@@ -1,6 +1,4 @@
-﻿using Microsoft.JSInterop;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public class BaseChart : BaseComponent
 {
@@ -24,16 +22,16 @@ public class BaseChart : BaseComponent
 
     public async Task Clear() { }
 
-    public virtual async Task InitializeAsync(ChartData data, ChartOptions options)
+    public virtual async Task InitializeAsync(ChartData data, IChartOptions options)
     {
         if (data is not null && data.Datasets is not null && data.Datasets.Any())
         {
             var _data = GetChartDataObject(data);
 
             if (chartType == ChartType.Bar)
-                await JS.InvokeVoidAsync("window.blazorChart.bar.initialize", ElementId, GetChartType(), _data, options);
+                await JS.InvokeVoidAsync("window.blazorChart.bar.initialize", ElementId, GetChartType(), _data, (BarChartOptions)options);
             else if (chartType == ChartType.Line)
-                await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), _data, options);
+                await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), _data, (LineChartOptions)options);
             else
                 await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), _data, options);
         }
@@ -54,16 +52,16 @@ public class BaseChart : BaseComponent
 
     public async Task ToBase64Image(string type, double quality) { }
 
-    public virtual async Task UpdateAsync(ChartData data, ChartOptions options)
+    public virtual async Task UpdateAsync(ChartData data, IChartOptions options)
     {
         if (data is not null && data.Datasets is not null && data.Datasets.Any())
         {
             var _data = GetChartDataObject(data);
 
             if (chartType == ChartType.Bar)
-                await JS.InvokeVoidAsync("window.blazorChart.bar.update", ElementId, GetChartType(), _data, options);
+                await JS.InvokeVoidAsync("window.blazorChart.bar.update", ElementId, GetChartType(), _data, (BarChartOptions)options);
             else if (chartType == ChartType.Line)
-                await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), _data, options);
+                await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), _data, (LineChartOptions)options);
             else
                 await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, options);
         }

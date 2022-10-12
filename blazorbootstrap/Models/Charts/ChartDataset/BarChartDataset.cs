@@ -25,12 +25,6 @@ public class BarChartDataset : ChartDataset
     public double CategoryPercentage { get; set; } = 0.8;
 
     /// <summary>
-    /// The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string IndexAxis { get; set; } = "x";
-
-    /// <summary>
     /// The label for the dataset which appears in the legend and tooltips.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

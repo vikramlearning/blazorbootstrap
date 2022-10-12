@@ -9,6 +9,11 @@ public class LineChartDataset : ChartDataset
     public List<int> BorderDash { get; set; }
 
     /// <summary>
+    /// Line dash offset.
+    /// </summary>
+    public double BorderDashOffset { get; set; }
+
+    /// <summary>
     /// Both line and radar charts support a fill option on the dataset object 
     /// which can be used to create area between two datasets or a dataset and 
     /// a boundary, i.e. the scale origin, start or end
@@ -106,7 +111,19 @@ public class LineChartDataset : ChartDataset
     /// </summary>
     public bool Stepped { get; set; }
 
-    public double Tension { get; set; } = 0.5;
+    public double Tension { get; set; } = 0.2;
+
+    /// <summary>
+    /// The ID of the x axis to plot this dataset on.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string XAxisID { get; set; }
+
+    /// <summary>
+    /// The ID of the y axis to plot this dataset on.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string YAxisID { get; set; }
 
     public LineChartDataset()
     {

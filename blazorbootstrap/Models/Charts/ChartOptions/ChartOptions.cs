@@ -5,7 +5,7 @@ public interface IChartOptions { }
 /// <summary>
 /// <see cref="https://www.chartjs.org/docs/latest/general/options.html"/>
 /// </summary>
-public class ChartOptions
+public class ChartOptions : IChartOptions
 {
     //hover -> mode, intersect
     //maintainAspectRatio

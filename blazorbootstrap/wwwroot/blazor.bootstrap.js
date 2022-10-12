@@ -268,8 +268,7 @@ window.blazorChart.bar = {
         const config = {
             type: type,
             data: data,
-            options: options,
-            //plugins: [ChartDataLabels]
+            options: options
         };
 
         const chart = new Chart(

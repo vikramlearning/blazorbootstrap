@@ -3,49 +3,35 @@
 
 <BarChart @ref="barChart" Class="mb-4" />
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddData()">Add Data</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDataAsync()">Add Random Data</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowHorizontalBarChartAsync()">Horizontal Bar Chart</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowVerticalBarChartAsync()">Vertical Bar Chart</Button>
 
 @code {
     private BarChart barChart;
 
     private ChartData chartData;
-    private ChartOptions chartOptions;
+    private BarChartOptions chartOptions;
 
     Random random = new Random();
 
     protected override void OnInitialized()
     {
         chartData = new ChartData
-            {
-                Labels = new List<string> { "January", "February", "March", "April", "May", "June", "July" },
-                Datasets = new List<IChartDataset>()
-                {
-                    new BarChartDataset()
-                    {
-                        Label = "Bar chart dataset 1",
-                        Data = new List<double> { random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120) },
-                        BackgroundColor = new List<string> { GetRandomBackgroundColor() },
-                        BorderWidth = new List<double>{ 0 },
-                        CategoryPercentage = 0.8,
-                        BarPercentage = 1,
-                    },
-                    new BarChartDataset()
-                    {
-                        Label = "Bar chart dataset 2",
-                        Data = new List<double> { random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120) },
-                        BackgroundColor = new List<string> { GetRandomBackgroundColor() },
-                        BorderWidth = new List<double>{ 0 },
-                    },
-                    new BarChartDataset()
-                    {
-                        Label = "Bar chart dataset 3",
-                        Data = new List<double> { random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120) },
-                        BackgroundColor = new List<string> { GetRandomBackgroundColor() },
-                        BorderWidth = new List<double> { 0 },
-                    }
-                }
-            };
-        chartOptions = new ChartOptions { Responsive = true };
+        {
+            Labels = new List<string> { "January", "February", "March", "April", "May", "June", "July" },
+            Datasets = new List<IChartDataset>()
+        };
+
+        chartData.Datasets.Add(GetRandomBarChartDataset());
+        chartData.Datasets.Add(GetRandomBarChartDataset());
+        chartData.Datasets.Add(GetRandomBarChartDataset());
+
+        chartOptions = new BarChartOptions
+        {
+            Responsive = true,
+            Interaction = new Interaction { Mode = InteractionMode.Index }
+        };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -57,26 +43,39 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task AddData()
+    private async Task AddDataAsync()
     {
-        if (chartData is null) return;
+        if (chartData is null || chartData.Datasets is null) return;
 
-        chartData.Datasets.Add(
-            new BarChartDataset()
-                {
-                    Label = $"Bar chart dataset {chartData.Datasets.Count + 1}",
-                    Data = new List<double> { random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120) },
-                    BackgroundColor = new List<string> { GetRandomBackgroundColor() },
-                    BorderWidth = new List<double> { 0 },
-                });
-
+        chartData.Datasets.Add(GetRandomBarChartDataset());
         await barChart.UpdateAsync(chartData, chartOptions);
     }
 
-    private string GetRandomBackgroundColor()
+    private async Task ShowHorizontalBarChartAsync()
     {
+        chartOptions.IndexAxis = "y";
+        await barChart.UpdateAsync(chartData, chartOptions);
+    }
+
+    private async Task ShowVerticalBarChartAsync()
+    {
+        chartOptions.IndexAxis = "x";
+        await barChart.UpdateAsync(chartData, chartOptions);
+    }
+
+    private BarChartDataset GetRandomBarChartDataset()
+    {
+        // random color
         var c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
-        Console.WriteLine($"Color Name: {c.Name}, HEX: {c.ToHexString()}, RGB: {c.ToRgbString()}, IsNamedColor: {c.IsNamedColor}");
-        return c.ToRgbString();
+        Console.WriteLine($"Bar Chart: Color Name: {c.Name}, HEX: {c.ToHexString()}, RGB: {c.ToRgbString()}, IsNamedColor: {c.IsNamedColor}");
+
+        return new BarChartDataset()
+        {
+            Label = $"Bar chart dataset {chartData.Datasets.Count + 1}",
+            Data = new List<double> { random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120), random.Next(120) },
+            BackgroundColor = new List<string> { c.ToRgbString() },
+            BorderColor = new List<string> { c.ToRgbString() },
+            BorderWidth = new List<double> { 0 },
+        };
     }
 }
