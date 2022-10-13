@@ -1,45 +1,94 @@
-﻿<DoughnutChart @ref="doughnutChart" Width="300" Height="300" />
+﻿@using BlazorBootstrap.Extensions
+@using Color = System.Drawing.Color
+
+<DoughnutChart @ref="doughnutChart" Width="400" Class="mb-4" />
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDataAsync()">Add Random Data</Button>
 
 @code {
     private DoughnutChart doughnutChart;
 
+    private ChartData chartData;
+    private DoughnutChartOptions chartOptions;
+    private List<string> backgroundColors;
+
+    Random random = new Random();
+
+    protected override void OnInitialized()
+    {
+        // prepare background colors
+        PrepareBackgroundColors();
+
+        chartData = new ChartData
+        {
+            Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
+            Datasets = new List<IChartDataset>()
+        };
+
+        chartData.Datasets.Add(GetRandomDoughnutChartDataset());
+        //chartData.Datasets.Add(GetRandomDoughnutChartDataset());
+
+        chartOptions = new DoughnutChartOptions
+        {
+            Responsive = true,
+        };
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var data = new ChartData
-            {
-                Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
-                Datasets = new List<IChartDataset>()
-                {
-                    new DoughnutChartDataset()
-                    {
-                        Data = new List<double>{ 189, 170, 111, 215, 89, 155},
-                        BackgroundColor = new List<string>
-                        {
-                            "rgba(255, 99, 132, 0.2)",
-                            "rgba(54, 162, 235, 0.2)",
-                            "rgba(255, 206, 86, 0.2)",
-                            "rgba(75, 192, 192, 0.2)",
-                            "rgba(153, 102, 255, 0.2)",
-                            "rgba(255, 159, 64, 0.2)"
-                        },
-                        BorderColor = new List<string>
-                        {
-                            "rgba(255, 99, 132, 1)",
-                            "rgba(54, 162, 235, 1)",
-                            "rgba(255, 206, 86, 1)",
-                            "rgba(75, 192, 192, 1)",
-                            "rgba(153, 102, 255, 1)",
-                            "rgba(255, 159, 64, 1)"
-                        },
-                        BorderWidth = new List<double>{ 1 }
-                    }
-                }
-            };
-
-        var options = new ChartOptions();
-
-        await doughnutChart.UpdateAsync(data, options);
-
+        if (firstRender)
+        {
+            await doughnutChart.InitializeAsync(chartData, chartOptions);
+        }
         await base.OnAfterRenderAsync(firstRender);
     }
+
+    private async Task AddDataAsync()
+    {
+        if (chartData is null || chartData.Datasets is null) return;
+
+        chartData.Datasets.Add(GetRandomDoughnutChartDataset());
+        await doughnutChart.UpdateAsync(chartData, chartOptions);
+    }
+
+    private DoughnutChartDataset GetRandomDoughnutChartDataset()
+    {
+        return new DoughnutChartDataset()
+        {
+            Data = new List<double> 
+            {
+                random.Next(120),
+                random.Next(120),
+                random.Next(120),
+                random.Next(120),
+                random.Next(120),
+                random.Next(120) 
+            },
+            BackgroundColor = new List<string>
+            {
+                backgroundColors[0],
+                backgroundColors[1],
+                backgroundColors[2],
+                backgroundColors[3],
+                backgroundColors[4],
+                backgroundColors[5]
+            },
+        };
+    }
+
+    private void PrepareBackgroundColors() 
+    {
+        if (backgroundColors is null)
+        {
+            backgroundColors = new List<string>();
+            backgroundColors.Add(GetRandomColor().ToRgbString());
+            backgroundColors.Add(GetRandomColor().ToRgbString());
+            backgroundColors.Add(GetRandomColor().ToRgbString());
+            backgroundColors.Add(GetRandomColor().ToRgbString());
+            backgroundColors.Add(GetRandomColor().ToRgbString());
+            backgroundColors.Add(GetRandomColor().ToRgbString());
+        }
+    }
+
+    private Color GetRandomColor() => Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
 }

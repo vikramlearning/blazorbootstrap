@@ -14,6 +14,14 @@ if (!window.blazorChart.bar) {
     window.blazorChart.bar = {};
 }
 
+if (!window.blazorChart.doughnut) {
+    window.blazorChart.doughnut = {};
+}
+
+if (!window.blazorChart.pie) {
+    window.blazorChart.pie = {};
+}
+
 window.blazorBootstrap = {
     alert: {
         initialize: (elementId, dotNetHelper) => {
@@ -311,6 +319,56 @@ window.blazorChart.bar = {
     },
 }
 
+window.blazorChart.doughnut = {
+    create: (elementId, type, data, options) => {
+        let chartEl = document.getElementById(elementId);
+
+        const config = {
+            type: type,
+            data: data,
+            options: options
+        };
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options) => {
+        let chart = window.blazorChart.doughnut.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.doughnut.create(elementId, type, data, options);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.doughnut.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
+        }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.doughnut.get(elementId);
+        if (chart) {
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        } else {
+            window.blazorChart.doughnut.create(elementId, type, data, options);
+        }
+    },
+}
+
 window.blazorChart.line = {
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
@@ -391,6 +449,56 @@ window.blazorChart.line = {
             chart.update();
         } else {
             window.blazorChart.line.create(elementId, type, data, options);
+        }
+    },
+}
+
+window.blazorChart.pie = {
+    create: (elementId, type, data, options) => {
+        let chartEl = document.getElementById(elementId);
+
+        const config = {
+            type: type,
+            data: data,
+            options: options
+        };
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options) => {
+        let chart = window.blazorChart.pie.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.pie.create(elementId, type, data, options);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.pie.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
+        }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.pie.get(elementId);
+        if (chart) {
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        } else {
+            window.blazorChart.pie.create(elementId, type, data, options);
         }
     },
 }
