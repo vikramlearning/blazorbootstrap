@@ -3,7 +3,7 @@ sidebar_label: Icons
 sidebar_position: 1
 ---
 
-# Icons
+# Blazor Icons
 
 BlazorBootstrap's icon component will display an icon from any icon font.
 
