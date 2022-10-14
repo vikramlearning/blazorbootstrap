@@ -61,6 +61,11 @@
     margin: .25rem .125rem;
 }
 
+.tab-pane.fade.active.show .bb-example {
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
 .highlight {
     padding: 1rem;
     margin-bottom: 1rem;
@@ -87,6 +92,11 @@
         color: #212529;
         word-wrap: normal
     }
+
+.tab-pane.fade.active.show .highlight {
+    border: 1px solid #dee2e6;
+    border-top-width: 0;
+}
 
 /* display */
 .display-7 {
