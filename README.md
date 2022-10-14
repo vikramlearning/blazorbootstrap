@@ -27,7 +27,7 @@
 Several quick start options are available:
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 0.4.2` 
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 0.5.0` 
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
@@ -36,13 +36,14 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 [![NuGet](https://img.shields.io/nuget/vpre/blazor.bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 [![NuGet](https://img.shields.io/nuget/dt/blazor.bootstrap.svg)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 
-## Components
+## Blazor Components
 
 - Alerts
 - AutoComplete
 - Breadcrumb
 - Buttons
 - Callout
+- Charts
 - Confirm Dialog
 - Grid
 - Icons

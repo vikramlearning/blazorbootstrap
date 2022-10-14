@@ -16,17 +16,18 @@ Blazor.Bootstrap is a component library built on top of Blazor and Bootstrap 5 C
 Several quick start options are available:
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 0.4.2` 
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 0.5.0` 
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
-## Components
+## Blazor Components
 
 - Alerts
 - AutoComplete
 - Breadcrumb
 - Buttons
 - Callout
+- Charts
 - Confirm Dialog
 - Grid
 - Icons
