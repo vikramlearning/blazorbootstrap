@@ -4,7 +4,7 @@ description: Use BlazorBootstrap's loading placeholders for your components or p
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: Placeholders
-sidebar_position: 11
+sidebar_position: 12
 ---
 
 # Placeholders

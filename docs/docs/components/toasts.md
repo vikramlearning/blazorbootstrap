@@ -4,7 +4,7 @@ description: Push notifications to your visitors with a toast, a lightweight and
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: Toasts
-sidebar_position: 14
+sidebar_position: 15
 ---
 
 # Toasts

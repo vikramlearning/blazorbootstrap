@@ -4,7 +4,7 @@ description: Build hidden sidebars into your project for navigation, shopping ca
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: Offcanvas
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 # Offcanvas

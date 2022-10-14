@@ -4,7 +4,7 @@ description: Documentation and examples for how to use BlazorBootstrap's Tabs co
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: Tabs
-sidebar_position: 13
+sidebar_position: 14
 ---
 
 # Tabs

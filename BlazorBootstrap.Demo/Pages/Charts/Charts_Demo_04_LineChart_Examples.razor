@@ -1,7 +1,7 @@
 ﻿@using BlazorBootstrap.Extensions
 @using Color = System.Drawing.Color
 
-<LineChart @ref="lineChart" />
+<LineChart @ref="lineChart" Width="600" Class="mb-4" />
 
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDataAsync()">Add Random Data</Button>
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowHorizontalLineChartAsync()">Horizontal Line Chart</Button>

@@ -4,7 +4,7 @@ description: Use BlazorBootstrap's `Confirm Dialog` component if you want the us
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: Confirm Dialog
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 # Confirm Dialog

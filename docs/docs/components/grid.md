@@ -4,7 +4,7 @@ description: Use BlazorBootstrap's grid component to display tabular data from t
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: Grid
-sidebar_position: 7
+sidebar_position: 8
 ---
 
 # Grid
