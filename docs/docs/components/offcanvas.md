@@ -7,7 +7,7 @@ sidebar_label: Offcanvas
 sidebar_position: 10
 ---
 
-# Offcanvas
+# Blazor Offcanvas
 
 Build hidden sidebars into your project for navigation, shopping carts, and more with BlazorBootstrap's offcanvas component.
 

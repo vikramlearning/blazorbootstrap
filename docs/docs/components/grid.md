@@ -7,7 +7,7 @@ sidebar_label: Grid
 sidebar_position: 8
 ---
 
-# Grid
+# Blazor Grid
 
 Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
 

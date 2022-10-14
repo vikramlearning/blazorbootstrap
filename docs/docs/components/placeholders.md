@@ -7,7 +7,7 @@ sidebar_label: Placeholders
 sidebar_position: 12
 ---
 
-# Placeholders
+# Blazor Placeholders
 
 Use BlazorBootstrap's loading placeholders for your components or pages to indicate something may still be loading.
 

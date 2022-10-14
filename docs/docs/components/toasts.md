@@ -7,7 +7,7 @@ sidebar_label: Toasts
 sidebar_position: 15
 ---
 
-# Toasts
+# Blazor Toasts
 
 Push notifications to your visitors with a toast, a lightweight and easily customizable BlazorBootstrap toast message.
 

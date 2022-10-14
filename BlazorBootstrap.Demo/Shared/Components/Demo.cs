@@ -71,7 +71,7 @@ public class Demo : ComponentBase
             builder.AddAttribute(302, "ChildContent", (RenderFragment)((childContentBuilder) =>
             {
                 childContentBuilder.OpenComponent<Tab>(303);
-                childContentBuilder.AddAttribute(304, "Title", "Demo");
+                childContentBuilder.AddAttribute(304, "Title", "EXAMPLE");
 
                 childContentBuilder.AddAttribute(305, "Content", (RenderFragment)((tabContentBuilder) =>
                 {
@@ -87,7 +87,7 @@ public class Demo : ComponentBase
                 childContentBuilder.CloseComponent();
 
                 childContentBuilder.OpenComponent<Tab>(400);
-                childContentBuilder.AddAttribute(401, "Title", "Source");
+                childContentBuilder.AddAttribute(401, "Title", "VIEW SOURCE");
 
                 childContentBuilder.AddAttribute(402, "Content", (RenderFragment)((tabContentBuilder) =>
                 {

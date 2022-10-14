@@ -7,7 +7,7 @@ sidebar_label: Tabs
 sidebar_position: 14
 ---
 
-# Tabs
+# Blazor Tabs
 
 Documentation and examples for how to use BlazorBootstrap's <code>Tabs</code> components.
 
