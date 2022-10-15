@@ -53,10 +53,20 @@ BlazorBootstrap's charts are well-designed chart components on top of Chart.js t
 
 | Property Name | Type | Default | Required | Description |
 |--|--|--|--|--|
+| BackgroundColor | | | | Get or sets the BackgroundColor. |
 | BarPercentage | double | 0.8 | | Percent (0-1) of the available width each bar should be within the category width. 1.0 will take the whole category width and put the bars right next to each other. |
+| BorderColor | | | | Get or sets the BorderColor. |
 | BorderRadius | int | 0 | | Border radius. |
+| BorderWidth | | | | Get or sets the BorderWidth. |
 | CategoryPercentage | double | 0.8 | | Percent (0-1) of the available width each category should be within the sample width. |
+| Clip | string | | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0} |
+| Data | `List<double>` | | | Get or sets the Data. |
+| Hidden | bool | false | | Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart. |
+| HoverBackgroundColor | `List<string>` | null | ✔️ | Get or sets the HoverBackgroundColor. |
+| HoverBorderColor | `List<string>` | null | ✔️ | Get or sets the HoverBorderColor. |
+| HoverBorderWidth | `List<double>` | null | ✔️ | Get or sets the HoverBorderWidth. |
 | Label | string | null | | The label for the dataset which appears in the legend and tooltips. |
+| Type | string | null | ✔️ | Get or sets the chart type. |
 | XAxisID | string | null | | The ID of the x axis to plot this dataset on. |
 | YAxisID | string | null | | The ID of the y axis to plot this dataset on. |
 
