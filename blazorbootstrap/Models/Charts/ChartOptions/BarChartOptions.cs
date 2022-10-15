@@ -18,11 +18,6 @@ public class BarChartOptions : ChartOptions
 
     public Plugins Plugins { get; set; } = new Plugins();
 
-    /// <summary>
-    /// <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options"/>
-    /// </summary>
-    public bool Responsive { get; set; }
-
     public Scales Scales { get; set; } = new Scales();
 
     //tooltips -> mode, intersect
