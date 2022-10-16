@@ -41,6 +41,10 @@ BlazorBootstrap's charts are well-designed chart components on top of Chart.js t
 
 ## DoughnutChartDataset Members
 
+:::note
+**DoughnutChartDataset** implements **IChartDataset**.
+:::
+
 | Property Name | Type | Default | Required | Description |
 |:--|:--|:--|:--|:--|
 | BackgroundColor | `List<string>` | null | | Get or sets the BackgroundColor. |
