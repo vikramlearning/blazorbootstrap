@@ -4,10 +4,25 @@
         <title>BlazorBootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>BlazorBootstrap Blog</description>
-        <lastBuildDate>Sat, 17 Sep 2022 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 16 Oct 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[BlazorBootstrap v0.5.0]]></title>
+            <link>https://getblazorbootstrap.com/blog/2022/10/16/blazorbootstrap-0.5.0</link>
+            <guid>/2022/10/16/blazorbootstrap-0.5.0</guid>
+            <pubDate>Sun, 16 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 0.5.0 with new chart components.]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.5.0</code> with new chart components.</p><img loading="lazy" src="https://i.imgur.com/JLV7oss.png" alt="Blazor Chart Component - Blazor Bar Chart Example" class="img_ev3q"><br><img loading="lazy" src="https://i.imgur.com/CzdXpqr.png" alt="Blazor Chart Component - Blazor Line Chart Example" class="img_ev3q"><br><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new-blazor-chart-components">New blazor chart components<a class="hash-link" href="#new-blazor-chart-components" title="Direct link to heading">​</a></h3><ul><li><p>Blazor Bar Chart component</p><img loading="lazy" src="https://i.imgur.com/ATtFiUZ.png" alt="Blazor Chart Component - Blazor Bar Chart" class="img_ev3q"></li><li><p>Blazor Doughnut Chart component</p><img loading="lazy" src="https://i.imgur.com/HV3pxA3.png" alt="Blazor Chart Component - Blazor Doughnut Chart" class="img_ev3q"></li><li><p>Blazor Line Chart component</p><img loading="lazy" src="https://i.imgur.com/NjrT5D7.png" alt="Blazor Chart Component - Blazor Line Chart" class="img_ev3q"></li><li><p>Blazor Pie Chart component</p><img loading="lazy" src="https://i.imgur.com/n5TiPtH.png" alt="Blazor Chart Component - Blazor Pie Chart" class="img_ev3q"></li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/charts" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/data-visualization/bar-chart" target="_blank" rel="noopener noreferrer">Blazor Bar Chart Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/data-visualization/doughnut-chart" target="_blank" rel="noopener noreferrer">Blazor Doughnut Chart Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/data-visualization/line-chart" target="_blank" rel="noopener noreferrer">Blazor Line Chart Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/data-visualization/pie-chart" target="_blank" rel="noopener noreferrer">Blazor Pie Chart Component Documentation</a></li></ul>]]></content:encoded>
+            <category>v0.5.0</category>
+            <category>blazorbootstrap</category>
+            <category>blazor-charts</category>
+            <category>blazor-bar-chart</category>
+            <category>blazor-doughnut-chart</category>
+            <category>blazor-line-chart</category>
+            <category>blazor-pie-chart</category>
+        </item>
         <item>
             <title><![CDATA[BlazorBootstrap v0.4.2]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/09/17/blazorbootstrap-0.4.2</link>
