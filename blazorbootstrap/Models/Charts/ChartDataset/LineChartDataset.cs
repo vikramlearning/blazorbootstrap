@@ -26,11 +26,14 @@ public class LineChartDataset : ChartDataset
     public bool Hidden { get; set; }
 
     /// <summary>
-    /// Line dash
+    /// Hover line dash.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<int> HoverBorderDash { get; set; }
 
+    /// <summary>
+    /// The label for the dataset which appears in the legend and tooltips.
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Label { get; set; }
 
@@ -47,7 +50,7 @@ public class LineChartDataset : ChartDataset
     public List<string> PointBorderColor { get; set; } = new List<string> { "rgba(0, 0, 0, 0.1)" };
 
     /// <summary>
-    /// The width of the point border in pixels
+    /// The width of the point border in pixels.
     /// </summary>
     public List<double> PointBorderWidth { get; set; } = new List<double> { 1 };
 
@@ -78,14 +81,14 @@ public class LineChartDataset : ChartDataset
     /// The radius of the point when hovered.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int> PointHoverRadius { get; set; } = new List<int> { 1 }; // 4
+    public List<int> PointHoverRadius { get; set; } = new List<int> { 1 }; // Default: 4
 
     /// <summary>
     /// The radius of the point shape. If set to 0, the point is not rendered.
     /// Default: 3
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int> PointRadius { get; set; } = new List<int> { 1 }; // 3
+    public List<int> PointRadius { get; set; } = new List<int> { 1 }; // Default: 3
 
     /// <summary>
     /// The rotation of the point in degrees.
@@ -95,6 +98,7 @@ public class LineChartDataset : ChartDataset
 
     /// <summary>
     /// Style of the point.
+    /// Use 'circle', 'cross', 'crossRot', 'dash', 'line', 'rect', 'rectRounded', 'rectRot', 'star', and 'triangle' to style the point.
     /// </summary>
     public List<string> PointStyle { get; set; } = new List<string> { "circle" };
 
@@ -107,10 +111,22 @@ public class LineChartDataset : ChartDataset
     public bool ShowLine { get; set; } = true;
 
     /// <summary>
+    /// If true, lines will be drawn between points with no or null data. 
+    /// If false, points with null data will create a break in the line. 
+    /// Can also be a number specifying the maximum gap length to span. 
+    /// The unit of the value depends on the scale used.
+    /// </summary>
+    public bool SpanGaps { get; set; }
+
+    /// <summary>
     /// true to show the line as a stepped line (tension will be ignored).
     /// </summary>
     public bool Stepped { get; set; }
 
+    /// <summary>
+    /// Bezier curve tension of the line. Set to 0 to draw straightlines. 
+    /// This option is ignored if monotone cubic interpolation is used.
+    /// </summary>
     public double Tension { get; set; } = 0.2;
 
     /// <summary>
