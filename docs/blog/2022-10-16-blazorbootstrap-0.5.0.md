@@ -10,6 +10,13 @@ tags: [v0.5.0, blazorbootstrap, blazor-charts, blazor-bar-chart, blazor-doughnut
 
 We are excited to release `0.5.0` with new chart components.
 
+<img src="https://i.imgur.com/JLV7oss.png" alt="Blazor Chart Component - Blazor Bar Chart Example" />
+<br />
+<img src="https://i.imgur.com/CzdXpqr.png" alt="Blazor Chart Component - Blazor Line Chart Example" />
+<br />
+
+<!--truncate-->
+
 ### New blazor chart components
 
 - Blazor Bar Chart component

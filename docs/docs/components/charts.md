@@ -19,6 +19,18 @@ BlazorBootstrap's charts are well-designed chart components on top of Chart.js t
 <br />
 <a href="https://demos.getblazorbootstrap.com/charts#bar-chart">See blazor chart demo here.</a>
 
+## Chart Types
+
+At this moment we are supporting four blazor chart types.
+1. Bar Chart
+1. Doughnut Chart
+1. Line Chart
+1. Pie Chart
+
+:::info
+We will add **Bubble Chart**, **Polar Area Chart**, **Radar Chart**, **Scatter Chart**, and **Mixed Chart** support in the subsequent versions.
+:::
+
 ## Bar Chart
 
 <img src="https://i.imgur.com/ATtFiUZ.png" alt="Blazor Chart Component - Blazor Bar Chart" />
