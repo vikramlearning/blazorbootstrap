@@ -7,7 +7,7 @@ sidebar_label: Callout
 sidebar_position: 5
 ---
 
-# Callout
+# Blazor Callout
 
 BlazorBootstrap's callout component provides content presentation in a visually distinct manner.
 

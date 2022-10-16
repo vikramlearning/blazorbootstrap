@@ -4,10 +4,10 @@ description: Use BlazorBootstrap's pagination component to indicate a series of 
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: Pagination
-sidebar_position: 10
+sidebar_position: 11
 ---
 
-# Pagination
+# Blazor Pagination
 
 Use BlazorBootstrap's pagination component to indicate a series of related content exists across multiple pages.
 

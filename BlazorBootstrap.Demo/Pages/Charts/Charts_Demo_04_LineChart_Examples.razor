@@ -1,0 +1,82 @@
+﻿@using BlazorBootstrap.Extensions
+@using Color = System.Drawing.Color
+
+<LineChart @ref="lineChart" Width="600" Class="mb-4" />
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDataAsync()">Add Random Data</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowHorizontalLineChartAsync()">Horizontal Line Chart</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowVerticalLineChartAsync()">Vertical Line Chart</Button>
+
+@code {
+    private LineChart lineChart;
+
+    private ChartData chartData;
+    private LineChartOptions chartOptions;
+
+    Random random = new Random();
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+        {
+            Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
+            Datasets = new List<IChartDataset>()
+        };
+
+        chartData.Datasets.Add(GetRandomLineChartDataset());
+        chartData.Datasets.Add(GetRandomLineChartDataset());
+        chartData.Datasets.Add(GetRandomLineChartDataset());
+
+        chartOptions = new LineChartOptions 
+        { 
+            Responsive = true,
+            Interaction = new Interaction { Mode = InteractionMode.Index }
+        };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await lineChart.UpdateAsync(chartData, chartOptions);
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task AddDataAsync()
+    {
+        if (chartData is null || chartData.Datasets is null) return;
+
+        chartData.Datasets.Add(GetRandomLineChartDataset());
+        await lineChart.UpdateAsync(chartData, chartOptions);
+    }
+
+    private async Task ShowHorizontalLineChartAsync()
+    {
+        chartOptions.IndexAxis = "y";
+        await lineChart.UpdateAsync(chartData, chartOptions);
+    }
+
+    private async Task ShowVerticalLineChartAsync()
+    {
+        chartOptions.IndexAxis = "x";
+        await lineChart.UpdateAsync(chartData, chartOptions);
+    }
+
+    private LineChartDataset GetRandomLineChartDataset()
+    {
+        // random color
+        var c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+        Console.WriteLine($"Line Chart: Color Name: {c.Name}, HEX: {c.ToHexString()}, RGB: {c.ToRgbString()}, IsNamedColor: {c.IsNamedColor}");
+
+        return new LineChartDataset()
+        {
+            Label = $"Line chart dataset {chartData.Datasets.Count + 1}",
+            Data = new List<double> { random.Next(200), random.Next(200), random.Next(200), random.Next(200), random.Next(200), random.Next(200) },
+            BackgroundColor = new List<string> { c.ToRgbString() },
+            BorderColor = new List<string> { c.ToRgbString() },
+            BorderWidth = new List<double> { 2 },
+            HoverBorderWidth = new List<double> { 4 },
+            PointBackgroundColor = new List<string> { c.ToRgbString() },
+            PointRadius = new List<int> { 0 }, // hide points
+            PointHoverRadius = new List<int> { 4 },
+        };
+    }
+}

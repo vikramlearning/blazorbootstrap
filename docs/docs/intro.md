@@ -14,7 +14,7 @@ Get started with BlazorBootstrap, with ready-made components.
 Looking to quickly add BlazorBootstrap to your project? Use NuGet package manager.
 
 ```shell
-Install-Package Blazor.Bootstrap -Version 0.4.2
+Install-Package Blazor.Bootstrap -Version 0.5.0
 ```
 
 ## Starter template
@@ -24,7 +24,7 @@ Change your `index.html` file and include the CSS and JS files:
  - Include `blazor.bootstrap.js` file
  - Include `blazor.bootstrap.css` file
 
-   ```html
+   ```html {8,9,10,16,17,18} showLineNumbers
    <!DOCTYPE html>
    <html lang="en">
    <head>
@@ -41,13 +41,21 @@ Change your `index.html` file and include the CSS and JS files:
        <div id="app">Loading...</div>
        <script src="_framework/blazor.webassembly.js"></script>
        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Add chart.js reference if Chart components are used in the application. -->
        <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
    </body>
    </html>
    ```
+   :::note NOTE
+   ```js
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   ```
+   Add `chart.js` reference if Chart components are used in the application.
+   :::
+
  - Add BlazorBootstrap service in `Program.cs`
 
-   ```cs {1,13}
+   ```cs {1,13} showLineNumbers
    using BlazorBootstrap;
    
    public class Program

@@ -4,10 +4,10 @@ description: Use BlazorBootstrap's tooltip component to add custom tooltips to y
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: Tooltips
-sidebar_position: 15
+sidebar_position: 16
 ---
 
-# Tooltips
+# Blazor Tooltips
 
 Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages.
 

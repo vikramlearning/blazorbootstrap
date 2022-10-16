@@ -4,10 +4,10 @@ description: Push notifications to your visitors with a toast, a lightweight and
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: Toasts
-sidebar_position: 14
+sidebar_position: 15
 ---
 
-# Toasts
+# Blazor Toasts
 
 Push notifications to your visitors with a toast, a lightweight and easily customizable BlazorBootstrap toast message.
 
@@ -20,17 +20,18 @@ Toasts are lightweight notifications designed to mimic the push notifications th
 ## Toasts Parameters
 
 | Name | Type | Descritpion | Required | Default |
-|--|--|--|--|--|
+|:--|:--|:--|:--|:--|
 | AutoHide | bool | Auto hide the toast. | | `true` |
 | Delay | int | Delay hiding the toast (milli seconds). | | 5000 |
 | Messages | `List<ToastMessage>` | List of all the toasts. | ✔️ | |
 | Placement | `ToastsPlacement` | Specifies the toasts placement. | | `ToastsPlacement.TopRight` |
+| ShowCloseButton | bool | Show close button. | | `true` |
 | StackLength | int | Specifies the toast container maximum capacity. | | 5 |
 
 ## ToastMessage Properties
 
 | Name | Type | Description | Required | Default |
-|--|--|--|--|--|
+|:--|:--|:--|:--|:--|
 | Type | `ToastType` | Gets or sets the type of the toast. | ✔️ | |
 | ImageSource | string | Gets or sets the source of the image. | | |
 | IconName | `IconName` | Gets or sets the bootstarp icon name. | | |

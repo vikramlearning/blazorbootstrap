@@ -34,11 +34,6 @@ namespace BlazorBootstrap
             base.BuildClasses(builder);
         }
 
-        protected override void BuildStyles(StyleBuilder builder)
-        {
-            base.BuildStyles(builder);
-        }
-
         protected override async Task OnInitializedAsync()
         {
             objRef ??= DotNetObjectReference.Create(this);

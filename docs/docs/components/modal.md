@@ -4,10 +4,10 @@ description: Use BlazorBootstrap's modal component to add dialogs to your site f
 image: https://getblazorbootstrap.com/img/logo.svg
 
 sidebar_label: Modal
-sidebar_position: 8
+sidebar_position: 9
 ---
 
-# Modal
+# Blazor Modal
 
 Use BlazorBootstrap's modal component to add dialogs to your site for lightboxes, user notifications, or completely custom content.
 

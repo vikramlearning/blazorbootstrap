@@ -7,7 +7,7 @@ sidebar_label: Buttons
 sidebar_position: 4
 ---
 
-# Buttons
+# Blazor Buttons
 
 Use BlazorBootstrap's button styles for actions in forms, dialogs, and more with support for multiple sizes, states, etc.
 

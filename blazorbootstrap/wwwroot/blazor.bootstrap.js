@@ -2,6 +2,26 @@
     window.blazorBootstrap = {};
 }
 
+if (!window.blazorChart) {
+    window.blazorChart = {};
+}
+
+if (!window.blazorChart.line) {
+    window.blazorChart.line = {};
+}
+
+if (!window.blazorChart.bar) {
+    window.blazorChart.bar = {};
+}
+
+if (!window.blazorChart.doughnut) {
+    window.blazorChart.doughnut = {};
+}
+
+if (!window.blazorChart.pie) {
+    window.blazorChart.pie = {};
+}
+
 window.blazorBootstrap = {
     alert: {
         initialize: (elementId, dotNetHelper) => {
@@ -23,7 +43,7 @@ window.blazorBootstrap = {
             bootstrap?.Alert?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
-    autocomplete: {        
+    autocomplete: {
         initialize: (elementRef, dotNetHelper) => {
             let dropdownToggleEl = elementRef;
 
@@ -193,3 +213,292 @@ window.blazorBootstrap = {
     }
 }
 
+window.blazorChart = {
+    create: (elementId, type, data, options) => {
+        let chartEl = document.getElementById(elementId);
+
+        //console.log(elementId);
+        //console.log(type);
+        //console.log(data);
+        //console.log(options); // NOTE: this gives more details in the chrome dev tools
+
+        const config = {
+            type: type,
+            data: data,
+            options: options,
+            //plugins: [ChartDataLabels]
+        };
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.create(elementId, type, data, options);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
+        }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        } else {
+            window.blazorChart.create(elementId, type, data, options);
+        }
+    },
+}
+
+window.blazorChart.bar = {
+    create: (elementId, type, data, options) => {
+        let chartEl = document.getElementById(elementId);
+
+        const config = {
+            type: type,
+            data: data,
+            options: options
+        };
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options) => {
+        let chart = window.blazorChart.bar.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.bar.create(elementId, type, data, options);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.bar.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
+        }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.bar.get(elementId);
+        if (chart) {
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        } else {
+            window.blazorChart.bar.create(elementId, type, data, options);
+        }
+    },
+}
+
+window.blazorChart.doughnut = {
+    create: (elementId, type, data, options) => {
+        let chartEl = document.getElementById(elementId);
+
+        const config = {
+            type: type,
+            data: data,
+            options: options
+        };
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options) => {
+        let chart = window.blazorChart.doughnut.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.doughnut.create(elementId, type, data, options);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.doughnut.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
+        }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.doughnut.get(elementId);
+        if (chart) {
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        } else {
+            window.blazorChart.doughnut.create(elementId, type, data, options);
+        }
+    },
+}
+
+window.blazorChart.line = {
+    create: (elementId, type, data, options) => {
+        let chartEl = document.getElementById(elementId);
+
+        const config = {
+            type: type,
+            data: data,
+            options: options,
+        };
+
+        if (type === 'line') {
+            // tooltipLine block
+            const tooltipLine = {
+                id: 'tooltipLine',
+                beforeDraw: chart => {
+                    if (chart.tooltip._active && chart.tooltip._active.length) {
+                        const ctx = chart.ctx;
+                        ctx.save();
+                        const activePoint = chart.tooltip._active[0];
+
+                        ctx.beginPath();
+                        ctx.setLineDash([5, 5]);
+                        ctx.moveTo(activePoint.element.x, chart.chartArea.top);
+                        ctx.lineTo(activePoint.element.x, activePoint.element.y);
+                        ctx.linewidth = 2;
+                        ctx.strokeStyle = 'grey';
+                        ctx.stroke();
+                        ctx.restore();
+
+                        ctx.beginPath();
+                        ctx.setLineDash([5, 5]);
+                        ctx.moveTo(activePoint.element.x, activePoint.element.y);
+                        ctx.lineTo(activePoint.element.x, chart.chartArea.bottom);
+                        ctx.linewidth = 2;
+                        ctx.strokeStyle = 'grey';
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                },
+            };
+
+            config.plugins = [tooltipLine];
+        }
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.line.create(elementId, type, data, options);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
+        }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        } else {
+            window.blazorChart.line.create(elementId, type, data, options);
+        }
+    },
+}
+
+window.blazorChart.pie = {
+    create: (elementId, type, data, options) => {
+        let chartEl = document.getElementById(elementId);
+
+        const config = {
+            type: type,
+            data: data,
+            options: options
+        };
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options) => {
+        let chart = window.blazorChart.pie.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.pie.create(elementId, type, data, options);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.pie.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
+        }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.pie.get(elementId);
+        if (chart) {
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        } else {
+            window.blazorChart.pie.create(elementId, type, data, options);
+        }
+    },
+}
