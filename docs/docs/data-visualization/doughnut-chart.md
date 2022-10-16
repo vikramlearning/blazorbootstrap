@@ -41,7 +41,7 @@ BlazorBootstrap's charts are well-designed chart components on top of Chart.js t
 
 ## DoughnutChartDataset Members
 
-:::note
+:::info
 **DoughnutChartDataset** implements **IChartDataset**.
 :::
 

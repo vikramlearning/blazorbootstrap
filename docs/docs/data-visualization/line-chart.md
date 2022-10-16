@@ -41,7 +41,7 @@ BlazorBootstrap's charts are well-designed chart components on top of Chart.js t
 
 ## LineChartDataset Members
 
-:::note
+:::info
 **LineChartDataset** implements **IChartDataset**.
 :::
 
