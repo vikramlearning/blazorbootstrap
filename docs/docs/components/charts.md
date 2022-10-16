@@ -16,6 +16,7 @@ BlazorBootstrap's charts are well-designed chart components on top of Chart.js t
 <img src="https://i.imgur.com/ATtFiUZ.png" alt="Blazor Chart Component - Blazor Bar Chart" />
 <br />
 <a href="https://demos.getblazorbootstrap.com/charts#bar-chart">See blazor bar chart demo here.</a>
+<br />
 
 ## Doughnut Chart
 
@@ -98,6 +99,14 @@ BlazorBootstrap's charts are well-designed chart components on top of Chart.js t
 | Height | int | | | Gets or sets chart height. |
 | Width | int | | | Get or sets chart width. |
 
+### Doughnut Chart Methods
+
+| Name | Descritpion |
+|:--|:--|
+| InitializeAsync(**ChartData** chartData, **IChartOptions** chartOptions) | Initialize Bar Chart. |
+| ResizeAsync(**int** width, **int** height) | Resize the chart. |
+| UpdateAsync(**ChartData** chartData, **IChartOptions** chartOptions) | Update Bar Chart. |
+
 #### DoughnutChartDataset Members
 
 | Property Name | Type | Default | Required | Description |
@@ -125,6 +134,14 @@ BlazorBootstrap's charts are well-designed chart components on top of Chart.js t
 |:--|:--|:--|:--|:--|
 | Height | int | | | Gets or sets chart height. |
 | Width | int | | | Get or sets chart width. |
+
+### Line Chart Methods
+
+| Name | Descritpion |
+|:--|:--|
+| InitializeAsync(**ChartData** chartData, **IChartOptions** chartOptions) | Initialize Bar Chart. |
+| ResizeAsync(**int** width, **int** height) | Resize the chart. |
+| UpdateAsync(**ChartData** chartData, **IChartOptions** chartOptions) | Update Bar Chart. |
 
 #### LineChartDataset Members
 
@@ -180,6 +197,14 @@ BlazorBootstrap's charts are well-designed chart components on top of Chart.js t
 |:--|:--|:--|:--|:--|
 | Height | int | | | Gets or sets chart height. |
 | Width | int | | | Get or sets chart width. |
+
+### Pie Chart Methods
+
+| Name | Descritpion |
+|:--|:--|
+| InitializeAsync(**ChartData** chartData, **IChartOptions** chartOptions) | Initialize Bar Chart. |
+| ResizeAsync(**int** width, **int** height) | Resize the chart. |
+| UpdateAsync(**ChartData** chartData, **IChartOptions** chartOptions) | Update Bar Chart. |
 
 #### PieChartDataset Members
 
