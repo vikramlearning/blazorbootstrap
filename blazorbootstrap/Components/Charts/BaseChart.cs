@@ -20,8 +20,13 @@ public class BaseChart : BaseComponent
         await base.OnInitializedAsync();
     }
 
-    public async Task Clear() { }
+    //public async Task Clear() { }
 
+    /// <summary>
+    /// Initialize Bar Chart.
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="options"></param>
     public virtual async Task InitializeAsync(ChartData data, IChartOptions options)
     {
         if (data is not null && data.Datasets is not null && data.Datasets.Any())
@@ -37,21 +42,31 @@ public class BaseChart : BaseComponent
         }
     }
 
-    public async Task Render() { }
+    //public async Task Render() { }
 
-    public async Task Reset() { }
+    //public async Task Reset() { }
 
-    public async Task Resize(int width, int height)
+    /// <summary>
+    /// Resize the chart.
+    /// </summary>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    public async Task ResizeAsync(int width, int height)
     {
         await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, width, height);
     }
 
-    public async Task Stop() { }
+    //public async Task Stop() { }
 
-    public async Task ToBase64Image() { }
+    //public async Task ToBase64Image() { }
 
-    public async Task ToBase64Image(string type, double quality) { }
+    //public async Task ToBase64Image(string type, double quality) { }
 
+    /// <summary>
+    /// Update Bar Chart.
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="options"></param>
     public virtual async Task UpdateAsync(ChartData data, IChartOptions options)
     {
         if (data is not null && data.Datasets is not null && data.Datasets.Any())
@@ -131,14 +146,12 @@ public class BaseChart : BaseComponent
     /// <summary>
     /// Get or sets chart width.
     /// </summary>
-    [Parameter]
-    public int Width { get; set; }
+    [Parameter] public int Width { get; set; }
 
     /// <summary>
     /// Gets or sets chart height.
     /// </summary>
-    [Parameter]
-    public int Height { get; set; }
+    [Parameter] public int Height { get; set; }
 
     #endregion Properties
 }

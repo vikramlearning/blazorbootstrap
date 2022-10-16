@@ -3,7 +3,7 @@
 public class LineChartDataset : ChartDataset
 {
     /// <summary>
-    /// Line dash
+    /// Line dash.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<int> BorderDash { get; set; }
@@ -16,7 +16,7 @@ public class LineChartDataset : ChartDataset
     /// <summary>
     /// Both line and radar charts support a fill option on the dataset object 
     /// which can be used to create area between two datasets or a dataset and 
-    /// a boundary, i.e. the scale origin, start or end
+    /// a boundary, i.e. the scale origin, start or end.
     /// </summary>
     public bool Fill { get; set; }
 

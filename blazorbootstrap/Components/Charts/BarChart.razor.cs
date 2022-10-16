@@ -44,11 +44,5 @@ public partial class BarChart : BaseChart
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Parameter, EditorRequired] 
-    public ChartData ChartData { get; set; }
-
-    [Parameter, EditorRequired] 
-    public ChartOptions ChartOptions { get; set; }
-
     #endregion Properties
 }
