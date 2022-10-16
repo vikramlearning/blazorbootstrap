@@ -110,32 +110,6 @@ public class Demo : ComponentBase
             builder.CloseComponent();
         }
 
-        //if (Tabs)
-        //{
-        //	builder.OpenElement(200, "div");
-        //	builder.AddAttribute(201, "class", "card-header");
-
-        //	builder.OpenComponent<Tabs>(300);
-        //	builder.AddAttribute(301, nameof(Tabs.CssClass), "card-header-tabs");
-        //	builder.AddAttribute(302, "ChildContent", (RenderFragment)((builder2) =>
-        //	{
-        //		builder2.OpenComponent<Tab>(303);
-        //		builder2.AddAttribute(304, "Id", "demo");
-        //		builder2.AddAttribute(305, "Title", "Demo");
-        //		builder2.AddAttribute(306, "OnTabActivated", EventCallback.Factory.Create(this, () => { showingDemo = true; }));
-        //		builder2.CloseComponent();
-
-        //		builder2.OpenComponent<Tab>(354);
-        //		builder2.AddAttribute(356, "Id", "source");
-        //		builder2.AddAttribute(357, "Title", "Source");
-        //		builder2.AddAttribute(358, "OnTabActivated", EventCallback.Factory.Create(this, () => { showingDemo = false; }));
-        //		builder2.CloseComponent();
-        //	}));
-        //	builder.CloseComponent();
-
-        //	builder.CloseElement(); // card-header
-        //}
-
         builder.AddMarkupContent(700, "<!--googleon: index-->"); // source: https://perishablepress.com/tell-google-to-not-index-certain-parts-of-your-page/
     }
 
