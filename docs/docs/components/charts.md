@@ -11,6 +11,14 @@ sidebar_position: 6
 
 BlazorBootstrap's charts are well-designed chart components on top of Chart.js to visualize data. It contains a rich UI gallery of charts that cater to all charting scenarios. Its high performance helps render large amounts of data quickly.
 
+## Example
+
+<img src="https://i.imgur.com/JLV7oss.png" alt="Blazor Chart Component - Blazor Bar Chart Example" />
+<br />
+<img src="https://i.imgur.com/CzdXpqr.png" alt="Blazor Chart Component - Blazor Line Chart Example" />
+<br />
+<a href="https://demos.getblazorbootstrap.com/charts#bar-chart">See blazor chart demo here.</a>
+
 ## Bar Chart
 
 <img src="https://i.imgur.com/ATtFiUZ.png" alt="Blazor Chart Component - Blazor Bar Chart" />
