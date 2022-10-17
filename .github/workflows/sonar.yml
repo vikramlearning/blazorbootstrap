@@ -1,13 +1,13 @@
-name: SonarQube Code Analysis
+name: SonarCloud analysis
+
 on:
   push:
-    branches:
-      - master
+    branches: [ "master", gh-pages ]
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
-  build:
-    name: Code Analysis
+  Analysis:
+    name: Static Code Analysis
     runs-on: windows-latest
     steps:
       - name: Set up JDK 11
