@@ -15,12 +15,12 @@ public class GridDataProviderRequest<TItem>
     /// <summary>
     /// Current sorting.
     /// </summary>
-    public IReadOnlyList<SortingItem<TItem>> Sorting { get; init; }
+    public IEnumerable<SortingItem<TItem>> Sorting { get; init; }
 
     /// <summary>
     /// Current filters.
     /// </summary>
-    public IReadOnlyList<FilterItem> Filters { get; init; }
+    public IEnumerable<FilterItem> Filters { get; init; }
 
     public GridDataProviderResult<TItem> ApplyTo(IEnumerable<TItem> data)
     {
@@ -56,15 +56,25 @@ public class GridDataProviderRequest<TItem>
         // apply sorting
         if (Sorting != null && Sorting.Any())
         {
-            IOrderedEnumerable<TItem> orderedData = (Sorting[0].SortDirection == SortDirection.Ascending)
-                       ? resultData.OrderBy(Sorting[0].SortKeySelector.Compile())
-                       : resultData.OrderByDescending(Sorting[0].SortKeySelector.Compile());
-
-            for (int i = 1; i < Sorting.Count; i++)
+            IOrderedEnumerable<TItem> orderedData = null!;
+            int index = 1;
+            foreach (var sortItem in Sorting)
             {
-                orderedData = (Sorting[i].SortDirection == SortDirection.Ascending)
-                    ? orderedData.ThenBy(Sorting[i].SortKeySelector.Compile())
-                    : orderedData.ThenByDescending(Sorting[i].SortKeySelector.Compile());
+                if (index == 1) {
+                    orderedData = (sortItem.SortDirection == SortDirection.Ascending)
+                       ? resultData.OrderBy(sortItem.SortKeySelector.Compile())
+                       : resultData.OrderByDescending(sortItem.SortKeySelector.Compile());
+                }
+                else
+                {
+                    if (orderedData != null)
+                    {
+                        orderedData = (sortItem.SortDirection == SortDirection.Ascending)
+                            ? orderedData.ThenBy(sortItem.SortKeySelector.Compile())
+                            : orderedData.ThenByDescending(sortItem.SortKeySelector.Compile());
+                    }
+                }
+                index++;
             }
             resultData = orderedData;
         }

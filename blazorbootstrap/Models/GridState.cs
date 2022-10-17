@@ -5,7 +5,7 @@
 /// </summary>
 public class GridState<TItem>
 {
-    public GridState(int pageIndex, IReadOnlyList<SortingItem<TItem>> sorting)
+    public GridState(int pageIndex, IEnumerable<SortingItem<TItem>> sorting)
     {
         PageIndex = pageIndex;
         Sorting = sorting;
@@ -19,5 +19,5 @@ public class GridState<TItem>
     /// <summary>
     /// Current sorting.
     /// </summary>
-    public IReadOnlyList<SortingItem<TItem>> Sorting { get; }
+    public IEnumerable<SortingItem<TItem>> Sorting { get; }
 }

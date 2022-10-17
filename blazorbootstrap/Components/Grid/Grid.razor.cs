@@ -102,11 +102,11 @@ public partial class Grid<TItem> : BaseComponent
                 else
                     c.currentSortDirection = (c.defaultSortDirection != SortDirection.None) ? c.defaultSortDirection : SortDirection.Ascending;
 
-                GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting().ToList().AsReadOnly());
+                GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting());
             }
             else if (c.ElementId == column.ElementId && c.SortDirection != SortDirection.None)
             {
-                GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting().ToList().AsReadOnly());
+                GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting());
             }
         });
 
@@ -120,15 +120,14 @@ public partial class Grid<TItem> : BaseComponent
         await RefreshDataAsync();
     }
 
-    private SortingItem<TItem>[] GetDefaultSorting()
+    private IEnumerable<SortingItem<TItem>> GetDefaultSorting()
     {
         if (!AllowSorting || columns == null || !columns.Any())
             return null;
 
         return columns?
                 .Where(column => column.CanSort() && column.IsDefaultSortColumn)?
-                .SelectMany(item => item.GetSorting())?
-                .ToArray();
+                .SelectMany(item => item.GetSorting());
     }
 
     private int GetTotalPagesCount()
