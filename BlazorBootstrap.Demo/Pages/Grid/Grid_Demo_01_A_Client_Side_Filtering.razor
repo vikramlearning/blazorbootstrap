@@ -1,4 +1,4 @@
-﻿<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
+﻿<Grid @ref="grid" TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
     <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
         @context.Id
     </GridColumn>
@@ -17,7 +17,14 @@
 </Grid>
 
 @code {
+    BlazorBootstrap.Grid<Employee1> grid;
     private IEnumerable<Employee1> employees;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await grid.SetFiltersAsync(new List<FilterItem>());
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {

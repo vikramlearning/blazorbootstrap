@@ -24,9 +24,10 @@ public partial class Grid<TItem> : BaseComponent
     {
         if (firstRender)
         {
-            RefreshDataAsync(); // for now sync call only
-            StateHasChanged(); // This is mandatory
+            await RefreshDataAsync();
         }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     internal void AddColumn(GridColumn<TItem> column)
@@ -46,12 +47,38 @@ public partial class Grid<TItem> : BaseComponent
                 ?.ToArray();
     }
 
+    /// <summary>
+    /// Set filters.
+    /// </summary>
+    /// <param name="filterItems"></param>
+    public async Task SetFiltersAsync(IEnumerable<FilterItem> filterItems)
+    {
+        if (filterItems is null || !filterItems.Any())
+            return;
+
+        foreach (var item in filterItems)
+        {
+            var column = columns.Where(x => x.PropertyName == item.PropertyName).FirstOrDefault();
+            if (column != null)
+            {
+                var allowedFilterOperators = FilterOperatorHelper.GetFilterOperators(column.GetPropertyTypeName());
+                if (allowedFilterOperators != null && allowedFilterOperators.Any(x => x.FilterOperator == item.Operator))
+                {
+                    column.SetFilterOperator(item.Operator);
+                    column.SetFilterValue(item.Value);
+                }
+            }
+        }
+
+        await RefreshDataAsync();
+    }
+
     internal void ResetPageNumber()
     {
         GridCurrentState = new GridState<TItem>(1, GridCurrentState.Sorting);
     }
 
-    internal void SortingChanged(GridColumn<TItem> column)
+    internal async Task SortingChangedAsync(GridColumn<TItem> column)
     {
         if (columns == null || !columns.Any())
             return;
@@ -83,8 +110,7 @@ public partial class Grid<TItem> : BaseComponent
             }
         });
 
-        RefreshDataAsync(); // for now sync call only
-        StateHasChanged(); // This is mandatory
+        await RefreshDataAsync();
     }
 
     private async Task OnPageChangedAsync(int newPageNumber)
