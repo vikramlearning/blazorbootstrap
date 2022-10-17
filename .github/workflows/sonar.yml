@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   build:
-    name: Build
+    name: Code Analysis
     runs-on: windows-latest
     steps:
       - name: Set up JDK 11
