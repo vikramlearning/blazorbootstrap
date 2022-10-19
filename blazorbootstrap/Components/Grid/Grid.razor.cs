@@ -36,19 +36,22 @@ public partial class Grid<TItem> : BaseComponent
         // TODO: call state changed here
     }
 
-    private FilterItem[] GetFilters()
+    /// <summary>
+    /// Get filters.
+    /// </summary>
+    /// <returns>IEnumerable</returns>
+    public IEnumerable<FilterItem> GetFilters()
     {
         if (!AllowFiltering || columns == null || !columns.Any())
             return null;
 
         return columns
-                ?.Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
-                ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison))
-                ?.ToArray();
+                .Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
+                ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison));
     }
 
     /// <summary>
-    /// Set filters.
+    /// Set filters and refresh the grid.
     /// </summary>
     /// <param name="filterItems"></param>
     public async Task SetFiltersAsync(IEnumerable<FilterItem> filterItems)

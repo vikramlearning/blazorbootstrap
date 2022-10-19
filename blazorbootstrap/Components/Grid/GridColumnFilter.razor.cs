@@ -25,16 +25,21 @@ partial class GridColumnFilter : BaseComponent
         this.filterOperator = this.FilterOperator;
         this.filterValue = this.FilterValue;
 
-        SetDefaultFilter();
-
-        SetSelectedFilterSymbol();
-
         base.OnInitialized();
     }
 
-    private void OnFilterOperatorChanged(EventArgs args, FilterOperatorInfo filterOperatorInfo)
+    protected override void OnParametersSet()
+    {
+        SetDefaultFilter();
+        SetSelectedFilterSymbol();
+
+        base.OnParametersSet();
+    }
+
+    private async Task OnFilterOperatorChangedAsync(EventArgs args, FilterOperatorInfo filterOperatorInfo)
     {
         this.filterOperator = filterOperatorInfo.FilterOperator;
+
         if (filterOperatorInfo.Symbol == "x")
         {
             if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
@@ -46,15 +51,15 @@ partial class GridColumnFilter : BaseComponent
         SetSelectedFilterSymbol();
 
         if (GridColumnFilterChanged.HasDelegate)
-            GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(this.filterValue, this.filterOperator));
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(this.filterValue, this.filterOperator));
     }
 
-    private void OnFilterChanged(ChangeEventArgs args)
+    private async Task OnFilterValueChangedAsync(ChangeEventArgs args)
     {
         this.filterValue = args?.Value?.ToString();
 
         if (GridColumnFilterChanged.HasDelegate)
-            GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(this.filterValue, this.filterOperator));
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(this.filterValue, this.filterOperator));
     }
 
     internal void SetDefaultFilter()

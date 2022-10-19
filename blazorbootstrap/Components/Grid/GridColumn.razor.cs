@@ -35,9 +35,14 @@ public partial class GridColumn<TItem> : BaseComponent
 
         Parent.AddColumn(this);
 
+        await base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
         SetDefaultFilter(this.filterOperator, this.GetPropertyTypeName());
 
-        await base.OnInitializedAsync();
+        base.OnParametersSet();
     }
 
     internal string GetPropertyTypeName()
@@ -63,6 +68,8 @@ public partial class GridColumn<TItem> : BaseComponent
         this.filterOperator = args.FilterOperator;
 
         await this.Parent.RefreshDataAsync();
+
+        Console.WriteLine("GridColumn.OnFilterChangedAsync: RefreshDataAsync called.");
     }
 
     internal void SetFilterOperator(FilterOperator filterOperator) => this.filterOperator = filterOperator;
@@ -158,21 +165,12 @@ public partial class GridColumn<TItem> : BaseComponent
     /// <summary>
     /// Gets or sets the filter operator.
     /// </summary>
-    [Parameter] public FilterOperator FilterOperator
-    {
-        get { return filterOperator; }
-        set { value = filterOperator; }
-    }
+    [Parameter] public FilterOperator FilterOperator { get; set; }
 
     /// <summary>
     /// Gets or sets the filter value.
     /// </summary>
-    [Parameter]
-    public string FilterValue
-    {
-        get { return filterValue; }
-        set { value = filterValue; }
-    }
+    [Parameter] public string FilterValue { get; set; }
 
     /// <summary>
     /// Gets or sets the StringComparison.
