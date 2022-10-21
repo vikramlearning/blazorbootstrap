@@ -1,5 +1,4 @@
-﻿@using System.Threading.Tasks
-@page "/grid"
+﻿@page "/grid"
 
 <PageTitle>@title</PageTitle>
 
@@ -10,7 +9,7 @@
     Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
 </div>
 
-@*<SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
+<SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
 <div>For filtering, <code>AllowFiltering</code> and <code>PropertyName</code> parameters are required.</div>
 <div class="mb-3">Add <code>AllowFiltering="true"</code> parameter to Grid and <code>PropertyName</code> parameter to all the GridColumns.</div>
 <Demo Type="typeof(Grid_Demo_01_A_Client_Side_Filtering)" Tabs="true" />
@@ -34,14 +33,14 @@
 <Demo Type="typeof(Grid_Demo_03_Client_Side_Sorting)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side filtering, paging, and sorting" PageUrl="@pageUrl" HashTagName="client-side-filtering-paging-sorting" />
-<Demo Type="typeof(Grid_Demo_04_Client_Side_Filtering_Paging_And_Sorting)" Tabs="true" />*@
+<Demo Type="typeof(Grid_Demo_04_Client_Side_Filtering_Paging_And_Sorting)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Set default filter" PageUrl="@pageUrl" HashTagName="set-default-filter" />
 <div class="mb-2"><code>FilterOperator</code> and <code>FilterValue</code> parameters are required to set the default filter.</div>
 <Callout Type="CalloutType.Tip">You can set the default filter on more than one GridColumn.</Callout>
 <Demo Type="typeof(Grid_Demo_05_Set_Default_Filter)" Tabs="true" />
 
-@*<SectionHeading Size="HeadingSize.H2" Text="Disable specific column filter" PageUrl="@pageUrl" HashTagName="disable-specific-column-filter" />
+<SectionHeading Size="HeadingSize.H2" Text="Disable specific column filter" PageUrl="@pageUrl" HashTagName="disable-specific-column-filter" />
 <div class="mb-3"><code>Filterable</code> parameter is required to disable the filter on a specific column. Add <code>Filterable="false"</code> parameter to GridColumn.</div>
 <Demo Type="typeof(Grid_Demo_06_Disable_Specific_Column_Filter)" Tabs="true" />
 
@@ -86,7 +85,7 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Empty data" PageUrl="@pageUrl" HashTagName="empty-data" />
 <div class="mb-3">If there are no records to display in the Grid, by default, it will display the <strong>No records to display</strong> message. You can change this message by adding the <code>EmptyText</code> parameter to the Grid.</div>
-<Demo Type="typeof(Grid_Demo_15_Empty_Data)" Tabs="true" />*@
+<Demo Type="typeof(Grid_Demo_15_Empty_Data)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Save and Load Grid Settings" PageUrl="@pageUrl" HashTagName="save-and-load-grid-settings" />
 <div class="mb-3">This example shows how to save/load the Grid state. The state includes the <b>page number</b>, <b>page size</b>, and <b>filters</b>.</div>

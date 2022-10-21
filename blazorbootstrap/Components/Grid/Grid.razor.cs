@@ -8,6 +8,8 @@ public partial class Grid<TItem> : BaseComponent
 
     private List<TItem> items = null;
 
+    private int pageSize;
+
     private int? totalCount = null;
 
     private int totalPages => GetTotalPagesCount();
@@ -19,6 +21,13 @@ public partial class Grid<TItem> : BaseComponent
     #endregion Members
 
     #region Methods
+
+    protected override void OnInitialized()
+    {
+        this.pageSize = this.PageSize;
+
+        base.OnInitialized();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -140,8 +149,8 @@ public partial class Grid<TItem> : BaseComponent
     {
         if (totalCount.HasValue && totalCount.Value > 0)
         {
-            var q = totalCount.Value / PageSize;
-            var r = totalCount.Value % PageSize;
+            var q = totalCount.Value / pageSize;
+            var r = totalCount.Value % pageSize;
 
             if (q < 1)
                 return 1;
@@ -165,10 +174,24 @@ public partial class Grid<TItem> : BaseComponent
             SetFilters(settings.Filters);
 
         if (settings.PageNumber > 0)
-            GridCurrentState = new GridState<TItem>(settings.PageNumber, GridCurrentState.Sorting);
+        {
+            if (settings.PageSize > 0 && settings.PageNumber < settings.PageSize)
+            {
+                GridCurrentState = new GridState<TItem>(settings.PageNumber, GridCurrentState.Sorting);
+                this.pageSize = settings.PageSize;
+            }
+            else
+            {
+                GridCurrentState = new GridState<TItem>(1, null);
+                this.pageSize = 10;
+            }
+        }
+        else
+        {
+            GridCurrentState = new GridState<TItem>(1, null);
+            this.pageSize = 10;
+        }
 
-        if (settings.PageSize > 0)
-            this.PageSize = settings.PageSize;
     }
 
     /// <summary>
@@ -188,7 +211,7 @@ public partial class Grid<TItem> : BaseComponent
         var request = new GridDataProviderRequest<TItem>
         {
             PageNumber = this.AllowPaging ? GridCurrentState.PageIndex : 0,
-            PageSize = this.AllowPaging ? this.PageSize : 0,
+            PageSize = this.AllowPaging ? this.pageSize : 0,
             Sorting = this.AllowSorting ? (GridCurrentState.Sorting ?? GetDefaultSorting()) : null,
             Filters = this.AllowFiltering ? GetFilters() : null
         };
@@ -221,7 +244,7 @@ public partial class Grid<TItem> : BaseComponent
         var settings = new GridSettings
         {
             PageNumber = this.AllowPaging ? GridCurrentState.PageIndex : 0,
-            PageSize = this.AllowPaging ? this.PageSize : 0,
+            PageSize = this.AllowPaging ? this.pageSize : 0,
             Filters = this.AllowFiltering ? GetFilters() : null
         };
 
