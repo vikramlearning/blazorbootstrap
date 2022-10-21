@@ -1,37 +1,35 @@
 ﻿@using System.Text.Json
 
-<Grid @ref="grid" TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+<Grid @ref="grid" TItem="Employee1" class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true"
+      GridSettingsChanged="OnGridSettingsChanged"
+      SettingsProvider="GridSettingsProvider">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
         @context.Name
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
         @context.Designation
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
         @context.DOJ
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
         @context.IsActive
     </GridColumn>
-</Grid>
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="SaveFilters">Save Filters</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="RestoreFilters">Restore Filters</Button>
+</Grid>
 
 @code {
     BlazorBootstrap.Grid<Employee1> grid;
     private IEnumerable<Employee1> employees;
 
     [Inject] public IJSRuntime JS { get; set; }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await grid.SetFiltersAsync(new List<FilterItem>());
-        await base.OnAfterRenderAsync(firstRender);
-    }
+    public GridSettings Settings { get; set; }
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
@@ -41,27 +39,23 @@
         return await Task.FromResult(request.ApplyTo(employees));
     }
 
-    private async Task SaveFilters()
+    private async Task OnGridSettingsChanged(GridSettings settings)
     {
-        var filters = grid.GetFilters();
-        if (filters is null || !filters.Any())
-            return;
-
-        await JS.InvokeVoidAsync("window.localStorage.setItem", "filters", JsonSerializer.Serialize(filters));
+        if (settings is not null)
+            await JS.InvokeVoidAsync("window.localStorage.setItem", "grid-settings", JsonSerializer.Serialize(settings));
     }
 
-    private async Task RestoreFilters()
+    private async Task<GridSettings> GridSettingsProvider()
     {
-        var filtersJson = await JS.InvokeAsync<string>("window.localStorage.getItem", "filters");
-        if (string.IsNullOrWhiteSpace(filtersJson))
-            return;
+        var settingsJson = await JS.InvokeAsync<string>("window.localStorage.getItem", "grid-settings");
+        if (string.IsNullOrWhiteSpace(settingsJson))
+            return null;
 
-        var filters = JsonSerializer.Deserialize<IEnumerable<FilterItem>>(filtersJson);
+        var settings = JsonSerializer.Deserialize<GridSettings>(settingsJson);
+        if (settings is null)
+            return null;
 
-        if (filters is null || !filters.Any())
-            return;
-
-        await grid.SetFiltersAsync(filters);
+        return settings;
     }
 
     private IEnumerable<Employee1> GetEmployees()
@@ -75,8 +69,11 @@
             new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
             new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
             new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
+            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
             new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
         };
     }
 }

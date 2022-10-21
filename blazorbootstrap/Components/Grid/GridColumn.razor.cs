@@ -62,19 +62,17 @@ public partial class GridColumn<TItem> : BaseComponent
     internal async Task OnFilterChangedAsync(FilterEventArgs args, GridColumn<TItem> column)
     {
         if (this.filterValue != args.Text || this.filterOperator != args.FilterOperator)
-            this.Parent.ResetPageNumber();
+            await this.Parent.ResetPageNumberAsync();
 
         this.filterValue = args.Text;
         this.filterOperator = args.FilterOperator;
-
+        await this.Parent.FilterChangedAsync();
         await this.Parent.RefreshDataAsync();
-
-        Console.WriteLine("GridColumn.OnFilterChangedAsync: RefreshDataAsync called.");
     }
 
-    internal void SetFilterOperator(FilterOperator filterOperator) => this.filterOperator = filterOperator;
+    internal void SetFilterOperator(FilterOperator filterOperator) => this.FilterOperator = this.filterOperator = filterOperator;
 
-    internal void SetFilterValue(string filterValue) => this.filterValue = filterValue;
+    internal void SetFilterValue(string filterValue) => this.FilterValue = this.filterValue = filterValue;
 
     #endregion Filters
 

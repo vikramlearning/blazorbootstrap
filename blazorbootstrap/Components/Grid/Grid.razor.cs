@@ -24,7 +24,7 @@ public partial class Grid<TItem> : BaseComponent
     {
         if (firstRender)
         {
-            await RefreshDataAsync();
+            await RefreshDataAsync(firstRender);
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -54,10 +54,12 @@ public partial class Grid<TItem> : BaseComponent
     /// Set filters and refresh the grid.
     /// </summary>
     /// <param name="filterItems"></param>
-    public async Task SetFiltersAsync(IEnumerable<FilterItem> filterItems)
+    private void SetFilters(IEnumerable<FilterItem> filterItems)
     {
         if (filterItems is null || !filterItems.Any())
             return;
+
+        Console.WriteLine($"Filters available.");
 
         foreach (var item in filterItems)
         {
@@ -72,13 +74,24 @@ public partial class Grid<TItem> : BaseComponent
                 }
             }
         }
+    }
 
+    internal async Task FilterChangedAsync()
+    {
+        await SaveGridSettingsAsync();
+    }
+
+    private async Task OnPageChangedAsync(int newPageNumber)
+    {
+        GridCurrentState = new GridState<TItem>(newPageNumber, GridCurrentState.Sorting);
+        await SaveGridSettingsAsync();
         await RefreshDataAsync();
     }
 
-    internal void ResetPageNumber()
+    internal async Task ResetPageNumberAsync()
     {
         GridCurrentState = new GridState<TItem>(1, GridCurrentState.Sorting);
+        await SaveGridSettingsAsync();
     }
 
     internal async Task SortingChangedAsync(GridColumn<TItem> column)
@@ -113,13 +126,7 @@ public partial class Grid<TItem> : BaseComponent
             }
         });
 
-        await RefreshDataAsync();
-    }
-
-    private async Task OnPageChangedAsync(int newPageNumber)
-    {
-        GridCurrentState = new GridState<TItem>(newPageNumber, GridCurrentState.Sorting);
-
+        await SaveGridSettingsAsync();
         await RefreshDataAsync();
     }
 
@@ -149,16 +156,38 @@ public partial class Grid<TItem> : BaseComponent
         return 1;
     }
 
+    private async Task LoadGridSettingsAsync()
+    {
+        if (this.SettingsProvider is null)
+            return;
+
+        var settings = await this.SettingsProvider.Invoke();
+        if (settings is null)
+            return;
+
+        if (settings.Filters is not null && settings.Filters.Any())
+            SetFilters(settings.Filters);
+
+        if(settings.PageNumber > 0)
+            GridCurrentState = new GridState<TItem>(settings.PageNumber, GridCurrentState.Sorting);
+
+        if(settings.PageSize > 0)
+            this.PageSize = settings.PageSize;
+    }
+
     /// <summary>
     /// Refresh the grid data.
     /// </summary>
     /// <returns>Task</returns>
-    public async Task RefreshDataAsync()
+    public async Task RefreshDataAsync(bool firstRender = false)
     {
         if (requestInProgress)
             return;
 
         requestInProgress = true;
+
+        if (firstRender)
+            await LoadGridSettingsAsync();
 
         var request = new GridDataProviderRequest<TItem>
         {
@@ -186,6 +215,21 @@ public partial class Grid<TItem> : BaseComponent
         requestInProgress = false;
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task SaveGridSettingsAsync()
+    {
+        if (!GridSettingsChanged.HasDelegate)
+            return;
+
+        var settings = new GridSettings
+        {
+            PageNumber = this.AllowPaging ? GridCurrentState.PageIndex : 0,
+            PageSize = this.AllowPaging ? this.PageSize : 0,
+            Filters = this.AllowFiltering ? GetFilters() : null
+        };
+
+        await GridSettingsChanged.InvokeAsync(settings);
     }
 
     #endregion Methods
@@ -250,6 +294,14 @@ public partial class Grid<TItem> : BaseComponent
     /// Gets or sets a value indicating whether Grid is responsive.
     /// </summary>
     [Parameter] public bool Responsive { get; set; }
+
+    [Parameter] public EventCallback<GridSettings> GridSettingsChanged { get; set; }
+
+    /// <summary>
+    /// Settings is for grid to render. 
+    /// The provider should always return an instance of 'GridSettings', and 'null' is not allowed.
+    /// </summary>
+    [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; }
 
     #endregion Properties
 }
