@@ -40,7 +40,7 @@ public partial class GridColumn<TItem> : BaseComponent
 
     protected override void OnParametersSet()
     {
-        SetDefaultFilter(this.filterOperator, this.GetPropertyTypeName());
+        SetDefaultFilter();
 
         base.OnParametersSet();
     }
@@ -78,8 +78,10 @@ public partial class GridColumn<TItem> : BaseComponent
 
     #region Sorting
 
-    private void SetDefaultFilter(FilterOperator columnFilterOperator, string propertyTypeName)
+    internal void SetDefaultFilter()
     {
+        string propertyTypeName = this.GetPropertyTypeName();
+
         if (propertyTypeName == StringConstants.PropertyTypeNameInt16
             || propertyTypeName == StringConstants.PropertyTypeNameInt32
             || propertyTypeName == StringConstants.PropertyTypeNameInt64
@@ -88,24 +90,24 @@ public partial class GridColumn<TItem> : BaseComponent
             || propertyTypeName == StringConstants.PropertyTypeNameDouble)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Equals;
+                this.FilterOperator = this.filterOperator = FilterOperator.Equals;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameString
             || propertyTypeName == StringConstants.PropertyTypeNameChar)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Contains;
+                this.FilterOperator = this.filterOperator = FilterOperator.Contains;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly
             || propertyTypeName == StringConstants.PropertyTypeNameDateTime)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Equals;
+                this.FilterOperator = this.filterOperator = FilterOperator.Equals;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Equals;
+                this.FilterOperator = this.filterOperator = FilterOperator.Equals;
         }
     }
 

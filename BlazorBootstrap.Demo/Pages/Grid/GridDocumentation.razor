@@ -88,10 +88,11 @@
 <div class="mb-3">If there are no records to display in the Grid, by default, it will display the <strong>No records to display</strong> message. You can change this message by adding the <code>EmptyText</code> parameter to the Grid.</div>
 <Demo Type="typeof(Grid_Demo_15_Empty_Data)" Tabs="true" />*@
 
-<SectionHeading Size="HeadingSize.H2" Text="Save and Restore Grid filters programmatically" PageUrl="@pageUrl" HashTagName="grid-save-and-restore-filters-programmatically" />
-<div class="mb-3">TODO: Update this section</div>
-<Callout Type="CalloutType.Default">Browser local storage is used to persist the filters state. Common locations exist for persisting state: <b>Server-side storage</b>, <b>URL</b>, <b>Browser storage</b>, and <b>In-memory state container service</b>.</Callout>
-<Demo Type="typeof(Grid_Demo_16_Save_And_Restore_Filters_Programmatically)" Tabs="true" />
+<SectionHeading Size="HeadingSize.H2" Text="Save and Load Grid Settings" PageUrl="@pageUrl" HashTagName="save-and-load-grid-settings" />
+<div class="mb-3">This example shows how to save/load the Grid state. The state includes the <b>page number</b>, <b>page size</b>, and <b>filters</b>.</div>
+<Callout Type="CalloutType.Danger" Heading="IMPORTANT">In version <code>0.5.1</code>, the Grid sorting state is not included as part of GridSettings. We will add it in the subsequent releases.</Callout>
+<Callout Type="CalloutType.Default">Browser local storage is used to persist the filters state. Common locations exist for persisting state are <b>Server-side storage</b>, <b>URL</b>, <b>Browser storage</b>, and <b>In-memory state container service</b>.</Callout>
+<Demo Type="typeof(Grid_Demo_16_Save_And_Load_Grid_Settings)" Tabs="true" />
 
 @code {
     private string pageUrl = "/grid";

@@ -23,9 +23,7 @@ public partial class Grid<TItem> : BaseComponent
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {
             await RefreshDataAsync(firstRender);
-        }
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -51,15 +49,13 @@ public partial class Grid<TItem> : BaseComponent
     }
 
     /// <summary>
-    /// Set filters and refresh the grid.
+    /// Set filters.
     /// </summary>
     /// <param name="filterItems"></param>
     private void SetFilters(IEnumerable<FilterItem> filterItems)
     {
         if (filterItems is null || !filterItems.Any())
             return;
-
-        Console.WriteLine($"Filters available.");
 
         foreach (var item in filterItems)
         {
@@ -168,10 +164,10 @@ public partial class Grid<TItem> : BaseComponent
         if (settings.Filters is not null && settings.Filters.Any())
             SetFilters(settings.Filters);
 
-        if(settings.PageNumber > 0)
+        if (settings.PageNumber > 0)
             GridCurrentState = new GridState<TItem>(settings.PageNumber, GridCurrentState.Sorting);
 
-        if(settings.PageSize > 0)
+        if (settings.PageSize > 0)
             this.PageSize = settings.PageSize;
     }
 
