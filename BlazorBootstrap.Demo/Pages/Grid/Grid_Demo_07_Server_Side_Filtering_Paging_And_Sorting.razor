@@ -33,8 +33,8 @@
         if (request.Sorting is not null && request.Sorting.Any())
         {
             // Note: Multi column sorting is not supported at this moment
-            sortString = request.Sorting[0].SortString;
-            sortDirection = request.Sorting[0].SortDirection;
+            sortString = request.Sorting.FirstOrDefault().SortString;
+            sortDirection = request.Sorting.FirstOrDefault().SortDirection;
         }
         var result = _employeeService.GetEmployees(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection);
         return await Task.FromResult(new GridDataProviderResult<Employee> { Data = result.Item1, TotalCount = result.Item2 });

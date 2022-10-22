@@ -23,9 +23,11 @@ Use BlazorBootstrap's grid component to display tabular data from the data sourc
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid. |
 | EmptyText | string | No records to display | | Shows text on no records. |
 | DataProvider | `GridDataProviderDelegate<TItem>` | | ✔️ | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. |
+| GridSettingsChanged | `EventCallback<GridSettings>` | | | This event is fired when the grid state is changed |
 | PageSize | int | Gets or sets the page size of the grid. | | 10 |
 | PaginationAlignment | enum | `Alignment.Start` | | Gets or sets the pagination alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. |
 | Responsive | bool | false | | Gets or sets a value indicating whether Grid is responsive. |
+| SettingsProvider | `GridSettingsProviderDelegate` | | | Settings are for the grid to render. The provider should always return an instance of 'GridSettings', and 'null' is not allowed. |
 | Sortable | bool | true | | Gets or sets whether end-users can sort data by the column's values. |
 
 ## GridColumn Parameters
@@ -48,6 +50,14 @@ Use BlazorBootstrap's grid component to display tabular data from the data sourc
 | StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Gets or sets the StringComparison. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. |
 | TextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. |
 | TextNoWrap | bool | false | | Gets or sets text nowrap. |
+
+## GridSettings Properties
+
+| Name | Type | Default | Required | Description |
+|--|--|--|--|--|
+| PageNumber | int | | | Page number. |
+| PageSize | int | | | Size of the page. |
+| Filters | IEnumerable<FilterItem\> | | | Current filters. |
 
 ## Examples
 
@@ -1044,3 +1054,107 @@ You can change this message by adding the `EmptyText` parameter to the Grid.
 :::tip TIP
 Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.
 :::
+
+### Save and Load Grid Settings
+
+This example shows how to save/load the Grid state. The state includes the page number, page size, and filters.
+
+:::danger IMPORTANT
+In version `0.5.1`, the Grid sorting state is not included as part of GridSettings. We will add it in the subsequent releases.
+:::
+
+:::note NOTE
+Browser local storage is used to persist the Grid state. Common locations exist for persisting state are **Server-side storage**, **URL**, **Browser storage**, and **In-memory state container service**.
+:::
+
+<img src="https://i.imgur.com/weFYVWA.png" alt="Blazor Bootstrap: Grid Component - Save and Load Grid Settings" />
+
+```cshtml {1,6,7} showLineNumbers
+@using System.Text.Json
+
+<Grid @ref="grid" TItem="Employee1" class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true" PageSize="8" AllowPaging="true" AllowSorting="true" Responsive="true"
+      GridSettingsChanged="OnGridSettingsChanged"
+      SettingsProvider="GridSettingsProvider">
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id" FilterOperator="FilterOperator.GreaterThanOrEquals" FilterValue="109">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+</Grid>
+```
+
+```cs {5,6,16-26,28-38} showLineNumbers
+@code {
+    BlazorBootstrap.Grid<Employee1> grid;
+    private IEnumerable<Employee1> employees;
+
+    [Inject] public IJSRuntime JS { get; set; }
+    public GridSettings Settings { get; set; }
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private async Task OnGridSettingsChanged(GridSettings settings)
+    {
+        if (settings is null)
+            return;
+
+        // NOTE: enable below two lines, if you want to set default values for PageNumber and PageSize all the time.
+        //settings.PageNumber = 1;
+        //settings.PageSize = 10;
+
+        await JS.InvokeVoidAsync("window.localStorage.setItem", "grid-settings", JsonSerializer.Serialize(settings));
+    }
+
+    private async Task<GridSettings> GridSettingsProvider()
+    {
+        var settingsJson = await JS.InvokeAsync<string>("window.localStorage.getItem", "grid-settings");
+        if (string.IsNullOrWhiteSpace(settingsJson))
+            return null;
+
+        var settings = JsonSerializer.Deserialize<GridSettings>(settingsJson);
+        if (settings is null)
+            return null;
+
+        return settings;
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
+            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
+        };
+    }
+}
+```
+
+[See demo here](https://demos.getblazorbootstrap.com/grid#save-and-load-grid-settings)

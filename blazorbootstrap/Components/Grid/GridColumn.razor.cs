@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using System.Data.Common;
-using System.Linq.Expressions;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class GridColumn<TItem> : BaseComponent
 {
@@ -24,7 +20,7 @@ public partial class GridColumn<TItem> : BaseComponent
 
     #region Methods
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         ElementId = IdGenerator.Generate; // Required
 
@@ -39,7 +35,14 @@ public partial class GridColumn<TItem> : BaseComponent
 
         Parent.AddColumn(this);
 
-        SetDefaultFilter(this.filterOperator, this.GetPropertyTypeName());
+        await base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        SetDefaultFilter();
+
+        base.OnParametersSet();
     }
 
     internal string GetPropertyTypeName()
@@ -56,23 +59,29 @@ public partial class GridColumn<TItem> : BaseComponent
 
     internal string GetFilterValue() => this.filterValue;
 
-    internal void OnFilterChanged(FilterEventArgs args, GridColumn<TItem> column)
+    internal async Task OnFilterChangedAsync(FilterEventArgs args, GridColumn<TItem> column)
     {
         if (this.filterValue != args.Text || this.filterOperator != args.FilterOperator)
-            this.Parent.ResetPageNumber();
+            await this.Parent.ResetPageNumberAsync();
 
         this.filterValue = args.Text;
         this.filterOperator = args.FilterOperator;
-
-        this.Parent.RefreshDataAsync();
+        await this.Parent.FilterChangedAsync();
+        await this.Parent.RefreshDataAsync();
     }
+
+    internal void SetFilterOperator(FilterOperator filterOperator) => this.FilterOperator = this.filterOperator = filterOperator;
+
+    internal void SetFilterValue(string filterValue) => this.FilterValue = this.filterValue = filterValue;
 
     #endregion Filters
 
     #region Sorting
 
-    private void SetDefaultFilter(FilterOperator columnFilterOperator, string propertyTypeName)
+    internal void SetDefaultFilter()
     {
+        string propertyTypeName = this.GetPropertyTypeName();
+
         if (propertyTypeName == StringConstants.PropertyTypeNameInt16
             || propertyTypeName == StringConstants.PropertyTypeNameInt32
             || propertyTypeName == StringConstants.PropertyTypeNameInt64
@@ -81,24 +90,24 @@ public partial class GridColumn<TItem> : BaseComponent
             || propertyTypeName == StringConstants.PropertyTypeNameDouble)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Equals;
+                this.FilterOperator = this.filterOperator = FilterOperator.Equals;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameString
             || propertyTypeName == StringConstants.PropertyTypeNameChar)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Contains;
+                this.FilterOperator = this.filterOperator = FilterOperator.Contains;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly
             || propertyTypeName == StringConstants.PropertyTypeNameDateTime)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Equals;
+                this.FilterOperator = this.filterOperator = FilterOperator.Equals;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
         {
             if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Equals;
+                this.FilterOperator = this.filterOperator = FilterOperator.Equals;
         }
     }
 
@@ -112,7 +121,7 @@ public partial class GridColumn<TItem> : BaseComponent
         yield return new SortingItem<TItem>(this.SortString, this.SortKeySelector, this.currentSortDirection);
     }
 
-    private void OnSortClick()
+    private async Task OnSortClickAsync()
     {
         // toggle the direction
         if (currentSortDirection == SortDirection.Ascending)
@@ -122,7 +131,7 @@ public partial class GridColumn<TItem> : BaseComponent
         else if (currentSortDirection == SortDirection.None)
             currentSortDirection = SortDirection = SortDirection.Ascending;
 
-        Parent.SortingChanged(this);
+        await Parent.SortingChangedAsync(this);
     }
 
     #endregion Sorting
@@ -215,7 +224,7 @@ public partial class GridColumn<TItem> : BaseComponent
                     seq++;
                     builder.AddAttribute(seq, "role", "button");
                     seq++;
-                    builder.AddAttribute(seq, "onclick", OnSortClick);
+                    builder.AddAttribute(seq, "onclick", async () => await OnSortClickAsync());
                 }
                 if (this.HeaderTextAlignment != Alignment.None)
                 {

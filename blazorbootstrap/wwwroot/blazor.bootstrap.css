@@ -55,6 +55,8 @@
         background-color: rgba(var(--bs-dark-rgb), .15);
         border-radius: .25rem;
         padding: 0.1rem;
+        padding-left: 0.3rem;
+        padding-right: 0.3rem;
     }
 
     .bb-callout a {

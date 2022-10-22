@@ -29,7 +29,7 @@
                                       FilterOperator="@column.FilterOperator"
                                       FilterValue="@column.FilterValue"
                                       FilterWidth="@column.FilterTextboxWidth"
-                                      GridColumnFilterChanged="((args) => column.OnFilterChanged(args, column))" />
+                                      GridColumnFilterChanged="(async (args) => await column.OnFilterChangedAsync(args, column))" />
                                 }
                             </th>
                         }
@@ -93,7 +93,7 @@
     @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0)
     {
         <div class="mt-2">
-            <Pagination ActivePageNumber="@(GridCurrentState.PageIndex)"
+            <Pagination ActivePageNumber="@GridCurrentState.PageIndex"
                 TotalPages="@totalPages"
                 PageChanged="OnPageChangedAsync"
                 FirstLinkIcon="IconName.ChevronDoubleLeft"
