@@ -10,14 +10,14 @@ tags: [v0.5.1, blazorbootstrap, blazorgrid, blazor-grid, blazor-grid-sorting, bl
 
 We are excited to release `0.5.1` with blazor grid enhancements.
 
-<img src="https://i.imgur.com/36RsWZ3.png" alt="Blazor Grid Component - Sorting, Filtering, and Paging" />
+<img src="https://i.imgur.com/weFYVWA.png" alt="Blazor Grid Component - Sorting, Filtering, and Paging" />
 <br />
 
 <!--truncate-->
 
 ### Grid Enhancements
 
-- Support for save/load Grid state. The state includes the `page number`, `page size`, and `filters`.
+- Support for save/load Grid state. The state includes the **page number**, **page size**, and **filters**.
 - Performance improvements by removing unnecessary conversions
 
 ### Links
