@@ -37,9 +37,10 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Set default filter" PageUrl="@pageUrl" HashTagName="set-default-filter" />
 <div class="mb-2">
-    <code>FilterOperator</code> and <code>FilterValue</code> parameters are required to set the default filter. The default sorting is enabled on the <b>Id</b> column in the below example.
+    <code>FilterOperator</code> and <code>FilterValue</code> parameters are required to set the default filter.
 </div>
 <Callout Type="CalloutType.Tip">You can set the default filter on more than one GridColumn.</Callout>
+<div class="mb-3">The default sorting is enabled on the <b>Id</b> column in the below example.</div>
 <Demo Type="typeof(Grid_Demo_05_Set_Default_Filter)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Disable specific column filter" PageUrl="@pageUrl" HashTagName="disable-specific-column-filter" />
@@ -60,10 +61,11 @@
 <div><code>IsDefaultSortColumn</code> parameter is required to set the default sorting. Add <code>IsDefaultSortColumn="true"</code> parameter to the GridColumn.</div>
 <div class="mb-2">The default sort direction will be ascending. To change the default sorting of a column, add <code>SortDirection="SortDirection.Descending"</code> to the GridColumn.</div>
 <Callout Type="CalloutType.Info">If more than one GridColumn has the <strong>IsDefaultSortColumn</strong> paramter, it will pick the first column as the default sorting column.</Callout>
+<div class="mb-3">The default sorting is enabled on the <b>Employee Name</b> column in the below example, and the sort direction is <b>descending</b>.</div>
 <Demo Type="typeof(Grid_Demo_08_Default_Sorting)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Disable specific column sorting" PageUrl="@pageUrl" HashTagName="disable-specific-column-sorting" />
-<div>Add <code>Sortable="false"</code>parameter the GridColumn to disable the sorting. If sorting is disabled, then the <code>SortKeySelector</code> parameter is not required.</div>
+<div>Add <code>Sortable="false"</code>parameter the GridColumn to disable the sorting. If sorting is disabled, then the <code>SortKeySelector</code> parameter is not required. The sorting is disabled on the <b>Designation</b> column in the below example.</div>
 <Demo Type="typeof(Grid_Demo_09_Disable_Specific_Column_Sorting)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Header text alignment" PageUrl="@pageUrl" HashTagName="header-text-alignment" />
