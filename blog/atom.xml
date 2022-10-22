@@ -2,11 +2,30 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>BlazorBootstrap Blog</title>
-    <updated>2022-10-16T00:00:00.000Z</updated>
+    <updated>2022-10-22T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>BlazorBootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/48X48.png</icon>
+    <entry>
+        <title type="html"><![CDATA[BlazorBootstrap v0.5.1]]></title>
+        <id>/2022/10/22/blazorbootstrap-0.5.1</id>
+        <link href="https://getblazorbootstrap.com/blog/2022/10/22/blazorbootstrap-0.5.1"/>
+        <updated>2022-10-22T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 0.5.1 with blazor grid enhancements.]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release <code>0.5.1</code> with blazor grid enhancements.</p><img loading="lazy" src="https://i.imgur.com/weFYVWA.png" alt="Blazor Grid Component - Sorting, Filtering, and Paging" class="img_ev3q"><br><h3 class="anchor anchorWithStickyNavbar_LWe7" id="grid-enhancements">Grid Enhancements<a class="hash-link" href="#grid-enhancements" title="Direct link to heading">​</a></h3><ul><li>Support for save/load Grid state. The state includes the <strong>page number</strong>, <strong>page size</strong>, and <strong>filters</strong>.</li><li>Performance improvements by removing unnecessary conversions</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/grid" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Blazor Grid Component Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v0.5.1" term="v0.5.1"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="blazorgrid" term="blazorgrid"/>
+        <category label="blazor-grid" term="blazor-grid"/>
+        <category label="blazor-grid-sorting" term="blazor-grid-sorting"/>
+        <category label="blazor-grid-filtering" term="blazor-grid-filtering"/>
+        <category label="blazor-grid-paging" term="blazor-grid-paging"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[BlazorBootstrap v0.5.0]]></title>
         <id>/2022/10/16/blazorbootstrap-0.5.0</id>
