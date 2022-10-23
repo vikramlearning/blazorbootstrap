@@ -62,7 +62,7 @@ public partial class Pagination : BaseComponent
     {
         var previousPageNUmber = 1;
 
-        if (TotalPages == 1 || ActivePageNumber == 0 | TotalPages == 0)
+        if (TotalPages == 1 || ActivePageNumber == 0 || TotalPages == 0)
             previousPageNUmber = 1;
         else if (ActivePageNumber > 1 && TotalPages > 1)
             previousPageNUmber = ActivePageNumber - 1;
@@ -74,7 +74,7 @@ public partial class Pagination : BaseComponent
     {
         var nextPageNumber = 1;
 
-        if (TotalPages == 1 || ActivePageNumber == 0 | TotalPages == 0)
+        if (TotalPages == 1 || ActivePageNumber == 0 || TotalPages == 0)
             nextPageNumber = 1;
         if (ActivePageNumber == TotalPages)
             nextPageNumber = TotalPages;

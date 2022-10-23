@@ -28,7 +28,7 @@ public static class FilterOperatorHelper
             return GetBooleanFilterOperators();
         }
 
-        return null;
+        return new List<FilterOperatorInfo>();
     }
 
     public static IEnumerable<FilterOperatorInfo> GetNumberFilterOperators()

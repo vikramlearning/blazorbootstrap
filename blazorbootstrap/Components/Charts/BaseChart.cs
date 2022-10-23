@@ -8,15 +8,12 @@ public class BaseChart : BaseComponent
 
     internal string chartContainerStyle => GetChartContainerSizeAsStyle();
 
-    private DotNetObjectReference<BaseChart> objRef;
-
     #endregion Members
 
     #region Methods
 
     protected override async Task OnInitializedAsync()
     {
-        objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
     }
 
@@ -25,20 +22,20 @@ public class BaseChart : BaseComponent
     /// <summary>
     /// Initialize Bar Chart.
     /// </summary>
-    /// <param name="data"></param>
-    /// <param name="options"></param>
-    public virtual async Task InitializeAsync(ChartData data, IChartOptions options)
+    /// <param name="chartData"></param>
+    /// <param name="chartOptions"></param>
+    public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions)
     {
-        if (data is not null && data.Datasets is not null && data.Datasets.Any())
+        if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
         {
-            var _data = GetChartDataObject(data);
+            var _data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JS.InvokeVoidAsync("window.blazorChart.bar.initialize", ElementId, GetChartType(), _data, (BarChartOptions)options);
+                await JS.InvokeVoidAsync("window.blazorChart.bar.initialize", ElementId, GetChartType(), _data, (BarChartOptions)chartOptions);
             else if (chartType == ChartType.Line)
-                await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), _data, (LineChartOptions)options);
+                await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), _data, (LineChartOptions)chartOptions);
             else
-                await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), _data, options);
+                await JS.InvokeVoidAsync("window.blazorChart.initialize", ElementId, GetChartType(), _data, chartOptions);
         }
     }
 
@@ -65,20 +62,20 @@ public class BaseChart : BaseComponent
     /// <summary>
     /// Update Bar Chart.
     /// </summary>
-    /// <param name="data"></param>
-    /// <param name="options"></param>
-    public virtual async Task UpdateAsync(ChartData data, IChartOptions options)
+    /// <param name="chartData"></param>
+    /// <param name="chartOptions"></param>
+    public virtual async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
-        if (data is not null && data.Datasets is not null && data.Datasets.Any())
+        if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
         {
-            var _data = GetChartDataObject(data);
+            var _data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JS.InvokeVoidAsync("window.blazorChart.bar.update", ElementId, GetChartType(), _data, (BarChartOptions)options);
+                await JS.InvokeVoidAsync("window.blazorChart.bar.update", ElementId, GetChartType(), _data, (BarChartOptions)chartOptions);
             else if (chartType == ChartType.Line)
-                await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), _data, (LineChartOptions)options);
+                await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), _data, (LineChartOptions)chartOptions);
             else
-                await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, options);
+                await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, chartOptions);
         }
     }
 

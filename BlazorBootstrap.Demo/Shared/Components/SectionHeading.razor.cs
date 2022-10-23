@@ -30,13 +30,13 @@ public partial class SectionHeading : ComponentBase
 
     [Parameter] public HeadingSize Size { get; set; }
 
-    [Parameter] public string Text { get; set; }
+    [Parameter] public string Text { get; set; } = null!;
 
-    [Parameter] public string PageUrl { get; set; }
+    [Parameter] public string PageUrl { get; set; } = null!;
 
-    [Parameter] public string HashTagName { get; set; }
+    [Parameter] public string HashTagName { get; set; } = null!;
 
-    [Inject] protected IJSRuntime JS { get; set; }
+    [Inject] protected IJSRuntime JS { get; set; } = null!;
 
     #endregion
 }
