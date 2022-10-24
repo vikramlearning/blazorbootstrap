@@ -1,19 +1,27 @@
 ﻿<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="false" />
 
-<Button Color="ButtonColor.Primary" @onclick="OnShowToastClick">Show Toast</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => ShowMessage(ToastType.Primary)">Show Primary Toast</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ShowMessage(ToastType.Secondary)">Show Secondary Toast</Button>
+<Button Color="ButtonColor.Success" @onclick="() => ShowMessage(ToastType.Success)">Show Success Toast</Button>
+<Button Color="ButtonColor.Danger" @onclick="() => ShowMessage(ToastType.Danger)">Show Danger Toast</Button>
+<Button Color="ButtonColor.Warning" @onclick="() => ShowMessage(ToastType.Warning)">Show Warning Toast</Button>
+<Button Color="ButtonColor.Info" @onclick="() => ShowMessage(ToastType.Info)">Show Info Toast</Button>
+<Button Color="ButtonColor.Light" @onclick="() => ShowMessage(ToastType.Light)">Show Light Toast</Button>
+<Button Color="ButtonColor.Dark" @onclick="() => ShowMessage(ToastType.Dark)">Show Dark Toast</Button>
 
 @code {
     List<ToastMessage> messages = new List<ToastMessage>();
 
-    private void OnShowToastClick()
+    private void ShowMessage(ToastType toastType) => messages?.Add(GetToastMessage(toastType));
+
+    private ToastMessage GetToastMessage(ToastType toastType)
     {
-        messages?.Add(new ToastMessage
+        return new ToastMessage
             {
-                Type = ToastType.Warning,
-                IconName = IconName.Alarm,
+                Type = toastType,
                 Title = "Blazor Bootstrap",
                 HelpText = $"{DateTime.Now}",
                 Message = $"Hello, world! This is a toast message. DateTime: {DateTime.Now}",
-            });
+            };
     }
 }

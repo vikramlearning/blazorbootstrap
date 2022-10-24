@@ -42,21 +42,6 @@
         /// </summary>
         Dark,
 
-        /// <summary>
-        /// Body background color.
-        /// </summary>
-        Body,
-
-        /// <summary>
-        /// White background color.
-        /// </summary>
-        White,
-
-        /// <summary>
-        /// Transparent background color.
-        /// </summary>
-        Transparent,
-
         // TODO: Review
         // https://getbootstrap.com/docs/5.1/utilities/background/#background-gradient
         // https://getbootstrap.com/docs/5.1/utilities/background/#opacity

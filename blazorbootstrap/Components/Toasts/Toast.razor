@@ -4,14 +4,7 @@
 <CascadingValue Value="@this" IsFixed="true">
     <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
         <div class="toast-header">
-            @if (!string.IsNullOrWhiteSpace(ToastMessage.ImageSource))
-            {
-                <img src="@ToastMessage.ImageSource" class="rounded me-2" alt="toast image">
-            }
-            else
-            {
-                <Icon Name="@ToastMessage.IconName" CustomIconName="@ToastMessage.CustomIconName" class="me-2"></Icon>
-            }
+            <Icon Name="@iconName" CustomIconName="@ToastMessage.CustomIconName" class="@iconClass"></Icon>
             <strong class="me-auto">@ToastMessage.Title</strong>
             <small class="text-muted">@ToastMessage.HelpText</small>
             @if (!AutoHide || ShowCloseButton)
@@ -21,6 +14,9 @@
         </div>
         <div class="toast-body">
             @ToastMessage.Message
+        </div>
+        <div class="progress" style="height: 2px;">
+            <div class="progress-bar @toastProgressClass w-100" role="progressbar" aria-label="Toast message progress" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
     </div>
 </CascadingValue>

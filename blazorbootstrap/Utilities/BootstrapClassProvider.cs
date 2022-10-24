@@ -174,7 +174,7 @@
 
         #region Text Colors
 
-        public string TextColor(TextColor textColor) => $"bg-{ToTextColor(textColor)}";
+        public string TextColor(TextColor textColor) => $"text-{ToTextColor(textColor)}";
 
         #endregion
 
@@ -303,9 +303,6 @@
                 BlazorBootstrap.ToastType.Info => "info",
                 BlazorBootstrap.ToastType.Light => "light",
                 BlazorBootstrap.ToastType.Dark => "dark",
-                BlazorBootstrap.ToastType.Body => "body",
-                BlazorBootstrap.ToastType.White => "white",
-                BlazorBootstrap.ToastType.Transparent => "transparent",
                 _ => null,
             };
         }
@@ -322,10 +319,7 @@
 
                 BlazorBootstrap.ToastType.Warning
                 or BlazorBootstrap.ToastType.Info
-                or BlazorBootstrap.ToastType.Light
-                or BlazorBootstrap.ToastType.Body
-                or BlazorBootstrap.ToastType.White
-                or BlazorBootstrap.ToastType.Transparent => "dark",
+                or BlazorBootstrap.ToastType.Light => "dark",
 
                 _ => null,
             };
