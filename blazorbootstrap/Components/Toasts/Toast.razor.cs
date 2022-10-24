@@ -28,6 +28,7 @@ public partial class Toast : BaseComponent, IDisposable
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Toast());
+        builder.Append(BootstrapClassProvider.BackgroundColor(BackgroundColor.White));
 
         base.BuildClasses(builder);
     }
