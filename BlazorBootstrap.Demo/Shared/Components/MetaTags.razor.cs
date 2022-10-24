@@ -24,22 +24,22 @@ public partial class MetaTags : ComponentBase
     /// Meta Url.
     /// Example: /alerts, /modal
     /// </summary>
-    [Parameter] public string PageUrl { get; set; }
+    [Parameter] public string PageUrl { get; set; } = null!;
 
     /// <summary>
     /// Page Title / Meta Title.
     /// </summary>
-    [Parameter] public string Title { get; set; }
+    [Parameter] public string Title { get; set; } = null!;
 
     /// <summary>
     /// Meta Description.
     /// </summary>
-    [Parameter] public string Description { get; set; }
+    [Parameter] public string Description { get; set; } = null!;
 
     /// <summary>
     /// Meta Image Url.
     /// </summary>
-    [Parameter] public string ImageUrl { get; set; }
+    [Parameter] public string ImageUrl { get; set; } = null!;
 
     #endregion
 }

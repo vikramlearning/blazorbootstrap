@@ -113,8 +113,6 @@ namespace BlazorBootstrap
             base.OnInitialized();
         }
 
-        //protected virtual RenderFragment ProvideDefaultLoadingTemplate() => null;
-
         protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder =>
         {
             builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {this.loadingText}");

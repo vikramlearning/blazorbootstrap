@@ -21,7 +21,7 @@ public partial class DoughnutChart : BaseChart
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
-            var datasets = chartData.Datasets.Where(x => x is DoughnutChartDataset).Select(x => (DoughnutChartDataset)x);
+            var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { Labels = chartData.Labels, Datasets = datasets };
             await JS.InvokeVoidAsync("window.blazorChart.doughnut.initialize", ElementId, GetChartType(), data, (DoughnutChartOptions)chartOptions);
         }
@@ -31,7 +31,7 @@ public partial class DoughnutChart : BaseChart
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
-            var datasets = chartData.Datasets.Where(x => x is DoughnutChartDataset).Select(x => (DoughnutChartDataset)x);
+            var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { Labels = chartData.Labels, Datasets = datasets };
             await JS.InvokeVoidAsync("window.blazorChart.doughnut.update", ElementId, GetChartType(), data, (DoughnutChartOptions)chartOptions);
         }

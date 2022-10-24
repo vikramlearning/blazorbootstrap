@@ -6,25 +6,25 @@ namespace BlazorBootstrap.Demo;
 
 public class Demo : ComponentBase
 {
-    [Parameter] public Type Type { get; set; }
+    #region Members
 
-    [Parameter] public bool Tabs { get; set; } = false;
-
-    [Inject] protected IJSRuntime JSRuntime { get; set; }
-
-    private bool showingDemo = true;
     private string code;
 
+    #endregion
+
+    #region Methods
     protected override async Task OnParametersSetAsync()
     {
         if (code is null)
         {
             var resourceName = Type.FullName + ".razor";
-
             using (Stream stream = Type.Assembly.GetManifestResourceStream(resourceName))
             {
                 try
                 {
+                    if (stream is null)
+                        return;
+
                     using (StreamReader reader = new StreamReader(stream))
                     {
                         code = await reader.ReadToEndAsync();
@@ -116,6 +116,17 @@ public class Demo : ComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
-        await JSRuntime.InvokeVoidAsync("highlightCode");
+        await JS.InvokeVoidAsync("highlightCode");
     }
+
+    #endregion
+
+    #region Properties
+    [Parameter] public Type Type { get; set; }
+
+    [Parameter] public bool Tabs { get; set; } = false;
+
+    [Inject] protected IJSRuntime JS { get; set; } = null!;
+
+    #endregion
 }

@@ -138,7 +138,7 @@ window.blazorBootstrap = {
     tabs: {
         initialize: (elementId, dotNetHelper) => {
             let navTabsEl = document.getElementById(elementId);
-            var triggerTabList = [].slice.call(navTabsEl.querySelectorAll('button'));
+            let triggerTabList = [].slice.call(navTabsEl.querySelectorAll('button'));
             triggerTabList.forEach(function (tabEl) {
                 let tabTrigger = new bootstrap.Tab(tabEl);
                 tabEl?.addEventListener('click', (event) => {
@@ -176,7 +176,7 @@ window.blazorBootstrap = {
     },
     toasts: {
         show: (elementId, autohide, delay, dotNetHelper) => {
-            var toastEl = document.getElementById(elementId);
+            let toastEl = document.getElementById(elementId);
 
             toastEl.addEventListener('show.bs.toast', function () {
                 dotNetHelper.invokeMethodAsync('bsShowToast');

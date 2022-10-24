@@ -12,8 +12,6 @@ partial class GridColumnFilter : BaseComponent
 
     private string selectedFilterSymbol;
 
-    private FilterOperator defaultFilterOperator;
-
     private string filterStyle => this.FilterWidth > 0 ? $"width:{this.FilterWidth}px;" : "";
 
     #endregion Members
@@ -36,7 +34,7 @@ partial class GridColumnFilter : BaseComponent
         base.OnParametersSet();
     }
 
-    private async Task OnFilterOperatorChangedAsync(EventArgs args, FilterOperatorInfo filterOperatorInfo)
+    private async Task OnFilterOperatorChangedAsync(FilterOperatorInfo filterOperatorInfo)
     {
         this.filterOperator = filterOperatorInfo.FilterOperator;
 

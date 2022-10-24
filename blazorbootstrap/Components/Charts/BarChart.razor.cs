@@ -21,7 +21,7 @@ public partial class BarChart : BaseChart
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
-            var datasets = chartData.Datasets.Where(x => x is BarChartDataset).Select(x => (BarChartDataset)x);
+            var datasets = chartData.Datasets.OfType<BarChartDataset>();
             var data = new { Labels = chartData.Labels, Datasets = datasets };
             await JS.InvokeVoidAsync("window.blazorChart.bar.initialize", ElementId, GetChartType(), data, (BarChartOptions)chartOptions);
         }
@@ -31,7 +31,7 @@ public partial class BarChart : BaseChart
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
-            var datasets = chartData.Datasets.Where(x => x is BarChartDataset).Select(x => (BarChartDataset)x);
+            var datasets = chartData.Datasets.OfType<BarChartDataset>();
             var data = new { Labels = chartData.Labels, Datasets = datasets };
             await JS.InvokeVoidAsync("window.blazorChart.bar.update", ElementId, GetChartType(), data, (BarChartOptions)chartOptions);
         }
