@@ -1,6 +1,4 @@
-﻿using Microsoft.JSInterop;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Alert
 {

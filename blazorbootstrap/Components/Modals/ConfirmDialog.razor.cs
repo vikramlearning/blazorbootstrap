@@ -108,7 +108,8 @@ namespace BlazorBootstrap
         [Parameter]
         public BackgroundColor TitleBackgroundColor
         {
-            get => _titleBackgroundColor; set
+            get => _titleBackgroundColor; 
+            set
             {
                 _titleBackgroundColor = value;
                 DirtyClasses();
@@ -141,7 +142,8 @@ namespace BlazorBootstrap
         [Parameter]
         public ButtonColor YesButtonColor
         {
-            get => _yesButtonColor; set
+            get => _yesButtonColor; 
+            set
             {
                 _yesButtonColor = value;
                 DirtyClasses();
@@ -164,7 +166,8 @@ namespace BlazorBootstrap
         [Parameter]
         public ButtonColor NoButtonColor
         {
-            get => _noButtonColor; set
+            get => _noButtonColor; 
+            set
             {
                 _noButtonColor = value;
                 DirtyClasses();

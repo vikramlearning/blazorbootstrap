@@ -3,7 +3,7 @@
 /// <summary>
 /// Predefined set of contextual colors.
 /// </summary>
-public enum AlertColor
+public enum ProgressColor
 {
     /// <summary>
     /// No color will be applied to an element.
@@ -39,11 +39,6 @@ public enum AlertColor
     /// Info color.
     /// </summary>
     Info,
-
-    /// <summary>
-    /// Light color.
-    /// </summary>
-    Light,
 
     /// <summary>
     /// Dark color.

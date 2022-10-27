@@ -63,12 +63,12 @@ public partial class Toasts : BaseComponent, IDisposable
     [Parameter] public List<ToastMessage> Messages { get; set; }
 
     /// <summary>
-    /// Auto hide the toast. Default is true.
+    /// Auto hide the toast. Default is false.
     /// </summary>
-    [Parameter] public bool AutoHide { get; set; } = true;
+    [Parameter] public bool AutoHide { get; set; }
 
     /// <summary>
-    /// Force show the close button
+    /// Show the close button.
     /// </summary>
     [Parameter] public bool ShowCloseButton { get; set; } = true;
 

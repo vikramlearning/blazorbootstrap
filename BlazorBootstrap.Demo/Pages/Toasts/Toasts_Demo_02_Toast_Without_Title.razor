@@ -1,4 +1,4 @@
-﻿<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="false" />
+﻿<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" />
 
 <Button Color="ButtonColor.Primary" @onclick="() => ShowMessage(ToastType.Primary)">Primary Toast</Button>
 <Button Color="ButtonColor.Secondary" @onclick="() => ShowMessage(ToastType.Secondary)">Secondary Toast</Button>
@@ -12,7 +12,7 @@
 @code {
     List<ToastMessage> messages = new List<ToastMessage>();
 
-    private void ShowMessage(ToastType toastType) => messages?.Add(GetToastMessage(toastType));
+    private void ShowMessage(ToastType toastType) => messages.Add(GetToastMessage(toastType));
 
     private ToastMessage GetToastMessage(ToastType toastType)
     => new ToastMessage

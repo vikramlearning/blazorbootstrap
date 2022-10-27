@@ -53,6 +53,7 @@
         #region Callout
 
         public string Callout() => "bb-callout";
+
         public string CalloutHeading() => $"{Callout()}-heading";
 
         #endregion
@@ -164,6 +165,16 @@
 
         #endregion
 
+        #region Progress
+
+        public string Progress() => "progress";
+        public string ProgressBar() => $"{Progress()}-bar";
+        public string ProgressBarStriped() => $"{ProgressBar()}-striped";
+        public string ProgressBarAnimated() => $"{ProgressBar()}-animated";
+        public string ProgressBackgroundColor(ProgressColor color) => $"bg-{ToProgressColor(color)}";
+
+        #endregion
+
         #region Text
 
         public string TextAlignment(Alignment alignment) => $"text-{ToAlignment(alignment)}";
@@ -268,6 +279,21 @@
                 BlazorBootstrap.ButtonColor.Light => "light",
                 BlazorBootstrap.ButtonColor.Dark => "dark",
                 BlazorBootstrap.ButtonColor.Link => "link",
+                _ => null,
+            };
+        }
+
+        public string ToProgressColor(ProgressColor color)
+        {
+            return color switch
+            {
+                BlazorBootstrap.ProgressColor.Primary => "primary",
+                BlazorBootstrap.ProgressColor.Secondary => "secondary",
+                BlazorBootstrap.ProgressColor.Success => "success",
+                BlazorBootstrap.ProgressColor.Danger => "danger",
+                BlazorBootstrap.ProgressColor.Warning => "warning",
+                BlazorBootstrap.ProgressColor.Info => "info",
+                BlazorBootstrap.ProgressColor.Dark => "dark",
                 _ => null,
             };
         }

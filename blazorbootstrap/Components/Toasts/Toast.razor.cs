@@ -33,11 +33,6 @@ public partial class Toast : BaseComponent, IDisposable
         base.BuildClasses(builder);
     }
 
-    protected override void BuildStyles(StyleBuilder builder)
-    {
-        base.BuildStyles(builder);
-    }
-
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -161,12 +156,12 @@ public partial class Toast : BaseComponent, IDisposable
     [Parameter] public EventCallback<Guid> Hidden { get; set; }
 
     /// <summary>
-    /// Auto hide the toast
+    /// Auto hide the toast. Default is false.
     /// </summary>
-    [Parameter] public bool AutoHide { get; set; } = true;
+    [Parameter] public bool AutoHide { get; set; }
 
     /// <summary>
-    /// Force show the close button
+    /// Show the close button.
     /// </summary>
     [Parameter] public bool ShowCloseButton { get; set; } = true;
 
