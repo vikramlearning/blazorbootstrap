@@ -1,42 +1,24 @@
 ﻿<Progress Class="mb-3">
-    <ProgressBar @ref="progressBar" />
+    <ProgressBar />
 </Progress>
-
-<div class="mb-3">
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="IncreaseProgressBar">Increase by 10%</Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="DecreaseProgressBar">Decrease by 10%</Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="ResetProgressBar">Reset</Button>
-</div>
-<div>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Success" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Success)">Set Color</Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Info" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Info)">Set Color</Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Warning" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Warning)">Set Color</Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Danger" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Danger)">Set Color</Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Primary)">Set Color</Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Secondary)">Set Color</Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Dark" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Dark)">Set Color</Button>
-</div>
-
-@code {
-    ProgressBar progressBar;
-
-    private void IncreaseProgressBar()
-    {
-        progressBar.IncreaseWidth(10);
-        progressBar.SetLabel($"{progressBar.GetWidth()}%");
-    }
-
-    private void DecreaseProgressBar()
-    {
-        progressBar.DecreaseProgressBar(10);
-        progressBar.SetLabel($"{progressBar.GetWidth()}%");
-    }
-
-    private void ResetProgressBar()
-    {
-        progressBar.SetWidth(0);
-        progressBar.SetLabel($"{progressBar.GetWidth()}%");
-    }
-
-    private void SetColor(ProgressColor color) => progressBar.SetColor(color);
-}
+<Progress Class="mb-3">
+    <ProgressBar Width="20" Label="20%" />
+</Progress>
+<Progress Class="mb-3">
+    <ProgressBar Color="ProgressColor.Success" Width="40" />
+</Progress>
+<Progress Class="mb-3">
+    <ProgressBar Color="ProgressColor.Warning" Width="60" />
+</Progress>
+<Progress Class="mb-3">
+    <ProgressBar Type="ProgressType.Striped" Color="ProgressColor.Danger" Width="70" />
+</Progress>
+<Progress Class="mb-3">
+    <ProgressBar Type="ProgressType.StripedAndAnimated" Color="ProgressColor.Dark" Width="80" />
+</Progress>
+<Progress Class="mb-3">
+    <ProgressBar Color="ProgressColor.Success" Width="20" />
+    <ProgressBar Color="ProgressColor.Info" Width="20" />
+    <ProgressBar Color="ProgressColor.Warning" Width="20" />
+    <ProgressBar Color="ProgressColor.Danger" Width="30" />
+</Progress>

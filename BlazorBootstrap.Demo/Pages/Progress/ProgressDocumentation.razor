@@ -7,7 +7,7 @@
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1>Blazor Progress</h1>
-<div class="mb-3">Documentation and examples for using Blazor progress bars featuring support for stacked bars, animated backgrounds, and text labels.</div>
+<div class="mb-3">Documentation and examples for using the Blazor Progress component featuring support for stacked bars, animated backgrounds, and text labels.</div>
 
 <SectionHeading Size="HeadingSize.H2" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
 <Demo Type="typeof(Progress_Demo_01_How_It_Works)" />
@@ -39,13 +39,9 @@
 <div>The stripes can also be animated. Add <code>Type="ProgressType.StripedAndAnimated"</code> to the Blazor ProgressBar component to animate the stripes right to the left.</div>
 <Demo Type="typeof(Progress_Demo_08_Animated_Stripes)" />
 
-@*<Button Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick="SetColor">Set Danger Color</Button>*@
-
 @code {
     private string pageUrl = "/progress";
     private string title = "Blazor Progress Component | BlazorBootstrap";
     private string description = "Documentation and examples for using Bootstrap custom progress bars featuring support for stacked bars, animated backgrounds, and text labels.";
-    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
-
-    //private void SetColor() => progressBar.SetColor(ProgressColor.Danger);
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg"; // TODO: update this image url
 }
