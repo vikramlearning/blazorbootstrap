@@ -72,9 +72,9 @@ public partial class ProgressBar
         StateHasChanged();
     }
 
-    public void SetLabel(string l)
+    public void SetLabel(string text)
     {
-        this.label = l;
+        this.label = text;
     }
 
     public void SetColor(ProgressColor color)

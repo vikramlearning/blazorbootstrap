@@ -2,13 +2,22 @@
     <ProgressBar @ref="progressBar" />
 </Progress>
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="IncreaseProgressBar">Increase by 10%</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="DecreaseProgressBar">Decrease by 10%</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ResetProgressBar">Reset</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick="() => SetColor(ProgressColor.Danger)">Set Danger Color</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Success" @onclick="() => SetColor(ProgressColor.Success)">Set Success Color</Button>
+<div class="mb-3">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="IncreaseProgressBar">Increase by 10%</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="DecreaseProgressBar">Decrease by 10%</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="ResetProgressBar">Reset</Button>
+</div>
+<div>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Success" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Success)">Set Color</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Info" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Info)">Set Color</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Warning" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Warning)">Set Color</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Danger" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Danger)">Set Color</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Primary)">Set Color</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Secondary)">Set Color</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Dark" Size="Size.Small" @onclick="() => SetColor(ProgressColor.Dark)">Set Color</Button>
+</div>
 
-@code{
+@code {
     ProgressBar progressBar;
 
     private void IncreaseProgressBar()
