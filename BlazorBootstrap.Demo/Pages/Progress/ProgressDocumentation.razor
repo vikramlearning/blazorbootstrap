@@ -7,115 +7,39 @@
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1>Blazor Progress</h1>
+<div class="mb-3">Documentation and examples for using Blazor progress bars featuring support for stacked bars, animated backgrounds, and text labels.</div>
 
-<Progress Class="mb-3">
-    <ProgressBar @ref="progressBar" />
-</Progress>
+<SectionHeading Size="HeadingSize.H2" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
+<Demo Type="typeof(Progress_Demo_01_How_It_Works)" />
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Success" @onclick="IncreaseProgressBar">Increase</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Warning" @onclick="DecreaseProgressBar">Decrease</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick="ResetProgressBar">Reset</Button>
-<br />
-<br />
-<Button Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick="SetColor">Set Danger Color</Button>
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Progress_Demo_02_Examples)" />
 
-<br />
-<br />
-<Progress Class="mb-3">
-    <ProgressBar Color="ProgressColor.Success" Width="20" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Color="ProgressColor.Info" Width="40" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Color="ProgressColor.Warning" Width="60" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Color="ProgressColor.Danger" Width="80" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Color="ProgressColor.Primary" Width="80" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Color="ProgressColor.Secondary" Width="80" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Color="ProgressColor.Dark" Width="80" />
-</Progress>
+<SectionHeading Size="HeadingSize.H2" Text="Labels" PageUrl="@pageUrl" HashTagName="labels" />
+<Demo Type="typeof(Progress_Demo_03_Labels)" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Height" PageUrl="@pageUrl" HashTagName="height" />
+<Demo Type="typeof(Progress_Demo_04_Height)" />
 
-<Progress Class="mb-3">
-    <ProgressBar Color="ProgressColor.Primary" Width="20" />
-    <ProgressBar Color="ProgressColor.Success" Width="40" />
-    <ProgressBar Color="ProgressColor.Info" Width="20" />
-    <ProgressBar Color="ProgressColor.Danger" Width="10" />
-</Progress>
+<SectionHeading Size="HeadingSize.H2" Text="Backgrounds" PageUrl="@pageUrl" HashTagName="backgrounds" />
+<Demo Type="typeof(Progress_Demo_05_Backgrounds)" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Multiple bars" PageUrl="@pageUrl" HashTagName="multiple-bars" />
+<Demo Type="typeof(Progress_Demo_06_MultipleBars)" />
 
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.Striped" Color="ProgressColor.Info" Width="40" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.Striped" Color="ProgressColor.Warning" Width="60" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.Striped" Color="ProgressColor.Danger" Width="80" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.Striped" Color="ProgressColor.Primary" Width="80" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.Striped" Color="ProgressColor.Secondary" Width="80" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.Striped" Color="ProgressColor.Dark" Width="80" />
-</Progress>
+<SectionHeading Size="HeadingSize.H2" Text="Striped" PageUrl="@pageUrl" HashTagName="striped" />
+<Demo Type="typeof(Progress_Demo_07_Striped)" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Animated stripes" PageUrl="@pageUrl" HashTagName="animated-stripes" />
+<Demo Type="typeof(Progress_Demo_08_Animated_Stripes)" />
 
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.StripedAndAnimated" Color="ProgressColor.Info" Width="40" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.StripedAndAnimated" Color="ProgressColor.Warning" Width="60" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.StripedAndAnimated" Color="ProgressColor.Danger" Width="80" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.StripedAndAnimated" Color="ProgressColor.Primary" Width="80" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.StripedAndAnimated" Color="ProgressColor.Secondary" Width="80" />
-</Progress>
-<Progress Class="mb-3">
-    <ProgressBar Type="ProgressType.StripedAndAnimated" Color="ProgressColor.Dark" Width="80" />
-</Progress>
+@*<Button Type="ButtonType.Button" Color="ButtonColor.Danger" @onclick="SetColor">Set Danger Color</Button>*@
 
 @code {
     private string pageUrl = "/progress";
     private string title = "Blazor Progress Component | BlazorBootstrap";
-    private string description = "Provide contextual feedback messages for typical user actions with the handful of available and flexible BlazorBootstrap alert messages.";
+    private string description = "Documentation and examples for using Bootstrap custom progress bars featuring support for stacked bars, animated backgrounds, and text labels.";
     private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
 
-    ProgressBar progressBar;
-
-    private void IncreaseProgressBar()
-    {
-        progressBar.IncreaseWidth(10);
-        progressBar.SetLabel($"{progressBar.GetWidth()}%");
-    }
-
-    private void DecreaseProgressBar()
-    {
-        progressBar.DecreaseProgressBar(10);
-        progressBar.SetLabel($"{progressBar.GetWidth()}%");
-    }
-
-    private void ResetProgressBar()
-    {
-        progressBar.SetWidth(0);
-        progressBar.SetLabel($"{progressBar.GetWidth()}%");
-    }
-
-    private void SetColor() => progressBar.SetColor(ProgressColor.Danger);
+    //private void SetColor() => progressBar.SetColor(ProgressColor.Danger);
 }
