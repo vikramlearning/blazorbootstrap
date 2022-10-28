@@ -4,6 +4,8 @@ public partial class Toast : BaseComponent, IDisposable
 {
     #region Members
 
+    private ProgressBar toastProgressBar;
+
     private DotNetObjectReference<Toast> objRef;
 
     private IconName iconName => GetToastIconName();
@@ -12,7 +14,7 @@ public partial class Toast : BaseComponent, IDisposable
 
     private string iconClass => $"{GetIconClass()} me-2".Trim();
 
-    private string toastProgressClass => $"{GetToastProgressBorder()}";
+    private ProgressColor progressColor => GetProgressColor();
 
     #endregion Members
 
@@ -110,20 +112,35 @@ public partial class Toast : BaseComponent, IDisposable
         };
     }
 
-    private string GetToastProgressBorder()
+    private ProgressColor GetProgressColor()
     {
         return this.ToastMessage.Type switch
         {
-            ToastType.Primary => BootstrapClassProvider.BackgroundColor(BackgroundColor.Primary),
-            ToastType.Secondary => BootstrapClassProvider.BackgroundColor(BackgroundColor.Secondary),
-            ToastType.Success => BootstrapClassProvider.BackgroundColor(BackgroundColor.Success),
-            ToastType.Danger => BootstrapClassProvider.BackgroundColor(BackgroundColor.Danger),
-            ToastType.Warning => BootstrapClassProvider.BackgroundColor(BackgroundColor.Warning),
-            ToastType.Info => BootstrapClassProvider.BackgroundColor(BackgroundColor.Info),
-            ToastType.Light => BootstrapClassProvider.BackgroundColor(BackgroundColor.Light),
-            ToastType.Dark => BootstrapClassProvider.BackgroundColor(BackgroundColor.Dark),
-            _ => "",
+            ToastType.Primary => ProgressColor.Primary,
+            ToastType.Secondary => ProgressColor.Secondary,
+            ToastType.Success => ProgressColor.Success,
+            ToastType.Danger => ProgressColor.Danger,
+            ToastType.Warning => ProgressColor.Warning,
+            ToastType.Info => ProgressColor.Info,
+            ToastType.Dark => ProgressColor.Dark,
+            _ => ProgressColor.Primary,
         };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender && AutoHide && Delay > 0)
+        {
+            var width = (20000 / Delay);
+            Console.WriteLine($"Delay: {Delay}, width: {width}");
+            using var periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(200));
+            while (await periodicTimer.WaitForNextTickAsync())
+            {
+                toastProgressBar.DecreaseProgressBar(width);
+            }
+        }
     }
 
     #endregion Methods
