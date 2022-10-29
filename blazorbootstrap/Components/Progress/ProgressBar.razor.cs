@@ -28,7 +28,7 @@ public partial class ProgressBar
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.ProgressBar());
-        builder.Append(BootstrapClassProvider.ProgressBarStriped(), (type == ProgressType.Striped || type == ProgressType.StripedAndAnimated ));
+        builder.Append(BootstrapClassProvider.ProgressBarStriped(), (type == ProgressType.Striped || type == ProgressType.StripedAndAnimated));
         builder.Append(BootstrapClassProvider.ProgressBarAnimated(), type == ProgressType.StripedAndAnimated);
         builder.Append(BootstrapClassProvider.ProgressBackgroundColor(this.color), this.color != ProgressColor.None);
         base.BuildClasses(builder);
@@ -40,18 +40,30 @@ public partial class ProgressBar
         base.BuildStyles(builder);
     }
 
-    public double GetWidth() => this.width;
-
-    public void SetWidth(double barPercentage)
+    /// <summary>
+    /// Decrease the progress bar width.
+    /// </summary>
+    /// <param name="width"></param>
+    public void DecreaseWidth(double width)
     {
-        if (width < 0 || width > 100)
+        if (width < 0 || width > 100 || this.width - width < 0)
             return;
 
-        this.width = barPercentage;
+        this.width -= width;
         DirtyStyles();
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Get the progress bar width.
+    /// </summary>
+    /// <returns></returns>
+    public double GetWidth() => this.width;
+
+    /// <summary>
+    /// Increase the progress bar width.
+    /// </summary>
+    /// <param name="width"></param>
     public void IncreaseWidth(double width)
     {
         if (width < 0 || width > 100 || this.width + width > 100)
@@ -62,25 +74,37 @@ public partial class ProgressBar
         StateHasChanged();
     }
 
-    public void DecreaseProgressBar(double width)
+    /// <summary>
+    /// Set the progress bar color.
+    /// </summary>
+    /// <param name="color"></param>
+    public void SetColor(ProgressColor color)
     {
-        if (width < 0 || width > 100 || this.width - width < 0)
-            return;
-
-        this.width -= width;
-        DirtyStyles();
+        this.color = color;
+        DirtyClasses();
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Set the progress bar label.
+    /// </summary>
+    /// <param name="text"></param>
     public void SetLabel(string text)
     {
         this.label = text;
     }
 
-    public void SetColor(ProgressColor color)
+    /// <summary>
+    /// Set the progress bar width.
+    /// </summary>
+    /// <param name="barPercentage"></param>
+    public void SetWidth(double barPercentage)
     {
-        this.color = color;
-        DirtyClasses();
+        if (width < 0 || width > 100)
+            return;
+
+        this.width = barPercentage;
+        DirtyStyles();
         StateHasChanged();
     }
 
@@ -91,12 +115,24 @@ public partial class ProgressBar
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
+    /// <summary>
+    /// Gets or sets the progress color.
+    /// </summary>
     [Parameter] public ProgressColor Color { get; set; }
 
+    /// <summary>
+    /// Gets or sets the progress bar label.
+    /// </summary>
     [Parameter] public string Label { get; set; }
 
+    /// <summary>
+    /// Gets or sets the progress bar type.
+    /// </summary>
     [Parameter] public ProgressType Type { get; set; }
 
+    /// <summary>
+    /// Get or sets the progress bar width.
+    /// </summary>
     [Parameter] public double Width { get; set; }
 
     #endregion

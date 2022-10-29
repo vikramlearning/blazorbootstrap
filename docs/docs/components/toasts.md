@@ -126,7 +126,7 @@ Here we've created a simple toast. You can create different toast color schemes 
 }
 ```
 
-[See simple toasts demo here.](https://demos.getblazorbootstrap.com/#toast-without-title)
+[See toasts without title demo here.](https://demos.getblazorbootstrap.com/toasts#toast-without-title)
 
 ### Auto hide
 
@@ -162,6 +162,8 @@ Add `AutoHide="true"` parameter to hide the Blazor Toasts after the delay. The d
         };
 }
 ```
+
+[See auto hide toasts demo here.](https://demos.getblazorbootstrap.com/toasts#auto-hide)
 
 ### Placement
 
@@ -204,6 +206,8 @@ Change the Blazor Toasts placement according to your need. The default placement
 }
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/toasts#placement)
+
 ### Stack Length
 
 Blazor Toasts component shows a maximum of 5 toasts by default. If you add a new toast to the existing list, the first toast gets deleted like FIFO (First In First Out). Change the maximum capacity according to your need by using the **StackLength** parameter.
@@ -239,5 +243,4 @@ In the below example, StackLength is set to 3. It shows a maximum of 3 toast mes
 }
 ```
 
-
-
+[See demo here.](https://demos.getblazorbootstrap.com/toasts#stack-length)

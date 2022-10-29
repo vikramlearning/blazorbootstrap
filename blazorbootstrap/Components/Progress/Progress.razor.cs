@@ -40,6 +40,9 @@ public partial class Progress
     /// </summary>
     [Parameter] public RenderFragment ChildContent { get; set; }
 
+    /// <summary>
+    /// Gets or sets the height of the Progress. Height is measured in pixels, and the default height is 16 pixels.
+    /// </summary>
     [Parameter] public double Height { get; set; } = 16;
 
     #endregion

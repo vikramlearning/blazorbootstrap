@@ -137,7 +137,7 @@ public partial class Toast : BaseComponent, IDisposable
             using var periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
             while (await periodicTimer.WaitForNextTickAsync())
             {
-                toastProgressBar.DecreaseProgressBar(width);
+                toastProgressBar.DecreaseWidth(width);
             }
         }
     }

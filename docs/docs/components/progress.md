@@ -1,4 +1,4 @@
----
+﻿---
 title: Blazor Progress Component
 description: Documentation and examples for using the Blazor Progress component featuring support for stacked bars, animated backgrounds, and text labels.
 image: https://i.imgur.com/MK142lQ.png
@@ -15,13 +15,30 @@ Documentation and examples for using the Blazor Progress component featuring sup
 ## Progress Parameters
 
 | Name | Type | Default | Required | Descritpion |
-|--|--|--|--|--|
-
+|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside this. |
+| Height | double | 16 | | Gets or sets the height of the Progress. Height is measured in pixels, and the default height is 16 pixels. |
 
 ## ProgressBar Parameters
 
 | Name | Type | Default | Required | Descritpion |
-|--|--|--|--|--|
+|:--|:--|:--|:--|:--|
+| Color| `ProgressColor` | | | Gets or sets the progress color. |
+| Label | string | | | Gets or sets the progress bar label. |
+| Type | `ProgressType` | | | Gets or sets the progress bar type. |
+| Width | double | | | Get or sets the progress bar width. |
+
+
+## ProgressBar Methods
+
+| Name | Description |
+|:--|:--|
+| DecreaseWidth | Decrease the progress bar width. |
+| GetWidth | Get the progress bar width. |
+| IncreaseWidth | Increase the progress bar width. |
+| SetColor | Set the progress bar color. |
+| SetLabel | Set the progress bar label. |
+| SetWidth | Set the progress bar width. |
 
 ## Examples
 
@@ -56,6 +73,8 @@ Documentation and examples for using the Blazor Progress component featuring sup
 </Progress>
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/progress#how-it-works)
+
 ### Labels
 
 Add labels to your Blazor ProgressBar component using the Label parameter or by calling the `SetLabel(...)` method.
@@ -67,6 +86,8 @@ Add labels to your Blazor ProgressBar component using the Label parameter or by 
     <ProgressBar Width="20" Label="20%" />
 </Progress>
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/progress#labels)
 
 ### Set width programmatically
 
@@ -110,6 +131,8 @@ Use `IncreaseWidth()` or `DecreaseProgressBar()` methods to increase or decrease
 }
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/progress#set-width-programmatically)
+
 ### Height
 
 Set the height of the Blazor Progress by using the `Height` parameter. Height is measured in pixels.
@@ -130,6 +153,8 @@ Set the height of the Blazor Progress by using the `Height` parameter. Height is
     <ProgressBar Width="40" />
 </Progress>
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/progress#height)
 
 ### Backgrounds
 
@@ -161,6 +186,8 @@ Use the `Color` parameter or the `SetColor(ProgressColor color)` method to chang
 </Progress>
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/progress#backgrounds)
+
 ### Set background programmatically
 
 You can dynamically set the Blazor ProgressBar color by calling the `SetColor()` method.
@@ -189,6 +216,9 @@ You can dynamically set the Blazor ProgressBar color by calling the `SetColor()`
     private void SetColor(ProgressColor color) => progressBar.SetColor(color);
 }
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/progress#set-background-programmatically)
+
 ### Multiple bars
 
 Include multiple Blazor ProgressBar components in a Blazor Progress component if needed.
@@ -203,6 +233,8 @@ Include multiple Blazor ProgressBar components in a Blazor Progress component if
     <ProgressBar Color="ProgressColor.Danger" Width="10" />
 </Progress>
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/progress#multiple-bars)
 
 ### Striped
 
@@ -234,6 +266,8 @@ Add `Type="ProgressType.Striped"` to any Blazor ProgressBar component to apply a
 </Progress>
 ```
 
+[See demo here.](https://demos.getblazorbootstrap.com/progress#striped)
+
 ### Animated stripes
 
 The stripes can also be animated. Add `Type="ProgressType.StripedAndAnimated"` to the Blazor ProgressBar component to animate the stripes right to the left.
@@ -263,3 +297,5 @@ The stripes can also be animated. Add `Type="ProgressType.StripedAndAnimated"` t
     <ProgressBar Type="ProgressType.StripedAndAnimated" Color="ProgressColor.Dark" Width="100" />
 </Progress>
 ```
+
+[See demo here.](https://demos.getblazorbootstrap.com/progress#animated-stripes)

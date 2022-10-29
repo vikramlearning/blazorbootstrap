@@ -14,7 +14,7 @@ BlazorBootstrap's callout component provides content presentation in a visually 
 ## Parameters
 
 | Name | Type | Default | Required | Descritpion |
-|--|--|--|--|--|
+|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside this. |
 | Heading | string | | | Gets or sets the callout heading. |
 | Type | enum | `CalloutType.Default` | | Use `CalloutType.Default` or `CalloutType.Info` or `CalloutType.Warning` or `CalloutType.Danger` or `CalloutType.Tip` |
