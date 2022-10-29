@@ -2,7 +2,7 @@
 @inherits BaseComponent
 
 <a id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-    @if (Enum.IsDefined(typeof(IconName), LinkIcon))
+    @if (Enum.IsDefined(typeof(IconName), LinkIcon) && LinkIcon != IconName.None)
     {
         <span aria-hidden="true"><Icon Name="LinkIcon" /></span>
     }

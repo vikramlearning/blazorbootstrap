@@ -1,5 +1,4 @@
 ﻿using BlazorBootstrap.Extensions;
-using System;
 using System.Text;
 
 namespace BlazorBootstrap.Utilities

@@ -78,7 +78,8 @@ public partial class Callout : BaseComponent
     [Parameter]
     public CalloutType Type
     {
-        get => type; set
+        get => type; 
+        set
         {
             type = value;
             DirtyClasses();

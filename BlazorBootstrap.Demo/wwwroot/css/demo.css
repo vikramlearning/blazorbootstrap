@@ -26,9 +26,11 @@
 .bb-example {
     position: relative;
     padding: 1rem;
-    margin: 1rem -.75rem 0;
+    margin-top: 1rem;
     border: solid #dee2e6;
-    border-width: 1px 0 0
+    border-width: 1px;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
 }
 
     .bb-example::after {
@@ -40,21 +42,11 @@
 @media (min-width: 576px) {
     .bb-example {
         padding: 1.5rem;
-        margin-right: 0;
-        margin-left: 0;
-        border-width: 1px;
-        border-top-left-radius: .25rem;
-        border-top-right-radius: .25rem
     }
-
-        .bb-example + .bb-clipboard + .highlight {
-            border-bottom-right-radius: .25rem;
-            border-bottom-left-radius: .25rem
-        }
 }
 
 .bb-example + p {
-    margin-top: 2rem
+    margin-top: 2rem;
 }
 
 .bb-example > .btn, .bb-example > .btn-group {
@@ -69,7 +61,11 @@
 .highlight {
     padding: 1rem;
     margin-bottom: 1rem;
-    background-color: #f8f9fa
+    background-color: #f8f9fa;
+    border: solid #dee2e6;
+    border-width: 0 1px 1px 1px;
+    border-bottom-left-radius: .25rem;
+    border-bottom-right-radius: .25rem;
 }
 
 @media (min-width: 576px) {
@@ -80,6 +76,7 @@
 
 .highlight pre {
     padding: 0;
+    padding-bottom: 1rem !important;
     margin-top: .65rem;
     margin-bottom: .65rem;
     white-space: pre;

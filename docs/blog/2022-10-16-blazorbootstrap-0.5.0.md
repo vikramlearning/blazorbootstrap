@@ -8,7 +8,7 @@ authors:
 tags: [v0.5.0, blazorbootstrap, blazor-charts, blazor-bar-chart, blazor-doughnut-chart, blazor-line-chart, blazor-pie-chart]
 ---
 
-We are excited to release `0.5.0` with new chart components.
+We are excited to release `0.5.0` with new blazor chart components.
 
 <img src="https://i.imgur.com/JLV7oss.png" alt="Blazor Chart Component - Blazor Bar Chart Example" />
 <br />

@@ -2,7 +2,8 @@
 {
     public enum IconName
     {
-        OneCircle = 1,
+        None = 0,
+        OneCircle,
         OneCircleFill,
         OneSquare,
         OneSquareFill,

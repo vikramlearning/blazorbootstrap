@@ -1,5 +1,5 @@
 ﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href=""> &nbsp; Blazor.Bootstrap <span class="ms-2 badge bg-secondary">v0.5.1</span></a>
+    <a class="navbar-brand" href=""> &nbsp; Blazor.Bootstrap <span class="ms-2 badge bg-secondary">v0.6.0</span></a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -83,13 +83,18 @@
             </NavLink>
         </li>
         <li class="nav-item px-3">
+            <NavLink class="nav-link" href="progress">
+                <Icon Name="IconName.UsbC" class="me-2" /> Progress <span class="ms-2 badge bg-danger">New</span>
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
             <NavLink class="nav-link" href="tabs">
                 <Icon Name="IconName.WindowPlus" class="me-2" /> Tabs
             </NavLink>
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="toasts">
-                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" /> Toasts
+                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" /> Toasts <span class="ms-2 badge bg-success">Update</span>
             </NavLink>
         </li>
         <li class="nav-item px-3">

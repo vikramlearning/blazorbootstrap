@@ -1,7 +1,4 @@
 ﻿using BlazorBootstrap.Base;
-using BlazorBootstrap.Utilities;
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 namespace BlazorBootstrap
 {
