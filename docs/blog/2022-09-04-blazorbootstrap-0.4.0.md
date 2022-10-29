@@ -8,7 +8,7 @@ authors:
 tags: [v0.4.0, blazorbootstrap, autocomplete, docs]
 ---
 
-We are excited to release `0.4.0` with new autocomplete component.
+We are excited to release `0.4.0` with new blazor autocomplete component.
 
 <!--truncate-->
 
