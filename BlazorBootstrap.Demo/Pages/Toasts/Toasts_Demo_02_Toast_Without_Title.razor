@@ -12,9 +12,9 @@
 @code {
     List<ToastMessage> messages = new List<ToastMessage>();
 
-    private void ShowMessage(ToastType toastType) => messages.Add(GetToastMessage(toastType));
+    private void ShowMessage(ToastType toastType) => messages.Add(CreateToastMessage(toastType));
 
-    private ToastMessage GetToastMessage(ToastType toastType)
+    private ToastMessage CreateToastMessage(ToastType toastType)
     => new ToastMessage
         {
             Type = toastType,
