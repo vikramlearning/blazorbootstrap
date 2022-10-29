@@ -1,24 +1,32 @@
-﻿<Toasts class="p-3" Messages="messages" AutoHide="true" Delay="10000" Placement="ToastsPlacement.BottomRight" />
+﻿<Toasts class="p-3" Messages="messages" Placement="@toastsPlacement" />
 
-<Button Color="ButtonColor.Primary" @onclick="() => ShowMessage(ToastType.Primary)">Primary Toast</Button>
-<Button Color="ButtonColor.Secondary" @onclick="() => ShowMessage(ToastType.Secondary)">Secondary Toast</Button>
-<Button Color="ButtonColor.Success" @onclick="() => ShowMessage(ToastType.Success)">Success Toast</Button>
-<Button Color="ButtonColor.Danger" @onclick="() => ShowMessage(ToastType.Danger)">Danger Toast</Button>
-<Button Color="ButtonColor.Warning" @onclick="() => ShowMessage(ToastType.Warning)">Warning Toast</Button>
-<Button Color="ButtonColor.Info" @onclick="() => ShowMessage(ToastType.Info)">Info Toast</Button>
-<Button Color="ButtonColor.Dark" @onclick="() => ShowMessage(ToastType.Dark)">Dark Toast</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ChangePlacement(ToastsPlacement.TopLeft)">Top Left</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ChangePlacement(ToastsPlacement.TopCenter)">Top Center</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ChangePlacement(ToastsPlacement.TopRight)">Top Right</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ChangePlacement(ToastsPlacement.MiddleLeft)">Middle Left</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ChangePlacement(ToastsPlacement.MiddleCenter)">Middle Center</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ChangePlacement(ToastsPlacement.MiddleRight)">Middle Right</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ChangePlacement(ToastsPlacement.BottomLeft)">Bottom Left</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ChangePlacement(ToastsPlacement.BottomCenter)">Bottom Center</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ChangePlacement(ToastsPlacement.BottomRight)">Bottom Right</Button>
 
 @code {
-    List<ToastMessage> messages = new List<ToastMessage>();
+    ToastsPlacement toastsPlacement = ToastsPlacement.TopRight;
+    List<ToastMessage> messages = new();
 
-    private void ShowMessage(ToastType toastType) => messages.Add(GetToastMessage(toastType));
-
-    private ToastMessage GetToastMessage(ToastType toastType)
-    => new ToastMessage
+    private void ChangePlacement(ToastsPlacement placement)
+    {
+        if (!messages.Any())
         {
-            Type = toastType,
-            Title = "Blazor Bootstrap",
-            HelpText = $"{DateTime.Now}",
-            Message = $"Hello, world! This is a toast message. DateTime: {DateTime.Now}",
-        };
+            messages.Add(
+                new ToastMessage()
+                    {
+                        Type = ToastType.Success,
+                        Title = "Blazor Bootstrap",
+                        HelpText = $"{DateTime.Now}",
+                        Message = $"Hello, world! This is a toast message. DateTime: {DateTime.Now}",
+                    });
+        }
+        toastsPlacement = placement;
+    }
 }

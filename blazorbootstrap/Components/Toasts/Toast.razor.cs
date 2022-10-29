@@ -133,9 +133,8 @@ public partial class Toast : BaseComponent, IDisposable
 
         if (firstRender && AutoHide && Delay > 0)
         {
-            var width = (20000 / Delay);
-            Console.WriteLine($"Delay: {Delay}, width: {width}");
-            using var periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(200));
+            var width = (10000 / Delay);
+            using var periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
             while (await periodicTimer.WaitForNextTickAsync())
             {
                 toastProgressBar.DecreaseProgressBar(width);
@@ -173,7 +172,7 @@ public partial class Toast : BaseComponent, IDisposable
     [Parameter] public EventCallback<Guid> Hidden { get; set; }
 
     /// <summary>
-    /// Auto hide the toast. Default is false.
+    /// Automatically hide the toast after the delay.
     /// </summary>
     [Parameter] public bool AutoHide { get; set; }
 
@@ -183,7 +182,7 @@ public partial class Toast : BaseComponent, IDisposable
     [Parameter] public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
-    /// Delay hiding the toast (ms)
+    /// Delay in milliseconds before hiding the toast.
     /// </summary>
     [Parameter] public int Delay { get; set; } = 5000;
 
