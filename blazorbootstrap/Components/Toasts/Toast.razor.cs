@@ -133,7 +133,7 @@ public partial class Toast : BaseComponent, IDisposable
 
         if (firstRender && AutoHide && Delay > 0)
         {
-            var width = (10000 / Delay);
+            var width = ((double)10000 / Delay);
             using var periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
             while (await periodicTimer.WaitForNextTickAsync())
             {
