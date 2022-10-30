@@ -69,10 +69,7 @@ public partial class Tabs : BaseComponent
         }
     }
 
-    private async Task OnTabClickAsync(string tabElementId)
-    {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tabElementId);
-    }
+    private async Task OnTabClickAsync(string tabElementId) => await ShowTabAsync(tabElementId);
 
     /// <summary>
     /// Show first tab.
