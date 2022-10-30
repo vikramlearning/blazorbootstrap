@@ -138,13 +138,9 @@ window.blazorBootstrap = {
     tabs: {
         initialize: (elementId, dotNetHelper) => {
             let navTabsEl = document.getElementById(elementId);
-            let triggerTabList = [].slice.call(navTabsEl.querySelectorAll('button'));
+            let triggerTabList = [].slice.call(navTabsEl.querySelectorAll('button.nav-link'));
+
             triggerTabList.forEach(function (tabEl) {
-                let tabTrigger = new bootstrap.Tab(tabEl);
-                tabEl?.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    tabTrigger?.show();
-                });
                 tabEl?.addEventListener('show.bs.tab', (event) => {
                     // event.target --> active tab
                     // event.relatedTarget --> previous active tab (if available)
@@ -168,7 +164,7 @@ window.blazorBootstrap = {
             });
         },
         show: (elementId) => {
-            (new bootstrap.Tab(document.getElementById(elementId)))?.show();
+            bootstrap?.Tab?.getOrCreateInstance(document.getElementById(elementId))?.show();
         },
         dispose: (elementId) => {
             bootstrap?.Tab?.getOrCreateInstance(document.getElementById(elementId))?.dispose();

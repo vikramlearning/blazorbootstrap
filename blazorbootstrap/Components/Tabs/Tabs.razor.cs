@@ -1,8 +1,4 @@
-﻿using BlazorBootstrap.Utilities;
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Tabs : BaseComponent
 {
@@ -48,16 +44,14 @@ public partial class Tabs : BaseComponent
     }
 
     /// <summary>
-    /// Shows an offcanvas.
+    /// Sets default active tab.
     /// </summary>
     public async Task SetDefaultActiveTabAsync()
     {
         activeTab = activeTab ?? tabs.FirstOrDefault(x => !x.Disabled);
 
         if (activeTab != null)
-        {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", activeTab.ElementId);
-        }
+            await ShowTabAsync(activeTab.ElementId);
     }
 
     internal void AddTab(Tab tab)
@@ -74,6 +68,60 @@ public partial class Tabs : BaseComponent
             StateHasChanged(); // This is mandatory
         }
     }
+
+    private async Task OnTabClickAsync(string tabElementId)
+    {
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tabElementId);
+    }
+
+    /// <summary>
+    /// Show first tab.
+    /// </summary>
+    public async Task ShowFirstTabAsync()
+    {
+        var tab = tabs.FirstOrDefault(x => !x.Disabled);
+        if (tab != null)
+            await ShowTabAsync(tab.ElementId);
+    }
+
+    /// <summary>
+    /// Show last tab.
+    /// </summary>
+    public async Task ShowLastTabAsync()
+    {
+        var tab = tabs.LastOrDefault(x => !x.Disabled);
+        if (tab != null)
+            await ShowTabAsync(tab.ElementId);
+    }
+
+    /// <summary>
+    /// Show tab by name.
+    /// </summary>
+    /// <param name="tabName"></param>
+    public async Task ShowTabByNameAsync(string tabName)
+    {
+        var tab = tabs.LastOrDefault(x => x.Name == tabName && !x.Disabled);
+        if (tab != null)
+            await ShowTabAsync(tab.ElementId);
+    }
+
+    /// <summary>
+    /// Show tab by index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get or set.</param>
+    public async Task ShowTabByIndexAsync(int index)
+    {
+        if (index < 0 || index >= tabs.Count)
+        {
+            throw new IndexOutOfRangeException();
+        }
+
+        var tab = tabs[index];
+        if (tab != null && !tab.Disabled)
+            await ShowTabAsync(tab.ElementId);
+    }
+
+    private async Task ShowTabAsync(string elementId) => await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", elementId);
 
     [JSInvokable]
     public async Task bsShowTab(string activeTabId, string previousActiveTabId)
