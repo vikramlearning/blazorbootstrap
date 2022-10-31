@@ -72,7 +72,7 @@ public partial class Tabs : BaseComponent
     private async Task OnTabClickAsync(string tabElementId) => await ShowTabAsync(tabElementId);
 
     /// <summary>
-    /// Show first tab.
+    /// Selects the first tab and show its associated pane.
     /// </summary>
     public async Task ShowFirstTabAsync()
     {
@@ -82,7 +82,7 @@ public partial class Tabs : BaseComponent
     }
 
     /// <summary>
-    /// Show last tab.
+    /// Selects the last tab and show its associated pane.
     /// </summary>
     public async Task ShowLastTabAsync()
     {
@@ -92,7 +92,7 @@ public partial class Tabs : BaseComponent
     }
 
     /// <summary>
-    /// Show tab by name.
+    /// Selects the tab by name and show its associated pane.
     /// </summary>
     /// <param name="tabName"></param>
     public async Task ShowTabByNameAsync(string tabName)
@@ -103,7 +103,7 @@ public partial class Tabs : BaseComponent
     }
 
     /// <summary>
-    /// Show tab by index.
+    /// Selects the tab by index and show its associated pane.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get or set.</param>
     public async Task ShowTabByIndexAsync(int index)

@@ -8,7 +8,7 @@
 @if (tabs.Any())
 {
     <nav>
-        <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="tablist">
             @foreach (var t in tabs)
             {
                 var tabElementId = t.ElementId;
