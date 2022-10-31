@@ -14,16 +14,24 @@
 <Demo Type="typeof(Tabs_Demo_01_Examples)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Fade effect" PageUrl="@pageUrl" HashTagName="fade-effect" />
+<div>To make tabs fade in, add <code>EnableFadeEffect="true"</code> parameter. The first tab pane must also have <code>IsActive="true"</code> parameter to make the initial content visible.</div>
 <Demo Type="typeof(Tabs_Demo_02_Enable_FadeEffect)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Title with Icon" PageUrl="@pageUrl" HashTagName="title-with-icon" />
+<div>To customize the tab title, use <code>TitleTemplate</code>, as shown in the below example.</div>
 <Demo Type="typeof(Tabs_Demo_03_Title_with_Icon)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Disable Tab" PageUrl="@pageUrl" HashTagName="disable-tab" />
+<div>Disable specific tabs by adding <code>Disabled="true"</code> parameter.</div>
 <Demo Type="typeof(Tabs_Demo_04_Disable_Tab)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Pills" PageUrl="@pageUrl" HashTagName="pills" />
+<div>Use <code>NavStyle="NavStyle.Pills"</code> parameter to change the tabs to pills.</div>
 <Demo Type="typeof(Tabs_Demo_05_Nav_Style_Pills)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Activate individual tabs" PageUrl="@pageUrl" HashTagName="activate-individual-tabs" />
+<div>You can activate individual tabs in several ways. Use predefined methods <code>ShowFirstTabAsync</code>, <code>ShowLastTabAsync</code>, <code>ShowTabByIndexAsync</code>, and <code>ShowTabByNameAsync</code>, as shown below.</div>
+<Demo Type="typeof(Tabs_Demo_06_Activate_Individual_Tabs)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
 <div>
@@ -38,14 +46,10 @@
         If no tab was already active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
     </Callout>
 </div>
-<Demo Type="typeof(Tabs_Demo_06_Events_Order)" />
+<Demo Type="typeof(Tabs_Demo_07_Events_Order)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events - Example" PageUrl="@pageUrl" HashTagName="events-example" />
-<Demo Type="typeof(Tabs_Demo_07_Events_Example)" />
-
-<SectionHeading Size="HeadingSize.H2" Text="Activate individual tabs" PageUrl="@pageUrl" HashTagName="activate-individual-tabs" />
-<div>You can activate individual tabs in several ways.</div>
-<Demo Type="typeof(Tabs_Demo_08_Activate_Individual_Tabs)" />
+<Demo Type="typeof(Tabs_Demo_08_Events_Example)" />
 
 @code {
     private string pageUrl = "/tabs";
