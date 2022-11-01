@@ -1,7 +1,47 @@
 ﻿@using BlazorBootstrap
 @page "/"
+@layout EmptyLayout
 
-<PageTitle>Home - Blazor.Bootstrap</PageTitle>
+<PageTitle>Blazor Components Examples & Demos | Blazor.Bootstrap</PageTitle>
+
+<div class="bd-masthead mb-3" id="content">
+    <div class="container-xxl bd-gutter">
+        <div class="col-md-8 mx-auto text-center">
+            <a class="d-flex flex-column flex-lg-row justify-content-center align-items-center mb-4 text-dark lh-sm text-decoration-none" href="https://blog.getbootstrap.com/2022/07/19/bootstrap-5-2-0/">
+                <strong class="d-sm-inline-block p-2 me-2 mb-2 mb-lg-0 rounded-3 masthead-notice">New in v0.6.1</strong>
+                <span class="text-muted">Tabs enhancements and more examples!</span>
+            </a>
+            <img src="images/logo/logo-color.svg" width="200" height="165" alt="Bootstrap" class="d-block mx-auto mb-3">
+            <h1 class="mb-3 fw-semibold">Blazor Components Examples and Demos</h1>
+            <p class="lead mb-4">
+                Powerful, extensible, and feature-packed blazor components.
+            </p>
+            <div class="d-flex flex-column flex-lg-row align-items-md-stretch justify-content-md-center gap-3 mb-4">
+                <div class="d-inline-block v-align-middle fs-5">
+                    <div class="bd-code-snippet">
+                        <div class="bd-clipboard">
+                            <button type="button" class="btn-clipboard"><i class="bi bi-clipboard"></i></button>
+                        </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">npm i bootstrap@5.2.2</span></span></code></pre></div>
+                    </div>
+                </div>
+                <a href="/docs/5.2/getting-started/introduction/" class="btn btn-lg bd-btn-lg btn-bd-primary d-flex align-items-center justify-content-center fw-semibold" onclick="ga('send', 'event', 'Jumbotron actions', 'Get started', 'Get started');">
+                    <svg class="bi me-2" aria-hidden="true"><use xlink:href="#book-half"></use></svg>
+                    Read the docs
+                </a>
+            </div>
+            <p class="text-muted mb-0">
+                Currently <strong>v5.2.2</strong>
+                <span class="px-1">·</span>
+                <a href="/docs/5.2/getting-started/download/" class="link-secondary">Download</a>
+                <span class="px-1">·</span>
+                <a href="https://getbootstrap.com/docs/4.6/getting-started/introduction/" class="link-secondary text-nowrap">v4.6.x docs</a>
+                <span class="px-1">·</span>
+                <a href="/docs/versions/" class="link-secondary text-nowrap">All releases</a>
+            </p>
+
+        </div>
+    </div>
+</div>
 
 <h1>Blazor.Bootstrap Library</h1>
 <div class="mb-3 text-secondary display-9">
@@ -12,6 +52,12 @@
     <a href="https://www.nuget.org/packages/Blazor.Bootstrap/"><img alt="Nuget" src="https://img.shields.io/nuget/v/Blazor.Bootstrap"></a>
     <a href="https://www.nuget.org/packages/Blazor.Bootstrap/"><img alt="Nuget" src="https://img.shields.io/nuget/dt/Blazor.Bootstrap"></a>
 </p>
+
+<div class="row bg-success">
+    <div class="col">
+        <h2>Blazor Components Examples and Demos</h2>
+    </div>
+</div>
 
 <Alert Color="AlertColor.Info">
     <div class="row">
