@@ -5,18 +5,29 @@
 
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
-<h1 class="my-4">Blazor Pagination</h1>
-<div class="mb-3">
-    Documentation and examples for showing pagination to indicate a series of related content exists across multiple pages.
-</div>
+<SectionHeading Size="HeadingSize.H2" Text="Introduction" PageUrl="@pageUrl" HashTagName="introduction" />
+<div>Get started with BlazorBootstrap, with ready-made components.</div>
 
-<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<div>We use a large block of connected links for our pagination, making links hard to miss and easily scalable—all while providing large hit areas. Pagination is built with list HTML elements so screen readers can announce the number of available links.</div>
-<Demo Type="typeof(Pagination_Demo_01_Examples)" ShowCodeOnly="true" />
+<SectionHeading Size="HeadingSize.H2" Text="Install Nuget Package" PageUrl="@pageUrl" HashTagName="install-nuget-package" />
+<div>Looking to quickly add <code>Blazor.Bootstrap</code> to your project? Use NuGet package manager.</div>
+<div class="text-bg-dark p-2 mt-3 rounded-2">Install-Package Blazor.Bootstrap -Version @version</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Starter template" PageUrl="@pageUrl" HashTagName="starter-template" />
+<div>Change your <code>index.html</code> file and include the CSS and JS files:</div>
+<Demo Type="typeof(Snippet_01_Starter_Template_Index)" ShowCodeOnly="true" />
 
 @code {
-    private string pageUrl = "/pagination";
-    private string title = "Blazor Pagination Component | BlazorBootstrap";
-    private string description = "Use BlazorBootstrap's pagination component to indicate a series of related content exists across multiple pages.";
+    private string pageUrl = "/getting-started";
+    private string title = "Getting started | BlazorBootstrap";
+    private string description = "High-performance, lightweight, and responsive blazor components in a single package from the developers for the developers.";
     private string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
+
+    private string version;
+    [Inject] public IConfiguration Configuration { get; set; }
+
+    protected override void OnInitialized()
+    {
+        version = $"{Configuration.GetValue<string>("version")}"; // example: v0.6.1
+        base.OnInitialized();
+    }
 }
