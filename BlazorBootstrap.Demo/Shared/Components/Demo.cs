@@ -13,6 +13,7 @@ public class Demo : ComponentBase
     #endregion
 
     #region Methods
+
     protected override async Task OnParametersSetAsync()
     {
         if (code is null)
@@ -43,7 +44,22 @@ public class Demo : ComponentBase
         // no base call
         builder.AddMarkupContent(0, "<!--googleoff: index-->"); // source: https://perishablepress.com/tell-google-to-not-index-certain-parts-of-your-page/
 
-        if (!Tabs)
+        if (ShowCodeOnly)
+        {
+            builder.OpenElement(300, "div");
+            builder.AddAttribute(301, "class", "highlight show-code-only");
+            builder.OpenElement(400, "pre");
+            builder.OpenElement(401, "code");
+            builder.AddAttribute(402, "class", "language-cshtml");
+            if (code != null)
+            {
+                builder.AddContent(403, code.Trim());
+            }
+            builder.CloseElement(); // end: code
+            builder.CloseElement(); // end: pre
+            builder.CloseElement();
+        }
+        else if (!Tabs)
         {
             builder.OpenElement(100, "div");
             builder.AddAttribute(101, "class", "bb-example");
@@ -122,11 +138,14 @@ public class Demo : ComponentBase
     #endregion
 
     #region Properties
-    [Parameter] public Type Type { get; set; }
+
+    [Inject] protected IJSRuntime JS { get; set; } = null!;
+
+    [Parameter] public bool ShowCodeOnly { get; set; }
 
     [Parameter] public bool Tabs { get; set; } = false;
 
-    [Inject] protected IJSRuntime JS { get; set; } = null!;
+    [Parameter] public Type Type { get; set; }
 
     #endregion
 }

@@ -318,6 +318,12 @@
     border-top-width: 0;
 }
 
+.show-code-only {
+    border-width: 1px;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}
+
 /* display */
 .display-7 {
     font-size: 2rem
