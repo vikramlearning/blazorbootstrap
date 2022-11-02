@@ -1,0 +1,22 @@
+﻿@using System.Threading.Tasks
+@page "/getting-started"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1 class="my-4">Blazor Pagination</h1>
+<div class="mb-3">
+    Documentation and examples for showing pagination to indicate a series of related content exists across multiple pages.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div>We use a large block of connected links for our pagination, making links hard to miss and easily scalable—all while providing large hit areas. Pagination is built with list HTML elements so screen readers can announce the number of available links.</div>
+<Demo Type="typeof(Pagination_Demo_01_Examples)" ShowCodeOnly="true" />
+
+@code {
+    private string pageUrl = "/pagination";
+    private string title = "Blazor Pagination Component | BlazorBootstrap";
+    private string description = "Use BlazorBootstrap's pagination component to indicate a series of related content exists across multiple pages.";
+    private string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
+}
