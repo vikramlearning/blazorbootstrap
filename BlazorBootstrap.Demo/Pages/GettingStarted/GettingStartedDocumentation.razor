@@ -9,12 +9,18 @@
 <div>Get started with BlazorBootstrap, with ready-made components.</div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Install Nuget Package" PageUrl="@pageUrl" HashTagName="install-nuget-package" />
-<div>Looking to quickly add <code>Blazor.Bootstrap</code> to your project? Use NuGet package manager.</div>
+<div>Looking to quickly add <b>Blazor.Bootstrap</b> to your project? Use NuGet package manager.</div>
 <div class="text-bg-dark p-2 mt-3 rounded-2">Install-Package Blazor.Bootstrap -Version @version</div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Starter template" PageUrl="@pageUrl" HashTagName="starter-template" />
-<div>Change your <code>index.html</code> file and include the CSS and JS files:</div>
+<div>Change your <b>index.html</b> file and include the CSS and JS files:</div>
 <Demo Type="typeof(Snippet_01_Starter_Template_Index)" ShowCodeOnly="true" />
+
+<div>Add BlazorBootstrap service in <b>Program.cs</b></div>
+<Demo Type="typeof(Snippet_02_Starter_Template_Program)" LanguageCssClass="language-cs" ShowCodeOnly="true" />
+
+<div>Register tag helpers in <b>_Imports.razor</b></div>
+<Demo Type="typeof(Snippet_03_Starter_Template_Imports)" LanguageCssClass="language-cs" ShowCodeOnly="true" />
 
 @code {
     private string pageUrl = "/getting-started";

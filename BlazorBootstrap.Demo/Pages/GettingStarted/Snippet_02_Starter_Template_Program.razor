@@ -1,1 +1,18 @@
-﻿
+﻿using BlazorBootstrap;
+
+public class Program
+{
+    public static async Task Main(string[] args)
+    {
+        var builder = WebAssemblyHostBuilder.CreateDefault(args);
+        // Enable below line
+        @*builder.RootComponents.Add<App>("#app");*@
+
+        builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+        // Inject services           
+        builder.Services.AddBlazorBootstrap();
+
+        await builder.Build().RunAsync();
+    }
+}

@@ -50,7 +50,7 @@ public class Demo : ComponentBase
             builder.AddAttribute(301, "class", "highlight show-code-only");
             builder.OpenElement(400, "pre");
             builder.OpenElement(401, "code");
-            builder.AddAttribute(402, "class", "language-cshtml");
+            builder.AddAttribute(402, "class", LanguageCssClass);
             if (code != null)
             {
                 builder.AddContent(403, code.Trim());
@@ -71,7 +71,7 @@ public class Demo : ComponentBase
             builder.AddAttribute(301, "class", "highlight");
             builder.OpenElement(400, "pre");
             builder.OpenElement(401, "code");
-            builder.AddAttribute(402, "class", "language-cshtml");
+            builder.AddAttribute(402, "class", LanguageCssClass);
             if (code != null)
             {
                 builder.AddContent(403, code.Trim());
@@ -111,7 +111,7 @@ public class Demo : ComponentBase
                     tabContentBuilder.AddAttribute(404, "class", "highlight");
                     tabContentBuilder.OpenElement(405, "pre");
                     tabContentBuilder.OpenElement(406, "code");
-                    tabContentBuilder.AddAttribute(407, "class", "language-cshtml");
+                    tabContentBuilder.AddAttribute(407, "class", LanguageCssClass);
                     if (code != null)
                     {
                         tabContentBuilder.AddContent(408, code.Trim());
@@ -140,6 +140,8 @@ public class Demo : ComponentBase
     #region Properties
 
     [Inject] protected IJSRuntime JS { get; set; } = null!;
+
+    [Parameter] public string LanguageCssClass { get; set; } = "language-cshtml";
 
     [Parameter] public bool ShowCodeOnly { get; set; }
 
