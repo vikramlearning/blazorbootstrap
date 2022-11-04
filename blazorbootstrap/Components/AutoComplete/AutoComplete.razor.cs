@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
 
 namespace BlazorBootstrap;
 

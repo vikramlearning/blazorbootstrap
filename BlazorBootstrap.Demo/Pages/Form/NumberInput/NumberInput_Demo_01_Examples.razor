@@ -1,5 +1,56 @@
-﻿<NumberInput TItem="int" />
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-2">
+        <label class="col-md-2 col-form-label">Amount:</label>
+        <div class="col-md-10">
+            <NumberInput @bind-Value="invoice.Amount" Placeholder="Enter invoice amount" />
+            <ValidationMessage For="@(() => invoice.Amount)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <button type="submit" class="btn btn-success float-right">Submit</button>
+        </div>
+    </div>
+</EditForm>
 
 @code {
+    private Invoice invoice = new();
+    private EditContext editContext;
 
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(invoice);
+        base.OnInitialized();
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        Console.WriteLine($"Amount: {invoice.Amount}");
+    }
+
+    public class Invoice
+    {
+        [Required(ErrorMessage = "Amount required.")]
+        [Range(10, 500, ErrorMessage = "Min. 10 and Max.500")]
+        public int? Amount { get; set; } = 100;
+    }
 }

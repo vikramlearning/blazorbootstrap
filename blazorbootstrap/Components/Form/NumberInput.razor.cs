@@ -2,14 +2,14 @@
 
 namespace BlazorBootstrap;
 
-public partial class NumberInput<TItem> : BaseComponent
+public partial class NumberInput : BaseComponent
 {
     #region Events
 
     /// <summary>
     /// This is event fires on every user keystroke that changes the textbox value.
     /// </summary>
-    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public EventCallback<int?> ValueChanged { get; set; }
 
     #endregion
 
@@ -59,9 +59,29 @@ public partial class NumberInput<TItem> : BaseComponent
         this.disabled = false;
     }
 
-    private async Task OnInputChangedAsync(ChangeEventArgs args)
+    private async Task OnInputChange(ChangeEventArgs e)
     {
-        this.Value = args.Value.ToString();
+        Console.WriteLine($"Input: {e.Value.ToString()}");
+
+        if (string.IsNullOrEmpty(e.Value.ToString()))
+            Value = null;
+        else if (!int.TryParse(e.Value.ToString(), out int value))
+            Value = null;
+        //else if ((Min.HasValue && Max.HasValue && (value < Min.Value || value > Max.Value))
+        //   || (Min.HasValue && value < Min.Value)
+        //   || (Max.HasValue && value > Max.Value))
+        //{
+        //    // do nothing
+        //    //Value = null;
+        //}
+        else
+            Value = value;
+
+        await ValueChanged.InvokeAsync(Value);
+
+        EditContext?.NotifyFieldChanged(fieldIdentifier);
+
+        Console.WriteLine($"Value: {Value}");
     }
 
     #endregion
@@ -70,6 +90,7 @@ public partial class NumberInput<TItem> : BaseComponent
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
+
     /// <summary>
     /// Gets or sets the disabled.
     /// </summary>
@@ -82,9 +103,9 @@ public partial class NumberInput<TItem> : BaseComponent
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
 
-    [Parameter] public string Value { get; set; }
+    [Parameter] public int? Value { get; set; }
 
-    [Parameter] public Expression<Func<string?>> ValueExpression { get; set; }
+    [Parameter] public Expression<Func<int?>> ValueExpression { get; set; }
 
     #endregion
 }
