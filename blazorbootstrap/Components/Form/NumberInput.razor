@@ -1,0 +1,5 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+@typeparam TItem
+
+<input @ref="@ElementRef" type="number" id="@ElementId" class="@ClassNames @fieldCssClasses" style="@StyleNames" @attributes="@Attributes" value="@Value" @oninput="async (args) => await OnInputChangedAsync(args)" placeholder=" @Placeholder" disabled="@disabled" autocomplete="off" />

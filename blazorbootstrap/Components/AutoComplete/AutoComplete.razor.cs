@@ -24,7 +24,7 @@ public partial class AutoComplete<TItem> : BaseComponent
     private DotNetObjectReference<AutoComplete<TItem>> objRef;
 
     private FieldIdentifier fieldIdentifier;
-    private string fieldCssClasses => CascadedEditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     private bool inputHasValue;
     private bool isDropdownShown;
@@ -153,7 +153,7 @@ public partial class AutoComplete<TItem> : BaseComponent
 
         SetInputHasValue();
 
-        CascadedEditContext?.NotifyFieldChanged(fieldIdentifier);
+        EditContext?.NotifyFieldChanged(fieldIdentifier);
 
         if (OnChanged.HasDelegate)
             await OnChanged.InvokeAsync(item);
@@ -172,7 +172,7 @@ public partial class AutoComplete<TItem> : BaseComponent
 
         SetInputHasValue();
 
-        CascadedEditContext?.NotifyFieldChanged(fieldIdentifier);
+        EditContext?.NotifyFieldChanged(fieldIdentifier);
 
         if (OnChanged.HasDelegate)
             await OnChanged.InvokeAsync(default(TItem));
@@ -269,7 +269,7 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [CascadingParameter] private EditContext CascadedEditContext { get; set; }
+    [CascadingParameter] private EditContext EditContext { get; set; }
 
     /// <summary>
     /// DataProvider is for items to render. 

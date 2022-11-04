@@ -1,0 +1,17 @@
+﻿@using BlazorBootstrap
+
+@page "/form/number-input"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(NumberInput_Demo_01_Examples)" />
+
+@code {
+    private string pageUrl = "/form/number-input";
+    private string title = "Blazor NumberInput Component | BlazorBootstrap";
+    private string description = "BlazorBootstrap's autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.";
+    private string imageUrl = "https://i.imgur.com/36RsWZ3.png"; // TODO: update this
+}
