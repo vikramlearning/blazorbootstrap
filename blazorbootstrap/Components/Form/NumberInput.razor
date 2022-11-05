@@ -1,14 +1,16 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<input @ref="@ElementRef" 
-    type="number" 
-    id="@ElementId" 
-    class="@ClassNames @fieldCssClasses" 
-    style="@StyleNames" 
-    @attributes="@Attributes" 
-    value="@Value" 
-    @oninput="OnInputChange" 
-    placeholder="@Placeholder" 
-    disabled="@disabled" 
-    autocomplete="off" />
+<input @ref="@ElementRef"
+       @attributes="@Attributes"
+       type="number"
+       id="@ElementId"
+       class="@ClassNames @fieldCssClasses"
+       style="@StyleNames"
+       value="@Value"
+       disabled="@disabled"
+       placeholder="@Placeholder"
+       step="@step"
+       autocomplete="@autoComplete"
+       @oninput="OnInput"
+       @onchange="OnChange"/>

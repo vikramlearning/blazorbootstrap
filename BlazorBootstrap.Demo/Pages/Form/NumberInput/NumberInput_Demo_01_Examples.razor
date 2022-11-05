@@ -18,18 +18,35 @@
     <DataAnnotationsValidator />
 
     <div class="form-group row mb-2">
-        <label class="col-md-3 col-form-label">Amount:</label>
-        <div class="col-md-10">
+        <label class="col-md-3 col-form-label">Input Required:</label>
+        <div class="col-md-9">
             <NumberInput @bind-Value="invoice.Amount" Placeholder="Enter invoice amount" />
             <ValidationMessage For="@(() => invoice.Amount)" />
         </div>
     </div>
 
     <div class="form-group row mb-2">
-        <label class="col-md-3 col-form-label">Min. 10 & Max. 500:</label>
-        <div class="col-md-10">
-            <NumberInput @bind-Value="invoice.Amount2" Min="10" Max="500" Placeholder="Enter invoice amount" />
+        <label class="col-md-3 col-form-label">Input Range (10-500):</label>
+        <div class="col-md-9">
+            <NumberInput @bind-Value="invoice.Amount2" Placeholder="Enter invoice amount" />
             <ValidationMessage For="@(() => invoice.Amount2)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-2">
+        <label class="col-md-3 col-form-label">Input Disabled:</label>
+        <div class="col-md-9">
+            <NumberInput @bind-Value="invoice.Amount3" Placeholder="Enter invoice amount" Disabled="true" />
+            <ValidationMessage For="@(() => invoice.Amount3)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-2">
+        <label class="col-md-3 col-form-label">Input Required:</label>
+        <div class="col-md-9">
+            <NumberInput @bind-Value="invoice.Amount4" Min="30" Max="100" Placeholder="Enter invoice amount" />
+            <span class="help-text">Min="30" Max="100"</span>
+            <ValidationMessage For="@(() => invoice.Amount4)" />
         </div>
     </div>
 
@@ -58,11 +75,15 @@
     public class Invoice
     {
         [Required(ErrorMessage = "Amount required.")]
-        [Range(10, 500, ErrorMessage = "Min. 10 and Max.500")]
         public int? Amount { get; set; } = 100;
 
         [Required(ErrorMessage = "Amount required.")]
         [Range(10, 500, ErrorMessage = "Min. 10 and Max.500")]
-        public int? Amount2 { get; set; } = 100;
+        public int? Amount2 { get; set; } = 600;
+
+        public int? Amount3 { get; set; }
+
+        [Required(ErrorMessage = "Amount required.")]
+        public int? Amount4 { get; set; } = 700;
     }
 }

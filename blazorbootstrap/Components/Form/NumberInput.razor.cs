@@ -19,7 +19,11 @@ public partial class NumberInput : BaseComponent
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
+    private string autoComplete => this.AutoComplete ? "true" : "false";
+
     private bool disabled;
+
+    private string step;
 
     #endregion
 
@@ -40,7 +44,31 @@ public partial class NumberInput : BaseComponent
 
         this.disabled = this.Disabled;
 
+        this.step = Step.HasValue ? $"{Step.Value}" : "any";
+
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (!firstRender || Value is null || !(Min.HasValue && Max.HasValue))
+            return;
+
+        var currentValue = Value; // object
+
+        if (string.IsNullOrWhiteSpace(currentValue?.ToString())
+             || !int.TryParse(currentValue.ToString(), out int value))
+            Value = null;
+        else if (Min.HasValue && value < Min.Value)
+            Value = Min.Value;
+        else if (Max.HasValue && value > Max.Value)
+            Value = Max.Value;
+
+        await ValueChanged.InvokeAsync(Value);
+
+        Console.WriteLine($"OnAfterRenderAsync - Value: {Value}"); // TODO: remove this console log
     }
 
     /// <summary>
@@ -59,7 +87,34 @@ public partial class NumberInput : BaseComponent
         this.disabled = false;
     }
 
-    private async Task OnInputChange(ChangeEventArgs e)
+    private async Task OnInput(ChangeEventArgs e)
+    {
+        var oldValue = Value;
+        var newValue = e.Value; // object
+
+        if (string.IsNullOrWhiteSpace(newValue?.ToString())
+             || !int.TryParse(newValue.ToString(), out int value))
+            Value = null;
+        //else if (Min.HasValue && value < Min.Value)
+        //    Value = Min.Value;
+        //else if (Max.HasValue && value > Max.Value)
+        //    Value = Max.Value;
+        else
+            Value = value;
+
+        if (oldValue == Value)
+        {
+            await JS.InvokeVoidAsync("window.blazorBootstrap.numberInput.setValue", ElementId, Value);
+        }
+
+        await ValueChanged.InvokeAsync(Value);
+
+        EditContext?.NotifyFieldChanged(fieldIdentifier);
+
+        Console.WriteLine($"OnInput - Input: {e.Value?.ToString()}, Value: {Value}"); // TODO: remove this console log
+    }
+
+    private async Task OnChange(ChangeEventArgs e)
     {
         var oldValue = Value;
         var newValue = e.Value; // object
@@ -83,7 +138,7 @@ public partial class NumberInput : BaseComponent
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
 
-        Console.WriteLine($"Input: {e.Value?.ToString()}, Value: {Value}");
+        Console.WriteLine($"OnChange - Input: {e.Value?.ToString()}, Value: {Value}"); // TODO: remove this console log
     }
 
     #endregion
@@ -92,6 +147,8 @@ public partial class NumberInput : BaseComponent
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
+
+    [Parameter] public bool AutoComplete { get; set; } = false;
 
     /// <summary>
     /// Gets or sets the disabled.
