@@ -20,7 +20,7 @@
     <div class="form-group row mb-2">
         <label class="col-md-3 col-form-label">Input Required:</label>
         <div class="col-md-9">
-            <NumberInput @bind-Value="invoice.Amount" Placeholder="Enter invoice amount" />
+            <NumberInput TValue="int?" @bind-Value="invoice.Amount" Placeholder="Enter invoice amount" />
             <ValidationMessage For="@(() => invoice.Amount)" />
         </div>
     </div>
@@ -28,7 +28,7 @@
     <div class="form-group row mb-2">
         <label class="col-md-3 col-form-label">Input Range (10-500):</label>
         <div class="col-md-9">
-            <NumberInput @bind-Value="invoice.Amount2" Placeholder="Enter invoice amount" />
+            <NumberInput TValue="int?" @bind-Value="invoice.Amount2" Placeholder="Enter invoice amount" />
             <ValidationMessage For="@(() => invoice.Amount2)" />
         </div>
     </div>
@@ -36,7 +36,7 @@
     <div class="form-group row mb-2">
         <label class="col-md-3 col-form-label">Input Disabled:</label>
         <div class="col-md-9">
-            <NumberInput @bind-Value="invoice.Amount3" Placeholder="Enter invoice amount" Disabled="true" />
+            <NumberInput TValue="int?" @bind-Value="invoice.Amount3" Placeholder="Enter invoice amount" Disabled="true" />
             <ValidationMessage For="@(() => invoice.Amount3)" />
         </div>
     </div>
@@ -44,7 +44,25 @@
     <div class="form-group row mb-2">
         <label class="col-md-3 col-form-label">Input Required:</label>
         <div class="col-md-9">
-            <NumberInput @bind-Value="invoice.Amount4" Min="30" Max="100" Placeholder="Enter invoice amount" />
+            <NumberInput TValue="int" @bind-Value="invoice.Amount4" Min="30" Max="100" Placeholder="Enter invoice amount" />
+            <span class="help-text">Min="30" Max="100"</span>
+            <ValidationMessage For="@(() => invoice.Amount4)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-2">
+        <label class="col-md-3 col-form-label">Input Required:</label>
+        <div class="col-md-9">
+            <NumberInput TValue="double?" @bind-Value="invoice.DoubleValue" Placeholder="Enter invoice amount" />
+            <span class="help-text">Min="30" Max="100"</span>
+            <ValidationMessage For="@(() => invoice.Amount4)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-2">
+        <label class="col-md-3 col-form-label">Input Required:</label>
+        <div class="col-md-9">
+            <NumberInput TValue="decimal?" @bind-Value="invoice.DecimalValue" Placeholder="Enter invoice amount" />
             <span class="help-text">Min="30" Max="100"</span>
             <ValidationMessage For="@(() => invoice.Amount4)" />
         </div>
@@ -70,6 +88,8 @@
     public void HandleOnValidSubmit()
     {
         Console.WriteLine($"Amount: {invoice.Amount}, Amount2: {invoice.Amount2}, Amount3: {invoice.Amount3}, Amount4: {invoice.Amount4}");
+        Console.WriteLine($"DoubleValue: {invoice.DoubleValue}");
+        Console.WriteLine($"DoubleValue: {invoice.DecimalValue}");
     }
 
     public class Invoice
@@ -84,6 +104,12 @@
         public int? Amount3 { get; set; }
 
         [Required(ErrorMessage = "Amount required.")]
-        public int? Amount4 { get; set; } = 700;
+        public int Amount4 { get; set; } = 700;
+
+        [Required(ErrorMessage = "Double required.")]
+        public double? DoubleValue { get; set; } = 700;
+
+        [Required(ErrorMessage = "Decimal required.")]
+        public decimal? DecimalValue { get; set; } = 700;
     }
 }
