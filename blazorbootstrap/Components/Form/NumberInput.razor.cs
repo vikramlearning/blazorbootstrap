@@ -61,27 +61,29 @@ public partial class NumberInput : BaseComponent
 
     private async Task OnInputChange(ChangeEventArgs e)
     {
-        Console.WriteLine($"Input: {e.Value.ToString()}");
+        var oldValue = Value;
+        var newValue = e.Value; // object
 
-        if (string.IsNullOrEmpty(e.Value.ToString()))
+        if (string.IsNullOrWhiteSpace(newValue?.ToString())
+             || !int.TryParse(newValue.ToString(), out int value))
             Value = null;
-        else if (!int.TryParse(e.Value.ToString(), out int value))
-            Value = null;
-        //else if ((Min.HasValue && Max.HasValue && (value < Min.Value || value > Max.Value))
-        //   || (Min.HasValue && value < Min.Value)
-        //   || (Max.HasValue && value > Max.Value))
-        //{
-        //    // do nothing
-        //    //Value = null;
-        //}
+        else if (Min.HasValue && value < Min.Value)
+            Value = Min.Value;
+        else if (Max.HasValue && value > Max.Value)
+            Value = Max.Value;
         else
             Value = value;
+
+        if (oldValue == Value)
+        {
+            await JS.InvokeVoidAsync("window.blazorBootstrap.numberInput.setValue", ElementId, Value);
+        }
 
         await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
 
-        Console.WriteLine($"Value: {Value}");
+        Console.WriteLine($"Input: {e.Value?.ToString()}, Value: {Value}");
     }
 
     #endregion
@@ -98,10 +100,19 @@ public partial class NumberInput : BaseComponent
 
     [CascadingParameter] private EditContext EditContext { get; set; }
 
+    [Parameter] public int? Max { get; set; }
+
+    [Parameter] public int? Min { get; set; }
+
     /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Gets or sets the step.
+    /// </summary>
+    [Parameter] public int? Step { get; set; }
 
     [Parameter] public int? Value { get; set; }
 

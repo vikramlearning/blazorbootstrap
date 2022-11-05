@@ -105,6 +105,11 @@ window.blazorBootstrap = {
             bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
+    numberInput: {
+        setValue: (elementId, value) => {
+            document.getElementById(elementId).value = value;
+        },
+    },
     offcanvas: {
         initialize: (elementId, useBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {
             let offcanvasEl = document.getElementById(elementId);

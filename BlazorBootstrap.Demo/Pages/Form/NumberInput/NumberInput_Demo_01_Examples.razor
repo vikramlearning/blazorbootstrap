@@ -18,10 +18,18 @@
     <DataAnnotationsValidator />
 
     <div class="form-group row mb-2">
-        <label class="col-md-2 col-form-label">Amount:</label>
+        <label class="col-md-3 col-form-label">Amount:</label>
         <div class="col-md-10">
             <NumberInput @bind-Value="invoice.Amount" Placeholder="Enter invoice amount" />
             <ValidationMessage For="@(() => invoice.Amount)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-2">
+        <label class="col-md-3 col-form-label">Min. 10 & Max. 500:</label>
+        <div class="col-md-10">
+            <NumberInput @bind-Value="invoice.Amount2" Min="10" Max="500" Placeholder="Enter invoice amount" />
+            <ValidationMessage For="@(() => invoice.Amount2)" />
         </div>
     </div>
 
@@ -44,7 +52,7 @@
 
     public void HandleOnValidSubmit()
     {
-        Console.WriteLine($"Amount: {invoice.Amount}");
+        Console.WriteLine($"Amount: {invoice.Amount}, Amount2: {invoice.Amount2}");
     }
 
     public class Invoice
@@ -52,5 +60,9 @@
         [Required(ErrorMessage = "Amount required.")]
         [Range(10, 500, ErrorMessage = "Min. 10 and Max.500")]
         public int? Amount { get; set; } = 100;
+
+        [Required(ErrorMessage = "Amount required.")]
+        [Range(10, 500, ErrorMessage = "Min. 10 and Max.500")]
+        public int? Amount2 { get; set; } = 100;
     }
 }
