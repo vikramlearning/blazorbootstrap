@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using System.Runtime.Serialization;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class NumberInput<TValue> : BaseComponent
 {
@@ -33,6 +30,7 @@ public partial class NumberInput<TValue> : BaseComponent
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.FormControl());
+        builder.Append(BootstrapClassProvider.TextAlignment(this.TextAlignment), this.TextAlignment != Alignment.None);
 
         base.BuildClasses(builder);
     }
@@ -72,25 +70,25 @@ public partial class NumberInput<TValue> : BaseComponent
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", ElementId, isFloatingNumber());
+
+            var currentValue = Value; // object
+
+            if (currentValue is null || !TryParseValue(currentValue, out TValue value))
+                Value = default;
+            else if (Min is not null && IsLeftGreaterThanRight(Min, Value)) // value < min
+                Value = Min;
+            else if (Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
+                Value = Max;
+            else
+                Value = value;
+
+            await ValueChanged.InvokeAsync(Value);
+        }
+
         await base.OnAfterRenderAsync(firstRender);
-
-        if (!firstRender || Value is null || !(Min is not null && Max is not null))
-            return;
-
-        var currentValue = Value; // object
-
-        if (currentValue is null || !TryParseValue(currentValue, out TValue value))
-            Value = default;
-        else if (IsLeftGreaterThanRight(Min, Value)) // value < min
-            Value = Min;
-        else if (IsLeftGreaterThanRight(Value, Max)) // value > max
-            Value = Max;
-        else
-            Value = value;
-
-        await ValueChanged.InvokeAsync(Value);
-
-        Console.WriteLine($"OnAfterRenderAsync - Value: {Value}"); // TODO: remove this console log
     }
 
     /// <summary>
@@ -109,28 +107,6 @@ public partial class NumberInput<TValue> : BaseComponent
         this.disabled = false;
     }
 
-    private async Task OnInput(ChangeEventArgs e)
-    {
-        var oldValue = Value;
-        var newValue = e.Value; // object
-
-        if (newValue is null || !TryParseValue(newValue, out TValue value))
-            Value = default;
-        else
-            Value = value;
-
-        if (oldValue.Equals(Value))
-        {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.numberInput.setValue", ElementId, Value);
-        }
-
-        await ValueChanged.InvokeAsync(Value);
-
-        EditContext?.NotifyFieldChanged(fieldIdentifier);
-
-        Console.WriteLine($"OnInput - Input: {e.Value?.ToString()}, Value: {Value}"); // TODO: remove this console log
-    }
-
     private async Task OnChange(ChangeEventArgs e)
     {
         var oldValue = Value;
@@ -138,9 +114,9 @@ public partial class NumberInput<TValue> : BaseComponent
 
         if (newValue is null || !TryParseValue(newValue, out TValue value))
             Value = default;
-        else if (IsLeftGreaterThanRight(Min, Value)) // value < min
+        else if (Min is not null && IsLeftGreaterThanRight(Min, value)) // value < min
             Value = Min;
-        else if (IsLeftGreaterThanRight(Value, Max)) // value > max
+        else if (Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
             Value = Max;
         else
             Value = value;
@@ -153,8 +129,6 @@ public partial class NumberInput<TValue> : BaseComponent
         await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
-
-        Console.WriteLine($"OnChange - Input: {e.Value?.ToString()}, Value: {Value}"); // TODO: remove this console log
     }
 
     /// <summary>
@@ -325,6 +299,16 @@ public partial class NumberInput<TValue> : BaseComponent
         }
     }
 
+    private bool isFloatingNumber()
+    {
+        return typeof(TValue) == typeof(float)
+            || typeof(TValue) == typeof(float?)
+            || typeof(TValue) == typeof(double)
+            || typeof(TValue) == typeof(double?)
+            || typeof(TValue) == typeof(decimal)
+            || typeof(TValue) == typeof(decimal?);
+    }
+
     #endregion
 
     #region Properties
@@ -351,9 +335,11 @@ public partial class NumberInput<TValue> : BaseComponent
     [Parameter] public string? Placeholder { get; set; }
 
     /// <summary>
-    /// Gets or sets the step. Default value is 1.
+    /// Gets or sets the step.
     /// </summary>
-    [Parameter] public double? Step { get; set; } = 1;
+    [Parameter] public double? Step { get; set; }
+
+    [Parameter] public Alignment TextAlignment { get; set; }
 
     [Parameter] public TValue Value { get; set; }
 

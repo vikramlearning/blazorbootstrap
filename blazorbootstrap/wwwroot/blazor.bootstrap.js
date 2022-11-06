@@ -106,9 +106,35 @@ window.blazorBootstrap = {
         }
     },
     numberInput: {
+        initialize: (elementId, isFloat) => {
+            let numberEl = document.getElementById(elementId);
+
+            numberEl?.addEventListener('keydown', function (event) {
+                let invalidChars = ["e", "E"];
+                if (!isFloat)
+                    invalidChars.push("."); // restrict '.' for integer types
+
+                if (invalidChars.includes(event.key)) {
+                    event.preventDefault();
+                }
+            });
+
+            numberEl?.addEventListener('beforeinput', function (event) {
+                if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
+
+                    if (isFloat && /[\e\E]/gi.test(event.data)) {
+                        event.preventDefault();
+                    }
+                    else if (!isFloat && /[\e\E\.]/gi.test(event.data)) { // restrict '.' for integer types
+                        event.preventDefault();
+                    }
+
+                }
+            });
+        },
         setValue: (elementId, value) => {
             document.getElementById(elementId).value = value;
-        },
+        }
     },
     offcanvas: {
         initialize: (elementId, useBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {

@@ -51,20 +51,28 @@
     </div>
 
     <div class="form-group row mb-2">
-        <label class="col-md-3 col-form-label">Input Required:</label>
+        <label class="col-md-3 col-form-label">Double? Required:</label>
         <div class="col-md-9">
             <NumberInput TValue="double?" @bind-Value="invoice.DoubleValue" Placeholder="Enter invoice amount" />
-            <span class="help-text">Min="30" Max="100"</span>
-            <ValidationMessage For="@(() => invoice.Amount4)" />
+            <ValidationMessage For="@(() => invoice.DoubleValue)" />
         </div>
     </div>
 
     <div class="form-group row mb-2">
-        <label class="col-md-3 col-form-label">Input Required:</label>
+        <label class="col-md-3 col-form-label">Double? Required:</label>
         <div class="col-md-9">
-            <NumberInput TValue="decimal?" @bind-Value="invoice.DecimalValue" Placeholder="Enter invoice amount" />
+            <NumberInput TValue="double?" @bind-Value="invoice.DoubleValue2" Min="30" Max="100" Placeholder="Enter invoice amount" />
             <span class="help-text">Min="30" Max="100"</span>
-            <ValidationMessage For="@(() => invoice.Amount4)" />
+            <ValidationMessage For="@(() => invoice.DoubleValue2)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-2">
+        <label class="col-md-3 col-form-label">Double? Required:</label>
+        <div class="col-md-9">
+            <NumberInput TValue="double?" @bind-Value="invoice.DoubleValue3" TextAlignment="Alignment.End" Min="30" Max="100" Placeholder="Enter invoice amount" />
+            <span class="help-text">Min="30" Max="100"</span>
+            <ValidationMessage For="@(() => invoice.DoubleValue3)" />
         </div>
     </div>
 
@@ -87,9 +95,13 @@
 
     public void HandleOnValidSubmit()
     {
-        Console.WriteLine($"Amount: {invoice.Amount}, Amount2: {invoice.Amount2}, Amount3: {invoice.Amount3}, Amount4: {invoice.Amount4}");
+        Console.WriteLine($"Amount: {invoice.Amount}");
+        Console.WriteLine($"Amount2: {invoice.Amount2}");
+        Console.WriteLine($"Amount3: {invoice.Amount3}");
+        Console.WriteLine($"Amount4: {invoice.Amount4}");
         Console.WriteLine($"DoubleValue: {invoice.DoubleValue}");
-        Console.WriteLine($"DoubleValue: {invoice.DecimalValue}");
+        Console.WriteLine($"DoubleValue2: {invoice.DoubleValue2}");
+        Console.WriteLine($"DoubleValue3: {invoice.DoubleValue3}");
     }
 
     public class Invoice
@@ -109,7 +121,10 @@
         [Required(ErrorMessage = "Double required.")]
         public double? DoubleValue { get; set; } = 700;
 
-        [Required(ErrorMessage = "Decimal required.")]
-        public decimal? DecimalValue { get; set; } = 700;
+        [Required(ErrorMessage = "Double required.")]
+        public double? DoubleValue2 { get; set; } = 700;
+
+        [Required(ErrorMessage = "Double required.")]
+        public double? DoubleValue3 { get; set; } = 35.67;
     }
 }
