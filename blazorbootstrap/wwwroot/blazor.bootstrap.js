@@ -106,7 +106,7 @@ window.blazorBootstrap = {
         }
     },
     numberInput: {
-        initialize: (elementId, isFloat) => {
+        initialize: (elementId, isFloat, allowPlusMinus) => {
             let numberEl = document.getElementById(elementId);
 
             numberEl?.addEventListener('keydown', function (event) {
@@ -114,18 +114,34 @@ window.blazorBootstrap = {
                 if (!isFloat)
                     invalidChars.push("."); // restrict '.' for integer types
 
-                if (invalidChars.includes(event.key)) {
-                    event.preventDefault();
+                if (!allowPlusMinus) {
+                    invalidChars.push("+"); // restrict '+'
+                    invalidChars.push("-"); // restrict '-'
                 }
+
+                if (invalidChars.includes(event.key))
+                    event.preventDefault();
             });
 
             numberEl?.addEventListener('beforeinput', function (event) {
                 if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
 
-                    if (isFloat && /[\e\E]/gi.test(event.data)) {
+                    if (!allowPlusMinus) {
+                        // restrict 'e', 'E', '+', '-'
+                        if (isFloat && /[\e\E\+\-]/gi.test(event.data)) {
+                            event.preventDefault();
+                        }
+                        // restrict 'e', 'E', '.', '+', '-'
+                        else if (!isFloat && /[\e\E\.\+\-]/gi.test(event.data)) {
+                            event.preventDefault();
+                        }
+                    }
+                    // restrict 'e', 'E'
+                    else if (isFloat && /[\e\E]/gi.test(event.data)) {
                         event.preventDefault();
                     }
-                    else if (!isFloat && /[\e\E\.]/gi.test(event.data)) { // restrict '.' for integer types
+                    // restrict 'e', 'E', '.'
+                    else if (!isFloat && /[\e\E\.]/gi.test(event.data)) {
                         event.preventDefault();
                     }
 

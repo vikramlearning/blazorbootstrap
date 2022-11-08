@@ -72,7 +72,7 @@ public partial class NumberInput<TValue> : BaseComponent
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", ElementId, isFloatingNumber());
+            await JS.InvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", ElementId, isFloatingNumber(), AllowPlusMinus);
 
             var currentValue = Value; // object
 
@@ -316,7 +316,9 @@ public partial class NumberInput<TValue> : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Parameter] public bool AutoComplete { get; set; } = false;
+    [Parameter] public bool AllowPlusMinus { get; set; }
+
+    [Parameter] public bool AutoComplete { get; set; }
 
     /// <summary>
     /// Gets or sets the disabled.

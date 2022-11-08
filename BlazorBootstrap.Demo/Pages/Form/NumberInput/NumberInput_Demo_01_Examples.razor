@@ -76,6 +76,15 @@
         </div>
     </div>
 
+    <div class="form-group row mb-2">
+        <label class="col-md-3 col-form-label">Double? Required:</label>
+        <div class="col-md-9">
+            <NumberInput TValue="double?" @bind-Value="invoice.DoubleValue4" AllowPlusMinus="true" Placeholder="Enter invoice amount" />
+            <span class="help-text">AllowPlusMinus="true"</span>
+            <ValidationMessage For="@(() => invoice.DoubleValue4)" />
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-12 text-right">
             <button type="submit" class="btn btn-success float-right">Submit</button>
@@ -102,6 +111,7 @@
         Console.WriteLine($"DoubleValue: {invoice.DoubleValue}");
         Console.WriteLine($"DoubleValue2: {invoice.DoubleValue2}");
         Console.WriteLine($"DoubleValue3: {invoice.DoubleValue3}");
+        Console.WriteLine($"DoubleValue4: {invoice.DoubleValue4}");
     }
 
     public class Invoice
@@ -126,5 +136,8 @@
 
         [Required(ErrorMessage = "Double required.")]
         public double? DoubleValue3 { get; set; } = 35.67;
+
+        [Required(ErrorMessage = "Double required.")]
+        public double? DoubleValue4 { get; set; } = 35.67;
     }
 }
