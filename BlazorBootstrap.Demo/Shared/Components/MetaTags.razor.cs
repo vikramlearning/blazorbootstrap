@@ -6,9 +6,9 @@ public partial class MetaTags : ComponentBase
 {
     #region Members
 
-    private string siteName => "Blazor.Bootstrap";
+    private string siteName => "Blazor Bootstrap";
 
-    private string title => $"{Title} - {siteName}";
+    private string title => $"{Title} | {siteName}";
 
     private string url => $"https://demos.getblazorbootstrap.com{PageUrl}";
 

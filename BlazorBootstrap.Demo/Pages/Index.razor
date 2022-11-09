@@ -4,6 +4,8 @@
 
 <PageTitle>Blazor Bootstrap Components Examples & Demos | Blazor Bootstrap</PageTitle>
 
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
 <div class="bd-masthead mb-3" id="content">
     <div class="container-xxl bd-gutter">
         <div class="col-md-8 mx-auto text-center">
@@ -134,6 +136,11 @@
 </div>
 
 @code {
+    private string pageUrl = "/";
+    private string title = "Blazor Bootstrap Component Library";
+    private string description = "Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg"; // TODO: update image
+
     private string version;
     private string releaseShortDescription;
 
