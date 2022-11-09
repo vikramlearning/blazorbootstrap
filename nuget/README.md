@@ -1,6 +1,6 @@
-﻿# Blazor.Bootstrap
+﻿# Blazor Bootstrap Component Library
 
-Blazor.Bootstrap is a component library built on top of Blazor and Bootstrap 5 CSS framework.
+### Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
 
 ## Table of contents
 
@@ -20,7 +20,11 @@ Several quick start options are available:
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
-## Blazor Components
+## Online Demos
+
+Online Demos with Examples: [Link](https://demos.getblazorbootstrap.com/)
+
+## Blazor Bootstrap Components
 
 - Alerts
 - AutoComplete

@@ -4,14 +4,18 @@
   </a>
 </p>
 
-<h3 align="center">Blazor.Bootstrap</h3>
+<h3 align="center">Blazor Bootstrap Component Library</h3>
 
 <p align="center">
-  Blazor.Bootstrap is a component library built on top of Blazor and Bootstrap 5 CSS framework.
+  Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
   <br>
-  <a href="https://getblazorbootstrap.com/docs/intro"><strong>Explore BlazorBootstrap docs »</strong></a>
+  <a href="https://getblazorbootstrap.com/docs/intro"><strong>Explore Blazor Bootstrap docs »</strong></a>
   <br>
 </p>
+
+## Online Demos
+
+Online Demos with Examples: [Link](https://demos.getblazorbootstrap.com/)
 
 ## Table of contents
 
@@ -36,7 +40,7 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 [![NuGet](https://img.shields.io/nuget/vpre/blazor.bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 [![NuGet](https://img.shields.io/nuget/dt/blazor.bootstrap.svg)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 
-## Blazor Components
+## Blazor Bootstrap Components
 
 - Alerts
 - AutoComplete
