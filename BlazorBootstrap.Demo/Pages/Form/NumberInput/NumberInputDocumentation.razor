@@ -6,8 +6,19 @@
 
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
+<h1>Blazor Number Input</h1>
+<div class="mb-3">
+    Blazor Bootstrap <code>NumberInput</code> component is built around HTML input of <code>type="number"</code> that prevents the user input based on the parameters set.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<Demo Type="typeof(NumberInput_Demo_01_Basic_Usage)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Generic type" PageUrl="@pageUrl" HashTagName="generic-type" />
+<Demo Type="typeof(NumberInput_Demo_02_Generic_Type)" />
+
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<Demo Type="typeof(NumberInput_Demo_01_Examples)" />
+<Demo Type="typeof(NumberInput_Demo_10_Examples)" />
 
 @code {
     private string pageUrl = "/form/number-input";
