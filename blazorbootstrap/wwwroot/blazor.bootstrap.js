@@ -106,16 +106,15 @@ window.blazorBootstrap = {
         }
     },
     numberInput: {
-        initialize: (elementId, isFloat, allowPlusMinus) => {
+        initialize: (elementId, isFloat, allowNegativeNumbers) => {
             let numberEl = document.getElementById(elementId);
 
             numberEl?.addEventListener('keydown', function (event) {
-                let invalidChars = ["e", "E"];
+                let invalidChars = ["e", "E", "+"];
                 if (!isFloat)
                     invalidChars.push("."); // restrict '.' for integer types
 
-                if (!allowPlusMinus) {
-                    invalidChars.push("+"); // restrict '+'
+                if (!allowNegativeNumbers) {
                     invalidChars.push("-"); // restrict '-'
                 }
 
@@ -126,7 +125,7 @@ window.blazorBootstrap = {
             numberEl?.addEventListener('beforeinput', function (event) {
                 if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
 
-                    if (!allowPlusMinus) {
+                    if (!allowNegativeNumbers) {
                         // restrict 'e', 'E', '+', '-'
                         if (isFloat && /[\e\E\+\-]/gi.test(event.data)) {
                             event.preventDefault();
@@ -136,12 +135,12 @@ window.blazorBootstrap = {
                             event.preventDefault();
                         }
                     }
-                    // restrict 'e', 'E'
-                    else if (isFloat && /[\e\E]/gi.test(event.data)) {
+                    // restrict 'e', 'E', '+'
+                    else if (isFloat && /[\e\E\+]/gi.test(event.data)) {
                         event.preventDefault();
                     }
-                    // restrict 'e', 'E', '.'
-                    else if (!isFloat && /[\e\E\.]/gi.test(event.data)) {
+                    // restrict 'e', 'E', '.', '+'
+                    else if (!isFloat && /[\e\E\.\+]/gi.test(event.data)) {
                         event.preventDefault();
                     }
 

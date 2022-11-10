@@ -72,15 +72,15 @@ public partial class NumberInput<TValue> : BaseComponent
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", ElementId, isFloatingNumber(), AllowPlusMinus);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", ElementId, isFloatingNumber(), AllowNegativeNumbers);
 
             var currentValue = Value; // object
 
             if (currentValue is null || !TryParseValue(currentValue, out TValue value))
                 Value = default;
-            else if (Min is not null && IsLeftGreaterThanRight(Min, Value)) // value < min
+            else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, Value)) // value < min
                 Value = Min;
-            else if (Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
+            else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
                 Value = Max;
             else
                 Value = value;
@@ -314,7 +314,7 @@ public partial class NumberInput<TValue> : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Parameter] public bool AllowPlusMinus { get; set; }
+    [Parameter] public bool AllowNegativeNumbers { get; set; }
 
     [Parameter] public bool AutoComplete { get; set; }
 
