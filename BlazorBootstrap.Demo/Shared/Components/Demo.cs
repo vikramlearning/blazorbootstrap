@@ -87,7 +87,17 @@ public class Demo : ComponentBase
             builder.AddAttribute(302, "ChildContent", (RenderFragment)((childContentBuilder) =>
             {
                 childContentBuilder.OpenComponent<Tab>(303);
-                childContentBuilder.AddAttribute(304, "Title", "EXAMPLE");
+                childContentBuilder.AddAttribute(304, "TitleTemplate", (RenderFragment)((titleTemplateBuilder) =>
+                {
+                    titleTemplateBuilder.OpenComponent<Icon>(501);
+                    titleTemplateBuilder.AddAttribute(502, "Name", IconName.Display);
+                    titleTemplateBuilder.AddAttribute(503, "class", "me-2");
+                    titleTemplateBuilder.CloseComponent(); // end: Icon
+
+                    titleTemplateBuilder.OpenElement(504, "b");
+                    titleTemplateBuilder.AddContent(505, "Example");
+                    titleTemplateBuilder.CloseElement(); // end: b
+                }));
 
                 childContentBuilder.AddAttribute(305, "Content", (RenderFragment)((tabContentBuilder) =>
                 {
@@ -103,7 +113,17 @@ public class Demo : ComponentBase
                 childContentBuilder.CloseComponent();
 
                 childContentBuilder.OpenComponent<Tab>(400);
-                childContentBuilder.AddAttribute(401, "Title", "VIEW SOURCE");
+                childContentBuilder.AddAttribute(401, "TitleTemplate", (RenderFragment)((titleTemplateBuilder) =>
+                {
+                    titleTemplateBuilder.OpenComponent<Icon>(601);
+                    titleTemplateBuilder.AddAttribute(602, "Name", IconName.CodeSlash);
+                    titleTemplateBuilder.AddAttribute(603, "class", "me-2");
+                    titleTemplateBuilder.CloseComponent(); // end: Icon
+
+                    titleTemplateBuilder.OpenElement(604, "b");
+                    titleTemplateBuilder.AddContent(605, "View Source");
+                    titleTemplateBuilder.CloseElement(); // end: b
+                }));
 
                 childContentBuilder.AddAttribute(402, "Content", (RenderFragment)((tabContentBuilder) =>
                 {
