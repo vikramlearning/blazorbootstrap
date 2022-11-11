@@ -18,34 +18,33 @@
     <DataAnnotationsValidator />
 
     <div class="form-group row mb-3">
-        <label class="col-md-3 col-form-label">Item Price: <span class="text-danger">*</span></label>
-        <div class="col-md-9">
-            <NumberInput TValue="decimal?" Value="invoice.Price" ValueChanged="(value) => PriceChanged(value)" Placeholder="Enter price" />
-            <span class="help-text">Min="60" Max="500"</span>
+        <label class="col-md-2 col-form-label">Item Price: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <NumberInput TValue="decimal?" Value="invoice.Price" ValueExpression="() => invoice.Price" ValueChanged="(value) => PriceChanged(value)" Placeholder="Enter price" />
             <ValidationMessage For="@(() => invoice.Price)" />
         </div>
     </div>
 
     <div class="form-group row mb-3">
-        <label class="col-md-3 col-form-label">Item Discount: <span class="text-danger">*</span></label>
-        <div class="col-md-9">
-            <NumberInput TValue="decimal?" Value="invoice.Discount" ValueChanged="(value) => DiscountChanged(value)" Placeholder="Enter discount" />
-            <span class="help-text">Min="0" Max="50"</span>
+        <label class="col-md-2 col-form-label">Item Discount:</label>
+        <div class="col-md-10">
+            <NumberInput TValue="decimal?" Value="invoice.Discount" ValueExpression="() => invoice.Discount" ValueChanged="(value) => DiscountChanged(value)" Placeholder="Enter discount" />
             <ValidationMessage For="@(() => invoice.Discount)" />
         </div>
     </div>
 
     <div class="form-group row mb-3">
-        <label class="col-md-3 col-form-label">Total Amount:</label>
-        <div class="col-md-9">
-            <NumberInput TValue="decimal?" @bind-Value="invoice.Total" Disabled="true" Min="30" Max="100" Placeholder="Enter total" />
+        <label class="col-md-2 col-form-label">Total Amount: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <NumberInput TValue="decimal?" @bind-Value="invoice.Total" Disabled="true" Placeholder="Enter total" />
             <ValidationMessage For="@(() => invoice.Total)" />
         </div>
     </div>
 
     <div class="row">
         <div class="col-md-12 text-right">
-            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end">Submit</Button>
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
         </div>
     </div>
 </EditForm>
@@ -92,6 +91,12 @@
         Console.WriteLine($"Total: {invoice.Total}");
     }
 
+    private void ResetForm()
+    {
+        invoice = new();
+        editContext = new EditContext(invoice);
+    }
+
     public class Invoice
     {
         [Required(ErrorMessage = "Price required.")]
@@ -102,6 +107,7 @@
         public decimal? Discount { get; set; }
 
         [Required(ErrorMessage = "Amount required.")]
+        [Range(10, 500, ErrorMessage = "Total should be between 60 and 500.")]
         public decimal? Total { get; set; }
     }
 }
