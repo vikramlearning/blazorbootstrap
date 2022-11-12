@@ -5,7 +5,7 @@ public partial class NumberInput<TValue> : BaseComponent
     #region Events
 
     /// <summary>
-    /// This is event fires on every user keystroke that changes the textbox value.
+    /// This is event fires on every user keystroke that changes the NumberInput value.
     /// </summary>
     [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
 
@@ -314,8 +314,14 @@ public partial class NumberInput<TValue> : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
+    /// <summary>
+    /// Allows negative numbers. By default, negative numbers are not allowed.
+    /// </summary>
     [Parameter] public bool AllowNegativeNumbers { get; set; }
 
+    /// <summary>
+    /// Indicates whether the NumberInput can complete the values automatically by the browser.
+    /// </summary>
     [Parameter] public bool AutoComplete { get; set; }
 
     /// <summary>
@@ -325,10 +331,22 @@ public partial class NumberInput<TValue> : BaseComponent
 
     [CascadingParameter] private EditContext EditContext { get; set; }
 
+    /// <summary>
+    /// Determines whether to restrict the user input to Min and Max range.
+    /// If true, restricts the user input between the Min and Max range. Else accepts the user input.
+    /// </summary>
     [Parameter] public bool EnableMinMax { get; set; }
 
+    /// <summary>
+    /// Gets or sets the max.
+    /// Max ignored if EnableMinMax="false".
+    /// </summary>
     [Parameter] public TValue Max { get; set; }
 
+    /// <summary>
+    /// Gets or sets the min.
+    /// Min ignored if EnableMinMax="false".
+    /// </summary>
     [Parameter] public TValue Min { get; set; }
 
     /// <summary>
@@ -341,8 +359,14 @@ public partial class NumberInput<TValue> : BaseComponent
     /// </summary>
     [Parameter] public double? Step { get; set; }
 
+    /// <summary>
+    /// Gets or sets the text alignment.
+    /// </summary>
     [Parameter] public Alignment TextAlignment { get; set; }
 
+    /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
     [Parameter] public TValue Value { get; set; }
 
     [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; }
