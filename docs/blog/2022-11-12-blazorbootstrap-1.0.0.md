@@ -8,12 +8,11 @@ authors:
 tags: [v1.0.0, blazor, blazorbootstrap, blazor-bootstrap, blazor-tabs, blazor-input, blazor-input-number, blazor-number-input, input, input-number]
 ---
 
-We are excited to release `1.0.0` with the new component and more enhancements.
+We are excited to release our major version, `1.0.0`, with new components, enhancements to existing ones, and more!!!
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor NumberInput component" />
+<img src="https://i.imgur.com/iUNBkki.png" alt="Blazor NumberInput component" />
 
 <!--truncate-->
-
 
 ### New Components
 
