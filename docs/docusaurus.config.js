@@ -3,8 +3,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'BlazorBootstrap',
-    tagline: 'Build fast, responsive sites with BlazorBootstrap',
+    title: 'Blazor Bootstrap',
+    tagline: 'High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.',
     url: 'https://getblazorbootstrap.com',
     baseUrl: '/',
     onBrokenLinks: 'throw',
@@ -43,7 +43,7 @@ const config = {
         ({
             announcementBar: {
                 id: 'support_us',
-                content: '⭐️ If you like BlazorBootstrap, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/vikramlearning/blazorbootstrap">GitHub</a>! ⭐️',
+                content: '⭐️ If you like Blazor Bootstrap, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/vikramlearning/blazorbootstrap">GitHub</a>! ⭐️',
                 //backgroundColor: '#fafbfc',
                 //textColor: '#091E42',
                 isCloseable: true,
@@ -99,7 +99,9 @@ const config = {
             //},
         }),
     customFields: {
-        version: '0.0.4'
+        version: '0.0.4',
+        logo_white: '/img/logo/logo-white.svg',
+        logo_color: '/img/logo/logo-color.svg'
     },
     plugins: [
         [
