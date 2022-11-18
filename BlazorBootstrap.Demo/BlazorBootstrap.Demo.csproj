@@ -17,7 +17,7 @@
 	</ItemGroup>
 
 	<Target Name="EmbedDemos" BeforeTargets="PrepareForBuild">
-		<!-- Let's embed demos sources to the assembly to be able to show sources at runtime. -->
+		<!-- Let's embed demos sources into the assembly to show the source at runtime. -->
 		<ItemGroup>
 			<EmbeddedResource Include="Pages\**\*Demo*.razor" />
       <EmbeddedResource Include="Pages\**\*Snippet*.razor" />
