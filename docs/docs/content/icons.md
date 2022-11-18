@@ -1,11 +1,15 @@
 ﻿---
+title: Blazor Tooltip Component
+description: Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
+image: https://i.imgur.com/Pkzbm1Q.jpg
+
 sidebar_label: Icons
 sidebar_position: 1
 ---
 
 # Blazor Icons
 
-BlazorBootstrap's icon component will display an icon from any icon font.
+Blazor Bootstrap icon component will display an icon from any icon font.
 
 ## Prerequisites
 

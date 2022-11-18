@@ -9,7 +9,7 @@ const config = {
     baseUrl: '/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
-    favicon: 'img/logo/48X48.png',
+    favicon: 'img/logo/logo-color.svg',
     organizationName: 'vikramlearning',
     projectName: 'blazorbootstrap',
     trailingSlash: false,
@@ -49,9 +49,9 @@ const config = {
                 isCloseable: true,
             },
             navbar: {
-                title: 'BlazorBootstrap',
+                title: 'Blazor Bootstrap',
                 logo: {
-                    alt: 'BlazorBootstrap',
+                    alt: 'Blazor Bootstrap',
                     src: 'img/logo.svg',
                 },
                 items: [
@@ -59,29 +59,35 @@ const config = {
                     { to: '/blog', label: 'Blog', position: 'left' },
                     { href: 'https://demos.getblazorbootstrap.com', label: 'Demos', position: 'left' },
                     { href: 'https://github.com/vikramlearning/blazorbootstrap', label: 'GitHub', position: 'right', },
+                    { href: 'https://twitter.com/blazorbootstrap', label: 'Twitter', position: 'right', },
                 ],
             },
             footer: {
                 style: 'dark',
                 links: [
                     {
-                        title: 'Docs',
+                        title: 'Links',
                         items: [
-                            { label: 'Introduction', to: '/docs/intro', },
+                            { label: 'Home', to: '/', },
+                            { label: 'Demos', href: 'https://demos.getblazorbootstrap.com/', },
+                            { label: 'Blog', to: '/blog', },
+                        ],
+                    },
+                    {
+                        title: 'Guides',
+                        items: [
+                            { label: 'Getting started', to: '/docs/intro', },
+                            { label: 'Install Nuget', to: '/docs/intro#quick-start', },
+                            { label: 'Starter template', to: '/docs/intro#starter-template', },
                         ],
                     },
                     {
                         title: 'Community',
                         items: [
-                            { label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/blazorbootstrap', },
+                            { label: 'Issues', href: 'https://github.com/vikramlearning/blazorbootstrap/issues', },
+                            { label: 'Discussions', href: 'https://github.com/vikramlearning/blazorbootstrap/discussions', },
+                            //{ label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/blazorbootstrap', },
                             { label: 'Twitter', href: 'https://twitter.com/blazorbootstrap', },
-                        ],
-                    },
-                    {
-                        title: 'More',
-                        items: [
-                            { label: 'Blog', to: '/blog', },
-                            { label: 'GitHub', href: 'https://github.com/vikramlearning/blazorbootstrap', },
                         ],
                     },
                 ],

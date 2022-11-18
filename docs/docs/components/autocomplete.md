@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor AutoComplete Component
-description: BlazorBootstrap's autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
-image: https://getblazorbootstrap.com/img/logo.svg
+description: Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
+image: https://i.imgur.com/gRcdvc0.png
 
 sidebar_label: AutoComplete
 sidebar_position: 2
@@ -9,7 +9,7 @@ sidebar_position: 2
 
 # Blazor Auto Complete
 
-BlazorBootstrap's autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
+Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
 
 ## Parameters
 | Name | Type | Default | Required | Descritpion |
@@ -25,6 +25,7 @@ BlazorBootstrap's autocomplete component is a textbox that offers the users sugg
 | ValueExpression | expression | null | | AutoComplete value expression. |
 
 ## Methods
+
 | Name | Returns | Arguments | Description |
 |--|--|--|
 | Disable() | void | N/A | Disables autocomplete. |
@@ -33,6 +34,7 @@ BlazorBootstrap's autocomplete component is a textbox that offers the users sugg
 | ResetAsync() | Task | N/A | Resets the autocomplete selection. |
 
 ## Callback Events
+
 | Name | Description |
 |--|--|
 | OnChanged | This event fires immediately when the autocomplete selection changes by the user. |

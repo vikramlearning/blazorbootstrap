@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Toasts Component
-description: Push notifications to your visitors with a toast, a lightweight and easily customizable BlazorBootstrap toast message.
-image: https://getblazorbootstrap.com/img/logo.svg
+description: Push notifications to your visitors with a toast, a lightweight and easily customizable Blazor Bootstrap toast message.
+image: https://i.imgur.com/W1YkmJH.png
 
 sidebar_label: Toasts
 sidebar_position: 16
@@ -9,7 +9,7 @@ sidebar_position: 16
 
 # Blazor Toasts
 
-Push notifications to your visitors with a toast, a lightweight and easily customizable BlazorBootstrap toast message.
+Push notifications to your visitors with a toast, a lightweight and easily customizable Blazor Bootstrap toast message.
 
 Toasts are lightweight notifications designed to mimic the push notifications that have been popularized by mobile and desktop operating systems. They’re built with flexbox, so they’re easy to align and position.
 
