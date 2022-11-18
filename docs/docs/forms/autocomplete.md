@@ -3,8 +3,8 @@ title: Blazor AutoComplete Component
 description: Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
 image: https://i.imgur.com/gRcdvc0.png
 
-sidebar_label: AutoComplete
-sidebar_position: 2
+sidebar_label: Auto Complete
+sidebar_position: 1
 ---
 
 # Blazor Auto Complete

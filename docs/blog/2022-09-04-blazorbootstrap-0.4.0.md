@@ -31,4 +31,4 @@ We are excited to release `0.4.0` with new blazor autocomplete component.
 
 - [Demo Website](https://demos.getblazorbootstrap.com/)
 - [Blazor AutoComplete Component Demos](https://demos.getblazorbootstrap.com/autocomplete)
-- [Blazor AutoComplete Component Documentation](https://getblazorbootstrap.com/docs/components/autocomplete)
+- [Blazor AutoComplete Component Documentation](https://getblazorbootstrap.com/docs/forms/autocomplete)
