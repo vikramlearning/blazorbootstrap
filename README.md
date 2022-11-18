@@ -74,4 +74,4 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ## Copyright and license
 
-Code and documentation copyright 2022 [Vikram Learning](https://vikramlearning.com) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/master/LICENSE.txt).
+Code and documentation copyright 2022 [Blazor Bootstrap](https://getblazorbootstrap.com/) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/master/LICENSE.txt).
