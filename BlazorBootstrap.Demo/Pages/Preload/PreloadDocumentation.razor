@@ -7,12 +7,26 @@
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
 <h1 class="my-4">Blazor Preload</h1>
-@*<div class="mb-3">
-    Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes, user notifications, or completely custom content.
-</div>*@
+<div class="mb-3">Indicate the loading state of a page with Blazor Bootstrap preload component.</div>
 
+<SectionHeading Size="HeadingSize.H2" Text="Things to know when using the blazor preload component" PageUrl="@pageUrl" HashTagName="things-to-know-when-using-the-blazor-preload-component" />
+<div class="mb-3">
+    <ul>
+        <li>Add the Preload component to your current page or your layout page.</li>
+        <li>Inject <code>PreloadService</code>.</li>
+        <li>Call <code>preloadService.Show()</code> before you make any call to the API.</li>
+        <li>Call <code>preloadService.Hide()</code> after you get the response from the API.</li>
+    </ul>
+</div>
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<Demo Type="typeof(Preload_Demo_01_Examples)" />
+<div class="mb-3">In the below example, when the page loads <code>PreloadService.Show()</code> is called to show the spinner.</div>
+<Demo Type="typeof(Preload_Demo_01_Examples)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Global preload/spinner for application" PageUrl="@pageUrl" HashTagName="global-preload-spinner-for-application" />
+<div class="mb-3">1. Add <code>Preload</code> component in <code>MainLayout.razor</code> page as show below. Refer <a href="https://github.com/gvreddy04/DemoSchool/blob/main/WebUI/Shared/MainLayout.razor" target="_blank">link</a>.</div>
+<Demo Type="typeof(Preload_Demo_02_Global_Preload_For_Application_01)" ShowCodeOnly="true" />
+<div class="mb-3">2. Inject <code>PreloadService</code>, then call the <code>Show()</code> and <code>Hide()</code> methods before and after the Service/API, respectively, as shown below.</div>
+<Demo Type="typeof(Preload_Demo_02_Global_Preload_For_Application_02)" ShowCodeOnly="true" />
 
 @code {
     private string pageUrl = "/preload";
