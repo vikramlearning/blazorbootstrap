@@ -13,28 +13,26 @@
 <Callout Type="CalloutType.Danger" Heading="NOTE">Similar to modals, only one offcanvas can be shown at a time.</Callout>
 
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<Demo Type="typeof(Offcanvas_Demo_01_Examples)" />
+<Demo Type="typeof(Offcanvas_Demo_01_Examples)" Tabs="true" />
 
 <Callout Type="CalloutType.Info">Default placement for the offcanvas component is right.</Callout>
 
 <SectionHeading Size="HeadingSize.H2" Text="Placement" PageUrl="@pageUrl" HashTagName="placement" />
-<div>Try the top, bottom, and left examples out below.</div>
-<Demo Type="typeof(Offcanvas_Demo_02_Placement_Top)" />
-<Demo Type="typeof(Offcanvas_Demo_02_Placement_Bottom)" />
-<Demo Type="typeof(Offcanvas_Demo_02_Placement_Left)" />
+<div class="mb-3">Try the top, bottom, and left examples out below.</div>
+<Demo Type="typeof(Offcanvas_Demo_02_Placement)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Backdrop" PageUrl="@pageUrl" HashTagName="backdrop" />
-<div>By default backdrop is enabled, you can disable it using the <code>UseBackground="false"</code> parameter.</div>
-<Demo Type="typeof(Offcanvas_Demo_03_Placement_Backdrop)" />
+<div class="mb-3">By default backdrop is enabled, you can disable it using the <code>UseBackground="false"</code> parameter.</div>
+<Demo Type="typeof(Offcanvas_Demo_03_Placement_Backdrop)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Sizes" PageUrl="@pageUrl" HashTagName="sizes" />
-<div>Set the size of the <code>Offcanvas</code> with the Size parameter. The default value is <code>OffcanvasSize.Regular</code>.</div>
-<Demo Type="typeof(Offcanvas_Demo_04_Sizes_A_Small)" />
-<Demo Type="typeof(Offcanvas_Demo_04_Sizes_B_Large)" />
+<div class="mb-3">Set the size of the <code>Offcanvas</code> with the Size parameter. The default value is <code>OffcanvasSize.Regular</code>.</div>
+<Demo Type="typeof(Offcanvas_Demo_04_Sizes_A_Small)" Tabs="true" />
+<Demo Type="typeof(Offcanvas_Demo_04_Sizes_B_Large)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
-<div>Blazor Bootstrap offcanvas component exposes a few events for hooking into offcanvas functionality.</div>
-<Demo Type="typeof(Offcanvas_Demo_05_Events)" />
+<div class="mb-3">Blazor Bootstrap offcanvas component exposes a few events for hooking into offcanvas functionality.</div>
+<Demo Type="typeof(Offcanvas_Demo_05_Events)" Tabs="true" />
 
 @code {
     private string pageUrl = "/offcanvas";
