@@ -8,6 +8,10 @@ namespace BlazorBootstrap
     {
         #region Members
 
+        private string title;
+        private string message1;
+        private string message2;
+
         private BackgroundColor _titleBackgroundColor = BackgroundColor.None;
         private ButtonColor _yesButtonColor = ButtonColor.Primary;
         private ButtonColor _noButtonColor = ButtonColor.Secondary;
@@ -42,6 +46,14 @@ namespace BlazorBootstrap
             base.BuildStyles(builder);
         }
 
+        protected override void OnInitialized()
+        {
+            this.message1 = Message1;
+            this.message2 = Message2;
+
+            base.OnInitialized();
+        }
+
         /// <summary>
         /// Shows confirm dialog.
         /// </summary>
@@ -53,6 +65,21 @@ namespace BlazorBootstrap
             this.DirtyStyles();
 
             StateHasChanged();
+        }
+
+        /// <summary>
+        /// Shows confirm dialog.
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message1"></param>
+        /// <param name="message2"></param>
+        public void Show(string title, string message1, string message2)
+        {
+            this.title = title;
+            this.message1 = message1;
+            this.message2 = message2;
+
+            this.Show();
         }
 
         /// <summary>

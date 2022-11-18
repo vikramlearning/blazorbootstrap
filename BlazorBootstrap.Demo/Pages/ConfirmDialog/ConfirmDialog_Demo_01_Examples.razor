@@ -2,38 +2,47 @@
                Title="Are you sure you want to save this?"
                Message1="This will save the details enterd in the form."
                Message2="Do you want to proceed?"
-               OnYes="OnYesAsync"
-               OnNo="OnNoAsync"></ConfirmDialog>
+               OnYes="OnYes"
+               OnNo="OnNo" />
 
-<Button Color="ButtonColor.Primary" @onclick="OnShowConfirmationModalClick">Show confirmation</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowSaveConfirmation">Save confirmation</Button>
+<Button Color="ButtonColor.Danger" @onclick="ShowDeleteConfirmation">Delete confirmation</Button>
 
-<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" />
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="true" ShowCloseButton="true" />
 
 @code {
     private ConfirmDialog dialog;
 
     List<ToastMessage> messages = new List<ToastMessage>();
 
-    private void OnShowConfirmationModalClick()
+    private void ShowSaveConfirmation()
     {
         dialog.Show();
     }
 
-    private async Task OnYesAsync()
+    private void ShowDeleteConfirmation()
+    {
+        dialog.Show(
+            title: "Are you sure you want to delete this?",
+            message1: "This will delete the record. Once deleted can not be rolled back.",
+            message2: "Do you want to proceed?");
+    }
+
+    private void OnYes()
     {
         messages?.Add(new ToastMessage
             {
                 Type = ToastType.Success,
-                Message = $"Details saved successfully. DateTime: {DateTime.Now}",
+                Message = $"Yes, confirmation was received from the user. DateTime: {DateTime.Now}",
             });
     }
 
-    private async Task OnNoAsync()
+    private void OnNo()
     {
         messages?.Add(new ToastMessage
             {
                 Type = ToastType.Secondary,
-                Message = $"Action canceled. DateTime: {DateTime.Now}",
+                Message = $"No, confirmation was received from the user. DateTime: {DateTime.Now}",
             });
     }
 }
