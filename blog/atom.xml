@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
-    <title>BlazorBootstrap Blog</title>
-    <updated>2022-10-30T00:00:00.000Z</updated>
+    <title>Blazor Bootstrap Blog</title>
+    <updated>2022-11-18T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
-    <subtitle>BlazorBootstrap Blog</subtitle>
-    <icon>https://getblazorbootstrap.com/img/logo/48X48.png</icon>
+    <subtitle>Blazor Bootstrap Blog</subtitle>
+    <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
     <entry>
-        <title type="html"><![CDATA[BlazorBootstrap v0.6.0]]></title>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.0.0]]></title>
+        <id>/2022/11/18/blazorbootstrap-1.0.0</id>
+        <link href="https://getblazorbootstrap.com/blog/2022/11/18/blazorbootstrap-1.0.0"/>
+        <updated>2022-11-18T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release our major version, 1.0.0, with new components, enhancements to existing ones, and more!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release our major version, <code>1.0.0</code>, with new components, enhancements to existing ones, and more!!!</p><img loading="lazy" src="https://i.imgur.com/iUNBkki.png" alt="Blazor NumberInput component" class="img_ev3q"><img loading="lazy" src="https://i.imgur.com/ranwriJ.png" alt="Blazor Tabs component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="new-components">New Components<a class="hash-link" href="#new-components" title="Direct link to heading">​</a></h2><ul><li><code>NumberInput</code> component</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="blazor-numberinput-component-features">Blazor NumberInput component features<a class="hash-link" href="#blazor-numberinput-component-features" title="Direct link to heading">​</a></h3><ul><li>Generic type support</li><li>Enable min and max</li><li>Step</li><li>Text alignment</li><li>Allow negative numbers</li><li>Disable</li><li>Validations</li><li>Events: ValueChanged</li></ul><img loading="lazy" src="https://i.imgur.com/iUNBkki.png" alt="Blazor NumberInput component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="blazor-tabs-component-features">Blazor Tabs component features<a class="hash-link" href="#blazor-tabs-component-features" title="Direct link to heading">​</a></h2><ul><li>Fade effect</li><li>Title with Icon</li><li>Disable Tab</li><li>Pills</li><li>Activate individual tabs</li><li>Events</li></ul><img loading="lazy" src="https://i.imgur.com/ranwriJ.png" alt="Blazor Tabs component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="demos-site-enhancements">Demos site enhancements<a class="hash-link" href="#demos-site-enhancements" title="Direct link to heading">​</a></h2><ul><li>Brand new landing page</li><li>The demo example and source code are split into two tabs for easy access.</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/form/number-input" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/number-input" target="_blank" rel="noopener noreferrer">Blazor NumberInput Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/tabs" target="_blank" rel="noopener noreferrer">Blazor Tabs Component Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.0.0" term="v1.0.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="blazor-bootstrap" term="blazor-bootstrap"/>
+        <category label="blazor-tabs" term="blazor-tabs"/>
+        <category label="blazor-input" term="blazor-input"/>
+        <category label="blazor-input-number" term="blazor-input-number"/>
+        <category label="blazor-number-input" term="blazor-number-input"/>
+        <category label="input" term="input"/>
+        <category label="input-number" term="input-number"/>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v0.6.0]]></title>
         <id>/2022/10/30/blazorbootstrap-0.6.0</id>
         <link href="https://getblazorbootstrap.com/blog/2022/10/30/blazorbootstrap-0.6.0"/>
         <updated>2022-10-30T00:00:00.000Z</updated>
@@ -28,7 +50,7 @@
         <category label="progress-bar" term="progress-bar"/>
     </entry>
     <entry>
-        <title type="html"><![CDATA[BlazorBootstrap v0.5.1]]></title>
+        <title type="html"><![CDATA[Blazor Bootstrap v0.5.1]]></title>
         <id>/2022/10/22/blazorbootstrap-0.5.1</id>
         <link href="https://getblazorbootstrap.com/blog/2022/10/22/blazorbootstrap-0.5.1"/>
         <updated>2022-10-22T00:00:00.000Z</updated>
