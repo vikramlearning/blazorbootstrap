@@ -53,7 +53,7 @@ Change your `index.html` file and include the CSS and JS files:
    Add `chart.js` reference if Chart components are used in the application.
    :::
 
- - Add Blazor Bootstrap service in `Program.cs`
+ - Add Blazor Bootstrap service in the `Program.cs`
 
    ```cs {1,13} showLineNumbers
    using BlazorBootstrap;

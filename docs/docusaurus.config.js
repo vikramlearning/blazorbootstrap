@@ -91,7 +91,7 @@ const config = {
                         ],
                     },
                 ],
-                copyright: `Copyright © ${new Date().getFullYear()} Vikram Learning.`,
+                copyright: `Copyright © ${new Date().getFullYear()} Blazor Bootstrap.`,
             },
             prism: {
                 theme: lightCodeTheme,

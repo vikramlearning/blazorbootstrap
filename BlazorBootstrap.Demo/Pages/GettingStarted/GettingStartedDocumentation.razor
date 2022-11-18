@@ -13,10 +13,17 @@
 <div class="text-bg-dark p-2 mt-3 rounded-2">Install-Package Blazor.Bootstrap -Version @version</div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Starter template" PageUrl="@pageUrl" HashTagName="starter-template" />
-<div>Change your <b>index.html</b> file and include the CSS and JS files:</div>
+<div>Change your <code>index.html</code> file and include the <b>CSS</b> and <b>JS</b> files:</div>
+<div>
+    <ul>
+        <li>Add <code>Bootstrap 5.x</code> CSS and JS files as recommended in the official Bootstrap website.</li>
+        <li>Include <code>blazor.bootstrap.js</code> file</li>
+        <li>Include <code>blazor.bootstrap.css</code> file</li>
+    </ul>
+</div>
 <Demo Type="typeof(Snippet_01_Starter_Template_Index)" ShowCodeOnly="true" />
 
-<div>Add Blazor Bootstrap service in <b>Program.cs</b></div>
+<div>Add Blazor Bootstrap service in the <b>Program.cs</b></div>
 <Demo Type="typeof(Snippet_02_Starter_Template_Program)" LanguageCssClass="language-cs" ShowCodeOnly="true" />
 
 <div>Register tag helpers in <b>_Imports.razor</b></div>
@@ -24,7 +31,7 @@
 
 @code {
     private string pageUrl = "/getting-started";
-    private string title = "Getting started";
+    private string title = "Getting started with Blazor Bootstrap";
     private string description = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
     private string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
 
