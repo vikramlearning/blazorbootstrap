@@ -1,5 +1,5 @@
 ---
-title: BlazorBootstrap v1.0.0
+title: Blazor Bootstrap v1.0.0
 authors:
   name: Vikram Reddy
   title: Creator
@@ -12,9 +12,11 @@ We are excited to release our major version, `1.0.0`, with new components, enhan
 
 <img src="https://i.imgur.com/iUNBkki.png" alt="Blazor NumberInput component" />
 
+<img src="https://i.imgur.com/ranwriJ.png" alt="Blazor Tabs component" />
+
 <!--truncate-->
 
-### New Components
+## New Components
 
 - `NumberInput` component
 
@@ -30,7 +32,7 @@ We are excited to release our major version, `1.0.0`, with new components, enhan
 
 <img src="https://i.imgur.com/iUNBkki.png" alt="Blazor NumberInput component" />
 
-### Blazor Tabs component features
+## Blazor Tabs component features
 - Fade effect
 - Title with Icon
 - Disable Tab
@@ -40,12 +42,12 @@ We are excited to release our major version, `1.0.0`, with new components, enhan
 
 <img src="https://i.imgur.com/ranwriJ.png" alt="Blazor Tabs component" />
 
-### Demos site enhancements
+## Demos site enhancements
 - Brand new landing page
 - The demo example and source code are split into two tabs for easy access.
 
 ### Links
 
 - [Demo Website](https://demos.getblazorbootstrap.com/form/number-input)
-- [Blazor NumberInput Component Documentation](https://getblazorbootstrap.com/docs/components/progress)
+- [Blazor NumberInput Component Documentation](https://getblazorbootstrap.com/docs/forms/number-input)
 - [Blazor Tabs Component Documentation](https://getblazorbootstrap.com/docs/components/tabs)
