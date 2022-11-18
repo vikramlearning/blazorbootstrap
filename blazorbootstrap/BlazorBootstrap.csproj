@@ -3,18 +3,18 @@
 	<PropertyGroup>
 
 		<PackageId>Blazor.Bootstrap</PackageId>
-    <Version>0.6.0</Version>
-		<PackageVersion>0.6.0</PackageVersion>
+    <Version>1.0.0</Version>
+		<PackageVersion>1.0.0</PackageVersion>
 
 		<!--<PackageIconUrl></PackageIconUrl>-->
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://getblazorbootstrap.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/vikramlearning/blazorbootstrap</RepositoryUrl>
-		<PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap, BlazorAlert, BlazorAutoComplete, BlazorButtons, BlazorCallout, BlazorCharts, BlazorConfirmDialog, BlazorGrid, BlazorModal, BlazorOffcanvas, BlazorPagination, BlazorPlaceholders, BlazorPreload, BlazorTabs, BlazorToasts, BlazorTooltips, BlazorBarChart, BlazorDoughnutChart, BlazorLineChart, BlazorPieChart</PackageTags>		
-		<Description>Blazor.Bootstrap is a component library built on top of Blazor and Bootstrap5 CSS framework.</Description>
+		<PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap, BlazorAlert, BlazorAutoComplete, BlazorButtons, BlazorCallout, BlazorCharts, BlazorConfirmDialog, BlazorGrid, BlazorModal, BlazorNumberInput, BlazorInput, BlazorNumber, BlazorOffcanvas, BlazorPagination, BlazorPlaceholders, BlazorPreload, BlazorTabs, BlazorToasts, BlazorTooltips, BlazorBarChart, BlazorDoughnutChart, BlazorLineChart, BlazorPieChart</PackageTags>		
+		<Description>Blazor Bootstrap is a component library built on top of Blazor and Bootstrap5 CSS framework.</Description>
 		<Authors>Vikram Reddy</Authors>
 		<!--<Company>your_company</Company>-->
-		<Copyright>Copyright © 2022 Vikram Learning</Copyright>
+		<Copyright>Copyright © 2022 Blazor Bootstrap</Copyright>
 		
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>

@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Tooltip Component
-description: Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages.
-image: https://getblazorbootstrap.com/img/logo.svg
+description: Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
+image: https://i.imgur.com/uqvqb2i.jpg
 
 sidebar_label: Tooltips
 sidebar_position: 17
@@ -9,7 +9,7 @@ sidebar_position: 17
 
 # Blazor Tooltips
 
-Use BlazorBootstrap's tooltip component to add custom tooltips to your web pages.
+Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
 
 ## Parameters
 

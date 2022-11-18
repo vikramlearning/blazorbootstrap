@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Offcanvas Component
-description: Build hidden sidebars into your project for navigation, shopping carts, and more with BlazorBootstrap's offcanvas component.
-image: https://getblazorbootstrap.com/img/logo.svg
+description: Build hidden sidebars into your project for navigation, shopping carts, and more with Blazor Bootstrap offcanvas component.
+image: https://i.imgur.com/ev2Q8ON.jpg
 
 sidebar_label: Offcanvas
 sidebar_position: 10
@@ -9,7 +9,7 @@ sidebar_position: 10
 
 # Blazor Offcanvas
 
-Build hidden sidebars into your project for navigation, shopping carts, and more with BlazorBootstrap's offcanvas component.
+Build hidden sidebars into your project for navigation, shopping carts, and more with Blazor Bootstrap offcanvas component.
 
 ## Parameters
 

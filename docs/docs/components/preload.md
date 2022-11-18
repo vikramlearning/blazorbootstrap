@@ -1,7 +1,7 @@
 ---
 title: Blazor Preload Component
-description: Indicate the loading state of a page with BlazorBootstrap's preload component.
-image: https://getblazorbootstrap.com/img/logo.svg
+description: Indicate the loading state of a page with Blazor Bootstrap preload component.
+image: https://getblazorbootstrap.com/img/logo/logo-color.svg
 
 sidebar_label: Preload
 sidebar_position: 13
@@ -9,7 +9,7 @@ sidebar_position: 13
 
 # Blazor Preload
 
-Indicate the loading state of a page with BlazorBootstrap's preload component.
+Indicate the loading state of a page with Blazor Bootstrap preload component.
 
 **Things to know when using the `Preload` component:**
 

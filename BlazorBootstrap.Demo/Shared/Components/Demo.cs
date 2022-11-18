@@ -13,6 +13,7 @@ public class Demo : ComponentBase
     #endregion
 
     #region Methods
+
     protected override async Task OnParametersSetAsync()
     {
         if (code is null)
@@ -43,7 +44,22 @@ public class Demo : ComponentBase
         // no base call
         builder.AddMarkupContent(0, "<!--googleoff: index-->"); // source: https://perishablepress.com/tell-google-to-not-index-certain-parts-of-your-page/
 
-        if (!Tabs)
+        if (ShowCodeOnly)
+        {
+            builder.OpenElement(300, "div");
+            builder.AddAttribute(301, "class", "highlight show-code-only");
+            builder.OpenElement(400, "pre");
+            builder.OpenElement(401, "code");
+            builder.AddAttribute(402, "class", LanguageCssClass);
+            if (code != null)
+            {
+                builder.AddContent(403, code.Trim());
+            }
+            builder.CloseElement(); // end: code
+            builder.CloseElement(); // end: pre
+            builder.CloseElement();
+        }
+        else if (!Tabs)
         {
             builder.OpenElement(100, "div");
             builder.AddAttribute(101, "class", "bb-example");
@@ -55,7 +71,7 @@ public class Demo : ComponentBase
             builder.AddAttribute(301, "class", "highlight");
             builder.OpenElement(400, "pre");
             builder.OpenElement(401, "code");
-            builder.AddAttribute(402, "class", "language-cshtml");
+            builder.AddAttribute(402, "class", LanguageCssClass);
             if (code != null)
             {
                 builder.AddContent(403, code.Trim());
@@ -71,7 +87,17 @@ public class Demo : ComponentBase
             builder.AddAttribute(302, "ChildContent", (RenderFragment)((childContentBuilder) =>
             {
                 childContentBuilder.OpenComponent<Tab>(303);
-                childContentBuilder.AddAttribute(304, "Title", "EXAMPLE");
+                childContentBuilder.AddAttribute(304, "TitleTemplate", (RenderFragment)((titleTemplateBuilder) =>
+                {
+                    titleTemplateBuilder.OpenComponent<Icon>(501);
+                    titleTemplateBuilder.AddAttribute(502, "Name", IconName.Display);
+                    titleTemplateBuilder.AddAttribute(503, "class", "me-2");
+                    titleTemplateBuilder.CloseComponent(); // end: Icon
+
+                    titleTemplateBuilder.OpenElement(504, "b");
+                    titleTemplateBuilder.AddContent(505, "Example");
+                    titleTemplateBuilder.CloseElement(); // end: b
+                }));
 
                 childContentBuilder.AddAttribute(305, "Content", (RenderFragment)((tabContentBuilder) =>
                 {
@@ -87,7 +113,17 @@ public class Demo : ComponentBase
                 childContentBuilder.CloseComponent();
 
                 childContentBuilder.OpenComponent<Tab>(400);
-                childContentBuilder.AddAttribute(401, "Title", "VIEW SOURCE");
+                childContentBuilder.AddAttribute(401, "TitleTemplate", (RenderFragment)((titleTemplateBuilder) =>
+                {
+                    titleTemplateBuilder.OpenComponent<Icon>(601);
+                    titleTemplateBuilder.AddAttribute(602, "Name", IconName.CodeSlash);
+                    titleTemplateBuilder.AddAttribute(603, "class", "me-2");
+                    titleTemplateBuilder.CloseComponent(); // end: Icon
+
+                    titleTemplateBuilder.OpenElement(604, "b");
+                    titleTemplateBuilder.AddContent(605, "View Source");
+                    titleTemplateBuilder.CloseElement(); // end: b
+                }));
 
                 childContentBuilder.AddAttribute(402, "Content", (RenderFragment)((tabContentBuilder) =>
                 {
@@ -95,7 +131,7 @@ public class Demo : ComponentBase
                     tabContentBuilder.AddAttribute(404, "class", "highlight");
                     tabContentBuilder.OpenElement(405, "pre");
                     tabContentBuilder.OpenElement(406, "code");
-                    tabContentBuilder.AddAttribute(407, "class", "language-cshtml");
+                    tabContentBuilder.AddAttribute(407, "class", LanguageCssClass);
                     if (code != null)
                     {
                         tabContentBuilder.AddContent(408, code.Trim());
@@ -122,11 +158,16 @@ public class Demo : ComponentBase
     #endregion
 
     #region Properties
-    [Parameter] public Type Type { get; set; }
+
+    [Inject] protected IJSRuntime JS { get; set; } = null!;
+
+    [Parameter] public string LanguageCssClass { get; set; } = "language-cshtml";
+
+    [Parameter] public bool ShowCodeOnly { get; set; }
 
     [Parameter] public bool Tabs { get; set; } = false;
 
-    [Inject] protected IJSRuntime JS { get; set; } = null!;
+    [Parameter] public Type Type { get; set; }
 
     #endregion
 }

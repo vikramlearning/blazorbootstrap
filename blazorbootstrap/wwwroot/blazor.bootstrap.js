@@ -105,6 +105,52 @@ window.blazorBootstrap = {
             bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
+    numberInput: {
+        initialize: (elementId, isFloat, allowNegativeNumbers) => {
+            let numberEl = document.getElementById(elementId);
+
+            numberEl?.addEventListener('keydown', function (event) {
+                let invalidChars = ["e", "E", "+"];
+                if (!isFloat)
+                    invalidChars.push("."); // restrict '.' for integer types
+
+                if (!allowNegativeNumbers) {
+                    invalidChars.push("-"); // restrict '-'
+                }
+
+                if (invalidChars.includes(event.key))
+                    event.preventDefault();
+            });
+
+            numberEl?.addEventListener('beforeinput', function (event) {
+                if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
+
+                    if (!allowNegativeNumbers) {
+                        // restrict 'e', 'E', '+', '-'
+                        if (isFloat && /[\e\E\+\-]/gi.test(event.data)) {
+                            event.preventDefault();
+                        }
+                        // restrict 'e', 'E', '.', '+', '-'
+                        else if (!isFloat && /[\e\E\.\+\-]/gi.test(event.data)) {
+                            event.preventDefault();
+                        }
+                    }
+                    // restrict 'e', 'E', '+'
+                    else if (isFloat && /[\e\E\+]/gi.test(event.data)) {
+                        event.preventDefault();
+                    }
+                    // restrict 'e', 'E', '.', '+'
+                    else if (!isFloat && /[\e\E\.\+]/gi.test(event.data)) {
+                        event.preventDefault();
+                    }
+
+                }
+            });
+        },
+        setValue: (elementId, value) => {
+            document.getElementById(elementId).value = value;
+        }
+    },
     offcanvas: {
         initialize: (elementId, useBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {
             let offcanvasEl = document.getElementById(elementId);
@@ -138,13 +184,9 @@ window.blazorBootstrap = {
     tabs: {
         initialize: (elementId, dotNetHelper) => {
             let navTabsEl = document.getElementById(elementId);
-            let triggerTabList = [].slice.call(navTabsEl.querySelectorAll('button'));
+            let triggerTabList = [].slice.call(navTabsEl.querySelectorAll('button.nav-link'));
+
             triggerTabList.forEach(function (tabEl) {
-                let tabTrigger = new bootstrap.Tab(tabEl);
-                tabEl?.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    tabTrigger?.show();
-                });
                 tabEl?.addEventListener('show.bs.tab', (event) => {
                     // event.target --> active tab
                     // event.relatedTarget --> previous active tab (if available)
@@ -168,7 +210,7 @@ window.blazorBootstrap = {
             });
         },
         show: (elementId) => {
-            (new bootstrap.Tab(document.getElementById(elementId)))?.show();
+            bootstrap?.Tab?.getOrCreateInstance(document.getElementById(elementId))?.show();
         },
         dispose: (elementId) => {
             bootstrap?.Tab?.getOrCreateInstance(document.getElementById(elementId))?.dispose();

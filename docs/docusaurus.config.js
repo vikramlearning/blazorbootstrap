@@ -3,13 +3,13 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'BlazorBootstrap',
-    tagline: 'Build fast, responsive sites with BlazorBootstrap',
+    title: 'Blazor Bootstrap',
+    tagline: 'High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.',
     url: 'https://getblazorbootstrap.com',
     baseUrl: '/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
-    favicon: 'img/logo/48X48.png',
+    favicon: 'img/logo/logo-color.svg',
     organizationName: 'vikramlearning',
     projectName: 'blazorbootstrap',
     trailingSlash: false,
@@ -43,15 +43,15 @@ const config = {
         ({
             announcementBar: {
                 id: 'support_us',
-                content: '⭐️ If you like BlazorBootstrap, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/vikramlearning/blazorbootstrap">GitHub</a>! ⭐️',
+                content: '⭐️ If you like Blazor Bootstrap, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/vikramlearning/blazorbootstrap">GitHub</a>! ⭐️',
                 //backgroundColor: '#fafbfc',
                 //textColor: '#091E42',
                 isCloseable: true,
             },
             navbar: {
-                title: 'BlazorBootstrap',
+                title: 'Blazor Bootstrap',
                 logo: {
-                    alt: 'BlazorBootstrap',
+                    alt: 'Blazor Bootstrap',
                     src: 'img/logo.svg',
                 },
                 items: [
@@ -59,33 +59,39 @@ const config = {
                     { to: '/blog', label: 'Blog', position: 'left' },
                     { href: 'https://demos.getblazorbootstrap.com', label: 'Demos', position: 'left' },
                     { href: 'https://github.com/vikramlearning/blazorbootstrap', label: 'GitHub', position: 'right', },
+                    { href: 'https://twitter.com/blazorbootstrap', label: 'Twitter', position: 'right', },
                 ],
             },
             footer: {
                 style: 'dark',
                 links: [
                     {
-                        title: 'Docs',
+                        title: 'Links',
                         items: [
-                            { label: 'Introduction', to: '/docs/intro', },
+                            { label: 'Home', to: '/', },
+                            { label: 'Demos', href: 'https://demos.getblazorbootstrap.com/', },
+                            { label: 'Blog', to: '/blog', },
+                        ],
+                    },
+                    {
+                        title: 'Guides',
+                        items: [
+                            { label: 'Getting started', to: '/docs/intro', },
+                            { label: 'Install Nuget', to: '/docs/intro#quick-start', },
+                            { label: 'Starter template', to: '/docs/intro#starter-template', },
                         ],
                     },
                     {
                         title: 'Community',
                         items: [
-                            { label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/blazorbootstrap', },
+                            { label: 'Issues', href: 'https://github.com/vikramlearning/blazorbootstrap/issues', },
+                            { label: 'Discussions', href: 'https://github.com/vikramlearning/blazorbootstrap/discussions', },
+                            //{ label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/blazorbootstrap', },
                             { label: 'Twitter', href: 'https://twitter.com/blazorbootstrap', },
                         ],
                     },
-                    {
-                        title: 'More',
-                        items: [
-                            { label: 'Blog', to: '/blog', },
-                            { label: 'GitHub', href: 'https://github.com/vikramlearning/blazorbootstrap', },
-                        ],
-                    },
                 ],
-                copyright: `Copyright © ${new Date().getFullYear()} Vikram Learning.`,
+                copyright: `Copyright © ${new Date().getFullYear()} Blazor Bootstrap.`,
             },
             prism: {
                 theme: lightCodeTheme,
@@ -99,7 +105,9 @@ const config = {
             //},
         }),
     customFields: {
-        version: '0.0.4'
+        version: '0.0.4',
+        logo_white: '/img/logo/logo-white.svg',
+        logo_color: '/img/logo/logo-color.svg'
     },
     plugins: [
         [

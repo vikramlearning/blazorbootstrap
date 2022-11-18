@@ -7,14 +7,14 @@ title: Introduction
 
 # Introduction
 
-Get started with BlazorBootstrap, with ready-made components.
+Get started with Blazor Bootstrap, with ready-made components.
 
 ## Quick start
 
-Looking to quickly add BlazorBootstrap to your project? Use NuGet package manager.
+Looking to quickly add Blazor Bootstrap to your project? Use NuGet package manager.
 
 ```shell
-Install-Package Blazor.Bootstrap -Version 0.6.0
+Install-Package Blazor.Bootstrap -Version 1.0.0
 ```
 
 ## Starter template
@@ -53,7 +53,7 @@ Change your `index.html` file and include the CSS and JS files:
    Add `chart.js` reference if Chart components are used in the application.
    :::
 
- - Add BlazorBootstrap service in `Program.cs`
+ - Add Blazor Bootstrap service in the `Program.cs`
 
    ```cs {1,13} showLineNumbers
    using BlazorBootstrap;

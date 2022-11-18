@@ -1,0 +1,16 @@
+﻿<div class="mb-3">
+    <label class="form-label">Amount</label>
+    <NumberInput @ref="numberInput" TValue="int?" @bind-Value="@amount" Disabled="true" Placeholder="Enter amount" />
+</div>
+
+<Button Color="ButtonColor.Primary" @onclick="enableNumberInput"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="disableNumberInput"> Disable </Button>
+
+@code {
+    private NumberInput<int?> numberInput;
+    private int? amount;
+
+    private void enableNumberInput() => numberInput.Enable();
+
+    private void disableNumberInput() => numberInput.Disable();
+}

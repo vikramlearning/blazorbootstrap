@@ -6,7 +6,7 @@
 
 <h1 class="my-4">Blazor Grid</h1>
 <div class="mb-3">
-    Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
+    Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
 </div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
@@ -95,13 +95,13 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Save and Load Grid Settings" PageUrl="@pageUrl" HashTagName="save-and-load-grid-settings" />
 <div class="mb-3">This example shows how to save/load the Grid state. The state includes the <b>page number</b>, <b>page size</b>, and <b>filters</b>.</div>
-<Callout Type="CalloutType.Danger" Heading="IMPORTANT">In version <code>0.5.1</code>, the Grid sorting state is not included as part of GridSettings. We will add it in the subsequent releases.</Callout>
+<Callout Type="CalloutType.Danger" Heading="IMPORTANT">In version <code>0.5.1</code> and above, the Grid sorting state is not included as part of GridSettings. We will add it in the subsequent releases.</Callout>
 <Callout Type="CalloutType.Default">Browser local storage is used to persist the Grid state. Common locations exist for persisting state are <b>Server-side storage</b>, <b>URL</b>, <b>Browser storage</b>, and <b>In-memory state container service</b>.</Callout>
 <Demo Type="typeof(Grid_Demo_16_Save_And_Load_Grid_Settings)" Tabs="true" />
 
 @code {
     private string pageUrl = "/grid";
-    private string title = "Blazor Grid Component | BlazorBootstrap";
-    private string description = "Use BlazorBootstrap's grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private string title = "Blazor Grid Component";
+    private string description = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
     private string imageUrl = "https://i.imgur.com/36RsWZ3.png";
 }

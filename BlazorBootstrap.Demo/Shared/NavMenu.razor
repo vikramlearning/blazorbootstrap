@@ -1,5 +1,5 @@
 ﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href=""> &nbsp; Blazor.Bootstrap <span class="ms-2 badge bg-secondary">v0.6.0</span></a>
+    <a class="navbar-brand" href=""> &nbsp; Blazor.Bootstrap <span class="ms-2 badge bg-success">@version</span></a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -8,7 +8,7 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="/getting-started" Match="NavLinkMatch.All">
                 <Icon Name="IconName.HouseDoorFill" class="me-2" /> Getting started
             </NavLink>
         </li>
@@ -39,7 +39,7 @@
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="charts">
-                <Icon Name="IconName.BarChartLineFill" class="me-2" /> Charts <span class="ms-2 badge bg-danger">New</span>
+                <Icon Name="IconName.BarChartLineFill" class="me-2" /> Charts
             </NavLink>
         </li>
         <li class="nav-item px-3">
@@ -49,7 +49,7 @@
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="grid">
-                <Icon Name="IconName.Grid3X2" class="me-2" /> Grid <span class="ms-2 badge bg-success">Update</span>
+                <Icon Name="IconName.Grid3X2" class="me-2" /> Grid
             </NavLink>
         </li>
         <li class="nav-item px-3">
@@ -60,6 +60,11 @@
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="modals">
                 <Icon Name="IconName.WindowStack" class="me-2" /> Modals
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/form/number-input">
+                <Icon Name="IconName.InputCursor" class="me-2" /> Number Input <span class="ms-2 badge bg-danger">New</span>
             </NavLink>
         </li>
         <li class="nav-item px-3">
@@ -74,7 +79,7 @@
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="placeholders">
-                Placeholders
+                <Icon Name="IconName.ColumnsGap" class="me-2" /> Placeholders
             </NavLink>
         </li>
         <li class="nav-item px-3">
@@ -84,17 +89,17 @@
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="progress">
-                <Icon Name="IconName.UsbC" class="me-2" /> Progress <span class="ms-2 badge bg-danger">New</span>
+                <Icon Name="IconName.UsbC" class="me-2" /> Progress
             </NavLink>
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="tabs">
-                <Icon Name="IconName.WindowPlus" class="me-2" /> Tabs
+                <Icon Name="IconName.WindowPlus" class="me-2" /> Tabs <span class="ms-2 badge bg-success">Update</span>
             </NavLink>
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="toasts">
-                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" /> Toasts <span class="ms-2 badge bg-success">Update</span>
+                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" /> Toasts
             </NavLink>
         </li>
         <li class="nav-item px-3">
@@ -106,9 +111,17 @@
 </div>
 
 @code {
+    private string version;
     private bool collapseNavMenu = true;
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : "";
 
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    [Inject] public IConfiguration Configuration { get; set; }
+
+    protected override void OnInitialized()
+    {
+        version = $"v{Configuration.GetValue<string>("version")}"; // example: v0.6.1
+        base.OnInitialized();
+    }
 
     private void ToggleNavMenu()
     {

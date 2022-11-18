@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Tab : BaseComponent
 {
@@ -38,6 +35,26 @@ public partial class Tab : BaseComponent
     [CascadingParameter] public Tabs Parent { get; set; }
 
     /// <summary>
+    /// Specifies the content to be rendered inside the tab.
+    /// </summary>
+    [Parameter, EditorRequired] public RenderFragment Content { get; set; }
+
+    /// <summary>
+    /// Gets or sets the disabled.
+    /// </summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the active tab.
+    /// </summary>
+    [Parameter] public bool IsActive { get; set; }
+
+    /// <summary>
+    /// Gets or sets the tab name.
+    /// </summary>
+    [Parameter] public string Name { get; set; }
+
+    /// <summary>
     /// Gets or sets the tab title.
     /// </summary>
     [Parameter] public string Title { get; set; }
@@ -46,21 +63,6 @@ public partial class Tab : BaseComponent
     /// Gets or sets the tab title template.
     /// </summary>
     [Parameter] public RenderFragment TitleTemplate { get; set; }
-
-    /// <summary>
-    /// Specifies the content to be rendered inside the tab.
-    /// </summary>
-    [Parameter, EditorRequired] public RenderFragment Content { get; set; }
-
-    /// <summary>
-    /// Gets or sets the active tab.
-    /// </summary>
-    [Parameter] public bool IsActive { get; set; }
-
-    /// <summary>
-    /// Gets or sets the disabled.
-    /// </summary>
-    [Parameter] public bool Disabled { get; set; }
 
     #endregion Properties
 }

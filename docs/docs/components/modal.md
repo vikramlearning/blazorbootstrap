@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Modal Component
-description: Use BlazorBootstrap's modal component to add dialogs to your site for lightboxes, user notifications, or completely custom content.
-image: https://getblazorbootstrap.com/img/logo.svg
+description: Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes, user notifications, or completely custom content.
+image: https://i.imgur.com/tLiaEs6.jpg
 
 sidebar_label: Modal
 sidebar_position: 9
@@ -9,7 +9,7 @@ sidebar_position: 9
 
 # Blazor Modal
 
-Use BlazorBootstrap's modal component to add dialogs to your site for lightboxes, user notifications, or completely custom content.
+Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes, user notifications, or completely custom content.
 
 ## Parameters
 

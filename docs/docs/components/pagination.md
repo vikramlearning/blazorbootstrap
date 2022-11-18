@@ -1,7 +1,7 @@
 ---
 title: Blazor Pagination Component
-description: Use BlazorBootstrap's pagination component to indicate a series of related content exists across multiple pages.
-image: https://getblazorbootstrap.com/img/logo.svg
+description: Use Blazor Bootstrap pagination component to indicate a series of related content exists across multiple pages.
+image: https://i.imgur.com/SCbZVd4.jpg
 
 sidebar_label: Pagination
 sidebar_position: 11
@@ -9,7 +9,7 @@ sidebar_position: 11
 
 # Blazor Pagination
 
-Use BlazorBootstrap's pagination component to indicate a series of related content exists across multiple pages.
+Use Blazor Bootstrap pagination component to indicate a series of related content exists across multiple pages.
 
 ## Parameters
 

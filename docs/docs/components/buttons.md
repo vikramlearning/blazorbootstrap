@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Button Component
-description: Use BlazorBootstrap's button styles for actions in forms, dialogs, and more with support for multiple sizes, states, etc.
-image: https://getblazorbootstrap.com/img/logo.svg
+description: Use Blazor Bootstrap button styles for actions in forms, dialogs, and more with support for multiple sizes, states, etc.
+image: https://i.imgur.com/Ne7FJ5H.jpg
 
 sidebar_label: Buttons
 sidebar_position: 4
@@ -9,7 +9,7 @@ sidebar_position: 4
 
 # Blazor Buttons
 
-Use BlazorBootstrap's button styles for actions in forms, dialogs, and more with support for multiple sizes, states, etc.
+Use Blazor Bootstrap button styles for actions in forms, dialogs, and more with support for multiple sizes, states, etc.
 
 ## Parameters
 
@@ -43,7 +43,7 @@ Use BlazorBootstrap's button styles for actions in forms, dialogs, and more with
 
 ### Buttons
 
-BlazorBootstrap includes several predefined button styles, each serving its own semantic purpose, with a few extras thrown in for more control.
+Blazor Bootstrap includes several predefined button styles, each serving its own semantic purpose, with a few extras thrown in for more control.
 
 <img src="https://i.imgur.com/Ne7FJ5H.jpg" alt="Blazor Bootstrap: Button Component" />
 

@@ -1,6 +1,6 @@
 ﻿---
 title: Blazor Progress Component
-description: Documentation and examples for using the Blazor Progress component featuring support for stacked bars, animated backgrounds, and text labels.
+description: Documentation and examples for using the Blazor Bootstrap progress component featuring support for stacked bars, animated backgrounds, and text labels.
 image: https://i.imgur.com/MK142lQ.png
 
 sidebar_label: Progress
@@ -8,7 +8,8 @@ sidebar_position: 14
 ---
 
 # Blazor Progress
-Documentation and examples for using the Blazor Progress component featuring support for stacked bars, animated backgrounds, and text labels.
+
+Documentation and examples for using the Blazor Bootstrap progress component featuring support for stacked bars, animated backgrounds, and text labels.
 
 <img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Progress" />
 
