@@ -93,10 +93,20 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ### Blazor Bootstrap - Modal
 ![Blazor Bootstrap - Modal](https://i.imgur.com/n0m4Fhq.jpg "Blazor Bootstrap - Modal")
+
+### Blazor Bootstrap - Number Input
 ![Blazor Bootstrap - Number Input](https://i.imgur.com/iUNBkki.png "Blazor Bootstrap - Number Input")
+
+### Blazor Bootstrap - Offcanvas
 ![Blazor Bootstrap - Offcanvas](https://i.imgur.com/1vNz5Ci.jpg "Blazor Bootstrap - Offcanvas")
+
+### Blazor Bootstrap - Progress
 ![Blazor Bootstrap - Progress](https://i.imgur.com/MK142lQ.png "Blazor Bootstrap - Progress")
+
+### Blazor Bootstrap - Tabs
 ![Blazor Bootstrap - Tabs](https://i.imgur.com/NdE5oqH.png "Blazor Bootstrap - Tabs")
+
+### Blazor Bootstrap - Toasts
 ![Blazor Bootstrap - Toasts](https://i.imgur.com/OCQUchu.png "Blazor Bootstrap - Toasts")
 
 ## Creators
