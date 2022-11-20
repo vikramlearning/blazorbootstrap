@@ -48,6 +48,7 @@ namespace BlazorBootstrap
 
         protected override void OnInitialized()
         {
+            this.title = Title;
             this.message1 = Message1;
             this.message2 = Message2;
 

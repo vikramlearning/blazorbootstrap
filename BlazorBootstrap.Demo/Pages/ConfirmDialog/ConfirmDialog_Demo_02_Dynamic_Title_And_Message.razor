@@ -1,11 +1,7 @@
-﻿<ConfirmDialog @ref="dialog"
-               Title="Are you sure you want to save this?"
-               Message1="This will save the details enterd in the form."
-               Message2="Do you want to proceed?"
-               OnYes="OnYes"
-               OnNo="OnNo" />
+﻿<ConfirmDialog @ref="dialog" OnYes="OnYes" OnNo="OnNo" />
 
 <Button Color="ButtonColor.Primary" @onclick="ShowSaveConfirmation"> Save Employee </Button>
+<Button Color="ButtonColor.Danger" @onclick="ShowDeleteConfirmation"> Delete Employee </Button>
 
 <Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="true" ShowCloseButton="true" />
 
@@ -16,11 +12,23 @@
 
     private void ShowSaveConfirmation()
     {
-        dialog.Show();
+        dialog.Show(
+            title: "Are you sure you want to save this?",
+            message1: "This will save the details enterd in the form.",
+            message2: "Do you want to proceed?");
+    }
+
+    private void ShowDeleteConfirmation()
+    {
+        dialog.Show(
+            title: "Are you sure you want to delete this?",
+            message1: "This will delete the record. Once deleted can not be rolled back.",
+            message2: "Do you want to proceed?");
     }
 
     private void OnYes()
     {
+        // TODO: call Service/API
         messages.Add(new ToastMessage
             {
                 Type = ToastType.Success,

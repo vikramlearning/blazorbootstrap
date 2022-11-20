@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Confirm Dialog Component
 description: Use Blazor Bootstrap confirm dialog component if you want the user to verify or accept something.
-image: https://i.imgur.com/chdLk3D.jpg
+image: https://i.imgur.com/FisZXwK.png
 
 sidebar_label: Confirm Dialog
 sidebar_position: 7
@@ -11,7 +11,7 @@ sidebar_position: 7
 
 Use Blazor Bootstrap confirm dialog component if you want the user to verify or accept something.
 
-<img src="https://i.imgur.com/chdLk3D.jpg" alt="Blazor Bootstrap: Confirm Dialog component" />
+<img src="https://i.imgur.com/FisZXwK.png" alt="Blazor Bootstrap: Confirm Dialog component" />
 
 ## Parameters
 
@@ -31,10 +31,11 @@ Use Blazor Bootstrap confirm dialog component if you want the user to verify or 
 
 ## Methods
 
-| Name | Description |
-|--|--|
-| Show | Shows confirm dialog. |
-| Hide | Hides confirm dialog. |
+| Name | Description | Version |
+|--|--|--|
+| Show() | Shows confirm dialog. | |
+| Show(string title, string message1, string message2) | Shows confirm dialog. | >= 1.0.1 |
+| Hide() | Hides confirm dialog. | |
 
 ## Callback Events
 
@@ -47,19 +48,19 @@ Use Blazor Bootstrap confirm dialog component if you want the user to verify or 
 
 ### Confirm Dialog
 
-<img src="https://i.imgur.com/chdLk3D.jpg" alt="Blazor Bootstrap: Modal Component" />
+<img src="https://i.imgur.com/FisZXwK.png" alt="Blazor Bootstrap: Confirm Dialog Component - Examples" />
 
 ```cshtml showLineNumbers
 <ConfirmDialog @ref="dialog"
                Title="Are you sure you want to save this?"
                Message1="This will save the details enterd in the form."
                Message2="Do you want to proceed?"
-               OnYes="OnYesAsync"
-               OnNo="OnNoAsync"></ConfirmDialog>
+               OnYes="OnYes"
+               OnNo="OnNo" />
 
-<Button Color="ButtonColor.Primary" @onclick="OnShowConfirmationModalClick">Show confirmation</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowSaveConfirmation"> Save Employee </Button>
 
-<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" />
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="true" ShowCloseButton="true" />
 ```
 
 ```cs {2,8,11,20} showLineNumbers
@@ -68,28 +69,87 @@ Use Blazor Bootstrap confirm dialog component if you want the user to verify or 
 
     List<ToastMessage> messages = new List<ToastMessage>();
 
-    private void OnShowConfirmationModalClick()
+    private void ShowSaveConfirmation()
     {
         dialog.Show();
     }
 
-    private async Task OnYesAsync()
+    private void OnYes()
     {
-        messages?.Add(new ToastMessage
+        messages.Add(new ToastMessage
             {
                 Type = ToastType.Success,
-                Message = $"Details saved successfully. DateTime: {DateTime.Now}",
+                Message = $"'Yes' confirmation was received from the user. DateTime: {DateTime.Now}",
             });
     }
 
-    private async Task OnNoAsync()
+    private void OnNo()
     {
-        messages?.Add(new ToastMessage
+        messages.Add(new ToastMessage
             {
                 Type = ToastType.Secondary,
-                Message = $"Action canceled. DateTime: {DateTime.Now}",
+                Message = $"'No' confirmation was received from the user. DateTime: {DateTime.Now}",
             });
     }
 }
 ```
 [See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#examples)
+
+### Dynamic Title and Message
+
+Dynamically change the confirmation dialog title (Title) and message (Message1 and Message2) by calling show(title, message1, message2). 
+In the example below, Save Employee and Delete Employee both will display different titles and messages.
+
+<img src="https://i.imgur.com/FlM6ZVv.png" alt="Blazor Bootstrap: Confirm Dialog Component - Dynamic Title and Message" />
+
+```cshtml showLineNumbers
+<ConfirmDialog @ref="dialog" OnYes="OnYes" OnNo="OnNo" />
+
+<Button Color="ButtonColor.Primary" @onclick="ShowSaveConfirmation"> Save Employee </Button>
+<Button Color="ButtonColor.Danger" @onclick="ShowDeleteConfirmation"> Delete Employee </Button>
+
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="true" ShowCloseButton="true" />
+```
+
+```cs {2,8-11,16-19,22,32} showLineNumbers
+@code {
+    private ConfirmDialog dialog;
+
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    private void ShowSaveConfirmation()
+    {
+        dialog.Show(
+            title: "Are you sure you want to save this?",
+            message1: "This will save the details enterd in the form.",
+            message2: "Do you want to proceed?");
+    }
+
+    private void ShowDeleteConfirmation()
+    {
+        dialog.Show(
+            title: "Are you sure you want to delete this?",
+            message1: "This will delete the record. Once deleted can not be rolled back.",
+            message2: "Do you want to proceed?");
+    }
+
+    private void OnYes()
+    {
+        // TODO: call Service/API
+        messages.Add(new ToastMessage
+            {
+                Type = ToastType.Success,
+                Message = $"'Yes' confirmation was received from the user. DateTime: {DateTime.Now}",
+            });
+    }
+
+    private void OnNo()
+    {
+        messages.Add(new ToastMessage
+            {
+                Type = ToastType.Secondary,
+                Message = $"'No' confirmation was received from the user. DateTime: {DateTime.Now}",
+            });
+    }
+}
+```
