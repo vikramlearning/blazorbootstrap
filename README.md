@@ -70,6 +70,8 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ## Screenshots
 
+### Blazor Bootstrap - Buttons
+
 ![Blazor Bootstrap - Buttons](https://i.imgur.com/ENKhcXR.jpg "Blazor Bootstrap - Buttons")
 ![Blazor Bootstrap - Bar Chart](https://i.imgur.com/JLV7oss.png "Blazor Bootstrap - Bar Chart")
 ![Blazor Bootstrap - Callout](https://i.imgur.com/vmibzEu.png "Blazor Bootstrap - Callout")
