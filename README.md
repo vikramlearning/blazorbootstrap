@@ -70,15 +70,30 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ## Screenshots
 
-### Blazor Bootstrap - Buttons
+### Blazor Bootstrap - Auto Complete
+![Blazor Bootstrap - Auto Complete](https://i.imgur.com/gRcdvc0.png "Blazor Bootstrap - Auto Complete")
 
+### Blazor Bootstrap - Buttons
 ![Blazor Bootstrap - Buttons](https://i.imgur.com/ENKhcXR.jpg "Blazor Bootstrap - Buttons")
+
+### Blazor Bootstrap - Bar Chart
 ![Blazor Bootstrap - Bar Chart](https://i.imgur.com/JLV7oss.png "Blazor Bootstrap - Bar Chart")
+
+### Blazor Bootstrap - Callout
 ![Blazor Bootstrap - Callout](https://i.imgur.com/vmibzEu.png "Blazor Bootstrap - Callout")
+
+### Blazor Bootstrap - Confirm Dialog
 ![Blazor Bootstrap - Confirm Dialog](https://i.imgur.com/FisZXwK.png "Blazor Bootstrap - Confirm Dialog")
+
+### Blazor Bootstrap - Grid
 ![Blazor Bootstrap - Grid](https://i.imgur.com/36RsWZ3.png "Blazor Bootstrap - Grid")
+
+### Blazor Bootstrap - Line Chart
 ![Blazor Bootstrap - Line Chart](https://i.imgur.com/CzdXpqr.png "Blazor Bootstrap - Line Chart")
+
+### Blazor Bootstrap - Modal
 ![Blazor Bootstrap - Modal](https://i.imgur.com/n0m4Fhq.jpg "Blazor Bootstrap - Modal")
+![Blazor Bootstrap - Number Input](https://i.imgur.com/iUNBkki.png "Blazor Bootstrap - Number Input")
 ![Blazor Bootstrap - Offcanvas](https://i.imgur.com/1vNz5Ci.jpg "Blazor Bootstrap - Offcanvas")
 ![Blazor Bootstrap - Progress](https://i.imgur.com/MK142lQ.png "Blazor Bootstrap - Progress")
 ![Blazor Bootstrap - Tabs](https://i.imgur.com/NdE5oqH.png "Blazor Bootstrap - Tabs")
