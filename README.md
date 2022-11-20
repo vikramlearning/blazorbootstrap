@@ -70,6 +70,9 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ## Screenshots
 
+### Blazor Bootstrap - Alerts
+![Blazor Bootstrap - Alerts](https://i.imgur.com/D9tJpSl.jpg "Blazor Bootstrap - Alerts")
+
 ### Blazor Bootstrap - Auto Complete
 ![Blazor Bootstrap - Auto Complete](https://i.imgur.com/gRcdvc0.png "Blazor Bootstrap - Auto Complete")
 
@@ -99,6 +102,9 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ### Blazor Bootstrap - Offcanvas
 ![Blazor Bootstrap - Offcanvas](https://i.imgur.com/1vNz5Ci.jpg "Blazor Bootstrap - Offcanvas")
+
+### Blazor Bootstrap - Pagination
+![Blazor Bootstrap - Pagination](https://i.imgur.com/SCbZVd4.jpg "Blazor Bootstrap - Pagination")
 
 ### Blazor Bootstrap - Progress
 ![Blazor Bootstrap - Progress](https://i.imgur.com/MK142lQ.png "Blazor Bootstrap - Progress")
