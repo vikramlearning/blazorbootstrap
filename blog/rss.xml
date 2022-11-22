@@ -4,10 +4,28 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Fri, 18 Nov 2022 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 22 Nov 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.0.1]]></title>
+            <link>https://getblazorbootstrap.com/blog/2022/11/22/blazorbootstrap-1.0.1</link>
+            <guid>/2022/11/22/blazorbootstrap-1.0.1</guid>
+            <pubDate>Tue, 22 Nov 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.0.1, with enhancements and more examples!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.0.1, with enhancements and more examples!!!</p><img loading="lazy" src="https://i.imgur.com/3pvzbXY.png" alt="Blazor Preload component" class="img_ev3q"><img loading="lazy" src="https://i.imgur.com/1vNz5Ci.jpg" alt="Blazor Offcanvas component" class="img_ev3q"><img loading="lazy" src="https://i.imgur.com/chdLk3D.jpg" alt="Blazor Confirm Dialog component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Confirmation Dialog</code> component enhancements</li><li><code>Offcanvas</code> component enhancements</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="demos-site-examples">Demos site examples<a class="hash-link" href="#demos-site-examples" title="Direct link to heading">​</a></h2><ul><li>New examples for 'Blazor Confirm Dialog Component'</li><li>New examples for 'Blazor Offcanvas Component'</li><li>New examples for 'Blazor Preload Component'</li><li>SEO Updates</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/components/confirmation-dialog" target="_blank" rel="noopener noreferrer">Blazor Confirm Dialog Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/offcanvas" target="_blank" rel="noopener noreferrer">Blazor Offcanvas Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/preload" target="_blank" rel="noopener noreferrer">Blazor Preload Component Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.0.1</category>
+            <category>blazor</category>
+            <category>blazorbootstrap</category>
+            <category>blazor-bootstrap</category>
+            <category>blazor-offcanvas</category>
+            <category>blazor-sidemodal</category>
+            <category>blazor-dialog</category>
+            <category>blazor-confirm-dialog</category>
+            <category>blazor-preload</category>
+            <category>blazor-spinner</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.0.0]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/11/18/blazorbootstrap-1.0.0</link>
@@ -103,7 +121,7 @@
             <guid>/2022/09/04/blazorbootstrap-0.4.0</guid>
             <pubDate>Sun, 04 Sep 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[We are excited to release 0.4.0 with new blazor autocomplete component.]]></description>
-            <content:encoded><![CDATA[<p>We are excited to release <code>0.4.0</code> with new blazor autocomplete component.</p><img loading="lazy" src="https://i.imgur.com/D5ox9um.png" alt="Blazor Bootstrap AutoComplete Component - Server side data" class="img_ev3q"><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new-components">New Components<a class="hash-link" href="#new-components" title="Direct link to heading">​</a></h3><ul><li><code>AutoComplete</code> component</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="autocomplete-component-features">AutoComplete component features<a class="hash-link" href="#autocomplete-component-features" title="Direct link to heading">​</a></h3><ul><li>Client side data filtering</li><li>Server side data filtering</li><li>Validations</li></ul><img loading="lazy" src="https://i.imgur.com/sMQ7Uc6.png" alt="Blazor Bootstrap AutoComplete Component - Validations - Data empty" class="img_ev3q"><img loading="lazy" src="https://i.imgur.com/4IzNcdp.png" alt="Blazor Bootstrap AutoComplete Component - Validations - Item selected" class="img_ev3q"><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/autocomplete" target="_blank" rel="noopener noreferrer">Blazor AutoComplete Component Demos</a></li><li><a href="https://getblazorbootstrap.com/docs/components/autocomplete" target="_blank" rel="noopener noreferrer">Blazor AutoComplete Component Documentation</a></li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>We are excited to release <code>0.4.0</code> with new blazor autocomplete component.</p><img loading="lazy" src="https://i.imgur.com/D5ox9um.png" alt="Blazor Bootstrap AutoComplete Component - Server side data" class="img_ev3q"><h3 class="anchor anchorWithStickyNavbar_LWe7" id="new-components">New Components<a class="hash-link" href="#new-components" title="Direct link to heading">​</a></h3><ul><li><code>AutoComplete</code> component</li></ul><h3 class="anchor anchorWithStickyNavbar_LWe7" id="autocomplete-component-features">AutoComplete component features<a class="hash-link" href="#autocomplete-component-features" title="Direct link to heading">​</a></h3><ul><li>Client side data filtering</li><li>Server side data filtering</li><li>Validations</li></ul><img loading="lazy" src="https://i.imgur.com/sMQ7Uc6.png" alt="Blazor Bootstrap AutoComplete Component - Validations - Data empty" class="img_ev3q"><img loading="lazy" src="https://i.imgur.com/4IzNcdp.png" alt="Blazor Bootstrap AutoComplete Component - Validations - Item selected" class="img_ev3q"><h3 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h3><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://demos.getblazorbootstrap.com/autocomplete" target="_blank" rel="noopener noreferrer">Blazor AutoComplete Component Demos</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/autocomplete" target="_blank" rel="noopener noreferrer">Blazor AutoComplete Component Documentation</a></li></ul>]]></content:encoded>
             <category>v0.4.0</category>
             <category>blazorbootstrap</category>
             <category>autocomplete</category>
