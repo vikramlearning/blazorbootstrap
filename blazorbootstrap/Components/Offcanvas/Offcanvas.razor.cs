@@ -8,6 +8,10 @@ namespace BlazorBootstrap
     {
         #region Members
 
+        private Placement placement = Placement.End;
+
+        private OffcanvasSize size = OffcanvasSize.Regular;
+
         private DotNetObjectReference<Offcanvas> objRef;
 
         #endregion Members
@@ -95,12 +99,30 @@ namespace BlazorBootstrap
         /// Specifies the placement.
         /// By default, offcanvas is placed on the right of the viewport.
         /// </summary>
-        [Parameter] public Placement Placement { get; set; } = Placement.End;
+        [Parameter]
+        public Placement Placement
+        {
+            get => placement;
+            set
+            {
+                placement = value;
+                DirtyClasses();
+            }
+        }
 
         /// <summary>
         /// Size of the offcanvas. Default is <see cref="OffcanvasSize.Regular"/>.
         /// </summary>
-        [Parameter] public OffcanvasSize Size { get; set; } = OffcanvasSize.Regular;
+        [Parameter]
+        public OffcanvasSize Size
+        {
+            get => size;
+            set
+            {
+                size = value;
+                DirtyClasses();
+            }
+        }
 
         /// <summary>
         /// Indicates whether the modal shows close button in header.

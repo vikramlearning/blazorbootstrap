@@ -5,10 +5,10 @@
     <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@Attributes">
         <div class="modal-dialog @scrollable @verticallyCentered">
             <div class="modal-content">
-                @if (!string.IsNullOrWhiteSpace(Title))
+                @if (!string.IsNullOrWhiteSpace(title))
                 {
                     <div class="modal-header @titleBackgroundColor">
-                        <h5 class="modal-title">@Title</h5>
+                        <h5 class="modal-title">@title</h5>
                         @if (Dismissable)
                         {
                             <button type="button" class="btn-close" @onclick="Hide"></button>
@@ -16,13 +16,13 @@
                     </div>
                 }
                 <div class="modal-body">
-                    @if (!string.IsNullOrWhiteSpace(Message1))
+                    @if (!string.IsNullOrWhiteSpace(message1))
                     {
-                        <div class="pb-2">@Message1</div>
+                        <div class="pb-2">@message1</div>
                     }
-                    @if (!string.IsNullOrWhiteSpace(Message2))
+                    @if (!string.IsNullOrWhiteSpace(message2))
                     {
-                        <div class="pb-2">@Message2</div>
+                        <div class="pb-2">@message2</div>
                     }
                 </div>
                 <div class="modal-footer border-top-0">

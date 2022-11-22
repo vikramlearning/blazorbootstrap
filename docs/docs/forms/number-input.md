@@ -4,7 +4,7 @@ description: Blazor Bootstrap `NumberInput` component is built around HTML input
 image: https://i.imgur.com/iUNBkki.png
 
 sidebar_label: Number Input
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # Blazor Number Input

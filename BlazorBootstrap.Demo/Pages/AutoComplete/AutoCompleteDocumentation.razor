@@ -1,6 +1,4 @@
-﻿@using BlazorBootstrap
-
-@page "/autocomplete"
+﻿@page "/autocomplete"
 
 <PageTitle>@title</PageTitle>
 
@@ -12,20 +10,20 @@
 </div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side data" PageUrl="@pageUrl" HashTagName="client-side-data" />
-<Demo Type="typeof(AutoComplete_Demo_01_A_Client_Side_Filtering)" />
+<Demo Type="typeof(AutoComplete_Demo_01_A_Client_Side_Filtering)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side data with StringComparision" PageUrl="@pageUrl" HashTagName="client-side-data-with-string-comparision" />
-<div>In the below example, <code>StringComparision.Ordinal</code> is used to make the filter case-sensitive.</div>
-<Demo Type="typeof(AutoComplete_Demo_01_B_Client_Side_Filtering_With_StringComparision)" />
+<div class="mb-3">In the below example, <code>StringComparision.Ordinal</code> is used to make the filter case-sensitive.</div>
+<Demo Type="typeof(AutoComplete_Demo_01_B_Client_Side_Filtering_With_StringComparision)" Tabs="true" />
 <Callout Color="CalloutType.Info">
     <div>By default, <code>StringComparison.OrdinalIgnoreCase</code> is used to compare culture-agnostic and case-insensitive string matching.</div>
 </Callout>
 
 <SectionHeading Size="HeadingSize.H2" Text="Server side data" PageUrl="@pageUrl" HashTagName="server-side-data" />
-<Demo Type="typeof(AutoComplete_Demo_02_Server_Side_Filtering)" />
+<Demo Type="typeof(AutoComplete_Demo_02_Server_Side_Filtering)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Validations" PageUrl="@pageUrl" HashTagName="validations" />
-<Demo Type="typeof(AutoComplete_Demo_03_Validations)" />
+<Demo Type="typeof(AutoComplete_Demo_03_Validations)" Tabs="true" />
 
 @code {
     private string pageUrl = "/autocomplete";

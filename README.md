@@ -31,7 +31,7 @@ Online Demos with Examples: [Link](https://demos.getblazorbootstrap.com/)
 Several quick start options are available:
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.0.0` 
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.0.1` 
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
@@ -67,6 +67,56 @@ More components coming...
 ## Documentation
 
 Blazor Bootstrap's documentation, included in this repo in the root directory, is built with [Docusaurus](https://docusaurus.io/) and publicly hosted on GitHub Pages at <https://getblazorbootstrap.com/>. The docs may also be run locally.
+
+## Screenshots
+
+### Blazor Bootstrap - Alerts
+![Blazor Bootstrap - Alerts](https://i.imgur.com/D9tJpSl.jpg "Blazor Bootstrap - Alerts")
+
+### Blazor Bootstrap - Auto Complete
+![Blazor Bootstrap - Auto Complete](https://i.imgur.com/gRcdvc0.png "Blazor Bootstrap - Auto Complete")
+
+### Blazor Bootstrap - Buttons
+![Blazor Bootstrap - Buttons](https://i.imgur.com/ENKhcXR.jpg "Blazor Bootstrap - Buttons")
+
+### Blazor Bootstrap - Bar Chart
+![Blazor Bootstrap - Bar Chart](https://i.imgur.com/JLV7oss.png "Blazor Bootstrap - Bar Chart")
+
+### Blazor Bootstrap - Callout
+![Blazor Bootstrap - Callout](https://i.imgur.com/vmibzEu.png "Blazor Bootstrap - Callout")
+
+### Blazor Bootstrap - Confirm Dialog
+![Blazor Bootstrap - Confirm Dialog](https://i.imgur.com/FisZXwK.png "Blazor Bootstrap - Confirm Dialog")
+
+### Blazor Bootstrap - Grid
+![Blazor Bootstrap - Grid](https://i.imgur.com/36RsWZ3.png "Blazor Bootstrap - Grid")
+
+### Blazor Bootstrap - Line Chart
+![Blazor Bootstrap - Line Chart](https://i.imgur.com/CzdXpqr.png "Blazor Bootstrap - Line Chart")
+
+### Blazor Bootstrap - Modal
+![Blazor Bootstrap - Modal](https://i.imgur.com/n0m4Fhq.jpg "Blazor Bootstrap - Modal")
+
+### Blazor Bootstrap - Number Input
+![Blazor Bootstrap - Number Input](https://i.imgur.com/iUNBkki.png "Blazor Bootstrap - Number Input")
+
+### Blazor Bootstrap - Offcanvas
+![Blazor Bootstrap - Offcanvas](https://i.imgur.com/1vNz5Ci.jpg "Blazor Bootstrap - Offcanvas")
+
+### Blazor Bootstrap - Pagination
+![Blazor Bootstrap - Pagination](https://i.imgur.com/SCbZVd4.jpg "Blazor Bootstrap - Pagination")
+
+### Blazor Bootstrap - Preload
+![Blazor Bootstrap - Preload](https://i.imgur.com/3pvzbXY.png "Blazor Bootstrap - Preload")
+
+### Blazor Bootstrap - Progress
+![Blazor Bootstrap - Progress](https://i.imgur.com/MK142lQ.png "Blazor Bootstrap - Progress")
+
+### Blazor Bootstrap - Tabs
+![Blazor Bootstrap - Tabs](https://i.imgur.com/NdE5oqH.png "Blazor Bootstrap - Tabs")
+
+### Blazor Bootstrap - Toasts
+![Blazor Bootstrap - Toasts](https://i.imgur.com/OCQUchu.png "Blazor Bootstrap - Toasts")
 
 ## Creators
 
