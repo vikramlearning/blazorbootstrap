@@ -7,6 +7,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Pages\GettingStarted\Snippet_02_Starter_Template_Program.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Pages\GettingStarted\Snippet_02_Starter_Template_Program.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.10" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.10" PrivateAssets="all" />
 		<PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
@@ -20,7 +28,7 @@
 		<!-- Let's embed demos sources into the assembly to show the source at runtime. -->
 		<ItemGroup>
 			<EmbeddedResource Include="Pages\**\*Demo*.razor" />
-      <EmbeddedResource Include="Pages\**\*Snippet*.razor" />
+      <EmbeddedResource Include="Pages\**\*Snippet*" />
 		</ItemGroup>
 	</Target>
 
