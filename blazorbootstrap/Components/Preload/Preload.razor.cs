@@ -94,8 +94,7 @@ public partial class Preload : BaseComponent
     /// <summary>
     /// Gets or sets the spinner color.
     /// </summary>
-    [Parameter]
-    public SpinnerColor Color
+    [Parameter] public SpinnerColor Color
     {
         get => color; set
         {

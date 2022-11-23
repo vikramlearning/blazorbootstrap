@@ -20,6 +20,7 @@ namespace BlazorBootstrap
             serviceCollection.AddSingleton<BootstrapIconProvider>();
             serviceCollection.AddScoped<IIdGenerator, IdGenerator>();
             serviceCollection.AddScoped<PreloadService>();
+            serviceCollection.AddScoped<ToastService>();
 
             serviceCollection.AddBootstrapComponents();
 

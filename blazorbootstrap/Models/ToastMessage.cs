@@ -24,9 +24,58 @@ public class ToastMessage : IEquatable<ToastMessage>
         this.Id = Guid.NewGuid();
     }
 
+    public ToastMessage(ToastType type, string message)
+    {
+        Type = type;
+        Message = message;
+    }
+
+    public ToastMessage(ToastType type, string title, string message)
+    {
+        Type = type;
+        Title = title;
+        Message = message;
+    }
+
+    public ToastMessage(ToastType type, IconName iconName, string title, string message)
+    {
+        Type = type;
+        IconName = iconName;
+        Title = title;
+        Message = message;
+    }
+
+    public ToastMessage(ToastType type, string customIconName, string title, string message)
+    {
+        Type = type;
+        CustomIconName = customIconName;
+        Title = title;
+        Message = message;
+    }
+
+    public ToastMessage(ToastType type, IconName iconName, string title, string helpText, string message)
+    {
+        Type = type;
+        IconName = iconName;
+        Title = title;
+        HelpText = helpText;
+        Message = message;
+    }
+
+    public ToastMessage(ToastType type, string customIconName, string title, string helpText, string message)
+    {
+        Type = type;
+        CustomIconName = customIconName;
+        Title = title;
+        HelpText = helpText;
+        Message = message;
+    }
+
     public bool Equals(ToastMessage other)
     {
-        if(other == null) return false;
+        if(other == null) 
+            return false;
+
         return this.Id.Equals(other.Id);
     }
 }

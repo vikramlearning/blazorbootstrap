@@ -1,10 +1,10 @@
 ﻿<Modal @ref="modal"
        title="Modal title"
-       OnShowing="OnModalShowingAsync"
-       OnShown="OnModalShownAsync"
-       OnHiding="OnModalHidingAsync"
-       OnHidden="OnModalHiddenAsync"
-       OnHidePrevented="OnModalHidePreventedAsync">
+       OnShowing="OnModalShowing"
+       OnShown="OnModalShown"
+       OnHiding="OnModalHiding"
+       OnHidden="OnModalHidden"
+       OnHidePrevented="OnModalHidePrevented">
 
     <BodyTemplate>
         Modal body text goes here.
@@ -22,6 +22,8 @@
 @code {
     private Modal modal;
 
+    [Inject] ToastService ToastService { get; set; }
+
     private async Task OnShowModalClick()
     {
         await modal?.ShowAsync();
@@ -32,28 +34,28 @@
         await modal?.HideAsync();
     }
 
-    private async Task OnModalShowingAsync()
+    private void OnModalShowing()
     {
-        await Task.Run(() => { Console.WriteLine("Event: Showing"); });
+        ToastService.Notify(new (ToastType.Primary, $"Event: Showing called. DateTime: {DateTime.Now}"));
     }
 
-    private async Task OnModalShownAsync()
+    private void OnModalShown()
     {
-        await Task.Run(() => { Console.WriteLine("Event: Show"); });
+        ToastService.Notify(new (ToastType.Success, $"Event: Show called. DateTime: {DateTime.Now}"));
     }
 
-    private async Task OnModalHidingAsync()
+    private void OnModalHiding()
     {
-        await Task.Run(() => { Console.WriteLine("Event: Hiding"); });
+        ToastService.Notify(new(ToastType.Danger, $"Event: Hiding called. DateTime: {DateTime.Now}"));
     }
 
-    private async Task OnModalHiddenAsync()
+    private void OnModalHidden()
     {
-        await Task.Run(() => { Console.WriteLine("Event: Hide"); });
+        ToastService.Notify(new(ToastType.Warning, $"Event: Hide called. DateTime: {DateTime.Now}"));
     }
 
-    private async Task OnModalHidePreventedAsync()
+    private void OnModalHidePrevented()
     {
-        await Task.Run(() => { Console.WriteLine("Event: Hide Prevented"); });
+        ToastService.Notify(new(ToastType.Info, $"Event: Hide Prevented called. DateTime: {DateTime.Now}"));
     }
 }

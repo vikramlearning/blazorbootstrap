@@ -19,6 +19,12 @@ public partial class Toasts : BaseComponent, IDisposable
         base.BuildClasses(builder);
     }
 
+    protected override void OnInitialized()
+    {
+        if (ToastService is not null)
+            ToastService.OnNotify += OnNotify;
+    }
+
     private void OnToastShownAsync(Guid toastId)
     {
         if (Messages != null && Messages.Any() && Messages.Count >= StackLength)
@@ -39,12 +45,26 @@ public partial class Toasts : BaseComponent, IDisposable
         }
     }
 
+    private void OnNotify(ToastMessage toastMessage)
+    {
+        if (Messages is null)
+            Messages = new();
+
+        if (toastMessage is not null)
+            Messages.Add(toastMessage);
+
+        StateHasChanged();
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
     {
         if (disposing)
         {
             Messages = null;
+
+            if (ToastService is not null)
+                ToastService.OnNotify -= OnNotify;
         }
 
         await base.DisposeAsync(disposing);
@@ -56,6 +76,8 @@ public partial class Toasts : BaseComponent, IDisposable
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
+
+    [Inject] public ToastService ToastService { get; set; }
 
     /// <summary>
     /// List of all the toasts.

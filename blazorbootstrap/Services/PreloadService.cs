@@ -2,8 +2,8 @@
 
 public class PreloadService
 {
-    public event Action OnShow;
-    public event Action OnHide;
+    internal event Action OnShow;
+    internal event Action OnHide;
 
     public void Show() { OnShow?.Invoke(); }
     public void Hide() { OnHide?.Invoke(); }
