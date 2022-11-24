@@ -141,7 +141,7 @@ public partial class ConfirmDialog : BaseComponent
     [Parameter]
     public BackgroundColor TitleBackgroundColor
     {
-        get => _titleBackgroundColor; 
+        get => _titleBackgroundColor;
         set
         {
             _titleBackgroundColor = value;
@@ -175,7 +175,7 @@ public partial class ConfirmDialog : BaseComponent
     [Parameter]
     public ButtonColor YesButtonColor
     {
-        get => _yesButtonColor; 
+        get => _yesButtonColor;
         set
         {
             _yesButtonColor = value;
@@ -194,7 +194,7 @@ public partial class ConfirmDialog : BaseComponent
     [Parameter]
     public ButtonColor NoButtonColor
     {
-        get => _noButtonColor; 
+        get => _noButtonColor;
         set
         {
             _noButtonColor = value;
