@@ -23,26 +23,42 @@ public partial class Toasts : BaseComponent, IDisposable
     {
         if (ToastService is not null)
             ToastService.OnNotify += OnNotify;
+
+        base.OnInitialized();
     }
 
-    private void OnToastShownAsync(Guid toastId)
+    private async Task OnToastShownAsync(ToastEventArgs args)
     {
-        if (Messages != null && Messages.Any() && Messages.Count >= StackLength)
-        {
-            Messages.RemoveRange(0, Messages.Count - StackLength);
-        }
-    }
+        if (Messages is null || !Messages.Any())
+            return;
 
-    private void OnToastHiddenAsync(Guid toastId)
-    {
-        if (Messages != null && Messages.Any())
+        Messages.ForEach(x =>
         {
-            var message = Messages.FirstOrDefault(x => x.Id == toastId);
-            if (message is not null && Messages.Remove(message))
+            if (x.Id == args.ToastId)
+                x.SetElementId(args.ElementId);
+        });
+
+        if (Messages.Count >= StackLength)
+        {
+            var deleteMessages = Messages.GetRange(0, Messages.Count - StackLength);
+
+            foreach (var message in deleteMessages)
             {
-                // toast message removed successfully.
+                if (string.IsNullOrWhiteSpace(message.ElementId))
+                    await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
             }
         }
+    }
+
+    private void OnToastHiddenAsync(ToastEventArgs args)
+    {
+        if (Messages is null || !Messages.Any())
+            return;
+
+        var message = Messages.FirstOrDefault(x => x.Id == args.ToastId);
+
+        if (message is not null)
+            Messages.Remove(message);
     }
 
     private void OnNotify(ToastMessage toastMessage)
@@ -50,8 +66,10 @@ public partial class Toasts : BaseComponent, IDisposable
         if (Messages is null)
             Messages = new();
 
-        if (toastMessage is not null)
-            Messages.Add(toastMessage);
+        if (toastMessage is null)
+            return;
+
+        Messages.Add(toastMessage);
 
         StateHasChanged();
     }

@@ -1,21 +1,19 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<CascadingValue Value="@this" IsFixed="true">
-    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-        @if (Messages != null && Messages.Any())
+<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    @if (Messages != null && Messages.Any())
+    {
+        foreach (var item in Messages)
         {
-            foreach (var item in Messages)
+            if (string.IsNullOrWhiteSpace(item.Title))
             {
-                if (string.IsNullOrWhiteSpace(item.Title))
-                {
-                    <SimpleToast @key="@item" AutoHide="@AutoHide" Delay="@Delay" ShowCloseButton="@ShowCloseButton" ToastMessage="@item" Shown="OnToastShownAsync" Hidden="OnToastHiddenAsync"></SimpleToast>
-                }
-                else
-                {
-                    <Toast @key="@item" AutoHide="@AutoHide" Delay="@Delay" ShowCloseButton="@ShowCloseButton" ToastMessage="@item" Shown="OnToastShownAsync" Hidden="OnToastHiddenAsync"></Toast>
-                }
+                <SimpleToast @key="@item" AutoHide="@AutoHide" Delay="@Delay" ShowCloseButton="@ShowCloseButton" ToastMessage="@item" Shown="OnToastShownAsync" Hidden="OnToastHiddenAsync"></SimpleToast>
+            }
+            else
+            {
+                <Toast @key="@item" AutoHide="@AutoHide" Delay="@Delay" ShowCloseButton="@ShowCloseButton" ToastMessage="@item" Shown="OnToastShownAsync" Hidden="OnToastHiddenAsync"></Toast>
             }
         }
-    </div>
-</CascadingValue>
+    }
+</div>
