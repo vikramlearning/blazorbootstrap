@@ -1396,6 +1396,7 @@
         PersonDash,
         PersonDashFill,
         PersonDown,
+        PersonExclamation,
         PersonFill,
         PersonFillAdd,
         PersonFillCheck,
