@@ -20,8 +20,8 @@ Install-Package Blazor.Bootstrap -Version 1.0.0
 ## Starter template
 
 Change your `index.html` file and include the CSS and JS files:
- - Add Bootstrap 5.x CSS and JS files as recommended in the official Bootstrap website.
- - Add Bootstrap Icons 1.x CSS file as recommended in the official Bootstrap Icons website.
+ - Add `Bootstrap 5.x` CSS and JS files as recommended in the official Bootstrap website.
+ - Add `Bootstrap Icons 1.x` CSS file as recommended in the official Bootstrap Icons website.
  - Include `blazor.bootstrap.js` file
  - Include `blazor.bootstrap.css` file
 
