@@ -6,19 +6,22 @@ public partial class ConfirmDialog : BaseComponent
 {
     #region Members
 
+    private bool isVisible;
+
     private string title;
     private string message1;
     private string message2;
 
-    private BackgroundColor _titleBackgroundColor = BackgroundColor.None;
-    private ButtonColor _yesButtonColor = ButtonColor.Primary;
-    private ButtonColor _noButtonColor = ButtonColor.Secondary;
-
-    private string scrollable => IsScrollable ? "modal-dialog-scrollable" : "";
-    private string titleBackgroundColor => TitleBackgroundColor.ToBackgroundAndTextClass();
-    private string verticallyCentered => IsVerticallyCentered ? "modal-dialog-centered" : "";
-    private string yesButtonColor => YesButtonColor.ToButtonClass();
-    private string noButtonColor => NoButtonColor.ToButtonClass();
+    private string dialogCssClass;
+    private bool dismissable;
+    private string headerCssClass;
+    private string scrollable;
+    private string verticallyCentered;
+    private string modalSize;
+    private string noButtonColor;
+    private string noButtonText;
+    private string yesButtonColor;
+    private string yesButtonText;
 
     private bool showBackdrop;
 
@@ -46,35 +49,15 @@ public partial class ConfirmDialog : BaseComponent
         base.BuildStyles(builder);
     }
 
-    protected override void OnInitialized()
-    {
-        this.title = Title;
-        this.message1 = Message1;
-        this.message2 = Message2;
-
-        base.OnInitialized();
-    }
-
     /// <summary>
     /// Shows confirm dialog.
     /// </summary>
-    public void Show()
-    {
-        showBackdrop = true;
-
-        this.DirtyClasses();
-        this.DirtyStyles();
-
-        StateHasChanged();
-    }
-
-    /// <summary>
-    /// Shows confirm dialog.
-    /// </summary>
-    /// <param name="title"></param>
-    /// <param name="message1"></param>
-    /// <param name="message2"></param>
-    public Task<bool> Show(string title, string message1, string message2)
+    /// <param name="title">title for the confirm dialog</param>
+    /// <param name="message1">message1 for the confirmation dialog.</param>
+    /// <param name="message2">message2 for the confirmation dialog. This is optional.</param>
+    /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
+    /// <returns>bool</returns>
+    public Task<bool> Show(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null)
     {
         taskCompletionSource = new TaskCompletionSource<bool>();
         Task<bool> task = taskCompletionSource.Task;
@@ -83,7 +66,27 @@ public partial class ConfirmDialog : BaseComponent
         this.message1 = message1;
         this.message2 = message2;
 
-        this.Show();
+        if (confirmDialogOptions is null)
+            confirmDialogOptions = new ConfirmDialogOptions();
+
+        this.dialogCssClass = confirmDialogOptions.DialogCssClass;
+        this.dismissable = confirmDialogOptions.Dismissable;
+        this.headerCssClass = confirmDialogOptions.HeaderCssClass;
+        this.scrollable = confirmDialogOptions.IsScrollable ? "modal-dialog-scrollable" : "";
+        this.verticallyCentered = confirmDialogOptions.IsVerticallyCentered ? "modal-dialog-centered" : "";
+        this.noButtonColor = confirmDialogOptions.NoButtonColor.ToButtonClass();
+        this.noButtonText = confirmDialogOptions.NoButtonText;
+        this.modalSize= BootstrapClassProvider.ToModalSize(confirmDialogOptions.Size);
+        this.yesButtonColor = confirmDialogOptions.YesButtonColor.ToButtonClass();
+        this.yesButtonText = confirmDialogOptions.YesButtonText;
+
+        this.isVisible = true;
+        this.showBackdrop = true;
+
+        this.DirtyClasses();
+        this.DirtyStyles();
+
+        StateHasChanged();
 
         return task;
     }
@@ -91,9 +94,10 @@ public partial class ConfirmDialog : BaseComponent
     /// <summary>
     /// Hides confirm dialog.
     /// </summary>
-    public void Hide()
+    private void Hide()
     {
-        showBackdrop = false;
+        this.isVisible= false;
+        this.showBackdrop = false;
 
         this.DirtyClasses();
         this.DirtyStyles();
@@ -101,13 +105,13 @@ public partial class ConfirmDialog : BaseComponent
         StateHasChanged();
     }
 
-    private void Yes()
+    private void OnYesClick()
     {
         Hide();
         taskCompletionSource.SetResult(true);
     }
 
-    private void No()
+    private void OnNoClick()
     {
         Hide();
         taskCompletionSource.SetResult(false);
@@ -119,88 +123,6 @@ public partial class ConfirmDialog : BaseComponent
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
-
-    /// <summary>
-    /// Allows confirm dialog body to be scrollable.
-    /// </summary>
-    [Parameter] public bool IsScrollable { get; set; }
-
-    /// <summary>
-    /// Shows the confirm dialog vertically in the center of the page.
-    /// </summary>
-    [Parameter] public bool IsVerticallyCentered { get; set; }
-
-    /// <summary>
-    /// Gets or sets the title of the confirm dialog.
-    /// </summary>
-    [Parameter] public string Title { get; set; }
-
-    /// <summary>
-    /// Gets or sets the background color of the confirm dialog title. <see cref="BackgroundColor"/>
-    /// </summary>
-    [Parameter]
-    public BackgroundColor TitleBackgroundColor
-    {
-        get => _titleBackgroundColor;
-        set
-        {
-            _titleBackgroundColor = value;
-            DirtyClasses();
-        }
-    }
-
-    /// <summary>
-    /// Adds a dismissable close button to the confirm dialog.
-    /// </summary>
-    [Parameter] public bool Dismissable { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the Message1 of the confirmation dialog.
-    /// </summary>
-    [Parameter] public string Message1 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Message2 of the confirmation dialog. This is optional.
-    /// </summary>
-    [Parameter] public string Message2 { get; set; }
-
-    /// <summary>
-    /// Gets or sets the 'Yes' button text.
-    /// </summary>
-    [Parameter] public string YesButtonText { get; set; } = "Yes";
-
-    /// <summary>
-    /// Gets or sets the 'Yes' button color. <see cref="ButtonColor"/>
-    /// </summary>
-    [Parameter]
-    public ButtonColor YesButtonColor
-    {
-        get => _yesButtonColor;
-        set
-        {
-            _yesButtonColor = value;
-            DirtyClasses();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the 'No' button text.
-    /// </summary>
-    [Parameter] public string NoButtonText { get; set; } = "No";
-
-    /// <summary>
-    /// Gets or sets the 'No' button color. <see cref="ButtonColor"/>
-    /// </summary>
-    [Parameter]
-    public ButtonColor NoButtonColor
-    {
-        get => _noButtonColor;
-        set
-        {
-            _noButtonColor = value;
-            DirtyClasses();
-        }
-    }
 
     #endregion Properties
 }
