@@ -17,13 +17,20 @@
                     </div>
                 }
                 <div class="modal-body">
-                    @if (!string.IsNullOrWhiteSpace(message1))
+                    @if (childComponent is not null)
                     {
-                        <div class="pb-2">@message1</div>
+                        <DynamicComponent Type="@childComponent" Parameters="@parametres" />
                     }
-                    @if (!string.IsNullOrWhiteSpace(message2))
+                    else
                     {
-                        <div class="pb-2">@message2</div>
+                        @if (!string.IsNullOrWhiteSpace(message1))
+                        {
+                            <div class="pb-2">@message1</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(message2))
+                        {
+                            <div class="pb-2">@message2</div>
+                        }
                     }
                 </div>
                 <div class="modal-footer border-top-0">

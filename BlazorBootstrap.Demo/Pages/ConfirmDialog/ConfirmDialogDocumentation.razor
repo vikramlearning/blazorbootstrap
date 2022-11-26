@@ -9,17 +9,24 @@
     Use Blazor Bootstrap confirm dialog component if you want the user to verify or accept something.
 </div>
 
-@*<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <div class="mb-3"></div>
-<Demo Type="typeof(ConfirmDialog_Demo_01_Examples)" Tabs="true" />*@
+<Demo Type="typeof(ConfirmDialog_Demo_01_Examples)" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Dynamic Title and Message" PageUrl="@pageUrl" HashTagName="dynamic-title-and-message" />
+<SectionHeading Size="HeadingSize.H2" Text="Detailed messages" PageUrl="@pageUrl" HashTagName="detailed-messages" />
 <div class="mb-3">
     Dynamically change the confirmation dialog title (Title) and message (Message1 and Message2) by calling <code>show(title, message1, message2)</code>.
     In the example below, <b>Save Employee</b> and <b>Delete Employee</b> both will display different titles and messages.
 </div>
+<Demo Type="typeof(ConfirmDialog_Demo_02_Detailed_Messages)" />
 
-<Demo Type="typeof(ConfirmDialog_Demo_02_Dynamic_Title_And_Message)" />
+<SectionHeading Size="HeadingSize.H2" Text="Dynamic component as confirm dialog" PageUrl="@pageUrl" HashTagName="dynamic-component-as-confirm-dialog" />
+<Demo Type="typeof(ConfirmDialog_Demo_03_Dynamic_Component_As_Confirm_Dialog)" />
+<b>EmployeeDemoComponent.razor</b>
+<Demo Type="typeof(EmployeeDemoComponent)" ShowCodeOnly="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Change buttons text and color" PageUrl="@pageUrl" HashTagName="change-buttons-text-and-color" />
+<Demo Type="typeof(ConfirmDialog_Demo_04_Change_Buttons_Text_And_Color)" />
 
 @code {
     private string pageUrl = "/confirm-dialog";

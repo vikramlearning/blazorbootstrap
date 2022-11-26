@@ -12,6 +12,9 @@ public partial class ConfirmDialog : BaseComponent
     private string message1;
     private string message2;
 
+    private Type? childComponent;
+    private Dictionary<string, object> parametres;
+
     private string dialogCssClass;
     private bool dismissable;
     private string headerCssClass;
@@ -49,15 +52,7 @@ public partial class ConfirmDialog : BaseComponent
         base.BuildStyles(builder);
     }
 
-    /// <summary>
-    /// Shows confirm dialog.
-    /// </summary>
-    /// <param name="title">title for the confirm dialog</param>
-    /// <param name="message1">message1 for the confirmation dialog.</param>
-    /// <param name="message2">message2 for the confirmation dialog. This is optional.</param>
-    /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
-    /// <returns>bool</returns>
-    public Task<bool> Show(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null)
+    private Task<bool> Show(string title, string message1, string message2, Type? type, Dictionary<string, object> parametres, ConfirmDialogOptions confirmDialogOptions)
     {
         taskCompletionSource = new TaskCompletionSource<bool>();
         Task<bool> task = taskCompletionSource.Task;
@@ -65,6 +60,9 @@ public partial class ConfirmDialog : BaseComponent
         this.title = title;
         this.message1 = message1;
         this.message2 = message2;
+
+        this.childComponent = type;
+        this.parametres= parametres;
 
         if (confirmDialogOptions is null)
             confirmDialogOptions = new ConfirmDialogOptions();
@@ -76,7 +74,7 @@ public partial class ConfirmDialog : BaseComponent
         this.verticallyCentered = confirmDialogOptions.IsVerticallyCentered ? "modal-dialog-centered" : "";
         this.noButtonColor = confirmDialogOptions.NoButtonColor.ToButtonClass();
         this.noButtonText = confirmDialogOptions.NoButtonText;
-        this.modalSize= BootstrapClassProvider.ToModalSize(confirmDialogOptions.Size);
+        this.modalSize = BootstrapClassProvider.ToModalSize(confirmDialogOptions.Size);
         this.yesButtonColor = confirmDialogOptions.YesButtonColor.ToButtonClass();
         this.yesButtonText = confirmDialogOptions.YesButtonText;
 
@@ -89,6 +87,44 @@ public partial class ConfirmDialog : BaseComponent
         StateHasChanged();
 
         return task;
+    }
+
+    /// <summary>
+    /// Shows confirm dialog.
+    /// </summary>
+    /// <param name="title">title for the confirm dialog</param>
+    /// <param name="message1">message1 for the confirmation dialog.</param>
+    /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
+    /// <returns>bool</returns>
+    public Task<bool> ShowAsync(string title, string message1, ConfirmDialogOptions confirmDialogOptions = null)
+    {        
+        return Show(title: title, message1: message1, message2: null, type: null, parametres: null, confirmDialogOptions: confirmDialogOptions);
+    }
+
+    /// <summary>
+    /// Shows confirm dialog.
+    /// </summary>
+    /// <param name="title">title for the confirm dialog</param>
+    /// <param name="message1">message1 for the confirmation dialog.</param>
+    /// <param name="message2">message2 for the confirmation dialog. This is optional.</param>
+    /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
+    /// <returns>bool</returns>
+    public Task<bool> ShowAsync(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null)
+    {
+        return Show(title: title, message1: message1, message2: message2, type: null, parametres: null, confirmDialogOptions: confirmDialogOptions) ;
+    }
+
+    /// <summary>
+    /// Shows confirm dialog.
+    /// </summary>
+    /// <typeparam name="T">Component</typeparam>
+    /// <param name="title"></param>
+    /// <param name="parametres"></param>
+    /// <param name="confirmDialogOptions"></param>
+    /// <returns>bool</returns>
+    public Task<bool> ShowAsync<T>(string title, Dictionary<string, object> parametres = null, ConfirmDialogOptions confirmDialogOptions = null) where T : ComponentBase
+    {
+        return Show(title: title, message1: null, message2: null, type: typeof(T), parametres: parametres, confirmDialogOptions: confirmDialogOptions);
     }
 
     /// <summary>

@@ -7,9 +7,18 @@
 
     private async Task ShowSaveConfirmation()
     {
+        var options = new ConfirmDialogOptions
+            {
+                YesButtonText = "OK",
+                YesButtonColor = ButtonColor.Success,
+                NoButtonText = "CANCEL",
+                NoButtonColor = ButtonColor.Danger
+            };
+
         var confirmation = await dialog.ShowAsync(
             title: "Simple Confirm Dialog",
-            message1: "Confirm ticket #2611202201?");
+            message1: "Do you want to proceed?",
+            confirmDialogOptions: options);
 
         if (confirmation)
         {
