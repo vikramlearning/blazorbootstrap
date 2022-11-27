@@ -1,11 +1,11 @@
 ﻿<ConfirmDialog @ref="dialog" />
 
-<Button Color="ButtonColor.Primary" @onclick="ShowSaveConfirmation"> Save Employee </Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowSaveConfirmationAsync"> Save Employee </Button>
 
 @code {
     private ConfirmDialog dialog;
 
-    private async Task ShowSaveConfirmation()
+    private async Task ShowSaveConfirmationAsync()
     {
         var options = new ConfirmDialogOptions
             {
