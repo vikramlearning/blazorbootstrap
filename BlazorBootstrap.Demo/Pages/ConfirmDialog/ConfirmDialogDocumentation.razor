@@ -13,12 +13,12 @@
 <div class="mb-3"></div>
 <Demo Type="typeof(ConfirmDialog_Demo_01_Examples)" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Detailed messages" PageUrl="@pageUrl" HashTagName="detailed-messages" />
+@*<SectionHeading Size="HeadingSize.H2" Text="Detailed messages" PageUrl="@pageUrl" HashTagName="detailed-messages" />
 <div class="mb-3">
     Dynamically change the confirmation dialog title (Title) and message (Message1 and Message2) by calling <code>show(title, message1, message2)</code>.
     In the example below, <b>Save Employee</b> and <b>Delete Employee</b> both will display different titles and messages.
 </div>
-<Demo Type="typeof(ConfirmDialog_Demo_02_Detailed_Messages)" />
+<Demo Type="typeof(ConfirmDialog_Demo_02_Detailed_Messages)" />*@
 
 <SectionHeading Size="HeadingSize.H2" Text="Dynamic component as confirm dialog" PageUrl="@pageUrl" HashTagName="dynamic-component-as-confirm-dialog" />
 <Demo Type="typeof(ConfirmDialog_Demo_03_Dynamic_Component_As_Confirm_Dialog)" />
@@ -33,12 +33,16 @@ Confirm dialog have three optional sizes. These sizes kick in at certain breakpo
 <Demo Type="typeof(ConfirmDialog_Demo_05_Optional_Sizes)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Scrolling long content" PageUrl="@pageUrl" HashTagName="scrolling-long-content" />
-<div class="mb-3">
-    When dialogs become too long for the user's viewport or device, they scroll independent of the page itself. Try the demo below to see what we mean.
-</div>
-<Demo Type="typeof(ConfirmDialog_Demo_06_Scrolling_Long_Content_01)" />
-<div class="mb-3">You can also create a scrollable dialog that allows scroll the dialog body by updating <code>DialogOptions.IsScrollable="true"</code>.</div>
-<Demo Type="typeof(ConfirmDialog_Demo_06_Scrolling_Long_Content_02)" />
+When dialogs become too long for the user's viewport or device, they scroll independent of the page itself. Try the demo below to see what we mean.
+<Demo Type="typeof(ConfirmDialog_Demo_06_Scrolling_Long_Content_01)" Tabs="true" />
+<div class="my-3">You can also create a scrollable dialog that allows scroll the dialog body by updating <code>DialogOptions.IsScrollable="true"</code>.</div>
+<Demo Type="typeof(ConfirmDialog_Demo_06_Scrolling_Long_Content_02)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Vertically centered" PageUrl="@pageUrl" HashTagName="vertically-centered" />
+Add <code>DialogOptions.IsVerticallyCentered="true"</code> to vertically center the confirm dialog.
+<Demo Type="typeof(ConfirmDialog_Demo_07_Vertically_Centered_01)" Tabs="true" />
+<div class="mb-3"></div>
+<Demo Type="typeof(ConfirmDialog_Demo_07_Vertically_Centered_02)" Tabs="true" />
 
 @code {
     private string pageUrl = "/confirm-dialog";

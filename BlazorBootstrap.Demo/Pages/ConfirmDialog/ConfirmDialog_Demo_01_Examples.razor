@@ -1,15 +1,16 @@
 ﻿<ConfirmDialog @ref="dialog" />
 
-<Button Color="ButtonColor.Primary" @onclick="ShowSaveConfirmation"> Save Employee </Button>
+<Button Color="ButtonColor.Danger" @onclick="ShowConfirmationAsync"> Delete Employee </Button>
 
 @code {
     private ConfirmDialog dialog;
 
-    private async Task ShowSaveConfirmation()
+    private async Task ShowConfirmationAsync()
     {
         var confirmation = await dialog.ShowAsync(
-            title: "Simple Confirm Dialog",
-            message1: "Confirm ticket #2611202201?");
+            title: "Are you sure you want to delete this?",
+            message1: "This will delete the record. Once deleted can not be rolled back.",
+            message2: "Do you want to proceed?");
 
         if (confirmation)
         {

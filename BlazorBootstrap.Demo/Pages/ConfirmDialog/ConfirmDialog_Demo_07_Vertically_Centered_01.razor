@@ -1,0 +1,25 @@
+﻿<ConfirmDialog @ref="dialog" />
+
+<Button Color="ButtonColor.Primary" @onclick="ShowDialog"> Launch Vertically Centered Confirm Dialog </Button>
+
+@code {
+    private ConfirmDialog dialog;
+
+    private async Task ShowDialog()
+    {
+        var options = new ConfirmDialogOptions { IsVerticallyCentered = true };
+        var confirmation = await dialog.ShowAsync(
+            title: "Simple Confirm Dialog",
+            message1: "Do you want to proceed?",
+            confirmDialogOptions: options);
+
+        if (confirmation)
+        {
+            // do whatever
+        }
+        else
+        {
+            // do whatever
+        }
+    }
+}
