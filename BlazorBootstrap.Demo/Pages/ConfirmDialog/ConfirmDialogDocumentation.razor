@@ -28,6 +28,18 @@
 <SectionHeading Size="HeadingSize.H2" Text="Change buttons text and color" PageUrl="@pageUrl" HashTagName="change-buttons-text-and-color" />
 <Demo Type="typeof(ConfirmDialog_Demo_04_Change_Buttons_Text_And_Color)" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Optional sizes" PageUrl="@pageUrl" HashTagName="optional-sizes" />
+Confirm dialog have three optional sizes. These sizes kick in at certain breakpoints to avoid horizontal scrollbars on narrower viewports.
+<Demo Type="typeof(ConfirmDialog_Demo_05_Optional_Sizes)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Scrolling long content" PageUrl="@pageUrl" HashTagName="scrolling-long-content" />
+<div class="mb-3">
+    When dialogs become too long for the user's viewport or device, they scroll independent of the page itself. Try the demo below to see what we mean.
+</div>
+<Demo Type="typeof(ConfirmDialog_Demo_06_Scrolling_Long_Content_01)" />
+<div class="mb-3">You can also create a scrollable dialog that allows scroll the dialog body by updating <code>DialogOptions.IsScrollable="true"</code>.</div>
+<Demo Type="typeof(ConfirmDialog_Demo_06_Scrolling_Long_Content_02)" />
+
 @code {
     private string pageUrl = "/confirm-dialog";
     private string title = "Blazor Confirm Dialog Component";

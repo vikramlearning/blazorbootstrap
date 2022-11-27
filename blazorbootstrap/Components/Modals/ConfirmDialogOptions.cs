@@ -40,7 +40,7 @@ public class ConfirmDialogOptions
     /// <summary>
     /// Size of the modal. Default is <see cref="ModalSize.Regular"/>.
     /// </summary>
-    public ModalSize Size { get; set; }
+    public DialogSize Size { get; set; }
 
     /// <summary>
     /// Gets or sets the 'Yes' button color. <see cref="ButtonColor"/>

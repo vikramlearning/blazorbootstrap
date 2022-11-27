@@ -74,7 +74,7 @@ public partial class ConfirmDialog : BaseComponent
         this.verticallyCentered = confirmDialogOptions.IsVerticallyCentered ? "modal-dialog-centered" : "";
         this.noButtonColor = confirmDialogOptions.NoButtonColor.ToButtonClass();
         this.noButtonText = confirmDialogOptions.NoButtonText;
-        this.modalSize = BootstrapClassProvider.ToModalSize(confirmDialogOptions.Size);
+        this.modalSize = BootstrapClassProvider.ToDialogSize(confirmDialogOptions.Size);
         this.yesButtonColor = confirmDialogOptions.YesButtonColor.ToButtonClass();
         this.yesButtonText = confirmDialogOptions.YesButtonText;
 
@@ -83,6 +83,8 @@ public partial class ConfirmDialog : BaseComponent
 
         this.DirtyClasses();
         this.DirtyStyles();
+
+        Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show"));
 
         StateHasChanged();
 
@@ -137,6 +139,8 @@ public partial class ConfirmDialog : BaseComponent
 
         this.DirtyClasses();
         this.DirtyStyles();
+
+        Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide"));
 
         StateHasChanged();
     }
