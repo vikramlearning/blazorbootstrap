@@ -2,11 +2,32 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2022-11-22T00:00:00.000Z</updated>
+    <updated>2022-11-28T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.1.0]]></title>
+        <id>/2022/11/28/blazorbootstrap-1.1.0</id>
+        <link href="https://getblazorbootstrap.com/blog/2022/11/28/blazorbootstrap-1.1.0"/>
+        <updated>2022-11-28T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.1.0, with new Toast Service, ConfirmDialog, Icons enhancements, and more examples!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.1.0, with new Toast Service, ConfirmDialog, Icons enhancements, and more examples!!!</p><b>Blazor Toasts service</b><img loading="lazy" src="https://i.imgur.com/wgYhBXW.png" alt="Blazor Bootstrap: Blazor Toasts service" class="img_ev3q"><b>Blazor ConfirmDialog component</b><img loading="lazy" src="https://i.imgur.com/B5Hf85u.png" alt="Blazor Bootstrap: Blazor ConfirmDialog component" class="img_ev3q"><b>Blazor Icon component</b><img loading="lazy" src="https://i.imgur.com/8HcjpiK.png" alt="Blazor Bootstrap: Blazor Icon component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li>New <code>ToastService</code></li><li><code>ConfirmDialog</code> component enhancements</li><li><code>PreloadService</code> enhancements</li><li><code>Icon</code> component enhancements</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="demos-site-examples">Demos site examples<a class="hash-link" href="#demos-site-examples" title="Direct link to heading">​</a></h2><ul><li>New examples for 'Blazor ToastService'</li><li>New examples for 'Blazor Confirm Dialog Component'</li><li>New examples for 'Blazor Preload Component'</li><li>New examples for 'Blazor Icon Component'</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website</a></li><li><a href="https://getblazorbootstrap.com/docs/components/toasts" target="_blank" rel="noopener noreferrer">Blazor Toasts Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/confirmation-dialog" target="_blank" rel="noopener noreferrer">Blazor Confirm Dialog Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/preload" target="_blank" rel="noopener noreferrer">Blazor Preload Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/content/icons" target="_blank" rel="noopener noreferrer">Blazor Icon Component Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.1.0" term="v1.1.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="blazor-bootstrap" term="blazor-bootstrap"/>
+        <category label="blazor-dialog" term="blazor-dialog"/>
+        <category label="blazor-confirm-dialog" term="blazor-confirm-dialog"/>
+        <category label="blazor-preload" term="blazor-preload"/>
+        <category label="blazor-spinner" term="blazor-spinner"/>
+        <category label="blazor-toast" term="blazor-toast"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.0.1]]></title>
         <id>/2022/11/22/blazorbootstrap-1.0.1</id>
