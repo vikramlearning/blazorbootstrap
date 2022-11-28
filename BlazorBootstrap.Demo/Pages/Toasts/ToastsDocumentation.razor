@@ -8,6 +8,12 @@
 <div class="mb-3">Push notifications to your visitors with a toast, a lightweight and easily customizable alert message.</div>
 <div>Blazor Toasts are lightweight notifications designed to mimic the push notifications that mobile and desktop operating systems have popularized. They're built with a flexbox, making it easy to align and position.</div>
 
+<SectionHeading Size="HeadingSize.H2" Text="Things to know when using the blazor toasts component" PageUrl="@pageUrl" HashTagName="things-to-know-when-using-the-blazor-toasts-component" />
+<ul>
+    <li>Blazor Toasts will not hide automatically if you do not specify <code>AutoHide="true"</code>.</li>
+    <li>Use <a href="/toasts#global-toasts-service-for-the-application">global toasts service</a> for the application instead of page level toasts.</li>
+</ul>
+
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <Demo Type="typeof(Toasts_Demo_01_Toast_With_Title)" />
 

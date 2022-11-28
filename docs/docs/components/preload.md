@@ -18,7 +18,7 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 - Call `PreloadService.Show()` before you make any call to the API.
 - Call `PreloadService.Hide()` after you get the response from the API.
 
-<img src="https://i.imgur.com/UV6zPTQ.png" alt="Blazor Preload Component - Default" />
+<img src="https://i.imgur.com/UV6zPTQ.png" alt="Blazor Bootstrap: Blazor Preload Component - Default" />
 
 ## Parameters
 
@@ -84,7 +84,7 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 
 Change the default spinner color by passing the `SpinnerColor` enum to the `Show(...)` method. In the below example, we are using a [global preload service](/docs/components/preload#global-preload-service-for-the-application), as shown in the above section.
 
-<img src="https://i.imgur.com/5PVt5bX.png" alt="Blazor Preload Component - Change spinner color" />
+<img src="https://i.imgur.com/5PVt5bX.png" alt="Blazor Bootstrap: Blazor Preload Component - Change spinner color" />
 
 ```cshml {} showLineNumbers
 <Button Color="ButtonColor.Primary" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Primary)">Primary Spinner</Button>

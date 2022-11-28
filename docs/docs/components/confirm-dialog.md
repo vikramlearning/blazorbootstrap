@@ -16,15 +16,15 @@ Use Blazor Bootstrap confirm dialog component if you want the user to verify or 
 ## Methods
 
 | Name | Return Type | Description | Added Version |
-|--|--|--|--|
+|:--|:--|:--|:--|
 | ShowAsync(string title, string message1, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. | 1.1.0 |
 | ShowAsync(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. | 1.1.0 |
 | ShowAsync<T\>(string title, Dictionary<string, object> parametres = null, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. | 1.1.0 |
 
 ## ConfirmDialogOptions Properties
 
-| Name | Type | Default | Description | Version |
-|--|--|--|--|--|
+| Name | Type | Default | Description | Added Version |
+|:--|:--|:--|:--|:--|
 | DialogCssClass | string | | Additional CSS class for the dialog (div.modal-dialog element). | 1.1.0 |
 | Dismissable | bool | | Adds a dismissable close button to the confirm dialog. | 1.1.0 |
 | HeaderCssClass | string | | Additional header CSS class (div.modal-header element). | 1.1.0 |
