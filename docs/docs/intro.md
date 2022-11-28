@@ -14,7 +14,7 @@ Get started with Blazor Bootstrap, with ready-made components.
 Looking to quickly add Blazor Bootstrap to your project? Use NuGet package manager.
 
 ```shell
-Install-Package Blazor.Bootstrap -Version 1.0.0
+Install-Package Blazor.Bootstrap -Version 1.1.0
 ```
 
 ## Starter template
