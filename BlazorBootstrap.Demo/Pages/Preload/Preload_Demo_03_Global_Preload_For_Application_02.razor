@@ -1,4 +1,5 @@
 ﻿@code {
+
     [Inject] protected PreloadService PreloadService { get; set; }
 
     private void GetEmployees()
@@ -7,7 +8,7 @@
         {
             PreloadService.Show();
 
-            // TODO: call the service/api to get the employees
+            // call the service/api to get the employees
         }
         catch
         {

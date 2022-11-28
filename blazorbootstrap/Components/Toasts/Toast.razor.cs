@@ -20,13 +20,6 @@ public partial class Toast : BaseComponent, IDisposable
 
     #region Methods
 
-    protected override void OnInitialized()
-    {
-        customIconName = this.ToastMessage.CustomIconName;
-
-        base.OnInitialized();
-    }
-
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Toast());
@@ -37,6 +30,7 @@ public partial class Toast : BaseComponent, IDisposable
 
     protected override async Task OnInitializedAsync()
     {
+        customIconName = this.ToastMessage.CustomIconName;
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
@@ -71,10 +65,10 @@ public partial class Toast : BaseComponent, IDisposable
         await base.DisposeAsync(disposing);
     }
 
-    [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync(this.ToastMessage.Id);
-    [JSInvokable] public async Task bsShownToast() => await Shown.InvokeAsync(this.ToastMessage.Id);
-    [JSInvokable] public async Task bsHideToast() => await Hiding.InvokeAsync(this.ToastMessage.Id);
-    [JSInvokable] public async Task bsHiddenToast() => await Hidden.InvokeAsync(this.ToastMessage.Id);
+    [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
+    [JSInvokable] public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
+    [JSInvokable] public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
+    [JSInvokable] public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
 
     private string GetIconClass()
     {
@@ -154,22 +148,22 @@ public partial class Toast : BaseComponent, IDisposable
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
-    [Parameter] public EventCallback<Guid> Showing { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Showing { get; set; }
 
     /// <summary>
     /// This event is fired when the toast has been made visible to the user.
     /// </summary>
-    [Parameter] public EventCallback<Guid> Shown { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Shown { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide instance method has been called.
     /// </summary>
-    [Parameter] public EventCallback<Guid> Hiding { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Hiding { get; set; }
 
     /// <summary>
     /// This event is fired when the toast has finished being hidden from the user.
     /// </summary>
-    [Parameter] public EventCallback<Guid> Hidden { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Hidden { get; set; }
 
     /// <summary>
     /// Automatically hide the toast after the delay.

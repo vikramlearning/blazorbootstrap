@@ -55,10 +55,10 @@ public partial class SimpleToast : BaseComponent, IDisposable
         await base.DisposeAsync(disposing);
     }
 
-    [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync(this.ToastMessage.Id);
-    [JSInvokable] public async Task bsShownToast() => await Shown.InvokeAsync(this.ToastMessage.Id);
-    [JSInvokable] public async Task bsHideToast() => await Hiding.InvokeAsync(this.ToastMessage.Id);
-    [JSInvokable] public async Task bsHiddenToast() => await Hidden.InvokeAsync(this.ToastMessage.Id);
+    [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
+    [JSInvokable] public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
+    [JSInvokable] public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
+    [JSInvokable] public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
 
     #endregion Methods
 
@@ -72,22 +72,22 @@ public partial class SimpleToast : BaseComponent, IDisposable
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
-    [Parameter] public EventCallback<Guid> Showing { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Showing { get; set; }
 
     /// <summary>
     /// This event is fired when the toast has been made visible to the user.
     /// </summary>
-    [Parameter] public EventCallback<Guid> Shown { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Shown { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide instance method has been called.
     /// </summary>
-    [Parameter] public EventCallback<Guid> Hiding { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Hiding { get; set; }
 
     /// <summary>
     /// This event is fired when the toast has finished being hidden from the user.
     /// </summary>
-    [Parameter] public EventCallback<Guid> Hidden { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Hidden { get; set; }
 
     /// <summary>
     /// Auto hide the toast. Default is false.

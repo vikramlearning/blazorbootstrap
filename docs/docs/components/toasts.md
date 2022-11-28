@@ -11,37 +11,38 @@ sidebar_position: 16
 
 Push notifications to your visitors with a toast, a lightweight and easily customizable Blazor Bootstrap toast message.
 
-Toasts are lightweight notifications designed to mimic the push notifications that have been popularized by mobile and desktop operating systems. They’re built with flexbox, so they’re easy to align and position.
+Blazor Toasts are lightweight notifications designed to mimic the push notifications that mobile and desktop operating systems have popularized. They're built with a flexbox, making it easy to align and position.
 
-<img src="https://i.imgur.com/OCQUchu.png" alt="Blazor Bootstrap: Blazor Toasts Component" />
+<img src="https://i.imgur.com/W1YkmJH.png" alt="Blazor Bootstrap: Blazor Toasts Component - Example 1" />
+<img src="https://i.imgur.com/OCQUchu.png" alt="Blazor Bootstrap: Blazor Toasts Component - Example 2" />
 
-**Things to know when using the toasts component:**
+**Things to know when using the blazor toasts component:**
 
 - Toasts will not hide automatically if you do not specify `AutoHide="true"`.
+- Use [global toasts service](/docs/components/toasts#global-toasts-service-for-the-application) for the application instead of page level toasts.
 
 ## Toasts Parameters
 
-| Name | Type | Descritpion | Required | Default |
-|:--|:--|:--|:--|:--|
-| AutoHide | bool | Auto hide the toast. | | `false` |
-| Delay | int | Delay hiding the toast (milli seconds). | | 5000 |
-| Messages | `List<ToastMessage>` | List of all the toasts. | ✔️ | |
-| Placement | `ToastsPlacement` | Specifies the toasts placement. | | `ToastsPlacement.TopRight` |
-| ShowCloseButton | bool | Show close button. | | `true` |
-| StackLength | int | Specifies the toast container maximum capacity. | | 5 |
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AutoHide | bool | Auto hide the toast. | | `false` | 1.0.0 |
+| Delay | int | Delay hiding the toast (milli seconds). | | 5000 | 1.0.0 |
+| Messages | `List<ToastMessage>` | List of all the toasts. | ✔️ | | 1.0.0 |
+| Placement | `ToastsPlacement` | Specifies the toasts placement. | | `ToastsPlacement.TopRight` | 1.0.0 |
+| ShowCloseButton | bool | Show close button. | | `true` | 1.0.0 |
+| StackLength | int | Specifies the toast container maximum capacity. | | 5 | 1.0.0 |
 
 ## ToastMessage Properties
 
-| Name | Type | Description | Required | Default |
-|:--|:--|:--|:--|:--|
-| Type | `ToastType` | Gets or sets the type of the toast. | ✔️ | |
-| ImageSource | string | Gets or sets the source of the image. | | |
-| IconName | `IconName` | Gets or sets the bootstarp icon name. | | |
-| Id | Guid | Gets the toast id. | | |
-| CustomIconName | string | Gets or sets the custom icon name. | | |
-| Title | string | Gets or sets the toast''s message title. | | |
-| HelpText | string | Gets or sets the help text. | | |
-| Message | string | Gets or sets the toast message. | ✔️ | |
+| Name | Type | Description | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| CustomIconName | string | Gets or sets the custom icon name. | | | 1.0.0 |
+| HelpText | string | Gets or sets the help text. | | | 1.0.0 |
+| IconName | `IconName` | Gets or sets the bootstarp icon name. | | | 1.0.0 |
+| Id | Guid | Gets the toast id. | | | 1.0.0 |
+| Message | string | Gets or sets the toast message. | ✔️ | | 1.0.0 |
+| Title | string | Gets or sets the toast''s message title. | | | 1.0.0 |
+| Type | `ToastType` | Gets or sets the type of the toast. | ✔️ | | 1.0.0 |
 
 ## Examples:
 
@@ -244,3 +245,47 @@ In the below example, StackLength is set to 3. It shows a maximum of 3 toast mes
 ```
 
 [See demo here.](https://demos.getblazorbootstrap.com/toasts#stack-length)
+
+### Global toasts service for the application
+
+1. Add the `Toasts` component in MainLayout.razor page as shown below.
+
+```cshtml {9} showLineNumbers
+@inherits LayoutComponentBase
+
+...
+
+... MainLayour.razor code goes here ...
+
+...
+
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+```
+:::tip
+Set the `Toasts` component parameters as per your requirement.
+:::
+
+2. Inject `ToastService`, then call the `Notify(...)` method as shown below.
+
+```cshtml {} showLineNumbers
+@code {
+
+    [Inject] protected ToastService ToastService { get; set; }
+
+    private void SaveEmployee()
+    {
+        try
+        {
+            // TODO: call the service/api to save the employee details
+
+            ToastService.Notify(new(ToastType.Success, $"Employee details saved successfully."));
+        }
+        catch(Exception ex)
+        {
+            // handle exception
+
+            ToastService.Notify(new(ToastType.Danger, $"Error: {ex.Message}."));
+        }
+    }
+}
+```

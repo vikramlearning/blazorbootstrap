@@ -1,16 +1,10 @@
-﻿using BlazorBootstrap.Extensions;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Preload : BaseComponent
 {
     #region Members
 
-    private SpinnerColor color = SpinnerColor.None;
-
-    private string verticallyCentered => IsVerticallyCentered ? "modal-dialog-centered" : "";
-
-    private string spinnerColor => Color.ToSpinnerColor();
+    private string spinnerColor;
 
     private bool showBackdrop;
 
@@ -42,8 +36,10 @@ public partial class Preload : BaseComponent
         PageLoadingService.OnHide += OnHide;
     }
 
-    private void OnShow()
+    private void OnShow(SpinnerColor spinnerColor)
     {
+        this.spinnerColor = spinnerColor.ToSpinnerColor();
+
         showBackdrop = true;
 
         this.DirtyClasses();
@@ -84,25 +80,7 @@ public partial class Preload : BaseComponent
     /// <summary>
     /// Gets or sets the <see cref="PageLoadingService" /> instance.
     /// </summary>
-    [Inject] PreloadService PageLoadingService { get; set; }
-
-    /// <summary>
-    /// Shows the preload vertically in the center of the page.
-    /// </summary>
-    [Parameter] public bool IsVerticallyCentered { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the spinner color.
-    /// </summary>
-    [Parameter]
-    public SpinnerColor Color
-    {
-        get => color; set
-        {
-            color = value;
-            DirtyClasses();
-        }
-    }
+    [Inject] PreloadService PageLoadingService { get; set; } = default!;
 
     /// <summary>
     /// Specifies the content to be rendered inside this.

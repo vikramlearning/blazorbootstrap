@@ -1,39 +1,24 @@
-﻿<ConfirmDialog @ref="dialog"
-               Title="Are you sure you want to save this?"
-               Message1="This will save the details enterd in the form."
-               Message2="Do you want to proceed?"
-               OnYes="OnYes"
-               OnNo="OnNo" />
+﻿<ConfirmDialog @ref="dialog" />
 
-<Button Color="ButtonColor.Primary" @onclick="ShowSaveConfirmation"> Save Employee </Button>
-
-<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopRight" AutoHide="true" ShowCloseButton="true" />
+<Button Color="ButtonColor.Danger" @onclick="ShowConfirmationAsync"> Delete Employee </Button>
 
 @code {
     private ConfirmDialog dialog;
 
-    List<ToastMessage> messages = new List<ToastMessage>();
-
-    private void ShowSaveConfirmation()
+    private async Task ShowConfirmationAsync()
     {
-        dialog.Show();
-    }
+        var confirmation = await dialog.ShowAsync(
+            title: "Are you sure you want to delete this?",
+            message1: "This will delete the record. Once deleted can not be rolled back.",
+            message2: "Do you want to proceed?");
 
-    private void OnYes()
-    {
-        messages.Add(new ToastMessage
-            {
-                Type = ToastType.Success,
-                Message = $"'Yes' confirmation was received from the user. DateTime: {DateTime.Now}",
-            });
-    }
-
-    private void OnNo()
-    {
-        messages.Add(new ToastMessage
-            {
-                Type = ToastType.Secondary,
-                Message = $"'No' confirmation was received from the user. DateTime: {DateTime.Now}",
-            });
+        if (confirmation)
+        {
+            // do whatever
+        }
+        else
+        {
+            // do whatever
+        }
     }
 }

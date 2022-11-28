@@ -19,24 +19,59 @@ public partial class Toasts : BaseComponent, IDisposable
         base.BuildClasses(builder);
     }
 
-    private void OnToastShownAsync(Guid toastId)
+    protected override void OnInitialized()
     {
-        if (Messages != null && Messages.Any() && Messages.Count >= StackLength)
+        if (ToastService is not null)
+            ToastService.OnNotify += OnNotify;
+
+        base.OnInitialized();
+    }
+
+    private async Task OnToastShownAsync(ToastEventArgs args)
+    {
+        if (Messages is null || !Messages.Any())
+            return;
+
+        Messages.ForEach(x =>
         {
-            Messages.RemoveRange(0, Messages.Count - StackLength);
+            if (x.Id == args.ToastId)
+                x.SetElementId(args.ElementId);
+        });
+
+        if (Messages.Count >= StackLength)
+        {
+            var deleteMessages = Messages.GetRange(0, Messages.Count - StackLength);
+
+            foreach (var message in deleteMessages)
+            {
+                if (string.IsNullOrWhiteSpace(message.ElementId))
+                    await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
+            }
         }
     }
 
-    private void OnToastHiddenAsync(Guid toastId)
+    private void OnToastHiddenAsync(ToastEventArgs args)
     {
-        if (Messages != null && Messages.Any())
-        {
-            var message = Messages.FirstOrDefault(x => x.Id == toastId);
-            if (message is not null && Messages.Remove(message))
-            {
-                // toast message removed successfully.
-            }
-        }
+        if (Messages is null || !Messages.Any())
+            return;
+
+        var message = Messages.FirstOrDefault(x => x.Id == args.ToastId);
+
+        if (message is not null)
+            Messages.Remove(message);
+    }
+
+    private void OnNotify(ToastMessage toastMessage)
+    {
+        if (Messages is null)
+            Messages = new();
+
+        if (toastMessage is null)
+            return;
+
+        Messages.Add(toastMessage);
+
+        StateHasChanged();
     }
 
     /// <inheritdoc />
@@ -45,6 +80,9 @@ public partial class Toasts : BaseComponent, IDisposable
         if (disposing)
         {
             Messages = null;
+
+            if (ToastService is not null)
+                ToastService.OnNotify -= OnNotify;
         }
 
         await base.DisposeAsync(disposing);
@@ -56,6 +94,8 @@ public partial class Toasts : BaseComponent, IDisposable
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
+
+    [Inject] public ToastService ToastService { get; set; }
 
     /// <summary>
     /// List of all the toasts.

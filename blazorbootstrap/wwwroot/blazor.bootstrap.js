@@ -72,6 +72,18 @@ window.blazorBootstrap = {
             bootstrap?.Dropdown?.getOrCreateInstance(elementRef)?.dispose();
         }
     },
+    confirmDialog: {
+        show: () => {
+            let bodyEl = document.getElementsByTagName('body');
+            if (bodyEl.length > 0)
+                bodyEl[0].style['overflow'] = 'hidden';
+        },
+        hide: () => {
+            let bodyEl = document.getElementsByTagName('body');
+            if (bodyEl.length > 0)
+                bodyEl[0].style['overflow'] = 'auto';
+        }
+    },
     modal: {
         initialize: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {
             let modalEl = document.getElementById(elementId);

@@ -515,6 +515,18 @@
             };
         }
 
+        public string ToDialogSize(DialogSize size)
+        {
+            return size switch
+            {
+                BlazorBootstrap.DialogSize.Regular => null,
+                BlazorBootstrap.DialogSize.Small => "modal-sm",
+                BlazorBootstrap.DialogSize.Large => "modal-lg",
+                BlazorBootstrap.DialogSize.ExtraLarge => "modal-xl",
+                _ => null,
+            };
+        }
+
         public string ToModalSize(ModalSize size)
         {
             return size switch

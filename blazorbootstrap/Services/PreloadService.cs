@@ -2,9 +2,9 @@
 
 public class PreloadService
 {
-    public event Action OnShow;
-    public event Action OnHide;
+    internal event Action<SpinnerColor> OnShow;
+    internal event Action OnHide;
 
-    public void Show() { OnShow?.Invoke(); }
-    public void Hide() { OnHide?.Invoke(); }
+    public void Show(SpinnerColor spinnerColor = SpinnerColor.Light) => OnShow?.Invoke(spinnerColor);
+    public void Hide() => OnHide?.Invoke();
 }

@@ -14,13 +14,14 @@ Get started with Blazor Bootstrap, with ready-made components.
 Looking to quickly add Blazor Bootstrap to your project? Use NuGet package manager.
 
 ```shell
-Install-Package Blazor.Bootstrap -Version 1.0.0
+Install-Package Blazor.Bootstrap -Version 1.1.0
 ```
 
 ## Starter template
 
 Change your `index.html` file and include the CSS and JS files:
- - Add Bootstrap 5 CSS and JS files as recommended in the official Bootstrap website.
+ - Add `Bootstrap 5.x` CSS and JS files as recommended in the official Bootstrap website.
+ - Add `Bootstrap Icons 1.x` CSS file as recommended in the official Bootstrap Icons website.
  - Include `blazor.bootstrap.js` file
  - Include `blazor.bootstrap.css` file
 
@@ -32,9 +33,9 @@ Change your `index.html` file and include the CSS and JS files:
        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
        <title>BlazorBootstrap - Starter Template</title>
        <base href="/" />
-       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
        <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
-       <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" rel="stylesheet" >
+       <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" rel="stylesheet" />
        <link href="BlazorBootstrap.UI.styles.css" rel="stylesheet" />
    </head>
    <body>
@@ -50,7 +51,7 @@ Change your `index.html` file and include the CSS and JS files:
    ```js
    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
    ```
-   Add `chart.js` reference if Chart components are used in the application.
+   Add `chart.js` reference if the <b>Chart</b> components are used in the application.
    :::
 
  - Add Blazor Bootstrap service in the `Program.cs`
