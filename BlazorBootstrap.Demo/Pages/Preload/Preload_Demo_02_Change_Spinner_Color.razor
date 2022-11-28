@@ -1,6 +1,4 @@
-﻿<Preload Color="@spinnerColor"></Preload>
-
-<Button Color="ButtonColor.Primary" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Primary)">Primary Spinner</Button>
+﻿<Button Color="ButtonColor.Primary" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Primary)">Primary Spinner</Button>
 <Button Color="ButtonColor.Secondary" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Secondary)">Secondary Spinner</Button>
 <Button Color="ButtonColor.Success" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Success)">Success Spinner</Button>
 <Button Color="ButtonColor.Danger" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Danger)">Danger Spinner</Button>
@@ -10,22 +8,11 @@
 <Button Color="ButtonColor.Dark" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Dark)">Dark Spinner</Button>
 
 @code {
-    public SpinnerColor spinnerColor = SpinnerColor.Light;
-
     [Inject] protected PreloadService PreloadService { get; set; }
 
-    protected override void OnInitialized()
+    private async Task ShowSpinnerAsync(SpinnerColor spinnerColor)
     {
-        base.OnInitialized();
-
-        Task.Run(() => ShowSpinnerAsync());
-    }
-
-    private async Task ShowSpinnerAsync(SpinnerColor spinnerColor = SpinnerColor.Light)
-    {
-        this.spinnerColor = spinnerColor;
-
-        PreloadService.Show();
+        PreloadService.Show(spinnerColor);
 
         await Task.Delay(3000); // call the service/api
 
