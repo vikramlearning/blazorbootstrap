@@ -62,7 +62,7 @@ public partial class ConfirmDialog : BaseComponent
         this.message2 = message2;
 
         this.childComponent = type;
-        this.parametres= parametres;
+        this.parametres = parametres;
 
         if (confirmDialogOptions is null)
             confirmDialogOptions = new ConfirmDialogOptions();
@@ -99,7 +99,7 @@ public partial class ConfirmDialog : BaseComponent
     /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
     /// <returns>bool</returns>
     public Task<bool> ShowAsync(string title, string message1, ConfirmDialogOptions confirmDialogOptions = null)
-    {        
+    {
         return Show(title: title, message1: message1, message2: null, type: null, parametres: null, confirmDialogOptions: confirmDialogOptions);
     }
 
@@ -113,7 +113,7 @@ public partial class ConfirmDialog : BaseComponent
     /// <returns>bool</returns>
     public Task<bool> ShowAsync(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null)
     {
-        return Show(title: title, message1: message1, message2: message2, type: null, parametres: null, confirmDialogOptions: confirmDialogOptions) ;
+        return Show(title: title, message1: message1, message2: message2, type: null, parametres: null, confirmDialogOptions: confirmDialogOptions);
     }
 
     /// <summary>
@@ -134,7 +134,7 @@ public partial class ConfirmDialog : BaseComponent
     /// </summary>
     private void Hide()
     {
-        this.isVisible= false;
+        this.isVisible = false;
         this.showBackdrop = false;
 
         this.DirtyClasses();

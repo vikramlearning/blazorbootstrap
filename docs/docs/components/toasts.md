@@ -244,3 +244,47 @@ In the below example, StackLength is set to 3. It shows a maximum of 3 toast mes
 ```
 
 [See demo here.](https://demos.getblazorbootstrap.com/toasts#stack-length)
+
+### Global toasts service for the application
+
+1. Add the `Toasts` component in MainLayout.razor page as shown below.
+
+```cshtml {9} showLineNumbers
+@inherits LayoutComponentBase
+
+...
+
+... MainLayour.razor code goes here ...
+
+...
+
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+```
+:::tip
+Set the `Toasts` component parameters as per your requirement.
+:::
+
+2. Inject `ToastService`, then call the `Notify(...)` method as shown below.
+
+```cshtml {} showLineNumbers
+@code {
+
+    [Inject] protected ToastService ToastService { get; set; }
+
+    private void SaveEmployee()
+    {
+        try
+        {
+            // TODO: call the service/api to save the employee details
+
+            ToastService.Notify(new(ToastType.Success, $"Employee details saved successfully."));
+        }
+        catch(Exception ex)
+        {
+            // handle exception
+
+            ToastService.Notify(new(ToastType.Danger, $"Error: {ex.Message}."));
+        }
+    }
+}
+```
