@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Icons Component
 description: Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
-image: https://i.imgur.com/Pkzbm1Q.jpg
+image: https://i.imgur.com/8HcjpiK.png
 
 sidebar_label: Icons
 sidebar_position: 1
@@ -126,6 +126,6 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 ### Bootstrap Icons
 
-<img src="https://i.imgur.com/273TamX.png" alt="Blazor Bootstrap: Icon Component - Bootstrap Icons" />
+<img src="https://i.imgur.com/8HcjpiK.png" alt="Blazor Bootstrap: Icon Component - Bootstrap Icons" />
 
 [See all bootstrap icons demo here.](https://demos.getblazorbootstrap.com/icons#bootstrap-icons)

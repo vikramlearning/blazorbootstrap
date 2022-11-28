@@ -16,8 +16,8 @@ We are excited to release 1.1.0, with new Toast Service, ConfirmDialog, Icons en
 <b>Blazor ConfirmDialog component</b>
 <img src="https://i.imgur.com/B5Hf85u.png" alt="Blazor Bootstrap: Blazor ConfirmDialog component" />
 
-<b>Blazor Preload component</b>
-<img src="https://i.imgur.com/3pvzbXY.png" alt="Blazor Bootstrap: Blazor Preload component" />
+<b>Blazor Icon component</b>
+<img src="https://i.imgur.com/8HcjpiK.png" alt="Blazor Bootstrap: Blazor Icon component" />
 
 <!--truncate-->
 
@@ -26,6 +26,7 @@ We are excited to release 1.1.0, with new Toast Service, ConfirmDialog, Icons en
 - New `ToastService`
 - `ConfirmDialog` component enhancements
 - `PreloadService` enhancements
+- `Icon` component enhancements
 
 ## Demos site examples
 - New examples for 'Blazor ToastService'
