@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Confirm Dialog Component
 description: Use Blazor Bootstrap confirm dialog component if you want the user to verify or accept something.
-image: https://i.imgur.com/FisZXwK.png
+image: https://i.imgur.com/B5Hf85u.png
 
 sidebar_label: Confirm Dialog
 sidebar_position: 7
@@ -11,7 +11,7 @@ sidebar_position: 7
 
 Use Blazor Bootstrap confirm dialog component if you want the user to verify or accept something.
 
-<img src="https://i.imgur.com/FisZXwK.png" alt="Blazor Bootstrap: Confirm Dialog component" />
+<img src="https://i.imgur.com/B5Hf85u.png" alt="Blazor Bootstrap: Confirm Dialog component" />
 
 ## Methods
 
@@ -40,7 +40,7 @@ Use Blazor Bootstrap confirm dialog component if you want the user to verify or 
 
 ### Confirm Dialog
 
-<img src="https://i.imgur.com/FisZXwK.png" alt="Blazor Bootstrap: Confirm Dialog Component - Examples" />
+<img src="https://i.imgur.com/B5Hf85u.png" alt="Blazor Bootstrap: Confirm Dialog Component - Examples" />
 
 ```cshtml {1} showLineNumbers
 <ConfirmDialog @ref="dialog" />
@@ -77,7 +77,7 @@ Use Blazor Bootstrap confirm dialog component if you want the user to verify or 
 
 In the below example, we used `Toast Service` to show the user confirmation.
 
-<img src="https://i.imgur.com/FlM6ZVv.png" alt="Blazor Bootstrap: Confirm Dialog Component - Dynamic component as confirm dialog" />
+<img src="https://i.imgur.com/yNv7Wvw.png" alt="Blazor Bootstrap: Confirm Dialog Component - Dynamic component as confirm dialog" />
 
 ```cshtml {1} showLineNumbers
 <ConfirmDialog @ref="dialog" />
@@ -142,13 +142,13 @@ In the below example, we used `Toast Service` to show the user confirmation.
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#examples)
+[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#dynamic-component-as-confirm-dialog)
 
 ### Change buttons text and color
 
 Use `ConfirmDialogOptions` to change the text and color of the button.
 
-<img src="https://i.imgur.com/FlM6ZVv.png" alt="Blazor Bootstrap: Confirm Dialog Component - Change buttons text and color" />
+<img src="https://i.imgur.com/uH19DpG.png" alt="Blazor Bootstrap: Confirm Dialog Component - Change buttons text and color" />
 
 ```cshtml showLineNumbers
 <ConfirmDialog @ref="dialog" />
@@ -187,13 +187,20 @@ Use `ConfirmDialogOptions` to change the text and color of the button.
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#examples)
+[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#change-buttons-text-and-color)
 
 ### Optional sizes
 
 Confirm dialog have three optional sizes. These sizes kick in at certain breakpoints to avoid horizontal scrollbars on narrower viewports.
 
-<img src="https://i.imgur.com/FlM6ZVv.png" alt="Blazor Bootstrap: Confirm Dialog Component - Optional sizes" />
+**Confirm Dialog Component - Small Size**
+<img src="https://i.imgur.com/RHYTaee.png" alt="Blazor Bootstrap: Confirm Dialog Component - Optional sizes - Small" />
+
+**Confirm Dialog Component - Large Size**
+<img src="https://i.imgur.com/pojAFvk.png" alt="Blazor Bootstrap: Confirm Dialog Component - Optional sizes - Large" />
+
+**Confirm Dialog Component - Extra Large Size**
+<img src="https://i.imgur.com/PMz3lbn.png" alt="Blazor Bootstrap: Confirm Dialog Component - Optional sizes - Extra Large" />
 
 ```cshtml showLineNumbers
 <ConfirmDialog @ref="dialog" />
@@ -228,13 +235,13 @@ Confirm dialog have three optional sizes. These sizes kick in at certain breakpo
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#examples)
+[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#optional-sizes)
 
 ### Scrolling long content
 
 When dialogs become too long for the user's viewport or device, they scroll independent of the page itself. Try the demo below to see what we mean.
 
-<img src="https://i.imgur.com/FlM6ZVv.png" alt="Blazor Bootstrap: Confirm Dialog Component - Scrolling long content" />
+<img src="https://i.imgur.com/8P6UejF.png" alt="Blazor Bootstrap: Confirm Dialog Component - Scrolling long content" />
 
 ```cshtml showLineNumbers
 <ConfirmDialog @ref="dialog" />
@@ -263,6 +270,8 @@ When dialogs become too long for the user's viewport or device, they scroll inde
 ```
 
 You can also create a scrollable dialog that allows scroll the dialog body by updating `DialogOptions.IsScrollable="true"`.
+
+<img src="https://i.imgur.com/kJdSffq.png" alt="Blazor Bootstrap: Confirm Dialog Component - Scrolling long content within the body" />
 
 ```cshtml showLineNumbers
 <ConfirmDialog @ref="dialog" />
@@ -293,13 +302,13 @@ You can also create a scrollable dialog that allows scroll the dialog body by up
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#examples)
+[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#scrolling-long-content)
 
 ### Vertically centered
 
 Add `DialogOptions.IsVerticallyCentered="true"` to vertically center the confirm dialog.
 
-<img src="https://i.imgur.com/FlM6ZVv.png" alt="Blazor Bootstrap: Confirm Dialog Component - Vertically centered" />
+<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Confirm Dialog Component - Vertically centered" />
 
 ```cshtml showLineNumbers
 <ConfirmDialog @ref="dialog" />
@@ -331,6 +340,8 @@ Add `DialogOptions.IsVerticallyCentered="true"` to vertically center the confirm
 }
 ```
 
+You can also create a scrollable dialog that allows scroll the dialog body by updating DialogOptions.IsScrollable="true".
+
 ```cshtml showLineNumbers
 <ConfirmDialog @ref="dialog" />
 
@@ -360,4 +371,4 @@ Add `DialogOptions.IsVerticallyCentered="true"` to vertically center the confirm
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#examples)
+[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#vertically-centered)

@@ -37,36 +37,43 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 
 ## Examples
 
-You can customize the color with `Color` parameter. You can use any of the `SpinnerColor` values.
+YIn the below example, when the page loads `PreloadService.Show()` is called to show the spinner.
 
-```cshml showLineNumbers
-<Preload Color="SpinnerColor.Light"></Preload>
+```cshml {1} showLineNumbers
+<Preload Color="@spinnerColor"></Preload>
+
+<Button Color="ButtonColor.Primary" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Primary)">Primary Spinner</Button>
+<Button Color="ButtonColor.Secondary" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Secondary)">Secondary Spinner</Button>
+<Button Color="ButtonColor.Success" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Success)">Success Spinner</Button>
+<Button Color="ButtonColor.Danger" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Danger)">Danger Spinner</Button>
+<Button Color="ButtonColor.Warning" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Warning)">Warning Spinner</Button>
+<Button Color="ButtonColor.Info" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Info)">Info Spinner</Button>
+<Button Color="ButtonColor.Light" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Light)">Light Spinner</Button>
+<Button Color="ButtonColor.Dark" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Dark)">Dark Spinner</Button>
 ```
 
 ```cs {6,13,22} showLineNumbers
 @code {
-    [Inject] protected PreloadService PageLoadingService { get; set; }
+    public SpinnerColor spinnerColor = SpinnerColor.Light;
+
+    [Inject] protected PreloadService PreloadService { get; set; }
 
     protected override void OnInitialized()
     {
-        Task.Run(async () => await LoadSpinnerAsync());
+        base.OnInitialized();
+
+        Task.Run(() => ShowSpinnerAsync());
     }
 
-    private async Task LoadSpinnerAsync()
+    private async Task ShowSpinnerAsync(SpinnerColor spinnerColor = SpinnerColor.Light)
     {
-        try
-        {
-            PageLoadingService.Show();
-            await Task.Delay(5000);
-        }
-        catch
-        {
-            // catch exception
-        }
-        finally
-        {
-            PageLoadingService.Hide();
-        }
+        this.spinnerColor = spinnerColor;
+
+        PreloadService.Show();
+
+        await Task.Delay(3000); // call the service/api
+
+        PreloadService.Hide();
     }
 }
 ```
