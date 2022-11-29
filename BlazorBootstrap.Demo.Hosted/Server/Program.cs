@@ -1,10 +1,14 @@
 using BlazorBootstrap;
+using BlazorBootstrap.Demo;
 using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-    // Add services to the container.
+    // DI
+    builder.Services.AddHttpClient();
     builder.Services.AddBlazorBootstrap();
+    builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+    builder.Services.AddScoped<ICustomerService, CustomerService>();
 
     builder.Services.AddControllersWithViews();
     builder.Services.AddRazorPages();
@@ -31,7 +35,7 @@ var app = builder.Build();
 
     app.MapRazorPages();
     app.MapControllers();
-    app.MapFallbackToFile("/_Host");
+    app.MapFallbackToPage("/_Host");
 
     app.Run();
 }
