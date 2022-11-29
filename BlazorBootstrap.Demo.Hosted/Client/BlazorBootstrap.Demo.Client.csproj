@@ -1,10 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Pages\GettingStarted\Snippet_02_Starter_Template_Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Pages\GettingStarted\Snippet_02_Starter_Template_Program.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <!--<PackageReference Include="Blazor.Bootstrap" Version="1.1.0" />-->

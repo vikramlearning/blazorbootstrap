@@ -8,7 +8,7 @@
       }
     },
     "profiles": {
-      "BlazorBootstrap.Demos.Server": {
+      "BlazorBootstrap.Demo.Server": {
         "commandName": "Project",
         "dotnetRunMessages": true,
         "launchBrowser": true,

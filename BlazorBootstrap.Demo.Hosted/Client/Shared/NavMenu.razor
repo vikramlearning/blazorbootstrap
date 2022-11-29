@@ -1,36 +1,127 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">BlazorBootstrap.Demos</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href=""> &nbsp; Blazor.Bootstrap <span class="ms-2 badge bg-success">@version</span></a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 </div>
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/getting-started" Match="NavLinkMatch.All">
+                <Icon Name="IconName.HouseDoorFill" class="me-2" /> Getting started
             </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="alerts">
+                <Icon Name="IconName.CheckCircleFill" class="me-2" /> Alerts
             </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="autocomplete">
+                <Icon Name="IconName.InputCursorText" class="me-2" /> AutoComplete
             </NavLink>
-        </div>
-    </nav>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="breadcrumb">
+                <Icon Name="IconName.SegmentedNav" class="me-2" /> Breadcrumb
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="buttons">
+                <Icon Name="IconName.ToggleOn" class="me-2" /> Buttons
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="callout">
+                <Icon Name="IconName.StickyFill" class="me-2" /> Callout
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="charts">
+                <Icon Name="IconName.BarChartLineFill" class="me-2" /> Charts
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="confirm-dialog">
+                <Icon Name="IconName.QuestionDiamondFill" class="me-2" /> Confirm Dialog <span class="ms-2 badge bg-success">Update</span>
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="grid">
+                <Icon Name="IconName.Grid3X2" class="me-2" /> Grid
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="icons">
+                <Icon Name="IconName.PersonSquare" class="me-2" /> Icons
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="modals">
+                <Icon Name="IconName.WindowStack" class="me-2" /> Modals
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/form/number-input">
+                <Icon Name="IconName.InputCursor" class="me-2" /> Number Input
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="offcanvas">
+                <Icon Name="IconName.LayoutSidebarReverse" class="me-2" /> Offcanvas
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="pagination">
+                <Icon Name="IconName.ThreeDots" class="me-2" /> Pagination
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="placeholders">
+                <Icon Name="IconName.ColumnsGap" class="me-2" /> Placeholders
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="preload">
+                <Icon Name="IconName.ArrowClockwise" class="me-2" /> Preload <span class="ms-2 badge bg-success">Update</span>
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="progress">
+                <Icon Name="IconName.UsbC" class="me-2" /> Progress
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="tabs">
+                <Icon Name="IconName.WindowPlus" class="me-2" /> Tabs
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="toasts">
+                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" /> Toasts <span class="ms-2 badge bg-success">Update</span>
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="tooltips">
+                <Icon Name="IconName.ChatSquareDotsFill" class="me-2" /> Tooltips
+            </NavLink>
+        </li>
+    </ul>
 </div>
 
 @code {
+    private string version;
     private bool collapseNavMenu = true;
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : "";
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    [Inject] public IConfiguration Configuration { get; set; }
+
+    protected override void OnInitialized()
+    {
+        version = $"v{Configuration.GetValue<string>("version")}"; // example: v0.6.1
+        base.OnInitialized();
+    }
 
     private void ToggleNavMenu()
     {

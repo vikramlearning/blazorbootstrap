@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace BlazorBootstrap.Demos.Server.Controllers
+namespace BlazorBootstrap.Demo.Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
