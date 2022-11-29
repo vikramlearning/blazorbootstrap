@@ -1,3 +1,5 @@
+using BlazorBootstrap;
+using BlazorBootstrap.Utilities;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
