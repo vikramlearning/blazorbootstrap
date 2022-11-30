@@ -1,0 +1,53 @@
+﻿<Tabs EnableFadeEffect="true"
+      OnShowing="@(args => OnTabShowingAsync(args))"
+      OnShown="@(args => OnTabShownAsync(args))"
+      OnHiding="@(args => OnTabHidingAsync(args))"
+      OnHidden="@(args => OnTabHiddenAsync(args))">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Home</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Profile</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Contact</b> tab.</p>
+        </Content>
+    </Tab>
+</Tabs>
+
+<p>Current Active Tab: <strong>@activeTabTitle</strong></p>
+<p>Previous Active Tab: <strong>@previousActiveTabTitle</strong></p>
+
+@code {
+    private string activeTabTitle;
+    private string previousActiveTabTitle;
+
+    private void OnTabShowingAsync(TabsEventArgs args)
+    {
+        //activeTabTitle = args.ActiveTabTitle;
+        //previousActiveTabTitle = args.PreviousActiveTabTitle;
+    }
+
+    private void OnTabShownAsync(TabsEventArgs args)
+    {
+        activeTabTitle = args.ActiveTabTitle;
+        previousActiveTabTitle = args.PreviousActiveTabTitle;
+    }
+
+    private void OnTabHidingAsync(TabsEventArgs args)
+    {
+        //activeTabTitle = args.ActiveTabTitle;
+        //previousActiveTabTitle = args.PreviousActiveTabTitle;
+    }
+
+    private void OnTabHiddenAsync(TabsEventArgs args)
+    {
+        //activeTabTitle = args.ActiveTabTitle;
+        //previousActiveTabTitle = args.PreviousActiveTabTitle;
+    }
+}

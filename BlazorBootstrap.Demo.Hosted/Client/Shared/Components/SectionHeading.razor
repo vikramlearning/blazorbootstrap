@@ -1,0 +1,32 @@
+﻿@namespace BlazorBootstrap.Demo
+
+@if (Size == HeadingSize.H2)
+{
+    <h2 id="@HashTagName.ToLower()" class="mt-4 mb-3">
+        @Text<a class="anchor-link" href="@link" @onclick="OnClick">#</a>
+    </h2>
+}
+else if (Size == HeadingSize.H3)
+{
+    <h3 id="@HashTagName.ToLower()" class="mt-4 mb-3">
+        @Text<a class="anchor-link" href="@link" @onclick="OnClick">#</a>
+    </h3>
+}
+else if (Size == HeadingSize.H4)
+{
+    <h4 id="@HashTagName.ToLower()" class="mt-4 mb-3">
+        @Text<a class="anchor-link" href="@link" @onclick="OnClick">#</a>
+    </h4>
+}
+else if (Size == HeadingSize.H5)
+{
+    <h5 id="@HashTagName.ToLower()" class="mt-4 mb-3">
+        @Text<a class="anchor-link" href="@link" @onclick="OnClick">#</a>
+    </h5>
+}
+else if (Size == HeadingSize.H6)
+{
+    <h6 id="@HashTagName.ToLower()" class="mt-4 mb-3">
+        @Text<a class="anchor-link" href="@link" @onclick="OnClick">#</a>
+    </h6>
+}

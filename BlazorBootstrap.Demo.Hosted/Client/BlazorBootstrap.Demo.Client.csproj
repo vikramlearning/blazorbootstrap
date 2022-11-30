@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Pages\GettingStarted\Snippet_02_Starter_Template_Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Pages\GettingStarted\Snippet_02_Starter_Template_Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.11" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\blazorbootstrap\BlazorBootstrap.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <Target Name="EmbedDemos" BeforeTargets="PrepareForBuild">
+    <!-- Let's embed demos sources into the assembly to show the source at runtime. -->
+    <ItemGroup>
+      <EmbeddedResource Include="Pages\**\*Demo*.razor" />
+      <EmbeddedResource Include="Pages\**\*Snippet*" />
+    </ItemGroup>
+  </Target>
+
+</Project>

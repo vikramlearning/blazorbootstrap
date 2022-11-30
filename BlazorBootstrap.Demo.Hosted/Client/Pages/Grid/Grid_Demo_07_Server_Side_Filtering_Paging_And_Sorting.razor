@@ -1,0 +1,42 @@
+﻿<Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
+    <GridColumn TItem="Employee" HeaderText="Id" PropertyName="Id" SortString="Id" SortKeySelector="item => item.Id" FilterTextboxWidth="80" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="First Name" PropertyName="FirstName" SortString="FirstName" SortKeySelector="item => item.FirstName" FilterTextboxWidth="80">
+        @context.FirstName
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="Last Name" PropertyName="LastName" SortString="LastName" SortKeySelector="item => item.LastName" FilterTextboxWidth="80">
+        @context.LastName
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="Designation" PropertyName="Designation" SortString="Designation" SortKeySelector="item => item.Designation" FilterTextboxWidth="80">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="Salary" PropertyName="Salary" SortString="Salary" SortKeySelector="item => item.Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" FilterTextboxWidth="80">
+        @context.Salary.ToString("N2")
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="DOJ" PropertyName="DOJ" SortString="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee" HeaderText="Active" PropertyName="IsActive" SortString="IsActive" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+</Grid>
+
+@code {
+    [Inject] public IEmployeeService _employeeService { get; set; }
+
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {
+        string sortString = "";
+        SortDirection sortDirection = SortDirection.None;
+
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault().SortString;
+            sortDirection = request.Sorting.FirstOrDefault().SortDirection;
+        }
+        var result = _employeeService.GetEmployees(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection);
+        return await Task.FromResult(new GridDataProviderResult<Employee> { Data = result.Item1, TotalCount = result.Item2 });
+    }
+}

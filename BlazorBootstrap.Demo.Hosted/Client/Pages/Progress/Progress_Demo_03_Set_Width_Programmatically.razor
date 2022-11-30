@@ -1,0 +1,29 @@
+﻿<Progress Class="mb-3">
+    <ProgressBar @ref="progressBar" />
+</Progress>
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="IncreaseProgressBar">Increase by 10%</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="DecreaseProgressBar">Decrease by 10%</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="ResetProgressBar">Reset</Button>
+
+@code {
+    ProgressBar progressBar;
+
+    private void IncreaseProgressBar()
+    {
+        progressBar.IncreaseWidth(10);
+        progressBar.SetLabel($"{progressBar.GetWidth()}%");
+    }
+
+    private void DecreaseProgressBar()
+    {
+        progressBar.DecreaseWidth(10);
+        progressBar.SetLabel($"{progressBar.GetWidth()}%");
+    }
+
+    private void ResetProgressBar()
+    {
+        progressBar.SetWidth(0);
+        progressBar.SetLabel($"{progressBar.GetWidth()}%");
+    }
+}

@@ -1,0 +1,21 @@
+﻿<Preload />
+
+@code {
+    [Inject] protected PreloadService PreloadService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Task.Run(() => ShowSpinnerAsync());
+    }
+
+    private async Task ShowSpinnerAsync()
+    {
+        PreloadService.Show();
+
+        await Task.Delay(3000); // call the service/api
+
+        PreloadService.Hide();
+    }
+}
