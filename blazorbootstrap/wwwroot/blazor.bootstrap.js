@@ -168,45 +168,66 @@ window.blazorBootstrap = {
             let currencyEl = document.getElementById(elementId);
 
             currencyEl?.addEventListener('keydown', function (event) {
-                let invalidChars = ["e", "E", "+"];
-                if (!isFloat)
-                    invalidChars.push("."); // restrict '.' for integer types
 
-                if (!allowNegativeNumbers) {
-                    invalidChars.push("-"); // restrict '-'
+                switch (event.keyCode) {
+                    case 8:   // backspace
+                    case 9:   // tab
+                    case 13:  // enter
+                    case 37:  // arrows left
+                    case 38:  // arrows up
+                    case 39:  // arrows right
+                    case 40:  // arrows down
+                    case 46:  // delete key
+                        return;
                 }
 
-                if (invalidChars.includes(event.key))
+                let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+                if (isFloat) {
+                    validChars.push('.'); // TODO: check ',' for specific culture
+                }
+
+                if (allowNegativeNumbers) {
+                    validChars.push('-');
+                }
+
+                if (!validChars.includes(event.key))
                     event.preventDefault();
             });
 
             currencyEl?.addEventListener('beforeinput', function (event) {
                 if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
 
-                    if (!allowNegativeNumbers) {
-                        // restrict 'e', 'E', '+', '-'
-                        if (isFloat && /[\e\E\+\-]/gi.test(event.data)) {
-                            event.preventDefault();
-                        }
-                        // restrict 'e', 'E', '.', '+', '-'
-                        else if (!isFloat && /[\e\E\.\+\-]/gi.test(event.data)) {
-                            event.preventDefault();
-                        }
-                    }
-                    // restrict 'e', 'E', '+'
-                    else if (isFloat && /[\e\E\+]/gi.test(event.data)) {
-                        event.preventDefault();
-                    }
-                    // restrict 'e', 'E', '.', '+'
-                    else if (!isFloat && /[\e\E\.\+]/gi.test(event.data)) {
-                        event.preventDefault();
-                    }
-
+                    // TODO: re-write the below logic
+                    //if (!allowNegativeNumbers) {
+                    //    // restrict 'e', 'E', '+', '-'
+                    //    if (isFloat && /[\e\E\+\-]/gi.test(event.data)) {
+                    //        event.preventDefault();
+                    //    }
+                    //    // restrict 'e', 'E', '.', '+', '-'
+                    //    else if (!isFloat && /[\e\E\.\+\-]/gi.test(event.data)) {
+                    //        event.preventDefault();
+                    //    }
+                    //}
+                    //// restrict 'e', 'E', '+'
+                    //else if (isFloat && /[\e\E\+]/gi.test(event.data)) {
+                    //    event.preventDefault();
+                    //}
+                    //// restrict 'e', 'E', '.', '+'
+                    //else if (!isFloat && /[\e\E\.\+]/gi.test(event.data)) {
+                    //    event.preventDefault();
+                    //}
                 }
             });
         },
-        setValue: (elementId, value) => {
-            document.getElementById(elementId).value = value;
+        getFormattedValue: (value, locales, currencySymbol) => {
+            let extractedValue = value.toString();
+            let parsedValue = Number.parseFloat(extractedValue);
+
+            return new Intl.NumberFormat(locales, {
+                style: 'currency',
+                currency: currencySymbol
+            }).format(parsedValue);
         }
     },
     offcanvas: {

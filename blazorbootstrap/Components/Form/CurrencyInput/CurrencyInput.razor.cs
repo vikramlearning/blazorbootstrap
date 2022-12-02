@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Globalization;
+
+namespace BlazorBootstrap;
 
 public partial class CurrencyInput<TValue> : BaseComponent
 {
@@ -22,6 +24,8 @@ public partial class CurrencyInput<TValue> : BaseComponent
     private bool disabled;
 
     private string step;
+
+    private string formattedValue;
 
     #endregion
 
@@ -109,8 +113,11 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     private async Task OnChange(ChangeEventArgs e)
     {
+        var cultureName = "fr-FR"; // "fr -FR"; // "en -IN";
+        var cultureInfo = new CultureInfo(cultureName);
+
         var oldValue = Value;
-        var newValue = e.Value; // object
+        var newValue = ExtractValue(e.Value, cultureInfo);
 
         if (newValue is null || !TryParseValue(newValue, out TValue value))
             Value = default;
@@ -121,12 +128,22 @@ public partial class CurrencyInput<TValue> : BaseComponent
         else
             Value = value;
 
-        if (oldValue.Equals(Value))
-            await JS.InvokeVoidAsync("window.blazorBootstrap.currencyInput.setValue", ElementId, Value);
-
         await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
+
+        //Console.WriteLine($"Name: {c.Name}"); // en-IN
+        //Console.WriteLine($"TwoLetterISOLanguageName: {c.TwoLetterISOLanguageName}"); // en
+        //Console.WriteLine($"ThreeLetterISOLanguageName: {c.ThreeLetterISOLanguageName}"); // eng
+        //Console.WriteLine($"CurrencySymbol: {c.NumberFormat.CurrencySymbol}"); // INR
+        //Console.WriteLine($"ISOCurrencySymbol: {(new RegionInfo(c.Name)).ISOCurrencySymbol}"); // INR
+        //Console.WriteLine($"NumberDecimalDigits: {c.NumberFormat.NumberDecimalDigits}"); // 3
+        //Console.WriteLine($"CurrencyDecimalDigits: {cultureInfo.NumberFormat.CurrencyDecimalDigits}"); // 2
+        //Console.WriteLine($"CurrencyDecimalSeparator: {cultureInfo.NumberFormat.CurrencyDecimalSeparator}"); // ,
+        //Console.WriteLine($"CurrencyGroupSeparator: {cultureInfo.NumberFormat.CurrencyGroupSeparator}"); // 
+        //Console.WriteLine($"CurrencyNegativePattern: {cultureInfo.NumberFormat.CurrencyNegativePattern}"); // 8
+
+        this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", Value, cultureName, (new RegionInfo(cultureInfo.Name)).ISOCurrencySymbol);
     }
 
     /// <summary>
@@ -305,6 +322,21 @@ public partial class CurrencyInput<TValue> : BaseComponent
             || typeof(TValue) == typeof(double?)
             || typeof(TValue) == typeof(decimal)
             || typeof(TValue) == typeof(decimal?);
+    }
+
+    private string ExtractValue(object value, CultureInfo cultureInfo)
+    {
+        if (value is null || string.IsNullOrWhiteSpace(value.ToString()))
+            return string.Empty;
+
+        var validChars = "0123456789";
+        if (isFloatingNumber())
+            validChars = string.Concat(validChars, ".");
+
+        if(AllowNegativeNumbers)
+            validChars = string.Concat(validChars, "-");
+
+        return string.Concat(value.ToString().Replace(",", ".").Where(c => validChars.Contains(c)));
     }
 
     #endregion

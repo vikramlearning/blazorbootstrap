@@ -42,7 +42,7 @@
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
-	  <None Include="Components\Form\CurrencyInput.razor" />
+	  <None Include="Components\Form\CurrencyInput\CurrencyInput.razor" />
 	</ItemGroup>
 
 	<ItemGroup>
