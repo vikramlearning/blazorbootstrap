@@ -11,9 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{74FC2FB9-8E2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demos", "demos", "{7DABA756-9F2F-48A6-B8D3-B104262D11B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorBootstrap.Demo.Server", "BlazorBootstrap.Demo.Hosted\Server\BlazorBootstrap.Demo.Server.csproj", "{D8A68986-BC6C-46AD-A089-7F325884E966}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.Demo.Server", "BlazorBootstrap.Demo.Hosted\Server\BlazorBootstrap.Demo.Server.csproj", "{D8A68986-BC6C-46AD-A089-7F325884E966}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorBootstrap.Demo.Client", "BlazorBootstrap.Demo.Hosted\Client\BlazorBootstrap.Demo.Client.csproj", "{CA121C94-88EC-4902-9FCD-8394BDEB0355}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.Demo.Client", "BlazorBootstrap.Demo.Hosted\Client\BlazorBootstrap.Demo.Client.csproj", "{CA121C94-88EC-4902-9FCD-8394BDEB0355}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

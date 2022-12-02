@@ -163,6 +163,52 @@ window.blazorBootstrap = {
             document.getElementById(elementId).value = value;
         }
     },
+    currencyInput: {
+        initialize: (elementId, isFloat, allowNegativeNumbers) => {
+            let currencyEl = document.getElementById(elementId);
+
+            currencyEl?.addEventListener('keydown', function (event) {
+                let invalidChars = ["e", "E", "+"];
+                if (!isFloat)
+                    invalidChars.push("."); // restrict '.' for integer types
+
+                if (!allowNegativeNumbers) {
+                    invalidChars.push("-"); // restrict '-'
+                }
+
+                if (invalidChars.includes(event.key))
+                    event.preventDefault();
+            });
+
+            currencyEl?.addEventListener('beforeinput', function (event) {
+                if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
+
+                    if (!allowNegativeNumbers) {
+                        // restrict 'e', 'E', '+', '-'
+                        if (isFloat && /[\e\E\+\-]/gi.test(event.data)) {
+                            event.preventDefault();
+                        }
+                        // restrict 'e', 'E', '.', '+', '-'
+                        else if (!isFloat && /[\e\E\.\+\-]/gi.test(event.data)) {
+                            event.preventDefault();
+                        }
+                    }
+                    // restrict 'e', 'E', '+'
+                    else if (isFloat && /[\e\E\+]/gi.test(event.data)) {
+                        event.preventDefault();
+                    }
+                    // restrict 'e', 'E', '.', '+'
+                    else if (!isFloat && /[\e\E\.\+]/gi.test(event.data)) {
+                        event.preventDefault();
+                    }
+
+                }
+            });
+        },
+        setValue: (elementId, value) => {
+            document.getElementById(elementId).value = value;
+        }
+    },
     offcanvas: {
         initialize: (elementId, useBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {
             let offcanvasEl = document.getElementById(elementId);
