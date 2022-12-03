@@ -29,6 +29,8 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     private bool isFirstRender = true;
 
+    private CultureInfo cultureInfo;
+
     #endregion
 
     #region Methods
@@ -70,6 +72,14 @@ public partial class CurrencyInput<TValue> : BaseComponent
         this.disabled = this.Disabled;
 
         this.step = Step.HasValue ? $"{Step.Value}" : "any";
+        try
+        {
+            this.cultureInfo = new CultureInfo(Locale);
+        }
+        catch (CultureNotFoundException)
+        {
+            this.cultureInfo = new CultureInfo("en-US");
+        }
 
         await base.OnInitializedAsync();
     }
@@ -126,10 +136,6 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     private async Task OnChange(ChangeEventArgs e)
     {
-        // TODO: cleanup cultureInfo related duplicate code
-        var cultureName = "fr-FR"; // "fr-FR"; // "en-IN";
-        var cultureInfo = new CultureInfo(cultureName);
-
         var oldValue = Value;
         var newValue = ExtractValue(e.Value, cultureInfo);
 
@@ -344,9 +350,10 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     private async Task SetFormattedValueAsync()
     {
-        var cultureName = "fr-FR"; // "fr-FR"; // "en-IN";
-        var cultureInfo = new CultureInfo(cultureName);
-        this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", (Value is null ? "" : Value), cultureName, (new RegionInfo(cultureInfo.Name)).ISOCurrencySymbol);
+        if (ShowCurrencySymbol) 
+            this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValueWithCurrencySymbol", (Value is null ? "" : Value), Locale, (new RegionInfo(cultureInfo.Name)).ISOCurrencySymbol);
+        else
+            this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", (Value is null ? "" : Value), Locale);
     }
 
     #endregion
@@ -380,6 +387,11 @@ public partial class CurrencyInput<TValue> : BaseComponent
     [Parameter] public bool EnableMinMax { get; set; }
 
     /// <summary>
+    /// Gets or sets the locale. Default locale is 'en-US'.
+    /// </summary>
+    [Parameter, EditorRequired] public string Locale { get; set; } = "en-US";
+
+    /// <summary>
     /// Gets or sets the max.
     /// Max ignored if EnableMinMax="false".
     /// </summary>
@@ -395,6 +407,11 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Determines whether to display the currency symbol are not.
+    /// </summary>
+    [Parameter] public bool ShowCurrencySymbol { get; set; }
 
     /// <summary>
     /// Gets or sets the step.

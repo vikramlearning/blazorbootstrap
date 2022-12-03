@@ -227,15 +227,26 @@ window.blazorBootstrap = {
                     currencyEl.value = ''; // don't assign zero.
             });
 
+            // this event is fired after OnChange event
             currencyEl?.addEventListener('focusout', function (event) {
-                if (currencyEl.dataset.currentValue && currencyEl.dataset.currentFormattedValue) {
-                    if (currencyEl.dataset.currentValue === currencyEl.value) {
-                        currencyEl.value = currencyEl.dataset.currentFormattedValue; // assign formatted value
-                    }
+                // scenario:
+                // without changing the value focusout event is triggered
+                if (typeof (currencyEl.dataset.currentValue) === 'undefined' || currencyEl.dataset.currentValue === currencyEl.value) {
+                    currencyEl.value = currencyEl.dataset.currentFormattedValue; // assign formatted value
                 }
             });
         },
-        getFormattedValue: (value, locales, currencySymbol) => {
+        getFormattedValue: (value, locales) => {
+
+            let extractedValue = value.toString();
+            let parsedValue = Number.parseFloat(extractedValue);
+
+            if (isNaN(parsedValue))
+                parsedValue = 0;
+
+            return new Intl.NumberFormat(locales).format(parsedValue);
+        },
+        getFormattedValueWithCurrencySymbol: (value, locales, currencySymbol) => {
 
             let extractedValue = value.toString();
             let parsedValue = Number.parseFloat(extractedValue);
