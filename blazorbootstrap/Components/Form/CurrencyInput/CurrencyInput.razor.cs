@@ -27,6 +27,8 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     private string formattedValue;
 
+    private bool isFirstRender = true;
+
     #endregion
 
     #region Methods
@@ -90,9 +92,27 @@ public partial class CurrencyInput<TValue> : BaseComponent
                 Value = value;
 
             await ValueChanged.InvokeAsync(Value);
+
+            await SetFormattedValueAsync();
+
+            await InvokeAsync(StateHasChanged);
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await SetFormattedValueAsync();
+
+        await base.OnParametersSetAsync();
+    }
+
+    private async Task SetFormattedValueAsync()
+    {
+        var cultureName = "fr-FR"; // "fr-FR"; // "en-IN";
+        var cultureInfo = new CultureInfo(cultureName);
+        this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", (Value is null ? "" : Value), cultureName, (new RegionInfo(cultureInfo.Name)).ISOCurrencySymbol);
     }
 
     /// <summary>
@@ -113,7 +133,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     private async Task OnChange(ChangeEventArgs e)
     {
-        var cultureName = "fr-FR"; // "fr -FR"; // "en -IN";
+        var cultureName = "fr-FR"; // "fr-FR"; // "en-IN";
         var cultureInfo = new CultureInfo(cultureName);
 
         var oldValue = Value;
@@ -333,10 +353,10 @@ public partial class CurrencyInput<TValue> : BaseComponent
         if (isFloatingNumber())
             validChars = string.Concat(validChars, ".");
 
-        if(AllowNegativeNumbers)
+        if (AllowNegativeNumbers)
             validChars = string.Concat(validChars, "-");
 
-        return string.Concat(value.ToString().Replace(",", ".").Where(c => validChars.Contains(c)));
+        return string.Concat(value?.ToString()?.Replace(",", ".")?.Where(c => validChars.Contains(c)));
     }
 
     #endregion
