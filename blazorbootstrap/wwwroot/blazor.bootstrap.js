@@ -219,10 +219,29 @@ window.blazorBootstrap = {
                     //}
                 }
             });
+
+            currencyEl?.addEventListener('focusin', function (event) {
+                if (currencyEl.dataset.currentValue)
+                    currencyEl.value = currencyEl.dataset.currentValue; // assign original value
+                else
+                    currencyEl.value = ''; // don't assign zero.
+            });
+
+            currencyEl?.addEventListener('focusout', function (event) {
+                if (currencyEl.dataset.currentValue && currencyEl.dataset.currentFormattedValue) {
+                    if (currencyEl.dataset.currentValue === currencyEl.value) {
+                        currencyEl.value = currencyEl.dataset.currentFormattedValue; // assign formatted value
+                    }
+                }
+            });
         },
         getFormattedValue: (value, locales, currencySymbol) => {
+
             let extractedValue = value.toString();
             let parsedValue = Number.parseFloat(extractedValue);
+
+            if (isNaN(parsedValue))
+                parsedValue = 0;
 
             return new Intl.NumberFormat(locales, {
                 style: 'currency',

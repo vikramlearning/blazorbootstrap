@@ -108,13 +108,6 @@ public partial class CurrencyInput<TValue> : BaseComponent
         await base.OnParametersSetAsync();
     }
 
-    private async Task SetFormattedValueAsync()
-    {
-        var cultureName = "fr-FR"; // "fr-FR"; // "en-IN";
-        var cultureInfo = new CultureInfo(cultureName);
-        this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", (Value is null ? "" : Value), cultureName, (new RegionInfo(cultureInfo.Name)).ISOCurrencySymbol);
-    }
-
     /// <summary>
     /// Disables number input.
     /// </summary>
@@ -133,6 +126,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     private async Task OnChange(ChangeEventArgs e)
     {
+        // TODO: cleanup cultureInfo related duplicate code
         var cultureName = "fr-FR"; // "fr-FR"; // "en-IN";
         var cultureInfo = new CultureInfo(cultureName);
 
@@ -152,18 +146,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
 
-        //Console.WriteLine($"Name: {c.Name}"); // en-IN
-        //Console.WriteLine($"TwoLetterISOLanguageName: {c.TwoLetterISOLanguageName}"); // en
-        //Console.WriteLine($"ThreeLetterISOLanguageName: {c.ThreeLetterISOLanguageName}"); // eng
-        //Console.WriteLine($"CurrencySymbol: {c.NumberFormat.CurrencySymbol}"); // INR
-        //Console.WriteLine($"ISOCurrencySymbol: {(new RegionInfo(c.Name)).ISOCurrencySymbol}"); // INR
-        //Console.WriteLine($"NumberDecimalDigits: {c.NumberFormat.NumberDecimalDigits}"); // 3
-        //Console.WriteLine($"CurrencyDecimalDigits: {cultureInfo.NumberFormat.CurrencyDecimalDigits}"); // 2
-        //Console.WriteLine($"CurrencyDecimalSeparator: {cultureInfo.NumberFormat.CurrencyDecimalSeparator}"); // ,
-        //Console.WriteLine($"CurrencyGroupSeparator: {cultureInfo.NumberFormat.CurrencyGroupSeparator}"); // 
-        //Console.WriteLine($"CurrencyNegativePattern: {cultureInfo.NumberFormat.CurrencyNegativePattern}"); // 8
-
-        this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", Value, cultureName, (new RegionInfo(cultureInfo.Name)).ISOCurrencySymbol);
+        await SetFormattedValueAsync();
     }
 
     /// <summary>
@@ -357,6 +340,13 @@ public partial class CurrencyInput<TValue> : BaseComponent
             validChars = string.Concat(validChars, "-");
 
         return string.Concat(value?.ToString()?.Replace(",", ".")?.Where(c => validChars.Contains(c)));
+    }
+
+    private async Task SetFormattedValueAsync()
+    {
+        var cultureName = "fr-FR"; // "fr-FR"; // "en-IN";
+        var cultureInfo = new CultureInfo(cultureName);
+        this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", (Value is null ? "" : Value), cultureName, (new RegionInfo(cultureInfo.Name)).ISOCurrencySymbol);
     }
 
     #endregion
