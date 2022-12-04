@@ -431,4 +431,9 @@ public partial class CurrencyInput<TValue> : BaseComponent
     [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; }
 
     #endregion
+
+    // number of decimals
+    // copy and paste
+    // round off
+    // remove step
 }

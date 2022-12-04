@@ -198,25 +198,23 @@ window.blazorBootstrap = {
             currencyEl?.addEventListener('beforeinput', function (event) {
                 if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
 
-                    // TODO: re-write the below logic
-                    //if (!allowNegativeNumbers) {
-                    //    // restrict 'e', 'E', '+', '-'
-                    //    if (isFloat && /[\e\E\+\-]/gi.test(event.data)) {
-                    //        event.preventDefault();
-                    //    }
-                    //    // restrict 'e', 'E', '.', '+', '-'
-                    //    else if (!isFloat && /[\e\E\.\+\-]/gi.test(event.data)) {
-                    //        event.preventDefault();
-                    //    }
-                    //}
-                    //// restrict 'e', 'E', '+'
-                    //else if (isFloat && /[\e\E\+]/gi.test(event.data)) {
-                    //    event.preventDefault();
-                    //}
-                    //// restrict 'e', 'E', '.', '+'
-                    //else if (!isFloat && /[\e\E\.\+]/gi.test(event.data)) {
-                    //    event.preventDefault();
-                    //}
+                    let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+                    if (isFloat) {
+                        validChars.push('.'); // TODO: check ',' for specific culture
+                    }
+
+                    if (allowNegativeNumbers) {
+                        validChars.push('-');
+                    }
+
+                    if (event.data && event.data.length > 0) {
+                        event.data.split('').forEach(c => {
+                            if (!validChars.includes(c)) {
+                                event.preventDefault(); // can be improved
+                            }
+                        });
+                    }
                 }
             });
 
