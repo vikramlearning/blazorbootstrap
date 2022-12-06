@@ -209,11 +209,8 @@ window.blazorBootstrap = {
                     }
 
                     if (event.data && event.data.length > 0) {
-                        event.data.split('').forEach(c => {
-                            if (!validChars.includes(c)) {
-                                event.preventDefault(); // can be improved
-                            }
-                        });
+                        if (blazorBootstrap.hasInvalidChars(event.data, validChars))
+                            event.preventDefault();
                     }
                 }
             });
@@ -359,7 +356,19 @@ window.blazorBootstrap = {
     // global function
     invokeMethodAsync: (callbackEventName, dotNetHelper) => {
         dotNetHelper.invokeMethodAsync(callbackEventName);
-    }
+    },
+    hasInvalidChars: (input, validChars) => {
+        if (input.length <= 0 || validChars.length <= 0)
+            return false;
+
+        let inputCharArr = input.split('');
+        for (var i = 0; i < inputCharArr.length; i++) {
+            if (!validChars.includes(inputCharArr[i]))
+                return true;
+        }
+
+        return false;
+    },
 }
 
 window.blazorChart = {
