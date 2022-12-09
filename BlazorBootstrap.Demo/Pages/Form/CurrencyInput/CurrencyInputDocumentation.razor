@@ -6,10 +6,15 @@
 
 <h1>Blazor Currency Input</h1>
 <div class="mb-3">
-    Blazor Bootstrap <code>CurrencyInput</code> component is built around HTML input of <code>type="number"</code> that prevents the user input based on the parameters set.
+    Blazor Bootstrap <code>CurrencyInput</code> component is similar to the <code>NumberInput</code> component. 
+    The significant difference here is that a user can set the currency locale. So the formatted value will be displayed. 
+    And also, the user can set the <b>minimum integer digits</b>, <b>minimum fraction digits</b>, and <b>maximum fraction digits</b>.
 </div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<Callout Type="CalloutType.Tip">
+    By default, the currency symbol is not displayed. Set <code>ShowCurrencySymbol</code> parameter value to <code>true</code> to show the currency symbol.
+</Callout>
 <div class="mb-3">By default, <code>e + -</code> are blocked. For all integral numeric types, dot <code>.</code> is blocked.</div>
 <Demo Type="typeof(CurrencyInput_Demo_01_Basic_Usage)" Tabs="true" />
 

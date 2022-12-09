@@ -1,13 +1,44 @@
 ﻿<div class="mb-3">
-    <label class="form-label">Amount</label>
-    <CurrencyInput TValue="double"
-                   @bind-Value="@amount"
-                   Locale="en-US"
-                   ShowCurrencySymbol="true"
-                   Placeholder="Enter amount" />
+    <label class="form-label">Locale: <b>en-IN</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount1" Locale="en-IN" ShowCurrencySymbol="true" Placeholder="Enter amount" />
 </div>
-<div class="mb-3">Entered Amount: @amount</div>
+<div class="mb-3">Entered Amount: @amount1</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>en-US</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount2" Locale="en-US" ShowCurrencySymbol="true" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount2</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>fr-FR</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount3" Locale="fr-FR" ShowCurrencySymbol="true" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount3</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>es-ES</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount4" Locale="es-ES" ShowCurrencySymbol="true" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount4</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>de-DE</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount5" Locale="de-DE" ShowCurrencySymbol="true" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount5</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>fr-CA</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount6" Locale="fr-CA" ShowCurrencySymbol="true" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount6</div>
 
 @code {
-    private double amount;
+    private int amount1 = 12345678;
+    private int amount2 = 12345678;
+    private int amount3 = 12345678;
+    private int amount4 = 12345678;
+    private int amount5 = 12345678;
+    private int amount6 = 12345678;
 }
