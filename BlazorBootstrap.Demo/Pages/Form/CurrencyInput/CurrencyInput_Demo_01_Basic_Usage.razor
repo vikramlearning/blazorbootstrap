@@ -1,6 +1,10 @@
 ﻿<div class="mb-3">
     <label class="form-label">Amount</label>
-    <CurrencyInput TValue="double" @bind-Value="@amount" Locale="en-US" ShowCurrencySymbol="true" Placeholder="Enter amount" />
+    <CurrencyInput TValue="double"
+                   @bind-Value="@amount"
+                   Locale="en-US"
+                   ShowCurrencySymbol="true"
+                   Placeholder="Enter amount" />
 </div>
 <div class="mb-3">Entered Amount: @amount</div>
 

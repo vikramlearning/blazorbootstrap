@@ -231,7 +231,7 @@ window.blazorBootstrap = {
                 }
             });
         },
-        getFormattedValue: (value, locales) => {
+        getFormattedValue: (value, locales, options) => {
 
             let extractedValue = value.toString();
             let parsedValue = Number.parseFloat(extractedValue);
@@ -239,21 +239,31 @@ window.blazorBootstrap = {
             if (isNaN(parsedValue))
                 parsedValue = 0;
 
-            return new Intl.NumberFormat(locales).format(parsedValue);
+            return new Intl.NumberFormat(locales, options).format(parsedValue);
         },
-        getFormattedValueWithCurrencySymbol: (value, locales, currencySymbol) => {
+        //getFormattedValue: (value, locales) => {
 
-            let extractedValue = value.toString();
-            let parsedValue = Number.parseFloat(extractedValue);
+        //    let extractedValue = value.toString();
+        //    let parsedValue = Number.parseFloat(extractedValue);
 
-            if (isNaN(parsedValue))
-                parsedValue = 0;
+        //    if (isNaN(parsedValue))
+        //        parsedValue = 0;
 
-            return new Intl.NumberFormat(locales, {
-                style: 'currency',
-                currency: currencySymbol
-            }).format(parsedValue);
-        }
+        //    return new Intl.NumberFormat(locales).format(parsedValue);
+        //},
+        //getFormattedValueWithCurrencySymbol: (value, locales, currencySymbol) => {
+
+        //    let extractedValue = value.toString();
+        //    let parsedValue = Number.parseFloat(extractedValue);
+
+        //    if (isNaN(parsedValue))
+        //        parsedValue = 0;
+
+        //    return new Intl.NumberFormat(locales, {
+        //        style: 'currency',
+        //        currency: currencySymbol
+        //    }).format(parsedValue);
+        //}
     },
     offcanvas: {
         initialize: (elementId, useBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {

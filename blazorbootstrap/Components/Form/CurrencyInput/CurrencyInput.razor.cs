@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+﻿using System.Runtime.Serialization;
 
 namespace BlazorBootstrap;
 
@@ -22,8 +22,6 @@ public partial class CurrencyInput<TValue> : BaseComponent
     private string autoComplete => this.AutoComplete ? "true" : "false";
 
     private bool disabled;
-
-    private string step;
 
     private string formattedValue;
 
@@ -71,7 +69,6 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
         this.disabled = this.Disabled;
 
-        this.step = Step.HasValue ? $"{Step.Value}" : "any";
         try
         {
             this.cultureInfo = new CultureInfo(Locale);
@@ -350,10 +347,23 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     private async Task SetFormattedValueAsync()
     {
-        if (ShowCurrencySymbol) 
-            this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValueWithCurrencySymbol", (Value is null ? "" : Value), Locale, (new RegionInfo(cultureInfo.Name)).ISOCurrencySymbol);
-        else
-            this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", (Value is null ? "" : Value), Locale);
+        var options = new CurrencyFormatOptions();
+
+        if (ShowCurrencySymbol)
+        {
+            options.Style = "currency";
+            options.Currency = (new RegionInfo(cultureInfo.Name)).ISOCurrencySymbol;
+        }
+
+        options.MinimumIntegerDigits = MinimumIntegerDigits;
+
+        if(MinimumFractionDigits.HasValue)
+            options.MinimumFractionDigits = MinimumFractionDigits.Value;
+
+        if (MaximumFractionDigits.HasValue)
+            options.MaximumFractionDigits = MaximumFractionDigits.Value;
+
+        this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", (Value is null ? "" : Value), Locale, options);
     }
 
     #endregion
@@ -386,6 +396,8 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// </summary>
     [Parameter] public bool EnableMinMax { get; set; }
 
+    //[Parameter] public string Format { get; set; }
+
     /// <summary>
     /// Gets or sets the locale. Default locale is 'en-US'.
     /// </summary>
@@ -404,6 +416,22 @@ public partial class CurrencyInput<TValue> : BaseComponent
     [Parameter] public TValue Min { get; set; }
 
     /// <summary>
+    /// The minimum number of integer digits to use. A value with a smaller number of integer digits than this number will be left-padded with zeros (to the specified length) when formatted. 
+    /// The default is 1.
+    /// </summary>
+    [Parameter] public byte MinimumIntegerDigits { get; set; } = 1;
+
+    /// <summary>
+    /// The minimum number of fraction digits to use.
+    /// </summary>
+    [Parameter] public byte? MinimumFractionDigits { get; set; }
+
+    /// <summary>
+    /// The maximum number of fraction digits to use.
+    /// </summary>
+    [Parameter] public byte? MaximumFractionDigits { get; set; }
+
+    /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
@@ -412,11 +440,6 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// Determines whether to display the currency symbol are not.
     /// </summary>
     [Parameter] public bool ShowCurrencySymbol { get; set; }
-
-    /// <summary>
-    /// Gets or sets the step.
-    /// </summary>
-    [Parameter] public double? Step { get; set; }
 
     /// <summary>
     /// Gets or sets the text alignment.
@@ -432,8 +455,8 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     #endregion
 
-    // number of decimals
     // copy and paste
+    // number of decimals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat
     // round off
     // remove step
 }
