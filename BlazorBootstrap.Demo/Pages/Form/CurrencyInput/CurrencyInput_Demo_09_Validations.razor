@@ -20,7 +20,7 @@
     <div class="form-group row mb-3">
         <label class="col-md-2 col-form-label">Item Price: <span class="text-danger">*</span></label>
         <div class="col-md-10">
-            <CurrencyInput TValue="decimal?" Value="invoice.Price" ValueExpression="() => invoice.Price" ValueChanged="(value) => PriceChanged(value)" Placeholder="Enter price" />
+            <CurrencyInput TValue="decimal?" Value="invoice.Price" Locale="en-US" ShowCurrencySymbol="true" ValueExpression="() => invoice.Price" ValueChanged="(value) => PriceChanged(value)" Placeholder="Enter price" />
             <ValidationMessage For="@(() => invoice.Price)" />
         </div>
     </div>
@@ -28,7 +28,7 @@
     <div class="form-group row mb-3">
         <label class="col-md-2 col-form-label">Item Discount:</label>
         <div class="col-md-10">
-            <CurrencyInput TValue="decimal?" Value="invoice.Discount" ValueExpression="() => invoice.Discount" ValueChanged="(value) => DiscountChanged(value)" Placeholder="Enter discount" />
+            <CurrencyInput TValue="decimal?" Value="invoice.Discount" Locale="en-US" ShowCurrencySymbol="true" ValueExpression="() => invoice.Discount" ValueChanged="(value) => DiscountChanged(value)" Placeholder="Enter discount" />
             <ValidationMessage For="@(() => invoice.Discount)" />
         </div>
     </div>
@@ -36,7 +36,7 @@
     <div class="form-group row mb-3">
         <label class="col-md-2 col-form-label">Total Amount: <span class="text-danger">*</span></label>
         <div class="col-md-10">
-            <CurrencyInput TValue="decimal?" @bind-Value="invoice.Total" Disabled="true" Placeholder="Enter total" />
+            <CurrencyInput TValue="decimal?" @bind-Value="invoice.Total" Locale="en-US" ShowCurrencySymbol="true" Disabled="true" Placeholder="Enter total" />
             <ValidationMessage For="@(() => invoice.Total)" />
         </div>
     </div>

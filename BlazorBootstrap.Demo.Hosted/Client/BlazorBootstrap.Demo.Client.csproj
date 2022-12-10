@@ -27,6 +27,12 @@
     <Folder Include="Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Pages\Index.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
   <Target Name="EmbedDemos" BeforeTargets="PrepareForBuild">
     <!-- Let's embed demos sources into the assembly to show the source at runtime. -->
     <ItemGroup>
