@@ -46,6 +46,11 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://demos.getblazorbootstrap.com/form/currency-input</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://demos.getblazorbootstrap.com/grid</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -61,7 +66,7 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://demos.getblazorbootstrap.com/number-input</loc>
+    <loc>https://demos.getblazorbootstrap.com/form/number-input</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
