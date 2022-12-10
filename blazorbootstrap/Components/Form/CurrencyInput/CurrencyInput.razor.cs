@@ -349,12 +349,19 @@ public partial class CurrencyInput<TValue> : BaseComponent
     {
         var options = new CurrencyFormatOptions();
 
-        if (ShowCurrencySymbol)
+        if (!HideCurrencySymbol)
         {
             options.Style = "currency";
             options.Currency = (new RegionInfo(cultureInfo.Name)).ISOCurrencySymbol;
         }
+        else
+        {
+            options.Style = "decimal";
+            options.Currency = null;
+        }
 
+        options.CurrencySign = CurrencySign == CurrencySign.Accounting ? "accounting" : "standard";
+        
         options.MinimumIntegerDigits = MinimumIntegerDigits;
 
         if(MinimumFractionDigits.HasValue)
@@ -383,6 +390,8 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// </summary>
     [Parameter] public bool AutoComplete { get; set; }
 
+    [Parameter] public CurrencySign CurrencySign { get; set; }
+
     /// <summary>
     /// Gets or sets the disabled.
     /// </summary>
@@ -396,7 +405,10 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// </summary>
     [Parameter] public bool EnableMinMax { get; set; }
 
-    //[Parameter] public string Format { get; set; }
+    /// <summary>
+    /// Determines whether to hide the currency symbol are not.
+    /// </summary>
+    [Parameter] public bool HideCurrencySymbol { get; set; }
 
     /// <summary>
     /// Gets or sets the locale. Default locale is 'en-US'.
@@ -435,11 +447,6 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
-
-    /// <summary>
-    /// Determines whether to display the currency symbol are not.
-    /// </summary>
-    [Parameter] public bool ShowCurrencySymbol { get; set; }
 
     /// <summary>
     /// Gets or sets the text alignment.
