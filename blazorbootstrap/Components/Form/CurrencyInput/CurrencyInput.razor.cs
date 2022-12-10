@@ -461,9 +461,4 @@ public partial class CurrencyInput<TValue> : BaseComponent
     [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; }
 
     #endregion
-
-    // copy and paste
-    // number of decimals: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat
-    // round off
-    // remove step
 }
