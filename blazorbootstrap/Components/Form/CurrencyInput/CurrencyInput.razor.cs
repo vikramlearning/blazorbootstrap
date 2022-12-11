@@ -364,11 +364,18 @@ public partial class CurrencyInput<TValue> : BaseComponent
         
         options.MinimumIntegerDigits = MinimumIntegerDigits;
 
-        if(MinimumFractionDigits.HasValue)
-            options.MinimumFractionDigits = MinimumFractionDigits.Value;
+        if (isFloatingNumber())
+        {
+            if (MinimumFractionDigits.HasValue)
+                options.MinimumFractionDigits = MinimumFractionDigits.Value;
 
-        if (MaximumFractionDigits.HasValue)
-            options.MaximumFractionDigits = MaximumFractionDigits.Value;
+            if (MaximumFractionDigits.HasValue)
+                options.MaximumFractionDigits = MaximumFractionDigits.Value;
+        }
+        else {
+            options.MinimumFractionDigits = 0;
+            options.MaximumFractionDigits = 0;
+        }
 
         this.formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", (Value is null ? "" : Value), Locale, options);
     }
