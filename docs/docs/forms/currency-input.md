@@ -1,4 +1,4 @@
----
+﻿---
 title: Blazor Currency Input Components
 description: Use the Blazor Bootstrap `CurrencyInput` component to show the numbers in the user's locale format, including the currency symbol.
 image: https://i.imgur.com/mihpoXk.png
@@ -19,12 +19,17 @@ Use the Blazor Bootstrap `CurrencyInput` component to show the numbers in the us
 |:--|:--|:--|:--|:--|
 | AllowNegativeNumbers | bool | false | | Allows negative numbers. By default, negative numbers are not allowed. |
 | AutoComplete | bool | false | | Indicates whether the NumberInput can complete the values automatically by the browser. |
+| CurrencySign | `CurrencySign` | `CurrencySign.Standard` | | |
 | Disabled | bool | false | | Gets or sets the disabled. |
 | EnableMinMax | bool | false | | Determines whether to restrict the user input to Min and Max range. If true, restricts the user input between the Min and Max range. Else accepts the user input. |
+| HideCurrencySymbol | bool | false | | Determines whether to hide the currency symbol are not. |
+| Locale | string | `en-US` | ✔️ | Gets or sets the locale. |
 | Max| TValue | | | Gets or sets the max. Max ignored if EnableMinMax="false". |
+| MaximumFractionDigits | byte? | null | | The maximum number of fraction digits to use. |
 | Min| TValue | | | Gets or sets the min. Min ignored if EnableMinMax="false". |
+| MinimumFractionDigits | byte? | null | | The minimum number of fraction digits to use. |
+| MinimumIntegerDigits | byte | 1 | | The minimum number of integer digits to use. A value with a smaller number of integer digits than this number will be left-padded with zeros (to the specified length) when formatted. |
 | Placeholder | string? | null | | Gets or sets the placeholder. |
-| Step | double? | null | | Gets or sets the step. |
 | TextAlignment | `Alignment` | `Alignment.None` | | Gets or sets the text alignment. |
 | Value | TValue | | | Gets or sets the value. |
 
@@ -32,8 +37,8 @@ Use the Blazor Bootstrap `CurrencyInput` component to show the numbers in the us
 
 | Name | Description |
 |:--|:--|
-| Disable | Disables number input. |
-| Enable | Enables number input. |
+| Disable | Disables currency input. |
+| Enable | Enables currency input. |
 
 ## Events
 

@@ -116,7 +116,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
     }
 
     /// <summary>
-    /// Disables number input.
+    /// Disables currency input.
     /// </summary>
     public void Disable()
     {
@@ -124,7 +124,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
     }
 
     /// <summary>
-    /// Enables number input.
+    /// Enables currency input.
     /// </summary>
     public void Enable()
     {
@@ -429,16 +429,15 @@ public partial class CurrencyInput<TValue> : BaseComponent
     [Parameter] public TValue Max { get; set; }
 
     /// <summary>
+    /// The maximum number of fraction digits to use.
+    /// </summary>
+    [Parameter] public byte? MaximumFractionDigits { get; set; }
+
+    /// <summary>
     /// Gets or sets the min.
     /// Min ignored if EnableMinMax="false".
     /// </summary>
     [Parameter] public TValue Min { get; set; }
-
-    /// <summary>
-    /// The minimum number of integer digits to use. A value with a smaller number of integer digits than this number will be left-padded with zeros (to the specified length) when formatted. 
-    /// The default is 1.
-    /// </summary>
-    [Parameter] public byte MinimumIntegerDigits { get; set; } = 1;
 
     /// <summary>
     /// The minimum number of fraction digits to use.
@@ -446,9 +445,10 @@ public partial class CurrencyInput<TValue> : BaseComponent
     [Parameter] public byte? MinimumFractionDigits { get; set; }
 
     /// <summary>
-    /// The maximum number of fraction digits to use.
+    /// The minimum number of integer digits to use. A value with a smaller number of integer digits than this number will be left-padded with zeros (to the specified length) when formatted. 
+    /// The default is 1.
     /// </summary>
-    [Parameter] public byte? MaximumFractionDigits { get; set; }
+    [Parameter] public byte MinimumIntegerDigits { get; set; } = 1;
 
     /// <summary>
     /// Gets or sets the placeholder.
