@@ -4,12 +4,14 @@ description: Blazor Bootstrap `NumberInput` component is built around HTML input
 image: https://i.imgur.com/iUNBkki.png
 
 sidebar_label: Number Input
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Blazor Number Input
 
 Blazor Bootstrap `NumberInput` component is built around HTML input of `type="number"` that prevents the user input based on the parameters set.
+
+<img src="https://i.imgur.com/XXD0xF4.png" alt="Blazor Bootstrap: Number Input Component" />
 
 ## Parameters
 

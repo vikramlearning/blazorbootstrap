@@ -25,6 +25,9 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Using fraction digits and integer digits" PageUrl="@pageUrl" HashTagName="using-fraction-digits-and-integer-digits" />
 <div class="mb-3">In the below example, formatting adds zeros to display minimum integers and fractions.</div>
+<Callout Type="CalloutType.Danger">
+    <b>MinimumFractionDigits</b> and <b>MaximumFractionDigits</b> parameters are applicable for floating-point numeric types only.
+</Callout>
 <Demo Type="typeof(CurrencyInput_Demo_04_Using_FractionDigits_and_IntegerDigits)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Wrap the number with parentheses instead of appending a minus sign" PageUrl="@pageUrl" HashTagName="wrap-the-number-with-parentheses-instead-of-appending-a-minus-sign" />
@@ -62,6 +65,10 @@
     In the below example, we used <b>Required</b> and <b>Range</b> attributes.
 </div>
 <Demo Type="typeof(CurrencyInput_Demo_11_Validations)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Events: ValueChanged" PageUrl="@pageUrl" HashTagName="event-value-changed" />
+<div class="mb-3">This event fires on every user keystroke that changes the <code>CurrencyInput</code> value.</div>
+<Demo Type="typeof(CurrencyInput_Demo_12_Events_Value_Changed)" Tabs="true" />
 
 @code {
     private string pageUrl = "/form/currency-input";

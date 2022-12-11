@@ -1,0 +1,529 @@
+---
+title: Blazor Currency Input Components
+description: Use the Blazor Bootstrap `CurrencyInput` component to show the numbers in the user's locale format, including the currency symbol.
+image: https://i.imgur.com/mihpoXk.png
+
+sidebar_label: Currency Input
+sidebar_position: 2
+---
+
+# Blazor Currency Input
+
+Use the Blazor Bootstrap `CurrencyInput` component to show the numbers in the user's locale format, including the currency symbol.
+
+<img src="https://i.imgur.com/mihpoXk.png" alt="Blazor Bootstrap: Currency Input Component" />
+
+## Parameters
+
+| Name | Type | Default | Required | Description |
+|:--|:--|:--|:--|:--|
+| AllowNegativeNumbers | bool | false | | Allows negative numbers. By default, negative numbers are not allowed. |
+| AutoComplete | bool | false | | Indicates whether the NumberInput can complete the values automatically by the browser. |
+| Disabled | bool | false | | Gets or sets the disabled. |
+| EnableMinMax | bool | false | | Determines whether to restrict the user input to Min and Max range. If true, restricts the user input between the Min and Max range. Else accepts the user input. |
+| Max| TValue | | | Gets or sets the max. Max ignored if EnableMinMax="false". |
+| Min| TValue | | | Gets or sets the min. Min ignored if EnableMinMax="false". |
+| Placeholder | string? | null | | Gets or sets the placeholder. |
+| Step | double? | null | | Gets or sets the step. |
+| TextAlignment | `Alignment` | `Alignment.None` | | Gets or sets the text alignment. |
+| Value | TValue | | | Gets or sets the value. |
+
+## Methods
+
+| Name | Description |
+|:--|:--|
+| Disable | Disables number input. |
+| Enable | Enables number input. |
+
+## Events
+
+| Name | Description |
+|:--|:--|
+| ValueChanged | This is event fires on every user keystroke that changes the `CurrencyInput` value. |
+
+## Examples
+
+### Basic usage
+
+By default, `e + -` are blocked. For all integral numeric types, dot `.` is blocked.
+
+<img src="https://i.imgur.com/fL9IlP1.png" alt="Blazor Bootstrap: Currency Input Component - Basic usage" />
+
+```cshtml {2} showLineNumbers
+<div class="mb-3">
+    <CurrencyInput TValue="int" @bind-Value="@amount1" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount1</div>
+```
+
+```cs showLineNumbers
+@code {
+    private int amount1 = 12345678;
+}
+```
+
+### Show currency symbols for the different locales
+
+<img src="https://i.imgur.com/mihpoXk.png" alt="Blazor Bootstrap: Currency Input Component - Show currency symbols for the different locales" />
+
+```cshtml {3,9,15,21,27,33,39,45,51} showLineNumbers
+<div class="mb-3">
+    <label class="form-label">Locale: <b>en-IN</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount1" Locale="en-IN" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount1</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>en-US</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount2" Locale="en-US" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount2</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>fr-FR</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount3" Locale="fr-FR" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount3</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>es-ES</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount4" Locale="es-ES" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount4</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>de-DE</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount5" Locale="de-DE" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount5</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>fr-CA</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount6" Locale="fr-CA" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount6</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>en-PH</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount7" Locale="en-PH" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount7</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>en-SE</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount8" Locale="en-SE" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount8</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>zh-CN</b></label>
+    <CurrencyInput TValue="int" @bind-Value="@amount9" Locale="zh-CN" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount9</div>
+```
+
+```cs showLineNumbers
+@code {
+    private int amount1 = 12345678;
+    private int amount2 = 12345678;
+    private int amount3 = 12345678;
+    private int amount4 = 12345678;
+    private int amount5 = 12345678;
+    private int amount6 = 12345678;
+    private int amount7 = 12345678;
+    private int amount8 = 12345678;
+    private int amount9 = 12345678;
+}
+```
+
+### Hide currency symbol
+
+Set `HideCurrencySymbol` parameter value to `true` to hide the currency symbol.
+
+<img src="https://i.imgur.com/1L1utF6.png" alt="Blazor Bootstrap: Currency Input Component - " />
+
+```cshtml {2,5} showLineNumbers
+<div class="mb-3">
+    <CurrencyInput 
+        TValue="double" 
+        @bind-Value="@amount1"
+        HideCurrencySymbol="true"
+        Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Value: @amount1</div>
+```
+
+```cs showLineNumbers
+@code {
+    private double amount1 = 4.33;
+}
+```
+
+### Using fraction digits and integer digits
+
+In the below example, formatting adds zeros to display minimum integers and fractions.
+
+<img src="https://i.imgur.com/gcwNP8c.png" alt="Blazor Bootstrap: Currency Input Component - Using fraction digits and integer digits" />
+
+:::danger
+<b>MinimumFractionDigits</b> and <b>MaximumFractionDigits</b> parameters are applicable for floating-point numeric types only.
+:::
+
+```cshtml {2,5,6} showLineNumbers
+<div class="mb-3">
+    <CurrencyInput 
+        TValue="double" 
+        @bind-Value="@amount1" 
+        MinimumIntegerDigits="3" 
+        MinimumFractionDigits="4" 
+        Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Value: @amount1</div>
+```
+
+```cs showLineNumbers
+@code {
+    private double amount1 = 4.33;
+}
+```
+
+### Wrap the number with parentheses instead of appending a minus sign
+
+In many locales, accounting format means to wrap the number with parentheses instead of appending a minus sign. You can enable this formatting by setting the <b>CurrencySign</b> option to `Accounting`. The default value is `Standard`.
+
+<img src="https://i.imgur.com/terrN93.png" alt="Blazor Bootstrap: Currency Input Component - Wrap the number with parentheses instead of appending a minus sign" />
+
+```cshtml {2,5} showLineNumbers
+<div class="mb-3">
+    <CurrencyInput 
+        TValue="int" 
+        @bind-Value="@amount1"
+        CurrencySign="CurrencySign.Accounting"
+        Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Value: @amount1</div>
+```
+
+```cs showLineNumbers
+@code {
+    private int amount1 = -21231;
+}
+```
+
+### Generic type
+
+`CurrencyInput` is a generic component. Always specify the exact type. In the below example <b>TValue</b> is set to `int`, `int?`, `float`, `float?`, `double`, `double?`, `decimal`, and `decimal?`.
+
+<img src="https://i.imgur.com/uslzD65.png" alt="Blazor Bootstrap: Currency Input Component - Generic type" />
+
+```cshtml {3,8,13,18,23,28,33,38} showLineNumbers
+<div class="mb-3">
+    <label class="form-label">Enter int number</label>
+    <CurrencyInput TValue="int" @bind-Value="@amount" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter int? number</label>
+    <CurrencyInput TValue="int?" @bind-Value="@amount2" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter float number</label>
+    <CurrencyInput TValue="float" @bind-Value="@amount3" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter float? number</label>
+    <CurrencyInput TValue="float?" @bind-Value="@amount4" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter double number</label>
+    <CurrencyInput TValue="double" @bind-Value="@amount5" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter double? number</label>
+    <CurrencyInput TValue="double?" @bind-Value="@amount6" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter decimal number</label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount7" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter decimal? number</label>
+    <CurrencyInput TValue="decimal?" @bind-Value="@amount8" />
+</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private int amount;
+    private int? amount2;
+    private float amount3;
+    private float? amount4;
+    private double amount5;
+    private double? amount6;
+    private decimal amount7;
+    private decimal? amount8;
+}
+```
+
+### Enable min and max
+
+Set `EnableMinMax="true"` and set the `Min` and `Max` parameters to restrict the user input between the Min and Max range.
+
+<img src="https://i.imgur.com/0Fsxcs9.png" alt="Blazor Bootstrap: Currency Input Component - Enable min and max" />
+
+:::caution NOTE
+If the user tries to enter a number in the <b>CurrencyInput</b> field which is out of range, then it will override with Min or Max value based on the context. 
+If the user input is less than the Min value, then it will override with the Min value. 
+If the user input exceeds the Max value, it will override with the Max value.
+:::
+
+```cshtml {3} showLineNumbers
+<div class="mb-3">
+    <label class="form-label">Amount</label>
+    <CurrencyInput TValue="decimal?" @bind-Value="@amount" ShowCurrencySymbol="true" EnableMinMax="true" Min="10" Max="500" Placeholder="Enter amount" />
+    <span class="form-text">Tip: The amount must be between 10 and 500.</span>
+</div>
+<div class="mb-3">Entered Amount: @amount</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private decimal? amount;
+}
+```
+
+### Text alignment
+
+You can change the text alignment according to your need. Use the `TextAlignment` parameter to set the alignment. In the below example, alignment is set to center and end.
+
+<img src="https://i.imgur.com/0Ye7o1y.png" alt="Blazor Bootstrap: Currency Input Component - Text alignment" />
+
+```cshtml {3,9} showLineNumbers
+<div class="mb-3">
+    <label class="form-label">Amount</label>
+    <CurrencyInput TValue="int" @bind-Value="@amount" ShowCurrencySymbol="true" TextAlignment="Alignment.Center" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount</div>
+
+<div class="mb-3">
+    <label class="form-label">Amount</label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount2" ShowCurrencySymbol="true" TextAlignment="Alignment.End" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount2</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private int amount;
+    private decimal amount2 = 2.34M;
+}
+```
+
+### Allow negative numbers
+
+By default, negative numbers are not allowed. Set the `AllowNegativeNumbers` parameter to true to allow the negative numbers.
+
+<img src="https://i.imgur.com/tTY2wdT.png" alt="Blazor Bootstrap: Currency Input Component - Allow negative numbers" />
+
+```cshtml {3} showLineNumbers
+<div class="mb-3">
+    <label class="form-label">Amount</label>
+    <CurrencyInput TValue="int" @bind-Value="@amount" ShowCurrencySymbol="true" AllowNegativeNumbers="true" Placeholder="Enter amount" />
+    <span class="form-text">Tip: Negative numbers are also allowed.</span>
+</div>
+<div class="mb-3">Entered Amount: @amount</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private int amount;
+}
+```
+
+### Disable
+
+Use the `Disable` parameter to disable the `CurrencyInput`. Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the `CurrencyInput`.
+
+<img src="https://i.imgur.com/bzh72b2.png" alt="Blazor Bootstrap: Currency Input Component - Disable" />
+
+```cshtml {3} showLineNumbers
+<div class="mb-3">
+    <label class="form-label">Amount</label>
+    <CurrencyInput @ref="currencyInput" TValue="int?" @bind-Value="@amount" ShowCurrencySymbol="true" Disabled="true" Placeholder="Enter amount" />
+</div>
+
+<Button Color="ButtonColor.Primary" @onclick="enableNumberInput"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="disableNumberInput"> Disable </Button>
+```
+
+```cs {2,5,7} showLineNumbers
+@code {
+    private CurrencyInput<int?> currencyInput;
+    private int? amount;
+
+    private void enableNumberInput() => currencyInput.Enable();
+
+    private void disableNumberInput() => currencyInput.Disable();
+}
+```
+
+### Validations
+
+Like any other blazor input components, `CurrencyInput` supports validations. Add the DataAnnotations on the `CurrencyInput` component to validate the user input before submitting the form. In the below example, we used <b>Required</b> and <b>Range</b> attributes.
+
+<img src="https://i.imgur.com/K9cyIJg.png" alt="Blazor Bootstrap: Currency Input Component - Validations" />
+
+```cshtml {17,18,23,24,31,32,39,40} showLineNumbers
+@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Item Price: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <CurrencyInput TValue="decimal?" Value="invoice.Price" Locale="en-US" ShowCurrencySymbol="true" ValueExpression="() => invoice.Price" ValueChanged="(value) => PriceChanged(value)" Placeholder="Enter price" />
+            <ValidationMessage For="@(() => invoice.Price)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Item Discount:</label>
+        <div class="col-md-10">
+            <CurrencyInput TValue="decimal?" Value="invoice.Discount" Locale="en-US" ShowCurrencySymbol="true" ValueExpression="() => invoice.Discount" ValueChanged="(value) => DiscountChanged(value)" Placeholder="Enter discount" />
+            <ValidationMessage For="@(() => invoice.Discount)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Total Amount: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <CurrencyInput TValue="decimal?" @bind-Value="invoice.Total" Locale="en-US" ShowCurrencySymbol="true" Disabled="true" Placeholder="Enter total" />
+            <ValidationMessage For="@(() => invoice.Total)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+        </div>
+    </div>
+</EditForm>
+```
+
+```cs {2-3,7,36,46,49-61} showLineNumbers
+@code {
+    private Invoice invoice = new();
+    private EditContext editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(invoice);
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        CalculateToatl();
+        base.OnParametersSet();
+    }
+
+    private void PriceChanged(decimal? value)
+    {
+        invoice.Price = value;
+        CalculateToatl();
+    }
+
+    private void DiscountChanged(decimal? value)
+    {
+        invoice.Discount = value;
+        CalculateToatl();
+    }
+
+    private void CalculateToatl()
+    {
+        var price = invoice.Price.HasValue ? invoice.Price.Value : 0;
+        var discount = invoice.Discount.HasValue ? invoice.Discount.Value : 0;
+        invoice.Total = price - discount;
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        Console.WriteLine($"Price: {invoice.Price}");
+        Console.WriteLine($"Discount: {invoice.Discount}");
+        Console.WriteLine($"Total: {invoice.Total}");
+    }
+
+    private void ResetForm()
+    {
+        invoice = new();
+        editContext = new EditContext(invoice);
+    }
+
+    public class Invoice
+    {
+        [Required(ErrorMessage = "Price required.")]
+        [Range(60, 500, ErrorMessage = "Price should be between 60 and 500.")]
+        public decimal? Price { get; set; } = 22M;
+
+        [Range(0, 50, ErrorMessage = "Discount should be between 0 and 50.")]
+        public decimal? Discount { get; set; }
+
+        [Required(ErrorMessage = "Amount required.")]
+        [Range(10, 500, ErrorMessage = "Total should be between 60 and 500.")]
+        public decimal? Total { get; set; }
+    }
+}
+```
+
+### Events: ValueChanged
+
+This event fires on every user keystroke that changes the `CurrencyInput` value.
+
+<img src="https://i.imgur.com/h8HFgYj.png" alt="Blazor Bootstrap: Currency Input Component - ValueChanged" />
+
+```cshtml {4} showLineNumbers
+<div class="row mb-3">
+    <label class="col-md-2 col-form-label">Item Price: <span class="text-danger">*</span></label>
+    <div class="col-md-10">
+        <CurrencyInput TValue="decimal?" Value="price" ValueExpression="() => price" ValueChanged="(value) => PriceChanged(value)" Placeholder="Enter price" />
+    </div>
+</div>
+<div>
+    @displayPrice
+</div>
+```
+
+```cs {5-9} showLineNumbers
+@code {
+    private decimal? price = 10M;
+    private string displayPrice;
+
+    private void PriceChanged(decimal? value)
+    {
+        price = value; // this is mandatory
+        displayPrice = $"Price: {value}, changed at {DateTime.Now.ToLocalTime()}.";
+    }
+}
+```
