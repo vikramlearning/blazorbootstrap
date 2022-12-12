@@ -7,11 +7,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Pages\GettingStarted\Snippet_02_Starter_Template_Program.cs" />
+	  <Compile Remove="Pages\GettingStarted\v1_1_0\Snippet_02_Starter_Template_Program.cs" />
+	  <Compile Remove="Pages\GettingStarted\v1_2_0\Snippet_02_Starter_Template_Program.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Pages\GettingStarted\Snippet_02_Starter_Template_Program.cs" />
+	  <Content Include="Pages\GettingStarted\v1_1_0\Snippet_02_Starter_Template_Program.cs" />
+	  <Content Include="Pages\GettingStarted\v1_2_0\Snippet_02_Starter_Template_Program.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
