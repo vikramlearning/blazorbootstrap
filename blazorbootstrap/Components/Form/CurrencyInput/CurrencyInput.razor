@@ -1,0 +1,17 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+@typeparam TValue
+
+<input @ref="@ElementRef"
+       @attributes="@Attributes"
+       type="text"
+       id="@ElementId"
+       class="@ClassNames @fieldCssClasses"
+       style="@StyleNames"
+       value="@formattedValue"
+       data-current-value="@Value"
+       data-current-formatted-value="@formattedValue"
+       disabled="@disabled"
+       placeholder="@Placeholder"
+       autocomplete="@autoComplete"
+       @onchange="OnChange" />

@@ -4,12 +4,14 @@ description: Blazor Bootstrap `NumberInput` component is built around HTML input
 image: https://i.imgur.com/iUNBkki.png
 
 sidebar_label: Number Input
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Blazor Number Input
 
 Blazor Bootstrap `NumberInput` component is built around HTML input of `type="number"` that prevents the user input based on the parameters set.
+
+<img src="https://i.imgur.com/XXD0xF4.png" alt="Blazor Bootstrap: Number Input Component" />
 
 ## Parameters
 
@@ -60,6 +62,8 @@ By default, `e + -` are blocked. For all integral numeric types, dot `.` is bloc
     private int amount;
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/form/number-input#basic-usage)
 
 ### Generic type
 
@@ -122,6 +126,8 @@ By default, `e + -` are blocked. For all integral numeric types, dot `.` is bloc
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/form/number-input#generic-type)
+
 ### Enable min and max
 
 Set `EnableMinMax="true"` and set the `Min` and `Max` parameters to restrict the user input between the Min and Max range.
@@ -148,6 +154,8 @@ If the user input exceeds the Max value, it will override with the Max value.
     private decimal? amount;
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/form/number-input#enable-min-and-max)
 
 ### Step
 
@@ -178,6 +186,8 @@ The `Step` sets the stepping interval when clicking the up and down spinner butt
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/form/number-input#step)
+
 ### Text alignment
 
 You can change the text alignment according to your need. Use the `TextAlignment` parameter to set the alignment. In the below example, alignment is set to center and end.
@@ -205,6 +215,8 @@ You can change the text alignment according to your need. Use the `TextAlignment
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/form/number-input#text-alignment)
+
 ### Allow negative numbers
 
 By default, negative numbers are not allowed. Set the `AllowNegativeNumbers` parameter to true to allow the negative numbers.
@@ -225,6 +237,8 @@ By default, negative numbers are not allowed. Set the `AllowNegativeNumbers` par
     private int amount;
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/form/number-input#allow-negative-numbers)
 
 ### Disable
 
@@ -252,6 +266,8 @@ Use the `Disable` parameter to disable the `NumberInput`. Also, use <b>Enable()<
     private void disableNumberInput() => numberInput.Disable();
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/form/number-input#disable)
 
 ### Validations
 
@@ -377,6 +393,8 @@ Like any other blazor input components, `NumberInput` supports validations. Add 
 }
 ```
 
+[See demo here](https://demos.getblazorbootstrap.com/form/number-input#validations)
+
 ### Events: ValueChanged
 
 This event fires on every user keystroke that changes the `NumberInput` value.
@@ -407,3 +425,5 @@ This event fires on every user keystroke that changes the `NumberInput` value.
     }
 }
 ```
+
+[See demo here](https://demos.getblazorbootstrap.com/form/number-input#event-value-changed)

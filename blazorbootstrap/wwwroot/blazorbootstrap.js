@@ -163,6 +163,108 @@ window.blazorBootstrap = {
             document.getElementById(elementId).value = value;
         }
     },
+    currencyInput: {
+        initialize: (elementId, isFloat, allowNegativeNumbers) => {
+            let currencyEl = document.getElementById(elementId);
+
+            currencyEl?.addEventListener('keydown', function (event) {
+
+                switch (event.keyCode) {
+                    case 8:   // backspace
+                    case 9:   // tab
+                    case 13:  // enter
+                    case 37:  // arrows left
+                    case 38:  // arrows up
+                    case 39:  // arrows right
+                    case 40:  // arrows down
+                    case 46:  // delete key
+                        return;
+                }
+
+                let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+                if (isFloat) {
+                    validChars.push('.'); // TODO: check ',' for specific culture
+                }
+
+                if (allowNegativeNumbers) {
+                    validChars.push('-');
+                }
+
+                if (!validChars.includes(event.key))
+                    event.preventDefault();
+            });
+
+            currencyEl?.addEventListener('beforeinput', function (event) {
+                if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
+
+                    let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+                    if (isFloat) {
+                        validChars.push('.'); // TODO: check ',' for specific culture
+                    }
+
+                    if (allowNegativeNumbers) {
+                        validChars.push('-');
+                    }
+
+                    if (event.data && event.data.length > 0) {
+                        if (blazorBootstrap.hasInvalidChars(event.data, validChars))
+                            event.preventDefault();
+                    }
+                }
+            });
+
+            currencyEl?.addEventListener('focusin', function (event) {
+                if (currencyEl.dataset.currentValue)
+                    currencyEl.value = currencyEl.dataset.currentValue; // assign original value
+                else
+                    currencyEl.value = ''; // don't assign zero.
+            });
+
+            // this event is fired after OnChange event
+            currencyEl?.addEventListener('focusout', function (event) {
+                // scenario:
+                // without changing the value focusout event is triggered
+                if (typeof (currencyEl.dataset.currentValue) === 'undefined' || currencyEl.dataset.currentValue === currencyEl.value) {
+                    currencyEl.value = currencyEl.dataset.currentFormattedValue; // assign formatted value
+                }
+            });
+        },
+        getFormattedValue: (value, locales, options) => {
+
+            let extractedValue = value.toString();
+            let parsedValue = Number.parseFloat(extractedValue);
+
+            if (isNaN(parsedValue))
+                parsedValue = 0;
+
+            return new Intl.NumberFormat(locales, options).format(parsedValue);
+        },
+        //getFormattedValue: (value, locales) => {
+
+        //    let extractedValue = value.toString();
+        //    let parsedValue = Number.parseFloat(extractedValue);
+
+        //    if (isNaN(parsedValue))
+        //        parsedValue = 0;
+
+        //    return new Intl.NumberFormat(locales).format(parsedValue);
+        //},
+        //getFormattedValueWithCurrencySymbol: (value, locales, currencySymbol) => {
+
+        //    let extractedValue = value.toString();
+        //    let parsedValue = Number.parseFloat(extractedValue);
+
+        //    if (isNaN(parsedValue))
+        //        parsedValue = 0;
+
+        //    return new Intl.NumberFormat(locales, {
+        //        style: 'currency',
+        //        currency: currencySymbol
+        //    }).format(parsedValue);
+        //}
+    },
     offcanvas: {
         initialize: (elementId, useBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {
             let offcanvasEl = document.getElementById(elementId);
@@ -264,7 +366,19 @@ window.blazorBootstrap = {
     // global function
     invokeMethodAsync: (callbackEventName, dotNetHelper) => {
         dotNetHelper.invokeMethodAsync(callbackEventName);
-    }
+    },
+    hasInvalidChars: (input, validChars) => {
+        if (input.length <= 0 || validChars.length <= 0)
+            return false;
+
+        let inputCharArr = input.split('');
+        for (var i = 0; i < inputCharArr.length; i++) {
+            if (!validChars.includes(inputCharArr[i]))
+                return true;
+        }
+
+        return false;
+    },
 }
 
 window.blazorChart = {

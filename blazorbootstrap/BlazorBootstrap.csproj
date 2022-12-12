@@ -2,15 +2,15 @@
 
 	<PropertyGroup>
 
-		<PackageId>Blazor.Bootstrap</PackageId>
-    <Version>1.1.0</Version>
-		<PackageVersion>1.1.0</PackageVersion>
+		<PackageId>BlazorBootstrap</PackageId>
+    <Version>1.2.0</Version>
+		<PackageVersion>1.2.0</PackageVersion>
 
 		<!--<PackageIconUrl></PackageIconUrl>-->
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://getblazorbootstrap.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/vikramlearning/blazorbootstrap</RepositoryUrl>
-		<PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap, BlazorAlert, BlazorAutoComplete, BlazorButtons, BlazorCallout, BlazorCharts, BlazorConfirmDialog, BlazorGrid, BlazorModal, BlazorNumberInput, BlazorInput, BlazorNumber, BlazorOffcanvas, BlazorPagination, BlazorPlaceholders, BlazorPreload, BlazorTabs, BlazorToasts, BlazorTooltips, BlazorBarChart, BlazorDoughnutChart, BlazorLineChart, BlazorPieChart</PackageTags>		
+		<PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap, BlazorAlert, BlazorAutoComplete, BlazorButtons, BlazorCallout, BlazorCharts, BlazorConfirmDialog, BlazorGrid, BlazorModal, BlazorCurrencyInput, BlazorNumberInput, BlazorInput, BlazorNumber, BlazorOffcanvas, BlazorPagination, BlazorPlaceholders, BlazorPreload, BlazorTabs, BlazorToasts, BlazorTooltips, BlazorBarChart, BlazorDoughnutChart, BlazorLineChart, BlazorPieChart</PackageTags>		
 		<Description>Blazor Bootstrap is a component library built on top of Blazor and Bootstrap5 CSS framework.</Description>
 		<Authors>Vikram Reddy</Authors>
 		<!--<Company>your_company</Company>-->
@@ -30,6 +30,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Content Remove="Components\Form\CurrencyInput.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Include="..\nuget\README.md">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
@@ -38,6 +42,7 @@
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
+	  <None Include="Components\Form\CurrencyInput\CurrencyInput.razor" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -46,6 +51,14 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.11" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Components\Form\CurrencyInput.razor" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="Components\Form\CurrencyInput.razor" />
 	</ItemGroup>
 
 </Project>
