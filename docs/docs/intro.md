@@ -9,7 +9,9 @@ title: Introduction
 
 Get started with Blazor Bootstrap, with ready-made components.
 
+<!--
 ## Getting started with 1.2.0 and above versions
+-->
 
 ## Install Nuget Package
 
@@ -19,6 +21,7 @@ Looking to quickly add Blazor Bootstrap to your project? Use NuGet package manag
 Install-Package BlazorBootstrap -Version 1.2.0
 ```
 
+<!--
 ## Starter template
 
 Change your `index.html` file and include the CSS and JS files:
@@ -44,7 +47,7 @@ Change your `index.html` file and include the CSS and JS files:
        <div id="app">Loading...</div>
        <script src="_framework/blazor.webassembly.js"></script>
        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- Add chart.js reference if Chart components are used in the application. -->
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
        <script src="_content/BlazorBootstrap/blazorbootstrap.js"></script>
    </body>
    </html>
@@ -93,6 +96,7 @@ Looking to quickly add Blazor Bootstrap to your project? Use NuGet package manag
 ```shell
 Install-Package BlazorBootstrap -Version 1.1.0
 ```
+-->
 
 ## Starter template
 
@@ -111,7 +115,7 @@ Change your `index.html` file and include the CSS and JS files:
        <title>BlazorBootstrap - Starter Template</title>
        <base href="/" />
        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
-       <link href="_content/Blazor.Bootstrap/blazorbootstrap.css" rel="stylesheet" />
+       <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css" rel="stylesheet" />
        <link href="BlazorBootstrap.UI.styles.css" rel="stylesheet" />
    </head>
@@ -120,7 +124,7 @@ Change your `index.html` file and include the CSS and JS files:
        <script src="_framework/blazor.webassembly.js"></script>
        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- Add chart.js reference if Chart components are used in the application. -->
-       <script src="_content/Blazor.Bootstrap/blazorbootstrap.js"></script>
+       <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
    </body>
    </html>
    ```

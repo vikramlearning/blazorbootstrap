@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 
-		<PackageId>BlazorBootstrap</PackageId>
+		<PackageId>Blazor.Bootstrap</PackageId>
     <Version>1.2.0</Version>
 		<PackageVersion>1.2.0</PackageVersion>
 
@@ -30,10 +30,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Content Remove="Components\Form\CurrencyInput.razor" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Include="..\nuget\README.md">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
@@ -42,8 +38,7 @@
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
-	  <None Include="Components\Form\CurrencyInput\CurrencyInput.razor" />
-	</ItemGroup>
+  </ItemGroup>
 
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
@@ -51,14 +46,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.11" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <UpToDateCheckInput Remove="Components\Form\CurrencyInput.razor" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <_ContentIncludedByDefault Remove="Components\Form\CurrencyInput.razor" />
 	</ItemGroup>
 
 </Project>

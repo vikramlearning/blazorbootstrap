@@ -25,11 +25,7 @@
     <ProjectReference Include="..\..\blazorbootstrap\BlazorBootstrap.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
+  <!--<ItemGroup>
     <Content Update="Pages\Form\CurrencyInput\CurrencyInputDocumentation.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
@@ -52,7 +48,7 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-  </ItemGroup>
+  </ItemGroup>-->
 
   <Target Name="EmbedDemos" BeforeTargets="PrepareForBuild">
     <!-- Let's embed demos sources into the assembly to show the source at runtime. -->
