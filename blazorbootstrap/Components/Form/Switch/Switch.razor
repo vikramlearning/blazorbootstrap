@@ -1,0 +1,20 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<div class="form-check form-switch @reverse">
+    <input @ref="@ElementRef"
+           @attributes="@Attributes"
+           type="checkbox" 
+           id="@ElementId"
+           class="@ClassNames"
+           style="@StyleNames"
+           disabled="@disabled"
+           checked="@Checked"
+           @onchange="OnChange"
+           role="switch" />
+
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <label class="form-check-label" for="@ElementId">@Label</label>
+    }
+</div>
