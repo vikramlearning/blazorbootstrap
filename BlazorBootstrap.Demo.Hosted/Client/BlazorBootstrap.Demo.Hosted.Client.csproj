@@ -25,12 +25,6 @@
     <ProjectReference Include="..\..\blazorbootstrap\BlazorBootstrap.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Shared\NavMenu.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-  </ItemGroup>
-
   <Target Name="EmbedDemos" BeforeTargets="PrepareForBuild">
     <!-- Let's embed demos sources into the assembly to show the source at runtime. -->
     <ItemGroup>

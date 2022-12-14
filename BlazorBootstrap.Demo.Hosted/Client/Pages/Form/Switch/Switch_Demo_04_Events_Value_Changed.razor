@@ -1,4 +1,4 @@
-﻿<Switch Value="agree" Label="Default switch checkbox input" ValueChanged="SwitchChanged" />
+﻿<Switch Value="agree" Label="Default switch checkbox input" ValueExpression="() => agree" ValueChanged="SwitchChanged" />
 <div class="mt-3">@displaySwitchStatus</div>
 
 @code {
