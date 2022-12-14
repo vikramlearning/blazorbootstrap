@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Client\BlazorBootstrap.Demo.Client.csproj" />
+    <ProjectReference Include="..\Client\BlazorBootstrap.Demo.Hosted.Client.csproj" />
   </ItemGroup>
 
 

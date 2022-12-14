@@ -1,6 +1,5 @@
 using BlazorBootstrap;
-using BlazorBootstrap.Demo;
-using Microsoft.AspNetCore.ResponseCompression;
+using BlazorBootstrap.Demo.Hosted.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 {
