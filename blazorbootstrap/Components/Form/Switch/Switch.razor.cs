@@ -15,7 +15,7 @@ public partial class Switch : BaseComponent
 
     private bool disabled;
 
-    private string reverse => this.Reverse ? "form-check-reverse" : "";
+    private string reverse => this.Reverse ? BootstrapClassProvider.ChecksReverse() : "";
 
     #endregion
 

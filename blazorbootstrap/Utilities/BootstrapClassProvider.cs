@@ -61,6 +61,7 @@
         #region Checks
 
         public string Checks() => "form-check-input";
+        public string ChecksReverse() => "form-check-reverse";
 
         #endregion
 
