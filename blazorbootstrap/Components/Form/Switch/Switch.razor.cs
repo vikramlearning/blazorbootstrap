@@ -7,11 +7,15 @@ public partial class Switch : BaseComponent
     /// <summary>
     /// This event fired when the switch selection changed.
     /// </summary>
-    [Parameter] public EventCallback<bool> CheckedChanged { get; set; }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
 
     #endregion
 
     #region Members
+
+    private FieldIdentifier fieldIdentifier;
+
+    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     private bool disabled;
 
@@ -25,6 +29,17 @@ public partial class Switch : BaseComponent
     {
         builder.Append(BootstrapClassProvider.Checks());
         base.BuildClasses(builder);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Attributes ??= new Dictionary<string, object>();
+
+        fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+
+        this.disabled = this.Disabled;
+
+        await base.OnInitializedAsync();
     }
 
     /// <summary>
@@ -46,8 +61,10 @@ public partial class Switch : BaseComponent
     private async Task OnChange(ChangeEventArgs e)
     {
         bool.TryParse(e.Value?.ToString(), out bool newValue);
-        this.Checked = newValue;
-        await CheckedChanged.InvokeAsync(Checked);
+        this.Value = newValue;
+        await ValueChanged.InvokeAsync(Value);
+
+        EditContext?.NotifyFieldChanged(fieldIdentifier);
     }
 
     #endregion
@@ -62,6 +79,8 @@ public partial class Switch : BaseComponent
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
+    [CascadingParameter] private EditContext EditContext { get; set; }
+
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
@@ -75,7 +94,9 @@ public partial class Switch : BaseComponent
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
-    [Parameter] public bool Checked { get; set; }
+    [Parameter] public bool Value { get; set; }
+
+    [Parameter] public Expression<Func<bool>> ValueExpression { get; set; }
 
     #endregion
 }
