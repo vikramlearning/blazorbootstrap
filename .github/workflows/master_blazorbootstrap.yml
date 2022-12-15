@@ -23,7 +23,7 @@ jobs:
         run: dotnet build ./BlazorBootstrap.Demo.Server/BlazorBootstrap.Demo.Server.csproj --configuration Release
 
       - name: Publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish ./BlazorBootstrap.Demo.Server/BlazorBootstrap.Demo.Server.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
