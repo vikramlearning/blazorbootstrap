@@ -16,7 +16,8 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '7.0.x'
+          app_location: "BlazorBootstrap.Demo.Server" # App source code path
           include-prerelease: true
 
       - name: Build with dotnet
