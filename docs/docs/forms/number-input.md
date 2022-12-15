@@ -1,5 +1,5 @@
 ---
-title: Blazor Number Input Components
+title: Blazor Number Input Component
 description: Blazor Bootstrap `NumberInput` component is built around HTML input of `type="number"` that prevents the user input based on the parameters set.
 image: https://i.imgur.com/iUNBkki.png
 
@@ -39,7 +39,7 @@ Blazor Bootstrap `NumberInput` component is built around HTML input of `type="nu
 
 | Name | Description |
 |:--|:--|
-| ValueChanged | This is event fires on every user keystroke that changes the `NumberInput` value. |
+| ValueChanged | This event fired on every user keystroke that changes the `NumberInput` value. |
 
 ## Examples
 
@@ -242,7 +242,7 @@ By default, negative numbers are not allowed. Set the `AllowNegativeNumbers` par
 
 ### Disable
 
-Use the `Disable` parameter to disable the `NumberInput`. Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the `NumberInput`.
+Use the `Disabled` parameter to disable the `NumberInput`. Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the `NumberInput`.
 
 <img src="https://i.imgur.com/ezc3VBH.png" alt="Blazor Bootstrap: Number Input Component - Disable" />
 

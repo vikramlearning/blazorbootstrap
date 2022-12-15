@@ -43,7 +43,7 @@ public partial class Switch : BaseComponent
     }
 
     /// <summary>
-    /// Disables currency input.
+    /// Disables switch.
     /// </summary>
     public void Disable()
     {
@@ -51,7 +51,7 @@ public partial class Switch : BaseComponent
     }
 
     /// <summary>
-    /// Enables currency input.
+    /// Enables switch.
     /// </summary>
     public void Enable()
     {
