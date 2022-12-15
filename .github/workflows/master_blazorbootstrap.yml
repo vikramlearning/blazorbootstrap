@@ -1,9 +1,9 @@
-name: Azure Web App (Server) CI/CD - blazorbootstrap
+name: Azure Web App (Blazor Server) CI/CD - demos.blazorbootstrap.com
 
 on:
   push:
     branches:
-      - features/1.3.0-updates
+      - master
   workflow_dispatch:
 
 jobs:
