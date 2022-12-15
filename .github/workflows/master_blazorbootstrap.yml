@@ -3,7 +3,7 @@ name: Azure Web App (Hosted) CI/CD - blazorbootstrap
 on:
   push:
     branches:
-      - master
+      - features/1.3.0-updates
   workflow_dispatch:
 
 jobs:
