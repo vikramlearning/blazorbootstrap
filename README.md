@@ -15,7 +15,8 @@
 
 ## Online Demos
 
-[Link](https://demos.getblazorbootstrap.com/)
+[Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
+[Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 
 ## Table of contents
 
@@ -31,7 +32,7 @@
 Several quick start options are available:
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.2.0` 
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.3.0` 
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
@@ -59,6 +60,7 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 - Placeholders
 - Preload
 - Progress
+- Switch
 - Tabs
 - Toasts
 - Tooltips
@@ -115,6 +117,9 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ### Blazor Bootstrap - Progress
 ![Blazor Bootstrap - Progress](https://i.imgur.com/MK142lQ.png "Blazor Bootstrap - Progress")
+
+### Blazor Bootstrap - Switch
+![Blazor Bootstrap - Switch](https://i.imgur.com/ALKzreq.png "Blazor Bootstrap - Switch")
 
 ### Blazor Bootstrap - Tabs
 ![Blazor Bootstrap - Tabs](https://i.imgur.com/NdE5oqH.png "Blazor Bootstrap - Tabs")
