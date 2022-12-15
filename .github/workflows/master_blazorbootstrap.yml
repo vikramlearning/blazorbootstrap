@@ -1,4 +1,4 @@
-name: Azure Web App (Hosted) CI/CD - blazorbootstrap
+name: Azure Web App (Server) CI/CD - blazorbootstrap
 
 on:
   push:
@@ -13,17 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up .NET Core
+      - name: Set up .NET 7.0.x
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '7.0.x'
-          app_location: "BlazorBootstrap.Demo.Server" # App source code path
-          include-prerelease: true
+          include-prerelease: false
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Build
+        run: dotnet build BlazorBootstrap.Demo.Server --configuration Release
+        #target
 
-      - name: dotnet publish
+      - name: Publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
@@ -52,4 +52,4 @@ jobs:
           app-name: 'blazorbootstrap'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1F484B42E8E9491C82F21EED2A6E2C15 }}
-          package: .
+          package: . #path
