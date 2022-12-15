@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -8,12 +8,12 @@
 
   <ItemGroup>
     <Compile Remove="Pages\GettingStarted\v1_1_0\Snippet_02_Starter_Template_Program.cs" />
-    <Compile Remove="Pages\GettingStarted\v1_2_0\Snippet_02_Starter_Template_Program.cs" />
+    <Compile Remove="Pages\GettingStarted\current\Snippet_02_Starter_Template_Program.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Pages\GettingStarted\v1_1_0\Snippet_02_Starter_Template_Program.cs" />
-    <Content Include="Pages\GettingStarted\v1_2_0\Snippet_02_Starter_Template_Program.cs" />
+    <Content Include="Pages\GettingStarted\current\Snippet_02_Starter_Template_Program.cs" />
   </ItemGroup>
 
   <ItemGroup>
