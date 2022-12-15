@@ -1,0 +1,31 @@
+﻿<div class="row">
+    <div class="col-md-5 col-sm-12">
+        <AutoComplete @bind-Value="customerName"
+                      TItem="Customer"
+                      DataProvider="CustomersDataProvider"
+                      PropertyName="CustomerName"
+                      Placeholder="Search a customer..."
+                      OnChanged="(Customer customer) => OnAutoCompleteChanged(customer)" />
+    </div>
+</div>
+
+@code {
+    private string customerName;
+
+    [Inject] ICustomerService _customerService { get; set; }
+
+    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
+    {
+        var customers = await _customerService.GetCustomers(request.Filter); // API call
+        await Task.Delay(500); // Added 500 milliseconds delay to simulate the real-time API response
+        return await Task.FromResult(new AutoCompleteDataProviderResult<Customer> { Data = customers, TotalCount = customers.Count() });
+    }
+
+    private void OnAutoCompleteChanged(Customer customer)
+    {
+        // TODO: handle your own logic
+
+        // NOTE: do null check
+        Console.WriteLine($"'{customer?.CustomerName}' selected.");
+    }
+}

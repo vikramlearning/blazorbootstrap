@@ -1,0 +1,47 @@
+﻿@page "/modals"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1 class="my-4">Blazor Modal</h1>
+<div class="mb-3">
+    Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes, user notifications, or completely custom content.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Modal_Demo_01_Examples)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Static backdrop" PageUrl="@pageUrl" HashTagName="static-backdrop" />
+<div class="mb-3">When <code>UseStaticBackdrop</code> is set to <code>true</code>, the modal will not close when clicking outside it. Click the button below to try it.</div>
+<Demo Type="typeof(Modal_Demo_02_Static_Backdrop)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Scrolling long content" PageUrl="@pageUrl" HashTagName="scrolling-long-content" />
+<div class="mb-3">When modals become too long for the user’s viewport or device, they scroll independent of the page itself. Try the demo below to see what we mean.</div>
+<Demo Type="typeof(Modal_Demo_03_Scrolling_Long_Content_A)" Tabs="true" />
+
+<div class="mb-3">You can also create a scrollable modal that allows scroll the modal body by adding <code>IsScrollable="true"</code>.</div>
+<Demo Type="typeof(Modal_Demo_03_Scrolling_Long_Content_B)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Vertically centered" PageUrl="@pageUrl" HashTagName="vertically-centered" />
+<div class="mb-3">Add <code>IsVerticallyCentered="true"</code> to vertically center the modal.</div>
+<Demo Type="typeof(Modal_Demo_04_Vertically_Centered)" Tabs="true" />
+<Demo Type="typeof(Modal_Demo_04_Vertically_Centered_And_Scrollable)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Optional sizes" PageUrl="@pageUrl" HashTagName="optional-sizes" />
+<div class="mb-3">Modals have three optional sizes. These sizes kick in at certain breakpoints to avoid horizontal scrollbars on narrower viewports.</div>
+<Demo Type="typeof(Modal_Demo_05_Optional_Sizes)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Fullscreen Modal" PageUrl="@pageUrl" HashTagName="fullscreen-modal" />
+<Demo Type="typeof(Modal_Demo_06_Fullscreen_Modal)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
+<div class="mb-3">Blazor Bootstrap modal class exposes a few events for hooking into modal functionality. </div>
+<Demo Type="typeof(Modal_Demo_07_Events)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/modals";
+    private string title = "Blazor Modal Component";
+    private string description = "Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes, user notifications, or completely custom content.";
+    private string imageUrl = "https://i.imgur.com/aWbURjD.jpg";
+}

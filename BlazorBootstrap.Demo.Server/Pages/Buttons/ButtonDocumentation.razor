@@ -1,0 +1,70 @@
+﻿@page "/buttons"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1 class="my-4">Blazor Buttons</h1>
+<div class="mb-3">
+    Use Blazor Bootstrap button styles for actions in forms, dialogs, and more with support for multiple sizes, states, and more.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div>Bootstrap includes several predefined button styles, each serving its own semantic purpose, with a few extras thrown in for more control.</div>
+<Demo Type="typeof(Button_Demo_01_Examples)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Button tags" PageUrl="@pageUrl" HashTagName="button-tags" />
+<Demo Type="typeof(Button_Demo_02_Button_Tags)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Outline buttons" PageUrl="@pageUrl" HashTagName="outline-buttons" />
+<Demo Type="typeof(Button_Demo_03_Outline_Buttons)" />
+
+<Callout Color="CalloutType.Info">
+    Some of the button styles use a relatively light foreground color, and should only be used on a dark background in order to have sufficient contrast.
+</Callout>
+
+<SectionHeading Size="HeadingSize.H2" Text="Sizes" PageUrl="@pageUrl" HashTagName="sizes" />
+<div>Fancy larger or smaller buttons? Add <code>Size="Size.Large"</code> or <code>Size="Size.Small"</code> for additional sizes.</div>
+<Demo Type="typeof(Button_Demo_04_Sizes_A)" />
+<Demo Type="typeof(Button_Demo_04_Sizes_B)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disabled state" PageUrl="@pageUrl" HashTagName="disabled-state" />
+<div>Make buttons look inactive by adding the <code>Disabled="true"</code> boolean parameter to any <code>Button</code> component. Disabled buttons have <code>pointer-events: none</code> applied to, preventing hover and active states from triggering.</div>
+<Demo Type="typeof(Button_Demo_05_Disabled_State_A)" />
+<Demo Type="typeof(Button_Demo_05_Disabled_State_B)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Block buttons" PageUrl="@pageUrl" HashTagName="block-buttons" />
+<Demo Type="typeof(Button_Demo_06_Block_Buttons_A)" />
+<Demo Type="typeof(Button_Demo_06_Block_Buttons_B)" />
+<Demo Type="typeof(Button_Demo_06_Block_Buttons_C)" />
+<Demo Type="typeof(Button_Demo_06_Block_Buttons_D)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Toggle states" PageUrl="@pageUrl" HashTagName="toggle-states" />
+<Demo Type="typeof(Button_Demo_07_Toggle_States_A)" />
+<Demo Type="typeof(Button_Demo_07_Toggle_States_B)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Loading spinner" PageUrl="@pageUrl" HashTagName="loading-spinner" />
+<div>Use spinners within buttons to indicate an action is currently processing or taking place. You may also swap the text out of the spinner element and utilize button text as needed.</div>
+<Demo Type="typeof(Button_Demo_08_Loading_Spinner)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Show/Hide loading spinner" PageUrl="@pageUrl" HashTagName="show-hide-loading-spinner" />
+<Demo Type="typeof(Button_Demo_08_Show_Hide_Loading_Spinner)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Tooltip" PageUrl="@pageUrl" HashTagName="tooltip" />
+<Demo Type="typeof(Button_Demo_09_Tooltip)" />
+
+<Callout Color="CalloutType.Warning">
+    Support for HTML tooltips is not available at this moment.
+</Callout>
+
+<SectionHeading Size="HeadingSize.H2" Text="Click events" PageUrl="@pageUrl" HashTagName="click-events" />
+<Demo Type="typeof(Button_Demo_10_Click_Event)" />
+<Demo Type="typeof(Button_Demo_11_Double_Click_Event)" />
+<Demo Type="typeof(Button_Demo_12_Click_Event_With_Args)" />
+
+@code {
+    private string pageUrl = "/buttons";
+    private string title = "Blazor Button Component";
+    private string description = "Use Blazor Bootstrap button styles for actions in forms, dialogs, and more with support for multiple sizes, states, etc.";
+    private string imageUrl = "https://i.imgur.com/Ne7FJ5H.jpg";
+}

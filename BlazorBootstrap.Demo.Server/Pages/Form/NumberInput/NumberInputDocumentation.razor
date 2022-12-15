@@ -1,0 +1,63 @@
+﻿@page "/form/number-input"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Number Input</h1>
+<div class="mb-3">
+    Blazor Bootstrap <code>NumberInput</code> component is built around HTML input of <code>type="number"</code> that prevents the user input based on the parameters set.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<div class="mb-3">By default, <code>e + -</code> are blocked. For all integral numeric types, dot <code>.</code> is blocked.</div>
+<Demo Type="typeof(NumberInput_Demo_01_Basic_Usage)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Generic type" PageUrl="@pageUrl" HashTagName="generic-type" />
+<div class="mb-3"><code>NumberInput</code> is a generic component. Always specify the exact type. In the below example <b>TValue</b> is set to <code>int</code>, <code>int?</code>, <code>float</code>, <code>float?</code>, <code>double</code>, <code>double?</code>, <code>decimal</code>, and <code>decimal?</code>.</div>
+<Demo Type="typeof(NumberInput_Demo_02_Generic_Type)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Enable min and max" PageUrl="@pageUrl" HashTagName="enable-min-and-max" />
+<div class="mb-3">
+    Set <code>EnableMinMax="true"</code> and set the <code>Min</code> and <code>Max</code> parameters to restrict the user input between the Min and Max range.
+</div>
+<Callout Type="CalloutType.Warning" Heading="NOTE">
+    If the user tries to enter a number in the <b>NumberInput</b> field which is out of range, then it will override with Min or Max value based on the context. If the user input is less than the Min value, then it will override with the Min value.
+    If the user input exceeds the Max value, it will override with the Max value.
+</Callout>
+<Demo Type="typeof(NumberInput_Demo_03_Enable_Min_Max)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Step" PageUrl="@pageUrl" HashTagName="step" />
+<div class="mb-3">The <code>Step</code> sets the stepping interval when clicking the up and down spinner buttons. If not explicitly included, <code>Step</code> defaults to <b>1</b>.</div>
+<Demo Type="typeof(NumberInput_Demo_04_Step)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Text alignment" PageUrl="@pageUrl" HashTagName="text-alignment" />
+<div class="mb-3">You can change the text alignment according to your need. Use the <code>TextAlignment</code> parameter to set the alignment. In the below example, alignment is set to center and end.</div>
+<Demo Type="typeof(NumberInput_Demo_05_Text_Alignment)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Allow negative numbers" PageUrl="@pageUrl" HashTagName="allow-negative-numbers" />
+<div class="mb-3">By default, negative numbers are not allowed. Set the <code>AllowNegativeNumbers</code> parameter to true to allow the negative numbers.</div>
+<Demo Type="typeof(NumberInput_Demo_06_Allow_Negative_Numbers)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable" PageUrl="@pageUrl" HashTagName="disable" />
+<div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>NumberInput</code>. Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>NumberInput</code>.</div>
+<Demo Type="typeof(NumberInput_Demo_07_Disable_Number_Input)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Validations" PageUrl="@pageUrl" HashTagName="validations" />
+<div class="mb-3">
+    Like any other blazor input components, <code>NumberInput</code> supports validations.
+    Add the DataAnnotations on the <code>NumberInput</code> component to validate the user input before submitting the form.
+    In the below example, we used <b>Required</b> and <b>Range</b> attributes.
+</div>
+<Demo Type="typeof(NumberInput_Demo_08_Validations)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Events: ValueChanged" PageUrl="@pageUrl" HashTagName="event-value-changed" />
+<div class="mb-3">This event fires on every user keystroke that changes the <code>NumberInput</code> value.</div>
+<Demo Type="typeof(NumberInput_Demo_09_Events_Value_Changed)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/form/number-input";
+    private string title = "Blazor NumberInput Component";
+    private string description = "Blazor Bootstrap NumberInput component is built around HTML input of type=\"number\" that prevents the user input based on the parameters set.";
+    private string imageUrl = "https://i.imgur.com/iUNBkki.png";
+}
