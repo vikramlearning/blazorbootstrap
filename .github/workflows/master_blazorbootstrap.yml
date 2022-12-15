@@ -20,7 +20,7 @@ jobs:
           include-prerelease: false
 
       - name: Build
-        run: dotnet build --configuration Release
+        run: dotnet build BlazorBootstrap.Demo.Server.csproj --configuration Release
         #target
 
       - name: Publish
