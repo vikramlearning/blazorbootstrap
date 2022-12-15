@@ -53,11 +53,11 @@
     }
 
     .sidebar {
-        width: 260px;
-        height: 100vh;
-        overflow-y: auto;
-        position: sticky;
-        top: 0;
+        width: 260px !important;
+        height: 100vh !important;
+        overflow-y: auto !important;
+        position: sticky !important;
+        top: 0 !important;
     }
 
     .top-row {

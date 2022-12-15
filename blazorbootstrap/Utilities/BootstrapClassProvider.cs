@@ -58,6 +58,13 @@
 
         #endregion
 
+        #region Checks
+
+        public string Checks() => "form-check-input";
+        public string ChecksReverse() => "form-check-reverse";
+
+        #endregion
+
         #region Confirmation Modal
 
         public string ConfirmationModal() => "modal-confirmation";

@@ -1,0 +1,41 @@
+﻿@page "/placeholders"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1 class="my-4">Blazor Placeholders</h1>
+<div class="mb-3">
+    Use Blazor Bootstrap loading placeholders for your components or pages to indicate something may still be loading.
+</div>
+
+<h2 class="my-4">About</h2>
+<div class="mb-3">
+    Placeholders can be used to enhance the experience of your application.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Placeholder_Demo_01_Examples)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Width" PageUrl="@pageUrl" HashTagName="width" />
+<div>You can change the width through <code>PlaceholderWidth</code>, width utilities, or inline styles.</div>
+<Demo Type="typeof(Placeholder_Demo_02_Width)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Color" PageUrl="@pageUrl" HashTagName="color" />
+<div>By default, the placeholder uses currentColor. This can be overridden with the <code>Color</code> property of type enum.</div>
+<Demo Type="typeof(Placeholder_Demo_03_Color)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Sizing" PageUrl="@pageUrl" HashTagName="sizing" />
+<div>The size of placeholders are based on the typographic style of the parent element. Customize them with <code>Size</code> property of type enum.</div>
+<Demo Type="typeof(Placeholder_Demo_04_Sizing)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Animation" PageUrl="@pageUrl" HashTagName="animation" />
+<div>Animate placeholders with <code>PlaceholderAnimation.Glow</code> or <code>PlaceholderAnimation.Wave</code> to better convey the perception of something being actively loaded.</div>
+<Demo Type="typeof(Placeholder_Demo_05_Animation)" />
+
+@code {
+    private string pageUrl = "/placeholders";
+    private string title = "Blazor Placeholder Component";
+    private string description = "Use Blazor Bootstrap loading placeholders for your components or pages to indicate something may still be loading.";
+    private string imageUrl = "https://i.imgur.com/JcLisSd.png";
+}

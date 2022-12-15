@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace BlazorBootstrap.Demo;
+namespace BlazorBootstrap.Demo.Hosted.Client;
 
 public partial class MetaTags : ComponentBase
 {

@@ -1,5 +1,5 @@
 ﻿---
-title: Blazor Currency Input Components
+title: Blazor Currency Input Component
 description: Use the Blazor Bootstrap `CurrencyInput` component to show the numbers in the user's locale format, including the currency symbol.
 image: https://i.imgur.com/mihpoXk.png
 
@@ -37,14 +37,14 @@ Use the Blazor Bootstrap `CurrencyInput` component to show the numbers in the us
 
 | Name | Description |
 |:--|:--|
-| Disable | Disables currency input. |
-| Enable | Enables currency input. |
+| Disable() | Disables currency input. |
+| Enable() | Enables currency input. |
 
 ## Events
 
 | Name | Description |
 |:--|:--|
-| ValueChanged | This is event fires on every user keystroke that changes the `CurrencyInput` value. |
+| ValueChanged | This event fired on every user keystroke that changes the `CurrencyInput` value. |
 
 ## Examples
 
@@ -371,7 +371,7 @@ By default, negative numbers are not allowed. Set the `AllowNegativeNumbers` par
 
 ### Disable
 
-Use the `Disable` parameter to disable the `CurrencyInput`. Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the `CurrencyInput`.
+Use the `Disabled` parameter to disable the `CurrencyInput`. Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the `CurrencyInput`.
 
 <img src="https://i.imgur.com/bzh72b2.png" alt="Blazor Bootstrap: Currency Input Component - Disable" />
 

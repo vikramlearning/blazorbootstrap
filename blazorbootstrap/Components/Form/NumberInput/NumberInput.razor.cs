@@ -5,7 +5,7 @@ public partial class NumberInput<TValue> : BaseComponent
     #region Events
 
     /// <summary>
-    /// This is event fires on every user keystroke that changes the NumberInput value.
+    /// This event fired on every user keystroke that changes the NumberInput value.
     /// </summary>
     [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
 
