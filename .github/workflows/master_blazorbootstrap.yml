@@ -51,4 +51,4 @@ jobs:
           app-name: 'blazorbootstrap'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1F484B42E8E9491C82F21EED2A6E2C15 }}
-          package: ./BlazorBootstrap.Demo.Server #path
+          package: . #path
