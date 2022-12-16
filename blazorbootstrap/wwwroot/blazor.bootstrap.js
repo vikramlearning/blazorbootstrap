@@ -72,7 +72,6 @@ window.blazorBootstrap = {
             bootstrap?.Dropdown?.getOrCreateInstance(elementRef)?.dispose();
         },
         focusListItem: (ul, isArrowDown, startIndex) => {
-            console.log(`focusListItem called.`);
             if (!ul || startIndex < -1) return;
 
             let childNodes = ul.getElementsByTagName('LI');
