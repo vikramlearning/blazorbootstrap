@@ -70,6 +70,44 @@ window.blazorBootstrap = {
         },
         dispose: (elementRef) => {
             bootstrap?.Dropdown?.getOrCreateInstance(elementRef)?.dispose();
+        },
+        focusListItem: (ul, isArrowDown, startIndex) => {
+            console.log(`focusListItem called.`);
+            if (!ul || startIndex < -1) return;
+
+            let childNodes = ul.getElementsByTagName('LI');
+
+            if (!childNodes || childNodes.length === 0) return;
+
+            if (startIndex === undefined || startIndex === null)
+                startIndex = -1;
+
+            let nextSelectedIndex = startIndex;
+
+            if (isArrowDown) {
+                if (nextSelectedIndex < childNodes.length - 1)
+                    nextSelectedIndex++;
+            }
+            else {
+                if (nextSelectedIndex > 0 && nextSelectedIndex <= childNodes.length - 1)
+                nextSelectedIndex--;
+            }
+
+            // reset li element focus
+            var highlighted = ul.querySelectorAll('.dropdown-item-highlight');
+            if (highlighted.length) {
+                for (var i = 0; i < highlighted.length; i++) {
+                    highlighted[i].classList.remove('dropdown-item-highlight');
+                }
+            }
+
+            // focus on the next li element
+            if (nextSelectedIndex >= 0 && nextSelectedIndex <= childNodes.length - 1) {
+                childNodes[nextSelectedIndex].classList.add('dropdown-item-highlight');
+                ul.scrollTop = childNodes[nextSelectedIndex].offsetTop;
+            }
+
+            return nextSelectedIndex;
         }
     },
     confirmDialog: {

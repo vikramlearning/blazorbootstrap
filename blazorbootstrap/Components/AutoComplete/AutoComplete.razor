@@ -4,14 +4,26 @@
 
 <div class="autocomplete">
     <div class="input-group">
-        <input @ref="@ElementRef" type="text" id="@ElementId" class="@ClassNames @fieldCssClasses" style="@StyleNames" @attributes="@Attributes" value="@Value" @oninput="async (args) => await OnInputChangedAsync(args)" placeholder=" @Placeholder" disabled="@disabled" autocomplete="off" />
+        <input @ref="@ElementRef"
+               type="text"
+               id="@ElementId"
+               class="@ClassNames @fieldCssClasses"
+               style="@StyleNames"
+               @attributes="@Attributes"
+               value="@Value"
+               @oninput="OnInputChangedAsync"
+               @onkeydown="OnKeyDownAsync"
+               placeholder=" @Placeholder"
+               disabled="@disabled"
+               autocomplete="off" />
+
         @if (inputHasValue)
         {
             <Button @ref="closeButton" Style="margin-left: -42px; z-index: 100; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" @onclick="async () => await ClearInputTextAsync()">
                 <Icon Name="IconName.XLg"></Icon>
             </Button>
         }
-        <ul class="dropdown-menu autocomplete-list" data-popper-placement="bottom-start">
+        <ul @ref="list" class="dropdown-menu autocomplete-list" data-popper-placement="bottom-start">
             @if (items is not null && items.Any())
             {
                 foreach (var item in items)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorBootstrap;
 
@@ -30,8 +31,10 @@ public partial class AutoComplete<TItem> : BaseComponent
     private IEnumerable<TItem> items = null;
     private int totalCount;
     private TItem? selectedItem;
+    private int selectedIndex = -1;
     private bool disabled;
     private Button closeButton;
+    private ElementReference list; // ul element reference
 
     /// <summary>
     /// Gets selected item.
@@ -142,6 +145,28 @@ public partial class AutoComplete<TItem> : BaseComponent
         closeButton?.HideLoading();
     }
 
+    private async Task OnKeyDownAsync(KeyboardEventArgs args)
+    {
+        var key = args.Code is not null ? args.Code : args.Key;
+
+        if(key == "ArrowDown" || key == "ArrowUp")
+        {
+            selectedIndex = await JS.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key == "ArrowDown", selectedIndex);
+        }
+        else if(key == "Enter")
+        {
+            if(selectedIndex >= 0 && selectedIndex <= items.Count() - 1)
+            {
+                await OnItemSelectedAsync(items.ElementAt(selectedIndex));
+                selectedIndex = -1;
+            }
+        }
+        else
+        {
+
+        }
+    }
+
     private async Task OnItemSelectedAsync(TItem item)
     {
         this.selectedItem = item;
@@ -180,7 +205,7 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// <summary>
     /// Checks whether the input has value.
     /// </summary>
-    private void SetInputHasValue() => this.inputHasValue = Value.Length > 0;
+    private void SetInputHasValue() => this.inputHasValue = Value is not null && Value.Length > 0;
 
     private string? GetPropertyValue(TItem item)
     {
