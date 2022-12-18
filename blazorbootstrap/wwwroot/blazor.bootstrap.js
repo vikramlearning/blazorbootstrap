@@ -89,7 +89,7 @@ window.blazorBootstrap = {
             }
             else {
                 if (nextSelectedIndex > 0 && nextSelectedIndex <= childNodes.length - 1)
-                nextSelectedIndex--;
+                    nextSelectedIndex--;
             }
 
             // reset li element focus

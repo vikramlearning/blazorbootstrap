@@ -159,7 +159,6 @@ public partial class AutoComplete<TItem> : BaseComponent
             if(selectedIndex >= 0 && selectedIndex <= items.Count() - 1)
             {
                 await OnItemSelectedAsync(items.ElementAt(selectedIndex));
-                selectedIndex = -1;
             }
         }
         else
@@ -171,6 +170,8 @@ public partial class AutoComplete<TItem> : BaseComponent
     private async Task OnItemSelectedAsync(TItem item)
     {
         this.selectedItem = item;
+        this.selectedIndex = -1;
+        this.items = new List<TItem>();
         this.Value = this.GetPropertyValue(item);
         await ValueChanged.InvokeAsync(this.Value);
 
@@ -190,6 +191,8 @@ public partial class AutoComplete<TItem> : BaseComponent
     private async Task ClearInputTextAsync()
     {
         this.selectedItem = default(TItem);
+        this.selectedIndex = -1;
+        this.items = new List<TItem>();
         this.Value = string.Empty;
         await ValueChanged.InvokeAsync(this.Value);
 
@@ -201,6 +204,8 @@ public partial class AutoComplete<TItem> : BaseComponent
 
         if (OnChanged.HasDelegate)
             await OnChanged.InvokeAsync(default(TItem));
+
+        await ElementRef.FocusAsync();
     }
 
     /// <summary>
@@ -254,7 +259,7 @@ public partial class AutoComplete<TItem> : BaseComponent
             }
             else
             {
-                items = new List<TItem> { };
+                items = new List<TItem>();
                 totalCount = 0;
             }
         }
