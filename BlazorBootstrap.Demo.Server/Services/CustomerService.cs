@@ -14,11 +14,13 @@ public class CustomerService : ICustomerService
         _httpClient.BaseAddress = new Uri(navigationManager.BaseUri);
     }
 
-    public async Task<IEnumerable<Customer>> GetCustomers(FilterItem filter)
+    public async Task<IEnumerable<Customer>> GetCustomers(FilterItem filter, CancellationToken cancellationToken)
     {
         try
         {
             var customers = await _httpClient.GetFromJsonAsync<Customer[]>("sample-data/autocomplete/customer.json");
+            if (customers is null)
+                return Enumerable.Empty<Customer>();
 
             var parameterExpression = Expression.Parameter(typeof(Customer)); // second param optional
             var lambda = ExpressionExtensions.GetExpressionDelegate<Customer>(parameterExpression, filter);

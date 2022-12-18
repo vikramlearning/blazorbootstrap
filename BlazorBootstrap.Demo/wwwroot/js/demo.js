@@ -11,5 +11,7 @@
 }
 
 window.highlightCode = function () {
-    Prism.highlightAll();
+    if (Prism) {
+        Prism.highlightAll();
+    }
 };

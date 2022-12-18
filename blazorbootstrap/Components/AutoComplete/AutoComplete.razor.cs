@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorBootstrap;
 
@@ -30,13 +30,17 @@ public partial class AutoComplete<TItem> : BaseComponent
     private IEnumerable<TItem> items = null;
     private int totalCount;
     private TItem? selectedItem;
+    private int selectedIndex = -1;
     private bool disabled;
     private Button closeButton;
+    private ElementReference list; // ul element reference
 
     /// <summary>
     /// Gets selected item.
     /// </summary>
     public TItem SelectedItem => selectedItem;
+
+    private CancellationTokenSource cancellationTokenSource;
 
     #endregion Members
 
@@ -90,18 +94,6 @@ public partial class AutoComplete<TItem> : BaseComponent
         await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", ElementRef);
     }
 
-    /// <inheritdoc />
-    protected override async ValueTask DisposeAsync(bool disposing)
-    {
-        if (disposing)
-        {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementRef);
-            objRef?.Dispose();
-        }
-
-        await base.DisposeAsync(disposing);
-    }
-
     [JSInvokable] public async Task bsShowAutocomplete() { }
     [JSInvokable] public async Task bsShownAutocomplete() { }
     [JSInvokable] public async Task bsHideAutocomplete() { }
@@ -122,6 +114,7 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     private async Task OnInputChangedAsync(ChangeEventArgs args)
     {
+        this.selectedIndex = -1;
         this.Value = args.Value.ToString();
 
         SetInputHasValue();
@@ -137,14 +130,48 @@ public partial class AutoComplete<TItem> : BaseComponent
 
         closeButton?.ShowLoading();
 
-        await FilterDataAsync();
+        if(cancellationTokenSource is not null 
+            && !cancellationTokenSource.IsCancellationRequested)
+        {
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+        }
+
+        cancellationTokenSource = new CancellationTokenSource();
+
+        var token = cancellationTokenSource.Token;
+        await Task.Delay(300, token); // 300ms timeout for the debouncing
+        await FilterDataAsync(token);
 
         closeButton?.HideLoading();
+    }
+
+    private async Task OnKeyDownAsync(KeyboardEventArgs args)
+    {
+        var key = args.Code is not null ? args.Code : args.Key;
+
+        if(key == "ArrowDown" || key == "ArrowUp" || key == "Home" || key == "End")
+        {
+            selectedIndex = await JS.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key, selectedIndex);
+        }
+        else if(key == "Enter")
+        {
+            if(selectedIndex >= 0 && selectedIndex <= items.Count() - 1)
+            {
+                await OnItemSelectedAsync(items.ElementAt(selectedIndex));
+            }
+        }
+        else
+        {
+            // TODO: check anything needs to be handled here
+        }
     }
 
     private async Task OnItemSelectedAsync(TItem item)
     {
         this.selectedItem = item;
+        this.selectedIndex = -1;
+        this.items = Enumerable.Empty<TItem>();
         this.Value = this.GetPropertyValue(item);
         await ValueChanged.InvokeAsync(this.Value);
 
@@ -164,6 +191,8 @@ public partial class AutoComplete<TItem> : BaseComponent
     private async Task ClearInputTextAsync()
     {
         this.selectedItem = default(TItem);
+        this.selectedIndex = -1;
+        this.items = Enumerable.Empty<TItem>();
         this.Value = string.Empty;
         await ValueChanged.InvokeAsync(this.Value);
 
@@ -175,12 +204,14 @@ public partial class AutoComplete<TItem> : BaseComponent
 
         if (OnChanged.HasDelegate)
             await OnChanged.InvokeAsync(default(TItem));
+
+        await ElementRef.FocusAsync();
     }
 
     /// <summary>
     /// Checks whether the input has value.
     /// </summary>
-    private void SetInputHasValue() => this.inputHasValue = Value.Length > 0;
+    private void SetInputHasValue() => this.inputHasValue = Value is not null && Value.Length > 0;
 
     private string? GetPropertyValue(TItem item)
     {
@@ -207,7 +238,7 @@ public partial class AutoComplete<TItem> : BaseComponent
         };
     }
 
-    private async Task FilterDataAsync()
+    private async Task FilterDataAsync(CancellationToken cancellationToken = default(CancellationToken))
     {
         string searchKey = this.Value;
         if (string.IsNullOrWhiteSpace(searchKey))
@@ -215,7 +246,8 @@ public partial class AutoComplete<TItem> : BaseComponent
 
         var request = new AutoCompleteDataProviderRequest<TItem>
         {
-            Filter = new FilterItem(this.PropertyName, searchKey, GetFilterOperator(), this.StringComparison)
+            Filter = new FilterItem(this.PropertyName, searchKey, GetFilterOperator(), this.StringComparison),
+            CancellationToken = cancellationToken
         };
 
         if (DataProvider != null)
@@ -228,7 +260,7 @@ public partial class AutoComplete<TItem> : BaseComponent
             }
             else
             {
-                items = new List<TItem> { };
+                items = Enumerable.Empty<TItem>();
                 totalCount = 0;
             }
         }
@@ -260,6 +292,19 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// Resets the autocomplete selection.
     /// </summary>
     public async Task ResetAsync() => await ClearInputTextAsync();
+
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsync(bool disposing)
+    {
+        if (disposing)
+        {
+            cancellationTokenSource?.Dispose();
+            await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementId);
+            objRef?.Dispose();
+        }
+
+        await base.DisposeAsync(disposing);
+    }
 
     #endregion Methods
 

@@ -16,14 +16,14 @@
 Several quick start options are available:
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.3.0` 
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.3.1` 
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
 ## Online Demos
 
-- [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
+- [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
 
 ## Blazor Bootstrap Components
 

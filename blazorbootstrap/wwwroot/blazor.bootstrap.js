@@ -23,6 +23,45 @@ if (!window.blazorChart.pie) {
 }
 
 window.blazorBootstrap = {
+    de: {
+        DELETE: 46,
+        BACKSPACE: 8,
+        TAB: 9,
+        ENTER: 13,
+        ESCAPE: 27,
+        ARROWLEFT: 37,
+        ARROWUP: 38,
+        ARROWRIGHT: 39,
+        ARROWDOWN: 40,
+        SPACE: 32,
+        END: 35,
+        HOME: 36,
+        PAGE_UP: 33,
+        PAGE_DOWN: 34,
+        PAGEUP: 33,
+        PAGEDOWN: 34
+    },
+    fe: {
+        DELETE: "Delete",
+        BACKSPACE: "Backspace",
+        TAB: "Tab",
+        ENTER: "Enter",
+        ESC: "Escape",
+        ARROWLEFT: "ArrowLeft",
+        ARROWUP: "ArrowUp",
+        ARROWRIGHT: "ArrowRight",
+        ARROWDOWN: "ArrowDown",
+        SPACE: "Space",
+        END: "End",
+        HOME: "Home",
+        PAGE_UP: "PageUp",
+        PAGE_DOWN: "PageDown"
+    },
+    ge: {
+        CTRL: "CTRL",
+        ALT: "ALT",
+        SHIFT: "SHIFT"
+    },
     alert: {
         initialize: (elementId, dotNetHelper) => {
             let alertEl = document.getElementById(elementId);
@@ -70,6 +109,51 @@ window.blazorBootstrap = {
         },
         dispose: (elementRef) => {
             bootstrap?.Dropdown?.getOrCreateInstance(elementRef)?.dispose();
+        },
+        focusListItem: (ul, key, startIndex) => {
+            if (!ul || startIndex < -1) return;
+
+            let childNodes = ul.getElementsByTagName('LI');
+
+            if (!childNodes || childNodes.length === 0) return;
+
+            if (startIndex === undefined || startIndex === null)
+                startIndex = -1;
+
+            let nextSelectedIndex = startIndex;
+
+            if (key === window.blazorBootstrap.fe.ARROWDOWN) {
+                if (nextSelectedIndex < childNodes.length - 1)
+                    nextSelectedIndex++;
+            }
+            else if (key === window.blazorBootstrap.fe.ARROWUP) {
+                if (nextSelectedIndex > 0 && nextSelectedIndex <= childNodes.length - 1)
+                    nextSelectedIndex--;
+            }
+            else if (key === window.blazorBootstrap.fe.HOME) {
+                nextSelectedIndex = 0;
+            }
+            else if (key === window.blazorBootstrap.fe.END) {
+                nextSelectedIndex = childNodes.length - 1;
+            }
+            else
+                return;
+
+            // reset li element focus
+            var highlighted = ul.querySelectorAll('.dropdown-item-highlight');
+            if (highlighted.length) {
+                for (var i = 0; i < highlighted.length; i++) {
+                    highlighted[i].classList.remove('dropdown-item-highlight');
+                }
+            }
+
+            // focus on the next li element
+            if (nextSelectedIndex >= 0 && nextSelectedIndex <= childNodes.length - 1) {
+                childNodes[nextSelectedIndex].classList.add('dropdown-item-highlight');
+                ul.scrollTop = childNodes[nextSelectedIndex].offsetTop;
+            }
+
+            return nextSelectedIndex;
         }
     },
     confirmDialog: {

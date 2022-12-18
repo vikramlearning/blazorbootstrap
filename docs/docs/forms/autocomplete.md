@@ -12,33 +12,46 @@ sidebar_position: 1
 Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
 
 ## Parameters
-| Name | Type | Default | Required | Descritpion |
-|--|--|--|--|--|
-| DataProvider | delegate | null | ✔️ | DataProvider is for items to render. The provider should always return an instance of `AutoCompleteDataProviderResult`, and null is not allowed. |
-| Disabled | bool | false | | Is AutoComplete disabled. |
-| Placeholder | string | null | | AutoComplete placeholder. |
-| PropertyName | string | null | ✔️ | AutoComplete data text property name. |
-| Size | enum | `AutoCompleteSize.Default` | | Use `AutoCompleteSize.Default` or `AutoCompleteSize.Large` or `AutoCompleteSize.Small` |
-| StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Specifies the culture, case, and sort rules to be used. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 
-| StringFilterOperator | enum | `StringFilterOperator.Contains` | | Use `StringFilterOperator.Equals` or `StringFilterOperator.Contains` or `StringFilterOperator.StartsWith` or `StringFilterOperator.EndsWith` |
-| Value | string | null | ✔️ | AutoComplete value. |
-| ValueExpression | expression | null | | AutoComplete value expression. |
+| Name | Type | Default | Required | Descritpion | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| DataProvider | delegate | null | ✔️ | DataProvider is for items to render. The provider should always return an instance of `AutoCompleteDataProviderResult`, and null is not allowed. | 0.4.0 |
+| Disabled | bool | false | | Is AutoComplete disabled. | 0.4.0 |
+| Placeholder | string | null | | AutoComplete placeholder. | 0.4.0 |
+| PropertyName | string | null | ✔️ | AutoComplete data text property name. | 0.4.0 |
+| Size | enum | `AutoCompleteSize.Default` | | Use `AutoCompleteSize.Default` or `AutoCompleteSize.Large` or `AutoCompleteSize.Small` | 0.4.0 |
+| StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Specifies the culture, case, and sort rules to be used. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 0.4.1 |
+| StringFilterOperator | enum | `StringFilterOperator.Contains` | | Use `StringFilterOperator.Equals` or `StringFilterOperator.Contains` or `StringFilterOperator.StartsWith` or `StringFilterOperator.EndsWith` | 0.4.1 |
+| Value | string | null | ✔️ | AutoComplete value. | 0.4.0 |
+| ValueExpression | expression | null | | AutoComplete value expression. | 0.4.0 |
 
 ## Methods
 
-| Name | Returns | Arguments | Description |
-|--|--|--|
-| Disable() | void | N/A | Disables autocomplete. |
-| Enable() | void | N/A | Enables autocomplete. |
-| RefreshDataAsync() | Task | N/A | Refresh the autocomplete data. |
-| ResetAsync() | Task | N/A | Resets the autocomplete selection. |
+| Name | Returns | Description | Added Version |
+|:--|:--|:--|:--|
+| Disable() | void | Disables autocomplete. | 0.4.0 |
+| Enable() | void | Enables autocomplete. | 0.4.0 |
+| RefreshDataAsync() | Task | Refresh the autocomplete data. | 0.4.0 |
+| ResetAsync() | Task | Resets the autocomplete selection. | 0.4.0 |
 
-## Callback Events
+## Events
 
-| Name | Description |
-|--|--|
-| OnChanged | This event fires immediately when the autocomplete selection changes by the user. |
-| ValueChanged | This event fires on every user keystroke that changes the textbox value. |
+| Name | Description | Added Version |
+|:--|:--|:--|
+| OnChanged | This event fires immediately when the autocomplete selection changes by the user. | 0.4.0 |
+| ValueChanged | This event fires on every user keystroke that changes the textbox value. | 0.4.0 |
+
+## Keyboard Navigation
+
+Blazor Bootstrap autocomplete component supports the following keyboard shortcuts to initiate various actions.
+
+| Key | Description | Added Version |
+|:--|:--|:--|
+| <kbd>Esc</kbd> | Closes the popup list when it is in an open state. | 1.3.1 |
+| <kbd>Up arrow</kbd> | Focuses on the previous item in the list. | 1.3.1 |
+| <kbd>Down arrow</kbd> | Focuses on the next item in the list. | 1.3.1 |
+| <kbd>Home</kbd> | Focuses on the first item in the list. | 1.3.1 |
+| <kbd>End</kbd> | Focuses on the last item in the list. | 1.3.1 |
+| <kbd>Enter</kbd> | Selects the currently focused item. | 1.3.1 |
 
 ## Examples
 
@@ -58,15 +71,23 @@ Blazor Bootstrap autocomplete component is a textbox that offers the users sugge
     </div>
 </div>
 ```
-```cs {34,36,39,41} showLineNumbers
+```cs {6-12} showLineNumbers
 @code {
     private string customerName;
 
     public IEnumerable<Customer> customers;
 
-    protected override void OnInitialized()
+    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
     {
-        customers = new List<Customer> {
+        if (customers is null) // pull customers only one time for client-side autocomplete
+            customers = GetCustomers(); // call a service or an API to pull the customers
+
+        return await Task.FromResult(request.ApplyTo(customers.OrderBy(customer => customer.CustomerName)));
+    }
+
+    private IEnumerable<Customer> GetCustomers()
+    {
+        return new List<Customer> {
             new(1, "Pich S"),
             new(2, "sfh Sobi"),
             new(3, "Jojo chan"),
@@ -92,18 +113,12 @@ Blazor Bootstrap autocomplete component is a textbox that offers the users sugge
         };
     }
 
-    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
-    {
-        return await Task.FromResult(request.ApplyTo(customers.OrderBy(customer => customer.CustomerName)));
-    }
-
     private void OnAutoCompleteChanged(Customer customer)
     {
         // TODO: handle your own logic
 
         // NOTE: do null check
         Console.WriteLine($"'{customer?.CustomerName}' selected.");
-        Console.WriteLine($"Data null: {customer is null}.");
     }
 }
 ```
@@ -112,11 +127,15 @@ Blazor Bootstrap autocomplete component is a textbox that offers the users sugge
 public record Customer(int CustomerId, string CustomerName);
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/grid#client-side-data)
+[See demo here](https://demos.getblazorbootstrap.com/autocomplete#client-side-data)
 
 ### Client side data with StringComparision
 
 In the below example, `StringComparision.Ordinal` is used to make the filter case-sensitive.
+
+:::info
+By default, `StringComparison.OrdinalIgnoreCase` is used to compare culture-agnostic and case-insensitive string matching.
+:::
 
 <img src="https://i.imgur.com/8YZzW9f.png" alt="Blazor Bootstrap AutoComplete Component - Client side data with StringComparision" />
 
@@ -133,15 +152,23 @@ In the below example, `StringComparision.Ordinal` is used to make the filter cas
     </div>
 </div>
 ```
-```cs {34,36,39,41} showLineNumbers
+```cs {6-12} showLineNumbers
 @code {
     private string customerName;
 
     public IEnumerable<Customer> customers;
 
-    protected override void OnInitialized()
+    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
     {
-        customers = new List<Customer> {
+        if (customers is null) // pull customers only one time for client-side autocomplete
+            customers = GetCustomers(); // call a service or an API to pull the customers
+
+        return await Task.FromResult(request.ApplyTo(customers.OrderBy(customer => customer.CustomerName)));
+    }
+
+    private IEnumerable<Customer> GetCustomers()
+    {
+        return new List<Customer> {
             new(1, "Pich S"),
             new(2, "sfh Sobi"),
             new(3, "Jojo chan"),
@@ -167,18 +194,12 @@ In the below example, `StringComparision.Ordinal` is used to make the filter cas
         };
     }
 
-    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
-    {
-        return await Task.FromResult(request.ApplyTo(customers.OrderBy(customer => customer.CustomerName)));
-    }
-
     private void OnAutoCompleteChanged(Customer customer)
     {
         // TODO: handle your own logic
 
         // NOTE: do null check
         Console.WriteLine($"'{customer?.CustomerName}' selected.");
-        Console.WriteLine($"Data null: {customer is null}.");
     }
 }
 ```
@@ -186,9 +207,8 @@ In the below example, `StringComparision.Ordinal` is used to make the filter cas
 ```cs showLineNumbers
 public record Customer(int CustomerId, string CustomerName);
 ```
-:::info
-By default, `StringComparison.OrdinalIgnoreCase` is used to compare culture-agnostic and case-insensitive string matching.
-:::
+
+[See demo here](https://demos.getblazorbootstrap.com/autocomplete#client-side-data-with-string-comparision)
 
 ### Server side data
 
@@ -206,7 +226,7 @@ By default, `StringComparison.OrdinalIgnoreCase` is used to compare culture-agno
     </div>
 </div>
 ```
-```cs {6,8-9,12,14} showLineNumbers
+```cs {6-10} showLineNumbers
 @code {
     private string customerName;
 
@@ -214,7 +234,7 @@ By default, `StringComparison.OrdinalIgnoreCase` is used to compare culture-agno
 
     private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
     {
-        var customers = await _customerService.GetCustomers(request.Filter); // API call
+        var customers = await _customerService.GetCustomers(request.Filter, request.CancellationToken); // API call
         return await Task.FromResult(new AutoCompleteDataProviderResult<Customer> { Data = customers, TotalCount = customers.Count() });
     }
 
@@ -224,12 +244,11 @@ By default, `StringComparison.OrdinalIgnoreCase` is used to compare culture-agno
 
         // NOTE: do null check
         Console.WriteLine($"'{customer?.CustomerName}' selected.");
-        Console.WriteLine($"Data null: {customer is null}.");
     }
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/grid#server-side-data)
+[See demo here](https://demos.getblazorbootstrap.com/autocomplete#server-side-data)
 
 ### Validations
 
@@ -290,7 +309,7 @@ By default, `StringComparison.OrdinalIgnoreCase` is used to compare culture-agno
 </EditForm>
 ```
 
-```cs {18,20-21,24,26} showLineNumbers
+```cs {} showLineNumbers
 @code {
     private CustomerAddress customerAddress = new();
     private EditContext _editContext;
@@ -334,4 +353,4 @@ By default, `StringComparison.OrdinalIgnoreCase` is used to compare culture-agno
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/grid#validations)
+[See demo here](https://demos.getblazorbootstrap.com/autocomplete#validations)

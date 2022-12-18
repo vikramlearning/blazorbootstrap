@@ -10,7 +10,7 @@ title: Introduction
 Get started with Blazor Bootstrap, with ready-made components.
 
 <!--
-## Getting started with 1.2.0 and above versions
+## Getting started with 1.3.1 and above versions
 -->
 
 ## Install Nuget Package
@@ -18,7 +18,7 @@ Get started with Blazor Bootstrap, with ready-made components.
 Looking to quickly add Blazor Bootstrap to your project? Use NuGet package manager.
 
 ```shell
-Install-Package BlazorBootstrap -Version 1.2.0
+Install-Package Blazor.Bootstrap -Version 1.3.1
 ```
 
 <!--
