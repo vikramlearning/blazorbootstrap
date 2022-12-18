@@ -4,6 +4,8 @@ public class AutoCompleteDataProviderRequest<TItem>
 {
     public FilterItem Filter { get; init; }
 
+    public CancellationToken CancellationToken { get; init; } = default(CancellationToken);
+
     public AutoCompleteDataProviderResult<TItem> ApplyTo(IEnumerable<TItem> data)
     {
         if (data == null)
