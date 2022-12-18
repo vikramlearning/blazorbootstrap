@@ -12,33 +12,46 @@ sidebar_position: 1
 Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
 
 ## Parameters
-| Name | Type | Default | Required | Descritpion |
-|--|--|--|--|--|
-| DataProvider | delegate | null | ✔️ | DataProvider is for items to render. The provider should always return an instance of `AutoCompleteDataProviderResult`, and null is not allowed. |
-| Disabled | bool | false | | Is AutoComplete disabled. |
-| Placeholder | string | null | | AutoComplete placeholder. |
-| PropertyName | string | null | ✔️ | AutoComplete data text property name. |
-| Size | enum | `AutoCompleteSize.Default` | | Use `AutoCompleteSize.Default` or `AutoCompleteSize.Large` or `AutoCompleteSize.Small` |
-| StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Specifies the culture, case, and sort rules to be used. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 
-| StringFilterOperator | enum | `StringFilterOperator.Contains` | | Use `StringFilterOperator.Equals` or `StringFilterOperator.Contains` or `StringFilterOperator.StartsWith` or `StringFilterOperator.EndsWith` |
-| Value | string | null | ✔️ | AutoComplete value. |
-| ValueExpression | expression | null | | AutoComplete value expression. |
+| Name | Type | Default | Required | Descritpion | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| DataProvider | delegate | null | ✔️ | DataProvider is for items to render. The provider should always return an instance of `AutoCompleteDataProviderResult`, and null is not allowed. | 0.4.0 |
+| Disabled | bool | false | | Is AutoComplete disabled. | 0.4.0 |
+| Placeholder | string | null | | AutoComplete placeholder. | 0.4.0 |
+| PropertyName | string | null | ✔️ | AutoComplete data text property name. | 0.4.0 |
+| Size | enum | `AutoCompleteSize.Default` | | Use `AutoCompleteSize.Default` or `AutoCompleteSize.Large` or `AutoCompleteSize.Small` | 0.4.0 |
+| StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Specifies the culture, case, and sort rules to be used. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 0.4.1 |
+| StringFilterOperator | enum | `StringFilterOperator.Contains` | | Use `StringFilterOperator.Equals` or `StringFilterOperator.Contains` or `StringFilterOperator.StartsWith` or `StringFilterOperator.EndsWith` | 0.4.1 |
+| Value | string | null | ✔️ | AutoComplete value. | 0.4.0 |
+| ValueExpression | expression | null | | AutoComplete value expression. | 0.4.0 |
 
 ## Methods
 
-| Name | Returns | Arguments | Description |
-|--|--|--|
-| Disable() | void | N/A | Disables autocomplete. |
-| Enable() | void | N/A | Enables autocomplete. |
-| RefreshDataAsync() | Task | N/A | Refresh the autocomplete data. |
-| ResetAsync() | Task | N/A | Resets the autocomplete selection. |
+| Name | Returns | Description | Added Version |
+|:--|:--|:--|:--|
+| Disable() | void | Disables autocomplete. | 0.4.0 |
+| Enable() | void | Enables autocomplete. | 0.4.0 |
+| RefreshDataAsync() | Task | Refresh the autocomplete data. | 0.4.0 |
+| ResetAsync() | Task | Resets the autocomplete selection. | 0.4.0 |
 
-## Callback Events
+## Events
 
-| Name | Description |
-|--|--|
-| OnChanged | This event fires immediately when the autocomplete selection changes by the user. |
-| ValueChanged | This event fires on every user keystroke that changes the textbox value. |
+| Name | Description | Added Version |
+|:--|:--|:--|
+| OnChanged | This event fires immediately when the autocomplete selection changes by the user. | 0.4.0 |
+| ValueChanged | This event fires on every user keystroke that changes the textbox value. | 0.4.0 |
+
+## Keyboard Navigation
+
+Blazor Bootstrap autocomplete component supports the following keyboard shortcuts to initiate various actions.
+
+| Key | Description | Added Version |
+|:--|:--|:--|
+| <kbd>Esc</kbd> | Closes the popup list when it is in an open state. | 1.3.1 |
+| <kbd>Up arrow</kbd> | Focuses on the previous item in the list. | 1.3.1 |
+| <kbd>Down arrow</kbd> | Focuses on the next item in the list. | 1.3.1 |
+| <kbd>Home</kbd> | Focuses on the first item in the list. | 1.3.1 |
+| <kbd>End</kbd> | Focuses on the last item in the list. | 1.3.1 |
+| <kbd>Enter</kbd> | Selects the currently focused item. | 1.3.1 |
 
 ## Examples
 
