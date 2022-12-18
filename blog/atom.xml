@@ -2,11 +2,28 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2022-12-15T00:00:00.000Z</updated>
+    <updated>2022-12-18T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.3.1]]></title>
+        <id>/2022/12/18/blazorbootstrap-1.3.1</id>
+        <link href="https://getblazorbootstrap.com/blog/2022/12/18/blazorbootstrap-1.3.1"/>
+        <updated>2022-12-18T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.3.1, with AutoComplete - keyboard navigation support, and more examples!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.3.1, with AutoComplete - keyboard navigation support, and more examples!!!</p><b>Blazor AutoComplete component</b><img loading="lazy" src="https://i.imgur.com/D5ox9um.png" alt="Blazor Bootstrap: Blazor AutoComplete component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>AutoComplete</code> component - keyboard navigation support</li><li><code>AutoComplete</code> component - CancellationToken support</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="demos-site-updates">Demos site updates<a class="hash-link" href="#demos-site-updates" title="Direct link to heading">​</a></h2><ul><li>New examples for 'Blazor AutoComplete Component'</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/autocomplete" target="_blank" rel="noopener noreferrer">Blazor AutoComplete Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.3.1" term="v1.3.1"/>
+        <category label="blazor" term="blazor"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="autocomplete" term="autocomplete"/>
+        <category label="blazorautocomplete" term="blazorautocomplete"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.3.0]]></title>
         <id>/2022/12/15/blazorbootstrap-1.3.0</id>
