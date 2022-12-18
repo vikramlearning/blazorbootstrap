@@ -150,9 +150,9 @@ public partial class AutoComplete<TItem> : BaseComponent
     {
         var key = args.Code is not null ? args.Code : args.Key;
 
-        if(key == "ArrowDown" || key == "ArrowUp")
+        if(key == "ArrowDown" || key == "ArrowUp" || key == "Home" || key == "End")
         {
-            selectedIndex = await JS.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key == "ArrowDown", selectedIndex);
+            selectedIndex = await JS.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key, selectedIndex);
         }
         else if(key == "Enter")
         {
