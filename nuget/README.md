@@ -22,8 +22,8 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 
 ## Online Demos
 
-- [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
+- [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
 
 ## Blazor Bootstrap Components
 
