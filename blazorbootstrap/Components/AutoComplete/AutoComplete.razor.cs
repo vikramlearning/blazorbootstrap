@@ -125,6 +125,7 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     private async Task OnInputChangedAsync(ChangeEventArgs args)
     {
+        this.selectedIndex = -1;
         this.Value = args.Value.ToString();
 
         SetInputHasValue();
@@ -163,7 +164,7 @@ public partial class AutoComplete<TItem> : BaseComponent
         }
         else
         {
-
+            // TODO: check anything needs to be handled here
         }
     }
 
