@@ -1,0 +1,20 @@
+﻿@page "/sidebar"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Sidebar</h1>
+<div class="lead mb-3">
+    Use the Blazor Bootstrap <code>Sidebar</code> component to show the consistent cross-browser and cross-device custom checkboxes.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<Demo Type="typeof(Sidebar_Demo_01_Basic_Usage)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/sidebar";
+    private string title = "Blazor Sidebar Component";
+    private string description = "Create consistent cross-browser and cross-device checkboxes with our blazor switches. A switch has the markup of a custom checkbox.";
+    private string imageUrl = "https://i.imgur.com/iUNBkki.png"; // TODO: update this
+}
