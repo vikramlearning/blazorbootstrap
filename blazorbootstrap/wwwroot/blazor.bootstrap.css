@@ -174,24 +174,47 @@ table button.dropdown-toggle::after {
 
 
 /* sidebar */
-.bb-sidebar .nav-item a:hover {
-    background-color: rgba(0,0,0,0.06) !important;
+.bb-sidebar {
+    background: rgba(234,234,234,1);
+    border-color: rgba(234,234,234,1);
+    border-right: 1px solid rgba(0,0,0,0.10);
+    color: rgba(0,0,0,0.9);
+    white-space: nowrap;
+
+    width: 48px;
 }
 
-.bb-sidebar .nav-item a.active {
-    background-color: rgba(0,0,0,0.06) !important;
-}
+    .bb-sidebar.expanded {
+        transition-duration: 200ms;
+        width: 260px;
+    }
 
-.bb-sidebar .nav-item .nav-link {
-    position: relative;
-}
+    .bb-sidebar .nav-group.expanded {
+        background-color: rgba(0,0,0,0.06) !important;
+    }
 
-.bb-sidebar .nav-item a.active::before {
-    background-color: rgba(0,120,212,1);
-    bottom: 0;
-    left: 0;
-    position: absolute;
-    top: 0;
-    content: "";
-    width: 3px;
-}
+    .bb-sidebar .nav-item a:hover {
+        background-color: rgba(0,0,0,0.06) !important;
+    }
+
+    .bb-sidebar .nav-item a.active {
+        background-color: rgba(0,0,0,0.06) !important;
+    }
+
+    .bb-sidebar .nav-item .nav-link {
+        position: relative;
+    }
+
+    .bb-sidebar .nav-item a.active::before {
+        background-color: rgba(0,120,212,1);
+        bottom: 0;
+        left: 0;
+        position: absolute;
+        top: 0;
+        content: "";
+        width: 3px;
+    }
+
+    .bb-sidebar .nav-item a::before {
+        background-color: rgba(0,0,0,0.08);
+    }

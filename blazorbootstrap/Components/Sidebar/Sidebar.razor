@@ -1,11 +1,11 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<div class="bb-sidebar" style="width:280px;">
+<div class="bb-sidebar expanded">
     <ul class="nav flex-column">
-        <li class="nav-item px-3">
+        <li class="nav-item nav-group expanded">
             <NavLink class="nav-link link-dark" href="/getting-started">
-                <Icon Name="IconName.HouseDoorFill" class="me-2" /> Navigation
+                <Icon Name="IconName.HouseDoorFill" class="me-2 text-primary" /> Navigation
             </NavLink>
 
             <ul class="nav flex-column">
@@ -14,41 +14,41 @@
                         <Icon Name="IconName.LayoutSidebarInset" class="me-2" /> Sidebar
                     </NavLink>
                 </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="/form/switch">
+                <li class="nav-item">
+                    <NavLink class="nav-link link-dark" href="/form/switch">
                         <Icon Name="IconName.ToggleOn" class="me-2" /> Switch
                     </NavLink>
                 </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="tabs">
+                <li class="nav-item">
+                    <NavLink class="nav-link link-dark" href="tabs">
                         <Icon Name="IconName.WindowPlus" class="me-2" /> Tabs
                     </NavLink>
                 </li>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="toasts">
+                <li class="nav-item">
+                    <NavLink class="nav-link link-dark" href="toasts">
                         <Icon Name="IconName.ExclamationTriangleFill" class="me-2" /> Toasts
                     </NavLink>
                 </li>
             </ul>
         </li>
-        <li class="nav-item px-3">
+        <li class="nav-item">
             <NavLink class="nav-link link-dark" href="alerts">
-                <Icon Name="IconName.CheckCircleFill" class="me-2" /> Alerts
+                <Icon Name="IconName.CheckCircleFill" class="me-2 text-success" /> Alerts
             </NavLink>
         </li>
-        <li class="nav-item px-3">
+        <li class="nav-item">
             <NavLink class="nav-link link-dark" href="autocomplete">
-                <Icon Name="IconName.InputCursorText" class="me-2" /> AutoComplete
+                <Icon Name="IconName.InputCursorText" class="me-2 text-danger" /> AutoComplete
             </NavLink>
         </li>
-        <li class="nav-item px-3">
+        <li class="nav-item">
             <NavLink class="nav-link link-dark" href="breadcrumb">
-                <Icon Name="IconName.SegmentedNav" class="me-2" /> Breadcrumb
+                <Icon Name="IconName.SegmentedNav" class="me-2 text-warning" /> Breadcrumb
             </NavLink>
         </li>
-        <li class="nav-item px-3">
+        <li class="nav-item">
             <NavLink class="nav-link link-dark" href="buttons">
-                <Icon Name="IconName.ToggleOn" class="me-2" /> Buttons
+                <Icon Name="IconName.ToggleOn" class="me-2 text-info" /> Buttons
             </NavLink>
         </li>
     </ul>
