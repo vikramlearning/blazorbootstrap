@@ -25,8 +25,8 @@ public partial class SidebarItemGroup : BaseComponent
 
         childItems = new List<NavItem>
         {
-            new NavItem{ Href = "/sidebar", PrefixIconName = IconName.LayoutSidebarInset, Sequence = 1, Text = "Sidebar"},
-            new NavItem{ Href = "/form/switch", PrefixIconName = IconName.ToggleOn, Sequence = 2, Text = "Switch"},
+            new NavItem{ Href = "/breadcrumb", PrefixIconName = IconName.SegmentedNav, Sequence = 1, Text = "Breadcrumb"},
+            new NavItem{ Href = "/sidebar", PrefixIconName = IconName.LayoutSidebarInset, Sequence = 2, Text = "Sidebar"},
             new NavItem{ Href = "/tabs", PrefixIconName = IconName.WindowPlus, Sequence = 3, Text = "Tabs"},
             new NavItem{ Href = "/toasts", PrefixIconName = IconName.ExclamationTriangleFill, Sequence = 4, Text = "Toasts"}
         };

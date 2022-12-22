@@ -2,12 +2,12 @@
 @inherits BaseComponent
 
 <li class="nav-item">
-    <NavLink class="@navLinkCssClass" href="@Href">
-        <Icon Name="@PrefixIconName" Class="me-2" />
-        @Text
-        @if (HasChilds)
-        {
-            if (expanded)
+    @if (HasChilds)
+    {
+        <NavLink class="@navLinkCssClass" role="button" @onclick="OnNavLinkClick">
+            <Icon Name="@PrefixIconName" Class="me-2" />
+            @Text
+            @if (expanded)
             {
                 <Icon Name="IconName.ChevronDown" Class="float-end text-primary" />
             }
@@ -15,8 +15,14 @@
             {
                 <Icon Name="IconName.ChevronRight" Class="float-end" />
             }
-        }
-    </NavLink>
+        </NavLink>
+    }
+    else
+    {
+        <NavLink class="@navLinkCssClass" href="@Href">
+            <Icon Name="@PrefixIconName" Class="me-2" /> @Text
+        </NavLink>
+    }
 
     @if (HasChilds & expanded && ChildItems is not null && ChildItems.Any())
     {
