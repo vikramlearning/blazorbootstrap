@@ -47,7 +47,6 @@ public partial class SidebarItem : BaseComponent
 
     private bool ShouldExpand(string currentUriAbsolute, string href)
     {
-        Console.WriteLine($"1: ShouldExpand called");
         var hrefAbsolute = (href == null) ? null : NavigationManager.ToAbsoluteUri(href).AbsoluteUri;
 
         if (hrefAbsolute == null)
@@ -55,19 +54,16 @@ public partial class SidebarItem : BaseComponent
             return false;
         }
 
-        Console.WriteLine($"2: ShouldExpand called");
         if (EqualsHrefExactlyOrIfTrailingSlashAdded(currentUriAbsolute, hrefAbsolute))
         {
             return true;
         }
 
-        Console.WriteLine($"3: ShouldExpand called");
         if (Match == NavLinkMatch.Prefix && IsStrictlyPrefixWithSeparator(currentUriAbsolute, hrefAbsolute))
         {
             return true;
         }
 
-        Console.WriteLine($"4: ShouldExpand called");
         return false;
     }
 
