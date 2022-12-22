@@ -1,14 +1,12 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Sidebar : BaseComponent
+public partial class SidebarContainer : BaseComponent
 {
     #region Events
 
     #endregion Events
 
     #region Members
-
-    private DotNetObjectReference<Sidebar> objRef;
 
     #endregion Members
 
@@ -21,13 +19,9 @@ public partial class Sidebar : BaseComponent
 
     protected override async Task OnInitializedAsync()
     {
-        objRef ??= DotNetObjectReference.Create(this);
-
         Attributes ??= new Dictionary<string, object>();
 
         await base.OnInitializedAsync();
-
-        //ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", ElementRef, objRef); });
     }
 
     #endregion Methods
