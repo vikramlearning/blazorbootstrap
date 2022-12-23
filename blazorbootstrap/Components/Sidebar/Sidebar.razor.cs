@@ -8,7 +8,7 @@ public partial class Sidebar : BaseComponent
 
     #region Members
 
-    private bool expanded = false;
+    private bool expanded = true;
 
     #endregion Members
 
