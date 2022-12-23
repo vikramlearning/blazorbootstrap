@@ -41,5 +41,7 @@ public partial class SidebarItemGroup : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
+    [Parameter] public bool NavigationExpanded { get; set; }
+
     #endregion Properties
 }

@@ -2,9 +2,9 @@
 @inherits BaseComponent
 
 <ul class="nav flex-column flex-grow-1 scroll-hidden v-scroll-auto custom-scrollbar my-1">
-    <SidebarItem PrefixIconName="IconName.HouseDoorFill" Href="/getting-started" Text="Navigation" HasChilds="true" ChildItems="childItems" />
-    <SidebarItem PrefixIconName="IconName.CheckCircleFill" Href="/alerts" Text="Alerts" />
-    <SidebarItem PrefixIconName="IconName.InputCursorText" Href="/autocomplete" Text="AutoComplete" />
-    <SidebarItem PrefixIconName="IconName.SegmentedNav" Href="/breadcrumb" Text="Breadcrumb" />
-    <SidebarItem PrefixIconName="IconName.ToggleOn" Href="/buttons" Text="Buttons" />
+    <SidebarItem NavigationExpanded="@NavigationExpanded" PrefixIconName="IconName.HouseDoorFill" Href="/getting-started" Text="Navigation" HasChilds="true" ChildItems="childItems" />
+    <SidebarItem NavigationExpanded="@NavigationExpanded" PrefixIconName="IconName.CheckCircleFill" Href="/alerts" Text="Alerts" />
+    <SidebarItem NavigationExpanded="@NavigationExpanded" PrefixIconName="IconName.InputCursorText" Href="/autocomplete" Text="AutoComplete" />
+    <SidebarItem NavigationExpanded="@NavigationExpanded" PrefixIconName="IconName.SegmentedNav" Href="/breadcrumb" Text="Breadcrumb" />
+    <SidebarItem NavigationExpanded="@NavigationExpanded" PrefixIconName="IconName.ToggleOn" Href="/buttons" Text="Buttons" />
 </ul>

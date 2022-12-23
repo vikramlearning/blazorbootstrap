@@ -5,9 +5,18 @@
     @if (HasChilds)
     {
         <NavLink class="@navLinkCssClass" role="button" @onclick="OnNavLinkClick">
-            <Icon Name="@PrefixIconName" Class="nav-icon me-2" />
+            @if (NavigationExpanded)
+            {                
+                <Icon Name="@PrefixIconName" Class="nav-icon me-2" />
+            }
+            else
+            {
+                <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
+                    <Icon Name="@PrefixIconName" Class="nav-icon me-2" />
+                </Tooltip>
+            }
             <span class="expanded-only">@Text</span>
-            @if (expanded)
+            @if (containerExpanded)
             {
                 <Icon Name="IconName.ChevronDown" Class="float-end expanded-only text-primary" />
             }
@@ -20,11 +29,21 @@
     else
     {
         <NavLink class="@navLinkCssClass" href="@Href">
-            <Icon Name="@PrefixIconName" Class="nav-icon me-2" /> <span class="expanded-only">@Text</span>
+            @if (NavigationExpanded)
+            {                
+                <Icon Name="@PrefixIconName" Class="nav-icon me-2" />
+            }
+            else
+            {
+                <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
+                    <Icon Name="@PrefixIconName" Class="nav-icon me-2" />
+                </Tooltip>
+            }
+            <span class="expanded-only">@Text</span>
         </NavLink>
     }
 
-    @if (HasChilds & expanded && ChildItems is not null && ChildItems.Any())
+    @if (HasChilds & containerExpanded && ChildItems is not null && ChildItems.Any())
     {
         <ul class="nav flex-column">
             @foreach (var childItem in ChildItems) // TODO: Handle sequence

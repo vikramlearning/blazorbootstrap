@@ -4,11 +4,11 @@ public partial class SidebarItem : BaseComponent
 {
     #region Events
 
-    private bool expanded = false;
+    private bool containerExpanded = false;
 
-    private string navLinkCssClass => (HasChilds & expanded) ? "nav-link link-dark fw-semibold" : "nav-link link-dark";
+    private string navLinkCssClass => (HasChilds & containerExpanded) ? "nav-link link-dark fw-semibold" : "nav-link link-dark";
 
-    private string liCssClass => (HasChilds & expanded) ? "nav-item nav-group expanded" : "nav-item";
+    private string liCssClass => (HasChilds & containerExpanded) ? "nav-item nav-group expanded" : "nav-item";
 
     #endregion Events
 
@@ -39,7 +39,7 @@ public partial class SidebarItem : BaseComponent
             Console.WriteLine($"Uri: {NavigationManager.Uri}, Href: {childItem.Href}");
             if (ShouldExpand(NavigationManager.Uri, childItem.Href))
             {
-                expanded = true;
+                containerExpanded = true;
                 return;
             }
         }
@@ -118,7 +118,7 @@ public partial class SidebarItem : BaseComponent
 
     private void OnNavLinkClick()
     {
-        expanded = !expanded;
+        containerExpanded = !containerExpanded;
     }
 
     #endregion Methods
@@ -140,6 +140,8 @@ public partial class SidebarItem : BaseComponent
     /// Gets or sets a value representing the URL matching behavior.
     /// </summary>
     [Parameter] public NavLinkMatch Match { get; set; }
+
+    [Parameter] public bool NavigationExpanded { get; set; }
 
     [Parameter] public IconName PrefixIconName { get; set; }
 
