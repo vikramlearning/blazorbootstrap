@@ -6,7 +6,7 @@ public partial class SidebarItem : BaseComponent
 
     private bool expanded = false;
 
-    private string navLinkCssClass => (HasChilds & expanded) ? "nav-link link-dark fw-bold" : "nav-link link-dark";
+    private string navLinkCssClass => (HasChilds & expanded) ? "nav-link link-dark fw-semibold" : "nav-link link-dark";
 
     private string liCssClass => (HasChilds & expanded) ? "nav-item nav-group expanded" : "nav-item";
 

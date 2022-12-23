@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<li class="nav-item">
+<li class="nav-item @liCssClass">
     @if (HasChilds)
     {
         <NavLink class="@navLinkCssClass" role="button" @onclick="OnNavLinkClick">

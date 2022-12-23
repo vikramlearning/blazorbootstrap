@@ -198,16 +198,9 @@ table button.dropdown-toggle::after {
         background-color: rgba(0,0,0,0.06) !important;
     }
 
-    /*.bb-sidebar .nav-item .nav-link {
-        padding-bottom: 12px;
-        padding-top: 12px;
-        width: 47px;
-    }*/
-
     .bb-sidebar .nav-icon {
         padding-bottom: 12px;
         padding-top: 12px;
-        /* width: 47px;*/
     }
 
     .bb-sidebar .nav-item a:hover {
@@ -253,8 +246,15 @@ table button.dropdown-toggle::after {
     }
 
     .bb-sidebar.collapsed .collapsible-section {
-        padding-bottom: 12px;
-        padding-top: 12px;
+        padding-bottom: 0.5rem;
+        padding-top: 0.5rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .bb-sidebar.expanded .collapsible-section .project-item {
+        padding-bottom: 0.5rem;
+        padding-top: 0.5rem;
         padding-left: 1rem;
         padding-right: 1rem;
     }
@@ -264,4 +264,30 @@ table button.dropdown-toggle::after {
     background-color: rgba(0,0,0,.1);
     height: 1px;
     margin: 0 10px;
+}
+
+/* scrollbar */
+.v-scroll-auto {
+    overflow-y: auto;
+}
+
+.scroll-hidden {
+    overflow: hidden;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 18px;
+    height: 18px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    border: 6px solid transparent;
+    background: rgba(0,0,0,.2);
+    background: rgba(0, 0, 0, .2);
+    border-radius: 10px;
+    background-clip: padding-box;
 }

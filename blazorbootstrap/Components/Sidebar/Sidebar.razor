@@ -2,10 +2,18 @@
 @inherits BaseComponent
 
 <div  @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" role="alert" @attributes="@Attributes">
+    <div class="collapsible-section flex-shrink-0">
+        <div class="project-item flex-row">
+            <Icon Name="IconName.LayoutSidebarInset" class="nav-icon me-2" />
+            <span class="fw-bold expanded-only">Blazor Bootstrap</span>
+        </div>
+    </div>
+    <div class="separator flex-row flex-shrink-0">
+    </div>
     <SidebarItemGroup />
     <div class="separator flex-row flex-shrink-0">
     </div>
-    <div class="collapsible-section">
+    <div class="collapsible-section flex-shrink-0">
         @if (expanded)
         {
             <Tooltip Title="Show less information" Placement="TooltipPlacement.Right" Class="float-end me-3 py-2" role="button">
