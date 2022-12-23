@@ -8,7 +8,7 @@ public partial class Sidebar : BaseComponent
 
     #region Members
 
-    private DotNetObjectReference<Sidebar> objRef;
+    private bool expanded = false;
 
     #endregion Members
 
@@ -16,18 +16,25 @@ public partial class Sidebar : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
+        builder.Append("bb-sidebar flex-column flex-grow-1");
+        builder.Append("expanded", expanded);
+        builder.Append("collapsed", !expanded);
+
         base.BuildClasses(builder);
     }
 
     protected override async Task OnInitializedAsync()
     {
-        objRef ??= DotNetObjectReference.Create(this);
-
         Attributes ??= new Dictionary<string, object>();
 
         await base.OnInitializedAsync();
+    }
 
-        //ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", ElementRef, objRef); });
+    private void OnExpandTogglClick()
+    {
+        expanded = !expanded;
+        DirtyClasses();
+        StateHasChanged();
     }
 
     #endregion Methods

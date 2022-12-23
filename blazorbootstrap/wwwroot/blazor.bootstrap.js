@@ -446,6 +446,9 @@ window.blazorBootstrap = {
             let tooltipEl = document.getElementById(elementId);
             bootstrap?.Tooltip?.getOrCreateInstance(tooltipEl);
         },
+        dispose: (elementId) => {
+            bootstrap?.Tooltip?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
+        }
     },
     // global function
     invokeMethodAsync: (callbackEventName, dotNetHelper) => {

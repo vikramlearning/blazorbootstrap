@@ -5,22 +5,22 @@
     @if (HasChilds)
     {
         <NavLink class="@navLinkCssClass" role="button" @onclick="OnNavLinkClick">
-            <Icon Name="@PrefixIconName" Class="me-2" />
-            @Text
+            <Icon Name="@PrefixIconName" Class="nav-icon me-2" />
+            <span class="expanded-only">@Text</span>
             @if (expanded)
             {
-                <Icon Name="IconName.ChevronDown" Class="float-end text-primary" />
+                <Icon Name="IconName.ChevronDown" Class="float-end expanded-only text-primary" />
             }
             else
             {
-                <Icon Name="IconName.ChevronRight" Class="float-end" />
+                <Icon Name="IconName.ChevronRight" Class="float-end expanded-only" />
             }
         </NavLink>
     }
     else
     {
         <NavLink class="@navLinkCssClass" href="@Href">
-            <Icon Name="@PrefixIconName" Class="me-2" /> @Text
+            <Icon Name="@PrefixIconName" Class="nav-icon me-2" /> <span class="expanded-only">@Text</span>
         </NavLink>
     }
 

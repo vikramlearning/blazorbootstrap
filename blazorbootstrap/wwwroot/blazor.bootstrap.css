@@ -180,8 +180,9 @@ table button.dropdown-toggle::after {
     border-right: 1px solid rgba(0,0,0,0.10);
     color: rgba(0,0,0,0.9);
     white-space: nowrap;
-
     width: 48px;
+    overflow: hidden;
+    position: relative;
 }
 
     .bb-sidebar.expanded {
@@ -189,8 +190,24 @@ table button.dropdown-toggle::after {
         width: 260px;
     }
 
+    .bb-sidebar.collapsed .expanded-only {
+        display: none;
+    }
+
     .bb-sidebar .nav-group.expanded {
         background-color: rgba(0,0,0,0.06) !important;
+    }
+
+    /*.bb-sidebar .nav-item .nav-link {
+        padding-bottom: 12px;
+        padding-top: 12px;
+        width: 47px;
+    }*/
+
+    .bb-sidebar .nav-icon {
+        padding-bottom: 12px;
+        padding-top: 12px;
+        /* width: 47px;*/
     }
 
     .bb-sidebar .nav-item a:hover {
@@ -203,6 +220,10 @@ table button.dropdown-toggle::after {
 
     .bb-sidebar .nav-item .nav-link {
         position: relative;
+    }
+
+    .bb-sidebar.collapsed .nav-item .nav-link {
+        width: 47px;
     }
 
     .bb-sidebar .nav-item a.active::before {
@@ -218,3 +239,29 @@ table button.dropdown-toggle::after {
     .bb-sidebar .nav-item a::before {
         background-color: rgba(0,0,0,0.08);
     }
+
+    .bb-sidebar .nav-item a::before {
+        background-color: rgba(0,0,0,0.08);
+    }
+
+    .bb-sidebar.expanded .collapsible-section {
+        display: flex;
+        flex-direction: row;
+        display: block;
+        text-decoration: none;
+        transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+    }
+
+    .bb-sidebar.collapsed .collapsible-section {
+        padding-bottom: 12px;
+        padding-top: 12px;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+/* separator */
+.separator {
+    background-color: rgba(0,0,0,.1);
+    height: 1px;
+    margin: 0 10px;
+}

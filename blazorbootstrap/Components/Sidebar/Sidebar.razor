@@ -1,8 +1,24 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<div class="bb-sidebar expanded">
+<div  @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" role="alert" @attributes="@Attributes">
     <SidebarItemGroup />
+    <div class="separator flex-row flex-shrink-0">
+    </div>
+    <div class="collapsible-section">
+        @if (expanded)
+        {
+            <Tooltip Title="Show less information" Placement="TooltipPlacement.Right" Class="float-end me-3 py-2" role="button">
+                <Icon Name="IconName.ChevronDoubleLeft" @onclick="OnExpandTogglClick" />
+            </Tooltip>
+        }
+        else
+        {
+            <Tooltip Title="Show more information" Placement="TooltipPlacement.Right" Class="me-3 py-2" role="button">
+                <Icon Name="IconName.ChevronDoubleRight" @onclick="OnExpandTogglClick" />
+            </Tooltip>
+        }
+    </div>
 
     @*<ul class="nav flex-column">
         <li class="nav-item nav-group expanded">
