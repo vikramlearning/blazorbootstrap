@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<ul class="nav d-flex flex-column flex-grow-1 scroll-hidden v-scroll-auto custom-scrollbar my-1">
+<ul class="nav d-flex flex-column flex-shrink-0 scroll-hidden v-scroll-auto custom-scrollbar mb-auto">
     <SidebarItem NavigationExpanded="@NavigationExpanded" PrefixIconName="IconName.HouseDoorFill" Href="/getting-started" Text="Navigation" HasChilds="true" ChildItems="childItems" />
     <SidebarItem NavigationExpanded="@NavigationExpanded" PrefixIconName="IconName.CheckCircleFill" Href="/alerts" Text="Alerts" />
     <SidebarItem NavigationExpanded="@NavigationExpanded" PrefixIconName="IconName.InputCursorText" Href="/autocomplete" Text="AutoComplete" />

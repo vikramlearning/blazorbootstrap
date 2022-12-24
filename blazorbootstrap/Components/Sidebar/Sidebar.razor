@@ -2,7 +2,7 @@
 @inherits BaseComponent
 
 <div  @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" role="alert" @attributes="@Attributes">
-    <div class="collapsible-section flex-shrink-0">
+    <div class="collapsible-section d-flex flex-shrink-0">
         <div class="project-item d-flex flex-row">
             @if (expanded)
             {
@@ -22,7 +22,7 @@
     <SidebarItemGroup NavigationExpanded="@expanded" />
     <div class="separator d-flex flex-row flex-shrink-0">
     </div>
-    <div class="collapsible-section flex-shrink-0">
+    <div class="collapsible-section flex-shrink-0 mt-1">
         @if (expanded)
         {
             <Tooltip Title="Show less information" Placement="TooltipPlacement.Right" Class="float-end me-3 py-2" role="button">
