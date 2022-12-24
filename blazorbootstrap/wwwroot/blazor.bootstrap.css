@@ -198,11 +198,6 @@ table button.dropdown-toggle::after {
         background-color: rgba(0,0,0,0.06) !important;
     }
 
-    .bb-sidebar .nav-icon {
-        padding-bottom: 12px;
-        padding-top: 12px;
-    }
-
     .bb-sidebar .nav-item a:hover {
         background-color: rgba(0,0,0,0.06) !important;
     }
@@ -252,11 +247,19 @@ table button.dropdown-toggle::after {
         padding-right: 1rem;
     }
 
-    .bb-sidebar.expanded .collapsible-section .project-item {
+    .bb-sidebar .nav-icon {
         padding-bottom: 0.5rem;
         padding-top: 0.5rem;
+    }
+
+    .bb-sidebar.expanded .collapsible-section .project-item {
         padding-left: 1rem;
         padding-right: 1rem;
+    }
+
+    .bb-sidebar.expanded .collapsible-section .project-item .title {
+        padding-bottom: 0.5rem;
+        padding-top: 0.5rem;
     }
 
 /* separator */
@@ -268,7 +271,7 @@ table button.dropdown-toggle::after {
 
 /* scrollbar */
 .v-scroll-auto {
-    overflow-y: auto;
+    overflow-y: auto !important;
 }
 
 .scroll-hidden {

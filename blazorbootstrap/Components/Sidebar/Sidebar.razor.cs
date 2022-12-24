@@ -16,7 +16,7 @@ public partial class Sidebar : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append("bb-sidebar flex-column flex-grow-1");
+        builder.Append("bb-sidebar d-flex flex-column flex-grow-1");
         builder.Append("expanded", expanded);
         builder.Append("collapsed", !expanded);
 

@@ -45,7 +45,7 @@
 
     @if (HasChilds & containerExpanded && ChildItems is not null && ChildItems.Any())
     {
-        <ul class="nav flex-column">
+        <ul class="nav d-flex flex-column">
             @foreach (var childItem in ChildItems) // TODO: Handle sequence
             {
                 <SidebarItem PrefixIconName="@childItem.PrefixIconName" Href="@childItem.Href" Text="@childItem.Text" />
