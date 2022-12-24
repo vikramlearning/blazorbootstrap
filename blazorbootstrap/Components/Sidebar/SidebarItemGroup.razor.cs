@@ -4,6 +4,8 @@ public partial class SidebarItemGroup : BaseComponent
 {
     #region Events
 
+    private string cssClass => !NavigationExpanded ? "custom-scrollbar-hidden" : string.Empty;
+
     private IReadOnlyList<NavItem>? childItems;
 
     #endregion Events
@@ -16,6 +18,8 @@ public partial class SidebarItemGroup : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
+        builder.Append("nav d-block flex-column scroll-hidden v-scroll-auto custom-scrollbar mb-auto");
+
         base.BuildClasses(builder);
     }
 
@@ -72,7 +76,7 @@ public partial class SidebarItemGroup : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Parameter] public bool NavigationExpanded { get; set; }
+    [CascadingParameter] public bool NavigationExpanded { get; set; }
 
     #endregion Properties
 }

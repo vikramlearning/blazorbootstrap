@@ -36,7 +36,6 @@ public partial class SidebarItem : BaseComponent
 
         foreach (var childItem in ChildItems)
         {
-            Console.WriteLine($"Uri: {NavigationManager.Uri}, Href: {childItem.Href}");
             if (ShouldExpand(NavigationManager.Uri, childItem.Href))
             {
                 containerExpanded = true;
@@ -127,6 +126,8 @@ public partial class SidebarItem : BaseComponent
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
+    [CascadingParameter] public bool NavigationExpanded { get; set; }
+
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
@@ -141,8 +142,6 @@ public partial class SidebarItem : BaseComponent
     /// </summary>
     [Parameter] public NavLinkMatch Match { get; set; }
 
-    [Parameter] public bool NavigationExpanded { get; set; }
-
     [Parameter] public IconName PrefixIconName { get; set; }
 
     [Parameter] public string Text { get; set; }
@@ -150,17 +149,4 @@ public partial class SidebarItem : BaseComponent
     // TODO: add target support
 
     #endregion Properties
-}
-
-public class NavItem
-{
-    public string Id { get; set; }
-    public IReadOnlyList<NavItem>? ChildItems { get; set; }
-    public bool HasChilds { get; set; }
-    public string Href { get; set; }
-    public NavLinkMatch Match { get; set; }
-    public string ParentId { get; set; }
-    public IconName PrefixIconName { get; set; }
-    public int Sequence { get; set; }
-    public string Text { get; set; }
 }
