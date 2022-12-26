@@ -1,0 +1,19 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<div class="bb-sidebar2">
+    <div class="top-row navbar navbar-dark">
+        <div class="container-fluid ps-3">
+            <a class="navbar-brand" href="">
+                <Icon Name="IconName.Bootstrap" Class="me-2" /> BlazorAppSidebarTest
+            </a>
+            <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="@NavMenuCssClass nav-scrollable custom-scrollbar">
+        <SidebarItemGroup2 />
+    </div>
+</div>

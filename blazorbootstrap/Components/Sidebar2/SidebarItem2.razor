@@ -1,0 +1,38 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+@{
+    var navItemCss = HasChilds ? "nav-item-group" : "";
+}
+<div class="nav-item @navItemCss">
+    @if (HasChilds)
+    {
+        <NavLink class="nav-link fw-semibold" role="button" @onclick="ToggleNavItemGroup">
+            <Icon Name="@PrefixIconName" Class="nav-icon me-2" aria-hidden="true" />
+            <span>@Text</span>
+            @if (navitemGroupExpanded)
+            {
+                <Icon Name="IconName.ChevronDown" Class="float-end expanded-only text-primary" />
+            }
+            else
+            {
+                <Icon Name="IconName.ChevronRight" Class="float-end expanded-only" />
+            }
+        </NavLink>
+    }
+    else
+    {
+        <NavLink class="nav-link" href="@Href" Match="NavLinkMatch.All">
+            <Icon Name="@PrefixIconName" Class="nav-icon me-2" aria-hidden="true" />
+            <span>@Text</span>
+        </NavLink>
+    }
+
+    @if (navitemGroupExpanded && HasChilds && ChildItems is not null && ChildItems.Any())
+    {
+        @foreach (var childItem in ChildItems) // TODO: Handle sequence
+        {
+            <SidebarItem2 PrefixIconName="@childItem.PrefixIconName" Href="@childItem.Href" Text="@childItem.Text" />
+        }
+    }
+</div>
