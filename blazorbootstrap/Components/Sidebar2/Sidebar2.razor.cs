@@ -56,7 +56,10 @@ public partial class Sidebar2 : BaseComponent
         collapseNavMenu = !collapseNavMenu;
     }
 
-    private void ToggleSidebar()
+    /// <summary>
+    /// Toggle sidebar.
+    /// </summary>
+    public void ToggleSidebar()
     {
         collapseSidebar = !collapseSidebar;
         DirtyClasses();
