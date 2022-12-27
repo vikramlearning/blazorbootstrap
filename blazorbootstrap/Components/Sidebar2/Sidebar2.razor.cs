@@ -10,7 +10,7 @@ public partial class Sidebar2 : BaseComponent
 
     #region Members
 
-    private bool collapseSidebar = true;
+    private bool collapseSidebar = false;
 
     private bool collapseNavMenu = true;
 

@@ -6,48 +6,28 @@
     display: none !important;
 }
 
-.nav-link-icon, .oi {
-    /*width: 2rem;
-    font-size: 1.1rem;
-    vertical-align: text-top;
-    top: -2px;*/
+.nav-link-icon {
     padding-bottom: 0.5rem;
     padding-top: 0.5rem;
 }
 
-nav .nav-item {
-    /*font-size: 0.9rem;
-    padding-bottom: 0.5rem;*/
-}
-
-    nav .nav-item:first-of-type {
-        /*padding-top: 1rem;*/
-    }
-
-    nav .nav-item:last-of-type {
-        /*padding-bottom: 1rem;*/
-    }
-
     nav .nav-item ::deep a {
-        color: #d7d7d7;
-        /*border-radius: 4px;*/
-        /*height: 3rem;*/
-        /*display: flex;*/
+        color: var(--bb-sidebar-text-color);
         align-items: center;
-        /*line-height: 3rem;*/
         padding: 0.5rem 1rem;
     }
 
         nav .nav-item ::deep a.active {
-            background-color: rgba(255,255,255,0.25);
-            color: white;
+            background-color: var(--bb-sidebar-nav-item-hover-color);
+            color: var(--bb-sidebar-color);
+            font-weight: 600;
         }
 
         nav .nav-item ::deep a:hover {
-            background-color: rgba(255,255,255,0.1);
-            color: white;
+            background-color: var(--bb-sidebar-nav-item-hover-color);
+            color: var(--bb-sidebar-color);
         }
 
     nav .nav-item.nav-item-group {
-        background-color: rgba(0, 0, 0, 0.2);
+        background-color: var(--bb-sidebar-nav-item-group-background-color);
     }

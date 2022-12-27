@@ -4,7 +4,7 @@
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
     @if (HasChilds)
     {
-        <NavLink class="nav-link fw-semibold" role="button" @onclick="ToggleNavItemGroup">
+        <NavLink class="nav-link" role="button" @onclick="ToggleNavItemGroup">
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon">
@@ -13,13 +13,13 @@
             }
             else
             {
-                <span class="nav-link-icon">
-                    <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
+                <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
+                    <span class="nav-link-icon">
                         <Icon Name="@PrefixIconName" Class="me-2" aria-hidden="true" />
-                    </Tooltip>                    
-                </span>
+                    </span>
+                </Tooltip>
             }
-            <span class="nav-link-text expanded-only">@Text</span>
+            <span class="nav-link-text fw-semibold expanded-only">@Text</span>
             @if (navitemGroupExpanded)
             {
                 <span class="nav-link-arrow float-end expanded-only">
@@ -45,11 +45,11 @@
             }
             else
             {
-                <span class="nav-link-icon">
-                    <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
+                <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
+                    <span class="nav-link-icon">
                         <Icon Name="@PrefixIconName" Class="me-2" aria-hidden="true" />
-                    </Tooltip>
-                </span>
+                    </span>
+                </Tooltip>
             }
             <span class="nav-link-text expanded-only">@Text</span>
         </NavLink>

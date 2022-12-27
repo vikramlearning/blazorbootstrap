@@ -1,14 +1,23 @@
 ﻿.navbar-toggler {
-    background-color: rgba(255, 255, 255, 0.1);
+    /*background-color: rgba(255, 255, 255, 0.1);*/
 }
 
 .top-row {
     height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
+    background-color: var(--bb-sidebar-background-color, rgba(0, 0, 0, 0.08));
 }
 
 .navbar-brand {
     font-size: 1.1rem;
+}
+
+.navbar-brand-icon {
+    color: var(--bb-sidebar-brand-icon-color);
+}
+
+.navbar-brand-text {
+    color: var(--bb-sidebar-text-color);
+    font-weight: 600 !important;
 }
 
 @media (min-width: 641px) {
@@ -30,11 +39,12 @@
 
 
 .bb-sidebar2 {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    color: var(--bb-sidebar-text-color);
+    background-color: var(--bb-sidebar-background-color);
 }
 
     .bb-sidebar2.collapsed {
-        width: 48px;
+        width: var(--bb-sidebar-collapsed-width);
     }
 
         .bb-sidebar2.collapsed .expanded-only {
@@ -43,7 +53,7 @@
 
 @media (min-width: 641px) {
     .bb-sidebar2 {
-        width: 260px;
+        width: var(--bb-sidebar-width);
         height: 100vh;
         position: sticky;
         top: 0;
