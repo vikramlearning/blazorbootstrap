@@ -8,6 +8,8 @@ public partial class Sidebar2 : BaseComponent
 
     #region Members
 
+    private bool collapseSidebar = false;
+
     private bool collapseNavMenu = true;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -18,6 +20,10 @@ public partial class Sidebar2 : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
+        builder.Append("bb-sidebar2");
+        builder.Append("collapsed", collapseSidebar);
+        builder.Append("expanded", !collapseSidebar);
+
         base.BuildClasses(builder);
     }
 
@@ -31,6 +37,13 @@ public partial class Sidebar2 : BaseComponent
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void ToggleSidebar()
+    {
+        collapseSidebar = !collapseSidebar;
+        DirtyClasses();
+        StateHasChanged();
     }
 
     #endregion Methods

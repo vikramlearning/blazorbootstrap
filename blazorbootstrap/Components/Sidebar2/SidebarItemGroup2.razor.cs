@@ -16,6 +16,10 @@ public partial class SidebarItemGroup2 : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
+        builder.Append("flex-column");
+        builder.Append("nav-scrollable");
+        //builder.Append("scroll-hidden", CollapseSidebar);
+
         base.BuildClasses(builder);
     }
 
@@ -71,6 +75,8 @@ public partial class SidebarItemGroup2 : BaseComponent
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
+
+    [CascadingParameter] public bool CollapseSidebar { get; set; }
 
     #endregion Properties
 }

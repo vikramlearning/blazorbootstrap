@@ -1,21 +1,23 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<div class="bb-sidebar2">
-    <div class="top-row navbar navbar-dark">
-        <div class="container-fluid ps-3">
-            <a class="navbar-brand" href="">
-                <Icon Name="IconName.Bootstrap" Class="me-2" /> 
-                <span class="me-2">Blazor Bootstrap</span>
-                <span class="badge text-bg-success">v1.3.1</span>
-            </a>
-            <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+<CascadingValue Value="@collapseSidebar">
+    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" role="navigation" @attributes="@Attributes">
+        <div class="top-row navbar navbar-dark">
+            <div class="container-fluid ps-3">
+                <a class="navbar-brand" href="">
+                    <span class="navbar-brand-icon"><Icon Name="IconName.Bootstrap" Class="me-2" /></span>
+                    <span class="navbar-brand-text expanded-only me-2">Blazor Bootstrap</span>
+                    <span class="navbar-brand-badge badge text-bg-success expanded-only">v1.3.1</span>
+                </a>
+                <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="@NavMenuCssClass nav-scrollable custom-scrollbar">
+            <SidebarItemGroup2 />
         </div>
     </div>
-
-    <div class="@NavMenuCssClass nav-scrollable custom-scrollbar">
-        <SidebarItemGroup2 />
-    </div>
-</div>
+</CascadingValue>

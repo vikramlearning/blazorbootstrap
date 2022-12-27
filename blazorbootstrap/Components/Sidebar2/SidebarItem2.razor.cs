@@ -16,6 +16,9 @@ public partial class SidebarItem2 : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
+        builder.Append("nav-item");
+        builder.Append("nav-item-group", HasChilds);
+
         base.BuildClasses(builder);
     }
 
@@ -121,6 +124,8 @@ public partial class SidebarItem2 : BaseComponent
     #region Properties
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+    [CascadingParameter] public bool CollapseSidebar { get; set; }
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;

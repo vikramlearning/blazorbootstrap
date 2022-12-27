@@ -1,4 +1,12 @@
-﻿.nav-icon, .oi {
+﻿.bb-sidebar2.collapsed .expanded-only {
+    display: none;
+}
+
+.bb-sidebar2.collapsed .bi.expanded-only {
+    display: none !important;
+}
+
+.nav-link-icon, .oi {
     /*width: 2rem;
     font-size: 1.1rem;
     vertical-align: text-top;
