@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Text;
+
+namespace BlazorBootstrap;
 
 public partial class Sidebar2 : BaseComponent
 {
@@ -8,11 +10,11 @@ public partial class Sidebar2 : BaseComponent
 
     #region Members
 
-    private bool collapseSidebar = false;
+    private bool collapseSidebar = true;
 
     private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string? NavMenuCssClass => GetNavMenuCssClass();
 
     #endregion Members
 
@@ -32,6 +34,21 @@ public partial class Sidebar2 : BaseComponent
         Attributes ??= new Dictionary<string, object>();
 
         await base.OnInitializedAsync();
+    }
+
+    private string GetNavMenuCssClass()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        if (collapseNavMenu)
+            sb.Append(" collapse");
+
+        sb.Append(" nav-scrollable custom-scrollbar");
+
+        if (collapseSidebar)
+            sb.Append(" custom-scrollbar-hidden");
+
+        return sb.ToString();
     }
 
     private void ToggleNavMenu()
