@@ -1,5 +1,10 @@
-
 :root {
+    /* preload */
+    --bb-preload-modal-z-index: 2055;
+    --bb-preload-modal-backdrop-z-index: 2050;
+    /* confirm dialog */
+    --bb-confirm-dialog-z-index: 2045;
+    --bb-confirm-dialog-backdrop-z-index: 2040;
     /* offcanvas */
     --bb-offcanvas-close-icon-font-size: 2rem;
     --bb-offcanvas-footer-padding-y: 1rem;
@@ -17,13 +22,13 @@
     --bb-sidebar-nav-item-group-background-color: rgba(0,0,0,0.06);
 }
 
-/* page loading component */
+/* preload */
 .modal-page-loading {
-    z-index: 2055 !important;
+    z-index: var(--bb-preload-modal-z-index) !important;
 }
 
 .modal-backdrop-page-loading {
-    z-index: 2050 !important;
+    z-index: var(--bb-preload-modal-backdrop-z-index) !important;
 }
 
 .modal-content-page-loading {
@@ -31,16 +36,16 @@
     border: inherit !important;
 }
 
-/* confirmation modal component */
+/* confirm dialog */
 .modal-confirmation {
-    z-index: 2045 !important;
+    z-index: var(--bb-confirm-dialog-z-index) !important;
 }
 
 .modal-backdrop-confirmation {
-    z-index: 2040 !important;
+    z-index: var(--bb-confirm-dialog-backdrop-z-index) !important;
 }
 
-/* callout component */
+/* callout */
 .bb-callout {
     padding: 1.25rem;
     margin-top: 1.25rem;
@@ -154,7 +159,7 @@
         color: rgba(var(--bs-success-rgb), 1);
     }
 
-/* offcanvas component */
+/* offcanvas */
 .offcanvas-footer {
     display: flex;
     align-items: center;
@@ -180,7 +185,6 @@ table button.dropdown-toggle::after {
     width: 2.25rem;
     display: inline-block;
 }
-
 
 /* sidebar */
 .bb-sidebar {
@@ -302,10 +306,10 @@ table button.dropdown-toggle::after {
             scrollbar-color: rgba(0, 0, 0, .2) transparent
         }
 
-.custom-scrollbar::-webkit-scrollbar {
-    width: 18px;
-    height: 18px;
-}
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 18px;
+        height: 18px;
+    }
 
     .custom-scrollbar::-webkit-scrollbar-thumb {
         border: 6px solid transparent;
@@ -315,9 +319,10 @@ table button.dropdown-toggle::after {
         background-clip: padding-box
     }
 
-.custom-scrollbar::-webkit-scrollbar-corner {
-    background: transparent;
-}
+    .custom-scrollbar::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
     .custom-scrollbar::-webkit-scrollbar-thumb:vertical {
         min-height: 30px
     }
@@ -337,19 +342,20 @@ table button.dropdown-toggle::after {
         background-clip: padding-box
     }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    border: 6px solid transparent;
-    background: rgba(0,0,0,.2);
-    background: rgba(0, 0, 0, .2);
-    border-radius: 10px;
-    background-clip: padding-box;
-}
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: rgba(0,0,0,.3);
-        background: rgba(0, 0, 0, .3);
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        border: 6px solid transparent;
+        background: rgba(0,0,0,.2);
+        background: rgba(0, 0, 0, .2);
+        border-radius: 10px;
         background-clip: padding-box;
-        border: 4px solid transparent
     }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,.3);
+            background: rgba(0, 0, 0, .3);
+            background-clip: padding-box;
+            border: 4px solid transparent
+        }
 
 .custom-scrollbar-hidden {
     -ms-overflow-style: none;
