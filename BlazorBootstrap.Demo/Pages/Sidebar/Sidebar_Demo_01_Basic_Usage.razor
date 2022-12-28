@@ -1,16 +1,59 @@
-﻿@*<div class="d-flex flex-column flex-grow-1 scroll-hidden vh-100">*@
-    @*<div class="d-flex flex-row flex-shrink-0 scroll-hidden">
-    </div>*@
-    @*<div class="d-flex flex-row flex-grow-1 scroll-hidden">
-        <Sidebar />
-        <div class="d-flex flex-column flex-grow-1 scroll-hidden" style="background-color: rgba(0,0,0,0.04);">
-            <div class="px-2">Page content goes here...</div>
-        </div>
-    </div>
-</div>*@
-
-<Sidebar />
+﻿<Sidebar @ref="sidebar" Title="Blazor Bootstrap" NavItems="navItems" />
 
 @code {
+    Sidebar sidebar;
+    List<NavItem> navItems;
 
+    protected override void OnInitialized()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem{ Href = "/getting-started", PrefixIconName = IconName.HouseDoorFill, Sequence = 1, Text = "Getting Started"},
+
+            new NavItem
+            {
+                PrefixIconName = IconName.LayoutSidebarInset, Sequence = 2, Text = "Content", HasChilds= true,
+                ChildItems = new List<NavItem>
+                {
+                    new NavItem{ Href = "/icons", PrefixIconName = IconName.PersonSquare, Sequence = 1, Text = "Icons"},
+                }
+            },
+
+            new NavItem
+            {
+                PrefixIconName = IconName.WindowPlus, Sequence = 3, Text = "Forms", HasChilds = true,
+                ChildItems = new List<NavItem>
+                {
+                    new NavItem{ Href = "/autocomplete", PrefixIconName = IconName.PersonSquare, Sequence = 1, Text = "Auto Complete"},
+                    new NavItem{ Href = "/currency-input", PrefixIconName = IconName.PersonSquare, Sequence = 2, Text = "Currency Input"},
+                    new NavItem{ Href = "/number-input", PrefixIconName = IconName.PersonSquare, Sequence = 3, Text = "Number Input"},
+                    new NavItem{ Href = "/switch", PrefixIconName = IconName.PersonSquare, Sequence = 4, Text = "Switch"},
+                }
+            },
+
+            new NavItem
+            {
+                PrefixIconName = IconName.ExclamationTriangleFill, Sequence = 4, Text = "Components", HasChilds = true,
+                ChildItems = new List<NavItem>
+                {
+                    new NavItem{ Href = "/alerts", PrefixIconName = IconName.PersonSquare, Sequence = 1, Text = "Alerts"},
+                    new NavItem{ Href = "/breadcrumb", PrefixIconName = IconName.PersonSquare, Sequence = 2, Text = "Breadcrumb"},
+                    new NavItem{ Href = "/sidebar", PrefixIconName = IconName.PersonSquare, Sequence = 3, Text = "Sidebar"},
+                }
+            },
+
+            new NavItem
+            {
+                PrefixIconName = IconName.ExclamationTriangleFill, Sequence = 5, Text = "Data Visualization", HasChilds = true,
+                ChildItems = new List<NavItem>
+                {
+                    new NavItem{ Href = "/charts", PrefixIconName = IconName.PersonSquare, Sequence = 1, Text = "Bar Chart"},
+                    new NavItem{ Href = "/charts", PrefixIconName = IconName.PersonSquare, Sequence = 2, Text = "Doughnut Chart"},
+                    new NavItem{ Href = "/charts", PrefixIconName = IconName.PersonSquare, Sequence = 3, Text = "Line Chart"},
+                    new NavItem{ Href = "/charts", PrefixIconName = IconName.PersonSquare, Sequence = 4, Text = "Pie Chart"},
+                }
+            },
+
+        };
+    }
 }

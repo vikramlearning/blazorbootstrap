@@ -6,28 +6,28 @@
     display: none !important;
 }
 
-.nav-link-icon {
+.bb-sidebar .nav-link-icon {
     padding-bottom: 0.5rem;
     padding-top: 0.5rem;
 }
 
-    nav .nav-item ::deep a {
-        color: var(--bb-sidebar-text-color);
-        align-items: center;
-        padding: 0.5rem 1rem;
+.bb-sidebar nav .nav-item ::deep a {
+    color: var(--bb-sidebar-text-color);
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+    .bb-sidebar nav .nav-item ::deep a.active {
+        background-color: var(--bb-sidebar-nav-item-hover-color);
+        color: var(--bb-sidebar-color);
+        font-weight: 600;
     }
 
-        nav .nav-item ::deep a.active {
-            background-color: var(--bb-sidebar-nav-item-hover-color);
-            color: var(--bb-sidebar-color);
-            font-weight: 600;
-        }
-
-        nav .nav-item ::deep a:hover {
-            background-color: var(--bb-sidebar-nav-item-hover-color);
-            color: var(--bb-sidebar-color);
-        }
-
-    nav .nav-item.nav-item-group {
-        background-color: var(--bb-sidebar-nav-item-group-background-color);
+    .bb-sidebar nav .nav-item ::deep a:hover {
+        background-color: var(--bb-sidebar-nav-item-hover-color);
+        color: var(--bb-sidebar-color);
     }
+
+.bb-sidebar nav .nav-item.nav-item-group.active {
+    background-color: var(--bb-sidebar-nav-item-group-background-color);
+}

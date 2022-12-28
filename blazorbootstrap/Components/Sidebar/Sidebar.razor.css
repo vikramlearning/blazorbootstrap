@@ -5,6 +5,7 @@
 .top-row {
     height: 3.5rem;
     background-color: var(--bb-sidebar-background-color, rgba(0, 0, 0, 0.08));
+    border-bottom: 1px solid var(--bb-sidebar-title-border-color);
 }
 
 .navbar-brand {

@@ -71,5 +71,9 @@ public partial class Sidebar : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
+    [Parameter] public IReadOnlyList<NavItem>? NavItems { get; set; }
+
+    [Parameter] public string Title { get; set; }
+
     #endregion Properties
 }

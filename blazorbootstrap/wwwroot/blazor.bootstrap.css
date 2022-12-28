@@ -20,6 +20,7 @@
     --bb-sidebar-background-color: rgba(234, 234, 234, 1);
     --bb-sidebar-nav-item-hover-color: rgba(0,0,0,0.06);
     --bb-sidebar-nav-item-group-background-color: rgba(0,0,0,0.06);
+    --bb-sidebar-title-border-color: rgb(214,213,213);
 }
 
 /* preload */

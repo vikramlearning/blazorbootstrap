@@ -18,15 +18,9 @@ public partial class SidebarItem : BaseComponent
     {
         builder.Append("nav-item");
         builder.Append("nav-item-group", HasChilds);
+        builder.Append("active", navitemGroupExpanded);
 
         base.BuildClasses(builder);
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        Attributes ??= new Dictionary<string, object>();
-
-        await base.OnInitializedAsync();
     }
 
     protected override void OnParametersSet()
