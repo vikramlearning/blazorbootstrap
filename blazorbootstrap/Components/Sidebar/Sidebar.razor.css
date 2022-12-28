@@ -16,6 +16,11 @@
     color: var(--bb-sidebar-brand-icon-color);
 }
 
+.navbar-brand-image img {
+    width: var(--bb-sidebar-brand-image-width);
+    height: var(--bb-sidebar-brand-image-height);
+}
+
 .navbar-brand-text {
     color: var(--bb-sidebar-text-color);
     font-weight: 600 !important;

@@ -6,7 +6,18 @@
         <div class="top-row navbar">
             <div class="container-fluid ps-3">
                 <a class="navbar-brand" href="">
-                    <span class="navbar-brand-icon"><Icon Name="IconName.Bootstrap" Class="me-2" /></span>
+                    @if (!string.IsNullOrWhiteSpace(ImageSrc))
+                    {
+                        <span class="navbar-brand-image align-middle">
+                            <img src="@ImageSrc" class="pb-1 me-2" width="24" height="24" alt="@Title" />
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="navbar-brand-icon">
+                            <Icon Name="@IconName" CustomIconName="@CustomIconName" Class="me-2" />
+                        </span>
+                    }
                     <span class="navbar-brand-text fw-semibold expanded-only me-2">@Title</span>
                     <span class="navbar-brand-badge badge text-bg-success expanded-only">v1.3.1</span>
                 </a>

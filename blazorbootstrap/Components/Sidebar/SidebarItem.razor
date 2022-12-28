@@ -8,14 +8,14 @@
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon">
-                    <Icon Name="@PrefixIconName" Class="me-2" aria-hidden="true" />
+                    <Icon Name="@PrefixIconName" CustomIconName="@CustomPrefixIconName" Class="me-2" aria-hidden="true" />
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon">
-                        <Icon Name="@PrefixIconName" Class="me-2" aria-hidden="true" />
+                        <Icon Name="@PrefixIconName" CustomIconName="@CustomPrefixIconName" Class="me-2" aria-hidden="true" />
                     </span>
                 </Tooltip>
             }

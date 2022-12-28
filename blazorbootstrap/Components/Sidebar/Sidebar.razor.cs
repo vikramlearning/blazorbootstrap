@@ -71,9 +71,15 @@ public partial class Sidebar : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Parameter] public IReadOnlyList<NavItem>? NavItems { get; set; }
+    [Parameter] public string CustomIconName { get; set; }
 
-    [Parameter] public string Title { get; set; }
+    [Parameter] public IconName IconName { get; set; }
+
+    [Parameter] public string ImageSrc { get; set; }
+
+    [Parameter, EditorRequired] public IReadOnlyList<NavItem>? NavItems { get; set; }
+
+    [Parameter, EditorRequired] public string Title { get; set; }
 
     #endregion Properties
 }

@@ -137,6 +137,8 @@ public partial class SidebarItem : BaseComponent
 
     [Parameter] public IconName PrefixIconName { get; set; }
 
+    [Parameter] public string CustomPrefixIconName { get; set; }
+
     [Parameter] public string Text { get; set; }
 
     // TODO: add target support
