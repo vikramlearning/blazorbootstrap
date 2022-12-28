@@ -187,7 +187,7 @@ table button.dropdown-toggle::after {
 }
 
 /* sidebar */
-.bb-sidebar {
+/*.bb-sidebar {
     background: rgba(234,234,234,1);
     border-color: rgba(234,234,234,1);
     border-right: 1px solid rgba(0,0,0,0.10);
@@ -273,14 +273,14 @@ table button.dropdown-toggle::after {
     .bb-sidebar .nav-icon {
         padding-bottom: 0.5rem;
         padding-top: 0.5rem;
-    }
+    }*/
 
 /* separator */
-.separator {
+/*.separator {
     background-color: rgba(0,0,0,.1);
     height: 1px;
     margin: 0 10px;
-}
+}*/
 
 /* scrollbar */
 .v-scroll-auto {
