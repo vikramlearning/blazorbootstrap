@@ -5,10 +5,11 @@
         <NavMenu />
     </div>*@
 
-    <Sidebar2 />
+    <Sidebar2 @ref="sidebar" />
 
     <main>
-        <div class="top-row px-4">
+        <div class="top-row px-4 d-flex justify-content-between">
+            <Icon Name="IconName.List" role="button" @onclick="ToogleSidebar" />
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
@@ -17,3 +18,9 @@
         </article>
     </main>
 </div>
+
+@code{
+    Sidebar2 sidebar;
+
+    private void ToogleSidebar() => sidebar.ToggleSidebar();
+}
