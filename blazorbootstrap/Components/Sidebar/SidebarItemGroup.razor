@@ -1,0 +1,10 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<nav @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    <SidebarItem PrefixIconName="IconName.HouseDoorFill" Href="/getting-started" Text="Navigation" HasChilds="true" ChildItems="childItems" />
+    <SidebarItem PrefixIconName="IconName.CheckCircleFill" Href="/alerts" Text="Alerts" />
+    <SidebarItem PrefixIconName="IconName.InputCursorText" Href="/autocomplete" Text="AutoComplete" />
+    <SidebarItem PrefixIconName="IconName.SegmentedNav" Href="/breadcrumb" Text="Breadcrumb" />
+    <SidebarItem PrefixIconName="IconName.ToggleOn" Href="/buttons" Text="Buttons" />
+</nav>

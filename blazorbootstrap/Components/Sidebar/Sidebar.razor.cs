@@ -1,8 +1,6 @@
-﻿using System.Text;
+﻿namespace BlazorBootstrap;
 
-namespace BlazorBootstrap;
-
-public partial class Sidebar2 : BaseComponent
+public partial class Sidebar : BaseComponent
 {
     #region Events
 
@@ -22,7 +20,7 @@ public partial class Sidebar2 : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append("bb-sidebar2");
+        builder.Append("bb-sidebar");
         builder.Append("collapsed", collapseSidebar);
         builder.Append("expanded", !collapseSidebar);
 

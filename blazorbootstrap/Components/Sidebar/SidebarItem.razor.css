@@ -1,8 +1,8 @@
-﻿.bb-sidebar2.collapsed .expanded-only {
+﻿.bb-sidebar.collapsed .expanded-only {
     display: none;
 }
 
-.bb-sidebar2.collapsed .bi.expanded-only {
+.bb-sidebar.collapsed .bi.expanded-only {
     display: none !important;
 }
 

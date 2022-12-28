@@ -38,21 +38,21 @@
 }
 
 
-.bb-sidebar2 {
+.bb-sidebar {
     color: var(--bb-sidebar-text-color);
     background-color: var(--bb-sidebar-background-color);
 }
 
-    .bb-sidebar2.collapsed {
+    .bb-sidebar.collapsed {
         width: var(--bb-sidebar-collapsed-width);
     }
 
-        .bb-sidebar2.collapsed .expanded-only {
+        .bb-sidebar.collapsed .expanded-only {
             display: none;
         }
 
 @media (min-width: 641px) {
-    .bb-sidebar2 {
+    .bb-sidebar {
         width: var(--bb-sidebar-width);
         height: 100vh;
         position: sticky;
