@@ -6,9 +6,9 @@
     </div>*@
 
     <Sidebar @ref="sidebar"
-             ImageSrc="https://demos.getblazorbootstrap.com/images/logo/logo-color.svg"
-             IconName="IconName.BootstrapFill"
+             ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-color.svg"
              CustomIconName="bi bi-apple"
+             IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
              NavItems="navItems" />
 
@@ -62,6 +62,7 @@
                 {
                     new NavItem{ Href = "/alerts", PrefixIconName = IconName.PersonSquare, Sequence = 1, Text = "Alerts"},
                     new NavItem{ Href = "/breadcrumb", PrefixIconName = IconName.PersonSquare, Sequence = 2, Text = "Breadcrumb"},
+                    new NavItem{ Href = "/sidebar", PrefixIconName = IconName.PersonSquare, Sequence = 3, Text = "Sidebar"},
                 }
             },
 
@@ -76,7 +77,6 @@
                     new NavItem{ Href = "/charts", PrefixIconName = IconName.PersonSquare, Sequence = 4, Text = "Pie Chart"},
                 }
             },
-
         };
     }
 
