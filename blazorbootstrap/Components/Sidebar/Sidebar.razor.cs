@@ -12,7 +12,7 @@ public partial class Sidebar : BaseComponent
 
     private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => GetNavMenuCssClass();
+    private string? navMenuCssClass => GetNavMenuCssClass();
 
     #endregion Members
 

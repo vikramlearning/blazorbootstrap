@@ -14,15 +14,20 @@
     /* sidebar */
     --bb-sidebar-width: 270px;
     --bb-sidebar-collapsed-width: 48px;
+    --bb-sidebar-background-color: rgba(234, 234, 234, 1);
+    --bb-sidebar-border-right-color: rgb(214,213,213);
+    --bb-sidebar-title-text-color: rgb(0,0,0);
+    --bb-sidebar-title-background-color: rgba(0,0,0,0.08);
+    --bb-sidebar-title-border-bottom-color: rgb(214,213,213);
     --bb-sidebar-brand-icon-color: #6f42c1;
     --bb-sidebar-brand-image-width: 24px;
     --bb-sidebar-brand-image-height: 24px;
-    --bb-sidebar-color: rgba(0,0,0,1);
-    --bb-sidebar-text-color: rgba(0,0,0,0.9);
-    --bb-sidebar-background-color: rgba(234, 234, 234, 1);
-    --bb-sidebar-nav-item-hover-color: rgba(0,0,0,0.06);
-    --bb-sidebar-nav-item-group-background-color: rgba(0,0,0,0.06);
-    --bb-sidebar-title-border-color: rgb(214,213,213);
+    --bb-sidebar-nav-item-text-color: rgba(0,0,0,0.9);
+    --bb-sidebar-nav-item-text-active-color-rgb: 0,0,0;
+    --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
+    --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
+    --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.06);
+    --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.06);
 }
 
 /* preload */

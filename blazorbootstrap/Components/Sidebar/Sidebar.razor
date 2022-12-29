@@ -21,13 +21,13 @@
                     <span class="navbar-brand-text fw-semibold expanded-only me-2">@Title</span>
                     <span class="navbar-brand-badge badge text-bg-success expanded-only">v1.3.1</span>
                 </a>
-                <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-                    <span class="navbar-toggler-icon"></span>
+                <button title="Navigation menu" class="navbar-toggler px-2" @onclick="ToggleNavMenu">
+                    <span class="navbar-toggler-icon bi bi-list"></span>
                 </button>
             </div>
         </div>
 
-        <div class="@NavMenuCssClass">
+        <div class="@navMenuCssClass">
             <SidebarItemGroup NavItems="@NavItems" />
         </div>
     </div>

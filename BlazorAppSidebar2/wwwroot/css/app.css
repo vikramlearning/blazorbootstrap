@@ -19,7 +19,7 @@ a, .btn-link {
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 .content {
@@ -99,3 +99,24 @@ a, .btn-link {
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+
+:root {
+    --bb-violet: #712cf9;
+    --bb-sidebar-width: 270px;
+    --bb-sidebar-collapsed-width: 48px;
+    --bb-sidebar-background-color: rgba(255, 255, 255, 1);
+    --bb-sidebar-border-right-color: rgb(214,213,213);
+    --bb-sidebar-title-text-color: rgb(255,255,255);
+    --bb-sidebar-title-background-color: var(--bb-violet);
+    --bb-sidebar-title-border-bottom-color: var(--bb-violet);
+    --bb-sidebar-brand-icon-color: #6f42c1;
+    --bb-sidebar-brand-image-width: 24px;
+    --bb-sidebar-brand-image-height: 24px;
+    --bb-sidebar-nav-item-text-color: rgba(0,0,0,0.9);
+    --bb-sidebar-nav-item-text-active-color-rgb: 112.520718,44.062154,249.437846;
+    --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
+    --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
+    --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.06);
+    --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.06);
+}

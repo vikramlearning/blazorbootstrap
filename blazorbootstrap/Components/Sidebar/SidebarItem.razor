@@ -7,15 +7,15 @@
         <NavLink class="nav-link" role="button" @onclick="ToggleNavItemGroup">
             @if (!CollapseSidebar)
             {
-                <span class="nav-link-icon">
-                    <Icon Name="@PrefixIconName" CustomIconName="@CustomPrefixIconName" Class="me-3" aria-hidden="true" />
+                <span class="nav-link-icon me-3">
+                    <Icon Name="@PrefixIconName" CustomIconName="@CustomPrefixIconName" aria-hidden="true" />
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
-                    <span class="nav-link-icon">
-                        <Icon Name="@PrefixIconName" CustomIconName="@CustomPrefixIconName" Class="me-3" aria-hidden="true" />
+                    <span class="nav-link-icon me-3">
+                        <Icon Name="@PrefixIconName" CustomIconName="@CustomPrefixIconName" aria-hidden="true" />
                     </span>
                 </Tooltip>
             }
@@ -39,15 +39,15 @@
         <NavLink class="nav-link" href="@Href" Match="NavLinkMatch.All">
             @if (!CollapseSidebar)
             {
-                <span class="nav-link-icon">
-                    <Icon Name="@PrefixIconName" Class="me-3" aria-hidden="true" />
+                <span class="nav-link-icon me-3">
+                    <Icon Name="@PrefixIconName" aria-hidden="true" />
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
-                    <span class="nav-link-icon">
-                        <Icon Name="@PrefixIconName" Class="me-3" aria-hidden="true" />
+                    <span class="nav-link-icon me-3">
+                        <Icon Name="@PrefixIconName" aria-hidden="true" />
                     </span>
                 </Tooltip>
             }
