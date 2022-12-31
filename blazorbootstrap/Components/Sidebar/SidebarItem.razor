@@ -57,7 +57,7 @@
 
     @if (navitemGroupExpanded && HasChilds && ChildItems is not null && ChildItems.Any())
     {
-        @foreach (var childItem in ChildItems) // TODO: Handle sequence
+        @foreach (var childItem in ChildItems)
         {
             <SidebarItem PrefixIconName="@childItem.IconName" Href="@childItem.Href" Text="@childItem.Text" />
         }
