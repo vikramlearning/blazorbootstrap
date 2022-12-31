@@ -124,7 +124,7 @@ public partial class SidebarItem : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Parameter] public IReadOnlyList<NavItem>? ChildItems { get; set; }
+    [Parameter] public IEnumerable<NavItem>? ChildItems { get; set; }
 
     [Parameter] public bool HasChilds { get; set; }
 

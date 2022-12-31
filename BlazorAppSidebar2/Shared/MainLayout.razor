@@ -1,4 +1,5 @@
 ﻿@inherits LayoutComponentBase
+@using BlazorBootstrap
 
 <div class="page">
     @*<div class="sidebar">
@@ -11,7 +12,7 @@
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
              BadgeText="v1.3.1"
-             NavItems="navItems" />
+             DataProvider="SidebarDataProvider" />
 
     <main>
         <div class="top-row px-4 d-flex justify-content-between">
@@ -27,58 +28,44 @@
 
 @code {
     Sidebar sidebar;
-    List<NavItem> navItems;
+    IEnumerable<NavItem> navItems;
 
-    protected override void OnInitialized()
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
     {
         navItems = new List<NavItem>
         {
-            new NavItem{ Href = "/getting-started", PrefixIconName = IconName.HouseDoorFill, Sequence = 1, Text = "Getting Started"},
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Sequence = 1, Text = "Getting Started"},
 
-            new NavItem
-            {
-                PrefixIconName = IconName.LayoutSidebarInset, Sequence = 2, Text = "Content", HasChilds= true,
-                ChildItems = new List<NavItem>
-                {
-                    new NavItem{ Href = "/icons", PrefixIconName = IconName.PersonSquare, Sequence = 1, Text = "Icons"},
-                }
-            },
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Sequence = 2, Text = "Content" },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Sequence = 1, Text = "Icons", ParentId="2"},
 
-            new NavItem
-            {
-                PrefixIconName = IconName.WindowPlus, Sequence = 3, Text = "Forms", HasChilds = true,
-                ChildItems = new List<NavItem>
-                {
-                    new NavItem{ Href = "/autocomplete", PrefixIconName = IconName.PersonSquare, Sequence = 1, Text = "Auto Complete"},
-                    new NavItem{ Href = "/currency-input", PrefixIconName = IconName.PersonSquare, Sequence = 2, Text = "Currency Input"},
-                    new NavItem{ Href = "/number-input", PrefixIconName = IconName.PersonSquare, Sequence = 3, Text = "Number Input"},
-                    new NavItem{ Href = "/switch", PrefixIconName = IconName.PersonSquare, Sequence = 4, Text = "Switch"},
-                }
-            },
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Sequence = 4, Text = "Components" },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.PersonSquare, Sequence = 1, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.PersonSquare, Sequence = 2, Text = "Breadcrumb", ParentId="4"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.PersonSquare, Sequence = 3, Text = "Sidebar", ParentId="4"},
 
-            new NavItem
-            {
-                PrefixIconName = IconName.ExclamationTriangleFill, Sequence = 4, Text = "Components", HasChilds = true,
-                ChildItems = new List<NavItem>
-                {
-                    new NavItem{ Href = "/alerts", PrefixIconName = IconName.PersonSquare, Sequence = 1, Text = "Alerts"},
-                    new NavItem{ Href = "/breadcrumb", PrefixIconName = IconName.PersonSquare, Sequence = 2, Text = "Breadcrumb"},
-                    new NavItem{ Href = "/sidebar", PrefixIconName = IconName.PersonSquare, Sequence = 3, Text = "Sidebar"},
-                }
-            },
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Sequence = 3, Text = "Forms" },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.PersonSquare, Sequence = 1, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.PersonSquare, Sequence = 2, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.PersonSquare, Sequence = 3, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.PersonSquare, Sequence = 4, Text = "Switch", ParentId="8"},
 
-            new NavItem
-            {
-                PrefixIconName = IconName.ExclamationTriangleFill, Sequence = 5, Text = "Data Visualization", HasChilds = true,
-                ChildItems = new List<NavItem>
-                {
-                    new NavItem{ Href = "/charts", PrefixIconName = IconName.PersonSquare, Sequence = 1, Text = "Bar Chart"},
-                    new NavItem{ Href = "/charts", PrefixIconName = IconName.PersonSquare, Sequence = 2, Text = "Doughnut Chart"},
-                    new NavItem{ Href = "/charts", PrefixIconName = IconName.PersonSquare, Sequence = 3, Text = "Line Chart"},
-                    new NavItem{ Href = "/charts", PrefixIconName = IconName.PersonSquare, Sequence = 4, Text = "Pie Chart"},
-                }
-            },
+            new NavItem { Id = "13", IconName = IconName.ExclamationTriangleFill, Sequence = 5, Text = "Data Visualization" },
+            new NavItem { Id = "14", Href = "/charts", IconName = IconName.PersonSquare, Sequence = 1, Text = "Bar Chart", ParentId="13"},
+            new NavItem { Id = "15", Href = "/charts", IconName = IconName.PersonSquare, Sequence = 2, Text = "Doughnut Chart", ParentId="13"},
+            new NavItem { Id = "16", Href = "/charts", IconName = IconName.PersonSquare, Sequence = 3, Text = "Line Chart", ParentId="13"},
+            new NavItem { Id = "17", Href = "/charts", IconName = IconName.PersonSquare, Sequence = 4, Text = "Pie Chart", ParentId="13"},
         };
+
+        return navItems;
     }
 
     private void ToogleSidebar() => sidebar.ToggleSidebar();

@@ -12,7 +12,11 @@ public partial class Sidebar : BaseComponent
 
     private bool collapseNavMenu = true;
 
+    private IEnumerable<NavItem> items = null;
+
     private string? navMenuCssClass => GetNavMenuCssClass();
+
+    private bool requestInProgress = false;
 
     #endregion Members
 
@@ -32,6 +36,44 @@ public partial class Sidebar : BaseComponent
         Attributes ??= new Dictionary<string, object>();
 
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await RefreshDataAsync(firstRender);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    /// <summary>
+    /// Refresh the grid data.
+    /// </summary>
+    /// <returns>Task</returns>
+    public async Task RefreshDataAsync(bool firstRender = false)
+    {
+        if (requestInProgress)
+            return;
+
+        requestInProgress = true;
+
+        if (DataProvider != null)
+        {
+            var request = new SidebarDataProviderRequest();
+            var result = await DataProvider.Invoke(request);
+            if (result != null)
+            {
+                items = result.Data;
+            }
+            else
+            {
+                items = new List<NavItem>();
+            }
+        }
+
+        requestInProgress = false;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private string GetNavMenuCssClass()
@@ -75,11 +117,17 @@ public partial class Sidebar : BaseComponent
 
     [Parameter] public string CustomIconName { get; set; }
 
+    /// <summary>
+    /// DataProvider is for items to render. 
+    /// The provider should always return an instance of 'SidebarDataProviderResult', and 'null' is not allowed.
+    /// </summary>
+    [Parameter, EditorRequired] public SidebarDataProviderDelegate DataProvider { get; set; }
+
     [Parameter] public IconName IconName { get; set; }
 
     [Parameter] public string ImageSrc { get; set; }
 
-    [Parameter, EditorRequired] public IReadOnlyList<NavItem>? NavItems { get; set; }
+    //[Parameter, EditorRequired] public IReadOnlyList<NavItem>? NavItems { get; set; }
 
     [Parameter, EditorRequired] public string Title { get; set; }
 

@@ -8,8 +8,6 @@ public partial class SidebarItemGroup : BaseComponent
 
     #region Members
 
-    private IReadOnlyList<NavItem>? childItems;
-
     #endregion Members
 
     #region Methods
@@ -30,7 +28,7 @@ public partial class SidebarItemGroup : BaseComponent
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 
-    [Parameter] public IReadOnlyList<NavItem>? NavItems { get; set; }
+    [Parameter] public IEnumerable<NavItem>? NavItems { get; set; }
 
     #endregion Properties
 }
