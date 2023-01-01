@@ -10,6 +10,8 @@ public partial class SidebarItem : BaseComponent
 
     private bool navitemGroupExpanded = false;
 
+    private string targetString => this.Target.ToTargetString();
+
     #endregion Members
 
     #region Methods
@@ -126,6 +128,8 @@ public partial class SidebarItem : BaseComponent
 
     [Parameter] public IEnumerable<NavItem>? ChildItems { get; set; }
 
+    [Parameter] public string CustomIconName { get; set; }
+
     [Parameter] public bool HasChilds { get; set; }
 
     [Parameter] public string Href { get; set; }
@@ -135,13 +139,11 @@ public partial class SidebarItem : BaseComponent
     /// </summary>
     [Parameter] public NavLinkMatch Match { get; set; }
 
-    [Parameter] public IconName PrefixIconName { get; set; }
-
-    [Parameter] public string CustomPrefixIconName { get; set; }
+    [Parameter] public IconName IconName { get; set; }
 
     [Parameter] public string Text { get; set; }
 
-    // TODO: add target support
+    [Parameter] public Target Target { get; set; }
 
     #endregion Properties
 }

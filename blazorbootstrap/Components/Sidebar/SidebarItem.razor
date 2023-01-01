@@ -8,14 +8,14 @@
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Name="@PrefixIconName" CustomIconName="@CustomPrefixIconName" aria-hidden="true" />
+                    <Icon Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Name="@PrefixIconName" CustomIconName="@CustomPrefixIconName" aria-hidden="true" />
+                        <Icon Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
                     </span>
                 </Tooltip>
             }
@@ -36,18 +36,18 @@
     }
     else
     {
-        <NavLink class="nav-link" href="@Href" Match="NavLinkMatch.All">
+        <NavLink class="nav-link" href="@Href" Match="@Match" target="@targetString">
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Name="@PrefixIconName" aria-hidden="true" />
+                    <Icon Name="@IconName" aria-hidden="true" />
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Name="@PrefixIconName" aria-hidden="true" />
+                        <Icon Name="@IconName" aria-hidden="true" />
                     </span>
                 </Tooltip>
             }
