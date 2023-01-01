@@ -36,7 +36,7 @@
     }
     else
     {
-        <NavLink class="nav-link" href="@Href" Match="@Match" target="@targetString">
+        <NavLink class="nav-link" href="@Href" target="@targetString" Match="@Match">
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
@@ -59,7 +59,12 @@
     {
         @foreach (var childItem in ChildItems)
         {
-            <SidebarItem PrefixIconName="@childItem.IconName" Href="@childItem.Href" Text="@childItem.Text" />
+            <SidebarItem IconName="@childItem.IconName"
+                         CustomIconName="@childItem.CustomIconName"
+                         Href="@childItem.Href"
+                         Text="@childItem.Text"
+                         Target="@childItem.Target"
+                         Match="@childItem.Match" />
         }
     }
 </div>

@@ -2,11 +2,18 @@
 @inherits BaseComponent
 
 <nav @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-    @if(NavItems is not null && NavItems.Any())
+    @if (NavItems is not null && NavItems.Any())
     {
         foreach (var item in NavItems)
         {
-            <SidebarItem IconName="@item.IconName" CustomIconName="@item.CustomIconName" Href="@item.Href" Text="@item.Text" Match="@item.Match" Target="@item.Target" HasChilds="@item.HasChilds" ChildItems="@item.ChildItems" />
+            <SidebarItem IconName="@item.IconName"
+                         CustomIconName="@item.CustomIconName"
+                         Href="@item.Href"
+                         Text="@item.Text"
+                         Target="@item.Target"
+                         Match="@item.Match"
+                         HasChilds="@item.HasChilds"
+                         ChildItems="@item.ChildItems" />
         }
     }
 </nav>
