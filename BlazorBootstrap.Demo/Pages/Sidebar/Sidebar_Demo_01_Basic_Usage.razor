@@ -1,10 +1,24 @@
-﻿<Sidebar @ref="sidebar"
+﻿<div class="bb-page">
+
+<Sidebar @ref="sidebar"
          ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-color.svg"
          CustomIconName="bi bi-apple"
          IconName="IconName.BootstrapFill"
          Title="Blazor Bootstrap"
          BadgeText="v1.3.1"
          DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-between">
+            <Icon Name="IconName.List" role="button" @onclick="ToogleSidebar" />
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">Page content goes here</div>
+        </article>
+    </main>
+</div>
 
 @code {
     Sidebar sidebar;
@@ -47,4 +61,6 @@
 
         return navItems;
     }
+
+    private void ToogleSidebar() => sidebar.ToggleSidebar();
 }

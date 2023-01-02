@@ -114,6 +114,8 @@ a, .btn-link {
     --bb-sidebar-brand-image-height: 24px;
     --bb-sidebar-title-badge-text-color: var(--bb-violet);
     --bb-sidebar-title-badge-background-color: rgb(255,255,255);
+    --bb-sidebar-navbar-toggler-icon-color: var(--bb-violet);
+    --bb-sidebar-navbar-toggler-background-color: rgb(255,255,255);
     --bb-sidebar-content-border-color: rgb(214,213,213);
     --bb-sidebar-nav-item-text-color: rgba(0,0,0,0.9);
     --bb-sidebar-nav-item-text-active-color-rgb: 112.520718,44.062154,249.437846;

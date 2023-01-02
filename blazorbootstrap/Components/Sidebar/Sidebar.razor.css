@@ -21,13 +21,22 @@
 }
 
 .navbar-toggler {
-    background-color: var(--bb-sidebar-title-text-color);
+    background-color: var(--bb-sidebar-navbar-toggler-background-color);
     color: rgb(var(--bb-sidebar-nav-item-text-active-color-rgb));
     padding: inherit !important;
     padding-right: 0.25rem !important;
     padding-left: 0.25rem !important;
     line-height: inherit !important;
     font-size: inherit !important;
+}
+
+.navbar-toggler-icon {
+    background-image: inherit !important;
+    color: var(--bb-sidebar-navbar-toggler-icon-color) !important;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none !important;
 }
 
 .bb-sidebar-top-row {
