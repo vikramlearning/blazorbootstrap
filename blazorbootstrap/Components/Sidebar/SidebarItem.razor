@@ -8,14 +8,14 @@
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
                     </span>
                 </Tooltip>
             }
@@ -40,14 +40,14 @@
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Name="@IconName" aria-hidden="true" />
+                    <Icon Class="@iconColorCssClass" Name="@IconName" aria-hidden="true" />
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Name="@IconName" aria-hidden="true" />
+                        <Icon Class="@iconColorCssClass" Name="@IconName" aria-hidden="true" />
                     </span>
                 </Tooltip>
             }
@@ -61,6 +61,7 @@
         {
             <SidebarItem IconName="@childItem.IconName"
                          CustomIconName="@childItem.CustomIconName"
+                         IconColor="@childItem.IconColor"
                          Href="@childItem.Href"
                          Text="@childItem.Text"
                          Target="@childItem.Target"

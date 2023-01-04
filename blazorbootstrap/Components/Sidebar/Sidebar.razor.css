@@ -1,6 +1,5 @@
 ﻿.bb-sidebar {
     background-color: var(--bb-sidebar-background-color);
-    /*border-right: 1px solid var(--bb-sidebar-border-right-color);*/
 }
 
     .bb-sidebar.collapsed {
@@ -14,7 +13,6 @@
 @media (min-width: 641px) {
     .bb-sidebar {
         width: var(--bb-sidebar-width);
-        height: 100vh;
         position: sticky;
         top: 0;
     }

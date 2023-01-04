@@ -8,6 +8,7 @@ public class NavItem
     public string Href { get; set; }
     public string Id { get; set; }
     public IconName IconName { get; set; }
+    public IconColor IconColor { get; set; }
     public NavLinkMatch Match { get; set; }
     public string ParentId { get; set; }
     public int Sequence { get; set; }

@@ -8,6 +8,8 @@ public partial class SidebarItem : BaseComponent
 
     #region Members
 
+    private string iconColorCssClass => BootstrapClassProvider.IconColor(this.IconColor);
+
     private bool navitemGroupExpanded = false;
 
     private string targetString => this.Target.ToTargetString();
@@ -140,6 +142,8 @@ public partial class SidebarItem : BaseComponent
     [Parameter] public NavLinkMatch Match { get; set; }
 
     [Parameter] public IconName IconName { get; set; }
+
+    [Parameter] public IconColor IconColor { get; set; }
 
     [Parameter] public string Text { get; set; }
 

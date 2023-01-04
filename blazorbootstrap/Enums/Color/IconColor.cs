@@ -3,7 +3,7 @@
 /// <summary>
 /// Predefined set of contextual colors.
 /// </summary>
-public enum TextColor
+public enum IconColor
 {
     /// <summary>
     /// No color will be applied to an element.

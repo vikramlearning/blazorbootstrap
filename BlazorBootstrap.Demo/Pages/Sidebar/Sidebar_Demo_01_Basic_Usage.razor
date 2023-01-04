@@ -36,19 +36,19 @@
         {
             new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Sequence = 1, Text = "Getting Started"},
 
-            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Sequence = 2, Text = "Content" },
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Sequence = 2, Text = "Content", IconColor = IconColor.Primary },
             new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Sequence = 1, Text = "Icons", ParentId="2"},
 
-            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Sequence = 4, Text = "Components" },
-            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.PersonSquare, Sequence = 1, Text = "Alerts", ParentId="4"},
-            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.PersonSquare, Sequence = 2, Text = "Breadcrumb", ParentId="4"},
-            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.PersonSquare, Sequence = 3, Text = "Sidebar", ParentId="4"},
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Sequence = 4, Text = "Components", IconColor = IconColor.Success },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Sequence = 1, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Sequence = 2, Text = "Breadcrumb", ParentId="4"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Sequence = 3, Text = "Sidebar", ParentId="4"},
 
-            new NavItem { Id = "8", IconName = IconName.WindowPlus, Sequence = 3, Text = "Forms" },
-            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.PersonSquare, Sequence = 1, Text = "Auto Complete", ParentId="8"},
-            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.PersonSquare, Sequence = 2, Text = "Currency Input", ParentId="8"},
-            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.PersonSquare, Sequence = 3, Text = "Number Input", ParentId="8"},
-            new NavItem { Id = "12", Href = "/switch", IconName = IconName.PersonSquare, Sequence = 4, Text = "Switch", ParentId="8"},
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Sequence = 3, Text = "Forms", IconColor = IconColor.Danger },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Sequence = 1, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Sequence = 2, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Sequence = 3, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Sequence = 4, Text = "Switch", ParentId="8"},
         };
 
         return navItems;
