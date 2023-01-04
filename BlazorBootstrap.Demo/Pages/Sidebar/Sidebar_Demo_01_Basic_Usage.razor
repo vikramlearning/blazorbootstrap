@@ -1,12 +1,9 @@
 ﻿<div class="bb-page">
 
-<Sidebar @ref="sidebar"
-         ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-color.svg"
-         CustomIconName="bi bi-apple"
-         IconName="IconName.BootstrapFill"
-         Title="Blazor Bootstrap"
-         BadgeText="v1.3.1"
-         DataProvider="SidebarDataProvider" />
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Blazor Bootstrap"
+             DataProvider="SidebarDataProvider" />
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-between">
@@ -18,6 +15,7 @@
             <div class="py-2">Page content goes here</div>
         </article>
     </main>
+
 </div>
 
 @code {
@@ -51,12 +49,6 @@
             new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.PersonSquare, Sequence = 2, Text = "Currency Input", ParentId="8"},
             new NavItem { Id = "11", Href = "/number-input", IconName = IconName.PersonSquare, Sequence = 3, Text = "Number Input", ParentId="8"},
             new NavItem { Id = "12", Href = "/switch", IconName = IconName.PersonSquare, Sequence = 4, Text = "Switch", ParentId="8"},
-
-            new NavItem { Id = "13", IconName = IconName.ExclamationTriangleFill, Sequence = 5, Text = "Data Visualization" },
-            new NavItem { Id = "14", Href = "/charts", IconName = IconName.PersonSquare, Sequence = 1, Text = "Bar Chart", ParentId="13"},
-            new NavItem { Id = "15", Href = "/charts", IconName = IconName.PersonSquare, Sequence = 2, Text = "Doughnut Chart", ParentId="13"},
-            new NavItem { Id = "16", Href = "/charts", IconName = IconName.PersonSquare, Sequence = 3, Text = "Line Chart", ParentId="13"},
-            new NavItem { Id = "17", Href = "/charts", IconName = IconName.PersonSquare, Sequence = 4, Text = "Pie Chart", ParentId="13"},
         };
 
         return navItems;
