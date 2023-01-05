@@ -104,7 +104,7 @@ a, .btn-link {
 :root {
     --bb-violet: #712cf9;
     --bb-sidebar-width: 270px;
-    --bb-sidebar-collapsed-width: 48px;
+    --bb-sidebar-collapsed-width: 50px;
     --bb-sidebar-background-color: rgba(255, 255, 255, 1);
     --bb-sidebar-top-row-background-color: var(--bb-violet);
     --bb-sidebar-top-row-border-color: var(--bb-violet);
