@@ -1,9 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+
+    <Sidebar @ref="sidebar"
+             ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-color.svg"
+             Title="Blazor Bootstrap"
+             BadgeText="v1.3.1"
+             DataProvider="SidebarDataProvider" />
 
     <div class="main">
         <div class="content my-4 my-md-4 px-4">
@@ -14,3 +17,59 @@
 
 <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
 <Preload />
+
+@code{
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new (){ Id = "1", Text = "Getting Started", Href = "/getting-started", IconName = IconName.HouseDoorFill, ParentId = "" },
+
+            new (){ Id = "2", Text = "Content", Href = "", IconName = IconName.Alarm, ParentId = "" },
+            new (){ Id = "3", Text = "Icons", Href = "", IconName = IconName.PersonSquare, ParentId = "2" },
+
+            new (){ Id = "4", Text = "Forms", Href = "", IconName = IconName.Alarm, ParentId = "" },
+            new (){ Id = "5", Text = "Auto Complete", Href = "", IconName = IconName.InputCursorText, ParentId = "4" },
+            new (){ Id = "6", Text = "Currency Input", Href = "", IconName = IconName.CurrencyDollar, ParentId = "4" },
+            new (){ Id = "7", Text = "Number Input", Href = "", IconName = IconName.InputCursor, ParentId = "4" },
+            new (){ Id = "8", Text = "Switch", Href = "", IconName = IconName.ToggleOn, ParentId = "4" },
+
+            new (){ Id = "9", Text = "Components", Href = "", IconName = IconName.Alarm, ParentId = "" },
+            new (){ Id = "10", Text = "Alerts", Href = "", IconName = IconName.CheckCircleFill, ParentId = "9" },
+            new (){ Id = "11", Text = "Breadcrumb", Href = "", IconName = IconName.SegmentedNav, ParentId = "9" },
+            new (){ Id = "12", Text = "Buttons", Href = "", IconName = IconName.ToggleOn, ParentId = "9" },
+            new (){ Id = "13", Text = "Callout", Href = "", IconName = IconName.StickyFill, ParentId = "9" },
+            new (){ Id = "14", Text = "Charts", Href = "", IconName = IconName.BarChartLineFill, ParentId = "9" },
+            new (){ Id = "15", Text = "Confirm Dialog", Href = "", IconName = IconName.QuestionDiamondFill, ParentId = "9" },
+            new (){ Id = "16", Text = "Grid", Href = "", IconName = IconName.Grid, ParentId = "9" },
+            new (){ Id = "17", Text = "Modals", Href = "", IconName = IconName.WindowStack, ParentId = "9" },
+            new (){ Id = "18", Text = "Offcanvas", Href = "", IconName = IconName.LayoutSidebarReverse, ParentId = "9" },
+            new (){ Id = "19", Text = "Pagination", Href = "", IconName = IconName.ThreeDots, ParentId = "9" },
+            new (){ Id = "20", Text = "Placeholders", Href = "", IconName = IconName.ColumnsGap, ParentId = "9" },
+            new (){ Id = "21", Text = "Preload", Href = "", IconName = IconName.ArrowClockwise, ParentId = "9" },
+            new (){ Id = "22", Text = "Progress", Href = "", IconName = IconName.UsbC, ParentId = "9" },
+            new (){ Id = "23", Text = "Tabs", Href = "", IconName = IconName.WindowPlus, ParentId = "9" },
+            new (){ Id = "24", Text = "Toasts", Href = "", IconName = IconName.ExclamationTriangleFill, ParentId = "9" },
+            new (){ Id = "25", Text = "Tooltips", Href = "", IconName = IconName.ChatSquareDotsFill, ParentId = "9" },
+
+            new (){ Id = "26", Text = "Data Visualization", Href = "", IconName = IconName.Alarm, ParentId = "" },
+            new (){ Id = "27", Text = "Bar Chart", Href = "", IconName = IconName.BarChartFill, ParentId = "26" },
+            new (){ Id = "28", Text = "Doughnut Chart", Href = "", IconName = IconName.CircleFill, ParentId = "26" },
+            new (){ Id = "29", Text = "Line Chart", Href = "", IconName = IconName.GraphUp, ParentId = "26" },
+            new (){ Id = "30", Text = "Pie Chart", Href = "", IconName = IconName.PieChartFill, ParentId = "26" },
+        };
+
+        return navItems;
+    }
+}
