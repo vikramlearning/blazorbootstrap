@@ -3,6 +3,7 @@
     <Sidebar @ref="sidebar"
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
+             BadgeText="v1.3.1"
              DataProvider="SidebarDataProvider" />
 
     <main>
@@ -11,7 +12,9 @@
         </div>
 
         <article class="content px-4">
-            <div class="py-2">Page content goes here</div>
+            <div class="py-2">
+                <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="ToggleSidebarStyles">Toggle Sidebar styles</Button>
+            </div>
         </article>
     </main>
 
@@ -19,6 +22,7 @@
 
 @code {
     Sidebar sidebar;
+    bool applyPurpleStyle = false;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -52,4 +56,37 @@
 
         return navItems;
     }
+
+    private void ToggleSidebarStyles() => applyPurpleStyle = !applyPurpleStyle;
+}
+
+@if (applyPurpleStyle)
+{
+    <style>
+
+        :root {
+            --bb-violet: #712cf9;
+            --bb-sidebar-width: 270px;
+            --bb-sidebar-collapsed-width: 50px;
+            --bb-sidebar-background-color: rgba(255, 255, 255, 1);
+            --bb-sidebar-top-row-background-color: var(--bb-violet);
+            --bb-sidebar-top-row-border-color: var(--bb-violet);
+            --bb-sidebar-title-text-color: rgb(255,255,255);
+            --bb-sidebar-brand-icon-color: rgb(255,255,255);
+            --bb-sidebar-brand-image-width: 24px;
+            --bb-sidebar-brand-image-height: 24px;
+            --bb-sidebar-title-badge-text-color: var(--bb-violet);
+            --bb-sidebar-title-badge-background-color: rgb(255,255,255);
+            --bb-sidebar-navbar-toggler-icon-color: var(--bb-violet);
+            --bb-sidebar-navbar-toggler-background-color: rgb(255,255,255);
+            --bb-sidebar-content-border-color: rgb(214,213,213);
+            --bb-sidebar-nav-item-text-color: rgba(0,0,0,0.9);
+            --bb-sidebar-nav-item-text-active-color-rgb: 112.520718,44.062154,249.437846;
+            --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
+            --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
+            --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
+            --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
+        }
+
+    </style>
 }
