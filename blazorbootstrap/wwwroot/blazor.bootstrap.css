@@ -283,7 +283,6 @@ table button.dropdown-toggle::after {
     }
 
 /* layout */
-
 @media (min-width: 641px) {
     .bb-page {
         flex-direction: row !important;
@@ -309,6 +308,14 @@ table button.dropdown-toggle::after {
 
 main {
     flex: 1;
+    overflow-y: auto;
+    height: 100vh;
+}
+
+.main {
+    flex: 1;
+    overflow-y: auto;
+    height: 100vh;
 }
 
 .bb-top-row {

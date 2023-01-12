@@ -2,7 +2,7 @@
 @inherits BaseComponent
 
 <CascadingValue Value="@collapseSidebar">
-    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" role="navigation" @attributes="@Attributes">
+    <aside @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" role="navigation" @attributes="@Attributes">
         <div class="bb-sidebar-top-row navbar">
             <div class="container-fluid ps-3">
                 <a class="navbar-brand d-flex align-items-center" href="">
@@ -33,5 +33,5 @@
         <div class="@navMenuCssClass">
             <SidebarItemGroup NavItems="@items" />
         </div>
-    </div>
+    </aside>
 </CascadingValue>
