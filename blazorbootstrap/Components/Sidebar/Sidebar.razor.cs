@@ -47,7 +47,7 @@ public partial class Sidebar : BaseComponent
     }
 
     /// <summary>
-    /// Refresh the grid data.
+    /// Refresh the sidebar data.
     /// </summary>
     /// <returns>Task</returns>
     public async Task RefreshDataAsync(bool firstRender = false)
@@ -97,7 +97,7 @@ public partial class Sidebar : BaseComponent
     }
 
     /// <summary>
-    /// Toggle sidebar.
+    /// Toggles sidebar.
     /// </summary>
     public void ToggleSidebar()
     {
@@ -113,8 +113,14 @@ public partial class Sidebar : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
+    /// <summary>
+    /// Gets or sets the badge text.
+    /// </summary>
     [Parameter] public string BadgeText { get; set; }
 
+    /// <summary>
+    /// Gets or sets the custom icon name.
+    /// </summary>
     [Parameter] public string CustomIconName { get; set; }
 
     /// <summary>
@@ -123,12 +129,19 @@ public partial class Sidebar : BaseComponent
     /// </summary>
     [Parameter, EditorRequired] public SidebarDataProviderDelegate DataProvider { get; set; }
 
+    /// <summary>
+    /// Gets or sets the IconName.
+    /// </summary>
     [Parameter] public IconName IconName { get; set; }
 
+    /// <summary>
+    /// Gets or sets the logo.
+    /// </summary>
     [Parameter] public string ImageSrc { get; set; }
 
-    //[Parameter, EditorRequired] public IReadOnlyList<NavItem>? NavItems { get; set; }
-
+    /// <summary>
+    /// Gets or sets the title.
+    /// </summary>
     [Parameter, EditorRequired] public string Title { get; set; }
 
     #endregion Properties

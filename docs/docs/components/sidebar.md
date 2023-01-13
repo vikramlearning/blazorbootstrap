@@ -17,19 +17,19 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 
 | Name | Type | Default | Required | Descritpion | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| BadgeText | string | | | | 1.4.0 |
-| CustomIconName | string | | | | 1.4.0 |
-| DataProvider | Delegate | | ✔️ | | 1.4.0 |
-| IconName | Enum | | | | 1.4.0 |
-| ImageSrc | string | | | | 1.4.0 |
-| Title | string | | ✔️ | | 1.4.0 |
+| BadgeText | string | | | Gets or sets the badge text. | 1.4.0 |
+| CustomIconName | string | | | Gets or sets the custom icon name. | 1.4.0 |
+| DataProvider | delegate | | ✔️ | DataProvider is for items to render. The provider should always return an instance of 'SidebarDataProviderResult', and 'null' is not allowed. | 1.4.0 |
+| IconName | enum | | | Gets or sets the IconName. | 1.4.0 |
+| ImageSrc | string | | | Gets or sets the logo. | 1.4.0 |
+| Title | string | | ✔️ | Gets or sets the title. | 1.4.0 |
 
 ## Methods
 
 | Name | Description | Added Version |
 |:--|:--|:--|
-| RefreshDataAsync | | 1.4.0 |
-| ToggleSidebar | | 1.4.0 |
+| RefreshDataAsync | Refresh the sidebar data. | 1.4.0 |
+| ToggleSidebar | Toggles sidebar. | 1.4.0 |
 
 ## Examples
 
