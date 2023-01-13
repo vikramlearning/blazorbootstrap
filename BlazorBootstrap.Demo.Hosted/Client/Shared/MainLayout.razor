@@ -5,7 +5,7 @@
     <Sidebar @ref="sidebar"
              ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-color.svg"
              Title="Blazor Bootstrap"
-             BadgeText="v1.3.1"
+             BadgeText="@version"
              DataProvider="SidebarDataProvider" />
 
     <main class="bb-scrollbar">
@@ -19,8 +19,17 @@
 <Preload />
 
 @code {
+    private string version;
     Sidebar sidebar;
     IEnumerable<NavItem> navItems;
+
+    [Inject] public IConfiguration Configuration { get; set; }
+
+    protected override void OnInitialized()
+    {
+        version = $"v{Configuration.GetValue<string>("version")}"; // example: v0.6.1
+        base.OnInitialized();
+    }
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
     {
