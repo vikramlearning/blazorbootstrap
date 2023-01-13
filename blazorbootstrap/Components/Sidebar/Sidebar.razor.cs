@@ -83,10 +83,10 @@ public partial class Sidebar : BaseComponent
         if (collapseNavMenu)
             sb.Append(" collapse");
 
-        sb.Append(" bb-sidebar-content nav-scrollable custom-scrollbar");
+        sb.Append(" bb-sidebar-content nav-scrollable bb-scrollbar");
 
         if (collapseSidebar)
-            sb.Append(" custom-scrollbar-hidden");
+            sb.Append(" bb-scrollbar-hidden");
 
         return sb.ToString();
     }

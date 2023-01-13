@@ -207,27 +207,27 @@ table button.dropdown-toggle::after {
     overflow: hidden;
 }
 
-.custom-scrollbar {
+.bb-scrollbar {
     scrollbar-color: rgba(0,0,0,.2) transparent;
     scrollbar-color: rgba(0, 0, 0, .2) transparent;
     scrollbar-width: thin
 }
 
-    .custom-scrollbar.scroll-auto-hide {
+    .bb-scrollbar.scroll-auto-hide {
         scrollbar-color: transparent transparent
     }
 
-        .custom-scrollbar.scroll-auto-hide:hover {
+        .bb-scrollbar.scroll-auto-hide:hover {
             scrollbar-color: rgba(0,0,0,.2) transparent;
             scrollbar-color: rgba(0, 0, 0, .2) transparent
         }
 
-    .custom-scrollbar::-webkit-scrollbar {
+    .bb-scrollbar::-webkit-scrollbar {
         width: 18px;
         height: 18px;
     }
 
-    .custom-scrollbar::-webkit-scrollbar-thumb {
+    .bb-scrollbar::-webkit-scrollbar-thumb {
         border: 6px solid transparent;
         background: rgba(0,0,0,.2);
         background: rgba(0, 0, 0, .2);
@@ -235,30 +235,30 @@ table button.dropdown-toggle::after {
         background-clip: padding-box
     }
 
-    .custom-scrollbar::-webkit-scrollbar-corner {
+    .bb-scrollbar::-webkit-scrollbar-corner {
         background: transparent;
     }
 
-    .custom-scrollbar::-webkit-scrollbar-thumb:vertical {
+    .bb-scrollbar::-webkit-scrollbar-thumb:vertical {
         min-height: 30px
     }
 
-    .custom-scrollbar::-webkit-scrollbar-thumb:horizontal {
+    .bb-scrollbar::-webkit-scrollbar-thumb:horizontal {
         min-width: 30px
     }
 
-    .custom-scrollbar.scroll-auto-hide::-webkit-scrollbar-thumb {
+    .bb-scrollbar.scroll-auto-hide::-webkit-scrollbar-thumb {
         background: transparent;
         background-clip: padding-box
     }
 
-    .custom-scrollbar.scroll-auto-hide:hover::-webkit-scrollbar-thumb {
+    .bb-scrollbar.scroll-auto-hide:hover::-webkit-scrollbar-thumb {
         background: rgba(0,0,0,.2);
         background: rgba(0, 0, 0, .2);
         background-clip: padding-box
     }
 
-    .custom-scrollbar::-webkit-scrollbar-thumb {
+    .bb-scrollbar::-webkit-scrollbar-thumb {
         border: 6px solid transparent;
         background: rgba(0,0,0,.2);
         background: rgba(0, 0, 0, .2);
@@ -266,19 +266,19 @@ table button.dropdown-toggle::after {
         background-clip: padding-box;
     }
 
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        .bb-scrollbar::-webkit-scrollbar-thumb:hover {
             background: rgba(0,0,0,.3);
             background: rgba(0, 0, 0, .3);
             background-clip: padding-box;
             border: 4px solid transparent
         }
 
-.custom-scrollbar-hidden {
+.bb-scrollbar-hidden {
     -ms-overflow-style: none;
     scrollbar-width: none
 }
 
-    .custom-scrollbar-hidden::-webkit-scrollbar {
+    .bb-scrollbar-hidden::-webkit-scrollbar {
         width: 0
     }
 
