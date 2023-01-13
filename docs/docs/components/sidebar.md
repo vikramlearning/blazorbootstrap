@@ -17,14 +17,19 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 
 | Name | Type | Default | Required | Descritpion | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside this. | 1.4.0 |
-| Height | double | 16 | | Gets or sets the height of the Progress. Height is measured in pixels, and the default height is 16 pixels. | 1.4.0 |
+| BadgeText | string | | | | 1.4.0 |
+| CustomIconName | string | | | | 1.4.0 |
+| DataProvider | Delegate | | ✔️ | | 1.4.0 |
+| IconName | Enum | | | | 1.4.0 |
+| ImageSrc | string | | | | 1.4.0 |
+| Title | string | | ✔️ | | 1.4.0 |
 
 ## Methods
 
 | Name | Description | Added Version |
 |:--|:--|:--|
-| DecreaseWidth | Decrease the progress bar width. | 1.4.0 |
+| RefreshDataAsync | | 1.4.0 |
+| ToggleSidebar | | 1.4.0 |
 
 ## Examples
 
