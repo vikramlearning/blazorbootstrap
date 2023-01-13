@@ -31,6 +31,21 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 | RefreshDataAsync | Refresh the sidebar data. | 1.4.0 |
 | ToggleSidebar | Toggles sidebar. | 1.4.0 |
 
+## NavItem Parameters
+
+| Name | Type | Default | Required | Descritpion | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| CustomIconName | string | | | Gets or sets the custom icon name. | 1.4.0 |
+| Href | string | | ✔️ | Gets or sets the href. | 1.4.0 |
+| IconColor | `IconColor` | `IconColor.None` | | Gets or sets the icon color. | 1.4.0 |
+| IconName | `IconName` | `IconName.None` | | Gets or sets the icon name. | 1.4.0 |
+| Id | string | | | Gets or sets the Id. | 1.4.0 |
+| Match | `NavLinkMatch` | `NavLinkMatch.Prefix` | | Gets or sets the URL matching behavior. | 1.4.0 |
+| ParentId | string | | | Gets or sets the parent Id. | 1.4.0 |
+| Sequence | int | | | Gets or sets the sequence. | 1.4.0 |
+| Target | `Target` | `Target.None` | | Gets or sets the target. | 1.4.0 |
+| Text | string | | ✔️ | Gets or sets the navigation link text. | 1.4.0 |
+
 ## Examples
 
 ### Basic usage
