@@ -1,6 +1,6 @@
 ﻿<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="/"> <img src="/images/logo/logo-white.svg" width="20" height="20" class="ms-2" alt="Blazor Bootstrap"> Blazor Bootstrap <span class="ms-2 badge bg-success">@version</span></a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+    <button class="navbar-toggler me-2" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
 </div>
@@ -8,7 +8,7 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/getting-started" Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href="/getting-started">
                 <Icon Name="IconName.HouseDoorFill" class="me-2" /> Getting started
             </NavLink>
         </li>
@@ -98,8 +98,13 @@
             </NavLink>
         </li>
         <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/sidebar">
+                <Icon Name="IconName.LayoutSidebarInset" class="me-2" /> Sidebar <span class="ms-2 badge bg-danger">New</span>
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
             <NavLink class="nav-link" href="/form/switch">
-                <Icon Name="IconName.ToggleOn" class="me-2" /> Switch <span class="ms-2 badge bg-danger">New</span>
+                <Icon Name="IconName.ToggleOn" class="me-2" /> Switch
             </NavLink>
         </li>
         <li class="nav-item px-3">

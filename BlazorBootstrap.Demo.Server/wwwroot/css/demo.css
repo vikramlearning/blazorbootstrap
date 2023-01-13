@@ -356,3 +356,11 @@
     color: #0d6efd !important;
     cursor: pointer;
 }
+
+/* HACK: sidebar */
+@media (min-width: 641px) {
+    .bb-example .nav-scrollable {
+        height: auto !important;
+        overflow-y: auto !important;
+    }
+}
