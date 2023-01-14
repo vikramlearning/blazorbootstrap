@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Sidebar Component
 description: Documentation and examples for using the Blazor Bootstrap progress component featuring support for stacked bars, animated backgrounds, and text labels.
-image: https://i.imgur.com/MK142lQ.png
+image: https://i.imgur.com/d91Q9Zt.png
 
 sidebar_label: Sidebar
 sidebar_position: 15
@@ -11,7 +11,7 @@ sidebar_position: 15
 
 Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, responsive and cross-device navigation links, additional information, or other content.
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Sidebar" />
+<img src="https://i.imgur.com/d91Q9Zt.png" alt="Blazor Sidebar" />
 
 ## Parameters
 
@@ -50,7 +50,7 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 
 ### Basic usage
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Sidebar - Basic usage" />
+<img src="https://i.imgur.com/q20RADm.png" alt="Blazor Sidebar - Basic usage" />
 
 ```cshtml {} showLineNumbers
 <Sidebar @ref="sidebar"
@@ -91,7 +91,7 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 
 Use NavItem's `Id` and `ParentId` to set the parent-child relation.
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Sidebar - " />
+<img src="https://i.imgur.com/YKtgDTq.png" alt="Blazor Sidebar - Two level navigation" />
 
 :::note NOTE
 At this moment, two levels of navigation are supported.
@@ -147,7 +147,7 @@ At this moment, two levels of navigation are supported.
 
 Set `IconColor` property to change the color.
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Sidebar - " />
+<img src="https://i.imgur.com/7wHWoqW.png" alt="Blazor Sidebar - Change icons color" />
 
 ```cshtml {} showLineNumbers
 <Sidebar @ref="sidebar"
@@ -199,7 +199,7 @@ Set `IconColor` property to change the color.
 
 Replace your **MainLayout.razor** page code with the below example to have a complete layout with a sidebar.
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Sidebar - " />
+<img src="https://i.imgur.com/rGws0kx.png" alt="Blazor Sidebar - Full layout with sidebar" />
 
 ```cshtml {} showLineNumbers
 <div class="bb-page">
@@ -265,7 +265,7 @@ Replace your **MainLayout.razor** page code with the below example to have a com
 
 Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Sidebar - " />
+<img src="https://i.imgur.com/rEwfrXN.png" alt="Blazor Sidebar - Toggle sidebar to show icons only" />
 
 ```cshtml {} showLineNumbers
 <div class="bb-page">
@@ -334,7 +334,7 @@ Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
 
 A badge is useful when displaying the application version, environment, or other information. Use the `BadgeText` parameter to show the badge.
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Sidebar - " />
+<img src="https://i.imgur.com/Ayaq9Gq.png" alt="Blazor Sidebar - Show badge" />
 
 ```cshtml {} showLineNumbers
 <div class="bb-page">
@@ -404,7 +404,7 @@ A badge is useful when displaying the application version, environment, or other
 
 Use the `CustomIconName` parameter to set the custom logo icon using font awesome or other icons.
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Sidebar - " />
+<img src="https://i.imgur.com/DqVvGKo.png" alt="Blazor Sidebar - Custom brand icon" />
 
 ```cshtml {} showLineNumbers
 <div class="bb-page">
@@ -474,7 +474,7 @@ Use the `CustomIconName` parameter to set the custom logo icon using font awesom
 
 Use the `ImageSrc` parameter to set the brand logo.
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Sidebar - " />
+<img src="https://i.imgur.com/d91Q9Zt.png" alt="Blazor Sidebar - Show image as brand logo" />
 
 ```cshtml {} showLineNumbers
 <div class="bb-page">
@@ -544,7 +544,7 @@ Use the `ImageSrc` parameter to set the brand logo.
 
 Developers can customize the sidebar color by changing the CSS variables, as mentioned in the below example.
 
-<img src="https://i.imgur.com/MK142lQ.png" alt="Blazor Sidebar - " />
+<img src="https://i.imgur.com/dY8NjDW.png" alt="Blazor Sidebar - Customize sidebar" />
 
 ```cshtml {} showLineNumbers
 <div class="bb-page">
