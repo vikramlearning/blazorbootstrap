@@ -31,7 +31,7 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 | RefreshDataAsync | Refresh the sidebar data. | 1.4.0 |
 | ToggleSidebar | Toggles sidebar. | 1.4.0 |
 
-## NavItem Parameters
+## NavItem Properties
 
 | Name | Type | Default | Required | Descritpion | Added Version |
 |:--|:--|:--|:--|:--|:--|
@@ -85,7 +85,7 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#)
+[See demo here.](https://demos.getblazorbootstrap.com/sidebar#basic-usage)
 
 ### Two level navigation
 
@@ -141,7 +141,7 @@ At this moment, two levels of navigation are supported.
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#)
+[See demo here.](https://demos.getblazorbootstrap.com/sidebar#two-level-navigation)
 
 ### Change icons color
 
@@ -193,7 +193,7 @@ Set `IconColor` property to change the color.
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#)
+[See demo here.](https://demos.getblazorbootstrap.com/sidebar#change-icons-color)
 
 ### Full layout with sidebar
 
@@ -259,7 +259,7 @@ Replace your **MainLayout.razor** page code with the below example to have a com
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#)
+[See demo here.](https://demos.getblazorbootstrap.com/sidebar#full-layout-with-sidebar)
 
 ### Toggle sidebar to show icons only
 
@@ -328,7 +328,7 @@ Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#)
+[See demo here.](https://demos.getblazorbootstrap.com/sidebar#toggle-sidebar-to-show-icons-only)
 
 ### Show badge
 
@@ -398,7 +398,7 @@ A badge is useful when displaying the application version, environment, or other
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#)
+[See demo here.](https://demos.getblazorbootstrap.com/sidebar#show-badge)
 
 ### Custom brand icon
 
@@ -468,7 +468,7 @@ Use the `CustomIconName` parameter to set the custom logo icon using font awesom
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#)
+[See demo here.](https://demos.getblazorbootstrap.com/sidebar#custom-brand-icon)
 
 ### Show image as brand logo
 
@@ -538,7 +538,7 @@ Use the `ImageSrc` parameter to set the brand logo.
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#)
+[See demo here.](https://demos.getblazorbootstrap.com/sidebar#show-image-as-brand-logo)
 
 ### Customize sidebar
 
@@ -613,23 +613,22 @@ Developers can customize the sidebar color by changing the CSS variables, as men
 {
     <style>
         :root {
-            --bb-violet: #712cf9;
             --bb-sidebar-width: 270px;
             --bb-sidebar-collapsed-width: 50px;
-            --bb-sidebar-background-color: rgba(255, 255, 255, 1);
-            --bb-sidebar-top-row-background-color: var(--bb-violet);
-            --bb-sidebar-top-row-border-color: var(--bb-violet);
-            --bb-sidebar-title-text-color: rgb(255,255,255);
-            --bb-sidebar-brand-icon-color: rgb(255,255,255);
+            --bb-sidebar-background-color: rgba(234, 234, 234, 1);
+            --bb-sidebar-top-row-background-color: rgba(0,0,0,0.08);
+            --bb-sidebar-top-row-border-color: rgb(194,192,192);
+            --bb-sidebar-title-text-color: rgb(0,0,0);
+            --bb-sidebar-brand-icon-color: #6f42c1;
             --bb-sidebar-brand-image-width: 24px;
             --bb-sidebar-brand-image-height: 24px;
-            --bb-sidebar-title-badge-text-color: var(--bb-violet);
-            --bb-sidebar-title-badge-background-color: rgb(255,255,255);
-            --bb-sidebar-navbar-toggler-icon-color: var(--bb-violet);
-            --bb-sidebar-navbar-toggler-background-color: rgb(255,255,255);
-            --bb-sidebar-content-border-color: rgb(214,213,213);
+            --bb-sidebar-title-badge-text-color: rgb(255,255,255);
+            --bb-sidebar-title-badge-background-color: rgba(25,135,84,var(--bs-bg-opacity,1));
+            --bb-sidebar-navbar-toggler-icon-color: rgb(0,0,0);
+            --bb-sidebar-navbar-toggler-background-color: rgba(0,0,0,0.08);
+            --bb-sidebar-content-border-color: rgb(194,192,192);
             --bb-sidebar-nav-item-text-color: rgba(0,0,0,0.9);
-            --bb-sidebar-nav-item-text-active-color-rgb: 112.520718,44.062154,249.437846;
+            --bb-sidebar-nav-item-text-active-color-rgb: 0,0,0;
             --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
             --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
             --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
@@ -639,4 +638,4 @@ Developers can customize the sidebar color by changing the CSS variables, as men
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#)
+[See demo here.](https://demos.getblazorbootstrap.com/sidebar#customize-sidebar)
