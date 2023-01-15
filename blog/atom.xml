@@ -2,11 +2,31 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2022-12-18T00:00:00.000Z</updated>
+    <updated>2023-01-15T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.4.0]]></title>
+        <id>/2023/01/15/blazorbootstrap-1.4.0</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/01/15/blazorbootstrap-1.4.0"/>
+        <updated>2023-01-15T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.4.0, with new sidebar and more examples!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.4.0, with new sidebar and more examples!!!</p><b>Blazor Sidebar component</b><img loading="lazy" src="https://i.imgur.com/d91Q9Zt.png" alt="Blazor Bootstrap: Blazor Sidebar component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Sidebar</code> component</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="demos-site-updates">Demos site updates<a class="hash-link" href="#demos-site-updates" title="Direct link to heading">​</a></h2><ul><li>New examples for 'Blazor Sidebar Component'</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/sidebar" target="_blank" rel="noopener noreferrer">Blazor Sidebar Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.4.0" term="v1.4.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="sidebar" term="sidebar"/>
+        <category label="blazorsidebar" term="blazorsidebar"/>
+        <category label="leftmenu" term="leftmenu"/>
+        <category label="navigation" term="navigation"/>
+        <category label="layout" term="layout"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.3.1]]></title>
         <id>/2022/12/18/blazorbootstrap-1.3.1</id>

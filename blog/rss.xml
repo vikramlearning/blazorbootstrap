@@ -4,10 +4,26 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Sun, 18 Dec 2022 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 15 Jan 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.4.0]]></title>
+            <link>https://getblazorbootstrap.com/blog/2023/01/15/blazorbootstrap-1.4.0</link>
+            <guid>/2023/01/15/blazorbootstrap-1.4.0</guid>
+            <pubDate>Sun, 15 Jan 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.4.0, with new sidebar and more examples!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.4.0, with new sidebar and more examples!!!</p><b>Blazor Sidebar component</b><img loading="lazy" src="https://i.imgur.com/d91Q9Zt.png" alt="Blazor Bootstrap: Blazor Sidebar component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Sidebar</code> component</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="demos-site-updates">Demos site updates<a class="hash-link" href="#demos-site-updates" title="Direct link to heading">​</a></h2><ul><li>New examples for 'Blazor Sidebar Component'</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/sidebar" target="_blank" rel="noopener noreferrer">Blazor Sidebar Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.4.0</category>
+            <category>blazor</category>
+            <category>blazorbootstrap</category>
+            <category>sidebar</category>
+            <category>blazorsidebar</category>
+            <category>leftmenu</category>
+            <category>navigation</category>
+            <category>layout</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.3.1]]></title>
             <link>https://getblazorbootstrap.com/blog/2022/12/18/blazorbootstrap-1.3.1</link>
