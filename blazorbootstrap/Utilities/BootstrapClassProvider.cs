@@ -113,6 +113,12 @@
 
         #endregion
 
+        #region Icons
+
+        public string IconColor(IconColor iconColor) => $"text-{ToIconColor(iconColor)}";
+
+        #endregion
+
         #region Modal
 
         public string Modal() => "modal";
@@ -301,6 +307,25 @@
                 BlazorBootstrap.ProgressColor.Warning => "warning",
                 BlazorBootstrap.ProgressColor.Info => "info",
                 BlazorBootstrap.ProgressColor.Dark => "dark",
+                _ => null,
+            };
+        }
+
+        public string ToIconColor(IconColor color)
+        {
+            return color switch
+            {
+                BlazorBootstrap.IconColor.Primary => "primary",
+                BlazorBootstrap.IconColor.Secondary => "secondary",
+                BlazorBootstrap.IconColor.Success => "success",
+                BlazorBootstrap.IconColor.Danger => "danger",
+                BlazorBootstrap.IconColor.Warning => "warning",
+                BlazorBootstrap.IconColor.Info => "info",
+                BlazorBootstrap.IconColor.Light => "light",
+                BlazorBootstrap.IconColor.Dark => "dark",
+                BlazorBootstrap.IconColor.Body => "body",
+                BlazorBootstrap.IconColor.Muted => "muted",
+                BlazorBootstrap.IconColor.White => "white",
                 _ => null,
             };
         }

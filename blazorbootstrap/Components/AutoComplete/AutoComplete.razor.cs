@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Web;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class AutoComplete<TItem> : BaseComponent
 {

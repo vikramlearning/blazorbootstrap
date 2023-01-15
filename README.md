@@ -32,7 +32,7 @@
 Several quick start options are available:
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.3.1` 
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.4.0` 
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
@@ -60,6 +60,7 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 - Placeholders
 - Preload
 - Progress
+- Sidebar
 - Switch
 - Tabs
 - Toasts
@@ -117,6 +118,9 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ### Blazor Bootstrap - Progress
 ![Blazor Bootstrap - Progress](https://i.imgur.com/MK142lQ.png "Blazor Bootstrap - Progress")
+
+### Blazor Bootstrap - Sidebar
+![Blazor Bootstrap - Sidebar](https://i.imgur.com/d91Q9Zt.png "Blazor Bootstrap - Sidebar")
 
 ### Blazor Bootstrap - Switch
 ![Blazor Bootstrap - Switch](https://i.imgur.com/ALKzreq.png "Blazor Bootstrap - Switch")
