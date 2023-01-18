@@ -8,12 +8,12 @@
     <BodyTemplate>...</BodyTemplate>
 </Modal>
 
-<Button Color="ButtonColor.Primary" @onclick="() => xlModal?.ShowAsync()">Extra large modal</Button>
-<Button Color="ButtonColor.Primary" @onclick="() => lgModal?.ShowAsync()">Large modal</Button>
-<Button Color="ButtonColor.Primary" @onclick="() => smModal?.ShowAsync()">Small modal</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => xlModal.ShowAsync()">Extra large modal</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => lgModal.ShowAsync()">Large modal</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => smModal.ShowAsync()">Small modal</Button>
 
 @code {
-    private Modal xlModal;
-    private Modal lgModal;
-    private Modal smModal;
+    private Modal xlModal = default!;
+    private Modal lgModal = default!;
+    private Modal smModal = default!;
 }

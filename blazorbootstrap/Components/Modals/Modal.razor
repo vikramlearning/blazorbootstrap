@@ -1,16 +1,17 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<CascadingValue Value="@this" IsFixed="true">
-    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-        <div class="modal-dialog @scrollable @verticallyCentered @modalSize @modalFullscreen @DialogCssClass">
-            <div class="modal-content">
-                @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
+<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    <div class="modal-dialog @scrollable @verticallyCentered @modalSize @modalFullscreen @DialogCssClass">
+        <div class="modal-content">
+            @if (isVisible)
+            {
+                @if (!string.IsNullOrWhiteSpace(title) || HeaderTemplate != null || ShowCloseButton)
                 {
                     <div class="modal-header @HeaderCssClass">
-                        @if (!string.IsNullOrWhiteSpace(Title))
+                        @if (!string.IsNullOrWhiteSpace(title))
                         {
-                            <h5 class="modal-title">@Title</h5>
+                            <h5 class="modal-title">@title</h5>
                         }
                         else if (HeaderTemplate != null)
                         {
@@ -23,7 +24,13 @@
                         }
                     </div>
                 }
-                @if (BodyTemplate != null)
+                @if (childComponent is not null)
+                {
+                    <div class="modal-body @BodyCssClass">
+                        <DynamicComponent Type="@childComponent" Parameters="@parameters" />
+                    </div>
+                }
+                else if (BodyTemplate != null)
                 {
                     <div class="modal-body @BodyCssClass">
                         @BodyTemplate
@@ -35,7 +42,7 @@
                         @FooterTemplate
                     </div>
                 }
-            </div>
+            }
         </div>
     </div>
-</CascadingValue>
+</div>

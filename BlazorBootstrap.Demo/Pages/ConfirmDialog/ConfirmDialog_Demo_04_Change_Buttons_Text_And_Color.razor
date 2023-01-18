@@ -3,7 +3,7 @@
 <Button Color="ButtonColor.Primary" @onclick="ShowSaveConfirmationAsync"> Save Employee </Button>
 
 @code {
-    private ConfirmDialog dialog;
+    private ConfirmDialog dialog = default!;
 
     private async Task ShowSaveConfirmationAsync()
     {
@@ -22,11 +22,11 @@
 
         if (confirmation)
         {
-            // do whatever
+            // do something
         }
         else
         {
-            // do whatever
+            // do something
         }
     }
 }
