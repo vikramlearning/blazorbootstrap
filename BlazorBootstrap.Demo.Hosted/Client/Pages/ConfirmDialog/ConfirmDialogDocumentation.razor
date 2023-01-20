@@ -14,7 +14,15 @@
 <Demo Type="typeof(ConfirmDialog_Demo_01_Examples)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Dynamic component as confirm dialog" PageUrl="@pageUrl" HashTagName="dynamic-component-as-confirm-dialog" />
-<div class="mb-3">In the below example, we used <a href="/toasts#global-toasts-service-for-the-application">Toast Service</a> to show the user confirmation.</div>
+<div class="mb-3">
+    Render different components dynamically within the confirm dialog without iterating through possible types or using conditional logic.
+</div>
+<div class="mb-3">
+    If dynamically-rendered components have component parameters, pass them as an <code>IDictionary</code>. The <code>string</code> is the parameter's name, and the <code>object</code> is the parameter's value.
+</div>
+<div class="mb-3">
+    In the below example, we used <a href="/toasts#global-toasts-service-for-the-application">Toast Service</a> to show the user confirmation.
+</div>
 <Demo Type="typeof(ConfirmDialog_Demo_03_Dynamic_Component_As_Confirm_Dialog)" />
 <b>EmployeeDemoComponent.razor</b>
 <Demo Type="typeof(EmployeeDemoComponent)" ShowCodeOnly="true" />
