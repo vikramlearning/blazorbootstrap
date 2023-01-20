@@ -13,9 +13,24 @@
 <Demo Type="typeof(Modal_Demo_01_Examples)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Dynamic component as modal" PageUrl="@pageUrl" HashTagName="dynamic-component-as-modal" />
+<div class="mb-3">Render different components dynamically within the modal without iterating through possible types or using conditional logic.</div>
 <Demo Type="typeof(Modal_Demo_02_A_Show_Dynamic_Component)" />
-<b>EmployeeDemoComponent.razor</b>
-<Demo Type="typeof(EmployeeDemoComponent)" ShowCodeOnly="true" />
+<b>EmployeeDemoComponent1.razor</b>
+<Demo Type="typeof(EmployeeDemoComponent1)" ShowCodeOnly="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Pass Event callbacks to a Dynamic Component" PageUrl="@pageUrl" HashTagName="pass-event-callbacks-to-a-dynamic-component" />
+<div class="mb-3">Event callbacks <code>(EventCallback)</code> can be passed in its parameter dictionary.</div>
+<div class="mb-3">
+    In the following parent component example, the <code>ShowDTMessage</code> method assigns a string with the current time to <code>message</code>, and the value of <code>message</code> is rendered.
+    The parent component passes the callback method, ShowDTMessage in the parameter dictionary:
+    <ol style="disc">
+        <li>The <code>string</code> key is the callback method's name, <code>OnClickCallback</code>.</li>
+        <li>The <code>object</code> value is created by <code>EventCallbackFactory.Create</code> for the parent callback method, <code>ShowDTMessage</code>.</li>
+    </ol>    
+</div>
+<Demo Type="typeof(Modal_Demo_02_B_Show_Dynamic_Component)" />
+<b>EmployeeDemoComponent2.razor</b>
+<Demo Type="typeof(EmployeeDemoComponent2)" ShowCodeOnly="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Static backdrop" PageUrl="@pageUrl" HashTagName="static-backdrop" />
 <div class="mb-3">When <code>UseStaticBackdrop</code> is set to <code>true</code>, the modal will not close when clicking outside it. Click the button below to try it.</div>
