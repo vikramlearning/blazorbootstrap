@@ -12,15 +12,15 @@
 <Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Launch demo modal</Button>
 
 @code {
-    private Modal modal;
+    private Modal modal = default!;
 
     private async Task OnShowModalClick()
     {
-        await modal?.ShowAsync();
+        await modal.ShowAsync();
     }
 
     private async Task OnHideModalClick()
     {
-        await modal?.HideAsync();
+        await modal.HideAsync();
     }
 }

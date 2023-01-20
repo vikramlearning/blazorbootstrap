@@ -17,18 +17,18 @@
     <BodyTemplate>...</BodyTemplate>
 </Modal>
 
-<Button Color="ButtonColor.Primary" @onclick="() => modal?.ShowAsync()">Full screen</Button>
-<Button Color="ButtonColor.Primary" @onclick="() => smModal?.ShowAsync()">Full screen below sm</Button>
-<Button Color="ButtonColor.Primary" @onclick="() => mdModal?.ShowAsync()">Full screen below md</Button>
-<Button Color="ButtonColor.Primary" @onclick="() => lgModal?.ShowAsync()">Full screen below lg</Button>
-<Button Color="ButtonColor.Primary" @onclick="() => xlModal?.ShowAsync()">Full screen below xl</Button>
-<Button Color="ButtonColor.Primary" @onclick="() => xxlModal?.ShowAsync()">Full screen below xxl</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => modal.ShowAsync()">Full screen</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => smModal.ShowAsync()">Full screen below sm</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => mdModal.ShowAsync()">Full screen below md</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => lgModal.ShowAsync()">Full screen below lg</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => xlModal.ShowAsync()">Full screen below xl</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => xxlModal.ShowAsync()">Full screen below xxl</Button>
 
 @code {
-    private Modal modal;
-    private Modal smModal;
-    private Modal mdModal;
-    private Modal lgModal;
-    private Modal xlModal;
-    private Modal xxlModal;
+    private Modal modal = default!;
+    private Modal smModal = default!;
+    private Modal mdModal = default!;
+    private Modal lgModal = default!;
+    private Modal xlModal = default!;
+    private Modal xxlModal = default!;
 }
