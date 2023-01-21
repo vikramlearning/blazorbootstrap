@@ -13,31 +13,32 @@ Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes,
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default |
-|--|--|--|--|--|
-| BodyCssClass | string | Additional body CSS class. | | |
-| BodyTemplate | RenderFragment | Body template. | ✔️ | |
-| ChildContent | RenderFragment | Specifies the content to be rendered inside the alert. | | |
-| CloseOnEscape | bool | Indicates whether the modal closes when escape key is pressed. | | true |
-| DialogCssClass | string | Additional CSS class for the dialog (div.modal-dialog element). | | |
-| FooterCssClass | string | Footer css class. | | |
-| FooterTemplate | RenderFragment | Footer template. | ✔️ | |
-| Fullscreen | `ModalFullscreen` | Fullscreen behavior of the modal. | ✔️ | `ModalFullscreen.Disabled` |
-| HeaderTemplate | RenderFragment | Header template. | ✔️ | |
-| HeaderCssClass | string | Additional header CSS class. | | |
-| IsScrollable | bool | Allows modal body scroll. | | false |
-| IsVerticallyCentered | bool | Shows the modal vertically in the center. | | false |
-| Size | `ModalSize` | Size of the modal. | ✔️ | `ModalSize.Regular` |
-| ShowCloseButton | bool | Indicates whether the modal shows close button in header. | ✔️ | true |
-| Title | string | | ✔️ | |
-| UseStaticBackdrop | bool | Indicates whether the modal uses a static backdrop. | | false |
+| Name | Type | Descritpion | Required | Default | Added Version |
+|--|--|--|--|--|--|
+| BodyCssClass | string | Additional body CSS class. | | | 1.0.0 |
+| BodyTemplate | RenderFragment | Body template. | ✔️ | | 1.0.0 |
+| ChildContent | RenderFragment | Specifies the content to be rendered inside the alert. | | | 1.0.0 |
+| CloseOnEscape | bool | Indicates whether the modal closes when escape key is pressed. | | true | 1.0.0 |
+| DialogCssClass | string | Additional CSS class for the dialog (div.modal-dialog element). | | | 1.0.0 |
+| FooterCssClass | string | Footer css class. | | | 1.0.0 |
+| FooterTemplate | RenderFragment | Footer template. | ✔️ | | 1.0.0 |
+| Fullscreen | `ModalFullscreen` | Fullscreen behavior of the modal. | ✔️ | `ModalFullscreen.Disabled` | 1.0.0 |
+| HeaderTemplate | RenderFragment | Header template. | ✔️ | | 1.0.0 |
+| HeaderCssClass | string | Additional header CSS class. | | | 1.0.0 |
+| IsScrollable | bool | Allows modal body scroll. | | false | 1.0.0 |
+| IsVerticallyCentered | bool | Shows the modal vertically in the center. | | false | 1.0.0 |
+| Size | `ModalSize` | Size of the modal. | ✔️ | `ModalSize.Regular` | 1.0.0 |
+| ShowCloseButton | bool | Indicates whether the modal shows close button in header. | ✔️ | true | 1.0.0 |
+| Title | string | | ✔️ | | 1.0.0 |
+| UseStaticBackdrop | bool | Indicates whether the modal uses a static backdrop. | | false | 1.0.0 |
 
 ## Methods
 
-| Name | Description |
-|--|--|
-| ShowAsync | Opens a modal. |
-| HideAsync | Hides a modal. |
+| Name | Description | Added Version |
+|--|--|--|
+| ShowAsync | Opens a modal. | 1.0.0 |
+| ShowAsync<T\>(string title, Dictionary<string, object\> parameters = null) | Opens a modal. T is component. | 1.4.1 |
+| HideAsync | Hides a modal. | 1.0.0 |
 
 :::danger Asynchronous methods and transitions
 
@@ -102,6 +103,18 @@ Clicking the **Show Modal** button below, the modal will slide down and fade in 
 ```
 
 [See demo here.](https://demos.getblazorbootstrap.com/modals#examples)
+
+### Dynamic component as modal
+
+Render different components dynamically within the modal without iterating through possible types or using conditional logic.
+If dynamically-rendered components have component parameters, pass them as an `IDictionary`. The `string` is the parameter's name, and the `object` is the parameter's value.
+
+### Pass Event callbacks to a Dynamic Component
+
+Event callbacks `(EventCallback)` can be passed in its parameter dictionary.
+In the following parent component example, the `ShowDTMessage` method assigns a string with the current time to `message`, and the value of `message` is rendered. The parent component passes the callback method, `ShowDTMessage` in the parameter dictionary:
+- The `string` key is the callback method's name, `OnClickCallback`.
+- The `object` value is created by `EventCallbackFactory.Create` for the parent callback method, `ShowDTMessage`.
 
 ### Static backdrop
 

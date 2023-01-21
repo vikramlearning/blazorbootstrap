@@ -19,7 +19,7 @@ Use Blazor Bootstrap confirm dialog component if you want the user to verify or 
 |:--|:--|:--|:--|
 | ShowAsync(string title, string message1, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. | 1.1.0 |
 | ShowAsync(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. | 1.1.0 |
-| ShowAsync<T\>(string title, Dictionary<string, object> parametres = null, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. | 1.1.0 |
+| ShowAsync<T\>(string title, Dictionary<string, object> parametres = null, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. T is component. | 1.1.0 |
 
 ## ConfirmDialogOptions Properties
 
@@ -74,6 +74,10 @@ Use Blazor Bootstrap confirm dialog component if you want the user to verify or 
 [See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#examples)
 
 ### Dynamic component as confirm dialog
+
+Render different components dynamically within the confirm dialog without iterating through possible types or using conditional logic.
+
+If dynamically-rendered components have component parameters, pass them as an `IDictionary`. The `string` is the parameter's name, and the `object` is the parameter's value.
 
 In the below example, we used `Toast Service` to show the user confirmation.
 
