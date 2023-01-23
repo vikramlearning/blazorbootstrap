@@ -2,11 +2,34 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-01-15T00:00:00.000Z</updated>
+    <updated>2023-01-23T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.4.1]]></title>
+        <id>/2023/01/23/blazorbootstrap-1.4.1</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/01/23/blazorbootstrap-1.4.1"/>
+        <updated>2023-01-23T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.4.1, with modal updates and more examples!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.4.1, with modal updates and more examples!!!</p><b>Blazor modal component</b><img loading="lazy" src="https://i.imgur.com/dQMxYxw.png" alt="Blazor Bootstrap: Blazor modal component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Modal</code> component<ul><li>Render different components dynamically within the modal without iterating through possible types or using conditional logic.</li><li>If dynamically-rendered components have component parameters, pass them as an <code>IDictionary&lt;string, object&gt;</code>.</li><li>Pass event callbacks to a dynamic component.</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="demos-site-updates">Demos site updates<a class="hash-link" href="#demos-site-updates" title="Direct link to heading">​</a></h2><ul><li>New examples for <code>Blazor Modal Component</code></li><li>New examples for <code>Blazor Confirm Dialog Component</code></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/modal" target="_blank" rel="noopener noreferrer">Blazor Modal Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/confirm-dialog" target="_blank" rel="noopener noreferrer">Blazor Confirm Dialog Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.4.1" term="v1.4.1"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="modal" term="modal"/>
+        <category label="blazormodal" term="blazormodal"/>
+        <category label="confirmmodal" term="confirmmodal"/>
+        <category label="blazorconfirmmodal" term="blazorconfirmmodal"/>
+        <category label="dialog" term="dialog"/>
+        <category label="blazordialog" term="blazordialog"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.4.0]]></title>
         <id>/2023/01/15/blazorbootstrap-1.4.0</id>

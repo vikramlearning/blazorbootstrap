@@ -4,10 +4,29 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Sun, 15 Jan 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 23 Jan 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.4.1]]></title>
+            <link>https://getblazorbootstrap.com/blog/2023/01/23/blazorbootstrap-1.4.1</link>
+            <guid>/2023/01/23/blazorbootstrap-1.4.1</guid>
+            <pubDate>Mon, 23 Jan 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.4.1, with modal updates and more examples!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.4.1, with modal updates and more examples!!!</p><b>Blazor modal component</b><img loading="lazy" src="https://i.imgur.com/dQMxYxw.png" alt="Blazor Bootstrap: Blazor modal component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Modal</code> component<ul><li>Render different components dynamically within the modal without iterating through possible types or using conditional logic.</li><li>If dynamically-rendered components have component parameters, pass them as an <code>IDictionary&lt;string, object&gt;</code>.</li><li>Pass event callbacks to a dynamic component.</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="demos-site-updates">Demos site updates<a class="hash-link" href="#demos-site-updates" title="Direct link to heading">​</a></h2><ul><li>New examples for <code>Blazor Modal Component</code></li><li>New examples for <code>Blazor Confirm Dialog Component</code></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/modal" target="_blank" rel="noopener noreferrer">Blazor Modal Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/confirm-dialog" target="_blank" rel="noopener noreferrer">Blazor Confirm Dialog Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.4.1</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>modal</category>
+            <category>blazormodal</category>
+            <category>confirmmodal</category>
+            <category>blazorconfirmmodal</category>
+            <category>dialog</category>
+            <category>blazordialog</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.4.0]]></title>
             <link>https://getblazorbootstrap.com/blog/2023/01/15/blazorbootstrap-1.4.0</link>
