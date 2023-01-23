@@ -15,7 +15,7 @@ Blazor Bootstrap charts are well-designed chart components on top of Chart.js to
 
 <img src="https://i.imgur.com/n5TiPtH.png" alt="Blazor Chart Component - Blazor Pie Chart" />
 <br />
-<a href="https://demos.getblazorbootstrap.com/charts#pie-chart">See blazor pie chart demo here.</a>
+<a href="https://demos.blazorbootstrap.com/charts#pie-chart">See blazor pie chart demo here.</a>
 
 ## Parameters
 

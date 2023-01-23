@@ -52,7 +52,7 @@ We use a large block of connected links for our pagination, making links hard to
 <Pagination TotalPages="100" />
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/pagination#examples)
+[See demo here.](https://demos.blazorbootstrap.com/pagination#examples)
 
 ### Working with icons
 
@@ -68,7 +68,7 @@ We use a large block of connected links for our pagination, making links hard to
             LastLinkIcon="IconName.ChevronDoubleRight" />
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/pagination#working-with-icons)
+[See demo here.](https://demos.blazorbootstrap.com/pagination#working-with-icons)
 
 ### Disabled and active states
 
@@ -80,7 +80,7 @@ We use a large block of connected links for our pagination, making links hard to
 <Pagination ActivePageNumber="5" TotalPages="10" />
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/pagination#disabled-and-active-states)
+[See demo here.](https://demos.blazorbootstrap.com/pagination#disabled-and-active-states)
 
 ### Sizing
 
@@ -94,7 +94,7 @@ Fancy larger or smaller pagination? Add `Size="PaginationSize.Small"` or `Size="
 <Pagination ActivePageNumber="5" TotalPages="5" Size="PaginationSize.Large" />
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/pagination#sizing)
+[See demo here.](https://demos.blazorbootstrap.com/pagination#sizing)
 
 ### Alignment
 
@@ -106,7 +106,7 @@ Fancy larger or smaller pagination? Add `Size="PaginationSize.Small"` or `Size="
 <Pagination ActivePageNumber="2" TotalPages="5" Alignment="Alignment.End" />
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/pagination#alignment)
+[See demo here.](https://demos.blazorbootstrap.com/pagination#alignment)
 
 ### Callback Events
 
@@ -131,4 +131,4 @@ Fancy larger or smaller pagination? Add `Size="PaginationSize.Small"` or `Size="
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/pagination#events)
+[See demo here.](https://demos.blazorbootstrap.com/pagination#events)

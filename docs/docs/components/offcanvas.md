@@ -92,7 +92,7 @@ Below is an offcanvas example that is shown by default.
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/offcanvas#examples)
+[See demo here.](https://demos.blazorbootstrap.com/offcanvas#examples)
 
 :::info 
 
@@ -125,7 +125,7 @@ Try the top, bottom, and left examples out below.
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/offcanvas#placement)
+[See demo here.](https://demos.blazorbootstrap.com/offcanvas#placement)
 
 ### Backdrop
 
@@ -161,7 +161,7 @@ By default backdrop is enabled, you can disable it using the `UseBackground="fal
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/offcanvas#backdrop)
+[See demo here.](https://demos.blazorbootstrap.com/offcanvas#backdrop)
 
 ### Sizes
 
@@ -199,7 +199,7 @@ Set the size of the `Offcanvas` with the Size parameter. The default value is `O
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/offcanvas#sizes)
+[See demo here.](https://demos.blazorbootstrap.com/offcanvas#sizes)
 
 #### Large Offcanvas
 
@@ -294,4 +294,4 @@ BlazorBootstrap's offcanvas component exposes a few events for hooking into offc
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/offcanvas#events)
+[See demo here.](https://demos.blazorbootstrap.com/offcanvas#events)

@@ -60,7 +60,7 @@ Blazor Bootstrap includes several predefined button styles, each serving its own
     <Button Color="ButtonColor.Link"> Link </Button>
 </p>
 ```
-[See buttons demo here.](https://demos.getblazorbootstrap.com/buttons#examples)
+[See buttons demo here.](https://demos.blazorbootstrap.com/buttons#examples)
 
 ### Button tags
 
@@ -72,7 +72,7 @@ Blazor Bootstrap includes several predefined button styles, each serving its own
     <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" To="#"> Button </Button>
 </p>
 ```
-[See button tags demo here.](https://demos.getblazorbootstrap.com/buttons#button-tags)
+[See button tags demo here.](https://demos.blazorbootstrap.com/buttons#button-tags)
 
 ### Outline Buttons
 
@@ -89,7 +89,7 @@ Blazor Bootstrap includes several predefined button styles, each serving its own
     <Button Color="ButtonColor.Dark" Outline="true"> Dark </Button>
 </p>
 ```
-[See outline button demo here.](https://demos.getblazorbootstrap.com/buttons#outline-buttons)
+[See outline button demo here.](https://demos.blazorbootstrap.com/buttons#outline-buttons)
 
 :::info
 Some of the button styles use a relatively light foreground color, and should only be used on a dark background in order to have sufficient contrast.
@@ -111,7 +111,7 @@ Fancy larger or smaller buttons? Add `Size="Size.Large"` or `Size="Size.Small"` 
     <Button Color="ButtonColor.Secondary" Size="Size.Small"> Small button </Button>
 </p>
 ```
-[See buttons with different size demo here.](https://demos.getblazorbootstrap.com/buttons#sizes)
+[See buttons with different size demo here.](https://demos.blazorbootstrap.com/buttons#sizes)
 
 ### Disabled State
 
@@ -129,7 +129,7 @@ Make buttons look inactive by adding the `Disabled="true"` boolean parameter to 
     <Button Type="ButtonType.Link" Color="ButtonColor.Secondary" Size="Size.Large" Disabled="true"> Link </Button>
 </p>
 ```
-[See button disabled state demo here.](https://demos.getblazorbootstrap.com/buttons#disabled-state)
+[See button disabled state demo here.](https://demos.blazorbootstrap.com/buttons#disabled-state)
 
 :::info
 Disabled buttons using the `Type="ButtonType.Link"` parameter behave a bit different.
@@ -174,7 +174,7 @@ Create responsive stacks of full-width, "block buttons" like those in Bootstrap 
     <Button Color="ButtonColor.Primary"> Button </Button>
 </div>
 ```
-[See block buttons demo here.](https://demos.getblazorbootstrap.com/buttons#block-buttons)
+[See block buttons demo here.](https://demos.blazorbootstrap.com/buttons#block-buttons)
 
 ### Toogle States
 
@@ -189,7 +189,7 @@ If you''re pre-toggling a button, you must manually add the `Active="true"` para
     <Button Color="ButtonColor.Primary" Disabled="true"> Disabled toggle button </Button>
 </p>
 ```
-[See button toogle states demo here.](https://demos.getblazorbootstrap.com/buttons#toggle-states)
+[See button toogle states demo here.](https://demos.blazorbootstrap.com/buttons#toggle-states)
 
 ### Loading spinner
 
@@ -209,7 +209,7 @@ Use spinners within buttons to indicate an action is currently processing or tak
     </Button>
 </p>
 ```
-[See button with loading spinner demo here.](https://demos.getblazorbootstrap.com/buttons#loading-spinner)
+[See button with loading spinner demo here.](https://demos.blazorbootstrap.com/buttons#loading-spinner)
 
 ### Show/Hide loading spinner
 
@@ -235,7 +235,7 @@ Use `ShowLoading()` and `HideLoading()` methods to toggle the button state.
     }
 }
 ```
-[See button with loading spinner demo here.](https://demos.getblazorbootstrap.com/buttons#show-hide-loading-spinner)
+[See button with loading spinner demo here.](https://demos.blazorbootstrap.com/buttons#show-hide-loading-spinner)
 
 ### Tooltip
 
@@ -254,7 +254,7 @@ Hover over the buttons below to see the four tooltips directions: top, right, bo
     <Button Color="ButtonColor.Primary" TooltipTitle="Tooltip text" TooltipPlacement="TooltipPlacement.Left"> Tooltip Left </Button>
 </p>
 ```
-[See button with tooltip demo here.](https://demos.getblazorbootstrap.com/buttons#tooltip)
+[See button with tooltip demo here.](https://demos.blazorbootstrap.com/buttons#tooltip)
 
 :::caution NOTE
 
@@ -322,4 +322,4 @@ HTML tooltips not supported at this moment.
 
 }
 ```
-[See button click events demo here.](https://demos.getblazorbootstrap.com/buttons#click-events)
+[See button click events demo here.](https://demos.blazorbootstrap.com/buttons#click-events)

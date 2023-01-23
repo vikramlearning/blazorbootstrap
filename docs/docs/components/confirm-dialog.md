@@ -71,7 +71,7 @@ Use Blazor Bootstrap confirm dialog component if you want the user to verify or 
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#examples)
+[See Confirm Dialog demo here.](https://demos.blazorbootstrap.com/confirm-dialog#examples)
 
 ### Dynamic component as confirm dialog
 
@@ -146,7 +146,7 @@ In the below example, we used `Toast Service` to show the user confirmation.
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#dynamic-component-as-confirm-dialog)
+[See Confirm Dialog demo here.](https://demos.blazorbootstrap.com/confirm-dialog#dynamic-component-as-confirm-dialog)
 
 ### Change buttons text and color
 
@@ -191,7 +191,7 @@ Use `ConfirmDialogOptions` to change the text and color of the button.
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#change-buttons-text-and-color)
+[See Confirm Dialog demo here.](https://demos.blazorbootstrap.com/confirm-dialog#change-buttons-text-and-color)
 
 ### Optional sizes
 
@@ -239,7 +239,7 @@ Confirm dialog have three optional sizes. These sizes kick in at certain breakpo
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#optional-sizes)
+[See Confirm Dialog demo here.](https://demos.blazorbootstrap.com/confirm-dialog#optional-sizes)
 
 ### Scrolling long content
 
@@ -306,7 +306,7 @@ You can also create a scrollable dialog that allows scroll the dialog body by up
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#scrolling-long-content)
+[See Confirm Dialog demo here.](https://demos.blazorbootstrap.com/confirm-dialog#scrolling-long-content)
 
 ### Vertically centered
 
@@ -375,4 +375,4 @@ You can also create a scrollable dialog that allows scroll the dialog body by up
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.getblazorbootstrap.com/confirm-dialog#vertically-centered)
+[See Confirm Dialog demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)

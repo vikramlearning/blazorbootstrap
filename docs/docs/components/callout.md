@@ -46,7 +46,7 @@ Blazor Bootstrap callout component provides content presentation in a visually d
     <strong>This is an tip callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
 </Callout>
 ```
-[See callout default demo here.](https://demos.getblazorbootstrap.com/callout#examples)
+[See callout default demo here.](https://demos.blazorbootstrap.com/callout#examples)
 
 ### Custom callout heading
 
@@ -73,7 +73,7 @@ Blazor Bootstrap callout component provides content presentation in a visually d
     <strong>This is an tip callout</strong>. Example text to show it in action. See <a href="https://getblazorbootstrap.com/docs/components/callout">callout documentation</a>.
 </Callout>
 ```
-[See callout danger demo here.](https://demos.getblazorbootstrap.com/callout#custom-callout-heading)
+[See callout danger demo here.](https://demos.blazorbootstrap.com/callout#custom-callout-heading)
 
 ### Large text
 
@@ -105,4 +105,4 @@ Blazor Bootstrap callout component provides content presentation in a visually d
     <p>Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g. the visible text), or is included through alternative means, such as additional text hidden with the <code>.visually-hidden</code> class.</p>
 </Callout>
 ```
-[See callout warning demo here.](https://demos.getblazorbootstrap.com/callout#large-text)
+[See callout warning demo here.](https://demos.blazorbootstrap.com/callout#large-text)

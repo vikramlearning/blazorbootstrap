@@ -52,7 +52,7 @@ Blazor Bootstrap breadcrumb component indicates the current page's location with
     }
 }
 ```
-[See breadcrumb demo here.](https://demos.getblazorbootstrap.com/breadcrumb#examples)
+[See breadcrumb demo here.](https://demos.blazorbootstrap.com/breadcrumb#examples)
 
 ### Dividers
 
@@ -81,7 +81,7 @@ Dividers are automatically added in CSS through `::before` and `content`. They c
     }
 }
 ```
-[See breadcrumb with dividers demo here.](https://demos.getblazorbootstrap.com/breadcrumb#dividers)
+[See breadcrumb with dividers demo here.](https://demos.blazorbootstrap.com/breadcrumb#dividers)
 
 ### Embedded SVG icon
 
@@ -110,4 +110,4 @@ It's also possible to use an embedded SVG icon. Apply it via our CSS custom prop
     }
 }
 ```
-[See breadcrumb with embedded svg icon demo here.](https://demos.getblazorbootstrap.com/breadcrumb#embedded-svg-icon)
+[See breadcrumb with embedded svg icon demo here.](https://demos.blazorbootstrap.com/breadcrumb#embedded-svg-icon)

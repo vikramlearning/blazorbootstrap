@@ -127,7 +127,7 @@ Blazor Bootstrap autocomplete component supports the following keyboard shortcut
 public record Customer(int CustomerId, string CustomerName);
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/autocomplete#client-side-data)
+[See demo here](https://demos.blazorbootstrap.com/autocomplete#client-side-data)
 
 ### Client side data with StringComparision
 
@@ -208,7 +208,7 @@ By default, `StringComparison.OrdinalIgnoreCase` is used to compare culture-agno
 public record Customer(int CustomerId, string CustomerName);
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/autocomplete#client-side-data-with-string-comparision)
+[See demo here](https://demos.blazorbootstrap.com/autocomplete#client-side-data-with-string-comparision)
 
 ### Server side data
 
@@ -248,7 +248,7 @@ public record Customer(int CustomerId, string CustomerName);
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/autocomplete#server-side-data)
+[See demo here](https://demos.blazorbootstrap.com/autocomplete#server-side-data)
 
 ### Validations
 
@@ -353,4 +353,4 @@ public record Customer(int CustomerId, string CustomerName);
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/autocomplete#validations)
+[See demo here](https://demos.blazorbootstrap.com/autocomplete#validations)
