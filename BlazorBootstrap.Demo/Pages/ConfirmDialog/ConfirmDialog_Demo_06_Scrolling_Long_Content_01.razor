@@ -3,7 +3,7 @@
 <Button Color="ButtonColor.Primary" @onclick="ShowDialogAsync"> Launch Confirm Dialog </Button>
 
 @code {
-    private ConfirmDialog dialog;
+    private ConfirmDialog dialog = default!;
 
     private async Task ShowDialogAsync()
     {
@@ -11,11 +11,11 @@
 
         if (confirmation)
         {
-            // do whatever
+            // do something
         }
         else
         {
-            // do whatever
+            // do something
         }
     }
 }

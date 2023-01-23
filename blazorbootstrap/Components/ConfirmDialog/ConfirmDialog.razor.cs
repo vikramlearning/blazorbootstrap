@@ -13,7 +13,7 @@ public partial class ConfirmDialog : BaseComponent
     private string message2;
 
     private Type? childComponent;
-    private Dictionary<string, object> parametres;
+    private Dictionary<string, object> parameters;
 
     private string dialogCssClass;
     private bool dismissable;
@@ -52,7 +52,7 @@ public partial class ConfirmDialog : BaseComponent
         base.BuildStyles(builder);
     }
 
-    private Task<bool> Show(string title, string message1, string message2, Type? type, Dictionary<string, object> parametres, ConfirmDialogOptions confirmDialogOptions)
+    private Task<bool> Show(string title, string message1, string message2, Type? type, Dictionary<string, object> parameters, ConfirmDialogOptions confirmDialogOptions)
     {
         taskCompletionSource = new TaskCompletionSource<bool>();
         Task<bool> task = taskCompletionSource.Task;
@@ -62,7 +62,7 @@ public partial class ConfirmDialog : BaseComponent
         this.message2 = message2;
 
         this.childComponent = type;
-        this.parametres = parametres;
+        this.parameters = parameters;
 
         if (confirmDialogOptions is null)
             confirmDialogOptions = new ConfirmDialogOptions();
@@ -100,7 +100,7 @@ public partial class ConfirmDialog : BaseComponent
     /// <returns>bool</returns>
     public Task<bool> ShowAsync(string title, string message1, ConfirmDialogOptions confirmDialogOptions = null)
     {
-        return Show(title: title, message1: message1, message2: null, type: null, parametres: null, confirmDialogOptions: confirmDialogOptions);
+        return Show(title: title, message1: message1, message2: null, type: null, parameters: null, confirmDialogOptions: confirmDialogOptions);
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public partial class ConfirmDialog : BaseComponent
     /// <returns>bool</returns>
     public Task<bool> ShowAsync(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null)
     {
-        return Show(title: title, message1: message1, message2: message2, type: null, parametres: null, confirmDialogOptions: confirmDialogOptions);
+        return Show(title: title, message1: message1, message2: message2, type: null, parameters: null, confirmDialogOptions: confirmDialogOptions);
     }
 
     /// <summary>
@@ -121,12 +121,12 @@ public partial class ConfirmDialog : BaseComponent
     /// </summary>
     /// <typeparam name="T">Component</typeparam>
     /// <param name="title"></param>
-    /// <param name="parametres"></param>
+    /// <param name="parameters"></param>
     /// <param name="confirmDialogOptions"></param>
     /// <returns>bool</returns>
-    public Task<bool> ShowAsync<T>(string title, Dictionary<string, object> parametres = null, ConfirmDialogOptions confirmDialogOptions = null) where T : ComponentBase
+    public Task<bool> ShowAsync<T>(string title, Dictionary<string, object> parameters = null, ConfirmDialogOptions confirmDialogOptions = null) where T : ComponentBase
     {
-        return Show(title: title, message1: null, message2: null, type: typeof(T), parametres: parametres, confirmDialogOptions: confirmDialogOptions);
+        return Show(title: title, message1: null, message2: null, type: typeof(T), parameters: parameters, confirmDialogOptions: confirmDialogOptions);
     }
 
     /// <summary>

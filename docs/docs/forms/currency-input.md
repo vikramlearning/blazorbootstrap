@@ -67,7 +67,7 @@ By default, `e + -` are blocked. For all integral numeric types, dot `.` is bloc
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#basic-usage)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#basic-usage)
 
 ### Show currency symbols for the different locales
 
@@ -143,7 +143,7 @@ By default, `e + -` are blocked. For all integral numeric types, dot `.` is bloc
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#show-currency-symbols-for-the-different-locales)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#show-currency-symbols-for-the-different-locales)
 
 ### Hide currency symbol
 
@@ -168,7 +168,7 @@ Set `HideCurrencySymbol` parameter value to `true` to hide the currency symbol.
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#hide-currency-symbol)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#hide-currency-symbol)
 
 ### Using fraction digits and integer digits
 
@@ -198,7 +198,7 @@ In the below example, formatting adds zeros to display minimum integers and frac
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#using-fraction-digits-and-integer-digits)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#using-fraction-digits-and-integer-digits)
 
 ### Wrap the number with parentheses instead of appending a minus sign
 
@@ -223,7 +223,7 @@ In many locales, accounting format means to wrap the number with parentheses ins
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#wrap-the-number-with-parentheses-instead-of-appending-a-minus-sign)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#wrap-the-number-with-parentheses-instead-of-appending-a-minus-sign)
 
 ### Generic type
 
@@ -286,7 +286,7 @@ In many locales, accounting format means to wrap the number with parentheses ins
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#generic-type)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#generic-type)
 
 ### Enable min and max
 
@@ -315,7 +315,7 @@ If the user input exceeds the Max value, it will override with the Max value.
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#enable-min-and-max)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#enable-min-and-max)
 
 ### Text alignment
 
@@ -344,7 +344,7 @@ You can change the text alignment according to your need. Use the `TextAlignment
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#text-alignment)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#text-alignment)
 
 ### Allow negative numbers
 
@@ -367,7 +367,7 @@ By default, negative numbers are not allowed. Set the `AllowNegativeNumbers` par
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#allow-negative-numbers)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#allow-negative-numbers)
 
 ### Disable
 
@@ -396,7 +396,7 @@ Use the `Disabled` parameter to disable the `CurrencyInput`. Also, use <b>Enable
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#disable)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#disable)
 
 ### Validations
 
@@ -522,7 +522,7 @@ Like any other blazor input components, `CurrencyInput` supports validations. Ad
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#validations)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#validations)
 
 ### Events: ValueChanged
 
@@ -555,4 +555,4 @@ This event fires on every user keystroke that changes the `CurrencyInput` value.
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/currency-input#event-value-changed)
+[See demo here](https://demos.blazorbootstrap.com/form/currency-input#event-value-changed)

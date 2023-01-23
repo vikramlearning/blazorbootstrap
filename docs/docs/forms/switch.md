@@ -56,7 +56,7 @@ Use the Blazor Bootstrap `Switch` component to show the consistent cross-browser
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/switch#basic-usage)
+[See demo here](https://demos.blazorbootstrap.com/form/switch#basic-usage)
 
 ### Disable
 
@@ -84,7 +84,7 @@ Use the `Disabled` parameter to disable the `Switch`. Also, use <b>Enable()</b> 
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/switch#disable)
+[See demo here](https://demos.blazorbootstrap.com/form/switch#disable)
 
 ### Reverse
 
@@ -102,7 +102,7 @@ Put your switches on the opposite side by using the `Reverse` parameter.
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/switch#reverse)
+[See demo here](https://demos.blazorbootstrap.com/form/switch#reverse)
 
 ### Events: ValueChanged
 
@@ -128,4 +128,4 @@ This event fired when the `Switch` selection changed.
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/switch#events-value-changed)
+[See demo here](https://demos.blazorbootstrap.com/form/switch#events-value-changed)

@@ -3,9 +3,9 @@
 <Button Color="ButtonColor.Danger" @onclick="DeleteEmployeeAsync"> Delete Employee </Button>
 
 @code {
-    private ConfirmDialog dialog;
+    private ConfirmDialog dialog = default!;
 
-    [Inject] ToastService ToastService { get; set; }
+    [Inject] ToastService ToastService { get; set; } = default!;
 
     private async Task DeleteEmployeeAsync()
     {

@@ -15,7 +15,7 @@ Blazor Bootstrap charts are well-designed chart components on top of Chart.js to
 
 <img src="https://i.imgur.com/HV3pxA3.png" alt="Blazor Chart Component - Blazor Doughnut Chart" />
 <br />
-<a href="https://demos.getblazorbootstrap.com/charts#doughnut-chart">See blazor doughnut chart demo here.</a>
+<a href="https://demos.blazorbootstrap.com/charts#doughnut-chart">See blazor doughnut chart demo here.</a>
 
 ## Parameters
 

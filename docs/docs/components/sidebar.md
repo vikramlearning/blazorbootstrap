@@ -85,7 +85,7 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#basic-usage)
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#basic-usage)
 
 ### Two level navigation
 
@@ -141,7 +141,7 @@ At this moment, two levels of navigation are supported.
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#two-level-navigation)
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#two-level-navigation)
 
 ### Change icons color
 
@@ -193,7 +193,7 @@ Set `IconColor` property to change the color.
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#change-icons-color)
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#change-icons-color)
 
 ### Full layout with sidebar
 
@@ -259,7 +259,7 @@ Replace your **MainLayout.razor** page code with the below example to have a com
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#full-layout-with-sidebar)
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#full-layout-with-sidebar)
 
 ### Toggle sidebar to show icons only
 
@@ -328,7 +328,7 @@ Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#toggle-sidebar-to-show-icons-only)
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#toggle-sidebar-to-show-icons-only)
 
 ### Show badge
 
@@ -398,7 +398,7 @@ A badge is useful when displaying the application version, environment, or other
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#show-badge)
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#show-badge)
 
 ### Custom brand icon
 
@@ -468,7 +468,7 @@ Use the `CustomIconName` parameter to set the custom logo icon using font awesom
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#custom-brand-icon)
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#custom-brand-icon)
 
 ### Show image as brand logo
 
@@ -538,7 +538,7 @@ Use the `ImageSrc` parameter to set the brand logo.
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#show-image-as-brand-logo)
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#show-image-as-brand-logo)
 
 ### Customize sidebar
 
@@ -638,4 +638,4 @@ Developers can customize the sidebar color by changing the CSS variables, as men
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/sidebar#customize-sidebar)
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#customize-sidebar)

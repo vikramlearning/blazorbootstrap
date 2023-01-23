@@ -74,7 +74,7 @@ Either **Title** or **TitleTemplate** is required.
 </Tabs>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/tabs#examples)
+[See demo here.](https://demos.blazorbootstrap.com/tabs#examples)
 
 ### Fade effect
 
@@ -108,7 +108,7 @@ To make tabs fade in, add `EnableFadeEffect="true"`. The first tab pane must als
 </Tabs>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/tabs#fade-effect)
+[See demo here.](https://demos.blazorbootstrap.com/tabs#fade-effect)
 
 ### Title with icon
 
@@ -151,7 +151,7 @@ To customize the tab title, use `TitleTemplate`, as shown in the below example.
 </Tabs>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/tabs#title-with-icon)
+[See demo here.](https://demos.blazorbootstrap.com/tabs#title-with-icon)
 
 ### Disable Tab
 
@@ -192,7 +192,7 @@ Disable specific tabs by adding `Disabled="true"` parameter.
 </Tabs>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/tabs#disable-tab)
+[See demo here.](https://demos.blazorbootstrap.com/tabs#disable-tab)
 
 ### Pills
 
@@ -226,7 +226,7 @@ Use `NavStyle="NavStyle.Pills"` parameter to change the tabs to pills.
 </Tabs>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/tabs#pills)
+[See demo here.](https://demos.blazorbootstrap.com/tabs#pills)
 
 ### Activate individual tabs
 
@@ -302,4 +302,4 @@ When showing a new tab, the events fire in the following order:
 If no tab was already active, then the `OnHiding` and `OnHidden` events will not be fired.
 :::
 
-[See demo here.](https://demos.getblazorbootstrap.com/tabs#events)
+[See demo here.](https://demos.blazorbootstrap.com/tabs#events)

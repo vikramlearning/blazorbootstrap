@@ -83,7 +83,7 @@ Toasts are as flexible as you need and have very little required markup. At a mi
 }
 ```
 
-[See toasts demo here.](https://demos.getblazorbootstrap.com/toasts#examples)
+[See toasts demo here.](https://demos.blazorbootstrap.com/toasts#examples)
 
 ### Toast without title
 
@@ -127,7 +127,7 @@ Here we've created a simple toast. You can create different toast color schemes 
 }
 ```
 
-[See toasts without title demo here.](https://demos.getblazorbootstrap.com/toasts#toast-without-title)
+[See toasts without title demo here.](https://demos.blazorbootstrap.com/toasts#toast-without-title)
 
 ### Auto hide
 
@@ -164,7 +164,7 @@ Add `AutoHide="true"` parameter to hide the Blazor Toasts after the delay. The d
 }
 ```
 
-[See auto hide toasts demo here.](https://demos.getblazorbootstrap.com/toasts#auto-hide)
+[See auto hide toasts demo here.](https://demos.blazorbootstrap.com/toasts#auto-hide)
 
 ### Placement
 
@@ -207,7 +207,7 @@ Change the Blazor Toasts placement according to your need. The default placement
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/toasts#placement)
+[See demo here.](https://demos.blazorbootstrap.com/toasts#placement)
 
 ### Stack Length
 
@@ -244,7 +244,7 @@ In the below example, StackLength is set to 3. It shows a maximum of 3 toast mes
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/toasts#stack-length)
+[See demo here.](https://demos.blazorbootstrap.com/toasts#stack-length)
 
 ### Global toasts service for the application
 

@@ -41,7 +41,7 @@ Use Blazor Bootstrap loading placeholders for your components or pages to indica
 </PlaceholderContainer>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/placeholders#examples)
+[See demo here.](https://demos.blazorbootstrap.com/placeholders#examples)
 
 ### Width
 
@@ -55,7 +55,7 @@ You can change the width through `PlaceholderWidth`, width utilities, or inline 
 <Placeholder Style="width: 25%;" />
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/placeholders#width)
+[See demo here.](https://demos.blazorbootstrap.com/placeholders#width)
 
 ### Color
 
@@ -75,7 +75,7 @@ By default, the placeholder uses currentColor. This can be overridden with the `
 <Placeholder Width="PlaceholderWidth.Col12" Color="PlaceholderColor.Dark" />
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/placeholders#color)
+[See demo here.](https://demos.blazorbootstrap.com/placeholders#color)
 
 ### Sizing
 
@@ -90,7 +90,7 @@ The size of placeholders are based on the typographic style of the parent elemen
 <Placeholder Width="PlaceholderWidth.Col12" Size="PlaceholderSize.ExtraSmall" />
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/placeholders#sizing)
+[See demo here.](https://demos.blazorbootstrap.com/placeholders#sizing)
 
 ### Animation
 
@@ -117,4 +117,4 @@ Animate placeholders with `PlaceholderAnimation.Glow` or `PlaceholderAnimation.W
 </PlaceholderContainer>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/placeholders#animation)
+[See demo here.](https://demos.blazorbootstrap.com/placeholders#animation)

@@ -63,7 +63,7 @@ By default, `e + -` are blocked. For all integral numeric types, dot `.` is bloc
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/number-input#basic-usage)
+[See demo here](https://demos.blazorbootstrap.com/form/number-input#basic-usage)
 
 ### Generic type
 
@@ -126,7 +126,7 @@ By default, `e + -` are blocked. For all integral numeric types, dot `.` is bloc
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/number-input#generic-type)
+[See demo here](https://demos.blazorbootstrap.com/form/number-input#generic-type)
 
 ### Enable min and max
 
@@ -155,7 +155,7 @@ If the user input exceeds the Max value, it will override with the Max value.
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/number-input#enable-min-and-max)
+[See demo here](https://demos.blazorbootstrap.com/form/number-input#enable-min-and-max)
 
 ### Step
 
@@ -186,7 +186,7 @@ The `Step` sets the stepping interval when clicking the up and down spinner butt
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/number-input#step)
+[See demo here](https://demos.blazorbootstrap.com/form/number-input#step)
 
 ### Text alignment
 
@@ -215,7 +215,7 @@ You can change the text alignment according to your need. Use the `TextAlignment
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/number-input#text-alignment)
+[See demo here](https://demos.blazorbootstrap.com/form/number-input#text-alignment)
 
 ### Allow negative numbers
 
@@ -238,7 +238,7 @@ By default, negative numbers are not allowed. Set the `AllowNegativeNumbers` par
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/number-input#allow-negative-numbers)
+[See demo here](https://demos.blazorbootstrap.com/form/number-input#allow-negative-numbers)
 
 ### Disable
 
@@ -267,7 +267,7 @@ Use the `Disabled` parameter to disable the `NumberInput`. Also, use <b>Enable()
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/number-input#disable)
+[See demo here](https://demos.blazorbootstrap.com/form/number-input#disable)
 
 ### Validations
 
@@ -393,7 +393,7 @@ Like any other blazor input components, `NumberInput` supports validations. Add 
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/number-input#validations)
+[See demo here](https://demos.blazorbootstrap.com/form/number-input#validations)
 
 ### Events: ValueChanged
 
@@ -426,4 +426,4 @@ This event fires on every user keystroke that changes the `NumberInput` value.
 }
 ```
 
-[See demo here](https://demos.getblazorbootstrap.com/form/number-input#event-value-changed)
+[See demo here](https://demos.blazorbootstrap.com/form/number-input#event-value-changed)

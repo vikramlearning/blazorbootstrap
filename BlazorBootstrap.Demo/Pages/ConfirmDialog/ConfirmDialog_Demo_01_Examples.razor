@@ -3,7 +3,7 @@
 <Button Color="ButtonColor.Danger" @onclick="ShowConfirmationAsync"> Delete Employee </Button>
 
 @code {
-    private ConfirmDialog dialog;
+    private ConfirmDialog dialog = default!;
 
     private async Task ShowConfirmationAsync()
     {
@@ -14,11 +14,11 @@
 
         if (confirmation)
         {
-            // do whatever
+            // do something
         }
         else
         {
-            // do whatever
+            // do something
         }
     }
 }

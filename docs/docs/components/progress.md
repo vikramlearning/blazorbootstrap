@@ -74,7 +74,7 @@ Documentation and examples for using the Blazor Bootstrap progress component fea
 </Progress>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/progress#how-it-works)
+[See demo here.](https://demos.blazorbootstrap.com/progress#how-it-works)
 
 ### Labels
 
@@ -88,7 +88,7 @@ Add labels to your Blazor ProgressBar component using the Label parameter or by 
 </Progress>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/progress#labels)
+[See demo here.](https://demos.blazorbootstrap.com/progress#labels)
 
 ### Set width programmatically
 
@@ -132,7 +132,7 @@ Use `IncreaseWidth()` or `DecreaseProgressBar()` methods to increase or decrease
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/progress#set-width-programmatically)
+[See demo here.](https://demos.blazorbootstrap.com/progress#set-width-programmatically)
 
 ### Height
 
@@ -155,7 +155,7 @@ Set the height of the Blazor Progress by using the `Height` parameter. Height is
 </Progress>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/progress#height)
+[See demo here.](https://demos.blazorbootstrap.com/progress#height)
 
 ### Backgrounds
 
@@ -187,7 +187,7 @@ Use the `Color` parameter or the `SetColor(ProgressColor color)` method to chang
 </Progress>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/progress#backgrounds)
+[See demo here.](https://demos.blazorbootstrap.com/progress#backgrounds)
 
 ### Set background programmatically
 
@@ -218,7 +218,7 @@ You can dynamically set the Blazor ProgressBar color by calling the `SetColor()`
 }
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/progress#set-background-programmatically)
+[See demo here.](https://demos.blazorbootstrap.com/progress#set-background-programmatically)
 
 ### Multiple bars
 
@@ -235,7 +235,7 @@ Include multiple Blazor ProgressBar components in a Blazor Progress component if
 </Progress>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/progress#multiple-bars)
+[See demo here.](https://demos.blazorbootstrap.com/progress#multiple-bars)
 
 ### Striped
 
@@ -267,7 +267,7 @@ Add `Type="ProgressType.Striped"` to any Blazor ProgressBar component to apply a
 </Progress>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/progress#striped)
+[See demo here.](https://demos.blazorbootstrap.com/progress#striped)
 
 ### Animated stripes
 
@@ -299,4 +299,4 @@ The stripes can also be animated. Add `Type="ProgressType.StripedAndAnimated"` t
 </Progress>
 ```
 
-[See demo here.](https://demos.getblazorbootstrap.com/progress#animated-stripes)
+[See demo here.](https://demos.blazorbootstrap.com/progress#animated-stripes)

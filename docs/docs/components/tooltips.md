@@ -54,7 +54,7 @@ Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
 </div>
 ```
 
-[See tooltips demo here.](https://demos.getblazorbootstrap.com/tooltips#examples)
+[See tooltips demo here.](https://demos.blazorbootstrap.com/tooltips#examples)
 
 ### Disabled button with tooltip
 
@@ -66,7 +66,7 @@ Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
 </Tooltip>
 ```
 
-[See disabled button with tooltip demo here.](https://demos.getblazorbootstrap.com/tooltips#disabled-button-with-tootip)
+[See disabled button with tooltip demo here.](https://demos.blazorbootstrap.com/tooltips#disabled-button-with-tootip)
 
 ### Tooltip icon with click event
 
@@ -87,4 +87,4 @@ Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
 }
 ```
 
-[See icon with tooltip demo here.](https://demos.getblazorbootstrap.com/tooltips#icon-with-click-event)
+[See icon with tooltip demo here.](https://demos.blazorbootstrap.com/tooltips#icon-with-click-event)

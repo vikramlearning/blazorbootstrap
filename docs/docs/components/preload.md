@@ -78,7 +78,7 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 }
 ```
 
-[See Preload demo here.](https://demos.getblazorbootstrap.com/preload#global-preload-service-for-the-application)
+[See Preload demo here.](https://demos.blazorbootstrap.com/preload#global-preload-service-for-the-application)
 
 ## Change spinner color
 
@@ -112,4 +112,4 @@ Change the default spinner color by passing the `SpinnerColor` enum to the `Show
 }
 ```
 
-[See Preload demo here.](https://demos.getblazorbootstrap.com/preload#change-spinner-color)
+[See Preload demo here.](https://demos.blazorbootstrap.com/preload#change-spinner-color)

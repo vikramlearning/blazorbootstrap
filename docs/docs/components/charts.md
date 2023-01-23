@@ -17,7 +17,7 @@ Blazor Bootstrap charts are well-designed chart components on top of Chart.js to
 <br />
 <img src="https://i.imgur.com/CzdXpqr.png" alt="Blazor Chart Component - Blazor Line Chart Example" />
 <br />
-<a href="https://demos.getblazorbootstrap.com/charts#bar-chart">See blazor chart demo here.</a>
+<a href="https://demos.blazorbootstrap.com/charts#bar-chart">See blazor chart demo here.</a>
 
 ## Chart Types
 
@@ -35,7 +35,7 @@ We will add **Bubble Chart**, **Polar Area Chart**, **Radar Chart**, **Scatter C
 
 <img src="https://i.imgur.com/ATtFiUZ.png" alt="Blazor Chart Component - Blazor Bar Chart" />
 <br />
-<a href="https://demos.getblazorbootstrap.com/charts#bar-chart">See blazor bar chart demo here.</a>
+<a href="https://demos.blazorbootstrap.com/charts#bar-chart">See blazor bar chart demo here.</a>
 <br />
 <a href="/docs/data-visualization/bar-chart">See blazor bar chart full documentation here.</a>
 
@@ -43,7 +43,7 @@ We will add **Bubble Chart**, **Polar Area Chart**, **Radar Chart**, **Scatter C
 
 <img src="https://i.imgur.com/HV3pxA3.png" alt="Blazor Chart Component - Blazor Doughnut Chart" />
 <br />
-<a href="https://demos.getblazorbootstrap.com/charts#doughnut-chart">See blazor doughnut chart demo here.</a>
+<a href="https://demos.blazorbootstrap.com/charts#doughnut-chart">See blazor doughnut chart demo here.</a>
 <br />
 <a href="/docs/data-visualization/doughnut-chart">See blazor doughnut chart full documentation here.</a>
 
@@ -51,7 +51,7 @@ We will add **Bubble Chart**, **Polar Area Chart**, **Radar Chart**, **Scatter C
 
 <img src="https://i.imgur.com/NjrT5D7.png" alt="Blazor Chart Component - Blazor Line Chart" />
 <br />
-<a href="https://demos.getblazorbootstrap.com/charts#line-chart">See blazor line chart demo here.</a>
+<a href="https://demos.blazorbootstrap.com/charts#line-chart">See blazor line chart demo here.</a>
 <br />
 <a href="/docs/data-visualization/line-chart">See blazor line chart full documentation here.</a>
 
@@ -59,6 +59,6 @@ We will add **Bubble Chart**, **Polar Area Chart**, **Radar Chart**, **Scatter C
 
 <img src="https://i.imgur.com/n5TiPtH.png" alt="Blazor Chart Component - Blazor Pie Chart" />
 <br />
-<a href="https://demos.getblazorbootstrap.com/charts#pie-chart">See blazor pie chart demo here.</a>
+<a href="https://demos.blazorbootstrap.com/charts#pie-chart">See blazor pie chart demo here.</a>
 <br />
 <a href="/docs/data-visualization/pie-chart">See blazor pie chart full documentation here.</a>

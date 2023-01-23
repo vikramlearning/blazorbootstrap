@@ -15,7 +15,7 @@ Blazor Bootstrap charts are well-designed chart components on top of Chart.js to
 
 <img src="https://i.imgur.com/ATtFiUZ.png" alt="Blazor Chart Component - Blazor Bar Chart" />
 <br />
-<a href="https://demos.getblazorbootstrap.com/charts#bar-chart">See blazor bar chart demo here.</a>
+<a href="https://demos.blazorbootstrap.com/charts#bar-chart">See blazor bar chart demo here.</a>
 
 ## Parameters
 
