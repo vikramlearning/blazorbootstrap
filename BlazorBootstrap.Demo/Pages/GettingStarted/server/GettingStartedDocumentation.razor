@@ -11,27 +11,39 @@
 <div>Looking to quickly add <b>Blazor Bootstrap</b> to your project? Use NuGet package manager.</div>
 <div class="text-bg-dark p-2 mt-3 rounded-2">Install-Package Blazor.Bootstrap -Version @version</div>
 
-<SectionHeading Size="HeadingSize.H2" Text="Starter template" PageUrl="@pageUrl" HashTagName="starter-template" />
-<div>Change your <code>index.html</code> file and include the <b>CSS</b> and <b>JS</b> files:</div>
-<div>
-    <ul>
-        <li>Add <code>Bootstrap 5.x</code> CSS and JS files as recommended in the official <a href="https://getbootstrap.com/" target="_blank">Bootstrap</a> website.</li>
-        <li>Add <code>Bootstrap Icons 1.x</code> CSS file as recommended in the official <a href="https://icons.getbootstrap.com/#install" target="_blank">Bootstrap Icons</a> website.</li>
-        <li>Include <code>blazor.bootstrap.js</code> file</li>
-        <li>Include <code>blazor.bootstrap.css</code> file</li>
-    </ul>
+<SectionHeading Size="HeadingSize.H2" Text="Add CSS references" PageUrl="@pageUrl" HashTagName="add-css-references" />
+<div class="mb-3">
+    Add the following references to the <code>head</code> section in the <b>Pages/_Host.cshtml</b>.
 </div>
-<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_01_Starter_Template_Index.html" />
+<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_01_A_Starter_Template_Add_CSS_References_Index.html" />
+
+<div class="mb-3">
+    <b>NOTE: </b>If you use the <b>Blazor Server App Empty</b> template without demonstration code and Bootstrap, add the following references to the <code>head</code> section in the <b>Pages/_Host.cshtml</b>. There is a known GitHub issue <a href="https://github.com/dotnet/aspnetcore/issues/43975" target="_blank">Blazor empty template doesn't load scoped CSS</a>.
+</div>
+<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_01_B_Starter_Template_Add_CSS_References_Index.html" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Add script references" PageUrl="@pageUrl" HashTagName="add-script-references" />
+<div class="mb-3">
+    Add the following references to the <code>body</code> section in the <b>Pages/_Host.cshtml</b> after the <code>_framework/blazor.server.js</code> reference.
+</div>
+<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_02_Starter_Template_Add_Script_References_Index.html" />
 
 <Callout Type="CalloutType.Tip">
     Add <code>chart.js</code> reference if the <b>Chart</b> components are used in the application.
 </Callout>
 
+<SectionHeading Size="HeadingSize.H2" Text="Register services" PageUrl="@pageUrl" HashTagName="register-services" />
 <div>Add Blazor Bootstrap service in the <b>Program.cs</b></div>
-<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_02_Starter_Template_Program.cs" />
+<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_03_Starter_Template_Register_services_Program.cs" />
 
 <div>Register tag helpers in <b>_Imports.razor</b></div>
-<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_03_Starter_Template_Imports.razor" />
+<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_04_Starter_Template_Imports.razor" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Remove default references" PageUrl="@pageUrl" HashTagName="remove-default-references" />
+<div class="mb-3">
+    <p>In the <b>index.html</b> file, the default blazor template includes demonstration code, icons, and Bootstrap. These files are no longer needed.</p>
+    <p>Delete the default <b>bootstrap</b> and <b>open-iconic</b> folders from the <b>wwwroot</b> folder. Either remove or keep the <b>app.css</b> file but make sure you clear it out of any content when the <code>Sidebar</code> component with full layout is used.</p>
+</div>
 
 @code {
     private string pageUrl = "/getting-started/blazor-server";
