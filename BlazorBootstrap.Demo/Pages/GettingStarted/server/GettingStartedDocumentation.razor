@@ -1,10 +1,10 @@
-﻿@page "/getting-started"
+﻿@page "/getting-started/blazor-server"
 
 <PageTitle>@title</PageTitle>
 
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
-<h1>Getting started</h1>
+<h1>Getting started - Blazor Server</h1>
 <div class="lead mb-3">Get started with the Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.</div>
 
 <SectionHeading Size="HeadingSize.H2" Text="Install Nuget Package" PageUrl="@pageUrl" HashTagName="install-nuget-package" />
@@ -21,21 +21,21 @@
         <li>Include <code>blazor.bootstrap.css</code> file</li>
     </ul>
 </div>
-<CodeSnippet File="~\Pages\GettingStarted\v1_1_0\Snippet_01_Starter_Template_Index.html" />
+<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_01_Starter_Template_Index.html" />
 
 <Callout Type="CalloutType.Tip">
     Add <code>chart.js</code> reference if the <b>Chart</b> components are used in the application.
 </Callout>
 
 <div>Add Blazor Bootstrap service in the <b>Program.cs</b></div>
-<CodeSnippet File="~\Pages\GettingStarted\v1_1_0\Snippet_02_Starter_Template_Program.cs" />
+<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_02_Starter_Template_Program.cs" />
 
 <div>Register tag helpers in <b>_Imports.razor</b></div>
-<CodeSnippet File="~\Pages\GettingStarted\v1_1_0\Snippet_03_Starter_Template_Imports.razor" />
+<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_03_Starter_Template_Imports.razor" />
 
 @code {
-    private string pageUrl = "/getting-started";
-    private string title = "Getting started with Blazor Bootstrap";
+    private string pageUrl = "/getting-started/blazor-server";
+    private string title = "Getting started with Blazor Bootstrap - Blazor Server Project Setup";
     private string description = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
     private string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
 

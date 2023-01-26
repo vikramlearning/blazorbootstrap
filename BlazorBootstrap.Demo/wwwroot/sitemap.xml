@@ -16,7 +16,7 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://demos.getblazorbootstrap.com/autocomplete</loc>
+    <loc>https://demos.getblazorbootstrap.com/form/autocomplete</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -92,6 +92,11 @@
   </url>
   <url>
     <loc>https://demos.getblazorbootstrap.com/progress</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://demos.getblazorbootstrap.com/sidebar</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
