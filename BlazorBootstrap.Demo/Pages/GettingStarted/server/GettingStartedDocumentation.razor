@@ -41,8 +41,19 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Remove default references" PageUrl="@pageUrl" HashTagName="remove-default-references" />
 <div class="mb-3">
-    <p>In the <b>index.html</b> file, the default blazor template includes demonstration code, icons, and Bootstrap. These files are no longer needed.</p>
-    <p>Delete the default <b>bootstrap</b> and <b>open-iconic</b> folders from the <b>wwwroot</b> folder. Either remove or keep the <b>app.css</b> file but make sure you clear it out of any content when the <code>Sidebar</code> component with full layout is used.</p>
+    <p>In the <b>Pages/_Host.cshtml</b> file, the default blazor template includes demonstration code, icons, and Bootstrap. These files are no longer needed.</p>
+</div>
+<CodeSnippet File="~\Pages\GettingStarted\server\Snippet_05_Starter_Template_Remove_Default_References_Index.html" />
+
+<div class="mb-3">
+    <p>Delete the default <b>bootstrap</b> and <b>open-iconic</b> folders from the <b>wwwroot</b> folder. </p>
+    <p>
+        <ol type="1">
+            <li>wwwroot/css/bootstrap</li>
+            <li>wwwroot/css/open-iconic</li>
+        </ol>
+    </p>
+    <p>Either remove or keep the <b>site.css</b> file but make sure you clear it out of any content when the <a href="/sidebar">Sidebar</a> component with full layout is used.</p>
 </div>
 
 @code {
