@@ -55,9 +55,9 @@ const config = {
                     src: 'img/logo.svg',
                 },
                 items: [
-                    { type: 'doc', docId: 'intro', label: 'Docs', position: 'left' },
+                    { type: 'doc', docId: 'getting-started/blazor-webassembly', label: 'Docs', position: 'left' },
                     { to: '/blog', label: 'Blog', position: 'left' },
-                    { href: 'https://demos.getblazorbootstrap.com', label: 'Demos', position: 'left' },
+                    { href: 'https://demos.blazorbootstrap.com', label: 'Demos', position: 'left' },
                     { href: 'https://github.com/vikramlearning/blazorbootstrap', label: 'GitHub', position: 'right', },
                     { href: 'https://twitter.com/blazorbootstrap', label: 'Twitter', position: 'right', },
                 ],
@@ -69,7 +69,7 @@ const config = {
                         title: 'Links',
                         items: [
                             { label: 'Home', to: '/', },
-                            { label: 'Demos', href: 'https://demos.getblazorbootstrap.com/', },
+                            { label: 'Demos', href: 'https://demos.blazorbootstrap.com/', },
                             { label: 'Blog', to: '/blog', },
                         ],
                     },
