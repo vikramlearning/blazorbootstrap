@@ -11,6 +11,10 @@
     --docsearch-logo-color: var(--bd-violet)
 }
 
+h1:focus-visible{
+    outline: inherit !important;
+}
+
 .bd-navbar {
     padding: .75rem 0;
     background-color: transparent;

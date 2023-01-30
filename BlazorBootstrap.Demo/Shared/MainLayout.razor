@@ -43,7 +43,9 @@
     {
         navItems = new List<NavItem>
         {
-            new (){ Id = "1", Text = "Getting Started", Href = "/getting-started", IconName = IconName.HouseDoorFill },
+            new (){ Id = "1", Text = "Getting Started", IconName = IconName.HouseDoorFill },
+            new (){ Id = "32", Text = "Blazor WebAssembly", Href = "/getting-started/blazor-webassembly", IconName = IconName.BrowserChrome, ParentId = "1" },
+            new (){ Id = "33", Text = "Blazor Server", Href = "/getting-started/blazor-server", IconName = IconName.Server, ParentId = "1" },
 
             new (){ Id = "2", Text = "Content", IconName = IconName.BodyText, IconColor = IconColor.Primary },
             new (){ Id = "3", Text = "Icons", Href = "/icons", IconName = IconName.PersonSquare, ParentId = "2" },
