@@ -90,20 +90,20 @@ Delete the default **bootstrap** and **open-iconic** folders from the **wwwroot*
 Either remove or keep the **site.css** file but make sure you clear it out of any content when the [Sidebar](/docs/components/sidebar#full-layout-with-sidebar) component with full layout is used.
 
 
-## Checkout GitHub starter templates
+## Starter templates
 
 ### .NET 6
 
-- [Blazor Bootstrap - Blazor Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorServerApp)
+1. [Blazor Bootstrap - Blazor Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorServerApp)
 
-  <img src="https://i.imgur.com/BfgYeNd.png" alt="Blazor Bootstrap - Blazor Server App" />
+   <img src="https://i.imgur.com/BfgYeNd.png" alt="Blazor Bootstrap - Blazor Server App" />
 
 ### .NET 7
 
-- [Blazor Bootstrap - Blazor Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerApp)
+1. [Blazor Bootstrap - Blazor Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerApp)
 
-  <img src="https://i.imgur.com/7vipHB1.png" alt="Blazor Bootstrap - Blazor Server App" />
+   <img src="https://i.imgur.com/7vipHB1.png" alt="Blazor Bootstrap - Blazor Server App" />
 
-- [Blazor Bootstrap - Blazor Empty Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerAppEmpty)
+1. [Blazor Bootstrap - Blazor Empty Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerAppEmpty)
 
-  <img src="https://i.imgur.com/rw13bZr.png" alt="Blazor Bootstrap - Blazor Empty Server App" />
+   <img src="https://i.imgur.com/rw13bZr.png" alt="Blazor Bootstrap - Blazor Empty Server App" />

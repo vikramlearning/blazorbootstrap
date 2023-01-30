@@ -86,20 +86,20 @@ Delete the default **bootstrap** and **open-iconic** folders from the **wwwroot*
 
 Either remove or keep the **app.css** file but make sure you clear it out of any content when the [Sidebar](/docs/components/sidebar#full-layout-with-sidebar) component with full layout is used.
 
-## Checkout GitHub starter templates
+## Starter templates
 
 ### .NET 6
 
-- [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
+1. [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
 
-  <img src="https://i.imgur.com/aRV3rJm.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
+   <img src="https://i.imgur.com/aRV3rJm.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
 
 ### .NET 7
 
-- [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyApp)
+1. [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyApp)
 
-  <img src="https://i.imgur.com/4P8u0HR.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
+   <img src="https://i.imgur.com/4P8u0HR.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
 
-- [Blazor Bootstrap - Blazor Empty WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyAppEmpty)
+1. [Blazor Bootstrap - Blazor Empty WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyAppEmpty)
 
-  <img src="https://i.imgur.com/CBEoZ6P.png" alt="Blazor Bootstrap - Blazor Empty WebAssembly App" />
+   <img src="https://i.imgur.com/CBEoZ6P.png" alt="Blazor Bootstrap - Blazor Empty WebAssembly App" />
