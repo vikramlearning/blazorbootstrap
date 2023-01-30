@@ -94,9 +94,16 @@ Either remove or keep the **site.css** file but make sure you clear it out of an
 
 ### .NET 6
 
-- [Blazor Bootstrap - Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorServerApp)
+- [Blazor Bootstrap - Blazor Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorServerApp)
+
+  <img src="https://i.imgur.com/BfgYeNd.png" alt="Blazor Bootstrap - Blazor Server App" />
 
 ### .NET 7
 
-- [Blazor Bootstrap - Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerApp)
-- [Blazor Bootstrap - Empty Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerAppEmpty)
+- [Blazor Bootstrap - Blazor Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerApp)
+
+  <img src="https://i.imgur.com/7vipHB1.png" alt="Blazor Bootstrap - Blazor Server App" />
+
+- [Blazor Bootstrap - Blazor Empty Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerAppEmpty)
+
+  <img src="https://i.imgur.com/rw13bZr.png" alt="Blazor Bootstrap - Blazor Empty Server App" />
