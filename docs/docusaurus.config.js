@@ -76,9 +76,9 @@ const config = {
                     {
                         title: 'Guides',
                         items: [
-                            { label: 'Getting started', to: '/docs/intro', },
-                            { label: 'Install Nuget', to: '/docs/intro#quick-start', },
-                            { label: 'Starter template', to: '/docs/intro#starter-template', },
+                            { label: 'Getting started', to: '/docs/getting-started/blazor-webassembly', },
+                            { label: 'Install Nuget', to: '/docs/getting-started/blazor-webassembly#install-nuget-package', },
+                            { label: 'Starter templates', to: 'https://github.com/vikramlearning/blazorbootstrap-starter-templates', },
                         ],
                     },
                     {
