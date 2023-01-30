@@ -89,3 +89,14 @@ Delete the default **bootstrap** and **open-iconic** folders from the **wwwroot*
 
 Either remove or keep the **site.css** file but make sure you clear it out of any content when the [Sidebar](/docs/components/sidebar#full-layout-with-sidebar) component with full layout is used.
 
+
+## Checkout Starter templates
+
+### .NET 6
+
+- [Blazor Bootstrap - Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorServerApp)
+
+### .NET 7
+
+- [Blazor Bootstrap - Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerApp)
+- [Blazor Bootstrap - Empty Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerAppEmpty)
