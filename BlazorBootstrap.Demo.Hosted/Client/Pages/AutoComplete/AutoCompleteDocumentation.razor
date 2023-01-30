@@ -25,6 +25,49 @@
 <SectionHeading Size="HeadingSize.H2" Text="Validations" PageUrl="@pageUrl" HashTagName="validations" />
 <Demo Type="typeof(AutoComplete_Demo_03_Validations)" Tabs="true" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Keyboard Navigation" PageUrl="@pageUrl" HashTagName="keyboard-navigation" />
+<div>
+    Blazor Bootstrap autocomplete component supports the following keyboard shortcuts to initiate various actions.
+</div>
+<div class="mb-3">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><kbd>Esc</kbd></td>
+                    <td>Closes the popup list when it is in an open state.</td>
+                </tr>
+                <tr>
+                    <td><kbd class="text-nowrap">Up arrow</kbd></td>
+                    <td>Focuses on the previous item in the list.</td>
+                </tr>
+                <tr>
+                    <td><kbd class="text-nowrap">Down arrow</kbd></td>
+                    <td>Focuses on the next item in the list.</td>
+                </tr>
+                <tr>
+                    <td><kbd>Home</kbd></td>
+                    <td>Focuses on the first item in the list.</td>
+                </tr>
+                <tr>
+                    <td><kbd>End</kbd></td>
+                    <td>Focuses on the last item in the list.</td>
+                </tr>
+                <tr>
+                    <td><kbd>Enter</kbd></td>
+                    <td>Selects the currently focused item.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 @code {
     private string pageUrl = "/autocomplete";
     private string title = "Blazor AutoComplete Component";
