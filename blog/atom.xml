@@ -2,11 +2,33 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-01-23T00:00:00.000Z</updated>
+    <updated>2023-01-30T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.4.2]]></title>
+        <id>/2023/01/30/blazorbootstrap-1.4.2</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/01/30/blazorbootstrap-1.4.2"/>
+        <updated>2023-01-30T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.4.2, with Auto Complete updates and new starter templates for blazor webassembly and blazor server!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.4.2, with Auto Complete updates and new starter templates for blazor webassembly and blazor server!!!</p><p><strong>Blazor Bootstrap: Blazor WebAssembly and Server starter templates</strong></p><img loading="lazy" src="https://i.imgur.com/4P8u0HR.png" alt="Blazor Bootstrap: Blazor WebAssembly and Server starter templates" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ol><li><code>Auto Complete</code> component<ul><li>Bug fix</li></ul></li></ol><h2 class="anchor anchorWithStickyNavbar_LWe7" id="starter-templates">Starter Templates<a class="hash-link" href="#starter-templates" title="Direct link to heading">​</a></h2><ol><li>Blazor Bootstrap: Blazor WebAssembly Template</li><li>Blazor Bootstrap: Blazor WebAssembly Empty Template</li><li>Blazor Bootstrap: Blazor Server Template</li><li>Blazor Bootstrap: Blazor Server Empty Template</li></ol><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/autocomplete" target="_blank" rel="noopener noreferrer">Blazor Auto Complete Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.4.2" term="v1.4.2"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="autocomplete" term="autocomplete"/>
+        <category label="blazor-autocomplete" term="blazor-autocomplete"/>
+        <category label="blazor-templates" term="blazor-templates"/>
+        <category label="blazor-starter-templates" term="blazor-starter-templates"/>
+        <category label="blazorbootstrap-starter-templates" term="blazorbootstrap-starter-templates"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.4.1]]></title>
         <id>/2023/01/23/blazorbootstrap-1.4.1</id>

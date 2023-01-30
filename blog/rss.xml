@@ -4,10 +4,28 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Mon, 23 Jan 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 30 Jan 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.4.2]]></title>
+            <link>https://getblazorbootstrap.com/blog/2023/01/30/blazorbootstrap-1.4.2</link>
+            <guid>/2023/01/30/blazorbootstrap-1.4.2</guid>
+            <pubDate>Mon, 30 Jan 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.4.2, with Auto Complete updates and new starter templates for blazor webassembly and blazor server!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.4.2, with Auto Complete updates and new starter templates for blazor webassembly and blazor server!!!</p><p><strong>Blazor Bootstrap: Blazor WebAssembly and Server starter templates</strong></p><img loading="lazy" src="https://i.imgur.com/4P8u0HR.png" alt="Blazor Bootstrap: Blazor WebAssembly and Server starter templates" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ol><li><code>Auto Complete</code> component<ul><li>Bug fix</li></ul></li></ol><h2 class="anchor anchorWithStickyNavbar_LWe7" id="starter-templates">Starter Templates<a class="hash-link" href="#starter-templates" title="Direct link to heading">​</a></h2><ol><li>Blazor Bootstrap: Blazor WebAssembly Template</li><li>Blazor Bootstrap: Blazor WebAssembly Empty Template</li><li>Blazor Bootstrap: Blazor Server Template</li><li>Blazor Bootstrap: Blazor Server Empty Template</li></ol><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/autocomplete" target="_blank" rel="noopener noreferrer">Blazor Auto Complete Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.4.2</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>autocomplete</category>
+            <category>blazor-autocomplete</category>
+            <category>blazor-templates</category>
+            <category>blazor-starter-templates</category>
+            <category>blazorbootstrap-starter-templates</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.4.1]]></title>
             <link>https://getblazorbootstrap.com/blog/2023/01/23/blazorbootstrap-1.4.1</link>
