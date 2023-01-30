@@ -5,26 +5,27 @@ authors:
   title: Creator
   url: https://github.com/gvreddy04
   image_url: https://avatars.githubusercontent.com/u/2337067
-tags: [v1.4.2, blazor, bootstrap, bootstrap5, blazorbootstrap, autocomplete, blazorautocomplete, blazortemplates, blazorstartertemplates]
+tags: [v1.4.2, blazor, bootstrap, bootstrap5, bootstrap-5, blazorbootstrap, autocomplete, blazor-autocomplete, blazor-templates, blazor-starter-templates, blazorbootstrap-starter-templates]
 ---
 
-We are excited to release 1.4.2, with autocomplete updates and getting started templates for blazor webassembly and blazor server!!!
+We are excited to release 1.4.2, with Auto Complete updates and new starter templates for blazor webassembly and blazor server!!!
 
-<b>Blazor WebAssembly  and Server starter templates</b>
-<img src="https://i.imgur.com/dQMxYxw.png" alt="Blazor Bootstrap: Blazor WebAssembly and Server starter templates" />
+**Blazor Bootstrap: Blazor WebAssembly and Server starter templates**
+
+<img src="https://i.imgur.com/4P8u0HR.png" alt="Blazor Bootstrap: Blazor WebAssembly and Server starter templates" />
 
 <!--truncate-->
 
 ## What's changed
 
-- `AutoComplete` component
-  - Minor bug fix
+1. `Auto Complete` component
+   - Bug fix
 
 ## Starter Templates
-- Blazor Bootstrap: Blazor WebAssembly Template
-- Blazor Bootstrap: Blazor WebAssembly Empty Template
-- Blazor Bootstrap: Blazor Server Template
-- Blazor Bootstrap: Blazor Server Empty Template
+1. Blazor Bootstrap: Blazor WebAssembly Template
+1. Blazor Bootstrap: Blazor WebAssembly Empty Template
+1. Blazor Bootstrap: Blazor Server Template
+1. Blazor Bootstrap: Blazor Server Empty Template
 
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
