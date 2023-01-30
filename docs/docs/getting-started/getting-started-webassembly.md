@@ -86,7 +86,6 @@ Delete the default **bootstrap** and **open-iconic** folders from the **wwwroot*
 
 Either remove or keep the **app.css** file but make sure you clear it out of any content when the [Sidebar](/docs/components/sidebar#full-layout-with-sidebar) component with full layout is used.
 
-
 ## Checkout GitHub starter templates
 
 ### .NET 6
