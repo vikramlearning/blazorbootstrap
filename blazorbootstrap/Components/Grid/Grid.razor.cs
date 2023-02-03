@@ -212,7 +212,8 @@ public partial class Grid<TItem> : BaseComponent
             PageNumber = this.AllowPaging ? GridCurrentState.PageIndex : 0,
             PageSize = this.AllowPaging ? this.pageSize : 0,
             Sorting = this.AllowSorting ? (GridCurrentState.Sorting ?? GetDefaultSorting()) : null,
-            Filters = this.AllowFiltering ? GetFilters() : null
+            Filters = this.AllowFiltering ? GetFilters() : null,
+            DataSource = this.DataSource
         };
 
         if (DataProvider != null)
@@ -228,7 +229,7 @@ public partial class Grid<TItem> : BaseComponent
                 items = new List<TItem> { };
                 totalCount = 0;
             }
-        }
+        }         
 
         requestInProgress = false;
 
@@ -292,6 +293,11 @@ public partial class Grid<TItem> : BaseComponent
     /// The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
     /// </summary>
     [Parameter, EditorRequired] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
+
+    /// <summary>
+    /// DataSource allows you to optionally, directly pass in the data that gets used by the DataProvider.
+    /// </summary>
+    [Parameter] public IEnumerable<TItem>? DataSource { get; set; }
 
     /// <summary>
     /// Gets or sets the pagination alignment.

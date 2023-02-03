@@ -22,6 +22,12 @@ public class GridDataProviderRequest<TItem>
     /// </summary>
     public IEnumerable<FilterItem> Filters { get; init; }
 
+    /// <summary>
+    /// Optional source for the data that the DataProvider can consume.
+    /// Useful for when you have more than one grid in use at once and need to use different data sources for each.
+    /// </summary>
+    public IEnumerable<TItem>? DataSource { get; init; }
+
     public GridDataProviderResult<TItem> ApplyTo(IEnumerable<TItem> data)
     {
         if (data == null)

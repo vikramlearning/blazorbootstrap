@@ -23,6 +23,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid. |
 | EmptyText | string | No records to display | | Shows text on no records. |
 | DataProvider | `GridDataProviderDelegate<TItem>` | | ✔️ | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. |
+| DataSource | `IEnumerable<TItem>` | | | Allows you to optionally pass in data for the DataProvider to consume via `GridDataProviderRequest.DataSource`. This is useful when you are rendering grids dynamically, i.e. in loops |
 | GridSettingsChanged | `EventCallback<GridSettings>` | | | This event is fired when the grid state is changed |
 | PageSize | int | Gets or sets the page size of the grid. | | 10 |
 | PaginationAlignment | enum | `Alignment.Start` | | Gets or sets the pagination alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. |
@@ -1095,7 +1096,8 @@ Browser local storage is used to persist the Grid state. Common locations exist 
 </Grid>
 ```
 
-```cs {5,6,16-26,28-38} showLineNumbers
+```cshtml {1,6,7} showLineNumbers
+
 @code {
     BlazorBootstrap.Grid<Employee1> grid;
     private IEnumerable<Employee1> employees;
@@ -1136,6 +1138,7 @@ Browser local storage is used to persist the Grid state. Common locations exist 
         return settings;
     }
 
+
     private IEnumerable<Employee1> GetEmployees()
     {
         return new List<Employee1>
@@ -1158,3 +1161,64 @@ Browser local storage is used to persist the Grid state. Common locations exist 
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/grid#save-and-load-grid-settings)
+
+### DataSource
+
+Need to create grids in a loop where the data source for the grid changes every iteration? This example shows how you can pass in the data your grid needs at the point of rendering the grid.
+
+```cshtml {1,6,7} showLineNumbers
+@foreach (var department in departments)
+{
+    <p>@department.Name Employees:</p>
+    <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" DataSource="department.Employees">
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </Grid>
+}
+```
+
+```cs {5,6,16-26,28-38} showLineNumbers
+@code {
+    private List<Department> departments = new List<Department>()
+    {
+        new Department("Research & Development", new List<Employee1> {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true }
+        }),
+        new Department("Development & Research", new List<Employee1> {
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true }
+        })
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        return await Task.FromResult(request.ApplyTo(request.DataSource));
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#datasources)
