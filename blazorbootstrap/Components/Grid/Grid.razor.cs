@@ -297,7 +297,7 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// DataSource allows you to optionally, directly pass in the data that gets used by the DataProvider.
     /// </summary>
-    [Parameter] public IEnumerable<TItem>? DataSource { get; set; }
+    [Parameter] public IEnumerable<TItem>? DataSource { get; set; } // TODO: rename this to Data
 
     /// <summary>
     /// Gets or sets the pagination alignment.
