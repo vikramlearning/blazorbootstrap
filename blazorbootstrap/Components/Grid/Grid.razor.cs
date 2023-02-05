@@ -7,7 +7,7 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Current grid state (filters, paging, sorting).
     /// </summary>
-    internal GridState<TItem> gridCurrentState1 = new GridState<TItem>(1, null);
+    internal GridState<TItem> gridCurrentState = new GridState<TItem>(1, null);
 
     private List<GridColumn<TItem>> columns = new List<GridColumn<TItem>>();
 
@@ -336,11 +336,6 @@ public partial class Grid<TItem> : BaseComponent
     /// Gets or sets the page size of the grid.
     /// </summary>
     [Parameter] public int PageSize { get; set; } = 10;
-
-    /// <summary>
-    /// Current grid state (filters, paging, sorting).
-    /// </summary>
-    internal GridState<TItem> gridCurrentState { get; set; } = new GridState<TItem>(1, null);
 
     /// <summary>
     /// Gets or sets a value indicating whether Grid is responsive.
