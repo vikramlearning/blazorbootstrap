@@ -30,8 +30,6 @@ partial class GridColumnFilter : BaseComponent
     {
         SetDefaultFilter();
         SetSelectedFilterSymbol();
-
-        base.OnParametersSet();
     }
 
     private async Task OnFilterOperatorChangedAsync(FilterOperatorInfo filterOperatorInfo)

@@ -93,7 +93,7 @@
     @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0)
     {
         <div class="mt-2">
-            <Pagination ActivePageNumber="@GridCurrentState.PageIndex"
+            <Pagination ActivePageNumber="@gridCurrentState.PageIndex"
                 TotalPages="@totalPages"
                 PageChanged="OnPageChangedAsync"
                 FirstLinkIcon="IconName.ChevronDoubleLeft"

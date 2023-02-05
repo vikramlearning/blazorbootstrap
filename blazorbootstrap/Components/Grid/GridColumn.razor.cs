@@ -41,8 +41,6 @@ public partial class GridColumn<TItem> : BaseComponent
     protected override void OnParametersSet()
     {
         SetDefaultFilter();
-
-        base.OnParametersSet();
     }
 
     internal string GetPropertyTypeName()
@@ -67,7 +65,6 @@ public partial class GridColumn<TItem> : BaseComponent
         this.filterValue = args.Text;
         this.filterOperator = args.FilterOperator;
         await this.Parent.FilterChangedAsync();
-        await this.Parent.RefreshDataAsync();
     }
 
     internal void SetFilterOperator(FilterOperator filterOperator) => this.FilterOperator = this.filterOperator = filterOperator;

@@ -3,7 +3,7 @@
 @foreach (var department in departments)
 {
     <p>@department.Name Employees:</p>
-    <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" DataSource="department.Employees">
+    <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" Data="department.Employees">
         <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
             @context.Id
         </GridColumn>
@@ -39,14 +39,4 @@
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true }
         })
     };
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
-    {
-        return await Task.FromResult(request.ApplyTo(request.DataSource));
-    }
 }
