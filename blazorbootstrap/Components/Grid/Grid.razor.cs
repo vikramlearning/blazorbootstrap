@@ -3,7 +3,7 @@
 public partial class Grid<TItem> : BaseComponent
 {
     #region Members
-    
+
     /// <summary>
     /// Current grid state (filters, paging, sorting).
     /// </summary>
@@ -38,8 +38,15 @@ public partial class Grid<TItem> : BaseComponent
 
     protected override Task OnParametersSetAsync()
     {
+        if (Data is not null && DataProvider is not null)
+        {
+            throw new InvalidOperationException($"Grid requires one of {nameof(Data)} or {nameof(DataProvider)}, but both were specified.");
+        }
+
         Console.WriteLine($"{this.ElementId}: Grid.OnParametersSetAsync called...");
-        var newDataOrDataProvider = (object?)DataProvider ?? Data;
+
+        // Perform a re-query only if the data source or something else has changed
+        var newDataOrDataProvider = Data ?? (object?)DataProvider;
         var dataSourceHasChanged = newDataOrDataProvider != lastAssignedDataOrDataProvider;
         if (dataSourceHasChanged)
         {
@@ -107,7 +114,7 @@ public partial class Grid<TItem> : BaseComponent
 
     internal async Task FilterChangedAsync()
     {
-        await SaveGridSettingsAsync(); 
+        await SaveGridSettingsAsync();
         await RefreshDataAsync();
     }
 
@@ -118,9 +125,20 @@ public partial class Grid<TItem> : BaseComponent
         await RefreshDataAsync();
     }
 
-    internal async Task ResetPageNumberAsync()
+    /// <summary>
+    /// Reset the page number to 1 and refresh the grid.
+    /// </summary>
+    public async ValueTask ResetPageNumber()
+    {
+        await ResetPageNumberAsync(true);
+    }
+
+    internal async ValueTask ResetPageNumberAsync(bool refreshGrid = false)
     {
         gridCurrentState = new GridState<TItem>(1, gridCurrentState.Sorting);
+
+        if (refreshGrid)
+            await RefreshDataAsync();
     }
 
     internal async Task SortingChangedAsync(GridColumn<TItem> column)
@@ -257,7 +275,7 @@ public partial class Grid<TItem> : BaseComponent
         {
             items = new List<TItem> { };
             totalCount = 0;
-        }         
+        }
 
         requestInProgress = false;
 

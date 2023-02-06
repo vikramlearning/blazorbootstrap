@@ -3,9 +3,9 @@
     public class Department
     {
         public string Name { get; set; }
-        public IEnumerable<Employee1> Employees { get; set; }
+        public List<Employee1> Employees { get; set; }
 
-        public Department(string name, IEnumerable<Employee1> employees)
+        public Department(string name, List<Employee1> employees)
         {
             Name = name;
             Employees = employees;

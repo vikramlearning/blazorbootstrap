@@ -60,7 +60,7 @@ public partial class GridColumn<TItem> : BaseComponent
     internal async Task OnFilterChangedAsync(FilterEventArgs args, GridColumn<TItem> column)
     {
         if (this.filterValue != args.Text || this.filterOperator != args.FilterOperator)
-            await this.Parent.ResetPageNumberAsync();
+            await this.Parent.ResetPageNumberAsync(false);
 
         this.filterValue = args.Text;
         this.filterOperator = args.FilterOperator;
