@@ -297,7 +297,7 @@ public partial class AutoComplete<TItem> : BaseComponent
         if (disposing)
         {
             cancellationTokenSource?.Dispose();
-            await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementId);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementRef); // NOTE: Always pass ElementRef
             objRef?.Dispose();
         }
 
