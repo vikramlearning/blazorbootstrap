@@ -240,7 +240,12 @@ public partial class Grid<TItem> : BaseComponent
     /// Refresh the grid data.
     /// </summary>
     /// <returns>Task</returns>
-    public async Task RefreshDataAsync(bool firstRender = false)
+    public async Task RefreshDataAsync()
+    {
+        await RefreshDataAsync(false);
+    }
+
+    internal async Task RefreshDataAsync(bool firstRender = false)
     {
         Console.WriteLine($"{this.ElementId}: Grid.RefreshDataAsync called...");
         if (requestInProgress)
@@ -346,6 +351,11 @@ public partial class Grid<TItem> : BaseComponent
     public RenderFragment EmptyDataTemplate { get; set; }
 
     /// <summary>
+    /// This event is fired when the grid state is changed.
+    /// </summary>
+    [Parameter] public EventCallback<GridSettings> GridSettingsChanged { get; set; }
+
+    /// <summary>
     /// Gets or sets the pagination alignment.
     /// </summary>
     [Parameter] public Alignment PaginationAlignment { get; set; } = Alignment.Start;
@@ -359,8 +369,6 @@ public partial class Grid<TItem> : BaseComponent
     /// Gets or sets a value indicating whether Grid is responsive.
     /// </summary>
     [Parameter] public bool Responsive { get; set; }
-
-    [Parameter] public EventCallback<GridSettings> GridSettingsChanged { get; set; }
 
     /// <summary>
     /// Settings is for grid to render. 

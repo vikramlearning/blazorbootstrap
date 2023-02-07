@@ -15,50 +15,61 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 
 ## Grid Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|--|--|--|--|--|
-| AllowFiltering | bool | false | | Gets or sets the grid filtering. |
-| AllowPaging | bool | false | | Gets or sets the grid paging. |
-| AllowSorting | bool | false | | Gets or sets the grid sorting. |
-| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid. |
-| EmptyText | string | No records to display | | Shows text on no records. |
-| DataProvider | `GridDataProviderDelegate<TItem>` | | ✔️ | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. |
-| DataSource | `IEnumerable<TItem>` | | | Allows you to optionally pass in data for the DataProvider to consume via `GridDataProviderRequest.DataSource`. This is useful when you are rendering grids dynamically, i.e. in loops |
-| GridSettingsChanged | `EventCallback<GridSettings>` | | | This event is fired when the grid state is changed |
-| PageSize | int | Gets or sets the page size of the grid. | | 10 |
-| PaginationAlignment | enum | `Alignment.Start` | | Gets or sets the pagination alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. |
-| Responsive | bool | false | | Gets or sets a value indicating whether Grid is responsive. |
-| SettingsProvider | `GridSettingsProviderDelegate` | | | Settings are for the grid to render. The provider should always return an instance of 'GridSettings', and 'null' is not allowed. |
-| Sortable | bool | true | | Gets or sets whether end-users can sort data by the column's values. |
+| Name | Type | Default | Required | Descritpion | Added Version |
+|--|--|--|--|--|--|
+| AllowFiltering | bool | false | | Gets or sets the grid filtering. | 1.0.0 |
+| AllowPaging | bool | false | | Gets or sets the grid paging. | 1.0.0 |
+| AllowSorting | bool | false | | Gets or sets the grid sorting. | 1.0.0 |
+| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid. | 1.0.0 |
+| EmptyDataTemplate | RenderFragment | | ✔️ | Template to render when there are no rows to display. | 1.0.0 |
+| EmptyText | string | No records to display | | Shows text on no records. | 1.0.0 |
+| Data | `IEnumerable<TItem>` | | | Gets or sets the grid data. | 1.4.3 |
+| DataProvider | `GridDataProviderDelegate<TItem>` | | | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | 1.0.0 |
+| GridSettingsChanged | `EventCallback<GridSettings>` | | | This event is fired when the grid state is changed. | 1.0.0 |
+| PageSize | int | 10 | | Gets or sets the page size of the grid. | 1.0.0 |
+| PaginationAlignment | enum | `Alignment.Start` | | Gets or sets the pagination alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
+| Responsive | bool | false | | Gets or sets a value indicating whether Grid is responsive. | 1.0.0 |
+| SettingsProvider | `GridSettingsProviderDelegate` | | | Settings are for the grid to render. The provider should always return an instance of 'GridSettings', and 'null' is not allowed. | 1.0.0 |
+
+:::note IMPORTANT
+Grid requires either `Data` or `DataProvider` parameter, but not both.
+:::
+
+## Grid Methods
+| Name | Return Type | Description | Added Version |
+|--|--|--|--|
+| GetFilters() | `IEnumerable<FilterItem>` | Get filters. | 1.0.0 |
+| RefreshDataAsync() | Task | Refresh the grid data. | 1.0.0 |
+| ResetPageNumber() | ValueTask | Reset the page number to 1 and refresh the grid. | 1.4.3 |
 
 ## GridColumn Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|--|--|--|--|--|
-| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid column. |
-| Filterable | bool | true | | Enable or disable the filter on a specific column. The filter is enabled or disabled based on the grid `AllowFiltering` parameter. |
-| FilterOperator | enum | Assigned based on the property type. | | Gets or sets the filter operator. |
-| FilterTextboxWidth | int | | | Gets or sets the filter textbox width in pixels. |
-| FilterValue | string | | | Gets or sets the filter value. |
-| HeaderText | string | | ✔️ | Gets or sets the table column header. |
-| HeaderTextAlignment | enum | `Alignment.Start` | | Gets or sets the header text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. |
-| IsDefaultSortColumn | bool | false | | Gets or sets the default sort column. |
-| PropertyName | string | | | Gets or sets the property name. This is required when `AllowFiltering` is true. |
-| Sortable | bool | false | | Enable or disable the sorting on a specific column. The sorting is enabled or disabled based on the grid `AllowSorting` parameter. |
-| SortDirection | enum | `SortDirection.None` | | Gets or sets the default sort direction of a column. Use `SortDirection.Ascending` or `SortDirection.Descending` |
-| SortKeySelector | `Expression<Func<TItem, IComparable>>` | | | Expression used for sorting. |
-| SortString | string | | | Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting. |
-| StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Gets or sets the StringComparison. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. |
-| TextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. |
-| TextNoWrap | bool | false | | Gets or sets text nowrap. |
+| Name | Type | Default | Required | Descritpion | Added Version |
+|--|--|--|--|--|--|
+| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid column. | 1.0.0 |
+| Filterable | bool | true | | Enable or disable the filter on a specific column. The filter is enabled or disabled based on the grid `AllowFiltering` parameter. | 1.0.0 |
+| FilterOperator | enum | Assigned based on the property type. | | Gets or sets the filter operator. | 1.0.0 |
+| FilterTextboxWidth | int | | | Gets or sets the filter textbox width in pixels. | 1.0.0 |
+| FilterValue | string | | | Gets or sets the filter value. | 1.0.0 |
+| HeaderText | string | | ✔️ | Gets or sets the table column header. | 1.0.0 |
+| HeaderTextAlignment | enum | `Alignment.Start` | | Gets or sets the header text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
+| IsDefaultSortColumn | bool | false | | Gets or sets the default sort column. | 1.0.0 |
+| PropertyName | string | | | Gets or sets the property name. This is required when `AllowFiltering` is true. | 1.0.0 |
+| Sortable | bool | false | | Enable or disable the sorting on a specific column. The sorting is enabled or disabled based on the grid `AllowSorting` parameter. | 1.0.0 |
+| SortDirection | enum | `SortDirection.None` | | Gets or sets the default sort direction of a column. Use `SortDirection.Ascending` or `SortDirection.Descending` | 1.0.0 |
+| SortKeySelector | `Expression<Func<TItem, IComparable>>` | | | Expression used for sorting. | 1.0.0 |
+| SortString | string | | | Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting. | 1.0.0 |
+| StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Gets or sets the StringComparison. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 1.0.0 |
+| TextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
+| TextNoWrap | bool | false | | Gets or sets text nowrap. | 1.0.0 |
 
 ## GridSettings Properties
 
-| Name | Type | Default | Required | Description |
-|--|--|--|--|--|
-| PageNumber | int | | | Page number. |
-| PageSize | int | | | Size of the page. |
-| Filters | IEnumerable<FilterItem\> | | | Current filters. |
+| Name | Type | Default | Required | Description | Added Version |
+|--|--|--|--|--|--|
+| PageNumber | int | | | Page number. | 1.0.0 |
+| PageSize | int | | | Size of the page. | 1.0.0 |
+| Filters | `IEnumerable<FilterItem>` | | | Current filters. | 1.0.0 |
 
 ## Examples
 
@@ -1162,15 +1173,17 @@ Browser local storage is used to persist the Grid state. Common locations exist 
 
 [See demo here](https://demos.blazorbootstrap.com/grid#save-and-load-grid-settings)
 
-### DataSource
+### Data parameter - Assign collection
 
-Need to create grids in a loop where the data source for the grid changes every iteration? This example shows how you can pass in the data your grid needs at the point of rendering the grid.
+Assign a collection to the `Data` parameter to render the grid dynamically. The example below will render different department employees in the individual grid.
 
-```cshtml {1,6,7} showLineNumbers
+```cshtml {} showLineNumbers
+@using BlazorBootstrap.Demo.Models;
+
 @foreach (var department in departments)
 {
     <p>@department.Name Employees:</p>
-    <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" DataSource="department.Employees">
+    <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" Data="department.Employees">
         <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
             @context.Id
         </GridColumn>
@@ -1190,35 +1203,112 @@ Need to create grids in a loop where the data source for the grid changes every 
 }
 ```
 
-```cs {5,6,16-26,28-38} showLineNumbers
+```cs {} showLineNumbers
 @code {
+    Grid<Employee1> grid;
+
     private List<Department> departments = new List<Department>()
     {
-        new Department("Research & Development", new List<Employee1> {
+        new Department("Product 1 - Research & Development", new List<Employee1> {
             new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
             new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
             new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
             new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
             new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true }
         }),
-        new Department("Development & Research", new List<Employee1> {
+        new Department("Product 2 - Research & Development", new List<Employee1> {
             new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
             new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
             new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true }
         })
     };
+}
+```
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+[See demo here](https://demos.blazorbootstrap.com/grid#data-parameter-assign-collection)
+
+### Data parameter - Update collection
+
+Assign a collection to the `Data` parameter to render the grid dynamically. The example below will render different department employees in the individual grid.
+
+```cshtml {} showLineNumbers
+@using BlazorBootstrap.Demo.Models;
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="AddEmployee"> Add Employee </Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="AddEmployee2"> Add Employee 2 </Button>
+
+<Grid @ref="grid" TItem="Employee1" class="table table-hover table-bordered table-striped mt-3" Data="employees">
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+</Grid>
+```
+
+```cs {} showLineNumbers
+@code {
+    Grid<Employee1> grid;
+
+    private List<Employee1> employees;
+
+    protected override void OnInitialized()
     {
-        await base.OnAfterRenderAsync(firstRender);
+        employees = new List<Employee1> {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true }
+        };
     }
 
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    private async Task AddEmployee()
     {
-        return await Task.FromResult(request.ApplyTo(request.DataSource));
+        // for the same employees collection, we are adding an object
+        // explicit grid refresh required
+        employees.Add(CreateEmployee());
+        await grid.RefreshDataAsync();
+    }
+
+    private void AddEmployee2()
+    {
+        // creates a shallow copy
+        var emps = employees.GetRange(0, employees.Count);
+        emps.Add(CreateEmployee());
+        // now employees variable has a new reference. So no need to refresh the grid explicitly
+        // explicit grid refresh is not required
+        employees = emps;
+    }
+
+    private Employee1 CreateEmployee()
+    {
+        var emp = new Employee1();
+        emp.Id = employees.Max(x => x.Id) + 1;
+        emp.Name = $"Employee {emp.Id}";
+        emp.Designation = $"QA Engineer {emp.Id}";
+        emp.DOJ = new DateOnly(new Random().Next(1970, 2000), new Random().Next(1, 12), new Random().Next(1, 25));
+        emp.IsActive = true;
+        return emp;
     }
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/grid#datasources)
+:::note
+The **Add Employee** button click adds a new employee to the existing **employees** collection—so explicit grid refresh is required.
+
+The **Add Employee 2** button click creates a shallow copy of the **employees** collection and adds a new employee. This new collection is assigned to the **employees** variable. Now, the **employees** variable has a new reference. So the grid will refresh automatically. An explicit grid refresh call is not required.
+:::
+
+[See demo here](https://demos.blazorbootstrap.com/grid#data-parameter-update-collection)
