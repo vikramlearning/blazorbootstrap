@@ -43,8 +43,6 @@ public partial class Grid<TItem> : BaseComponent
             throw new InvalidOperationException($"Grid requires one of {nameof(Data)} or {nameof(DataProvider)}, but both were specified.");
         }
 
-        Console.WriteLine($"{this.ElementId}: Grid.OnParametersSetAsync called...");
-
         // Perform a re-query only if the data source or something else has changed
         var newDataOrDataProvider = Data ?? (object?)DataProvider;
         var dataSourceHasChanged = newDataOrDataProvider != lastAssignedDataOrDataProvider;
@@ -247,7 +245,6 @@ public partial class Grid<TItem> : BaseComponent
 
     internal async Task RefreshDataAsync(bool firstRender = false)
     {
-        Console.WriteLine($"{this.ElementId}: Grid.RefreshDataAsync called...");
         if (requestInProgress)
             return;
 
