@@ -93,7 +93,7 @@ public class GridDataProviderRequest<TItem>
 
         return new GridDataProviderResult<TItem>
         {
-            Data = resultData.ToList(), // TODO: if not required, remove .ToList() here
+            Data = resultData,
             TotalCount = totalCount
         };
     }

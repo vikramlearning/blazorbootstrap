@@ -4,6 +4,11 @@ public partial class Grid<TItem> : BaseComponent
 {
     #region Members
 
+    /// <summary>
+    /// Current grid state (filters, paging, sorting).
+    /// </summary>
+    internal GridState<TItem> gridCurrentState = new GridState<TItem>(1, null);
+
     private List<GridColumn<TItem>> columns = new List<GridColumn<TItem>>();
 
     private List<TItem> items = null;
@@ -18,6 +23,8 @@ public partial class Grid<TItem> : BaseComponent
 
     private string responsiveCssClass => this.Responsive ? "table-responsive" : "";
 
+    private object? lastAssignedDataOrDataProvider;
+
     #endregion Members
 
     #region Methods
@@ -27,6 +34,29 @@ public partial class Grid<TItem> : BaseComponent
         this.pageSize = this.PageSize;
 
         base.OnInitialized();
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        if (Data is not null && DataProvider is not null)
+        {
+            throw new InvalidOperationException($"Grid requires one of {nameof(Data)} or {nameof(DataProvider)}, but both were specified.");
+        }
+
+        // Perform a re-query only if the data source or something else has changed
+        var newDataOrDataProvider = Data ?? (object?)DataProvider;
+        var dataSourceHasChanged = newDataOrDataProvider != lastAssignedDataOrDataProvider;
+        if (dataSourceHasChanged)
+        {
+            lastAssignedDataOrDataProvider = newDataOrDataProvider;
+        }
+
+        var mustRefreshData = dataSourceHasChanged && !GridSettingsChanged.HasDelegate;
+
+        // We want to trigger the first data load when we've collected the initial set of columns
+        // because they might perform some action, like setting the default sort order. 
+        // It would be wasteful to have to re-query immediately.
+        return (columns.Count > 0 && mustRefreshData) ? RefreshDataAsync() : Task.CompletedTask;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -83,19 +113,30 @@ public partial class Grid<TItem> : BaseComponent
     internal async Task FilterChangedAsync()
     {
         await SaveGridSettingsAsync();
+        await RefreshDataAsync();
     }
 
     private async Task OnPageChangedAsync(int newPageNumber)
     {
-        GridCurrentState = new GridState<TItem>(newPageNumber, GridCurrentState.Sorting);
+        gridCurrentState = new GridState<TItem>(newPageNumber, gridCurrentState.Sorting);
         await SaveGridSettingsAsync();
         await RefreshDataAsync();
     }
 
-    internal async Task ResetPageNumberAsync()
+    /// <summary>
+    /// Reset the page number to 1 and refresh the grid.
+    /// </summary>
+    public async ValueTask ResetPageNumber()
     {
-        GridCurrentState = new GridState<TItem>(1, GridCurrentState.Sorting);
-        await SaveGridSettingsAsync();
+        await ResetPageNumberAsync(true);
+    }
+
+    internal async ValueTask ResetPageNumberAsync(bool refreshGrid = false)
+    {
+        gridCurrentState = new GridState<TItem>(1, gridCurrentState.Sorting);
+
+        if (refreshGrid)
+            await RefreshDataAsync();
     }
 
     internal async Task SortingChangedAsync(GridColumn<TItem> column)
@@ -122,11 +163,11 @@ public partial class Grid<TItem> : BaseComponent
                 else
                     c.currentSortDirection = (c.defaultSortDirection != SortDirection.None) ? c.defaultSortDirection : SortDirection.Ascending;
 
-                GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting());
+                gridCurrentState = new GridState<TItem>(gridCurrentState.PageIndex, c.GetSorting());
             }
             else if (c.ElementId == column.ElementId && c.SortDirection != SortDirection.None)
             {
-                GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting());
+                gridCurrentState = new GridState<TItem>(gridCurrentState.PageIndex, c.GetSorting());
             }
         });
 
@@ -176,18 +217,18 @@ public partial class Grid<TItem> : BaseComponent
         {
             if (settings.PageSize > 0 && settings.PageNumber < settings.PageSize)
             {
-                GridCurrentState = new GridState<TItem>(settings.PageNumber, GridCurrentState.Sorting);
+                gridCurrentState = new GridState<TItem>(settings.PageNumber, gridCurrentState.Sorting);
                 this.pageSize = settings.PageSize;
             }
             else
             {
-                GridCurrentState = new GridState<TItem>(1, null);
+                gridCurrentState = new GridState<TItem>(1, null);
                 this.pageSize = 10;
             }
         }
         else
         {
-            GridCurrentState = new GridState<TItem>(1, null);
+            gridCurrentState = new GridState<TItem>(1, null);
             this.pageSize = 10;
         }
 
@@ -197,7 +238,12 @@ public partial class Grid<TItem> : BaseComponent
     /// Refresh the grid data.
     /// </summary>
     /// <returns>Task</returns>
-    public async Task RefreshDataAsync(bool firstRender = false)
+    public async Task RefreshDataAsync()
+    {
+        await RefreshDataAsync(false);
+    }
+
+    internal async Task RefreshDataAsync(bool firstRender = false)
     {
         if (requestInProgress)
             return;
@@ -209,25 +255,28 @@ public partial class Grid<TItem> : BaseComponent
 
         var request = new GridDataProviderRequest<TItem>
         {
-            PageNumber = this.AllowPaging ? GridCurrentState.PageIndex : 0,
+            PageNumber = this.AllowPaging ? gridCurrentState.PageIndex : 0,
             PageSize = this.AllowPaging ? this.pageSize : 0,
-            Sorting = this.AllowSorting ? (GridCurrentState.Sorting ?? GetDefaultSorting()) : null,
+            Sorting = this.AllowSorting ? (gridCurrentState.Sorting ?? GetDefaultSorting()) : null,
             Filters = this.AllowFiltering ? GetFilters() : null
         };
 
-        if (DataProvider != null)
+        GridDataProviderResult<TItem> result = default!;
+
+        if (DataProvider is not null)
+            result = await DataProvider.Invoke(request);
+        else if (Data is not null)
+            result = request.ApplyTo(Data);
+
+        if (result is not null)
         {
-            var result = await DataProvider.Invoke(request);
-            if (result != null)
-            {
-                items = result.Data.ToList();
-                totalCount = result.TotalCount ?? result.Data.Count();
-            }
-            else
-            {
-                items = new List<TItem> { };
-                totalCount = 0;
-            }
+            items = result.Data.ToList();
+            totalCount = result.TotalCount ?? result.Data.Count();
+        }
+        else
+        {
+            items = new List<TItem> { };
+            totalCount = 0;
         }
 
         requestInProgress = false;
@@ -235,19 +284,19 @@ public partial class Grid<TItem> : BaseComponent
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task SaveGridSettingsAsync()
+    private Task SaveGridSettingsAsync()
     {
         if (!GridSettingsChanged.HasDelegate)
-            return;
+            return Task.CompletedTask;
 
         var settings = new GridSettings
         {
-            PageNumber = this.AllowPaging ? GridCurrentState.PageIndex : 0,
+            PageNumber = this.AllowPaging ? gridCurrentState.PageIndex : 0,
             PageSize = this.AllowPaging ? this.pageSize : 0,
             Filters = this.AllowFiltering ? GetFilters() : null
         };
 
-        await GridSettingsChanged.InvokeAsync(settings);
+        return GridSettingsChanged.InvokeAsync(settings);
     }
 
     #endregion Methods
@@ -278,6 +327,17 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public RenderFragment ChildContent { get; set; }
 
     /// <summary>
+    /// Gets or sets the grid data.
+    /// </summary>
+    [Parameter] public IEnumerable<TItem> Data { get; set; }
+
+    /// <summary>
+    /// DataProvider is for items to render. 
+    /// The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
+    /// </summary>
+    [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
+
+    /// <summary>
     /// Shows text on no records.
     /// </summary>
     [Parameter] public string EmptyText { get; set; } = "No records to display";
@@ -285,13 +345,12 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Template to render when there are no rows to display.
     /// </summary>
-    public RenderFragment EmptyDataTemplate { get; set; } // TODO: support this in the next release
+    public RenderFragment EmptyDataTemplate { get; set; }
 
     /// <summary>
-    /// DataProvider is for items to render. 
-    /// The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
+    /// This event is fired when the grid state is changed.
     /// </summary>
-    [Parameter, EditorRequired] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
+    [Parameter] public EventCallback<GridSettings> GridSettingsChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the pagination alignment.
@@ -304,16 +363,9 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public int PageSize { get; set; } = 10;
 
     /// <summary>
-    /// Current grid state (filters, paging, sorting).
-    /// </summary>
-    internal GridState<TItem> GridCurrentState { get; set; } = new GridState<TItem>(1, null);
-
-    /// <summary>
     /// Gets or sets a value indicating whether Grid is responsive.
     /// </summary>
     [Parameter] public bool Responsive { get; set; }
-
-    [Parameter] public EventCallback<GridSettings> GridSettingsChanged { get; set; }
 
     /// <summary>
     /// Settings is for grid to render. 

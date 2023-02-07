@@ -99,6 +99,24 @@
 <Callout Type="CalloutType.Default">Browser local storage is used to persist the Grid state. Common locations exist for persisting state are <b>Server-side storage</b>, <b>URL</b>, <b>Browser storage</b>, and <b>In-memory state container service</b>.</Callout>
 <Demo Type="typeof(Grid_Demo_16_Save_And_Load_Grid_Settings)" Tabs="true" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Data parameter - Assign collection" PageUrl="@pageUrl" HashTagName="data-parameter-assign-collection" />
+<div class="mb-3">Assign a collection to the <code>Data</code> parameter to render the grid dynamically. The example below will render different department employees in the individual grid.</div>
+<Demo Type="typeof(Grid_Demo_17_A_Data_Parameter_Assign_Collection)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Data parameter - Update collection" PageUrl="@pageUrl" HashTagName="data-parameter-update-collection" />
+<div class="mb-3">You can update the collection assigned to the <code>Data</code> parameter. In the below example, the grid will render the updated collection.</div>
+<Demo Type="typeof(Grid_Demo_17_B_Data_Parameter_Update_Collection)" Tabs="true" />
+
+<Callout Type="CalloutType.Tip" Heading="Important">
+    <p>
+        The <b>Add Employee</b> button click adds a new employee to the existing <b>employees</b> collection—so explicit grid refresh is required.
+    </p>
+    <p>
+        The <b>Add Employee 2</b> button click creates a shallow copy of the <b>employees</b> collection and adds a new employee.
+        This new collection is assigned to the <b>employees</b> variable. Now, the <b>employees</b> variable has a new reference. So the grid will refresh automatically. An explicit grid refresh call is not required.
+    </p>
+</Callout>
+
 @code {
     private string pageUrl = "/grid";
     private string title = "Blazor Grid Component";
