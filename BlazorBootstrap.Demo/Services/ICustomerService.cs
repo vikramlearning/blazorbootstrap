@@ -2,5 +2,5 @@
 
 public interface ICustomerService
 {
-    public Task<IEnumerable<Customer>> GetCustomers(FilterItem filter, CancellationToken cancellationToken);
+    public Task<IEnumerable<Customer2>> GetCustomers(FilterItem filter, CancellationToken cancellationToken);
 }

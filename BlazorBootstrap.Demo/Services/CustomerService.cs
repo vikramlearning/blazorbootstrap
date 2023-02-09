@@ -9,14 +9,14 @@ public class CustomerService : ICustomerService
         _httpClient = httpClient;
     }
 
-    public async Task<IEnumerable<Customer>> GetCustomers(FilterItem filter, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Customer2>> GetCustomers(FilterItem filter, CancellationToken cancellationToken)
     {
-        var customers = await _httpClient.GetFromJsonAsync<Customer[]>("sample-data/autocomplete/customer.json");
-        if(customers is null)
-            return Enumerable.Empty<Customer>();
+        var customers = await _httpClient.GetFromJsonAsync<Customer2[]>("sample-data/customer/customer.json");
+        if (customers is null)
+            return Enumerable.Empty<Customer2>();
 
-        var parameterExpression = Expression.Parameter(typeof(Customer)); // second param optional
-        var lambda = ExpressionExtensions.GetExpressionDelegate<Customer>(parameterExpression, filter);
+        var parameterExpression = Expression.Parameter(typeof(Customer2)); // second param optional
+        var lambda = ExpressionExtensions.GetExpressionDelegate<Customer2>(parameterExpression, filter);
         return customers.Where(lambda.Compile()).OrderBy(customer => customer.CustomerName);
     }
 }

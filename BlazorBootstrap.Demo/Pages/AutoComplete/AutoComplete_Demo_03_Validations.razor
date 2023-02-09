@@ -21,11 +21,11 @@
         <label class="col-md-2 col-form-label">Customer:</label>
         <div class="col-md-10">
             <AutoComplete @bind-Value="customerAddress.CustomerName"
-                          TItem="Customer"
+                          TItem="Customer2"
                           DataProvider="CustomersDataProvider"
                           PropertyName="CustomerName"
                           Placeholder="Search a customer..."
-                          OnChanged="(Customer customer) => OnAutoCompleteChanged(customer)" />
+                          OnChanged="(Customer2 customer) => OnAutoCompleteChanged(customer)" />
             <ValidationMessage For="@(() => customerAddress.CustomerName)" />
         </div>
     </div>
@@ -62,13 +62,13 @@
         Console.WriteLine($"Customer name is {customerAddress.CustomerName} and address is {customerAddress.Address}");
     }
 
-    private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
+    private async Task<AutoCompleteDataProviderResult<Customer2>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer2> request)
     {
         var customers = await _customerService.GetCustomers(request.Filter, request.CancellationToken); // API call
-        return await Task.FromResult(new AutoCompleteDataProviderResult<Customer> { Data = customers, TotalCount = customers.Count() });
+        return await Task.FromResult(new AutoCompleteDataProviderResult<Customer2> { Data = customers, TotalCount = customers.Count() });
     }
 
-    private void OnAutoCompleteChanged(Customer customer)
+    private void OnAutoCompleteChanged(Customer2 customer)
     {
         // TODO: handle your own logic
 
