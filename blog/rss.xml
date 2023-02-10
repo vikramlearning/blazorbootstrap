@@ -4,10 +4,26 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Tue, 07 Feb 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 10 Feb 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.4.4]]></title>
+            <link>https://getblazorbootstrap.com/blog/2023/02/10/blazorbootstrap-1.4.4</link>
+            <guid>/2023/02/10/blazorbootstrap-1.4.4</guid>
+            <pubDate>Fri, 10 Feb 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.4.4, with Grid enhancements and more examples!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.4.4, with Grid enhancements and more examples!!!</p><img loading="lazy" src="https://i.imgur.com/36RsWZ3.png" alt="Blazor Bootstrap: Grid Component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Grid</code> component<ul><li>Filters have 300ms timeout for the debouncing</li><li><code>CancellationToken</code> support for the <code>RefreshDataAsync()</code> method</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Blazor Grid Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.4.4</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>grid</category>
+            <category>blazor-grid</category>
+            <category>blazorgrid</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.4.3]]></title>
             <link>https://getblazorbootstrap.com/blog/2023/02/07/blazorbootstrap-1.4.3</link>
