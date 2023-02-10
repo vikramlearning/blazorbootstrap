@@ -1,23 +1,23 @@
 ﻿<Grid TItem="Customer2" class="table table-hover table-bordered table-striped" DataProvider="CustomersDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
-    <GridColumn TItem="Customer2" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="80" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+    <GridColumn TItem="Customer2" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
         @context.CustomerId
     </GridColumn>
     <GridColumn TItem="Customer2" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
         @context.CustomerName
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="80">
+    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
         @context.Phone
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="80">
+    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
         @context.Email
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="80">
+    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="120">
         @context.Address
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip">
+    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
         @context.PostalZip
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country">
+    <GridColumn TItem="Customer2" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
         @context.Country
     </GridColumn>
 </Grid>
