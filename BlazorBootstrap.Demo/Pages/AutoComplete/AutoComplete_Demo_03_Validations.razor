@@ -64,7 +64,7 @@
 
     private async Task<AutoCompleteDataProviderResult<Customer2>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer2> request)
     {
-        var customers = await _customerService.GetCustomers(request.Filter, request.CancellationToken); // API call
+        var customers = await _customerService.GetCustomersAsync(request.Filter, request.CancellationToken); // API call
         return await Task.FromResult(new AutoCompleteDataProviderResult<Customer2> { Data = customers, TotalCount = customers.Count() });
     }
 

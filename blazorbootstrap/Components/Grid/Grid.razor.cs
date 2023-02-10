@@ -25,6 +25,8 @@ public partial class Grid<TItem> : BaseComponent
 
     private object? lastAssignedDataOrDataProvider;
 
+    private CancellationTokenSource cancellationTokenSource;
+
     #endregion Members
 
     #region Methods
@@ -56,7 +58,7 @@ public partial class Grid<TItem> : BaseComponent
         // We want to trigger the first data load when we've collected the initial set of columns
         // because they might perform some action, like setting the default sort order. 
         // It would be wasteful to have to re-query immediately.
-        return (columns.Count > 0 && mustRefreshData) ? RefreshDataAsync() : Task.CompletedTask;
+        return (columns.Count > 0 && mustRefreshData) ? RefreshDataAsync(false, default) : Task.CompletedTask;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -112,15 +114,27 @@ public partial class Grid<TItem> : BaseComponent
 
     internal async Task FilterChangedAsync()
     {
+        if (cancellationTokenSource is not null
+            && !cancellationTokenSource.IsCancellationRequested)
+        {
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+        }
+
+        cancellationTokenSource = new CancellationTokenSource();
+
+        var token = cancellationTokenSource.Token;
+        await Task.Delay(300, token); // 300ms timeout for the debouncing
+
         await SaveGridSettingsAsync();
-        await RefreshDataAsync();
+        await RefreshDataAsync(false, token);
     }
 
     private async Task OnPageChangedAsync(int newPageNumber)
     {
         gridCurrentState = new GridState<TItem>(newPageNumber, gridCurrentState.Sorting);
         await SaveGridSettingsAsync();
-        await RefreshDataAsync();
+        await RefreshDataAsync(false, default);
     }
 
     /// <summary>
@@ -136,7 +150,7 @@ public partial class Grid<TItem> : BaseComponent
         gridCurrentState = new GridState<TItem>(1, gridCurrentState.Sorting);
 
         if (refreshGrid)
-            await RefreshDataAsync();
+            await RefreshDataAsync(false, default);
     }
 
     internal async Task SortingChangedAsync(GridColumn<TItem> column)
@@ -172,7 +186,7 @@ public partial class Grid<TItem> : BaseComponent
         });
 
         await SaveGridSettingsAsync();
-        await RefreshDataAsync();
+        await RefreshDataAsync(false, default);
     }
 
     private IEnumerable<SortingItem<TItem>> GetDefaultSorting()
@@ -238,12 +252,12 @@ public partial class Grid<TItem> : BaseComponent
     /// Refresh the grid data.
     /// </summary>
     /// <returns>Task</returns>
-    public async Task RefreshDataAsync()
+    public async Task RefreshDataAsync(CancellationToken cancellationToken = default)
     {
-        await RefreshDataAsync(false);
+        await RefreshDataAsync(false, cancellationToken);
     }
 
-    internal async Task RefreshDataAsync(bool firstRender = false)
+    internal async Task RefreshDataAsync(bool firstRender = false, CancellationToken cancellationToken = default)
     {
         if (requestInProgress)
             return;
@@ -258,7 +272,8 @@ public partial class Grid<TItem> : BaseComponent
             PageNumber = this.AllowPaging ? gridCurrentState.PageIndex : 0,
             PageSize = this.AllowPaging ? this.pageSize : 0,
             Sorting = this.AllowSorting ? (gridCurrentState.Sorting ?? GetDefaultSorting()) : null,
-            Filters = this.AllowFiltering ? GetFilters() : null
+            Filters = this.AllowFiltering ? GetFilters() : null,
+            CancellationToken = cancellationToken
         };
 
         GridDataProviderResult<TItem> result = default!;

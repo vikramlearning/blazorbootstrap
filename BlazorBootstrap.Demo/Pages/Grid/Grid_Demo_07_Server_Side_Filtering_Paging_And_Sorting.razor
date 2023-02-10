@@ -1,31 +1,31 @@
-﻿<Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
-    <GridColumn TItem="Employee" HeaderText="Id" PropertyName="Id" SortString="Id" SortKeySelector="item => item.Id" FilterTextboxWidth="80" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.Id
+﻿<Grid TItem="Customer2" class="table table-hover table-bordered table-striped" DataProvider="CustomersDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
+    <GridColumn TItem="Customer2" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="80" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+        @context.CustomerId
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="First Name" PropertyName="FirstName" SortString="FirstName" SortKeySelector="item => item.FirstName" FilterTextboxWidth="80">
-        @context.FirstName
+    <GridColumn TItem="Customer2" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+        @context.CustomerName
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Last Name" PropertyName="LastName" SortString="LastName" SortKeySelector="item => item.LastName" FilterTextboxWidth="80">
-        @context.LastName
+    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="80">
+        @context.Phone
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Designation" PropertyName="Designation" SortString="Designation" SortKeySelector="item => item.Designation" FilterTextboxWidth="80">
-        @context.Designation
+    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="80">
+        @context.Email
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Salary" PropertyName="Salary" SortString="Salary" SortKeySelector="item => item.Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" FilterTextboxWidth="80">
-        @context.Salary.ToString("N2")
+    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="80">
+        @context.Address
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="DOJ" PropertyName="DOJ" SortString="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
+    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip">
+        @context.PostalZip
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Active" PropertyName="IsActive" SortString="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
+    <GridColumn TItem="Customer2" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country">
+        @context.Country
     </GridColumn>
 </Grid>
 
 @code {
-    [Inject] public IEmployeeService _employeeService { get; set; }
+    [Inject] public ICustomerService _customerService { get; set; }
 
-    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    private async Task<GridDataProviderResult<Customer2>> CustomersDataProvider(GridDataProviderRequest<Customer2> request)
     {
         string sortString = "";
         SortDirection sortDirection = SortDirection.None;
@@ -36,7 +36,7 @@
             sortString = request.Sorting.FirstOrDefault().SortString;
             sortDirection = request.Sorting.FirstOrDefault().SortDirection;
         }
-        var result = _employeeService.GetEmployees(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection);
-        return await Task.FromResult(new GridDataProviderResult<Employee> { Data = result.Item1, TotalCount = result.Item2 });
+        var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
+        return await Task.FromResult(new GridDataProviderResult<Customer2> { Data = result.Item1, TotalCount = result.Item2 });
     }
 }
