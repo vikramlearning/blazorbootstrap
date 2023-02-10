@@ -22,6 +22,8 @@ public class GridDataProviderRequest<TItem>
     /// </summary>
     public IEnumerable<FilterItem> Filters { get; init; }
 
+    public CancellationToken CancellationToken { get; init; } = default(CancellationToken);
+
     public GridDataProviderResult<TItem> ApplyTo(IEnumerable<TItem> data)
     {
         if (data == null)

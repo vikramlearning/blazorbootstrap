@@ -39,7 +39,7 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 | Name | Return Type | Description | Added Version |
 |--|--|--|--|
 | GetFilters() | `IEnumerable<FilterItem>` | Get filters. | 1.0.0 |
-| RefreshDataAsync() | Task | Refresh the grid data. | 1.0.0 |
+| RefreshDataAsync(CancellationToken cancellationToken = default) | Task | Refresh the grid data. | 1.0.0 |
 | ResetPageNumber() | ValueTask | Reset the page number to 1 and refresh the grid. | 1.4.3 |
 
 ## GridColumn Parameters
