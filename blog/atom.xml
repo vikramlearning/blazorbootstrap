@@ -2,11 +2,31 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-02-10T00:00:00.000Z</updated>
+    <updated>2023-02-23T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.4.5]]></title>
+        <id>/2023/02/23/blazorbootstrap-1.4.5</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/02/23/blazorbootstrap-1.4.5"/>
+        <updated>2023-02-23T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.4.5 with the Toasts component bug fix!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.4.5 with the Toasts component bug fix!!!</p><img loading="lazy" src="https://i.imgur.com/W1YkmJH.png" alt="Blazor Bootstrap: Toasts Component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Toasts</code> component bug fixed<ul><li>Toast progress bar not working when the browser language is french</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/toasts" target="_blank" rel="noopener noreferrer">Blazor Toasts Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.4.5" term="v1.4.5"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="toasts" term="toasts"/>
+        <category label="blazor-toasts" term="blazor-toasts"/>
+        <category label="blazortoasts" term="blazortoasts"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.4.4]]></title>
         <id>/2023/02/10/blazorbootstrap-1.4.4</id>
