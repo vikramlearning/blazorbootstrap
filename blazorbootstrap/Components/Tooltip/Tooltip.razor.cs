@@ -4,6 +4,8 @@ public partial class Tooltip : BaseComponent
 {
     #region Members
 
+    private string title = default!;
+
     private TooltipPlacement _placement = TooltipPlacement.Top;
 
     private DotNetObjectReference<Tooltip> objRef;
@@ -16,10 +18,21 @@ public partial class Tooltip : BaseComponent
 
     protected override async Task OnInitializedAsync()
     {
+        this.title = this.Title;
         objRef ??= DotNetObjectReference.Create(this);
+
         await base.OnInitializedAsync();
 
         ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (title != Title)
+        {
+            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementId);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementId);
+        }
     }
 
     /// <inheritdoc />
@@ -49,7 +62,7 @@ public partial class Tooltip : BaseComponent
     /// <summary>
     /// Displays informative text when users hover, focus, or tap an element.
     /// </summary>
-    [Parameter] public string Title { get; set; }
+    [Parameter, EditorRequired] public string Title { get; set; }
 
     /// <summary>
     /// Specifies the tooltip placement. Default is top right.
@@ -57,7 +70,8 @@ public partial class Tooltip : BaseComponent
     [Parameter]
     public TooltipPlacement Placement
     {
-        get => _placement; set
+        get => _placement; 
+        set
         {
             _placement = value;
             DirtyClasses();

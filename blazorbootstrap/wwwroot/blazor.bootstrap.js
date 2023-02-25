@@ -446,6 +446,10 @@ window.blazorBootstrap = {
             let tooltipEl = document.getElementById(elementId);
             bootstrap?.Tooltip?.getOrCreateInstance(tooltipEl);
         },
+        update: (elementId) => {
+            let tooltipEl = document.getElementById(elementId);
+            bootstrap?.Tooltip?.getOrCreateInstance(tooltipEl)?.update();
+        },
         dispose: (elementId) => {
             bootstrap?.Tooltip?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }

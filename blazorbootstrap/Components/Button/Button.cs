@@ -20,7 +20,9 @@ public partial class Button : BaseComponent
 
     private bool loading;
 
-    private string loadingText;
+    private string loadingText = default!;
+
+    private string tooltipTitle = default!;
 
     #endregion
 
@@ -67,7 +69,6 @@ public partial class Button : BaseComponent
             }
         }
 
-
         Attributes ??= new Dictionary<string, object>();
 
         // tooltip
@@ -107,7 +108,18 @@ public partial class Button : BaseComponent
 
         this.LoadingTemplate ??= ProvideDefaultLoadingTemplate();
 
+        this.tooltipTitle = TooltipTitle;
+
         base.OnInitialized();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!Disabled && tooltipTitle != TooltipTitle)
+        {
+            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementId);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementId);
+        }
     }
 
     protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder =>
@@ -256,7 +268,7 @@ public partial class Button : BaseComponent
     /// <summary>
     /// Gets or sets the component loading template.
     /// </summary>
-    [Parameter] public RenderFragment LoadingTemplate { get; set; }
+    [Parameter] public RenderFragment LoadingTemplate { get; set; } = default!;
 
     /// <summary>
     /// Denotes the target route of the <see cref="ButtonType.Link"/> button.
@@ -276,12 +288,12 @@ public partial class Button : BaseComponent
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="Button"/>.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Displays informative text when users hover, focus, or tap an element.
     /// </summary>
-    [Parameter] public string TooltipTitle { get; set; }
+    [Parameter] public string TooltipTitle { get; set; } = default!;
 
     /// <summary>
     /// Tooltip placement

@@ -1,8 +1,6 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<CascadingValue Value="@this" IsFixed="true">
-    <span @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" data-bs-toggle="tooltip" data-bs-placement="@placement" title="@Title">
-        @ChildContent
-    </span>
-</CascadingValue>
+<span @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" data-bs-toggle="tooltip" data-bs-placement="@placement" title="@Title">
+    @ChildContent
+</span>
