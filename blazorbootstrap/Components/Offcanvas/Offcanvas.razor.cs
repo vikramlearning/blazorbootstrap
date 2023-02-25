@@ -1,12 +1,14 @@
-﻿using BlazorBootstrap.Utilities;
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-
-namespace BlazorBootstrap
+﻿namespace BlazorBootstrap
 {
     public partial class Offcanvas : BaseComponent
     {
         #region Members
+
+        private string title;
+
+        private Type? childComponent;
+
+        private Dictionary<string, object> parameters;
 
         private Placement placement = Placement.End;
 
@@ -29,6 +31,7 @@ namespace BlazorBootstrap
 
         protected override async Task OnInitializedAsync()
         {
+            this.title = Title;
             objRef ??= DotNetObjectReference.Create(this);
             await base.OnInitializedAsync();
 
@@ -40,7 +43,29 @@ namespace BlazorBootstrap
         /// </summary>
         public async Task ShowAsync()
         {
+            await ShowAsync(title: null, type: null, parameters: null);
+        }
+
+        /// <summary>
+        /// Opens a offcanvas.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="title"></param>
+        /// <param name="parameters"></param>
+        public async Task ShowAsync<T>(string title, Dictionary<string, object> parameters = null)
+        {
+            await ShowAsync(title: title, type: typeof(T), parameters: parameters);
+        }
+
+        private async Task ShowAsync(string title, Type? type, Dictionary<string, object> parameters)
+        {
+            if (!string.IsNullOrWhiteSpace(title))
+                this.title = title;
+
+            this.childComponent = type;
+            this.parameters = parameters;
             await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", ElementId);
+            await InvokeAsync(StateHasChanged);
         }
 
         /// <summary>
