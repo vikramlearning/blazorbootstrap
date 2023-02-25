@@ -1,0 +1,8 @@
+﻿<div class="mb-3">
+    <DateInput TValue="DateTime" @bind-Value="@date1" Min="2022-12-31" Max="2023-04-20" Placeholder="Enter Date" />
+</div>
+<div class="mb-3">Entered date: @date1</div>
+
+@code {
+    private DateTime date1 = DateTime.Now;
+}

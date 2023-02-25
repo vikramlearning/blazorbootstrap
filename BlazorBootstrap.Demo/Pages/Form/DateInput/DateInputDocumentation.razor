@@ -1,0 +1,22 @@
+﻿@page "/date-input"
+@page "/form/date-input"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Date Input</h1>
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<Demo Type="typeof(DateInput_Demo_01_Basic_Usage)" Tabs="false" />
+
+<Callout Type="CalloutType.Tip">
+    The default locale is <b>en-US</b>.
+</Callout>
+
+@code {
+    private string pageUrl = "/form/date-input";
+    private string title = "Blazor DateInput Component";
+    private string description = "Use the Blazor Bootstrap DateInput component to show the numbers in the user's locale format, including the currency symbol.";
+    private string imageUrl = "https://i.imgur.com/iUNBkki.png";
+}
