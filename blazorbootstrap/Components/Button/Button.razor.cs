@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Components.Rendering;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Button : BaseComponent
 {
     #region Members
+
+    private string buttonTypeString => this.Type.ToButtonTypeString();
 
     private ButtonColor color = ButtonColor.None;
 
@@ -35,71 +35,12 @@ public partial class Button : BaseComponent
         builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
         builder.Append(BootstrapClassProvider.ButtonOutline(Color), Color != ButtonColor.None && Outline);
         builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
-        builder.Append(BootstrapClassProvider.ButtonDisabled(), disabled);
+        builder.Append(BootstrapClassProvider.ButtonDisabled(), disabled && Type == ButtonType.Link);
         builder.Append(BootstrapClassProvider.ButtonActive(), active);
         builder.Append(BootstrapClassProvider.ButtonBlock(), Block);
         builder.Append(BootstrapClassProvider.ButtonLoading(), Loading && LoadingTemplate != null);
 
         base.BuildClasses(builder);
-    }
-
-    protected override void BuildRenderTree(RenderTreeBuilder builder)
-    {
-        builder
-            .OpenElement(Type.ToButtonTagName())
-            .Id(ElementId)
-            .Type(Type.ToButtonTypeString())
-            .Class(ClassNames)
-            .Style(StyleNames)
-            .Disabled(Disabled)
-            .AriaPressed(Active)
-            .TabIndex(TabIndex);
-
-        if (Type == ButtonType.Link)
-        {
-            builder.Role("button")
-                .Href(To)
-                .Target(Target);
-
-            if (Disabled)
-            {
-                builder
-                    .TabIndex(-1)
-                    .AriaDisabled("true");
-            }
-        }
-
-        Attributes ??= new Dictionary<string, object>();
-
-        // tooltip
-        if (string.IsNullOrWhiteSpace(TooltipTitle))
-        {
-            if (Attributes.TryGetValue("title", out object title))
-                Attributes.Remove("title");
-        }
-        else if (!Disabled)
-        {
-            builder.DataBootstrap("toggle", "toggle");
-            builder.DataBootstrap("placement", TooltipPlacement.ToTooltipPlacementName());
-
-            if (!Attributes.TryGetValue("title", out object title))
-                Attributes.Add("title", TooltipTitle);
-            else
-                Attributes["title"] = TooltipTitle;
-
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
-        }
-
-        builder.Attributes(Attributes);
-
-        if (Loading && LoadingTemplate != null)
-            builder.Content(LoadingTemplate);
-        else
-            builder.Content(ChildContent);
-
-        builder.CloseElement();
-
-        base.BuildRenderTree(builder);
     }
 
     protected override void OnInitialized()
@@ -110,15 +51,77 @@ public partial class Button : BaseComponent
 
         this.tooltipTitle = TooltipTitle;
 
+        SetAttributes();
+
         base.OnInitialized();
+
+        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
     }
 
     protected override async Task OnParametersSetAsync()
     {
         if (!Disabled && tooltipTitle != TooltipTitle)
         {
+            if (Attributes is not null && Attributes.TryGetValue("title", out object title))
+                Attributes["title"] = TooltipTitle;
+
             await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementId);
             await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementId);
+        }
+    }
+
+    private void SetAttributes()
+    {
+        Attributes ??= new Dictionary<string, object>();
+
+        if (this.Disabled)
+            Attributes.Add("disabled", "disabled");
+
+        if (this.Active)
+            Attributes.Add("aria-pressed", "true");
+
+        if (this.TabIndex is not null)
+            Attributes.Add("tabindex", TabIndex);
+
+        // 'a' tag
+        if (Type == ButtonType.Link)
+        {
+            Attributes.Add("role", "button");
+            Attributes.Add("href", To);
+
+            if (Target != Target.None)
+            {
+                Attributes.Add("target", Target.ToTargetString());
+            }
+
+            if (Disabled)
+            {
+                if (Attributes.TryGetValue("tabindex", out object tabindex))
+                    Attributes["tabindex"] = -1;
+                else
+                    Attributes.Add("tabindex", -1);
+
+                Attributes.Add("aria-disabled", "true");
+            }
+        }
+
+        // tooltip
+        if (string.IsNullOrWhiteSpace(TooltipTitle))
+        {
+            if (Attributes.TryGetValue("title", out object title))
+                Attributes.Remove("title");
+        }
+        else if (!Disabled)
+        {
+            Attributes.Add("data-bs-toggle", "button");
+            Attributes.Add("data-bs-placement", TooltipPlacement.ToTooltipPlacementName());
+
+            if (Attributes.TryGetValue("title", out object title))
+                Attributes["title"] = TooltipTitle;
+            else
+                Attributes.Add("title", TooltipTitle);
+
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
         }
     }
 

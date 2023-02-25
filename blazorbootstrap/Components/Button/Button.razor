@@ -1,0 +1,29 @@
+﻿@namespace BlazorBootstrap
+@inherits BaseComponent
+
+@if (this.Type == ButtonType.Link)
+{
+    <a type="@buttonTypeString" @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        @if (Loading && LoadingTemplate != null)
+        {
+            @LoadingTemplate
+        }
+        else
+        {
+            @ChildContent
+        }
+    </a>
+}
+else
+{
+    <button type="@buttonTypeString" @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        @if (Loading && LoadingTemplate != null)
+        {
+            @LoadingTemplate
+        }
+        else
+        {
+            @ChildContent
+        }
+    </button>
+}
