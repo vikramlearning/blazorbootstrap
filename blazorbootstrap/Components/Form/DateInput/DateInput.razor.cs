@@ -87,6 +87,7 @@ public partial class DateInput<TValue> : BaseComponent
 
     private async Task OnChange(ChangeEventArgs e)
     {
+        Console.WriteLine($"OnChnage: {e.Value}");
     }
 
     #endregion
