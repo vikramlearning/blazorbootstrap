@@ -1,8 +1,27 @@
 ﻿<div class="mb-3">
-    <DateInput TValue="DateTime" @bind-Value="@date1" Min="2022-12-31" Max="2023-04-20" Placeholder="Enter Date" />
+    <DateInput TValue="DateOnly" @bind-Value="@date1" EnableMinMax="true" Min="@min1" Max="@max1" Placeholder="Enter Date" />
 </div>
-<div class="mb-3">Entered date: @date1</div>
+<div class="mb-3">Min date: @min1.ToString("dd-MM-yyyy")</div>
+<div class="mb-3">Max date: @max1.ToString("dd-MM-yyyy")</div>
+<div class="mb-3">Entered date: @date1.ToString("dd-MM-yyyy")</div>
+
+@*<div class="mb-3">
+    <DateInput TValue="DateTime" @bind-Value="@date2" Min="@min2" Max="@max2" Placeholder="Enter Date" />
+</div>
+<div class="mb-3">Entered date: @date2</div>*@
 
 @code {
-    private DateTime date1 = DateTime.Now;
+    private DateOnly date1;
+    private DateOnly min1 = DateOnly.Parse("2023-02-01"); // yyyy-MM-dd
+    private DateOnly max1 = DateOnly.Parse("2023-04-01"); // yyyy-MM-dd
+
+    private DateTime date2;
+    private DateTime min2 = DateTime.Parse("2022-01-20"); // yyyy-MM-dd
+    private DateTime max2 = DateTime.Parse("2024-04-20"); // yyyy-MM-dd
+
+    protected override void OnInitialized()
+    {
+        date1 = DateOnly.FromDateTime(DateTime.Now.AddDays(10));
+        date2 = DateTime.Now;
+    }
 }
