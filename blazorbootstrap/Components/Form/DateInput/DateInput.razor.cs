@@ -48,8 +48,8 @@ public partial class DateInput<TValue> : BaseComponent
 
     protected override async Task OnInitializedAsync()
     {
-        if (EnableMinMax 
-            && Min is not null 
+        if (EnableMinMax
+            && Min is not null
             && Max is not null
             && IsLeftGreaterThanRight(Min, Max))
             throw new InvalidOperationException("The Min parameter value is greater than the Max parameter value.");
@@ -83,16 +83,21 @@ public partial class DateInput<TValue> : BaseComponent
     {
         if (firstRender)
         {
-            Console.WriteLine($"OnAfterRenderAsync..."); // TODO: remove this
-
-            // TODO: check JS call required or not?
-
             var currentValue = Value;
 
             if (currentValue is null || !TryParseValue(currentValue, out TValue value))
-                Value = default!;
+            {
+                if (EnableMinMax
+                    && Min is not null
+                    && (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateTime)))
+                {
+                    Value = Min;
+                }
+                else
+                    Value = default!;
+            }
             else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, Value)) //  value < min
-                Value = Min;
+                Value = EnableMinMax && Min is not null ? Min : default!;
             else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
                 Value = Max;
             else
@@ -102,12 +107,97 @@ public partial class DateInput<TValue> : BaseComponent
             this.formattedMin = GetFormattedValue(Min);
             this.formattedValue = GetFormattedValue(Value);
 
-            Console.WriteLine($"firstRender: formattedValue: {this.formattedValue}");
-
             await ValueChanged.InvokeAsync(Value);
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task OnChange(ChangeEventArgs e)
+    {
+        var oldValue = Value;
+        var newValue = e.Value; // object
+
+        if (newValue is null || !TryParseValue(newValue, out TValue value))
+        {
+            if (EnableMinMax
+                && Min is not null
+                && (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateTime)))
+            {
+                Value = Min;
+            }
+            else
+                Value = default!;
+
+            Console.WriteLine($"OnChange 1: {Value}");
+        }
+        else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, value)) //  value < min
+        {
+            Value = Min;
+            Console.WriteLine($"OnChange 2: {Value}, oldValue: {oldValue}");
+        }
+        else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
+        {
+            Value = Max;
+            Console.WriteLine($"OnChange 3: {Value}, oldValue: {oldValue}");
+        }
+        else
+        {
+            Value = value;
+            Console.WriteLine($"OnChange 4: {Value}");
+        }
+
+        this.formattedMax = GetFormattedValue(Max);
+        this.formattedMin = GetFormattedValue(Min);
+        this.formattedValue = GetFormattedValue(Value);
+
+        if (oldValue.Equals(Value))
+            await JS.InvokeVoidAsync("window.blazorBootstrap.dateInput.setValue", ElementId, this.formattedValue);
+
+        await ValueChanged.InvokeAsync(Value);
+
+        EditContext?.NotifyFieldChanged(fieldIdentifier);
+
+        Console.WriteLine($"OnChange: formattedValue: {this.formattedValue}");
+    }
+
+    private bool TryParseValue(object value, out TValue newValue)
+    {
+        try
+        {
+            Console.WriteLine($"TryParseValue 1: {value}");
+
+            // DateOnly / DateOnly?
+            if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
+            {
+                if (DateTime.TryParse(value.ToString(), CultureInfo.GetCultureInfo(defaultLocale), DateTimeStyles.None, out DateTime dt))
+                {
+                    Console.WriteLine($"TryParseValue 2: {dt}");
+                    newValue = (TValue)(object)DateOnly.FromDateTime(dt);
+                    Console.WriteLine($"TryParseValue 3: {newValue}");
+                    return true;
+                }
+
+                newValue = default!;
+                Console.WriteLine($"TryParseValue 4: {newValue}");
+                return false;
+            }
+            // DateTime / DateTime?
+            else if (typeof(TValue) == typeof(DateTime) || typeof(TValue) == typeof(DateTime?))
+            {
+                newValue = (TValue)Convert.ChangeType(value, typeof(DateTime), CultureInfo.InvariantCulture);
+                return true;
+            }
+
+            newValue = default!;
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"exception: {ex.Message}");
+            newValue = default!;
+            return false;
+        }
     }
 
     /// <summary>
@@ -172,44 +262,6 @@ public partial class DateInput<TValue> : BaseComponent
         return false;
     }
 
-    private bool TryParseValue(object value, out TValue newValue)
-    {
-        try
-        {
-            Console.WriteLine($"TryParseValue 1: {value}");
-            // DateOnly / DateOnly?
-            if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
-            {
-                if (DateTime.TryParse(value.ToString(), CultureInfo.GetCultureInfo(defaultLocale), DateTimeStyles.None, out DateTime dt))
-                {
-                    Console.WriteLine($"TryParseValue 2: {dt}");
-                    newValue = (TValue)(object)DateOnly.FromDateTime(dt);
-                    Console.WriteLine($"TryParseValue 3: {newValue}");
-                    return true;
-                }
-
-                newValue = default!;
-                Console.WriteLine($"TryParseValue 4: {newValue}");
-                return false;
-            }
-            // DateTime / DateTime?
-            else if (typeof(TValue) == typeof(DateTime) || typeof(TValue) == typeof(DateTime?))
-            {
-                newValue = (TValue)Convert.ChangeType(value, typeof(DateTime), CultureInfo.InvariantCulture);
-                return true;
-            }
-
-            newValue = default!;
-            return false;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"exception: {ex.Message}");
-            newValue = default!;
-            return false;
-        }
-    }
-
     private string GetFormattedValue(TValue value)
     {
         string date = "";
@@ -271,47 +323,6 @@ public partial class DateInput<TValue> : BaseComponent
     public void Enable()
     {
         this.disabled = false;
-    }
-
-    private async Task OnChange(ChangeEventArgs e)
-    {
-        var oldValue = Value;
-        var newValue = e.Value; // object
-        Console.WriteLine($"OnChange 0: newValue: {e.Value}");
-
-        if (newValue is null || !TryParseValue(newValue, out TValue value))
-        {
-            Value = EnableMinMax && Min is not null ? Min : default!;
-            Console.WriteLine($"OnChange 2: {Value}");
-        }
-        else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, value)) //  value < min
-        {
-            Value = Min;
-            Console.WriteLine($"OnChange 3: {Value}, oldValue: {oldValue}");
-        }
-        else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
-        {
-            Value = Max;
-            Console.WriteLine($"OnChange 4: {Value}, oldValue: {oldValue}");
-        }
-        else
-        {
-            Value = value;
-            Console.WriteLine($"OnChange 5: {Value}");
-        }
-
-        this.formattedMax = GetFormattedValue(Max);
-        this.formattedMin = GetFormattedValue(Min);
-        this.formattedValue = GetFormattedValue(Value);
-
-        if (oldValue.Equals(Value))
-            await JS.InvokeVoidAsync("window.blazorBootstrap.dateInput.setValue", ElementId, this.formattedValue);
-
-        await ValueChanged.InvokeAsync(Value);
-
-        EditContext?.NotifyFieldChanged(fieldIdentifier);
-
-        Console.WriteLine($"OnChange: formattedValue: {this.formattedValue}");
     }
 
     #endregion
