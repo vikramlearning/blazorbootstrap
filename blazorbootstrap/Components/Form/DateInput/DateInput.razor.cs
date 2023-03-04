@@ -13,8 +13,10 @@ public partial class DateInput<TValue> : BaseComponent
 
     #region Members
 
+    /// <summary>
+    /// Date format: yyyy-MM-dd.
+    /// </summary>
     private string defaultFormat = "yyyy-MM-dd";
-    private string defaultLocale = "en-US";
 
     private FieldIdentifier fieldIdentifier;
 
@@ -31,8 +33,6 @@ public partial class DateInput<TValue> : BaseComponent
     private string formattedValue;
 
     private bool isFirstRender = true;
-
-    private CultureInfo cultureInfo;
 
     #endregion
 
@@ -67,15 +67,6 @@ public partial class DateInput<TValue> : BaseComponent
 
         this.disabled = this.Disabled;
 
-        try
-        {
-            this.cultureInfo = new CultureInfo(Locale); // TODO: check locale is required or not?
-        }
-        catch (CultureNotFoundException)
-        {
-            this.cultureInfo = new CultureInfo("en-US");
-        }
-
         await base.OnInitializedAsync();
     }
 
@@ -93,33 +84,35 @@ public partial class DateInput<TValue> : BaseComponent
                     && (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateTime)))
                 {
                     Value = Min;
+                    Console.WriteLine($"OnAfterRenderAsync 2: Value: {Value}");
                 }
                 else // DateOnly? / DateTime?
+                {
                     Value = default!;
-
-                Console.WriteLine($"OnAfterRenderAsync 2: currentValue: {currentValue}, Value: {Value}");
+                    Console.WriteLine($"OnAfterRenderAsync 3: Value: {Value}");
+                }
             }
             else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, Value)) //  value < min
             {
                 Value = EnableMinMax && Min is not null ? Min : default!;
-                Console.WriteLine($"OnAfterRenderAsync 3: currentValue: {currentValue}, Value: {Value}");
+                Console.WriteLine($"OnAfterRenderAsync 4: Value: {Value}");
             }
             else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
             {
                 Value = Max;
-                Console.WriteLine($"OnAfterRenderAsync 4: currentValue: {currentValue}, Value: {Value}");
+                Console.WriteLine($"OnAfterRenderAsync 5: Value: {Value}");
             }
             else
             {
                 Value = value;
-                Console.WriteLine($"OnAfterRenderAsync 5: currentValue: {currentValue}, Value: {Value}");
+                Console.WriteLine($"OnAfterRenderAsync 6: Value: {Value}");
             }
 
-            this.formattedMax = EnableMinMax ? GetFormattedValue(Max) : string.Empty;
-            this.formattedMin = EnableMinMax ? GetFormattedValue(Min) : string.Empty;
+            this.formattedMax = EnableMinMax && Max is not null ? GetFormattedValue(Max) : string.Empty;
+            this.formattedMin = EnableMinMax && Min is not null ? GetFormattedValue(Min) : string.Empty;
             this.formattedValue = GetFormattedValue(Value);
 
-            Console.WriteLine($"OnAfterRenderAsync 6: formattedMax: {formattedMax}, formattedMin: {formattedMin}, formattedValue: {formattedValue}");
+            Console.WriteLine($"OnAfterRenderAsync 7: formattedMax: {formattedMax}, formattedMin: {formattedMin}, formattedValue: {formattedValue}");
 
             await ValueChanged.InvokeAsync(Value);
         }
@@ -169,8 +162,8 @@ public partial class DateInput<TValue> : BaseComponent
             Console.WriteLine($"OnChange 7: {Value}");
         }
 
-        this.formattedMax = EnableMinMax ? GetFormattedValue(Max) : string.Empty;
-        this.formattedMin = EnableMinMax ? GetFormattedValue(Min) : string.Empty;
+        this.formattedMax = EnableMinMax && Max is not null ? GetFormattedValue(Max) : string.Empty;
+        this.formattedMin = EnableMinMax && Min is not null ? GetFormattedValue(Min) : string.Empty;
         this.formattedValue = GetFormattedValue(Value);
 
         if (oldValue.Equals(Value))
@@ -261,61 +254,42 @@ public partial class DateInput<TValue> : BaseComponent
         return false;
     }
 
-    private string GetFormattedValue(TValue value)
+    private string GetFormattedValue(object value)
     {
         Console.WriteLine($"GetFormattedValue 1: value: {value}");
 
-        string date = "";
+        string formattedDate = "";
 
         try
         {
             if (value is null)
-                return date;
+                return formattedDate;
 
             // DateOnly / DateOnly?
             if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
             {
                 if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
                 {
-                    date = dt.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-                    Console.WriteLine($"GetFormattedValue 3: value: {date}");
+                    formattedDate = dt.ToString(defaultFormat, CultureInfo.InvariantCulture);
+                    Console.WriteLine($"GetFormattedValue 2: value: {formattedDate}");
                 }
             }
-            //// DateOnly?
-            //else if (typeof(TValue) == typeof(DateOnly?))
-            //{
-            //    if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
-            //    {
-            //        date = dt.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            //        Console.WriteLine($"GetFormattedValue 3: value: {date}");
-            //    }
-            //}
-            // DateTime
-            else if (typeof(TValue) == typeof(DateTime))
+            // DateTime / DateTime?
+            else if (typeof(TValue) == typeof(DateTime) || typeof(TValue) == typeof(DateTime?))
             {
-                var d = Convert.ToDateTime(value.ToString()); // TODO: update this with .NET 8 upgrade
-                date = d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-                Console.WriteLine($"GetFormattedValue 4: value: {date}");
-            }
-            // DateTime?
-            else if (typeof(TValue) == typeof(DateTime?))
-            {
-                var d = value as DateTime?;
-                if (d is not null && d.HasValue)
-                {
-                    date = d.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-                    Console.WriteLine($"GetFormattedValue 5: value: {date}");
-                }
+                var d = Convert.ToDateTime(value, CultureInfo.InvariantCulture); // TODO: update this with .NET 8 upgrade
+                formattedDate = d.ToString(defaultFormat);
+                Console.WriteLine($"GetFormattedValue 3: value: {formattedDate}");
             }
         }
         catch (FormatException ex)
         {
-            Console.WriteLine($"GetFormattedValue 6: FormatException: {ex.Message}");
-            return date;
+            Console.WriteLine($"GetFormattedValue 4: FormatException: {ex.Message}");
+            return formattedDate;
         }
 
-        Console.WriteLine($"GetFormattedValue 7: value: {date}");
-        return date;
+        Console.WriteLine($"GetFormattedValue 5: value: {formattedDate}");
+        return formattedDate;
     }
 
     /// <summary>
@@ -360,11 +334,6 @@ public partial class DateInput<TValue> : BaseComponent
     [Parameter] public bool EnableMinMax { get; set; }
 
     /// <summary>
-    /// Gets or sets the locale. Default locale is 'en-US'.
-    /// </summary>
-    [Parameter, EditorRequired] public string Locale { get; set; } = "en-US";
-
-    /// <summary>
     /// Gets or sets the max.
     /// Allowed format is yyyy-mm-dd.
     /// </summary>
@@ -380,12 +349,6 @@ public partial class DateInput<TValue> : BaseComponent
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
-
-    /// <summary>
-    /// Gets or sets the step.
-    /// The default value of step is 1, indicating 1 day.
-    /// </summary>
-    [Parameter] public int Step { get; set; } = 1;
 
     /// <summary>
     /// Gets or sets the text alignment.

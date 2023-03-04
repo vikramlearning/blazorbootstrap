@@ -1,5 +1,17 @@
-﻿<h3>DateInput_Demo_05_Disable_Date_Input</h3>
+﻿<div class="mb-3">
+    <DateInput @ref="dateInput" TValue="DateOnly" @bind-Value="@date1" Disabled="true" Placeholder="Enter Date" />
+</div>
+<div class="mb-3">Entered date: @date1.ToString("dd-MM-yyyy")</div>
+
+<Button Color="ButtonColor.Primary" @onclick="enableNumberInput"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="disableNumberInput"> Disable </Button>
 
 @code {
+    private DateInput<DateOnly> dateInput;
 
+    private DateOnly date1 = DateOnly.FromDateTime(DateTime.Now);
+
+    private void enableNumberInput() => dateInput.Enable();
+
+    private void disableNumberInput() => dateInput.Disable();
 }

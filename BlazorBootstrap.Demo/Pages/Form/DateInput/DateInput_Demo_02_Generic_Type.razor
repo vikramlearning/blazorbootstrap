@@ -1,5 +1,38 @@
-﻿<h3>DateInput_Demo_02_Generic_Type</h3>
+﻿<div class="mb-3">
+    <strong>DateOnly</strong>:
+</div>
+<div class="mb-3">
+    <DateInput TValue="DateOnly" @bind-Value="@date1" Placeholder="Enter Date" />
+</div>
+<div class="mb-3">Entered date: @date1.ToString("dd-MM-yyyy")</div>
+
+<div class="mb-3">
+    <strong>DateOnly?</strong>:
+</div>
+<div class="mb-3">
+    <DateInput TValue="DateOnly?" @bind-Value="@date2" Placeholder="Enter Date" />
+</div>
+<div class="mb-3">Entered date: @date2?.ToString("dd-MM-yyyy")</div>
+
+<div class="mb-3">
+    <strong>DateTime</strong>:
+</div>
+<div class="mb-3">
+    <DateInput TValue="DateTime" @bind-Value="@date3" Placeholder="Enter Date" />
+</div>
+<div class="mb-3">Entered date: @date3.ToString("dd-MM-yyyy")</div>
+
+<div class="mb-3">
+    <strong>DateTime?</strong>:
+</div>
+<div class="mb-3">
+    <DateInput TValue="DateTime?" @bind-Value="@date4" Placeholder="Enter Date" />
+</div>
+<div class="mb-3">Entered date: @date4?.ToString("dd-MM-yyyy")</div>
 
 @code {
-
+    private DateOnly date1 = DateOnly.FromDateTime(DateTime.Now.AddMonths(3));
+    private DateOnly? date2;
+    private DateTime date3 = DateTime.Now.AddMonths(3);
+    private DateTime? date4;
 }
