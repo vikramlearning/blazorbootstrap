@@ -84,6 +84,7 @@ public partial class DateInput<TValue> : BaseComponent
         if (firstRender)
         {
             var currentValue = Value;
+            Console.WriteLine($"OnAfterRenderAsync 1: currentValue: {currentValue}, Min: {Min}, Max: {Max}");
 
             if (currentValue is null || !TryParseValue(currentValue, out TValue value))
             {
@@ -93,19 +94,32 @@ public partial class DateInput<TValue> : BaseComponent
                 {
                     Value = Min;
                 }
-                else
+                else // DateOnly? / DateTime?
                     Value = default!;
+
+                Console.WriteLine($"OnAfterRenderAsync 2: currentValue: {currentValue}, Value: {Value}");
             }
             else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, Value)) //  value < min
+            {
                 Value = EnableMinMax && Min is not null ? Min : default!;
+                Console.WriteLine($"OnAfterRenderAsync 3: currentValue: {currentValue}, Value: {Value}");
+            }
             else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
+            {
                 Value = Max;
+                Console.WriteLine($"OnAfterRenderAsync 4: currentValue: {currentValue}, Value: {Value}");
+            }
             else
+            {
                 Value = value;
+                Console.WriteLine($"OnAfterRenderAsync 5: currentValue: {currentValue}, Value: {Value}");
+            }
 
-            this.formattedMax = GetFormattedValue(Max);
-            this.formattedMin = GetFormattedValue(Min);
+            this.formattedMax = EnableMinMax ? GetFormattedValue(Max) : string.Empty;
+            this.formattedMin = EnableMinMax ? GetFormattedValue(Min) : string.Empty;
             this.formattedValue = GetFormattedValue(Value);
+
+            Console.WriteLine($"OnAfterRenderAsync 6: formattedMax: {formattedMax}, formattedMin: {formattedMin}, formattedValue: {formattedValue}");
 
             await ValueChanged.InvokeAsync(Value);
         }
@@ -115,6 +129,8 @@ public partial class DateInput<TValue> : BaseComponent
 
     private async Task OnChange(ChangeEventArgs e)
     {
+        Console.WriteLine($"OnChange called...");
+
         var oldValue = Value;
         var newValue = e.Value; // object
 
@@ -126,7 +142,7 @@ public partial class DateInput<TValue> : BaseComponent
             {
                 Value = Min;
             }
-            else
+            else // DateOnly? / DateTime?
                 Value = default!;
 
             Console.WriteLine($"OnChange 1: {Value}");
@@ -147,8 +163,8 @@ public partial class DateInput<TValue> : BaseComponent
             Console.WriteLine($"OnChange 4: {Value}");
         }
 
-        this.formattedMax = GetFormattedValue(Max);
-        this.formattedMin = GetFormattedValue(Min);
+        this.formattedMax = EnableMinMax ? GetFormattedValue(Max) : string.Empty;
+        this.formattedMin = EnableMinMax ? GetFormattedValue(Min) : string.Empty;
         this.formattedValue = GetFormattedValue(Value);
 
         if (oldValue.Equals(Value))
@@ -170,7 +186,7 @@ public partial class DateInput<TValue> : BaseComponent
             // DateOnly / DateOnly?
             if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
             {
-                if (DateTime.TryParse(value.ToString(), CultureInfo.GetCultureInfo(defaultLocale), DateTimeStyles.None, out DateTime dt))
+                if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
                 {
                     Console.WriteLine($"TryParseValue 2: {dt}");
                     newValue = (TValue)(object)DateOnly.FromDateTime(dt);
@@ -264,6 +280,8 @@ public partial class DateInput<TValue> : BaseComponent
 
     private string GetFormattedValue(TValue value)
     {
+        Console.WriteLine($"GetFormattedValue 1: value: {value}");
+
         string date = "";
 
         try
@@ -271,41 +289,49 @@ public partial class DateInput<TValue> : BaseComponent
             if (value is null)
                 return date;
 
-            // DateOnly
-            if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateTime))
+            // DateOnly / DateOnly?
+            if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
             {
-                if (value is not null)
+                if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
                 {
-                    var d = Convert.ToDateTime(value.ToString()); // TODO: update this with .NET 8 upgrade
-                    date = d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    date = dt.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    Console.WriteLine($"GetFormattedValue 3: value: {date}");
                 }
             }
-            // DateOnly?
-            else if (typeof(TValue) == typeof(DateOnly?) || typeof(TValue) == typeof(DateTime?))
-            {
-                var d = value as DateTime?;
-                if (d is not null && d.HasValue)
-                    date = d.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            }
+            //// DateOnly?
+            //else if (typeof(TValue) == typeof(DateOnly?))
+            //{
+            //    if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+            //    {
+            //        date = dt.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            //        Console.WriteLine($"GetFormattedValue 3: value: {date}");
+            //    }
+            //}
             // DateTime
-            else if (typeof(TValue) == typeof(DateOnly?) || typeof(TValue) == typeof(DateTime?))
+            else if (typeof(TValue) == typeof(DateTime))
             {
                 var d = Convert.ToDateTime(value.ToString()); // TODO: update this with .NET 8 upgrade
                 date = d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                Console.WriteLine($"GetFormattedValue 4: value: {date}");
             }
             // DateTime?
-            else if (typeof(TValue) == typeof(DateOnly?) || typeof(TValue) == typeof(DateTime?))
+            else if (typeof(TValue) == typeof(DateTime?))
             {
                 var d = value as DateTime?;
                 if (d is not null && d.HasValue)
+                {
                     date = d.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+                    Console.WriteLine($"GetFormattedValue 5: value: {date}");
+                }
             }
         }
-        catch (FormatException)
+        catch (FormatException ex)
         {
+            Console.WriteLine($"GetFormattedValue 6: FormatException: {ex.Message}");
             return date;
         }
 
+        Console.WriteLine($"GetFormattedValue 7: value: {date}");
         return date;
     }
 
