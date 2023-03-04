@@ -1,5 +1,4 @@
-﻿@*
-<div class="mb-3">
+﻿@*<div class="mb-3">
     <strong>DateOnly</strong>:
 </div>
 <div class="mb-3">
@@ -17,46 +16,54 @@
 </div>
 <div class="mb-3">Min date: @min2.ToString("dd-MM-yyyy")</div>
 <div class="mb-3">Max date: @max2.ToString("dd-MM-yyyy")</div>
-<div class="mb-3">Entered date: @date2?.ToString("dd-MM-yyyy")</div>
-*@
-<div class="mb-3">
+<div class="mb-3">Entered date: @date2?.ToString("dd-MM-yyyy")</div>*@
+
+@*<div class="mb-3">
     <strong>DateTime</strong>:
 </div>
 <div class="mb-3">
-    <DateInput TValue="DateTime" @bind-Value="@date3" Min="@min3" Max="@max3" Placeholder="Enter Date" />
+    <DateInput TValue="DateTime" @bind-Value="@date3" EnableMinMax="true" Min="@min3" Max="@max3" Placeholder="Enter Date" />
 </div>
 <div class="mb-3">Min date: @min3.ToString("dd-MM-yyyy")</div>
 <div class="mb-3">Max date: @max3.ToString("dd-MM-yyyy")</div>
-<div class="mb-3">Entered date: @date3.ToString("dd-MM-yyyy")</div>
-@*
+<div class="mb-3">Entered date: @date3.ToString("dd-MM-yyyy")</div>*@
+
+<div class="mb-3">
+    <strong>DateTime?</strong>:
+</div>
 <div class="mb-3">
     <DateInput TValue="DateTime?" @bind-Value="@date4" Min="@min4" Max="@max4" Placeholder="Enter Date" />
 </div>
-<div class="mb-3">Min date: @min4.ToString("dd-MM-yyyy")</div>
-<div class="mb-3">Max date: @max4.ToString("dd-MM-yyyy")</div>
+<div class="mb-3">Min date: @min4?.ToString("dd-MM-yyyy")</div>
+<div class="mb-3">Max date: @max4?.ToString("dd-MM-yyyy")</div>
 <div class="mb-3">Entered date: @date4?.ToString("dd-MM-yyyy")</div>
-*@
 
 @code {
-    private DateOnly date1;
-    private DateOnly min1 = DateOnly.Parse("2023-02-01"); // yyyy-MM-dd
-    private DateOnly max1 = DateOnly.Parse("2023-04-01"); // yyyy-MM-dd
+    private DateTime date = DateTime.Now.AddMonths(3);
+    private DateTime min = DateTime.Now.AddMonths(-1);
+    private DateTime max = DateTime.Now.AddMonths(1);
 
-    private DateOnly? date2;
-    private DateOnly min2 = DateOnly.Parse("2023-02-01"); // yyyy-MM-dd
-    private DateOnly max2 = DateOnly.Parse("2023-04-01"); // yyyy-MM-dd
-
-    private DateTime date3;
-    private DateTime min3 = DateTime.Parse("2022-01-20"); // yyyy-MM-dd
-    private DateTime max3 = DateTime.Parse("2024-04-20"); // yyyy-MM-dd
-
-    private DateTime? date4;
-    private DateTime min4 = DateTime.Parse("2022-01-20"); // yyyy-MM-dd
-    private DateTime max4 = DateTime.Parse("2024-04-20"); // yyyy-MM-dd
+    private DateOnly date1, min1, max1;
+    private DateOnly? date2, min2, max2;
+    private DateTime date3, min3, max3;
+    private DateTime? date4, min4, max4;
 
     protected override void OnInitialized()
     {
-        date1 = DateOnly.FromDateTime(DateTime.Now.AddDays(10));
-        date3 = DateTime.Now;
+        date1 = DateOnly.FromDateTime(date);
+        min1 = DateOnly.FromDateTime(min);
+        max1 = DateOnly.FromDateTime(max);
+
+        date2 = null;
+        min2 = DateOnly.FromDateTime(min);
+        max2 = DateOnly.FromDateTime(max);
+
+        date3 = DateTime.Now.AddMonths(3);
+        min3 = min;
+        max3 = max;
+
+        date4 = null;
+        min4 = min;
+        max4 = max;
     }
 }

@@ -134,6 +134,8 @@ public partial class DateInput<TValue> : BaseComponent
         var oldValue = Value;
         var newValue = e.Value; // object
 
+        Console.WriteLine($"OnChange 1: oldValue: {oldValue}, newValue: {newValue}");
+
         if (newValue is null || !TryParseValue(newValue, out TValue value))
         {
             if (EnableMinMax
@@ -141,26 +143,30 @@ public partial class DateInput<TValue> : BaseComponent
                 && (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateTime)))
             {
                 Value = Min;
+                Console.WriteLine($"OnChange 2: {Value}");
             }
             else // DateOnly? / DateTime?
+            {
                 Value = default!;
+                Console.WriteLine($"OnChange 3: {Value}");
+            }
 
-            Console.WriteLine($"OnChange 1: {Value}");
+            Console.WriteLine($"OnChange 4: {Value}");
         }
         else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, value)) //  value < min
         {
             Value = Min;
-            Console.WriteLine($"OnChange 2: {Value}, oldValue: {oldValue}");
+            Console.WriteLine($"OnChange 5: {Value}, oldValue: {oldValue}");
         }
         else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
         {
             Value = Max;
-            Console.WriteLine($"OnChange 3: {Value}, oldValue: {oldValue}");
+            Console.WriteLine($"OnChange 6: {Value}, oldValue: {oldValue}");
         }
         else
         {
             Value = value;
-            Console.WriteLine($"OnChange 4: {Value}");
+            Console.WriteLine($"OnChange 7: {Value}");
         }
 
         this.formattedMax = EnableMinMax ? GetFormattedValue(Max) : string.Empty;
@@ -202,10 +208,12 @@ public partial class DateInput<TValue> : BaseComponent
             else if (typeof(TValue) == typeof(DateTime) || typeof(TValue) == typeof(DateTime?))
             {
                 newValue = (TValue)Convert.ChangeType(value, typeof(DateTime), CultureInfo.InvariantCulture);
+                Console.WriteLine($"TryParseValue 5: {newValue}");
                 return true;
             }
 
             newValue = default!;
+            Console.WriteLine($"TryParseValue 6: {newValue}");
             return false;
         }
         catch (Exception ex)
@@ -228,52 +236,27 @@ public partial class DateInput<TValue> : BaseComponent
         if (left is null || right is null)
             return false;
 
-        // DateOnly? / DateOnly
-        if (typeof(TValue) == typeof(DateOnly?) || typeof(TValue) == typeof(DateOnly))
+        // DateOnly / DateOnly?
+        if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
         {
-            Console.WriteLine($"Before: left: {left}, right: {right}");
-            if (DateTime.TryParse(left.ToString(), CultureInfo.GetCultureInfo(defaultLocale), DateTimeStyles.None, out DateTime ldt)
-                && DateTime.TryParse(right.ToString(), CultureInfo.GetCultureInfo(defaultLocale), DateTimeStyles.None, out DateTime rdt))
+            if (DateTime.TryParse(left.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime ldt)
+                && DateTime.TryParse(right.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime rdt))
             {
                 DateOnly l = DateOnly.FromDateTime(ldt);
                 DateOnly r = DateOnly.FromDateTime(rdt);
 
-                Console.WriteLine($"After: left: {l}, right: {r}");
+                Console.WriteLine($"IsLeftGreaterThanRight 1: left: {l}, right: {r}, result: {l > r}");
                 return l > r;
             }
         }
-
-        //// DateOnly
-        //if (typeof(TValue) == typeof(DateOnly))
-        //{
-        //    DateOnly l = DateOnly.FromDateTime(Convert.ToDateTime(left.ToString())); // TODO: update this with .NET 8 upgrade
-        //    DateOnly r = DateOnly.FromDateTime(Convert.ToDateTime(right.ToString())); // TODO: update this with .NET 8 upgrade
-
-        //    Console.WriteLine($"left: {l}, right: {r}");
-
-        //    return l > r;
-        //}
-        //// DateOnly?
-        //else if (typeof(TValue) == typeof(DateOnly?))
-        //{
-        //    DateOnly? l = left as DateOnly?;
-        //    DateOnly? r = right as DateOnly?;
-        //    return l.HasValue && r.HasValue && l > r;
-        //}
-        //// DateTime
-        //else if (typeof(TValue) == typeof(DateTime))
-        //{
-        //    DateTime l = Convert.ToDateTime(left);
-        //    DateTime r = Convert.ToDateTime(right);
-        //    return l > r;
-        //}
-        //// DateTime?
-        //else if (typeof(TValue) == typeof(DateTime?))
-        //{
-        //    DateTime? l = left as DateTime?;
-        //    DateTime? r = right as DateTime?;
-        //    return l.HasValue && r.HasValue && l > r;
-        //}
+        // DateTime / DateTime?
+        else if (typeof(TValue) == typeof(DateTime) || typeof(TValue) == typeof(DateTime?))
+        {
+            DateTime l = Convert.ToDateTime(left, CultureInfo.InvariantCulture);
+            DateTime r = Convert.ToDateTime(right, CultureInfo.InvariantCulture);
+            Console.WriteLine($"IsLeftGreaterThanRight 2: left: {l.ToString("dd-MM-yyyy")}, right: {r.ToString("dd-MM-yyyy")}, result: {l > r}");
+            return l > r;
+        }
 
         return false;
     }
