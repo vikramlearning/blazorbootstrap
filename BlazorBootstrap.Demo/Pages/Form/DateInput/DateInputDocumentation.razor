@@ -41,30 +41,23 @@
 </Callout>
 <Demo Type="typeof(DateInput_Demo_03_Max_Min)" Tabs="true" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Step" PageUrl="@pageUrl" HashTagName="step" />
-<div class="mb-3">
-    The <code>Step</code> sets the stepping interval when clicking the up and down spinner buttons.
-    For the <b>DateInput</b>, the value of <code>Step</code> is in days. The default value of <code>Step</code> is <b>1</b>, indicating one day.
-</div>
-<Demo Type="typeof(DateInput_Demo_04_Step)" Tabs="true" />
-
 <SectionHeading Size="HeadingSize.H2" Text="Disable" PageUrl="@pageUrl" HashTagName="disable" />
 <div class="mb-3">
     Use the <code>Disabled</code> parameter to disable the <b>DateInput</b>. Also, use <code>Enable()</code> and <code>Disable()</code> methods to enable and disable the <b>DateInput</b>.
 </div>
-<Demo Type="typeof(DateInput_Demo_05_Disable_Date_Input)" Tabs="true" />
+<Demo Type="typeof(DateInput_Demo_04_Disable_Date_Input)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Validations" PageUrl="@pageUrl" HashTagName="validations" />
 <div class="mb-3">
     Like any other blazor input component, <b>DateInput</b> component supports validations. Use the <b>DataAnnotations</b> to validate the user input before submitting the form. In the below example, we used the <code>Required</code> attributes.
 </div>
-<Demo Type="typeof(DateInput_Demo_06_Validations)" Tabs="true" />
+<Demo Type="typeof(DateInput_Demo_05_Validations)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Value changed" PageUrl="@pageUrl" HashTagName="value-changed" />
 <div class="mb-3">
     This event fires on every user keystroke/selection that changes the <b>DateInput</b> value.
 </div>
-<Demo Type="typeof(DateInput_Demo_07_Events_Value_Changed)" Tabs="true" />
+<Demo Type="typeof(DateInput_Demo_06_Events_Value_Changed)" Tabs="true" />
 
 @code {
     private string pageUrl = "/form/date-input";

@@ -1,8 +1,0 @@
-﻿<div class="mb-3">
-    <DateInput TValue="DateOnly" @bind-Value="@date1" Step="5" Placeholder="Enter Date" />
-</div>
-<div class="mb-3">Entered date: @date1.ToString("dd-MM-yyyy")</div>
-
-@code {
-    private DateOnly date1 = DateOnly.FromDateTime(DateTime.Now);
-}
