@@ -1,8 +1,8 @@
 ﻿<Modal @ref="modal" />
 
-<Button Color="ButtonColor.Primary" @onclick="OnShowModalClick">Show Employee Component</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowEmployeeComponent">Show Employee Component</Button>
 
-<div class="mt-3">
+<div class="mt-3 bg-success text-white bg-opacity-75">
     @message
 </div>
 
@@ -10,7 +10,7 @@
     private Modal modal = default!;
     private string? message;
 
-    private async Task OnShowModalClick()
+    private async Task ShowEmployeeComponent()
     {
         var parameters = new Dictionary<string, object>();
         parameters.Add("EmployeeId", 322);

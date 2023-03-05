@@ -1,0 +1,74 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Invoice Date: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <DateInput TValue="DateOnly?" @bind-Value="invoice.InvoiceDate" />
+            <ValidationMessage For="@(() => invoice.InvoiceDate)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Customer Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <InputText class="form-control" @bind-Value="invoice.CustomerName" Placeholder="Enter Customer Name" />
+            <ValidationMessage For="@(() => invoice.CustomerName)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private Invoice invoice = new();
+    private EditContext editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(invoice);
+        base.OnInitialized();
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        Console.WriteLine($"Invoice Date: {invoice.InvoiceDate}");
+        Console.WriteLine($"Customer Name: {invoice.CustomerName}");
+    }
+
+    private void ResetForm()
+    {
+        invoice = new();
+        editContext = new EditContext(invoice);
+    }
+
+    public class Invoice
+    {
+        [Required(ErrorMessage = "Invoice Date required.")]
+        public DateOnly? InvoiceDate { get; set; }
+
+        [Required(ErrorMessage = "Customer Name required.")]
+        public string CustomerName { get; set; }
+    }
+}

@@ -47,19 +47,6 @@ public partial class Modal : BaseComponent
         ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.modal.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, objRef); });
     }
 
-    private async Task ShowAsync(string title, Type? type, Dictionary<string, object> parameters)
-    {
-        this.isVisible = true;
-
-        if(!string.IsNullOrWhiteSpace(title))
-            this.title = title;
-
-        this.childComponent = type;
-        this.parameters = parameters;
-        await JS.InvokeVoidAsync("window.blazorBootstrap.modal.show", ElementId);
-        await InvokeAsync(StateHasChanged);
-    }
-
     /// <summary>
     /// Opens a modal.
     /// </summary>
@@ -77,6 +64,19 @@ public partial class Modal : BaseComponent
     public async Task ShowAsync<T>(string title, Dictionary<string, object> parameters = null)
     {
         await ShowAsync(title: title, type: typeof(T), parameters: parameters);
+    }
+
+    private async Task ShowAsync(string title, Type? type, Dictionary<string, object> parameters)
+    {
+        this.isVisible = true;
+
+        if (!string.IsNullOrWhiteSpace(title))
+            this.title = title;
+
+        this.childComponent = type;
+        this.parameters = parameters;
+        await JS.InvokeVoidAsync("window.blazorBootstrap.modal.show", ElementId);
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
@@ -119,9 +119,9 @@ public partial class Modal : BaseComponent
     [Parameter] public string Title { get; set; }
 
     /// <summary>
-		/// Header template.
-		/// </summary>
-		[Parameter] public RenderFragment HeaderTemplate { get; set; }
+    /// Header template.
+    /// </summary>
+    [Parameter] public RenderFragment HeaderTemplate { get; set; }
 
     /// <summary>
     /// Body template.
@@ -139,7 +139,7 @@ public partial class Modal : BaseComponent
     [Parameter]
     public ModalSize Size
     {
-        get => size; 
+        get => size;
         set
         {
             size = value;
@@ -153,7 +153,7 @@ public partial class Modal : BaseComponent
     [Parameter]
     public ModalFullscreen Fullscreen
     {
-        get => fullscreen; 
+        get => fullscreen;
         set
         {
             fullscreen = value;

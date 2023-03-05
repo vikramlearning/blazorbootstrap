@@ -349,6 +349,23 @@ window.blazorBootstrap = {
         //    }).format(parsedValue);
         //}
     },
+    dateInput: {
+        getFormattedValue: (value) => {
+            let extractedValue = value.toString();
+            if (extractedValue.length === 0)
+                return '';
+
+            let isValid = !isNaN(Date.parse(extractedValue));
+            if (!isValid)
+                return '';
+
+            let _date = new Date(extractedValue);
+            return _date.toLocaleDateString();
+        },
+        setValue: (elementId, value) => {
+            document.getElementById(elementId).value = value;
+        }
+    },
     offcanvas: {
         initialize: (elementId, useBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {
             let offcanvasEl = document.getElementById(elementId);
@@ -445,6 +462,10 @@ window.blazorBootstrap = {
         initialize: (elementId) => {
             let tooltipEl = document.getElementById(elementId);
             bootstrap?.Tooltip?.getOrCreateInstance(tooltipEl);
+        },
+        update: (elementId) => {
+            let tooltipEl = document.getElementById(elementId);
+            bootstrap?.Tooltip?.getOrCreateInstance(tooltipEl)?.update();
         },
         dispose: (elementId) => {
             bootstrap?.Tooltip?.getOrCreateInstance(document.getElementById(elementId))?.dispose();

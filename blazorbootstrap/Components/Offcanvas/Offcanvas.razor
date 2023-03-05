@@ -6,11 +6,11 @@
         @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
         {
             <div class="offcanvas-header @HeaderCssClass">
-                @if (!string.IsNullOrWhiteSpace(Title))
+                @if (!string.IsNullOrWhiteSpace(title))
                 {
-                    <h5>@Title</h5>
+                    <h5>@title</h5>
                 }
-                else if (HeaderTemplate != null)
+                else if (HeaderTemplate is not null)
                 {
                     @HeaderTemplate
                 }
@@ -21,7 +21,13 @@
                 }
             </div>
         }
-        @if (BodyTemplate != null)
+        @if (childComponent is not null)
+        {
+            <div class="offcanvas-body @BodyCssClass">
+                <DynamicComponent Type="@childComponent" Parameters="@parameters" />
+            </div>
+        }
+        else if (BodyTemplate != null)
         {
             <div class="offcanvas-body @BodyCssClass">
                 @BodyTemplate

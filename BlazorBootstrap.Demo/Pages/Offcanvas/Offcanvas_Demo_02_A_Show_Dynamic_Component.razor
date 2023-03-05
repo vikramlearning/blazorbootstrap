@@ -1,0 +1,15 @@
+﻿<Offcanvas @ref="offcanvas" />
+
+<Button Color="ButtonColor.Primary" @onclick="ShowEmployeeComponent">Show Employee Component</Button>
+
+@code {
+    private Offcanvas offcanvas = default!;
+    private string? message;
+
+    private async Task ShowEmployeeComponent()
+    {
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("EmployeeId", 321);
+        await offcanvas.ShowAsync<EmployeeDemoComponent1>(title: "Employee Details", parameters: parameters);
+    }
+}
