@@ -2,11 +2,38 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-02-23T00:00:00.000Z</updated>
+    <updated>2023-03-05T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.5.0]]></title>
+        <id>/2023/03/05/blazorbootstrap-1.5.0</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/03/05/blazorbootstrap-1.5.0"/>
+        <updated>2023-03-05T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.5.0 with new DateInput component and other updates!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.5.0 with new DateInput component and other updates!!!</p><img loading="lazy" src="https://i.imgur.com/1mVjqQv.png" alt="Blazor Bootstrap: DateInput Component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's new<a class="hash-link" href="#whats-new" title="Direct link to heading">​</a></h2><ul><li><code>DateInput</code> component<ul><li>Generic type: DateOnly, DateOnly?, DateTime, and DateTime? data types supported</li><li>Max and Min range</li><li>Disable</li><li>Validations</li><li>ValueChanged event</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><p><code>Offcanvas</code> component</p><ul><li>Render different components dynamically within the modal without iterating through possible types or using conditional logic.</li><li>If dynamically-rendered components have component parameters, pass them as an <code>IDictionary&lt;string, object&gt;</code>.</li><li>Pass event callbacks to a dynamic component.</li></ul></li><li><p><code>Button</code> component</p><ul><li>Dynamic tooltip support added</li></ul></li><li><p><code>Tooltip</code> component</p><ul><li>Dynamic tooltip support added</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/date-input" target="_blank" rel="noopener noreferrer">Blazor DateInput Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/offcanvas" target="_blank" rel="noopener noreferrer">Blazor Offcanvas Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/buttons" target="_blank" rel="noopener noreferrer">Blazor Button Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/tooltips" target="_blank" rel="noopener noreferrer">Blazor Tooltip Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.5.0" term="v1.5.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="buttons" term="buttons"/>
+        <category label="blazorbuttons" term="blazorbuttons"/>
+        <category label="dateinput" term="dateinput"/>
+        <category label="datepicker" term="datepicker"/>
+        <category label="blazordateinput" term="blazordateinput"/>
+        <category label="blazordatepicker" term="blazordatepicker"/>
+        <category label="offcanvas" term="offcanvas"/>
+        <category label="blazoroffcanvas" term="blazoroffcanvas"/>
+        <category label="modal" term="modal"/>
+        <category label="blazormodal" term="blazormodal"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.4.5]]></title>
         <id>/2023/02/23/blazorbootstrap-1.4.5</id>
