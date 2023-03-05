@@ -65,7 +65,6 @@ Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
     <button class="btn btn-primary" type="button" disabled>Disabled button</button>
 </Tooltip>
 ```
-
 [See disabled button with tooltip demo here.](https://demos.blazorbootstrap.com/tooltips#disabled-button-with-tootip)
 
 ### Tooltip icon with click event
@@ -86,5 +85,20 @@ Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
     }
 }
 ```
-
 [See icon with tooltip demo here.](https://demos.blazorbootstrap.com/tooltips#icon-with-click-event)
+
+### Dynamically update the tooltip text
+
+```cshtml showLineNumbers
+<div class="mb-3">
+    <Tooltip Title="@text" Placement="TooltipPlacement.Top">Tooltip Bottom</Tooltip>
+</div>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ChangeTooltip">Change Tooltip</Button>
+
+@code {
+    private string text = "Tooltip text";
+
+    private void ChangeTooltip() => text = $"Updated {DateTime.Now.ToLongTimeString()}";
+}
+```
+[see demo here](https://demos.blazorbootstrap.com/tooltips#dynamically-update-the-tooltip-text)

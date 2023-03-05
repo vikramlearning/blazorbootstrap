@@ -95,10 +95,137 @@ Below is an offcanvas example that is shown by default.
 [See demo here.](https://demos.blazorbootstrap.com/offcanvas#examples)
 
 :::info 
-
 Default placement for the offcanvas component is right.
-
 :::
+
+### Dynamic component as offcanvas
+
+Render different components dynamically within the offcanvas without iterating through possible types or using conditional logic.
+If dynamically-rendered components have component parameters, pass them as an `IDictionary`. The `string` is the parameter's name, and the `object` is the parameter's value.
+
+```cshtml showLineNumbers
+<Offcanvas @ref="offcanvas" />
+
+<Button Color="ButtonColor.Primary" @onclick="ShowEmployeeComponent">Show Employee Component</Button>
+
+@code {
+    private Offcanvas offcanvas = default!;
+    private string? message;
+
+    private async Task ShowEmployeeComponent()
+    {
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("EmployeeId", 321);
+        await offcanvas.ShowAsync<EmployeeDemoComponent1>(title: "Employee Details", parameters: parameters);
+    }
+}
+```
+
+**EmployeeDemoComponent1.razor**
+
+```cshtml showLineNumbers
+<div class="row">
+    <div class="col-5 col-md-4 text-end">Employee Id :</div>
+    <div class="col-7 col-md-8">@EmployeeId</div>
+</div>
+<div class="row">
+    <div class="col-5 col-md-4 text-end">First Name :</div>
+    <div class="col-7 col-md-8">@employee.FirstName</div>
+</div>
+<div class="row">
+    <div class="col-5 col-md-4 text-end">Last Name :</div>
+    <div class="col-7 col-md-8">@employee.LastName</div>
+</div>
+
+@code {
+    private Employee employee = default!;
+
+    [Parameter] public int EmployeeId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // get employee with {EmployeeId} from DB
+
+        employee = new Employee { FirstName = "Vikram", LastName = "Reddy" };
+
+        base.OnInitialized();
+    }
+}
+```
+[See demo here.](https://demos.blazorbootstrap.com/offcanvas#dynamic-component-as-offcanvas)
+
+### Pass event callbacks to a dynamic component
+
+Event callbacks can be passed in its parameter dictionary.
+
+In the following parent component example, the `ShowDTMessage` method assigns a string with the current time to `message`, and the value of `message` is rendered. The parent component passes the callback method, ShowDTMessage in the parameter dictionary:
+ - The `string` key is the callback method's name, `OnClickCallback`.
+ - The `object` value is created by `EventCallbackFactory.Create` for the parent callback method, `ShowDTMessage`.
+
+```cshtml showLineNumbers
+<Offcanvas @ref="offcanvas" />
+
+<Button Color="ButtonColor.Primary" @onclick="ShowEmployeeComponent">Show Employee Component</Button>
+
+<div class="mt-3 bg-success text-white bg-opacity-75">
+    @message
+</div>
+
+@code {
+    private Offcanvas offcanvas = default!;
+    private string? message;
+
+    private async Task ShowEmployeeComponent()
+    {
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("EmployeeId", 322);
+        parameters.Add("OnclickCallback", EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage));
+        await offcanvas.ShowAsync<EmployeeDemoComponent2>(title: "Employee Details", parameters: parameters);
+    }
+
+    private void ShowDTMessage(MouseEventArgs e) => message = $"The current date time is: {DateTime.Now}.";
+}
+```
+
+**EmployeeDemoComponent2.razor**
+
+```cshtml showLineNumbers
+<div class="row">
+    <div class="col-5 col-md-4 text-end">Employee Id :</div>
+    <div class="col-7 col-md-8">@EmployeeId</div>
+</div>
+<div class="row">
+    <div class="col-5 col-md-4 text-end">First Name :</div>
+    <div class="col-7 col-md-8">@employee.FirstName</div>
+</div>
+<div class="row">
+    <div class="col-5 col-md-4 text-end">Last Name :</div>
+    <div class="col-7 col-md-8">@employee.LastName</div>
+</div>
+
+<Button class="mt-3" Color="ButtonColor.Success" Type="ButtonType.Button" @onclick="OnClickCallback">
+    Trigger a Parent component method
+</Button>
+
+@code {
+    private Employee employee = default!;
+
+    [Parameter] public int EmployeeId { get; set; }
+
+    [Parameter] public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // get employee with {EmployeeId} from DB
+
+        employee = new Employee { FirstName = "Sagar", LastName = "Reddy" };
+
+        base.OnInitialized();
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/offcanvas#pass-event-callbacks-to-a-dynamic-component)
 
 ### Placement
 

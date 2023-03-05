@@ -237,7 +237,7 @@ Use `ShowLoading()` and `HideLoading()` methods to toggle the button state.
 ```
 [See button with loading spinner demo here.](https://demos.blazorbootstrap.com/buttons#show-hide-loading-spinner)
 
-### Tooltip
+### Show Tooltip
 
 Hover over the buttons below to see the four tooltips directions: top, right, bottom, and left.
 
@@ -257,10 +257,26 @@ Hover over the buttons below to see the four tooltips directions: top, right, bo
 [See button with tooltip demo here.](https://demos.blazorbootstrap.com/buttons#tooltip)
 
 :::caution NOTE
-
 HTML tooltips not supported at this moment.
-
 :::
+
+### Dynamically update the tooltip text
+
+```cshtml showLineNumbers
+<div class="mb-3">
+    <Button Color="ButtonColor.Primary" TooltipTitle="@text" TooltipPlacement="TooltipPlacement.Top"> Tooltip Top </Button>
+</div>
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ChangeTooltip">Change Tooltip</Button>
+```
+```csharp
+@code {
+    private string text = "Tooltip text";
+
+    private void ChangeTooltip() => text = $"Updated {DateTime.Now.ToLongTimeString()}";
+}
+```
+[See demo here.](https://demos.blazorbootstrap.com/buttons#dynamically-update-the-tooltip-text)
 
 ### Events
 
