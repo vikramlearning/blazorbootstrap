@@ -75,7 +75,6 @@ public partial class DateInput<TValue> : BaseComponent
         if (firstRender)
         {
             var currentValue = Value;
-            Console.WriteLine($"OnAfterRenderAsync 1: currentValue: {currentValue}, Min: {Min}, Max: {Max}");
 
             if (currentValue is null || !TryParseValue(currentValue, out TValue value))
             {
@@ -84,35 +83,28 @@ public partial class DateInput<TValue> : BaseComponent
                     && (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateTime)))
                 {
                     Value = Min;
-                    Console.WriteLine($"OnAfterRenderAsync 2: Value: {Value}");
                 }
                 else // DateOnly? / DateTime?
                 {
                     Value = default!;
-                    Console.WriteLine($"OnAfterRenderAsync 3: Value: {Value}");
                 }
             }
             else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, Value)) //  value < min
             {
                 Value = EnableMinMax && Min is not null ? Min : default!;
-                Console.WriteLine($"OnAfterRenderAsync 4: Value: {Value}");
             }
             else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
             {
                 Value = Max;
-                Console.WriteLine($"OnAfterRenderAsync 5: Value: {Value}");
             }
             else
             {
                 Value = value;
-                Console.WriteLine($"OnAfterRenderAsync 6: Value: {Value}");
             }
 
             this.formattedMax = EnableMinMax && Max is not null ? GetFormattedValue(Max) : string.Empty;
             this.formattedMin = EnableMinMax && Min is not null ? GetFormattedValue(Min) : string.Empty;
             this.formattedValue = GetFormattedValue(Value);
-
-            Console.WriteLine($"OnAfterRenderAsync 7: formattedMax: {formattedMax}, formattedMin: {formattedMin}, formattedValue: {formattedValue}");
 
             await ValueChanged.InvokeAsync(Value);
         }
@@ -122,12 +114,8 @@ public partial class DateInput<TValue> : BaseComponent
 
     private async Task OnChange(ChangeEventArgs e)
     {
-        Console.WriteLine($"OnChange called...");
-
         var oldValue = Value;
         var newValue = e.Value; // object
-
-        Console.WriteLine($"OnChange 1: oldValue: {oldValue}, newValue: {newValue}");
 
         if (newValue is null || !TryParseValue(newValue, out TValue value))
         {
@@ -136,30 +124,23 @@ public partial class DateInput<TValue> : BaseComponent
                 && (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateTime)))
             {
                 Value = Min;
-                Console.WriteLine($"OnChange 2: {Value}");
             }
             else // DateOnly? / DateTime?
             {
                 Value = default!;
-                Console.WriteLine($"OnChange 3: {Value}");
             }
-
-            Console.WriteLine($"OnChange 4: {Value}");
         }
         else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, value)) //  value < min
         {
             Value = Min;
-            Console.WriteLine($"OnChange 5: {Value}, oldValue: {oldValue}");
         }
         else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
         {
             Value = Max;
-            Console.WriteLine($"OnChange 6: {Value}, oldValue: {oldValue}");
         }
         else
         {
             Value = value;
-            Console.WriteLine($"OnChange 7: {Value}");
         }
 
         this.formattedMax = EnableMinMax && Max is not null ? GetFormattedValue(Max) : string.Empty;
@@ -172,46 +153,36 @@ public partial class DateInput<TValue> : BaseComponent
         await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
-
-        Console.WriteLine($"OnChange: formattedValue: {this.formattedValue}");
     }
 
     private bool TryParseValue(object value, out TValue newValue)
     {
         try
         {
-            Console.WriteLine($"TryParseValue 1: {value}");
-
             // DateOnly / DateOnly?
             if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
             {
                 if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime dt))
                 {
-                    Console.WriteLine($"TryParseValue 2: {dt}");
                     newValue = (TValue)(object)DateOnly.FromDateTime(dt);
-                    Console.WriteLine($"TryParseValue 3: {newValue}");
                     return true;
                 }
 
                 newValue = default!;
-                Console.WriteLine($"TryParseValue 4: {newValue}");
                 return false;
             }
             // DateTime / DateTime?
             else if (typeof(TValue) == typeof(DateTime) || typeof(TValue) == typeof(DateTime?))
             {
                 newValue = (TValue)Convert.ChangeType(value, typeof(DateTime), CultureInfo.CurrentCulture);
-                Console.WriteLine($"TryParseValue 5: {newValue}");
                 return true;
             }
 
             newValue = default!;
-            Console.WriteLine($"TryParseValue 6: {newValue}");
             return false;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"exception: {ex.Message}");
             newValue = default!;
             return false;
         }
@@ -225,7 +196,6 @@ public partial class DateInput<TValue> : BaseComponent
     /// <returns>bool</returns>
     private bool IsLeftGreaterThanRight(object left, object right)
     {
-        Console.WriteLine($"IsLeftGreaterThanRight called...");
         if (left is null || right is null)
             return false;
 
@@ -238,7 +208,6 @@ public partial class DateInput<TValue> : BaseComponent
                 DateOnly l = DateOnly.FromDateTime(ldt);
                 DateOnly r = DateOnly.FromDateTime(rdt);
 
-                Console.WriteLine($"IsLeftGreaterThanRight 1: left: {l}, right: {r}, result: {l > r}");
                 return l > r;
             }
         }
@@ -247,7 +216,6 @@ public partial class DateInput<TValue> : BaseComponent
         {
             DateTime l = Convert.ToDateTime(left, CultureInfo.CurrentCulture);
             DateTime r = Convert.ToDateTime(right, CultureInfo.CurrentCulture);
-            Console.WriteLine($"IsLeftGreaterThanRight 2: left: {l.ToString("dd-MM-yyyy")}, right: {r.ToString("dd-MM-yyyy")}, result: {l > r}");
             return l > r;
         }
 
@@ -256,8 +224,6 @@ public partial class DateInput<TValue> : BaseComponent
 
     private string GetFormattedValue(object value)
     {
-        Console.WriteLine($"GetFormattedValue 1: value: {value}");
-
         string formattedDate = "";
 
         try
@@ -271,7 +237,6 @@ public partial class DateInput<TValue> : BaseComponent
                 if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime dt))
                 {
                     formattedDate = dt.ToString(defaultFormat);
-                    Console.WriteLine($"GetFormattedValue 2: value: {formattedDate}");
                 }
             }
             // DateTime / DateTime?
@@ -279,16 +244,13 @@ public partial class DateInput<TValue> : BaseComponent
             {
                 var d = Convert.ToDateTime(value, CultureInfo.CurrentCulture); // TODO: update this with .NET 8 upgrade
                 formattedDate = d.ToString(defaultFormat);
-                Console.WriteLine($"GetFormattedValue 3: value: {formattedDate}");
             }
         }
         catch (FormatException ex)
         {
-            Console.WriteLine($"GetFormattedValue 4: FormatException: {ex.Message}");
             return formattedDate;
         }
 
-        Console.WriteLine($"GetFormattedValue 5: value: {formattedDate}");
         return formattedDate;
     }
 
