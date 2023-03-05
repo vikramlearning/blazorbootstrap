@@ -185,7 +185,7 @@ public partial class DateInput<TValue> : BaseComponent
             // DateOnly / DateOnly?
             if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
             {
-                if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime dt))
                 {
                     Console.WriteLine($"TryParseValue 2: {dt}");
                     newValue = (TValue)(object)DateOnly.FromDateTime(dt);
@@ -200,7 +200,7 @@ public partial class DateInput<TValue> : BaseComponent
             // DateTime / DateTime?
             else if (typeof(TValue) == typeof(DateTime) || typeof(TValue) == typeof(DateTime?))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(DateTime), CultureInfo.InvariantCulture);
+                newValue = (TValue)Convert.ChangeType(value, typeof(DateTime), CultureInfo.CurrentCulture);
                 Console.WriteLine($"TryParseValue 5: {newValue}");
                 return true;
             }
@@ -232,8 +232,8 @@ public partial class DateInput<TValue> : BaseComponent
         // DateOnly / DateOnly?
         if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
         {
-            if (DateTime.TryParse(left.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime ldt)
-                && DateTime.TryParse(right.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime rdt))
+            if (DateTime.TryParse(left.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime ldt)
+                && DateTime.TryParse(right.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime rdt))
             {
                 DateOnly l = DateOnly.FromDateTime(ldt);
                 DateOnly r = DateOnly.FromDateTime(rdt);
@@ -245,8 +245,8 @@ public partial class DateInput<TValue> : BaseComponent
         // DateTime / DateTime?
         else if (typeof(TValue) == typeof(DateTime) || typeof(TValue) == typeof(DateTime?))
         {
-            DateTime l = Convert.ToDateTime(left, CultureInfo.InvariantCulture);
-            DateTime r = Convert.ToDateTime(right, CultureInfo.InvariantCulture);
+            DateTime l = Convert.ToDateTime(left, CultureInfo.CurrentCulture);
+            DateTime r = Convert.ToDateTime(right, CultureInfo.CurrentCulture);
             Console.WriteLine($"IsLeftGreaterThanRight 2: left: {l.ToString("dd-MM-yyyy")}, right: {r.ToString("dd-MM-yyyy")}, result: {l > r}");
             return l > r;
         }
@@ -268,16 +268,16 @@ public partial class DateInput<TValue> : BaseComponent
             // DateOnly / DateOnly?
             if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
             {
-                if (DateTime.TryParse(value.ToString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime dt))
                 {
-                    formattedDate = dt.ToString(defaultFormat, CultureInfo.InvariantCulture);
+                    formattedDate = dt.ToString(defaultFormat);
                     Console.WriteLine($"GetFormattedValue 2: value: {formattedDate}");
                 }
             }
             // DateTime / DateTime?
             else if (typeof(TValue) == typeof(DateTime) || typeof(TValue) == typeof(DateTime?))
             {
-                var d = Convert.ToDateTime(value, CultureInfo.InvariantCulture); // TODO: update this with .NET 8 upgrade
+                var d = Convert.ToDateTime(value, CultureInfo.CurrentCulture); // TODO: update this with .NET 8 upgrade
                 formattedDate = d.ToString(defaultFormat);
                 Console.WriteLine($"GetFormattedValue 3: value: {formattedDate}");
             }

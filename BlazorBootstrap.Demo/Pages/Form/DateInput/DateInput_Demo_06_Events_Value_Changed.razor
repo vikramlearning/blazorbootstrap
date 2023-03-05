@@ -1,7 +1,7 @@
 ﻿<div class="mb-3">
     <DateInput TValue="DateOnly" Value="date1" ValueExpression="() => date1" ValueChanged="(value) => DateChanged(value)" />
 </div>
-<div class="mb-3">Changed date: @date1.ToString("dd-MM-yyyy")</div>
+<div class="mb-3">Changed date: @date1</div>
 
 @code {
     private DateOnly date1 = DateOnly.FromDateTime(DateTime.Now);
