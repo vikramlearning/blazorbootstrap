@@ -4,7 +4,7 @@ description: Use the Blazor Bootstrap `Switch` component to show the consistent 
 image: https://i.imgur.com/ALKzreq.png
 
 sidebar_label: Switch
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Blazor Switch

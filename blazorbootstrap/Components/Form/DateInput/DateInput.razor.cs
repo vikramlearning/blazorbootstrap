@@ -41,8 +41,6 @@ public partial class DateInput<TValue> : BaseComponent
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.FormControl());
-        builder.Append(BootstrapClassProvider.TextAlignment(this.TextAlignment), this.TextAlignment != Alignment.None);
-
         base.BuildClasses(builder);
     }
 
@@ -278,7 +276,7 @@ public partial class DateInput<TValue> : BaseComponent
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Indicates whether the NumberInput can complete the values automatically by the browser.
+    /// Indicates whether the DateInput can complete the values automatically by the browser.
     /// </summary>
     [Parameter] public bool AutoComplete { get; set; }
 
@@ -311,11 +309,6 @@ public partial class DateInput<TValue> : BaseComponent
     /// Gets or sets the placeholder.
     /// </summary>
     [Parameter] public string? Placeholder { get; set; }
-
-    /// <summary>
-    /// Gets or sets the text alignment.
-    /// </summary>
-    [Parameter] public Alignment TextAlignment { get; set; }
 
     /// <summary>
     /// Gets or sets the value.

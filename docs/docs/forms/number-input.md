@@ -4,7 +4,7 @@ description: Blazor Bootstrap `NumberInput` component is built around HTML input
 image: https://i.imgur.com/iUNBkki.png
 
 sidebar_label: Number Input
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Blazor Number Input
@@ -271,7 +271,7 @@ Use the `Disabled` parameter to disable the `NumberInput`. Also, use <b>Enable()
 
 ### Validations
 
-Like any other blazor input components, `NumberInput` supports validations. Add the DataAnnotations on the `NumberInput` component to validate the user input before submitting the form. In the below example, we used <b>Required</b> and <b>Range</b> attributes.
+Like any other blazor input component, `NumberInput` supports validations. Add the DataAnnotations on the `NumberInput` component to validate the user input before submitting the form. In the below example, we used <b>Required</b> and <b>Range</b> attributes.
 
 <img src="https://i.imgur.com/K7bepKc.png" alt="Blazor Bootstrap: Number Input Component - Validations" />
 
