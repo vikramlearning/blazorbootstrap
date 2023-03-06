@@ -22,13 +22,14 @@ Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes,
 | DialogCssClass | string | Additional CSS class for the dialog (div.modal-dialog element). | | | 1.0.0 |
 | FooterCssClass | string | Footer css class. | | | 1.0.0 |
 | FooterTemplate | RenderFragment | Footer template. | ✔️ | | 1.0.0 |
-| Fullscreen | `ModalFullscreen` | Fullscreen behavior of the modal. | ✔️ | `ModalFullscreen.Disabled` | 1.0.0 |
+| Fullscreen | `ModalFullscreen` | Fullscreen behavior of the modal. | | `ModalFullscreen.Disabled` | 1.0.0 |
 | HeaderTemplate | RenderFragment | Header template. | ✔️ | | 1.0.0 |
 | HeaderCssClass | string | Additional header CSS class. | | | 1.0.0 |
 | IsScrollable | bool | Allows modal body scroll. | | false | 1.0.0 |
 | IsVerticallyCentered | bool | Shows the modal vertically in the center. | | false | 1.0.0 |
-| Size | `ModalSize` | Size of the modal. | ✔️ | `ModalSize.Regular` | 1.0.0 |
-| ShowCloseButton | bool | Indicates whether the modal shows close button in header. | ✔️ | true | 1.0.0 |
+| Size | `ModalSize` | Size of the modal. | | `ModalSize.Regular` | 1.0.0 |
+| ShowCloseButton | bool | Indicates whether the modal shows close button in header. | | true | 1.0.0 |
+| TabIndex | int | Gets or sets the tab index. | | -1 | 1.6.0 |
 | Title | string | | ✔️ | | 1.0.0 |
 | UseStaticBackdrop | bool | Indicates whether the modal uses a static backdrop. | | false | 1.0.0 |
 
