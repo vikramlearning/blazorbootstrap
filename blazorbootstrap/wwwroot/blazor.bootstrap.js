@@ -432,6 +432,11 @@ window.blazorBootstrap = {
             bootstrap?.Tab?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
+    timeInput: {
+        setValue: (elementId, value) => {
+            document.getElementById(elementId).value = value;
+        }
+    },
     toasts: {
         show: (elementId, autohide, delay, dotNetHelper) => {
             let toastEl = document.getElementById(elementId);

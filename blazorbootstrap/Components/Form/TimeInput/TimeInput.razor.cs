@@ -14,9 +14,9 @@ public partial class TimeInput<TValue> : BaseComponent
     #region Members
 
     /// <summary>
-    /// Date format: yyyy-MM-dd.
+    /// Time format: HH:mm. 24-hours format.
     /// </summary>
-    private string defaultFormat = "yyyy-MM-dd";
+    private string defaultFormat = "HH:mm";
 
     private FieldIdentifier fieldIdentifier;
 
@@ -70,8 +70,10 @@ public partial class TimeInput<TValue> : BaseComponent
     {
         if (firstRender)
         {
+            Console.WriteLine($"OnAfterRenderAsync called...");
             var currentValue = Value;
 
+            Console.WriteLine($"OnAfterRenderAsync 1 - currentValue: {currentValue}");
             if (currentValue is null || !TryParseValue(currentValue, out TValue value))
             {
                 if (EnableMinMax
@@ -79,28 +81,35 @@ public partial class TimeInput<TValue> : BaseComponent
                     && (typeof(TValue) == typeof(TimeOnly)))
                 {
                     Value = Min;
+                    Console.WriteLine($"OnAfterRenderAsync 2 - Value: {Value}");
                 }
                 else // TimeOnly?
                 {
                     Value = default!;
+                    Console.WriteLine($"OnAfterRenderAsync 3 - Value: {Value}");
                 }
             }
             else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, Value)) //  value < min
             {
                 Value = EnableMinMax && Min is not null ? Min : default!;
+                Console.WriteLine($"OnAfterRenderAsync 4 - Value: {Value}");
             }
             else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
             {
                 Value = Max;
+                Console.WriteLine($"OnAfterRenderAsync 5 - Value: {Value}");
             }
             else
             {
                 Value = value;
+                Console.WriteLine($"OnAfterRenderAsync 6 - Value: {Value}");
             }
 
             this.formattedMax = EnableMinMax && Max is not null ? GetFormattedValue(Max) : string.Empty;
             this.formattedMin = EnableMinMax && Min is not null ? GetFormattedValue(Min) : string.Empty;
             this.formattedValue = GetFormattedValue(Value);
+
+            Console.WriteLine($"OnAfterRenderAsync 7 - formattedValue: {formattedValue}");
 
             await ValueChanged.InvokeAsync(Value);
         }
@@ -144,7 +153,7 @@ public partial class TimeInput<TValue> : BaseComponent
         this.formattedValue = GetFormattedValue(Value);
 
         if (oldValue.Equals(Value))
-            await JS.InvokeVoidAsync("window.blazorBootstrap.dateInput.setValue", ElementId, this.formattedValue);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.timeInput.setValue", ElementId, this.formattedValue);
 
         await ValueChanged.InvokeAsync(Value);
 
@@ -155,17 +164,27 @@ public partial class TimeInput<TValue> : BaseComponent
     {
         try
         {
+            Console.WriteLine($"TryParseValue 1 - value: {value}");
             // TimeOnly / TimeOnly?
             if (typeof(TValue) == typeof(TimeOnly) || typeof(TValue) == typeof(TimeOnly?))
             {
-                if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime dt))
+                if (TimeOnly.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out TimeOnly time))
                 {
-                    newValue = (TValue)(object)DateOnly.FromDateTime(dt);
+                    Console.WriteLine($"TryParseValue 2 - time: {time}");
+                    newValue = (TValue)(object)(time);
                     return true;
+                }
+                else
+                {
+                    Console.WriteLine($"TryParseValue 3 - value: {value}");
                 }
 
                 newValue = default!;
                 return false;
+            }
+            else
+            {
+                Console.WriteLine($"TryParseValue 4 - value: {value}");
             }
 
             newValue = default!;
@@ -173,6 +192,7 @@ public partial class TimeInput<TValue> : BaseComponent
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"TryParseValue 5 - error: {ex.Message}");
             newValue = default!;
             return false;
         }
@@ -186,20 +206,29 @@ public partial class TimeInput<TValue> : BaseComponent
     /// <returns>bool</returns>
     private bool IsLeftGreaterThanRight(object left, object right)
     {
+        Console.WriteLine($"IsLeftGreaterThanRight called...");
+        Console.WriteLine($"IsLeftGreaterThanRight 1 - left: {left}, right: {right}");
+
         if (left is null || right is null)
             return false;
 
         // TimeOnly / TimeOnly?
         if (typeof(TValue) == typeof(TimeOnly) || typeof(TValue) == typeof(TimeOnly?))
         {
-            if (DateTime.TryParse(left.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime ldt)
-                && DateTime.TryParse(right.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime rdt))
+            if (TimeOnly.TryParse(left.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out TimeOnly lt)
+                && TimeOnly.TryParse(right.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out TimeOnly rt))
             {
-                DateOnly l = DateOnly.FromDateTime(ldt);
-                DateOnly r = DateOnly.FromDateTime(rdt);
-
-                return l > r;
+                Console.WriteLine($"IsLeftGreaterThanRight 2 - lt: {lt}, rt: {rt}, result: {lt > rt}");
+                return lt > rt;
             }
+            else
+            {
+                Console.WriteLine($"IsLeftGreaterThanRight 3 - left: {left}, right: {right}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"IsLeftGreaterThanRight 4 - left: {left}, right: {right}");
         }
 
         return false;
@@ -207,28 +236,40 @@ public partial class TimeInput<TValue> : BaseComponent
 
     private string GetFormattedValue(object value)
     {
-        string formattedDate = "";
+        string formattedTime = "";
 
         try
         {
+            Console.WriteLine($"GetFormattedValue 1 - value: {value}");
             if (value is null)
-                return formattedDate;
+                return formattedTime;
 
             // TimeOnly / TimeOnly?
             if (typeof(TValue) == typeof(TimeOnly) || typeof(TValue) == typeof(TimeOnly?))
             {
-                if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime dt))
+                if (TimeOnly.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out TimeOnly t))
                 {
-                    formattedDate = dt.ToString(defaultFormat);
+                    Console.WriteLine($"GetFormattedValue 2 - t: {t}");
+                    formattedTime = t.ToString(defaultFormat);
+                    Console.WriteLine($"GetFormattedValue 3 - value: {formattedTime}");
                 }
+                else
+                {
+                    Console.WriteLine($"GetFormattedValue 4 - value: {value}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"GetFormattedValue 5 - value: {value}");
             }
         }
         catch (FormatException ex)
         {
-            return formattedDate;
+            Console.WriteLine($"GetFormattedValue 6 - exception: {ex.Message}");
+            return formattedTime;
         }
 
-        return formattedDate;
+        return formattedTime;
     }
 
     /// <summary>
