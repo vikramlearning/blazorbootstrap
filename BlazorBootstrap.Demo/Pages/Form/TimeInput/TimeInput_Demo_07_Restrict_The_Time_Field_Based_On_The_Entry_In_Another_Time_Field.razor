@@ -18,41 +18,25 @@
     <DataAnnotationsValidator />
 
     <div class="form-group row mb-3">
-        <label class="col-md-2 col-form-label">Flight Number: <span class="text-danger">*</span></label>
-        <div class="col-md-10">
-            <InputText class="form-control" @bind-Value="flightForm.FlightNumber" Placeholder="Enter Flight Number" />
-            <ValidationMessage For="@(() => flightForm.FlightNumber)" />
-        </div>
-    </div>
-
-    <div class="form-group row mb-3">
-        <label class="col-md-2 col-form-label">Departure Date: <span class="text-danger">*</span></label>
-        <div class="col-md-10">
-            <DateInput TValue="DateOnly?" class="form-control" @bind-Value="flightForm.DepartureDate" />
-            <ValidationMessage For="@(() => flightForm.DepartureDate)" />
-        </div>
-    </div>
-
-    <div class="form-group row mb-3">
         <label class="col-md-2 col-form-label">Departure Time: <span class="text-danger">*</span></label>
         <div class="col-md-10">
-            <TimeInput TValue="TimeOnly?" @bind-Value="flightForm.DepartureTime" />
+            <TimeInput TValue="TimeOnly?"
+                       Value="flightForm.DepartureTime"
+                       ValueExpression="() => flightForm.DepartureTime"
+                       ValueChanged="(value) => DepartureTimeChanged(value)" />
             <ValidationMessage For="@(() => flightForm.DepartureTime)" />
-        </div>
-    </div>
-
-    <div class="form-group row mb-3">
-        <label class="col-md-2 col-form-label">Arrival Date: <span class="text-danger">*</span></label>
-        <div class="col-md-10">
-            <DateInput TValue="DateOnly?" class="form-control" @bind-Value="flightForm.ArrivalDate" />
-            <ValidationMessage For="@(() => flightForm.ArrivalDate)" />
         </div>
     </div>
 
     <div class="form-group row mb-3">
         <label class="col-md-2 col-form-label">Arrival Time: <span class="text-danger">*</span></label>
         <div class="col-md-10">
-            <TimeInput TValue="TimeOnly?" @bind-Value="flightForm.ArrivalTime" />
+            <TimeInput @ref="arrivalTimeInput" TValue="TimeOnly?"
+                       @bind-Value="flightForm.ArrivalTime"
+                       EnableMinMax="true"
+                       Min="arrivalMinTime"
+                       Max="arrivalMaxTime"
+                       Disabled="true" />
             <ValidationMessage For="@(() => flightForm.ArrivalTime)" />
         </div>
     </div>
@@ -66,8 +50,13 @@
 </EditForm>
 
 @code {
+    TimeInput<TimeOnly?> arrivalTimeInput = default!;
+
     private FlightForm flightForm = new();
     private EditContext editContext;
+
+    private TimeOnly? arrivalMinTime;
+    private TimeOnly? arrivalMaxTime;
 
     [Inject] ToastService _toastService { get; set; }
 
@@ -75,6 +64,26 @@
     {
         editContext = new EditContext(flightForm);
         base.OnInitialized();
+    }
+
+    private void DepartureTimeChanged(TimeOnly? departureTime)
+    {
+        if (departureTime is null || !departureTime.HasValue)
+        {
+            flightForm.DepartureTime = null;
+            flightForm.ArrivalTime = null;
+            arrivalMinTime = null;
+            arrivalMaxTime = null;
+            arrivalTimeInput.Disable();
+
+            return;
+        }
+
+        flightForm.DepartureTime = departureTime;
+        flightForm.ArrivalTime = null;
+        arrivalMinTime = departureTime.Value.AddHours(1);
+        arrivalMaxTime = departureTime.Value.AddHours(12);
+        arrivalTimeInput.Enable();
     }
 
     public void HandleValidSubmit()
@@ -98,17 +107,8 @@
 
     public class FlightForm
     {
-        [Required(ErrorMessage = "Flight Number required.")]
-        public string FlightNumber { get; set; }
-
-        [Required(ErrorMessage = "Departure Date required.")]
-        public DateOnly? DepartureDate { get; set; }
-
         [Required(ErrorMessage = "Departure Time required.")]
         public TimeOnly? DepartureTime { get; set; }
-
-        [Required(ErrorMessage = "Arrival Date required.")]
-        public DateOnly? ArrivalDate { get; set; }
 
         [Required(ErrorMessage = "Arrival Time required.")]
         public TimeOnly? ArrivalTime { get; set; }
