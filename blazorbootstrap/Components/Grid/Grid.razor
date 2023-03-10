@@ -77,7 +77,8 @@
                     {
                         foreach (var item in items)
                         {
-                            <tr @key="item?.GetHashCode()">
+                            var rowClass = RowClass?.Invoke(item) ?? "";
+                            <tr @key="item?.GetHashCode()" class="@rowClass">
                                 @foreach (var column in columns)
                                 {
                                     @column.CellTemplate(item)

@@ -383,6 +383,11 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public bool Responsive { get; set; }
 
     /// <summary>
+    /// Gets or sets the row class.
+    /// </summary>
+    [Parameter] public Func<TItem, string>? RowClass { get; set; }
+
+    /// <summary>
     /// Settings is for grid to render. 
     /// The provider should always return an instance of 'GridSettings', and 'null' is not allowed.
     /// </summary>
