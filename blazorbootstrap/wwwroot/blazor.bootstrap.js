@@ -325,30 +325,7 @@ window.blazorBootstrap = {
                 parsedValue = 0;
 
             return new Intl.NumberFormat(locales, options).format(parsedValue);
-        },
-        //getFormattedValue: (value, locales) => {
-
-        //    let extractedValue = value.toString();
-        //    let parsedValue = Number.parseFloat(extractedValue);
-
-        //    if (isNaN(parsedValue))
-        //        parsedValue = 0;
-
-        //    return new Intl.NumberFormat(locales).format(parsedValue);
-        //},
-        //getFormattedValueWithCurrencySymbol: (value, locales, currencySymbol) => {
-
-        //    let extractedValue = value.toString();
-        //    let parsedValue = Number.parseFloat(extractedValue);
-
-        //    if (isNaN(parsedValue))
-        //        parsedValue = 0;
-
-        //    return new Intl.NumberFormat(locales, {
-        //        style: 'currency',
-        //        currency: currencySymbol
-        //    }).format(parsedValue);
-        //}
+        }
     },
     dateInput: {
         getFormattedValue: (value) => {

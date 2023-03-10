@@ -5,7 +5,7 @@ public partial class TimeInput<TValue> : BaseComponent
     #region Events
 
     /// <summary>
-    /// This event fired on every user keystroke that changes the CurrencyInput value.
+    /// This event fired on every user keystroke that changes the TimeInput value.
     /// </summary>
     [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
 
@@ -25,6 +25,10 @@ public partial class TimeInput<TValue> : BaseComponent
     private string autoComplete => this.AutoComplete ? "true" : "false";
 
     private bool disabled;
+
+    private TValue max;
+
+    private TValue min;
 
     private string formattedMax;
 
@@ -46,10 +50,13 @@ public partial class TimeInput<TValue> : BaseComponent
 
     protected override async Task OnInitializedAsync()
     {
+        this.max = Max;
+        this.min = Min;
+
         if (EnableMinMax
-            && Min is not null
-            && Max is not null
-            && IsLeftGreaterThanRight(Min, Max))
+            && min is not null
+            && max is not null
+            && IsLeftGreaterThanRight(min, max))
             throw new InvalidOperationException("The Min parameter value is greater than the Max parameter value.");
 
         if (!(typeof(TValue) == typeof(TimeOnly)
@@ -66,6 +73,24 @@ public partial class TimeInput<TValue> : BaseComponent
         await base.OnInitializedAsync();
     }
 
+    protected override void OnParametersSet()
+    {
+        Console.WriteLine($"OnParametersSet called...");
+        if (EnableMinMax && !min.Equals(Min))
+        {
+            Console.WriteLine($"OnParametersSet 1 - min: {min}, Min: {Min}");
+            min = Min;
+            this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
+        }
+
+        if (EnableMinMax && !max.Equals(Max))
+        {
+            Console.WriteLine($"OnParametersSet 2 - max: {max}, Max: {Max}");
+            max = Max;
+            this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -77,10 +102,10 @@ public partial class TimeInput<TValue> : BaseComponent
             if (currentValue is null || !TryParseValue(currentValue, out TValue value))
             {
                 if (EnableMinMax
-                    && Min is not null
+                    && min is not null
                     && (typeof(TValue) == typeof(TimeOnly)))
                 {
-                    Value = Min;
+                    Value = min;
                     Console.WriteLine($"OnAfterRenderAsync 2 - Value: {Value}");
                 }
                 else // TimeOnly?
@@ -89,14 +114,14 @@ public partial class TimeInput<TValue> : BaseComponent
                     Console.WriteLine($"OnAfterRenderAsync 3 - Value: {Value}");
                 }
             }
-            else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, Value)) //  value < min
+            else if (EnableMinMax && min is not null && IsLeftGreaterThanRight(min, Value)) //  value < min
             {
-                Value = EnableMinMax && Min is not null ? Min : default!;
+                Value = EnableMinMax && min is not null ? min : default!;
                 Console.WriteLine($"OnAfterRenderAsync 4 - Value: {Value}");
             }
-            else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
+            else if (EnableMinMax && max is not null && IsLeftGreaterThanRight(Value, max)) // value > max
             {
-                Value = Max;
+                Value = max;
                 Console.WriteLine($"OnAfterRenderAsync 5 - Value: {Value}");
             }
             else
@@ -105,8 +130,8 @@ public partial class TimeInput<TValue> : BaseComponent
                 Console.WriteLine($"OnAfterRenderAsync 6 - Value: {Value}");
             }
 
-            this.formattedMax = EnableMinMax && Max is not null ? GetFormattedValue(Max) : string.Empty;
-            this.formattedMin = EnableMinMax && Min is not null ? GetFormattedValue(Min) : string.Empty;
+            this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+            this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
             this.formattedValue = GetFormattedValue(Value);
 
             Console.WriteLine($"OnAfterRenderAsync 7 - formattedValue: {formattedValue}");
@@ -125,31 +150,31 @@ public partial class TimeInput<TValue> : BaseComponent
         if (newValue is null || !TryParseValue(newValue, out TValue value))
         {
             if (EnableMinMax
-                && Min is not null
+                && min is not null
                 && (typeof(TValue) == typeof(TimeOnly)))
             {
-                Value = Min;
+                Value = min;
             }
             else // TimeOnly?
             {
                 Value = default!;
             }
         }
-        else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, value)) //  value < min
+        else if (EnableMinMax && min is not null && IsLeftGreaterThanRight(min, value)) //  value < min
         {
-            Value = Min;
+            Value = min;
         }
-        else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
+        else if (EnableMinMax && max is not null && IsLeftGreaterThanRight(value, max)) // value > max
         {
-            Value = Max;
+            Value = max;
         }
         else
         {
             Value = value;
         }
 
-        this.formattedMax = EnableMinMax && Max is not null ? GetFormattedValue(Max) : string.Empty;
-        this.formattedMin = EnableMinMax && Min is not null ? GetFormattedValue(Min) : string.Empty;
+        //this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+        //this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
         this.formattedValue = GetFormattedValue(Value);
 
         if (oldValue.Equals(Value))
@@ -317,13 +342,13 @@ public partial class TimeInput<TValue> : BaseComponent
     /// Gets or sets the max.
     /// Allowed format is hh:mm.
     /// </summary>
-    [Parameter] public TValue Max { get; set; }
+    [Parameter] public TValue Max { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the min.
     /// Allowed format is hh:mm.
     /// </summary>
-    [Parameter] public TValue Min { get; set; }
+    [Parameter] public TValue Min { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the placeholder.
