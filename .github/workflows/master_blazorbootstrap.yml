@@ -5,6 +5,12 @@ on:
     branches:
       - master
   workflow_dispatch:
+    inputs:
+      prod_release:
+        description: 'Do you want to release to PROD'
+        required: true
+        default: false
+        type: boolean
 
 jobs:
   build:
@@ -33,6 +39,7 @@ jobs:
 
   deploy:
     runs-on: windows-latest
+    if:  ${{ inputs.prod_release }} 
     needs: build
     environment:
       name: 'Production'

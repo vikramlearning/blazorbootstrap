@@ -5,6 +5,13 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      prod_release:
+        description: 'Do you want to release to PROD'
+        required: true
+        default: false
+        type: boolean
 jobs:
   Build-Deploy-Documentation:
     runs-on: ubuntu-latest
@@ -27,6 +34,7 @@ jobs:
           npm run build
       # Adding publshing content
       - name: Publish Content
+        if:  ${{ inputs.prod_release }} 
         env:
           GIT_USER: ${{ secrets.GIT_USER }}
           GIT_PASS: ${{ secrets.GIT_USER_TOKEN }}
