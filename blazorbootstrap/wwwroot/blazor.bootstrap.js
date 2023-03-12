@@ -192,6 +192,7 @@ window.blazorBootstrap = {
             bootstrap?.Modal?.getOrCreateInstance(modalEl, options);
         },
         show: (elementId) => {
+            console.log(`show called...`);
             bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.show();
         },
         hide: (elementId) => {
@@ -324,30 +325,7 @@ window.blazorBootstrap = {
                 parsedValue = 0;
 
             return new Intl.NumberFormat(locales, options).format(parsedValue);
-        },
-        //getFormattedValue: (value, locales) => {
-
-        //    let extractedValue = value.toString();
-        //    let parsedValue = Number.parseFloat(extractedValue);
-
-        //    if (isNaN(parsedValue))
-        //        parsedValue = 0;
-
-        //    return new Intl.NumberFormat(locales).format(parsedValue);
-        //},
-        //getFormattedValueWithCurrencySymbol: (value, locales, currencySymbol) => {
-
-        //    let extractedValue = value.toString();
-        //    let parsedValue = Number.parseFloat(extractedValue);
-
-        //    if (isNaN(parsedValue))
-        //        parsedValue = 0;
-
-        //    return new Intl.NumberFormat(locales, {
-        //        style: 'currency',
-        //        currency: currencySymbol
-        //    }).format(parsedValue);
-        //}
+        }
     },
     dateInput: {
         getFormattedValue: (value) => {
@@ -429,6 +407,11 @@ window.blazorBootstrap = {
         },
         dispose: (elementId) => {
             bootstrap?.Tab?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
+        }
+    },
+    timeInput: {
+        setValue: (elementId, value) => {
+            document.getElementById(elementId).value = value;
         }
     },
     toasts: {

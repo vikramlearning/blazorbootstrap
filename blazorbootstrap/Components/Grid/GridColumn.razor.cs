@@ -267,20 +267,28 @@ public partial class GridColumn<TItem> : BaseComponent
         {
             return cellTemplate ??= (rowData => builder =>
             {
-                var seq = 0;
-                builder.OpenElement(seq, "td");
+                builder.OpenElement(100, "td");
+
+                var classList = new List<string>();
+
+                // text alignment
                 if (this.TextAlignment != Alignment.None)
-                {
-                    seq++;
-                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.TextAlignment));
-                }
+                    classList.Add(BootstrapClassProvider.TextAlignment(this.TextAlignment));
+
+                // text nowrap
                 if (this.TextNoWrap)
-                {
-                    seq++;
-                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextNoWrap());
-                }
-                seq++;
-                builder.AddContent(seq, ChildContent, rowData);
+                    classList.Add(BootstrapClassProvider.TextNoWrap());
+
+                // custom column class
+                var columnClass = ColumnClass?.Invoke(rowData) ?? "";
+                if(!string.IsNullOrWhiteSpace(columnClass))
+                    classList.Add(columnClass);
+
+                if (classList.Any())
+                    builder.AddAttribute(101, "class", string.Join(" ", classList));
+
+                builder.AddContent(102, ChildContent, rowData);
+
                 builder.CloseElement();
             });
         }
@@ -305,6 +313,11 @@ public partial class GridColumn<TItem> : BaseComponent
     /// Gets or sets the filter textbox width in pixels.
     /// </summary>
     [Parameter] public int FilterTextboxWidth { get; set; }
+
+    /// <summary>
+    /// Gets or sets the column class.
+    /// </summary>
+    [Parameter] public Func<TItem, string>? ColumnClass { get; set; }
 
     #endregion Properties
 }

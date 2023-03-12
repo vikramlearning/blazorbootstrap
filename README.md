@@ -46,7 +46,7 @@
 Several quick start options are available:
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.5.0`
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.6.0`
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
@@ -78,6 +78,7 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 - Sidebar
 - Switch
 - Tabs
+- Time Input
 - Toasts
 - Tooltips
 
@@ -145,6 +146,9 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ### Blazor Bootstrap - Tabs
 ![Blazor Bootstrap - Tabs](https://i.imgur.com/NdE5oqH.png "Blazor Bootstrap - Tabs")
+
+### Blazor Bootstrap - Time Input
+![Blazor Bootstrap - Time Input](https://i.imgur.com/TlvjRlP.png "Blazor Bootstrap - Time Input")
 
 ### Blazor Bootstrap - Toasts
 ![Blazor Bootstrap - Toasts](https://i.imgur.com/OCQUchu.png "Blazor Bootstrap - Toasts")

@@ -24,6 +24,7 @@ Blazor Bootstrap `DateInput` component is constructed using an HTML input of `ty
 | Min| TValue | | | Gets or sets the min. Min ignored if EnableMinMax="false". | 1.5.0 |
 | Placeholder | string? | null | | Gets or sets the placeholder. | 1.5.0 |
 | Value | TValue | | | Gets or sets the value. | 1.5.0 |
+| ValueExpression | `Expression<Func<TValue>>` | | | Gets or sets the expression | 1.6.0 |
 
 ## Methods
 
@@ -346,3 +347,146 @@ This event fires on every user keystroke/selection that changes the `DateInput` 
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/form/date-input#event-value-changed)
+
+### Restrict the date field based on the entry in another date field
+
+One common scenario is that the date fields are restricted based on the entry in another date field. 
+In the example below, we restrict the course end time based on the selection of course start date.
+
+<img src="https://i.imgur.com/bCXn1vE.png" width="450" alt="Blazor Bootstrap:- Date Input Component - Restrict the date field based on the entry in another date field" />
+
+```cshtml {} showLineNumbers
+@using System.ComponentModel.DataAnnotations
+```
+
+```css {} showLineNumbers
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+```
+
+```cshtml {17-18,28-30} showLineNumbers
+<EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit" novalidate>
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Course Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <InputText class="form-control" @bind-Value="onlineCourseForm.CourseName" />
+            <ValidationMessage For="@(() => onlineCourseForm.CourseName)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Start Date: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <DateInput TValue="DateTime?"
+                       Value="onlineCourseForm.StartDate"
+                       ValueExpression="() => onlineCourseForm.StartDate"
+                       ValueChanged="(value) => StartDateChanged(value)" />
+            <ValidationMessage For="@(() => onlineCourseForm.StartDate)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">End Date: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <DateInput @ref="endDateInput" TValue="DateTime?"
+                       @bind-Value="onlineCourseForm.EndDate"
+                       EnableMinMax="true"
+                       Min="courseMinDate"
+                       Max="courseMaxDate"
+                       Disabled="true" />
+            <ValidationMessage For="@(() => onlineCourseForm.EndDate)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+        </div>
+    </div>
+</EditForm>
+```
+
+```cshtml {23-25,32-34} showLineNumbers
+@code {
+    DateInput<DateTime?> endDateInput = default!;
+
+    private OnlineCourseForm onlineCourseForm = new();
+    private EditContext editContext;
+
+    private DateTime? courseMinDate;
+    private DateTime? courseMaxDate;
+
+    [Inject] ToastService _toastService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(onlineCourseForm);
+        base.OnInitialized();
+    }
+
+    private void StartDateChanged(DateTime? startDate)
+    {
+        if (startDate is null || !startDate.HasValue)
+        {
+            onlineCourseForm.StartDate = null;
+            onlineCourseForm.EndDate = null;
+            courseMinDate = null;
+            courseMaxDate = null;
+            endDateInput.Disable();
+
+            return;
+        }
+
+        onlineCourseForm.StartDate = startDate;
+        onlineCourseForm.EndDate = null;
+        courseMinDate = startDate.Value;
+        courseMaxDate = startDate.Value.AddDays(5);
+        endDateInput.Enable();
+    }
+
+    public void HandleValidSubmit()
+    {
+        var toastMessage = new ToastMessage
+        (
+            type: ToastType.Success,
+            iconName: IconName.Check2All,
+            title: "Success!",
+            helpText: $"{DateTime.Now.ToLocalTime()}",
+            message: "Online course schedule created."
+        );
+        _toastService.Notify(toastMessage);
+    }
+
+    private void ResetForm()
+    {
+        onlineCourseForm = new();
+        editContext = new EditContext(onlineCourseForm);
+    }
+
+    public class OnlineCourseForm
+    {
+        [Required(ErrorMessage = "Course Name required.")]
+        public string CourseName { get; set; }
+
+        [Required(ErrorMessage = "Start Date required.")]
+        public DateTime? StartDate { get; set; }
+
+        [Required(ErrorMessage = "End Date required.")]
+        public DateTime? EndDate { get; set; }
+    }
+}
+```

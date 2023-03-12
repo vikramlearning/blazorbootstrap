@@ -5,7 +5,7 @@ public partial class DateInput<TValue> : BaseComponent
     #region Events
 
     /// <summary>
-    /// This event fired on every user keystroke that changes the CurrencyInput value.
+    /// This event fired on every user keystroke that changes the DateInput value.
     /// </summary>
     [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
 
@@ -25,6 +25,10 @@ public partial class DateInput<TValue> : BaseComponent
     private string autoComplete => this.AutoComplete ? "true" : "false";
 
     private bool disabled;
+
+    private TValue max;
+
+    private TValue min;
 
     private string formattedMax;
 
@@ -46,10 +50,13 @@ public partial class DateInput<TValue> : BaseComponent
 
     protected override async Task OnInitializedAsync()
     {
+        this.max = Max;
+        this.min = Min;
+
         if (EnableMinMax
-            && Min is not null
-            && Max is not null
-            && IsLeftGreaterThanRight(Min, Max))
+            && min is not null
+            && max is not null
+            && IsLeftGreaterThanRight(min, max))
             throw new InvalidOperationException("The Min parameter value is greater than the Max parameter value.");
 
         if (!(typeof(TValue) == typeof(DateOnly)
@@ -68,6 +75,21 @@ public partial class DateInput<TValue> : BaseComponent
         await base.OnInitializedAsync();
     }
 
+    protected override void OnParametersSet()
+    {
+        if (EnableMinMax && !min.Equals(Min))
+        {
+            min = Min;
+            this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
+        }
+
+        if (EnableMinMax && !max.Equals(Max))
+        {
+            max = Max;
+            this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -77,31 +99,31 @@ public partial class DateInput<TValue> : BaseComponent
             if (currentValue is null || !TryParseValue(currentValue, out TValue value))
             {
                 if (EnableMinMax
-                    && Min is not null
+                    && min is not null
                     && (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateTime)))
                 {
-                    Value = Min;
+                    Value = min;
                 }
                 else // DateOnly? / DateTime?
                 {
                     Value = default!;
                 }
             }
-            else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, Value)) //  value < min
+            else if (EnableMinMax && min is not null && IsLeftGreaterThanRight(min, Value)) //  value < min
             {
-                Value = EnableMinMax && Min is not null ? Min : default!;
+                Value = EnableMinMax && min is not null ? min : default!;
             }
-            else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
+            else if (EnableMinMax && max is not null && IsLeftGreaterThanRight(Value, max)) // value > max
             {
-                Value = Max;
+                Value = max;
             }
             else
             {
                 Value = value;
             }
 
-            this.formattedMax = EnableMinMax && Max is not null ? GetFormattedValue(Max) : string.Empty;
-            this.formattedMin = EnableMinMax && Min is not null ? GetFormattedValue(Min) : string.Empty;
+            this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+            this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
             this.formattedValue = GetFormattedValue(Value);
 
             await ValueChanged.InvokeAsync(Value);
@@ -118,31 +140,31 @@ public partial class DateInput<TValue> : BaseComponent
         if (newValue is null || !TryParseValue(newValue, out TValue value))
         {
             if (EnableMinMax
-                && Min is not null
+                && min is not null
                 && (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateTime)))
             {
-                Value = Min;
+                Value = min;
             }
             else // DateOnly? / DateTime?
             {
                 Value = default!;
             }
         }
-        else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, value)) //  value < min
+        else if (EnableMinMax && min is not null && IsLeftGreaterThanRight(min, value)) //  value < min
         {
-            Value = Min;
+            Value = min;
         }
-        else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
+        else if (EnableMinMax && max is not null && IsLeftGreaterThanRight(value, max)) // value > max
         {
-            Value = Max;
+            Value = max;
         }
         else
         {
             Value = value;
         }
 
-        this.formattedMax = EnableMinMax && Max is not null ? GetFormattedValue(Max) : string.Empty;
-        this.formattedMin = EnableMinMax && Min is not null ? GetFormattedValue(Min) : string.Empty;
+        //this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+        //this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
         this.formattedValue = GetFormattedValue(Value);
 
         if (oldValue.Equals(Value))
@@ -244,7 +266,7 @@ public partial class DateInput<TValue> : BaseComponent
                 formattedDate = d.ToString(defaultFormat);
             }
         }
-        catch (FormatException ex)
+        catch (FormatException)
         {
             return formattedDate;
         }
@@ -297,13 +319,13 @@ public partial class DateInput<TValue> : BaseComponent
     /// Gets or sets the max.
     /// Allowed format is yyyy-mm-dd.
     /// </summary>
-    [Parameter] public TValue Max { get; set; }
+    [Parameter] public TValue Max { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the min.
     /// Allowed format is yyyy-mm-dd.
     /// </summary>
-    [Parameter] public TValue Min { get; set; }
+    [Parameter] public TValue Min { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the placeholder.
@@ -315,6 +337,9 @@ public partial class DateInput<TValue> : BaseComponent
     /// </summary>
     [Parameter] public TValue Value { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the expression.
+    /// </summary>
     [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 
     #endregion

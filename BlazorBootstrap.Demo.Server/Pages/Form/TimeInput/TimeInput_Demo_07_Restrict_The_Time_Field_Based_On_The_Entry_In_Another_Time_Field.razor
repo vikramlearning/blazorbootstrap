@@ -1,0 +1,116 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit" novalidate>
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Departure Time: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TimeInput TValue="TimeOnly?"
+                       Value="flightForm.DepartureTime"
+                       ValueExpression="() => flightForm.DepartureTime"
+                       ValueChanged="(value) => DepartureTimeChanged(value)" />
+            <ValidationMessage For="@(() => flightForm.DepartureTime)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Arrival Time: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TimeInput @ref="arrivalTimeInput" TValue="TimeOnly?"
+                       @bind-Value="flightForm.ArrivalTime"
+                       EnableMinMax="true"
+                       Min="arrivalMinTime"
+                       Max="arrivalMaxTime"
+                       Disabled="true" />
+            <ValidationMessage For="@(() => flightForm.ArrivalTime)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    TimeInput<TimeOnly?> arrivalTimeInput = default!;
+
+    private FlightForm flightForm = new();
+    private EditContext editContext;
+
+    private TimeOnly? arrivalMinTime;
+    private TimeOnly? arrivalMaxTime;
+
+    [Inject] ToastService _toastService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(flightForm);
+        base.OnInitialized();
+    }
+
+    private void DepartureTimeChanged(TimeOnly? departureTime)
+    {
+        if (departureTime is null || !departureTime.HasValue)
+        {
+            flightForm.DepartureTime = null;
+            flightForm.ArrivalTime = null;
+            arrivalMinTime = null;
+            arrivalMaxTime = null;
+            arrivalTimeInput.Disable();
+
+            return;
+        }
+
+        flightForm.DepartureTime = departureTime;
+        flightForm.ArrivalTime = null;
+        arrivalMinTime = departureTime.Value.AddHours(1);
+        arrivalMaxTime = departureTime.Value.AddHours(12);
+        arrivalTimeInput.Enable();
+    }
+
+    public void HandleValidSubmit()
+    {
+        var toastMessage = new ToastMessage
+        (
+            type: ToastType.Success,
+            iconName: IconName.Check2All,
+            title: "Success!",
+            helpText: $"{DateTime.Now.ToLocalTime()}",
+            message: "Flight schedule created."
+        );
+        _toastService.Notify(toastMessage);
+    }
+
+    private void ResetForm()
+    {
+        flightForm = new();
+        editContext = new EditContext(flightForm);
+    }
+
+    public class FlightForm
+    {
+        [Required(ErrorMessage = "Departure Time required.")]
+        public TimeOnly? DepartureTime { get; set; }
+
+        [Required(ErrorMessage = "Arrival Time required.")]
+        public TimeOnly? ArrivalTime { get; set; }
+    }
+}

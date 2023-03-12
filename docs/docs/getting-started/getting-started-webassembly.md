@@ -14,7 +14,7 @@ Get started with the Enterprise-class Blazor Bootstrap Component library built o
 Looking to quickly add **Blazor Bootstrap** to your project? Use NuGet package manager.
 
 ```shell
-Install-Package Blazor.Bootstrap -Version 1.5.0
+Install-Package Blazor.Bootstrap -Version 1.6.0
 ```
 
 ## Add CSS references
@@ -22,7 +22,7 @@ Install-Package Blazor.Bootstrap -Version 1.5.0
 Add the following references to the `head` section in the **wwwroot/index.html**.
 
 ```html showLineNumbers
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" rel="stylesheet" />
 <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
 ```
@@ -42,7 +42,7 @@ Add the following references to the `body` section in the **wwwroot/index.html**
 
 
 ``` js showLineNumbers
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- Add chart.js reference if Chart components are used in the application. -->
 <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
 ```

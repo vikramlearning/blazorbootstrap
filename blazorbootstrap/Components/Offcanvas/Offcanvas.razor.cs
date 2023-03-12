@@ -209,6 +209,11 @@
         /// </summary>
         [Parameter] public EventCallback OnHidden { get; set; }
 
+        /// <summary>
+        /// Gets or sets the tab index.
+        /// </summary>
+        [Parameter] public int TabIndex { get; set; } = -1;
+
         #endregion Properties
     }
 }

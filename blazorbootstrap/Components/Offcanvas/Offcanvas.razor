@@ -2,7 +2,7 @@
 @inherits BaseComponent
 
 <CascadingValue Value="@this" IsFixed="true">
-    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" tabindex="@TabIndex">
         @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
         {
             <div class="offcanvas-header @HeaderCssClass">

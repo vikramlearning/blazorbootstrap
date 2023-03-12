@@ -13,29 +13,30 @@ Build hidden sidebars into your project for navigation, shopping carts, and more
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default |
-|--|--|--|--|--|
-| BodyCssClass | string | Additional body CSS class. | | |
-| BodyTemplate | RenderFragment | Body content. | ✔️ | |
-| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | |
-| CloseOnEscape | bool | Indicates whether the offcanvas closes when escape key is pressed. | | true |
-| FooterCssClass | string | Additional footer CSS class. | | |
-| FooterTemplate | RenderFragment | Footer content. | | |
-| HeaderCssClass | string | Additional header CSS class. | | |
-| HeaderTemplate | RenderFragment | Content for the header. | | |
-| IsScrollable | bool | Indicates whether body (page) scrolling is allowed while offcanvas is open. | | false |
-| Placement | `Placement` | Gets or sets the offcanvas placement. By default, offcanvas is placed on the right of the viewport. | | `Placement.End` |
-| ShowCloseButton | bool | Indicates whether the modal shows close button in header. | | true |
-| Size | `OffcanvasSize` | Size of the offcanvas. | | `OffcanvasSize.Regular` |
-| Title | string | Text for the title in header. | | |
-| UseBackdrop | bool | Indicates whether to apply a backdrop on body while offcanvas is open. | | true |
+| Name | Type | Descritpion | Required | Default | Added Version |
+|--|--|--|--|--|--|
+| BodyCssClass | string | Additional body CSS class. | | | 1.0.0 |
+| BodyTemplate | RenderFragment | Body content. | ✔️ | | 1.0.0 |
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | | 1.0.0 |
+| CloseOnEscape | bool | Indicates whether the offcanvas closes when escape key is pressed. | | true | 1.0.0 |
+| FooterCssClass | string | Additional footer CSS class. | | | 1.0.0 |
+| FooterTemplate | RenderFragment | Footer content. | | | 1.0.0 |
+| HeaderCssClass | string | Additional header CSS class. | | | 1.0.0 |
+| HeaderTemplate | RenderFragment | Content for the header. | | | 1.0.0 |
+| IsScrollable | bool | Indicates whether body (page) scrolling is allowed while offcanvas is open. | | false | 1.0.0 |
+| Placement | `Placement` | Gets or sets the offcanvas placement. By default, offcanvas is placed on the right of the viewport. | | `Placement.End` | 1.0.0 |
+| ShowCloseButton | bool | Indicates whether the modal shows close button in header. | | true | 1.0.0 |
+| Size | `OffcanvasSize` | Size of the offcanvas. | | `OffcanvasSize.Regular` | 1.0.0 |
+| TabIndex | int | Gets or sets the tab index. | | -1 | 1.6.0 |
+| Title | string | Text for the title in header. | ✔️ | | 1.0.0 |
+| UseBackdrop | bool | Indicates whether to apply a backdrop on body while offcanvas is open. | | true | 1.0.0 |
 
 ## Methods
 
-| Method | Description |
-|--|--|
-| ShowAsync | Shows an offcanvas element. Returns to the caller before the offcanvas element has actually been shown (i.e. before the `OnShown` event occurs). |
-| HideAsync | Hides an offcanvas element. Returns to the caller before the offcanvas element has actually been hidden (i.e. before the `OnHidden` event occurs). |
+| Method | Description | Added Version |
+|--|--|--|
+| ShowAsync | Shows an offcanvas element. Returns to the caller before the offcanvas element has actually been shown (i.e. before the `OnShown` event occurs). | 1.0.0 |
+| HideAsync | Hides an offcanvas element. Returns to the caller before the offcanvas element has actually been hidden (i.e. before the `OnHidden` event occurs). | 1.0.0 |
 
 :::danger Asynchronous methods and transitions
 

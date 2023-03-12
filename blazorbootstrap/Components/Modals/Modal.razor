@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" tabindex="@TabIndex">
     <div class="modal-dialog @scrollable @verticallyCentered @modalSize @modalFullscreen @DialogCssClass">
         <div class="modal-content">
             @if (isVisible)
