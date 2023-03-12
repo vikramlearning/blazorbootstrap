@@ -2,11 +2,44 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-03-05T00:00:00.000Z</updated>
+    <updated>2023-03-12T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.6.0]]></title>
+        <id>/2023/03/12/blazorbootstrap-1.6.0</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/03/12/blazorbootstrap-1.6.0"/>
+        <updated>2023-03-12T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.6.0 with new TimeInput component and other updates!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.6.0 with new TimeInput component and other updates!!!</p><img loading="lazy" src="https://i.imgur.com/TlvjRlP.png" alt="Blazor Bootstrap: TimeInput Component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's new<a class="hash-link" href="#whats-new" title="Direct link to heading">​</a></h2><ul><li><code>TimeInput</code> component<ul><li>Generic type: TimeOnly and TimeOnly? supported</li><li>Max and Min range</li><li>Disable</li><li>Validations</li><li>ValueChanged event</li><li>Restrict the time field based on the entry in another field</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><p><code>Grid</code> component</p><ul><li>Conditional css class for grid row</li><li>Conditional css class for grid column</li></ul></li><li><p><code>DateInput</code> component</p><ul><li>Restrict the date field based on the entry in another field</li></ul></li><li><p><code>Modal</code> component</p><ul><li>Modal CloseOnEscape not working - Fixed</li></ul></li><li><p><code>Offcanvas</code> component</p><ul><li>Offcanvas CloseOnEscape not working #160 - Fixed</li></ul></li><li><p>Upgrade Bootstrap version from v5.1.3 to v5.2.3</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/time-input" target="_blank" rel="noopener noreferrer">Blazor TimeInput Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Blazor Grid Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/date-input" target="_blank" rel="noopener noreferrer">Blazor DateInput Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/modal" target="_blank" rel="noopener noreferrer">Blazor Modal Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/offcanvas" target="_blank" rel="noopener noreferrer">Blazor Offcanvas Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.6.0" term="v1.6.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="timeinput" term="timeinput"/>
+        <category label="timepicker" term="timepicker"/>
+        <category label="blazortimeinput" term="blazortimeinput"/>
+        <category label="blazortimepicker" term="blazortimepicker"/>
+        <category label="blazortime" term="blazortime"/>
+        <category label="dateinput" term="dateinput"/>
+        <category label="datepicker" term="datepicker"/>
+        <category label="blazordateinput" term="blazordateinput"/>
+        <category label="blazordatepicker" term="blazordatepicker"/>
+        <category label="blazordate" term="blazordate"/>
+        <category label="grid" term="grid"/>
+        <category label="blazorgrid" term="blazorgrid"/>
+        <category label="modal" term="modal"/>
+        <category label="blazormodal" term="blazormodal"/>
+        <category label="offcanvas" term="offcanvas"/>
+        <category label="blazoroffcanvas" term="blazoroffcanvas"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.5.0]]></title>
         <id>/2023/03/05/blazorbootstrap-1.5.0</id>
