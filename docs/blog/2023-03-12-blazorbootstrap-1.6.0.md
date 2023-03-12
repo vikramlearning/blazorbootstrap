@@ -10,7 +10,7 @@ tags: [v1.6.0, blazor, bootstrap, bootstrap5, bootstrap-5, blazorbootstrap, time
 
 We are excited to release 1.6.0 with new TimeInput component and other updates!!!
 
-<img src="https://i.imgur.com/1mVjqQv.png" alt="Blazor Bootstrap: DateInput Component" />
+<img src="https://i.imgur.com/TlvjRlP.png" alt="Blazor Bootstrap: TimeInput Component" />
 
 <!--truncate-->
 
