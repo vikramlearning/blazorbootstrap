@@ -24,6 +24,7 @@ Blazor Bootstrap `DateInput` component is constructed using an HTML input of `ty
 | Min| TValue | | | Gets or sets the min. Min ignored if EnableMinMax="false". | 1.5.0 |
 | Placeholder | string? | null | | Gets or sets the placeholder. | 1.5.0 |
 | Value | TValue | | | Gets or sets the value. | 1.5.0 |
+| ValueExpression | `Expression<Func<TValue>>` | | | Gets or sets the expression | 1.6.0 |
 
 ## Methods
 

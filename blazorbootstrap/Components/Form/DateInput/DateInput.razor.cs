@@ -337,6 +337,9 @@ public partial class DateInput<TValue> : BaseComponent
     /// </summary>
     [Parameter] public TValue Value { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the expression.
+    /// </summary>
     [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 
     #endregion
