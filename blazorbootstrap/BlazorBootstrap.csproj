@@ -3,14 +3,14 @@
 	<PropertyGroup>
 
 		<PackageId>Blazor.Bootstrap</PackageId>
-    <Version>1.5.0</Version>
-		<PackageVersion>1.5.0</PackageVersion>
+    <Version>1.6.0</Version>
+		<PackageVersion>1.6.0</PackageVersion>
 
 		<!--<PackageIconUrl></PackageIconUrl>-->
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 		<PackageProjectUrl>https://getblazorbootstrap.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/vikramlearning/blazorbootstrap</RepositoryUrl>
-		<PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap, BlazorAlert, BlazorAutoComplete, BlazorButtons, BlazorCallout, BlazorCharts, BlazorConfirmDialog, BlazorGrid, BlazorModal, BlazorCurrencyInput, BlazorNumberInput, BlazorInput, BlazorNumber, BlazorDate, BlazorDateInput, BlazorDatePicker, BlazorOffcanvas, BlazorPagination, BlazorPlaceholders, BlazorPreload, BlazorProgress, BlazorSidebar, BlazorSwitch, BlazorTabs, BlazorToasts, BlazorTooltips, BlazorBarChart, BlazorDoughnutChart, BlazorLineChart, BlazorPieChart</PackageTags>		
+		<PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap, BlazorAlert, BlazorAutoComplete, BlazorButtons, BlazorCallout, BlazorCharts, BlazorConfirmDialog, BlazorGrid, BlazorModal, BlazorCurrencyInput, BlazorNumberInput, BlazorInput, BlazorNumber, BlazorDate, BlazorDateInput, BlazorDatePicker, BlazorTime, BlazorTimeInput, BlazorTimePicker, BlazorOffcanvas, BlazorPagination, BlazorPlaceholders, BlazorPreload, BlazorProgress, BlazorSidebar, BlazorSwitch, BlazorTabs, BlazorToasts, BlazorTooltips, BlazorBarChart, BlazorDoughnutChart, BlazorLineChart, BlazorPieChart</PackageTags>		
 		<Description>Blazor Bootstrap is a component library built on top of Blazor and Bootstrap5 CSS framework.</Description>
 		<Authors>Vikram Reddy</Authors>
 		<!--<Company>your_company</Company>-->
