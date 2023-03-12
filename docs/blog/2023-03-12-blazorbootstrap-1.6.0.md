@@ -34,10 +34,10 @@ We are excited to release 1.6.0 with new TimeInput component and other updates!!
   - Restrict the date field based on the entry in another field
 
 - `Modal` component
-  - Modal CloseOnEscape not working
+  - Modal CloseOnEscape not working - Fixed
 
 - `Offcanvas` component
-  - Offcanvas CloseOnEscape not working #160
+  - Offcanvas CloseOnEscape not working #160 - Fixed
   
 - Upgrade Bootstrap version from v5.1.3 to v5.2.3
 
