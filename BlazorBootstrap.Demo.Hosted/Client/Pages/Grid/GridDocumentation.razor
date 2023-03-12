@@ -117,6 +117,14 @@
     </p>
 </Callout>
 
+<SectionHeading Size="HeadingSize.H2" Text="Conditional css class for grid row" PageUrl="@pageUrl" HashTagName="conditional-css-class-for-grid-row" />
+<div class="mb-3">In the below example, we applied <code>table-danger</code> CSS class to the row where the employee is inactive and the <code>table-success</code> CSS class to the row where the employee designation is Architect.</div>
+<Demo Type="typeof(Grid_Demo_18_Specify_Custom_Row_Class)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Conditional css class for grid column" PageUrl="@pageUrl" HashTagName="conditional-css-class-for-grid-column" />
+<div class="mb-3">In the below example, we applied <code>table-danger</code> CSS class to the Active column where the employee is inactive and the <code>table-success</code> CSS class to the Active column where the employee is active.</div>
+<Demo Type="typeof(Grid_Demo_19_Specify_Custom_Column_Class)" Tabs="true" />
+
 @code {
     private string pageUrl = "/grid";
     private string title = "Blazor Grid Component";
