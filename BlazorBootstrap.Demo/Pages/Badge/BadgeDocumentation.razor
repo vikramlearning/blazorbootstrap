@@ -14,7 +14,23 @@
     Badges scale to match the size of the immediate parent element by using relative font sizing and <code>em</code> units.
     As of now, badges no longer have focus or hover styles for links.
 </div>
-<Demo Type="typeof(BadgeComponent_Demo_01_Examples)" Tabs="true" />
+<Demo Type="typeof(Badge_Demo_01_Examples)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Buttons" PageUrl="@pageUrl" HashTagName="buttons" />
+<div class="mb-3">
+    Badges can be used as part of links or buttons to provide a counter.
+</div>
+<Demo Type="typeof(Badge_Demo_02_Buttons)" Tabs="false" />
+<div class="mb-3">
+    <p>Note that depending on how they are used, badges may be confusing for users of screen readers and similar assistive technologies. While the styling of badges provides a visual cue as to their purpose, these users will simply be presented with the content of the badge. Depending on the specific situation, these badges may seem like random additional words or numbers at the end of a sentence, link, or button.</p>
+    <p>Unless the context is clear (as with the “Notifications” example, where it is understood that the “4” is the number of notifications), consider including additional context with a visually hidden piece of additional text.</p>
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Positioned" PageUrl="@pageUrl" HashTagName="positioned" />
+<div class="mb-3">
+    Use <code>VisuallyHiddenText</code> parameter to modify the position it in the corner of a link or button.
+</div>
+<Demo Type="typeof(Badge_Demo_03_Positionedrazor)" Tabs="false" />
 
 @code {
     private string pageUrl = "/badge";

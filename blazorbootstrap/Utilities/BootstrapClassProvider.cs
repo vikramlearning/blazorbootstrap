@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap.Utilities
+﻿using System.Drawing;
+
+namespace BlazorBootstrap.Utilities
 {
     public class BootstrapClassProvider
     {
@@ -185,8 +187,11 @@
         #region Position
 
         public string Position() => "position";
+        public string PositionStatic() => $"{Position()}-static";
+        public string PositionRelative() => $"{Position()}-relative";
         public string PositionAbsolute() => $"{Position()}-absolute";
         public string PositionFixed() => $"{Position()}-fixed";
+        public string PositionSticky() => $"{Position()}-sticky";
 
         #endregion
 
@@ -706,6 +711,19 @@
                 BlazorBootstrap.PlaceholderSize.Small => "sm",
                 BlazorBootstrap.PlaceholderSize.Large => "lg",
                 _ => null,
+            };
+        }
+
+        public string ToPosition(Position position)
+        {
+            return position switch
+            {
+                BlazorBootstrap.Position.Static => PositionAbsolute(),
+                BlazorBootstrap.Position.Relative => PositionRelative(),
+                BlazorBootstrap.Position.Absolute => PositionAbsolute(),
+                BlazorBootstrap.Position.Fixed => PositionFixed(),
+                BlazorBootstrap.Position.Sticky => PositionSticky(),
+                _ => "",
             };
         }
 

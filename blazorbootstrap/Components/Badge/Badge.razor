@@ -3,4 +3,8 @@
 
 <span @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
     @ChildContent
+    @if (!string.IsNullOrWhiteSpace(visuallyHiddenText))
+    {
+        <span class="visually-hidden">@visuallyHiddenText</span>
+    }
 </span>
