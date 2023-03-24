@@ -24,6 +24,16 @@
 
         #endregion
 
+        #region Badge
+
+        public string Badge() => "badge";
+
+        public string BadgeColor(BadgeColor color) => $"text-bg-{ToBadgeColor(color)}";
+
+        public string PillBadge() => "rounded-pill";
+
+        #endregion
+
         #region Button
 
         public string Button() => "btn";
@@ -47,6 +57,8 @@
         #region Background Colors
 
         public string BackgroundColor(BackgroundColor backgroundColor) => $"bg-{ToBackgroundColor(backgroundColor)}";
+
+        public string TextAndBackgroundColor(BackgroundColor backgroundColor) => $"text-bg-{ToBackgroundColor(backgroundColor)}";
 
         #endregion
 
@@ -396,6 +408,49 @@
                 BlazorBootstrap.AlertColor.Light => "light",
                 BlazorBootstrap.AlertColor.Dark => "dark",
                 _ => null,
+            };
+        }
+
+        public string ToBadgeColor(BadgeColor color)
+        {
+            return color switch
+            {
+                BlazorBootstrap.BadgeColor.Primary => "primary",
+                BlazorBootstrap.BadgeColor.Secondary => "secondary",
+                BlazorBootstrap.BadgeColor.Success => "success",
+                BlazorBootstrap.BadgeColor.Danger => "danger",
+                BlazorBootstrap.BadgeColor.Warning => "warning",
+                BlazorBootstrap.BadgeColor.Info => "info",
+                BlazorBootstrap.BadgeColor.Light => "light",
+                BlazorBootstrap.BadgeColor.Dark => "dark",
+                _ => null,
+            };
+        }
+
+        public string ToBadgePlacement(BadgePlacement badgePlacement)
+        {
+            return badgePlacement switch
+            {
+                BlazorBootstrap.BadgePlacement.TopLeft => "top-0 start-0",
+                BlazorBootstrap.BadgePlacement.TopCenter => "top-0 start-50 translate-middle-x",
+                BlazorBootstrap.BadgePlacement.TopRight => "top-0 end-0",
+                BlazorBootstrap.BadgePlacement.MiddleLeft => "top-50 start-0 translate-middle-y",
+                BlazorBootstrap.BadgePlacement.MiddleCenter => "top-50 start-50 translate-middle",
+                BlazorBootstrap.BadgePlacement.MiddleRight => "top-50 end-0 translate-middle-y",
+                BlazorBootstrap.BadgePlacement.BottomLeft => "bottom-0 start-0",
+                BlazorBootstrap.BadgePlacement.BottomCenter => "bottom-0 start-50 translate-middle-x",
+                BlazorBootstrap.BadgePlacement.BottomRight => "bottom-0 end-0",
+                _ => "top-0 end-0", // default: Top right
+            };
+        }
+
+        public string ToBadgeIndicator(BadgeIndicatorType indicatorType)
+        {
+            return indicatorType switch
+            {
+                BlazorBootstrap.BadgeIndicatorType.RoundedPill => "rounded-pill",
+                BlazorBootstrap.BadgeIndicatorType.RoundedCircle => "rounded-circle",
+                _ => "", // default: Top right
             };
         }
 

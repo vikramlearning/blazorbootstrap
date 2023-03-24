@@ -1,10 +1,15 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// Defines the placement of toasts.
+/// Defines the placement of badge.
 /// </summary>
-public enum ToastsPlacement
+public enum BadgePlacement
 {
+    /// <summary>
+    /// No placement will be applied to an element.
+    /// </summary>
+    None,
+
     /// <summary>
     /// Top left
     /// </summary>

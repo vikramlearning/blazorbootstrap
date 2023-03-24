@@ -1,52 +1,52 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// Defines the placement of toasts.
+/// Predefined set of contextual colors.
 /// </summary>
-public enum ToastsPlacement
+public enum BadgeColor
 {
     /// <summary>
-    /// Top left
+    /// No color will be applied to an element.
     /// </summary>
-    TopLeft,
+    None,
 
     /// <summary>
-    /// Top center
+    /// Primary color.
     /// </summary>
-    TopCenter,
+    Primary,
 
     /// <summary>
-    /// Top right
+    /// Secondary color.
     /// </summary>
-    TopRight,
+    Secondary,
 
     /// <summary>
-    /// Middle left
+    /// Success color.
     /// </summary>
-    MiddleLeft,
+    Success,
 
     /// <summary>
-    /// Middle center
+    /// Danger color.
     /// </summary>
-    MiddleCenter,
+    Danger,
 
     /// <summary>
-    /// Middle right
+    /// Warning color.
     /// </summary>
-    MiddleRight,
+    Warning,
 
     /// <summary>
-    /// Bottom left
+    /// Info color.
     /// </summary>
-    BottomLeft,
+    Info,
 
     /// <summary>
-    /// Bottom center
+    /// Light color.
     /// </summary>
-    BottomCenter,
+    Light,
 
     /// <summary>
-    /// Bottom right
+    /// Dark color.
     /// </summary>
-    BottomRight
+    Dark
 }
