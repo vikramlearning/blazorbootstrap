@@ -1,4 +1,4 @@
----
+﻿---
 title: Blazor Badge Component
 description: The Blazor Bootstrap Badge component shows the small count and labels.
 image: https://i.imgur.com/ux0sTs9.png
@@ -17,9 +17,12 @@ The Blazor Bootstrap `Badge` component shows the small count and labels.
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-|  |  |  | |  | 1.7.0 |
-|  |  |  | |  | 1.7.0 |
-|  |  |  | |  | 1.7.0 |
+| ChildContent | RenderFragment | | | Specifies the content to be rendered inside the badge. | 1.7.0 |
+| Color | `BadgeColor` | `BadgeColor.Secondary` | ✔️ | Gets or sets the badge color. | 1.7.0 |
+| IndicatorType | `BadgeIndicatorType` | `BadgeIndicatorType.None` | | Gets or sets the badge indicator. | 1.7.0 |
+| Placement | `BadgePlacement` | `BadgePlacement.None` | | Gets or sets the badge placement. | 1.7.0 |
+| Position | `Position` | | | Gets or sets the badge position. | 1.7.0 |
+| VisuallyHiddenText | string | | | Gets or sets the visually hidden text. | 1.7.0 |
 
 ## Examples
 
@@ -39,7 +42,7 @@ As of now, badges no longer have focus or hover styles for links.
 <h6>Example heading <Badge>New</Badge></h6>
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/badge#)
+[See demo here](https://demos.blazorbootstrap.com/badge#examples)
 
 ### Background colors
 
@@ -57,10 +60,10 @@ As of now, badges no longer have focus or hover styles for links.
 ```
 
 :::info Conveying meaning to assistive technologies
-Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies � such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g., the visible text) or is included through alternative means, such as additional text hidden with the `VisuallyHiddenText` parameter.
+Using color to add meaning only provides a visual indication, which will not be conveyed to users of assistive technologies – such as screen readers. Ensure that information denoted by the color is either obvious from the content itself (e.g., the visible text) or is included through alternative means, such as additional text hidden with the `VisuallyHiddenText` parameter.
 :::
 
-[See demo here](https://demos.blazorbootstrap.com/badge#)
+[See demo here](https://demos.blazorbootstrap.com/badge#background-colors)
 
 ### Pill badges
 
@@ -78,6 +81,8 @@ Use the `IndicatorType` parameter to make badges more rounded with a larger `bor
 <Badge Color="BadgeColor.Light" IndicatorType="BadgeIndicatorType.RoundedPill">Light</Badge>
 <Badge Color="BadgeColor.Dark" IndicatorType="BadgeIndicatorType.RoundedPill">Dark</Badge>
 ```
+
+[See demo here](https://demos.blazorbootstrap.com/badge#pill-badges)
 
 ### Buttons
 
@@ -103,6 +108,8 @@ Badges can be used as part of links or buttons to provide a counter.
     </Button>
 </div>
 ```
+
+[See demo here](https://demos.blazorbootstrap.com/badge#buttons)
 
 ### Positioned
 
@@ -197,6 +204,8 @@ Use `Position` and `Placement` parameters to position it in the corner of a link
 </div>
 ```
 
+[See demo here](https://demos.blazorbootstrap.com/badge#positioned)
+
 ### Generic indicator
 
 You can also replace the badge with a generic indicator without the count.
@@ -213,3 +222,5 @@ You can also replace the badge with a generic indicator without the count.
            VisuallyHiddenText="unread messages"></Badge>
 </Button>
 ```
+
+[See demo here](https://demos.blazorbootstrap.com/badge#generic-indicator)

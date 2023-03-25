@@ -61,13 +61,27 @@ public partial class Badge
     /// <summary>
     /// Gets or sets the badge color.
     /// </summary>
-    [Parameter]
+    [Parameter, EditorRequired]
     public BadgeColor Color
     {
         get => color;
         set
         {
             color = value;
+            DirtyClasses();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the badge indicator.
+    /// </summary>
+    [Parameter]
+    public BadgeIndicatorType IndicatorType
+    {
+        get => indicatorType;
+        set
+        {
+            indicatorType = value;
             DirtyClasses();
         }
     }
@@ -96,20 +110,6 @@ public partial class Badge
         set
         {
             position = value;
-            DirtyClasses();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the badge indicator.
-    /// </summary>
-    [Parameter]
-    public BadgeIndicatorType IndicatorType
-    {
-        get => indicatorType;
-        set
-        {
-            indicatorType = value;
             DirtyClasses();
         }
     }
