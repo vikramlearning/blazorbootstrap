@@ -436,16 +436,16 @@ namespace BlazorBootstrap.Utilities
         {
             return badgePlacement switch
             {
-                BlazorBootstrap.BadgePlacement.TopLeft => "top-0 start-0",
-                BlazorBootstrap.BadgePlacement.TopCenter => "top-0 start-50 translate-middle-x",
-                BlazorBootstrap.BadgePlacement.TopRight => "top-0 end-0",
-                BlazorBootstrap.BadgePlacement.MiddleLeft => "top-50 start-0 translate-middle-y",
+                BlazorBootstrap.BadgePlacement.TopLeft => "top-0 start-0 translate-middle",
+                BlazorBootstrap.BadgePlacement.TopCenter => "top-0 start-50 translate-middle",
+                BlazorBootstrap.BadgePlacement.TopRight => "top-0 start-100 translate-middle",
+                BlazorBootstrap.BadgePlacement.MiddleLeft => "top-50 start-0 translate-middle",
                 BlazorBootstrap.BadgePlacement.MiddleCenter => "top-50 start-50 translate-middle",
-                BlazorBootstrap.BadgePlacement.MiddleRight => "top-50 end-0 translate-middle-y",
-                BlazorBootstrap.BadgePlacement.BottomLeft => "bottom-0 start-0",
-                BlazorBootstrap.BadgePlacement.BottomCenter => "bottom-0 start-50 translate-middle-x",
-                BlazorBootstrap.BadgePlacement.BottomRight => "bottom-0 end-0",
-                _ => "top-0 end-0", // default: Top right
+                BlazorBootstrap.BadgePlacement.MiddleRight => "top-50 start-100 translate-middle",
+                BlazorBootstrap.BadgePlacement.BottomLeft => "top-100 start-0 translate-middle",
+                BlazorBootstrap.BadgePlacement.BottomCenter => "top-100 start-50 translate-middle",
+                BlazorBootstrap.BadgePlacement.BottomRight => "top-100 start-100 translate-middle",
+                _ => "top-0 start-100 translate-middle", // default: Top right
             };
         }
 
