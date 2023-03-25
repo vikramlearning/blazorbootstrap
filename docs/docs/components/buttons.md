@@ -13,24 +13,25 @@ Use Blazor Bootstrap button styles for actions in forms, dialogs, and more with 
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default |
-|--|--|--|--|--|
-| Active | bool | When set to `true`, places the component in the active state with active styling. | | false |
-| Block | bool | Makes the button to span the full width of a parent. | | false |
-| ChildContent | RenderFragment | Specifies the content to be rendered inside this `Button`. | | |
-| Color | `ButtonColor` | Gets or sets the button color. | ✔️ | |
-| Disabled | bool | When set to `true`, disables the component's functionality and places it in a disabled state. | | false |
-| Loading | bool | Shows the loading spinner or a `LoadingTemplate`. | | false |
-| LoadingTemplate | RenderFragment | Gets or sets the component loading template. | | |
-| LoadingText | string | Gets or sets the loadgin text. | | `Loading...` |
-| Outline | bool | Makes the button to have the outlines. | | false |
-| Size | `Size` | Changes the size of a button. | | |
-| TabIndex | int? | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | |
-| Target | `Target` | The target attribute specifies where to open the linked document for a `ButtonType.Link`. | | `Target.None` |
-| To | string | Denotes the target route of the `ButtonType.Link` button. | | |
-| TooltipPlacement | `TooltipPlacement` | Tooltip placement | | `TooltipPlacement.Top` |
-| TooltipTitle | string | Displays informative text when users hover, focus, or tap an element. | | |
-| Type | `ButtonType` | Defines the button type. | | `ButtonType.Button` |
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Active | bool | When set to `true`, places the component in the active state with active styling. | | false | 1.0.0 |
+| Block | bool | Makes the button to span the full width of a parent. | | false | 1.0.0 |
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this `Button`. | | | 1.0.0 |
+| Color | `ButtonColor` | Gets or sets the button color. | ✔️ | | 1.0.0 |
+| Disabled | bool | When set to `true`, disables the component's functionality and places it in a disabled state. | | false | 1.0.0 |
+| Loading | bool | Shows the loading spinner or a `LoadingTemplate`. | | false | 1.0.0 |
+| LoadingTemplate | RenderFragment | Gets or sets the component loading template. | | | 1.0.0 |
+| LoadingText | string | Gets or sets the loadgin text. | | `Loading...` | 1.0.0 |
+| Outline | bool | Makes the button to have the outlines. | | false | 1.0.0 |
+| Position | `Position` | Gets or sets the position. | | | 1.7.0 |
+| Size | `Size` | Changes the size of a button. | | | 1.0.0 |
+| TabIndex | int? | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | | 1.0.0 |
+| Target | `Target` | The target attribute specifies where to open the linked document for a `ButtonType.Link`. | | `Target.None` | 1.0.0 |
+| To | string | Denotes the target route of the `ButtonType.Link` button. | | | 1.0.0 |
+| TooltipPlacement | `TooltipPlacement` | Tooltip placement | | `TooltipPlacement.Top` | 1.0.0 |
+| TooltipTitle | string | Displays informative text when users hover, focus, or tap an element. | | | 1.0.0 |
+| Type | `ButtonType` | Defines the button type. | | `ButtonType.Button` | 1.0.0 |
 
 ## Methods
 

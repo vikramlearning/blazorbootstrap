@@ -24,6 +24,8 @@ public partial class Button : BaseComponent
 
     private string tooltipTitle = default!;
 
+    private Position position;
+
     #endregion
 
     #region Methods
@@ -35,10 +37,11 @@ public partial class Button : BaseComponent
         builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
         builder.Append(BootstrapClassProvider.ButtonOutline(Color), Color != ButtonColor.None && Outline);
         builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
-        builder.Append(BootstrapClassProvider.ButtonDisabled(), disabled && Type == ButtonType.Link);
-        builder.Append(BootstrapClassProvider.ButtonActive(), active);
+        builder.Append(BootstrapClassProvider.ButtonDisabled(), Disabled && Type == ButtonType.Link);
+        builder.Append(BootstrapClassProvider.ButtonActive(), Active);
         builder.Append(BootstrapClassProvider.ButtonBlock(), Block);
         builder.Append(BootstrapClassProvider.ButtonLoading(), Loading && LoadingTemplate != null);
+        builder.Append(BootstrapClassProvider.ToPosition(this.Position), this.Position != Position.None);
 
         base.BuildClasses(builder);
     }
@@ -301,7 +304,21 @@ public partial class Button : BaseComponent
     /// <summary>
     /// Tooltip placement
     /// </summary>
-    [Parameter] public BlazorBootstrap.TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
+    [Parameter] public TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
+
+    /// <summary>
+    /// Gets or sets the position.
+    /// Use <see cref="Position"/> to modify a <see cref="Badge"/> and position it in the corner of a link or button.
+    /// </summary>
+    [Parameter] public Position Position
+    {
+        get => position;
+        set
+        {
+            position = value;
+            DirtyClasses();
+        }
+    }
 
     #endregion
 

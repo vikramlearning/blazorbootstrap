@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap.Utilities
+﻿using System.Drawing;
+
+namespace BlazorBootstrap.Utilities
 {
     public class BootstrapClassProvider
     {
@@ -21,6 +23,16 @@
         public string AlertMessage() => null;
 
         public string AlertDescription() => null;
+
+        #endregion
+
+        #region Badge
+
+        public string Badge() => "badge";
+
+        public string BadgeColor(BadgeColor color) => $"text-bg-{ToBadgeColor(color)}";
+
+        public string PillBadge() => "rounded-pill";
 
         #endregion
 
@@ -47,6 +59,8 @@
         #region Background Colors
 
         public string BackgroundColor(BackgroundColor backgroundColor) => $"bg-{ToBackgroundColor(backgroundColor)}";
+
+        public string TextAndBackgroundColor(BackgroundColor backgroundColor) => $"text-bg-{ToBackgroundColor(backgroundColor)}";
 
         #endregion
 
@@ -173,8 +187,11 @@
         #region Position
 
         public string Position() => "position";
+        public string PositionStatic() => $"{Position()}-static";
+        public string PositionRelative() => $"{Position()}-relative";
         public string PositionAbsolute() => $"{Position()}-absolute";
         public string PositionFixed() => $"{Position()}-fixed";
+        public string PositionSticky() => $"{Position()}-sticky";
 
         #endregion
 
@@ -396,6 +413,49 @@
                 BlazorBootstrap.AlertColor.Light => "light",
                 BlazorBootstrap.AlertColor.Dark => "dark",
                 _ => null,
+            };
+        }
+
+        public string ToBadgeColor(BadgeColor color)
+        {
+            return color switch
+            {
+                BlazorBootstrap.BadgeColor.Primary => "primary",
+                BlazorBootstrap.BadgeColor.Secondary => "secondary",
+                BlazorBootstrap.BadgeColor.Success => "success",
+                BlazorBootstrap.BadgeColor.Danger => "danger",
+                BlazorBootstrap.BadgeColor.Warning => "warning",
+                BlazorBootstrap.BadgeColor.Info => "info",
+                BlazorBootstrap.BadgeColor.Light => "light",
+                BlazorBootstrap.BadgeColor.Dark => "dark",
+                _ => null,
+            };
+        }
+
+        public string ToBadgePlacement(BadgePlacement badgePlacement)
+        {
+            return badgePlacement switch
+            {
+                BlazorBootstrap.BadgePlacement.TopLeft => "top-0 start-0 translate-middle",
+                BlazorBootstrap.BadgePlacement.TopCenter => "top-0 start-50 translate-middle",
+                BlazorBootstrap.BadgePlacement.TopRight => "top-0 start-100 translate-middle",
+                BlazorBootstrap.BadgePlacement.MiddleLeft => "top-50 start-0 translate-middle",
+                BlazorBootstrap.BadgePlacement.MiddleCenter => "top-50 start-50 translate-middle",
+                BlazorBootstrap.BadgePlacement.MiddleRight => "top-50 start-100 translate-middle",
+                BlazorBootstrap.BadgePlacement.BottomLeft => "top-100 start-0 translate-middle",
+                BlazorBootstrap.BadgePlacement.BottomCenter => "top-100 start-50 translate-middle",
+                BlazorBootstrap.BadgePlacement.BottomRight => "top-100 start-100 translate-middle",
+                _ => "top-0 start-100 translate-middle", // default: Top right
+            };
+        }
+
+        public string ToBadgeIndicator(BadgeIndicatorType indicatorType)
+        {
+            return indicatorType switch
+            {
+                BlazorBootstrap.BadgeIndicatorType.RoundedPill => "rounded-pill",
+                BlazorBootstrap.BadgeIndicatorType.RoundedCircle => "rounded-circle",
+                _ => "", // default: Top right
             };
         }
 
@@ -651,6 +711,19 @@
                 BlazorBootstrap.PlaceholderSize.Small => "sm",
                 BlazorBootstrap.PlaceholderSize.Large => "lg",
                 _ => null,
+            };
+        }
+
+        public string ToPosition(Position position)
+        {
+            return position switch
+            {
+                BlazorBootstrap.Position.Static => PositionAbsolute(),
+                BlazorBootstrap.Position.Relative => PositionRelative(),
+                BlazorBootstrap.Position.Absolute => PositionAbsolute(),
+                BlazorBootstrap.Position.Fixed => PositionFixed(),
+                BlazorBootstrap.Position.Sticky => PositionSticky(),
+                _ => "",
             };
         }
 
