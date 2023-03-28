@@ -1,5 +1,16 @@
-﻿<h3>Collapse_Demo_01_Examples</h3>
+﻿<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ToggleContentAsync">Toggle content</Button>
+
+<Collapse @ref="collapse1">
+    <div class="card card-body">
+        Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+    </div>
+</Collapse>
 
 @code {
+    Collapse collapse1 = default!;
 
+    private async Task ToggleContentAsync()
+    {
+        await collapse1.ToggleAsync();
+    }
 }

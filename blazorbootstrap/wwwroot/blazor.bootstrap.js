@@ -156,6 +156,40 @@ window.blazorBootstrap = {
             return nextSelectedIndex;
         }
     },
+    collapse: {
+        initialize: (elementId, parent, toggle, dotNetHelper) => {
+            let collapseEl = document.getElementById(elementId);
+
+            collapseEl.addEventListener('show.bs.collapse', function () {
+                dotNetHelper.invokeMethodAsync('bsShowCollapse');
+            });
+            collapseEl.addEventListener('shown.bs.collapse', function () {
+                dotNetHelper.invokeMethodAsync('bsShownCollapse');
+            });
+            collapseEl.addEventListener('hide.bs.collapse', function () {
+                dotNetHelper.invokeMethodAsync('bsHideCollapse');
+            });
+            collapseEl.addEventListener('hidden.bs.collapse', function () {
+                dotNetHelper.invokeMethodAsync('bsHiddenCollapse');
+            });
+
+            let options = { parent: parent, toggle: toggle };
+            bootstrap?.Collapse?.getOrCreateInstance(collapseEl, options);
+        },
+        show: (elementId) => {
+            console.log(`collapse called...`);
+            bootstrap?.Collapse?.getOrCreateInstance(document.getElementById(elementId))?.show();
+        },
+        hide: (elementId) => {
+            bootstrap?.Collapse?.getOrCreateInstance(document.getElementById(elementId))?.hide();
+        },
+        toggle: (elementId) => {
+            bootstrap?.Collapse?.getOrCreateInstance(document.getElementById(elementId))?.toggle();
+        },
+        dispose: (elementId) => {
+            bootstrap?.Collapse?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
+        }
+    },
     confirmDialog: {
         show: () => {
             let bodyEl = document.getElementsByTagName('body');
