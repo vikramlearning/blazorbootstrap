@@ -1,0 +1,23 @@
+﻿@page "/collapse"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Collapse</h1>
+<div class="lead mb-3">
+    Toggle the visibility of content across your project with the Blazor Bootstrap <code>Collapse</code> component.
+</div>
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div class="mb-3">
+    Click the buttons below to show and hide another element.
+</div>
+<Demo Type="typeof(Collapse_Demo_01_Examples)" Tabs="false" />
+
+
+@code {
+    private string pageUrl = "/collapse";
+    private string title = "Blazor Collapse Component";
+    private string description = "Toggle the visibility of content across your project with the Blazor Bootstrap Collapse component.";
+    private string imageUrl = "https://i.imgur.com/1mVjqQv.png";
+}

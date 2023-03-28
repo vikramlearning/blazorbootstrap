@@ -85,6 +85,13 @@ namespace BlazorBootstrap.Utilities
 
         #endregion
 
+        #region Collapse
+
+        public string Collapse() => "collapse";
+        public string CollapseHorizontal() => $"{Collapse()}-horizontal";
+
+        #endregion
+
         #region DisplayHeading
 
         public string DisplayHeadingSize(DisplayHeadingSize displayHeadingSize) => $"display-{ToDisplayHeadingSize(displayHeadingSize)}";
