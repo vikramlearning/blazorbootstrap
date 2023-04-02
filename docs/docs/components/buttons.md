@@ -61,6 +61,7 @@ Blazor Bootstrap includes several predefined button styles, each serving its own
     <Button Color="ButtonColor.Link"> Link </Button>
 </p>
 ```
+
 [See buttons demo here.](https://demos.blazorbootstrap.com/buttons#examples)
 
 ### Button tags
@@ -73,6 +74,7 @@ Blazor Bootstrap includes several predefined button styles, each serving its own
     <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" To="#"> Button </Button>
 </p>
 ```
+
 [See button tags demo here.](https://demos.blazorbootstrap.com/buttons#button-tags)
 
 ### Outline Buttons
@@ -90,6 +92,7 @@ Blazor Bootstrap includes several predefined button styles, each serving its own
     <Button Color="ButtonColor.Dark" Outline="true"> Dark </Button>
 </p>
 ```
+
 [See outline button demo here.](https://demos.blazorbootstrap.com/buttons#outline-buttons)
 
 :::info
@@ -112,11 +115,16 @@ Fancy larger or smaller buttons? Add `Size="Size.Large"` or `Size="Size.Small"` 
     <Button Color="ButtonColor.Secondary" Size="Size.Small"> Small button </Button>
 </p>
 ```
+
 [See buttons with different size demo here.](https://demos.blazorbootstrap.com/buttons#sizes)
 
 ### Disabled State
 
 Make buttons look inactive by adding the `Disabled="true"` boolean parameter to any `<Button>` component. Disabled buttons have `pointer-events: none` applied to, preventing hover and active states from triggering.
+
+:::info
+Disabled buttons using the `Type="ButtonType.Link"` parameter behave a bit different.
+:::
 
 <img src="https://i.imgur.com/A0MlIha.jpg" alt="Blazor Bootstrap: Button Component - Disable State" />
 
@@ -130,11 +138,37 @@ Make buttons look inactive by adding the `Disabled="true"` boolean parameter to 
     <Button Type="ButtonType.Link" Color="ButtonColor.Secondary" Size="Size.Large" Disabled="true"> Link </Button>
 </p>
 ```
+
 [See button disabled state demo here.](https://demos.blazorbootstrap.com/buttons#disabled-state)
 
-:::info
-Disabled buttons using the `Type="ButtonType.Link"` parameter behave a bit different.
-:::
+### Disable and enable state dynamically
+
+<img src="https://i.imgur.com/nKA9C8n.png" alt="Blazor Bootstrap: Button Component - Disable and enable state dynamically" />
+
+```cshtml {} showLineNumbers
+<Button Type="ButtonType.Link" Color="ButtonColor.Primary" Disabled="@disableButton" TooltipTitle="@tooltip">Link Button</Button>
+<Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Disabled="@disableButton" TooltipTitle="@tooltip">Submit Button</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Disabled="@disableButton" TooltipTitle="@tooltip">Button</Button>
+<Button Type="ButtonType.Reset" Color="ButtonColor.Primary" Disabled="@disableButton" TooltipTitle="@tooltip">Reset Button</Button>
+
+<Button Color="ButtonColor.Danger" @onclick="() => SwapDisable()">Swap Disable</Button>
+```
+
+```cshtml {} LineNumbers
+@code
+{
+    bool disableButton = true;
+    string tooltip = "";
+
+    public void SwapDisable()
+    {
+        disableButton = !disableButton;
+        tooltip = $"Updated at {DateTime.Now}";
+    }
+}
+```
+
+[See disable and enable state dynamically demo here.](https://demos.blazorbootstrap.com/buttons#disable-and-enable-state-dynamically)
 
 ### Block Buttons
 
@@ -175,6 +209,7 @@ Create responsive stacks of full-width, "block buttons" like those in Bootstrap 
     <Button Color="ButtonColor.Primary"> Button </Button>
 </div>
 ```
+
 [See block buttons demo here.](https://demos.blazorbootstrap.com/buttons#block-buttons)
 
 ### Toogle States
@@ -190,6 +225,7 @@ If you''re pre-toggling a button, you must manually add the `Active="true"` para
     <Button Color="ButtonColor.Primary" Disabled="true"> Disabled toggle button </Button>
 </p>
 ```
+
 [See button toogle states demo here.](https://demos.blazorbootstrap.com/buttons#toggle-states)
 
 ### Loading spinner
@@ -210,6 +246,7 @@ Use spinners within buttons to indicate an action is currently processing or tak
     </Button>
 </p>
 ```
+
 [See button with loading spinner demo here.](https://demos.blazorbootstrap.com/buttons#loading-spinner)
 
 ### Show/Hide loading spinner
@@ -236,6 +273,7 @@ Use `ShowLoading()` and `HideLoading()` methods to toggle the button state.
     }
 }
 ```
+
 [See button with loading spinner demo here.](https://demos.blazorbootstrap.com/buttons#show-hide-loading-spinner)
 
 ### Show Tooltip
@@ -255,6 +293,7 @@ Hover over the buttons below to see the four tooltips directions: top, right, bo
     <Button Color="ButtonColor.Primary" TooltipTitle="Tooltip text" TooltipPlacement="TooltipPlacement.Left"> Tooltip Left </Button>
 </p>
 ```
+
 [See button with tooltip demo here.](https://demos.blazorbootstrap.com/buttons#tooltip)
 
 :::caution NOTE
@@ -277,6 +316,7 @@ HTML tooltips not supported at this moment.
     private void ChangeTooltip() => text = $"Updated {DateTime.Now.ToLongTimeString()}";
 }
 ```
+
 [See demo here.](https://demos.blazorbootstrap.com/buttons#dynamically-update-the-tooltip-text)
 
 ### Events
@@ -339,4 +379,5 @@ HTML tooltips not supported at this moment.
 
 }
 ```
+
 [See button click events demo here.](https://demos.blazorbootstrap.com/buttons#click-events)
