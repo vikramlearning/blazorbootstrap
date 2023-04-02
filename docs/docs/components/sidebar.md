@@ -4,7 +4,7 @@ description: Documentation and examples for using the Blazor Bootstrap progress 
 image: https://i.imgur.com/d91Q9Zt.png
 
 sidebar_label: Sidebar
-sidebar_position: 15
+sidebar_position: 16
 ---
 
 # Blazor Sidebar

@@ -4,7 +4,7 @@ description: Indicate the loading state of a page with Blazor Bootstrap preload 
 image: https://i.imgur.com/UV6zPTQ.png
 
 sidebar_label: Preload
-sidebar_position: 13
+sidebar_position: 14
 ---
 
 # Blazor Preload
