@@ -72,6 +72,19 @@ namespace BlazorBootstrap.Utilities
 
         #endregion
 
+        #region Card
+
+        public string Card() => "card";
+
+        public string CardHeader() => $"{Card()}-heading";
+        public string CardBody() => $"{Card()}-body";
+        public string CardTitle() => $"{Card()}-heading";
+        public string CardSubTitle() => $"{Card()}-subtitle";
+        public string CardText() => $"{Card()}-text";
+        public string CardFooter() => $"{Card()}-footer";
+
+        #endregion
+
         #region Checks
 
         public string Checks() => "form-check-input";
