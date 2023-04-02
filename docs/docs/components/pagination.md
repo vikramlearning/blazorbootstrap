@@ -4,7 +4,7 @@ description: Use Blazor Bootstrap pagination component to indicate a series of r
 image: https://i.imgur.com/SCbZVd4.jpg
 
 sidebar_label: Pagination
-sidebar_position: 11
+sidebar_position: 12
 ---
 
 # Blazor Pagination

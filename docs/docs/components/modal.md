@@ -4,7 +4,7 @@ description: Use Blazor Bootstrap modal component to add dialogs to your site fo
 image: https://i.imgur.com/tLiaEs6.jpg
 
 sidebar_label: Modal
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 # Blazor Modal
