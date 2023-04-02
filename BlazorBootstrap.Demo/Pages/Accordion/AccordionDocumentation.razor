@@ -1,0 +1,23 @@
+﻿@page "/accordion"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Accordion</h1>
+<div class="lead mb-3">
+    Build vertically collapsing accordions in combination with our Collapse JavaScript plugin.
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div class="mb-3">
+    Click the accordions below to expand/collapse the accordion content.
+</div>
+<Demo Type="typeof(Accordion_Demo_01_Examples)" Tabs="false" />
+
+@code {
+    private string pageUrl = "/accordion";
+    private string title = "Blazor Accordion Component";
+    private string description = "Build vertically collapsing accordions in combination with our Collapse JavaScript plugin.";
+    private string imageUrl = "https://i.imgur.com/8A0emQe.png"; // TODO: update this
+}
