@@ -56,7 +56,7 @@ public partial class Collapse
     /// <summary>
     /// Shows a collapsible element.
     /// </summary>
-    private async Task ShowAsync()
+    public async Task ShowAsync()
     {
         await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.show", ElementId);
     }
