@@ -19,7 +19,7 @@
 <SectionHeading Size="HeadingSize.H2" Text="Outline buttons" PageUrl="@pageUrl" HashTagName="outline-buttons" />
 <Demo Type="typeof(Button_Demo_03_Outline_Buttons)" />
 
-<Callout Color="CalloutType.Info">
+<Callout Type="CalloutType.Info">
     Some of the button styles use a relatively light foreground color, and should only be used on a dark background in order to have sufficient contrast.
 </Callout>
 
@@ -30,8 +30,16 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Disabled state" PageUrl="@pageUrl" HashTagName="disabled-state" />
 <div>Make buttons look inactive by adding the <code>Disabled="true"</code> boolean parameter to any <code>Button</code> component. Disabled buttons have <code>pointer-events: none</code> applied to, preventing hover and active states from triggering.</div>
+
+<Callout Type="CalloutType.Info">
+    Disabled buttons using the <code>Type="ButtonType.Link"</code> parameter behave a bit different.
+</Callout>
+
 <Demo Type="typeof(Button_Demo_05_Disabled_State_A)" />
 <Demo Type="typeof(Button_Demo_05_Disabled_State_B)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable and enable state dynamically" PageUrl="@pageUrl" HashTagName="disable-and-enable-state-dynamically" />
+<Demo Type="typeof(Button_Demo_13_Disable_Enable_Dynamically)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Block buttons" PageUrl="@pageUrl" HashTagName="block-buttons" />
 <Demo Type="typeof(Button_Demo_06_Block_Buttons_A)" />

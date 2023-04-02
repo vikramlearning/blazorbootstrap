@@ -12,9 +12,9 @@ public partial class Button : BaseComponent
 
     private bool outline;
 
-    private bool disabled;
+    private bool disabled, previousDisabled;
 
-    private bool active;
+    private bool active, previousActive;
 
     private bool block;
 
@@ -22,9 +22,17 @@ public partial class Button : BaseComponent
 
     private string loadingText = default!;
 
-    private string tooltipTitle = default!;
+    private string previousTooltipTitle = default!;
 
     private Position position;
+
+    private ButtonType previousType;
+
+    private Target previousTarget;
+
+    private int? previousTabIndex;
+
+    private bool setButtonAttributesAgain = false;
 
     #endregion
 
@@ -48,11 +56,14 @@ public partial class Button : BaseComponent
 
     protected override void OnInitialized()
     {
+        this.previousDisabled = Disabled;
+        this.previousActive = Active;
         this.loadingText = LoadingText;
-
         this.LoadingTemplate ??= ProvideDefaultLoadingTemplate();
-
-        this.tooltipTitle = TooltipTitle;
+        this.previousType = Type;
+        this.previousTarget = Target;
+        this.previousTabIndex = TabIndex;
+        this.previousTooltipTitle = TooltipTitle;
 
         SetAttributes();
 
@@ -63,13 +74,63 @@ public partial class Button : BaseComponent
 
     protected override async Task OnParametersSetAsync()
     {
-        if (!Disabled && tooltipTitle != TooltipTitle)
+        if (previousDisabled != Disabled)
         {
-            if (Attributes is not null && Attributes.TryGetValue("title", out object title))
+            previousDisabled = Disabled;
+            setButtonAttributesAgain = true;
+        }
+
+        if (previousActive != Active)
+        {
+            previousActive = Active;
+            setButtonAttributesAgain = true;
+        }
+
+        if (previousType != Type)
+        {
+            previousType = Type;
+            setButtonAttributesAgain = true;
+        }
+
+        if (previousTarget != Target)
+        {
+            previousTarget = Target;
+            setButtonAttributesAgain = true;
+        }
+
+        if (previousTabIndex != TabIndex)
+        {
+            previousTabIndex = TabIndex;
+            setButtonAttributesAgain = true;
+        }
+
+        if (setButtonAttributesAgain)
+        {
+            SetAttributes();
+            setButtonAttributesAgain = false;
+        }
+
+        // additional scenario
+        if (!Disabled && previousTooltipTitle != TooltipTitle)
+        {
+            previousTooltipTitle = TooltipTitle;
+
+            if (Attributes is not null && Attributes.TryGetValue("title", out _))
                 Attributes["title"] = TooltipTitle;
 
             await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementId);
             await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementId);
+        }
+        else if (Disabled)
+        {
+            if (previousTooltipTitle != TooltipTitle)
+                previousTooltipTitle = TooltipTitle;
+
+            if (Attributes is not null && Attributes.TryGetValue("title", out _))
+            {
+                Attributes.Remove("title");
+                await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementId);
+            }
         }
     }
 
@@ -77,54 +138,101 @@ public partial class Button : BaseComponent
     {
         Attributes ??= new Dictionary<string, object>();
 
-        if (this.Disabled)
-            Attributes.Add("disabled", "disabled");
-
-        if (this.Active)
+        if (this.Active && !Attributes.TryGetValue("aria-pressed", out _))
             Attributes.Add("aria-pressed", "true");
-
-        if (this.TabIndex is not null)
-            Attributes.Add("tabindex", TabIndex);
+        else if (!this.Active && Attributes.TryGetValue("aria-pressed", out _))
+            Attributes.Remove("aria-pressed");
 
         // 'a' tag
         if (Type == ButtonType.Link)
         {
-            Attributes.Add("role", "button");
-            Attributes.Add("href", To);
+            if (!Attributes.TryGetValue("role", out _))
+                Attributes.Add("role", "button");
+
+            if (!Attributes.TryGetValue("href", out _))
+                Attributes.Add("href", To);
 
             if (Target != Target.None)
             {
-                Attributes.Add("target", Target.ToTargetString());
+                if (!Attributes.TryGetValue("target", out _))
+                    Attributes.Add("target", Target.ToTargetString());
             }
 
             if (Disabled)
             {
-                if (Attributes.TryGetValue("tabindex", out object tabindex))
+                if (Attributes.TryGetValue("aria-disabled", out _))
+                    Attributes["aria-disabled"] = "true";
+                else
+                    Attributes.Add("aria-disabled", "true");
+
+                if (Attributes.TryGetValue("tabindex", out _))
                     Attributes["tabindex"] = -1;
                 else
                     Attributes.Add("tabindex", -1);
+            }
+            else
+            {
+                if (Attributes.TryGetValue("aria-disabled", out _))
+                    Attributes.Remove("aria-disabled");
 
-                Attributes.Add("aria-disabled", "true");
+                if (this.TabIndex is not null && !Attributes.TryGetValue("tabindex", out _))
+                    Attributes.Add("tabindex", TabIndex);
+                else if (this.TabIndex is null && Attributes.TryGetValue("tabindex", out _))
+                    Attributes.Remove("tabindex");
             }
         }
-
-        // tooltip
-        if (string.IsNullOrWhiteSpace(TooltipTitle))
+        else // button, submit
         {
-            if (Attributes.TryGetValue("title", out object title))
-                Attributes.Remove("title");
+            if (Attributes.TryGetValue("role", out _))
+                Attributes.Remove("role");
+
+            if (Attributes.TryGetValue("href", out _))
+                Attributes.Remove("href");
+
+            if (Attributes.TryGetValue("target", out _))
+                Attributes.Remove("target");
+
+            if (Attributes.TryGetValue("aria-disabled", out _))
+                Attributes.Remove("aria-disabled");
+
+            if (this.Disabled && !Attributes.TryGetValue("disabled", out _))
+                Attributes.Add("disabled", "disabled");
+            else if (!this.Disabled && Attributes.TryGetValue("disabled", out _))
+                Attributes.Remove("disabled");
+
+            if (this.TabIndex is not null && !Attributes.TryGetValue("tabindex", out _))
+                Attributes.Add("tabindex", TabIndex);
+            else if (this.TabIndex is null && Attributes.TryGetValue("tabindex", out _))
+                Attributes.Remove("tabindex");
         }
-        else if (!Disabled)
-        {
-            Attributes.Add("data-bs-toggle", "button");
-            Attributes.Add("data-bs-placement", TooltipPlacement.ToTooltipPlacementName());
 
-            if (Attributes.TryGetValue("title", out object title))
+        // has tooltip and enabled        
+        if (!string.IsNullOrWhiteSpace(TooltipTitle) && !Disabled)
+        {
+            // Ref: https://getbootstrap.com/docs/5.2/components/buttons/#toggle-states
+            // The below code creates an issue when the `button` or `a` element has a tooltip.
+            //if (!Attributes.TryGetValue("data-bs-toggle", out _))
+            //    Attributes.Add("data-bs-toggle", "button");
+
+            if (!Attributes.TryGetValue("data-bs-placement", out _))
+                Attributes.Add("data-bs-placement", TooltipPlacement.ToTooltipPlacementName());
+
+            if (Attributes.TryGetValue("title", out _))
                 Attributes["title"] = TooltipTitle;
             else
                 Attributes.Add("title", TooltipTitle);
+        }
+        // no tooltip and disabled
+        else
+        {
+            if (Attributes.TryGetValue("data-bs-toggle", out _))
+                Attributes.Remove("data-bs-toggle");
 
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
+            if (Attributes.TryGetValue("data-bs-placement", out _))
+                Attributes.Remove("data-bs-placement");
+
+            if (Attributes.TryGetValue("title", out _))
+                Attributes.Remove("title");
         }
     }
 
@@ -299,7 +407,8 @@ public partial class Button : BaseComponent
     /// <summary>
     /// Displays informative text when users hover, focus, or tap an element.
     /// </summary>
-    [Parameter] public string TooltipTitle { get; set; } = default!;
+    [Parameter]
+    public string TooltipTitle { get; set; } = default!;
 
     /// <summary>
     /// Tooltip placement
@@ -310,7 +419,8 @@ public partial class Button : BaseComponent
     /// Gets or sets the position.
     /// Use <see cref="Position"/> to modify a <see cref="Badge"/> and position it in the corner of a link or button.
     /// </summary>
-    [Parameter] public Position Position
+    [Parameter]
+    public Position Position
     {
         get => position;
         set
