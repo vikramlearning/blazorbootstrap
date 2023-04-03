@@ -28,7 +28,7 @@ public partial class Collapse
 
     #region Members
 
-    private bool collapseHorizontal;
+    private bool horizontal;
 
     private DotNetObjectReference<Collapse> objRef;
 
@@ -40,7 +40,7 @@ public partial class Collapse
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Collapse());
-        builder.Append(BootstrapClassProvider.CollapseHorizontal(), this.CollapseHorizontal);
+        builder.Append(BootstrapClassProvider.CollapseHorizontal(), this.Horizontal);
 
         base.BuildClasses(builder);
     }
@@ -108,15 +108,15 @@ public partial class Collapse
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the collapse horizontal.
+    /// Gets or sets the horizontal.
     /// </summary>
     [Parameter]
-    public bool CollapseHorizontal
+    public bool Horizontal
     {
-        get => collapseHorizontal;
+        get => horizontal;
         set
         {
-            collapseHorizontal = value;
+            horizontal = value;
             DirtyClasses();
         }
     }

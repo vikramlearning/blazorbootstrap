@@ -18,7 +18,7 @@ Toggle the visibility of content across your project with the Blazor Bootstrap `
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the collapse. | 1.7.0 |
-| CollapseHorizontal | bool | false |  | Gets or sets the collapse horizontal. | 1.7.0 |
+| Horizontal | bool | false |  | Gets or sets the horizontal. | 1.7.0 |
 | Parent | string | null | | Gets or sets the parent. | 1.7.0 |
 | Toggle | bool | false | | Toggles the collapsible element on invocation. | 1.7.0 |
 
@@ -66,7 +66,7 @@ Click the buttons below to show and hide the content.
 ## Horizontal
 
 The `Collapse` component supports horizontal collapsing. 
-Set the `CollapseHorizontal` parameter to `true` to enable horizontal collapsing.
+Set the `Horizontal` parameter to `true` to enable horizontal collapsing.
 
 <img src="https://i.imgur.com/kgSAEVL.png" alt="Blazor Bootstrap: Collapse Component - Horizontal" />
 
@@ -75,7 +75,7 @@ Set the `CollapseHorizontal` parameter to `true` to enable horizontal collapsing
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="HideContentAsync">Hide content</Button>
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ToggleContentAsync">Toggle content</Button>
 
-<Collapse @ref="collapse1" CollapseHorizontal="true">
+<Collapse @ref="collapse1" Horizontal="true">
     <Card Style="width:300px;">
         <CardBody>
             This is some placeholder content for a horizontal collapse. It's hidden by default and shown when triggered.
