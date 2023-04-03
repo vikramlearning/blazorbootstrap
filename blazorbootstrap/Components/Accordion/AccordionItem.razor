@@ -1,0 +1,22 @@
+@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    <h2 class="accordion-header">
+        <button class="accordion-button" type="button" @onclick="toggleAccordionItemAsync">
+            @if (Header is not null)
+            {
+                @Header
+            }
+            else if (!string.IsNullOrWhiteSpace(HeaderText))
+            {
+                @HeaderText
+            }
+        </button>
+    </h2>
+    <Collapse @ref="collapseAccordionItem" Class="accordion-collapse">
+        <div class="accordion-body">
+            @Body
+        </div>
+    </Collapse>
+</div>

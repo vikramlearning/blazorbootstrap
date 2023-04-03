@@ -4,6 +4,16 @@ namespace BlazorBootstrap.Utilities
 {
     public class BootstrapClassProvider
     {
+        #region Accordion
+
+        public string Accordion() => "accordion";
+        public string AccordionItem() => $"{Accordion()}-item";
+        public string AccordionItemHeader() => $"{Accordion()}-header";
+        public string AccordionItemBody() => $"{Accordion()}-body";
+        public string AccordionButton() => $"{Accordion()}-button";
+
+        #endregion
+
         #region Alert
 
         public string Alert() => "alert";
