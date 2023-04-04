@@ -7,6 +7,7 @@ namespace BlazorBootstrap.Utilities
         #region Accordion
 
         public string Accordion() => "accordion";
+        public string AccordionFlush() => $"{Accordion()}-flush";
         public string AccordionItem() => $"{Accordion()}-item";
         public string AccordionItemHeader() => $"{Accordion()}-header";
         public string AccordionItemBody() => $"{Accordion()}-body";

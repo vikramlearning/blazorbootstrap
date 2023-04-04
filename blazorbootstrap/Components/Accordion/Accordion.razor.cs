@@ -16,7 +16,7 @@ public partial class Accordion
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Accordion());
-
+        builder.Append(BootstrapClassProvider.AccordionFlush(), Flush);
         base.BuildClasses(builder);
     }
 
@@ -32,6 +32,18 @@ public partial class Accordion
     /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment ChildContent { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the flush.
+    /// Removes borders and rounded corners to render accordions edge-to-edge with their parent container.
+    /// </summary>
+    [Parameter] public bool Flush { get; set; }
+
+    /// <summary>
+    /// Gets or sets the AlwaysOpen.
+    /// It makes accordion items stay open when another item is opened.
+    /// </summary>
+    [Parameter] public bool AlwaysOpen { get; set; }
 
     #endregion
 }

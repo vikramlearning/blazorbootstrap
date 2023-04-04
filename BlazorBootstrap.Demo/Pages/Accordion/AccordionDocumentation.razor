@@ -6,8 +6,18 @@
 
 <h1>Blazor Accordion</h1>
 <div class="lead mb-3">
-    Build vertically collapsing accordions in combination with our Collapse JavaScript plugin.
+    Build vertically collapsing accordions in combination with our Collapse component.
 </div>
+
+<SectionHeading Size="HeadingSize.H2" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
+<div class="mb-3">
+    The <code>Accordion</code> component uses <code>Collapse</code> component internally to make it collapsible.
+</div>
+
+<Callout Type="CalloutType.Info">
+    The animation effect of this component is dependent on the <code>prefers-reduced-motion</code> media query. <br />
+    See the <a href="https://getbootstrap.com/docs/5.3/getting-started/accessibility/#reduced-motion" target="_blank">reduced motion section of our accessibility documentation</a>.
+</Callout>
 
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <div class="mb-3">
@@ -15,9 +25,24 @@
 </div>
 <Demo Type="typeof(Accordion_Demo_01_Examples)" Tabs="true" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Flush" PageUrl="@pageUrl" HashTagName="flush" />
+<div class="mb-3">
+    Set the <code>Flush</code> parameter to <code>true</code> to remove borders and rounded corners to render accordions edge-to-edge with their parent container.
+</div>
+<Demo Type="typeof(Accordion_Demo_02_Flush)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Always open" PageUrl="@pageUrl" HashTagName="always-open" />
+<div class="mb-3">
+    Set the <code>AlwaysOpen</code> parameter to <code>true</code> to keep accordion items open when another item is opened.
+</div>
+<Demo Type="typeof(Accordion_Demo_03_Always_Open)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
+<Demo Type="typeof(Accordion_Demo_04_Events)" Tabs="true" />
+
 @code {
     private string pageUrl = "/accordion";
     private string title = "Blazor Accordion Component";
-    private string description = "Build vertically collapsing accordions in combination with our Collapse JavaScript plugin.";
+    private string description = "Build vertically collapsing accordions in combination with our Collapse component.";
     private string imageUrl = "https://i.imgur.com/8A0emQe.png"; // TODO: update this
 }
