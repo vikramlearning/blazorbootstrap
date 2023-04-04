@@ -10,7 +10,7 @@ public partial class AccordionItem
     [Parameter] public EventCallback OnShowing { get; set; }
 
     /// <summary>
-    /// This event is fired when a collapse element has been made visible to the user (will wait for CSS transitions to complete).
+    /// This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to complete).
     /// </summary>
     [Parameter] public EventCallback OnShown { get; set; }
 
@@ -20,7 +20,7 @@ public partial class AccordionItem
     [Parameter] public EventCallback OnHiding { get; set; }
 
     /// <summary>
-    /// This event is fired when a collapse element has been hidden from the user (will wait for CSS transitions to complete).
+    /// This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete).
     /// </summary>
     [Parameter] public EventCallback OnHidden { get; set; }
 
@@ -109,7 +109,10 @@ public partial class AccordionItem
     [Parameter, EditorRequired]
     public RenderFragment Body { get; set; } = default!;
 
-    [CascadingParameter] public Accordion Parent { get; set; }
+    /// <summary>
+    /// Gets or sets the parent.
+    /// </summary>
+    [CascadingParameter] internal Accordion Parent { get; set; } = default!;
 
     #endregion
 }

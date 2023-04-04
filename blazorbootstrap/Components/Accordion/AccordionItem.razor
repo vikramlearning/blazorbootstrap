@@ -16,6 +16,7 @@
     </h2>
     <Collapse @ref="collapseAccordionItem"
               Class="accordion-collapse"
+              Parent="@Parent.ElementRef"
               OnShowing="OnCollapseShowingAsync"
               OnShown="OnCollapseShownAsync"
               OnHiding="OnCollapseHidingAsync"

@@ -47,30 +47,9 @@ public partial class Collapse
 
     protected override async Task OnInitializedAsync()
     {
-        //SetAttributes();
         objRef ??= DotNetObjectReference.Create(this);
-        await base.OnInitializedAsync(); 
-
         ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", ElementId, Parent, Toggle, objRef); });
-
-    }
-
-    private void SetAttributes()
-    {
-        Attributes ??= new Dictionary<string, object>();
-
-        if (!string.IsNullOrWhiteSpace(Parent))
-        {
-            if (!Attributes.TryGetValue("data-bs-parent", out _))
-                Attributes.Add("data-bs-parent", $"#{Parent}");
-            else
-                Attributes["data-bs-parent"] = $"#{Parent}";
-        }
-        else
-        {
-            if (Attributes.TryGetValue("data-bs-parent", out _))
-                Attributes.Remove("data-bs-parent");
-        }
+        await base.OnInitializedAsync();
     }
 
     /// <summary>
@@ -146,7 +125,7 @@ public partial class Collapse
     /// If parent is provided, then all collapsible elements under the specified parent will be closed when this collapsible item is shown. (similar to traditional accordion behavior - this is dependent on the card class). 
     /// The attribute has to be set on the target collapsible area.
     /// </summary>
-    [Parameter] public string Parent { get; set; } = default!;
+    [Parameter] public object Parent { get; set; } = default!;
 
     /// <summary>
     /// Toggles the collapsible element on invocation.
