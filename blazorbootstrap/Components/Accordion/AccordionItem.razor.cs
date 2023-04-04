@@ -4,6 +4,26 @@ public partial class AccordionItem
 {
     #region Events
 
+    /// <summary>
+    /// This event fires immediately when the show instance method is called.
+    /// </summary>
+    [Parameter] public EventCallback OnShowing { get; set; }
+
+    /// <summary>
+    /// This event is fired when a collapse element has been made visible to the user (will wait for CSS transitions to complete).
+    /// </summary>
+    [Parameter] public EventCallback OnShown { get; set; }
+
+    /// <summary>
+    /// This event is fired immediately when the hide method has been called.
+    /// </summary>
+    [Parameter] public EventCallback OnHiding { get; set; }
+
+    /// <summary>
+    /// This event is fired when a collapse element has been hidden from the user (will wait for CSS transitions to complete).
+    /// </summary>
+    [Parameter] public EventCallback OnHidden { get; set; }
+
     #endregion
 
     #region Members
@@ -36,30 +56,32 @@ public partial class AccordionItem
 
     private async Task toggleAccordionItemAsync() => await collapseAccordionItem.ToggleAsync();
 
-    private Task OnCollapseShowing()
+    private async Task OnCollapseShowingAsync()
     {
         isCollapsed = false;
-        // TODO: call AccordionIten -> Showing
-        return Task.CompletedTask;
+
+        if (OnShowing.HasDelegate)
+            await OnShowing.InvokeAsync();
     }
 
-    private Task OnCollapseShown()
+    private async Task OnCollapseShownAsync()
     {
-        // TODO: call AccordionIten -> Shown
-        return Task.CompletedTask;
+        if (OnShown.HasDelegate)
+            await OnShown.InvokeAsync();
     }
 
-    private Task OnCollapseHiding()
+    private async Task OnCollapseHidingAsync()
     {
         isCollapsed = true;
-        // TODO: call AccordionIten -> Hiding
-        return Task.CompletedTask;
+
+        if (OnHiding.HasDelegate)
+            await OnHiding.InvokeAsync();
     }
 
-    private Task OnCollapseHidden()
+    private async Task OnCollapseHiddenAsync()
     {
-        // TODO: call AccordionIten -> Hidden
-        return Task.CompletedTask;
+        if (OnHidden.HasDelegate)
+            await OnHidden.InvokeAsync();
     }
 
     #endregion

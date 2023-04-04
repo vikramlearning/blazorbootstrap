@@ -16,10 +16,10 @@
     </h2>
     <Collapse @ref="collapseAccordionItem"
               Class="accordion-collapse"
-              OnShowing="OnCollapseShowing"
-              OnShown="OnCollapseShown"
-              OnHiding="OnCollapseHiding"
-              OnHidden="OnCollapseHidden">
+              OnShowing="OnCollapseShowingAsync"
+              OnShown="OnCollapseShownAsync"
+              OnHiding="OnCollapseHidingAsync"
+              OnHidden="OnCollapseHiddenAsync">
         <div class="accordion-body">
             @Body
         </div>
