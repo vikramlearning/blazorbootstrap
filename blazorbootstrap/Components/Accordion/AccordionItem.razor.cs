@@ -10,6 +10,10 @@ public partial class AccordionItem
 
     private Collapse collapseAccordionItem = default!;
 
+    private bool isCollapsed = true;
+
+    private string buttonCollapsedStateCSSClass => isCollapsed ? "collapsed" : string.Empty;
+
     #endregion
 
     #region Methods
@@ -31,6 +35,32 @@ public partial class AccordionItem
     }
 
     private async Task toggleAccordionItemAsync() => await collapseAccordionItem.ToggleAsync();
+
+    private Task OnCollapseShowing()
+    {
+        isCollapsed = false;
+        // TODO: call AccordionIten -> Showing
+        return Task.CompletedTask;
+    }
+
+    private Task OnCollapseShown()
+    {
+        // TODO: call AccordionIten -> Shown
+        return Task.CompletedTask;
+    }
+
+    private Task OnCollapseHiding()
+    {
+        isCollapsed = true;
+        // TODO: call AccordionIten -> Hiding
+        return Task.CompletedTask;
+    }
+
+    private Task OnCollapseHidden()
+    {
+        // TODO: call AccordionIten -> Hidden
+        return Task.CompletedTask;
+    }
 
     #endregion
 
@@ -56,6 +86,8 @@ public partial class AccordionItem
     /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment Body { get; set; } = default!;
+
+    [CascadingParameter] public Accordion Parent { get; set; }
 
     #endregion
 }

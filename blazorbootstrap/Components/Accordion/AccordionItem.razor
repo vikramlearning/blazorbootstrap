@@ -3,7 +3,7 @@
 
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
     <h2 class="accordion-header">
-        <button class="accordion-button" type="button" @onclick="toggleAccordionItemAsync">
+        <button class="accordion-button @buttonCollapsedStateCSSClass" type="button" @onclick="toggleAccordionItemAsync">
             @if (Header is not null)
             {
                 @Header
@@ -14,7 +14,12 @@
             }
         </button>
     </h2>
-    <Collapse @ref="collapseAccordionItem" Class="accordion-collapse">
+    <Collapse @ref="collapseAccordionItem"
+              Class="accordion-collapse"
+              OnShowing="OnCollapseShowing"
+              OnShown="OnCollapseShown"
+              OnHiding="OnCollapseHiding"
+              OnHidden="OnCollapseHidden">
         <div class="accordion-body">
             @Body
         </div>
