@@ -4,26 +4,6 @@ public partial class AccordionItem
 {
     #region Events
 
-    /// <summary>
-    /// This event fires immediately when the show instance method is called.
-    /// </summary>
-    [Parameter] public EventCallback OnShowing { get; set; }
-
-    /// <summary>
-    /// This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to complete).
-    /// </summary>
-    [Parameter] public EventCallback OnShown { get; set; }
-
-    /// <summary>
-    /// This event is fired immediately when the hide method has been called.
-    /// </summary>
-    [Parameter] public EventCallback OnHiding { get; set; }
-
-    /// <summary>
-    /// This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete).
-    /// </summary>
-    [Parameter] public EventCallback OnHidden { get; set; }
-
     #endregion
 
     #region Members
@@ -38,6 +18,12 @@ public partial class AccordionItem
 
     #region Methods
 
+    protected override void OnInitialized()
+    {
+        ElementId = IdGenerator.Generate; // This is required
+        Parent.AddAccordionItem(this);
+    }
+
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
@@ -48,9 +34,9 @@ public partial class AccordionItem
 
     protected override void OnParametersSet()
     {
-        if (Header is not null && !string.IsNullOrWhiteSpace(HeaderText))
+        if (TitleTemplate is not null && !string.IsNullOrWhiteSpace(Title))
         {
-            throw new InvalidOperationException($"{nameof(AccordionItem)} requires one of {nameof(Header)} or {nameof(HeaderText)}, but both were specified.");
+            throw new InvalidOperationException($"{nameof(AccordionItem)} requires one of {nameof(TitleTemplate)} or {nameof(Title)}, but both were specified.");
         }
     }
 
@@ -60,28 +46,28 @@ public partial class AccordionItem
     {
         isCollapsed = false;
 
-        if (OnShowing.HasDelegate)
-            await OnShowing.InvokeAsync();
+        if (Parent.OnShowing.HasDelegate)
+            await Parent.OnShowing.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
     private async Task OnCollapseShownAsync()
     {
-        if (OnShown.HasDelegate)
-            await OnShown.InvokeAsync();
+        if (Parent.OnShown.HasDelegate)
+            await Parent.OnShown.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
     private async Task OnCollapseHidingAsync()
     {
         isCollapsed = true;
 
-        if (OnHiding.HasDelegate)
-            await OnHiding.InvokeAsync();
+        if (Parent.OnHiding.HasDelegate)
+            await Parent.OnHiding.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
     private async Task OnCollapseHiddenAsync()
     {
-        if (OnHidden.HasDelegate)
-            await OnHidden.InvokeAsync();
+        if (Parent.OnHidden.HasDelegate)
+            await Parent.OnHidden.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
     #endregion
@@ -92,27 +78,32 @@ public partial class AccordionItem
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Specifies the header content to be rendered inside the <see cref="Header"/>.
-    /// </summary>
-    [Parameter]
-    public RenderFragment Header { get; set; } = default!;
-
-    /// <summary>
-    /// Gets or sets the header text.
-    /// </summary>
-    [Parameter]
-    public string HeaderText { get; set; } = default!;
-
-    /// <summary>
-    /// Specifies the body content to be rendered inside the <see cref="Body"/>.
+    /// Specifies the content to be rendered inside the <see cref="AccordionItem"/>.
     /// </summary>
     [Parameter, EditorRequired]
-    public RenderFragment Body { get; set; } = default!;
+    public RenderFragment Content { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    [Parameter] public string Name { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the parent.
     /// </summary>
     [CascadingParameter] internal Accordion Parent { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the <see cref="AccordionItem"/> title.
+    /// </summary>
+    [Parameter]
+    public string Title { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the <see cref="AccordionItem"/> title template.
+    /// </summary>
+    [Parameter]
+    public RenderFragment TitleTemplate { get; set; } = default!;
 
     #endregion
 }

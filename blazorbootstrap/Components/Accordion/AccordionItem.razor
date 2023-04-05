@@ -4,16 +4,17 @@
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
     <h2 class="accordion-header">
         <button class="accordion-button @buttonCollapsedStateCSSClass" type="button" @onclick="toggleAccordionItemAsync">
-            @if (Header is not null)
+            @if (TitleTemplate is not null)
             {
-                @Header
+                @TitleTemplate
             }
-            else if (!string.IsNullOrWhiteSpace(HeaderText))
+            else if (!string.IsNullOrWhiteSpace(Title))
             {
-                @HeaderText
+                @Title
             }
         </button>
     </h2>
+
     <Collapse @ref="collapseAccordionItem"
               Class="accordion-collapse"
               Parent="@(Parent.AlwaysOpen ? null : Parent.ElementRef)"
@@ -22,7 +23,7 @@
               OnHiding="OnCollapseHidingAsync"
               OnHidden="OnCollapseHiddenAsync">
         <div class="accordion-body">
-            @Body
+            @Content
         </div>
     </Collapse>
 </div>

@@ -1,23 +1,47 @@
-﻿<Accordion @ref="accordion1">
-    <AccordionItem>
-        <Header>Accordion Item #1</Header>
-        <Body>
+﻿<Accordion @ref="accordion1"
+           OnShowing="OnShowingAsync"
+           OnShown="OnShownAsync"
+           OnHiding="OnHidingAsync"
+           OnHidden="OnHiddenAsync">
+    <AccordionItem Name="AccordionItem1">
+        <TitleTemplate>Accordion Item #1</TitleTemplate>
+        <Content>
             <b>This is the first item's accordion body.</b> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-        </Body>
+        </Content>
     </AccordionItem>
-    <AccordionItem HeaderText="Accordion Item #2">
-        <Body>
+    <AccordionItem Name="AccordionItem2" Title="Accordion Item #2">
+        <Content>
             <b>This is the second item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-        </Body>
+        </Content>
     </AccordionItem>
-    <AccordionItem>
-        <Header>Accordion Item #3</Header>
-        <Body>
+    <AccordionItem Name="AccordionItem3">
+        <TitleTemplate>Accordion Item #3</TitleTemplate>
+        <Content>
             <b>This is the third item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-        </Body>
+        </Content>
     </AccordionItem>
 </Accordion>
 
 @code {
-    private Accordion accordion1;
+    private Accordion accordion1 = default!; 
+
+    private void OnShowingAsync(AccordionEventArgs args)
+    {
+        Console.WriteLine($"OnShowingAsync - Name: {args.Name}, Title: {args.Title}");
+    }
+
+    private void OnShownAsync(AccordionEventArgs args)
+    {
+        Console.WriteLine($"OnShownAsync - Name: {args.Name}, Title: {args.Title}");
+    }
+
+    private void OnHidingAsync(AccordionEventArgs args)
+    {
+        Console.WriteLine($"OnHidingAsync - Name: {args.Name}, Title: {args.Title}");
+    }
+
+    private void OnHiddenAsync(AccordionEventArgs args)
+    {
+        Console.WriteLine($"OnHiddenAsync - Name: {args.Name}, Title: {args.Title}");
+    }
 }

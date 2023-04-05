@@ -160,16 +160,16 @@ window.blazorBootstrap = {
         initialize: (elementId, parent, toggle, dotNetHelper) => {
             let collapseEl = document.getElementById(elementId);
 
-            collapseEl.addEventListener('show.bs.collapse', function () {
+            collapseEl.addEventListener('show.bs.collapse', (event) => {
                 dotNetHelper.invokeMethodAsync('bsShowCollapse');
             });
-            collapseEl.addEventListener('shown.bs.collapse', function () {
+            collapseEl.addEventListener('shown.bs.collapse', (event) => {
                 dotNetHelper.invokeMethodAsync('bsShownCollapse');
             });
-            collapseEl.addEventListener('hide.bs.collapse', function () {
+            collapseEl.addEventListener('hide.bs.collapse', (event) => {
                 dotNetHelper.invokeMethodAsync('bsHideCollapse');
             });
-            collapseEl.addEventListener('hidden.bs.collapse', function () {
+            collapseEl.addEventListener('hidden.bs.collapse', (event) => {
                 dotNetHelper.invokeMethodAsync('bsHiddenCollapse');
             });
 
