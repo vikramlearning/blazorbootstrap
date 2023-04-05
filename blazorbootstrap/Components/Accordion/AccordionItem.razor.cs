@@ -40,7 +40,11 @@ public partial class AccordionItem
         }
     }
 
-    private async Task toggleAccordionItemAsync() => await collapseAccordionItem.ToggleAsync();
+    internal async Task ShowAccordionItemAsync() => await collapseAccordionItem.ShowAsync();
+
+    internal async Task HideAccordionItemAsync() => await collapseAccordionItem.HideAsync();
+
+    private async Task ToggleAccordionItemAsync() => await collapseAccordionItem.ToggleAsync();
 
     private async Task OnCollapseShowingAsync()
     {

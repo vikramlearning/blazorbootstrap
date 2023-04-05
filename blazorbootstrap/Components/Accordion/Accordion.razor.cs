@@ -44,6 +44,11 @@ public partial class Accordion
         base.BuildClasses(builder);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     internal void AddAccordionItem(AccordionItem accordionItem)
     {
         if (accordionItem != null)

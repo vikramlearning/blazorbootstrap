@@ -23,25 +23,35 @@
 </Accordion>
 
 @code {
-    private Accordion accordion1 = default!; 
+    private Accordion accordion1 = default!;
+
+    [Inject] ToastService ToastService { get; set; } = default!;
 
     private void OnShowingAsync(AccordionEventArgs args)
     {
-        Console.WriteLine($"OnShowingAsync - Name: {args.Name}, Title: {args.Title}");
+        ToastService.Notify(new ToastMessage(
+            type: ToastType.Primary,
+            message: $"Event Name: Showing, AccordionItemName: {args.Name}, AccordionItemTitle: {args.Title}"));
     }
 
     private void OnShownAsync(AccordionEventArgs args)
     {
-        Console.WriteLine($"OnShownAsync - Name: {args.Name}, Title: {args.Title}");
+        ToastService.Notify(new ToastMessage(
+            type: ToastType.Primary,
+            message: $"Event Name: OnShown, AccordionItemName: {args.Name}, AccordionItemTitle: {args.Title}"));
     }
 
     private void OnHidingAsync(AccordionEventArgs args)
     {
-        Console.WriteLine($"OnHidingAsync - Name: {args.Name}, Title: {args.Title}");
+        ToastService.Notify(new ToastMessage(
+            type: ToastType.Primary,
+            message: $"Event Name: OnHiding, AccordionItemName: {args.Name}, AccordionItemTitle: {args.Title}"));
     }
 
     private void OnHiddenAsync(AccordionEventArgs args)
     {
-        Console.WriteLine($"OnHiddenAsync - Name: {args.Name}, Title: {args.Title}");
+        ToastService.Notify(new ToastMessage(
+            type: ToastType.Primary,
+            message: $"Event Name: OnHidden, AccordionItemName: {args.Name}, AccordionItemTitle: {args.Title}"));
     }
 }
