@@ -177,7 +177,6 @@ window.blazorBootstrap = {
             bootstrap?.Collapse?.getOrCreateInstance(collapseEl, options);
         },
         show: (elementId) => {
-            console.log(`collapse called...`);
             bootstrap?.Collapse?.getOrCreateInstance(document.getElementById(elementId))?.show();
         },
         hide: (elementId) => {
