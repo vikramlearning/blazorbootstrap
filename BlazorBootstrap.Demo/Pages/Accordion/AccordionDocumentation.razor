@@ -37,22 +37,28 @@
 </div>
 <Demo Type="typeof(Accordion_Demo_03_Flush)" Tabs="true" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Set default active accordion item" PageUrl="@pageUrl" HashTagName="set-default-active-accordion-item" />
+<div class="mb-3">
+    Set the <code>IsActive</code> parameter to <code>true</code> to keep accordion item open by default.
+</div>
+<Demo Type="typeof(Accordion_Demo_04_Set_Default_Active)" Tabs="true" />
+
 <SectionHeading Size="HeadingSize.H2" Text="Always open" PageUrl="@pageUrl" HashTagName="always-open" />
 <div class="mb-3">
     Set the <code>AlwaysOpen</code> parameter to <code>true</code> to keep accordion items open when another item is opened.
 </div>
-<Demo Type="typeof(Accordion_Demo_04_Always_Open)" Tabs="true" />
+<Demo Type="typeof(Accordion_Demo_05_Always_Open)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Activate individual accordion items" PageUrl="@pageUrl" HashTagName="activate-individual-accordion-items" />
 <div class="mb-3">
     You can activate individual accordion items in several ways.
     Use predefined methods <code>ShowFirstAccordionItemAsync</code>, <code>ShowLastAccordionItemAsync</code>, <code>ShowAccordionItemByNameAsync</code>, and <code>ShowAccordionItemByIndexAsync</code>, as shown below.
 </div>
-<Demo Type="typeof(Accordion_Demo_05_Activate_Individual_AccordionItems)" Tabs="true" />
+<Demo Type="typeof(Accordion_Demo_06_Activate_Individual_AccordionItems)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
 <div class="mb-3">Blazor Bootstrap modal class exposes a few events for hooking into modal functionality.</div>
-<Demo Type="typeof(Accordion_Demo_06_Events)" Tabs="true" />
+<Demo Type="typeof(Accordion_Demo_07_Events)" Tabs="true" />
 
 @code {
     private string pageUrl = "/accordion";

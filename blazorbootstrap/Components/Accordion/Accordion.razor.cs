@@ -30,8 +30,6 @@ public partial class Accordion
 
     private List<AccordionItem> items = new List<AccordionItem>();
 
-    private AccordionItem activeAccordionItem = default!;
-
     #endregion
 
     #region Methods
@@ -44,34 +42,11 @@ public partial class Accordion
         base.BuildClasses(builder);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-
-        // set active accordion item.
-        if(firstRender)
-            await SetDefaultActiveAccordionItemAsync();
-    }
-
-    /// <summary>
-    /// Sets default active <see cref="AccordionItem"/>.
-    /// </summary>
-    private async Task SetDefaultActiveAccordionItemAsync()
-    {
-        activeAccordionItem = activeAccordionItem ?? items.FirstOrDefault(x => x.IsActive);
-
-        if (activeAccordionItem is not null)
-            await activeAccordionItem.ShowAsync();
-    }
-
     internal void Add(AccordionItem accordionItem)
     {
         if (accordionItem != null)
         {
             items?.Add(accordionItem);
-
-            if(accordionItem.IsActive)
-                activeAccordionItem = accordionItem;
         }
     }
 

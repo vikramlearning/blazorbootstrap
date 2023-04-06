@@ -18,6 +18,7 @@
     <Collapse @ref="collapse"
               Class="accordion-collapse"
               Parent="@(Parent.AlwaysOpen ? null : Parent.ElementRef)"
+              Toggle="@IsActive"
               OnShowing="OnCollapseShowingAsync"
               OnShown="OnCollapseShownAsync"
               OnHiding="OnCollapseHidingAsync"
