@@ -23,22 +23,36 @@
 <div class="mb-3">
     Click the accordions below to expand/collapse the accordion content.
 </div>
-@*<Demo Type="typeof(Accordion_Demo_01_Examples)" Tabs="true" />*@
+<Demo Type="typeof(Accordion_Demo_01_Examples)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Title with Icon" PageUrl="@pageUrl" HashTagName="title-with-icon" />
+<div class="mb-3">
+    To customize the accordion title, use <code>TitleTemplate</code>, as shown in the below example.
+</div>
+<Demo Type="typeof(Accordion_Demo_02_Title_with_Icon)" Tabs="false" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Flush" PageUrl="@pageUrl" HashTagName="flush" />
 <div class="mb-3">
     Set the <code>Flush</code> parameter to <code>true</code> to remove borders and rounded corners to render accordions edge-to-edge with their parent container.
 </div>
-@*<Demo Type="typeof(Accordion_Demo_02_Flush)" Tabs="true" />*@
+<Demo Type="typeof(Accordion_Demo_03_Flush)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Always open" PageUrl="@pageUrl" HashTagName="always-open" />
 <div class="mb-3">
     Set the <code>AlwaysOpen</code> parameter to <code>true</code> to keep accordion items open when another item is opened.
 </div>
-@*<Demo Type="typeof(Accordion_Demo_03_Always_Open)" Tabs="true" />*@
+<Demo Type="typeof(Accordion_Demo_04_Always_Open)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Activate individual accordion items" PageUrl="@pageUrl" HashTagName="activate-individual-accordion-items" />
+<div class="mb-3">
+    You can activate individual accordion items in several ways.
+    Use predefined methods <code>ShowFirstAccordionItemAsync</code>, <code>ShowLastAccordionItemAsync</code>, <code>ShowAccordionItemByNameAsync</code>, and <code>ShowAccordionItemByIndexAsync</code>, as shown below.
+</div>
+<Demo Type="typeof(Accordion_Demo_05_Activate_Individual_AccordionItems)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
-<Demo Type="typeof(Accordion_Demo_04_Events)" Tabs="true" />
+<div class="mb-3">Blazor Bootstrap modal class exposes a few events for hooking into modal functionality.</div>
+<Demo Type="typeof(Accordion_Demo_06_Events)" Tabs="true" />
 
 @code {
     private string pageUrl = "/accordion";

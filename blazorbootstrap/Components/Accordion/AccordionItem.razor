@@ -3,7 +3,7 @@
 
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
     <h2 class="accordion-header">
-        <button class="accordion-button @buttonCollapsedStateCSSClass" type="button" @onclick="ToggleAccordionItemAsync">
+        <button class="accordion-button @buttonCollapsedStateCSSClass" type="button" @onclick="ToggleAsync">
             @if (TitleTemplate is not null)
             {
                 @TitleTemplate
@@ -15,7 +15,7 @@
         </button>
     </h2>
 
-    <Collapse @ref="collapseAccordionItem"
+    <Collapse @ref="collapse"
               Class="accordion-collapse"
               Parent="@(Parent.AlwaysOpen ? null : Parent.ElementRef)"
               OnShowing="OnCollapseShowingAsync"

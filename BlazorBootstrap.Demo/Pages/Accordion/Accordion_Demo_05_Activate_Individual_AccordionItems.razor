@@ -1,0 +1,54 @@
+﻿<Accordion @ref="accordion1" Class="mb-3">
+    <AccordionItem Name="AccordionItem1">
+        <TitleTemplate>Home</TitleTemplate>
+        <Content>
+            <b>This is the first item's accordion body.</b> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+        </Content>
+    </AccordionItem>
+    <AccordionItem Name="AccordionItem2" Title="Profile">
+        <Content>
+            <b>This is the second item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+        </Content>
+    </AccordionItem>
+    <AccordionItem Name="AccordionItem3">
+        <TitleTemplate>Contact</TitleTemplate>
+        <Content>
+            <b>This is the third item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+        </Content>
+    </AccordionItem>
+    <AccordionItem Name="Products">
+        <TitleTemplate>Products</TitleTemplate>
+        <Content>
+            <b>This is the fourth item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+        </Content>
+    </AccordionItem>
+    <AccordionItem Name="FAQ">
+        <TitleTemplate>FAQs</TitleTemplate>
+        <Content>
+            <b>This is the fifth item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+        </Content>
+    </AccordionItem>
+    <AccordionItem Name="AccordionItem6">
+        <TitleTemplate>About</TitleTemplate>
+        <Content>
+            <b>This is the sixth item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
+        </Content>
+    </AccordionItem>
+</Accordion>
+
+<Button Color="ButtonColor.Primary" @onclick="ShowFirstAccordionItemAsync">First Accordion Item</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowSecondAccordionItemAsync">Second Accordion Item</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowThirdAccordionItemAsync">Third Accordion Item</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowProductsAccordionItemAsync">Products Accordion Item</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowFaqsAccordionItemAsync">FAQs Accordion Item</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowLastAccordionItemAsync">Last Accordion Item</Button>
+@code {
+    private Accordion accordion1 = default!;
+
+    private async Task ShowFirstAccordionItemAsync() => await accordion1.ShowFirstAccordionItemAsync();
+    private async Task ShowSecondAccordionItemAsync() => await accordion1.ShowAccordionItemByIndexAsync(1);
+    private async Task ShowThirdAccordionItemAsync() => await accordion1.ShowAccordionItemByIndexAsync(2);
+    private async Task ShowProductsAccordionItemAsync() => await accordion1.ShowAccordionItemByNameAsync("Products");
+    private async Task ShowFaqsAccordionItemAsync() => await accordion1.ShowAccordionItemByNameAsync("FAQ");
+    private async Task ShowLastAccordionItemAsync() => await accordion1.ShowLastAccordionItemAsync();
+}

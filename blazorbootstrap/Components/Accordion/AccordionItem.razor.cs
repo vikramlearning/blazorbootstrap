@@ -8,7 +8,7 @@ public partial class AccordionItem
 
     #region Members
 
-    private Collapse collapseAccordionItem = default!;
+    private Collapse collapse = default!;
 
     private bool isCollapsed = true;
 
@@ -21,7 +21,7 @@ public partial class AccordionItem
     protected override void OnInitialized()
     {
         ElementId = IdGenerator.Generate; // This is required
-        Parent.AddAccordionItem(this);
+        Parent.Add(this);
     }
 
     /// <inheritdoc/>
@@ -40,23 +40,23 @@ public partial class AccordionItem
         }
     }
 
-    internal async Task ShowAccordionItemAsync() => await collapseAccordionItem.ShowAsync();
+    internal async Task ShowAsync() => await collapse.ShowAsync();
 
-    internal async Task HideAccordionItemAsync() => await collapseAccordionItem.HideAsync();
+    internal async Task HideAsync() => await collapse.HideAsync();
 
-    private async Task ToggleAccordionItemAsync() => await collapseAccordionItem.ToggleAsync();
+    private async Task ToggleAsync() => await collapse.ToggleAsync();
 
     private async Task OnCollapseShowingAsync()
     {
         isCollapsed = false;
 
-        if (Parent.OnShowing.HasDelegate)
+        if (Parent is not null && Parent.OnShowing.HasDelegate)
             await Parent.OnShowing.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
     private async Task OnCollapseShownAsync()
     {
-        if (Parent.OnShown.HasDelegate)
+        if (Parent is not null && Parent.OnShown.HasDelegate)
             await Parent.OnShown.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
@@ -64,13 +64,13 @@ public partial class AccordionItem
     {
         isCollapsed = true;
 
-        if (Parent.OnHiding.HasDelegate)
+        if (Parent is not null && Parent.OnHiding.HasDelegate)
             await Parent.OnHiding.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
     private async Task OnCollapseHiddenAsync()
     {
-        if (Parent.OnHidden.HasDelegate)
+        if (Parent is not null && Parent.OnHidden.HasDelegate)
             await Parent.OnHidden.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
@@ -86,6 +86,11 @@ public partial class AccordionItem
     /// </summary>
     [Parameter, EditorRequired]
     public RenderFragment Content { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the active <see cref="AccordionItem"/>.
+    /// </summary>
+    [Parameter] public bool IsActive { get; set; }
 
     /// <summary>
     /// Gets or sets the name.

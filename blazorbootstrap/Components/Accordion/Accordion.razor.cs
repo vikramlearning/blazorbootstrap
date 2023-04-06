@@ -47,16 +47,79 @@ public partial class Accordion
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
+
+        // set active accordion item.
+        if(firstRender)
+            await SetDefaultActiveAccordionItemAsync();
     }
 
-    internal void AddAccordionItem(AccordionItem accordionItem)
+    /// <summary>
+    /// Sets default active <see cref="AccordionItem"/>.
+    /// </summary>
+    private async Task SetDefaultActiveAccordionItemAsync()
+    {
+        activeAccordionItem = activeAccordionItem ?? items.FirstOrDefault(x => x.IsActive);
+
+        if (activeAccordionItem is not null)
+            await activeAccordionItem.ShowAsync();
+    }
+
+    internal void Add(AccordionItem accordionItem)
     {
         if (accordionItem != null)
         {
             items?.Add(accordionItem);
 
-            // TODO: handle default open AccordionItem 
+            if(accordionItem.IsActive)
+                activeAccordionItem = accordionItem;
         }
+    }
+
+    /// <summary>
+    /// Show the first <see cref="AccordionItem"/>.
+    /// </summary>
+    public async Task ShowFirstAccordionItemAsync()
+    {
+        var accordionItem = items.FirstOrDefault();
+        if (accordionItem is not null)
+            await accordionItem.ShowAsync();
+    }
+
+    /// <summary>
+    /// Show the last <see cref="AccordionItem"/>.
+    /// </summary>
+    public async Task ShowLastAccordionItemAsync()
+    {
+        var accordionItem = items.LastOrDefault();
+        if (accordionItem is not null)
+            await accordionItem.ShowAsync();
+    }
+
+    /// <summary>
+    /// Show the <see cref="AccordionItem"/> by name.
+    /// </summary>
+    /// <param name="accordionItemName">AccordionItem Name</param>
+    public async Task ShowAccordionItemByNameAsync(string accordionItemName)
+    {
+        var accordionItem = items.FirstOrDefault(x => x.Name == accordionItemName);
+        if (accordionItem is not null)
+            await accordionItem.ShowAsync();
+    }
+
+    /// <summary>
+    /// Show the <see cref="AccordionItem"/> by index.
+    /// </summary>
+    /// <param name="index"></param>
+    public async Task ShowAccordionItemByIndexAsync(int index)
+    {
+        if (index < 0 || index >= items.Count)
+        {
+            throw new IndexOutOfRangeException();
+        }
+
+        var accordionItem = items[index];
+        if (accordionItem is not null)
+            await accordionItem.ShowAsync();
     }
 
     /// <inheritdoc />
