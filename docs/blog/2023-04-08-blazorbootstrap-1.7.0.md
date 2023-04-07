@@ -25,7 +25,7 @@ We are excited to release 1.7.0 with new Badge, Collapse, and Accordion componen
 
 - `Collapse` component
   - Horizontal collapse
-  - Call back events: OnShowing, OnShown, OnHiding, and OnHidden
+  - **Call back events:** OnShowing, OnShown, OnHiding, and OnHidden
 
 - `Accordion` component
   - Title with Icon
@@ -33,7 +33,7 @@ We are excited to release 1.7.0 with new Badge, Collapse, and Accordion componen
   - Set default active accordion item
   - Always open
   - Activate individual accordion items
-  - Call back events: OnShowing, OnShown, OnHiding, and OnHidden
+  - **Call back events:** OnShowing, OnShown, OnHiding, and OnHidden
 
 ## What's changed
 
