@@ -16,7 +16,7 @@
 Several quick start options are available:
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.6.0` 
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.7.0` 
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
@@ -41,18 +41,21 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 
 ## Blazor Bootstrap Components
 
+- Accordion
 - Alerts
 - AutoComplete
+- Badge
 - Breadcrumb
 - Buttons
 - Callout
 - Charts
+- Collapse
 - Confirm Dialog
 - Currency Input
 - Date Input
 - Grid
 - Icons
-- Modal
+- Modals
 - Number Input
 - Offcanvas
 - Pagination

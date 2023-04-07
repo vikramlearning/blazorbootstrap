@@ -28,7 +28,7 @@ public partial class Collapse
 
     #region Members
 
-    private bool collapseHorizontal;
+    private bool horizontal;
 
     private DotNetObjectReference<Collapse> objRef;
 
@@ -40,7 +40,7 @@ public partial class Collapse
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Collapse());
-        builder.Append(BootstrapClassProvider.CollapseHorizontal(), this.CollapseHorizontal);
+        builder.Append(BootstrapClassProvider.CollapseHorizontal(), this.Horizontal);
 
         base.BuildClasses(builder);
     }
@@ -48,9 +48,8 @@ public partial class Collapse
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-        await base.OnInitializedAsync();
-
         ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", ElementId, Parent, Toggle, objRef); });
+        await base.OnInitializedAsync();
     }
 
     /// <summary>
@@ -108,25 +107,25 @@ public partial class Collapse
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the collapse horizontal.
+    /// Gets or sets the horizontal.
     /// </summary>
     [Parameter]
-    public bool CollapseHorizontal
+    public bool Horizontal
     {
-        get => collapseHorizontal;
+        get => horizontal;
         set
         {
-            collapseHorizontal = value;
+            horizontal = value;
             DirtyClasses();
         }
     }
 
     /// <summary>
-    /// Gets or sets the parent.
+    /// Gets or sets the parent selector, DOM element.
     /// If parent is provided, then all collapsible elements under the specified parent will be closed when this collapsible item is shown. (similar to traditional accordion behavior - this is dependent on the card class). 
     /// The attribute has to be set on the target collapsible area.
     /// </summary>
-    [Parameter] public string Parent { get; set; } = default!;
+    [Parameter] public object Parent { get; set; } = default!;
 
     /// <summary>
     /// Toggles the collapsible element on invocation.

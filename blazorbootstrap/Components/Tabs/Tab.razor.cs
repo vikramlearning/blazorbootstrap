@@ -32,12 +32,10 @@ public partial class Tab : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [CascadingParameter] public Tabs Parent { get; set; }
-
     /// <summary>
     /// Specifies the content to be rendered inside the tab.
     /// </summary>
-    [Parameter, EditorRequired] public RenderFragment Content { get; set; }
+    [Parameter, EditorRequired] public RenderFragment Content { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the disabled.
@@ -52,17 +50,22 @@ public partial class Tab : BaseComponent
     /// <summary>
     /// Gets or sets the tab name.
     /// </summary>
-    [Parameter] public string Name { get; set; }
+    [Parameter] public string Name { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the parent.
+    /// </summary>
+    [CascadingParameter] internal Tabs Parent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the tab title.
     /// </summary>
-    [Parameter] public string Title { get; set; }
+    [Parameter] public string Title { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the tab title template.
     /// </summary>
-    [Parameter] public RenderFragment TitleTemplate { get; set; }
+    [Parameter] public RenderFragment TitleTemplate { get; set; } = default!;
 
     #endregion Properties
 }

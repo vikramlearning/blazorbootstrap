@@ -46,7 +46,7 @@
 Several quick start options are available:
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.6.0`
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.7.0`
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
@@ -57,18 +57,21 @@ Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for i
 
 ## Blazor Bootstrap Components
 
+- Accordion
 - Alerts
 - AutoComplete
+- Badge
 - Breadcrumb
 - Buttons
 - Callout
 - Charts
+- Collapse
 - Confirm Dialog
 - Currency Input
 - Date Input
 - Grid
 - Icons
-- Modal
+- Modals
 - Number Input
 - Offcanvas
 - Pagination
@@ -90,20 +93,38 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ## Screenshots
 
+### Blazor Bootstrap - Accordion
+![Blazor Bootstrap - Accordion](https://i.imgur.com/g4zpMXp.png "Blazor Bootstrap - Accordion")
+
 ### Blazor Bootstrap - Alerts
 ![Blazor Bootstrap - Alerts](https://i.imgur.com/D9tJpSl.jpg "Blazor Bootstrap - Alerts")
 
 ### Blazor Bootstrap - Auto Complete
 ![Blazor Bootstrap - Auto Complete](https://i.imgur.com/gRcdvc0.png "Blazor Bootstrap - Auto Complete")
 
+### Blazor Bootstrap - Badge
+![Blazor Bootstrap - Badge](https://i.imgur.com/ux0sTs9.png "Blazor Bootstrap - Badge")
+
 ### Blazor Bootstrap - Buttons
 ![Blazor Bootstrap - Buttons](https://i.imgur.com/ENKhcXR.jpg "Blazor Bootstrap - Buttons")
 
-### Blazor Bootstrap - Bar Chart
-![Blazor Bootstrap - Bar Chart](https://i.imgur.com/JLV7oss.png "Blazor Bootstrap - Bar Chart")
-
 ### Blazor Bootstrap - Callout
 ![Blazor Bootstrap - Callout](https://i.imgur.com/vmibzEu.png "Blazor Bootstrap - Callout")
+
+### Blazor Bootstrap - Charts: Bar Chart
+![Blazor Bootstrap - Charts: Bar Chart](https://i.imgur.com/JLV7oss.png "Blazor Bootstrap - Charts: Bar Chart")
+
+### Blazor Bootstrap - Charts: Doughnut Chart
+![Blazor Bootstrap - Charts: Doughnut Chart](https://i.imgur.com/e5fnMXQ.png "Blazor Bootstrap - Charts: Doughnut Chart")
+
+### Blazor Bootstrap - Charts: Line Chart
+![Blazor Bootstrap - Charts: Line Chart](https://i.imgur.com/CzdXpqr.png "Blazor Bootstrap - Charts: Line Chart")
+
+### Blazor Bootstrap - Charts: Pie Chart
+![Blazor Bootstrap - Charts: Pie Chart](https://i.imgur.com/jr3w0fM.png "Blazor Bootstrap - Charts: Pie Chart")
+
+### Blazor Bootstrap - Collapse
+![Blazor Bootstrap - Collapse](https://i.imgur.com/8A0emQe.png "Blazor Bootstrap - Collapse")
 
 ### Blazor Bootstrap - Confirm Dialog
 ![Blazor Bootstrap - Confirm Dialog](https://i.imgur.com/FisZXwK.png "Blazor Bootstrap - Confirm Dialog")
@@ -116,9 +137,6 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ### Blazor Bootstrap - Grid
 ![Blazor Bootstrap - Grid](https://i.imgur.com/36RsWZ3.png "Blazor Bootstrap - Grid")
-
-### Blazor Bootstrap - Line Chart
-![Blazor Bootstrap - Line Chart](https://i.imgur.com/CzdXpqr.png "Blazor Bootstrap - Line Chart")
 
 ### Blazor Bootstrap - Modal
 ![Blazor Bootstrap - Modal](https://i.imgur.com/n0m4Fhq.jpg "Blazor Bootstrap - Modal")

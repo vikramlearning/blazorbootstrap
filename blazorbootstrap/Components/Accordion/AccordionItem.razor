@@ -1,0 +1,30 @@
+@namespace BlazorBootstrap
+@inherits BaseComponent
+
+<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    <h2 class="accordion-header">
+        <button class="accordion-button @buttonCollapsedStateCSSClass" type="button" @onclick="ToggleAsync">
+            @if (TitleTemplate is not null)
+            {
+                @TitleTemplate
+            }
+            else if (!string.IsNullOrWhiteSpace(Title))
+            {
+                @Title
+            }
+        </button>
+    </h2>
+
+    <Collapse @ref="collapse"
+              Class="accordion-collapse"
+              Parent="@(Parent.AlwaysOpen ? null : Parent.ElementRef)"
+              Toggle="@IsActive"
+              OnShowing="OnCollapseShowingAsync"
+              OnShown="OnCollapseShownAsync"
+              OnHiding="OnCollapseHidingAsync"
+              OnHidden="OnCollapseHiddenAsync">
+        <div class="accordion-body">
+            @Content
+        </div>
+    </Collapse>
+</div>
