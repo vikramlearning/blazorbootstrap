@@ -225,7 +225,6 @@ window.blazorBootstrap = {
             bootstrap?.Modal?.getOrCreateInstance(modalEl, options);
         },
         show: (elementId) => {
-            console.log(`show called...`);
             bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.show();
         },
         hide: (elementId) => {
