@@ -38,7 +38,7 @@ We are excited to release 1.7.0 with new Badge, Collapse, and Accordion componen
 ## What's changed
 
 - `Buttons` component
-  - Disable and enable state dynamically #172
+  - Disable and enable state dynamically [#172](https://github.com/vikramlearning/blazorbootstrap/issues/172)
 
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
