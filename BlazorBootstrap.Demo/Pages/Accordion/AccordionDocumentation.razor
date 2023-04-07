@@ -11,7 +11,7 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
 <div class="mb-3">
-    The <code>Accordion</code> component uses <code>Collapse</code> component internally to make it collapsible.
+    The <code>Accordion</code> component uses the <code>Collapse</code> component internally to make it collapsible.
 </div>
 
 <Callout Type="CalloutType.Info">
@@ -39,7 +39,7 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Set default active accordion item" PageUrl="@pageUrl" HashTagName="set-default-active-accordion-item" />
 <div class="mb-3">
-    Set the <code>IsActive</code> parameter to <code>true</code> to keep accordion item open by default.
+    Set the <code>IsActive</code> parameter to <code>true</code> to keep the accordion item open by default.
 </div>
 <Demo Type="typeof(Accordion_Demo_04_Set_Default_Active)" Tabs="true" />
 
@@ -57,7 +57,46 @@
 <Demo Type="typeof(Accordion_Demo_06_Activate_Individual_AccordionItems)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
-<div class="mb-3">Blazor Bootstrap modal class exposes a few events for hooking into modal functionality.</div>
+<div class="mb-3">
+    Blazor Bootstrap modal class exposes a few events for hooking into accordion functionality.
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Event Name</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            <tr>
+                <th scope="row"><code>OnHiding</code></th>
+                <td>
+                    This event is fired immediately when the <code>hide</code> method has been called.
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnHidden</code></th>
+                <td>
+                    This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete).
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnShowing</code></th>
+                <td>
+                    This event fires immediately when the <code>show</code> method is called.
+                </td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnShown</code></th>
+                <td>
+                    This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to complete).
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <Callout Type="CalloutType.Info">
+        If no accordion item is active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
+    </Callout>
+</div>
 <Demo Type="typeof(Accordion_Demo_07_Events)" Tabs="true" />
 
 @code {

@@ -5,7 +5,7 @@ public partial class Accordion
     #region Events
 
     /// <summary>
-    /// This event fires immediately when the show instance method is called.
+    /// This event fires immediately when the show method is called.
     /// </summary>
     [Parameter] public EventCallback<AccordionEventArgs> OnShowing { get; set; }
 
