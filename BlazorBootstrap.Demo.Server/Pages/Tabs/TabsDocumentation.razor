@@ -34,13 +34,39 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
 <div>
-    When showing a new tab, the events fire in the following order:
+    When showing a new tab, the events fire in the following order:    
     <p class="py-2 px-3">
         1. <code>OnHiding</code> (on the current active tab)<br />
         2. <code>OnShowing</code> (on the to-be-shown tab)<br />
         3. <code>OnHidden</code> (on the previous active tab, the same one as for the <code>OnHiding</code> event)<br />
         4. <code>OnShown</code> (on the newly-active just-shown tab, the same one as for the <code>OnShowing</code> event)<br />
     </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Event Name</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            <tr>
+                <th scope="row"><code>OnHiding</code></th>
+                <td>This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnHidden</code></th>
+                <td>This event fires after a new tab is shown (and thus the previous active tab is hidden).</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnShowing</code></th>
+                <td>This event fires on tab show, but before the new tab has been shown.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnShown</code></th>
+                <td>This event fires on tab show after a tab has been shown.</td>
+            </tr>
+        </tbody>
+    </table>
     <Callout Type="CalloutType.Info">
         If no tab was already active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
     </Callout>

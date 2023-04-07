@@ -32,6 +32,38 @@
 </div>
 <Demo Type="typeof(Collapse_Demo_02_Horizontal)" Tabs="false" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
+<div class="mb-3">
+    Blazor Bootstrap Collapse component exposes a few events for hooking into collapse functionality.
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Event Name</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            <tr>
+                <th scope="row"><code>OnHiding</code></th>
+                <td>This event is fired immediately when the <code>hide</code> method has been called.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnHidden</code></th>
+                <td>This event is fired when a collapse component has been hidden from the user (will wait for CSS transitions to complete).</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnShowing</code></th>
+                <td>This event fires immediately when the <code>show</code> method is called.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnShown</code></th>
+                <td>This event is fired when a collapse component has been made visible to the user (will wait for CSS transitions to complete).</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<Demo Type="typeof(Collapse_Demo_03_Events)" Tabs="true" />
+
 @code {
     private string pageUrl = "/collapse";
     private string title = "Blazor Collapse Component";
