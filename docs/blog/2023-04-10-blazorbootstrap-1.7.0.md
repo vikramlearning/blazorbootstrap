@@ -40,6 +40,12 @@ We are excited to release 1.7.0 with new Badge, Collapse, and Accordion componen
 - `Buttons` component
   - Disable and enable state dynamically [#172](https://github.com/vikramlearning/blazorbootstrap/issues/172)
 
+## Documentation
+
+- Layout setup docs
+  - Layout Setup - Blazor WebAssembly
+  - Layout Setup - Blazor Server
+
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
@@ -47,3 +53,5 @@ We are excited to release 1.7.0 with new Badge, Collapse, and Accordion componen
 - [Blazor Collapse Documentation](https://getblazorbootstrap.com/docs/components/collapse)
 - [Blazor Accordion Documentation](https://getblazorbootstrap.com/docs/components/accordion)
 - [Blazor Buttons Documentation](https://getblazorbootstrap.com/docs/components/buttons)
+- [Layout Setup - Blazor WebAssembly Documentation](https://getblazorbootstrap.com/docs/layout/blazor-webassembly)
+- [Layout Setup - Blazor Server Documentation](https://getblazorbootstrap.com/docs/layout/blazor-server)
