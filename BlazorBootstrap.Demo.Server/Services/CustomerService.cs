@@ -1,7 +1,4 @@
-﻿using BlazorBootstrap;
-using Microsoft.AspNetCore.Components;
-using System.Globalization;
-using System.Threading;
+﻿using Microsoft.AspNetCore.Components;
 
 namespace BlazorBootstrap.Demo.Server;
 

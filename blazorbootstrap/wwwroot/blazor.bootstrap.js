@@ -140,9 +140,9 @@ window.blazorBootstrap = {
                 return;
 
             // reset li element focus
-            var highlighted = ul.querySelectorAll('.dropdown-item-highlight');
+            let highlighted = ul.querySelectorAll('.dropdown-item-highlight');
             if (highlighted.length) {
-                for (var i = 0; i < highlighted.length; i++) {
+                for (let i = 0; i < highlighted.length; i++) {
                     highlighted[i].classList.remove('dropdown-item-highlight');
                 }
             }
@@ -495,7 +495,7 @@ window.blazorBootstrap = {
             return false;
 
         let inputCharArr = input.split('');
-        for (var i = 0; i < inputCharArr.length; i++) {
+        for (let i = 0; i < inputCharArr.length; i++) {
             if (!validChars.includes(inputCharArr[i]))
                 return true;
         }
