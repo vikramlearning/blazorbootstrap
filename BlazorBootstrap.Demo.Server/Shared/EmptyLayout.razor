@@ -102,16 +102,16 @@
 </footer>
 
 @code {
-    private string version;
-    private string docsUrl;
-    private string blogUrl;
-    private string githubUrl;
-    private string twitterUrl;
-    private string githubIssuesUrl;
-    private string githubDiscussionsUrl;
-    private string stackoverflowUrl;
+    private string version = default!;
+    private string docsUrl = default!;
+    private string blogUrl = default!;
+    private string githubUrl = default!;
+    private string twitterUrl = default!;
+    private string githubIssuesUrl = default!;
+    private string githubDiscussionsUrl = default!;
+    private string stackoverflowUrl = default!;
 
-    [Inject] public IConfiguration Configuration { get; set; }
+    [Inject] public IConfiguration Configuration { get; set; } = default!;
 
     protected override void OnInitialized()
     {

@@ -1,4 +1,4 @@
-﻿@* Add ﻿`@inherits LayoutComponentBase`*@
+﻿@inherits LayoutComponentBase
 
 <div class="bb-page">
 
@@ -14,7 +14,7 @@
 
         <article class="content px-4">
             <div class="py-2">
-                @*Add `@Body` here*@
+                @Body
             </div>
         </article>
     </main>
@@ -22,8 +22,8 @@
 </div>
 
 @code {
-    Sidebar sidebar;
-    IEnumerable<NavItem> navItems;
+    private Sidebar sidebar = default!;
+    private IEnumerable<NavItem> navItems = default!;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
     {
