@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblazorbootstrap=self.webpackChunkblazorbootstrap||[]).push([[2718],{38124:a=>{a.exports=JSON.parse('{"label":"datepicker","permalink":"/blog/tags/datepicker","allTagsPath":"/blog/tags","count":2}')}}]);

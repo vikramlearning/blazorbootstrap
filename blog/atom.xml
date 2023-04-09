@@ -2,11 +2,36 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-03-12T00:00:00.000Z</updated>
+    <updated>2023-04-10T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.7.0]]></title>
+        <id>/2023/04/10/blazorbootstrap-1.7.0</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/04/10/blazorbootstrap-1.7.0"/>
+        <updated>2023-04-10T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.7.0 with new Badge, Collapse, and Accordion components and other updates!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.7.0 with new Badge, Collapse, and Accordion components and other updates!!!</p><img loading="lazy" src="https://i.imgur.com/FkbNpZN.png" alt="Blazor Bootstrap: Accordion Component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's new<a class="hash-link" href="#whats-new" title="Direct link to heading">​</a></h2><ul><li><p><code>Badge</code> component</p><ul><li>Background colors</li><li>Pill badges</li><li>Buttons</li><li>Positioned</li><li>Generic indicator</li></ul></li><li><p><code>Collapse</code> component</p><ul><li>Horizontal collapse</li><li><strong>Call back events:</strong> OnShowing, OnShown, OnHiding, and OnHidden</li></ul></li><li><p><code>Accordion</code> component</p><ul><li>Title with Icon</li><li>Flush</li><li>Set default active accordion item</li><li>Always open</li><li>Activate individual accordion items</li><li><strong>Call back events:</strong> OnShowing, OnShown, OnHiding, and OnHidden</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Buttons</code> component<ul><li>Disable and enable state dynamically <a href="https://github.com/vikramlearning/blazorbootstrap/issues/172" target="_blank" rel="noopener noreferrer">#172</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="documentation">Documentation<a class="hash-link" href="#documentation" title="Direct link to heading">​</a></h2><ul><li>Layout setup docs<ul><li>Layout Setup - Blazor WebAssembly</li><li>Layout Setup - Blazor Server</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/badge" target="_blank" rel="noopener noreferrer">Blazor Badge Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/collapse" target="_blank" rel="noopener noreferrer">Blazor Collapse Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/accordion" target="_blank" rel="noopener noreferrer">Blazor Accordion Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/buttons" target="_blank" rel="noopener noreferrer">Blazor Buttons Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/layout/blazor-webassembly" target="_blank" rel="noopener noreferrer">Layout Setup - Blazor WebAssembly Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/layout/blazor-server" target="_blank" rel="noopener noreferrer">Layout Setup - Blazor Server Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.7.0" term="v1.7.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="badge" term="badge"/>
+        <category label="blazorbadge" term="blazorbadge"/>
+        <category label="collapse" term="collapse"/>
+        <category label="blazorcollapse" term="blazorcollapse"/>
+        <category label="accordion" term="accordion"/>
+        <category label="blazoraccordion" term="blazoraccordion"/>
+        <category label="button" term="button"/>
+        <category label="blazorbutton" term="blazorbutton"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.6.0]]></title>
         <id>/2023/03/12/blazorbootstrap-1.6.0</id>

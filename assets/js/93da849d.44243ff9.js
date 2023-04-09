@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblazorbootstrap=self.webpackChunkblazorbootstrap||[]).push([[5683],{80457:a=>{a.exports=JSON.parse('{"label":"blazor-grid-sorting","permalink":"/blog/tags/blazor-grid-sorting","allTagsPath":"/blog/tags","count":1}')}}]);

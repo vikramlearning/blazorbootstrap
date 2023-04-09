@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkblazorbootstrap=self.webpackChunkblazorbootstrap||[]).push([[2571],{1985:a=>{a.exports=JSON.parse('{"label":"confirm dialog","permalink":"/blog/tags/confirm-dialog","allTagsPath":"/blog/tags","count":1}')}}]);
