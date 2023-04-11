@@ -216,44 +216,67 @@ public partial class GridColumn<TItem> : BaseComponent
                 // th > span "title", span > i "icon"
                 var seq = 0;
                 builder.OpenElement(seq, "th");
-                if (this.CanSort())
-                {
-                    seq++;
-                    builder.AddAttribute(seq, "role", "button");
-                    seq++;
-                    builder.AddAttribute(seq, "onclick", async () => await OnSortClickAsync());
-                }
-                if (this.HeaderTextAlignment != Alignment.None)
-                {
-                    seq++;
-                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
-                }
-                seq++;
-                builder.OpenElement(seq, "span");
-                seq++;
-                builder.AddAttribute(seq, "class", "me-2");
-                seq++;
-                builder.AddContent(seq, HeaderText);
-                seq++;
-                builder.CloseElement(); // close: span
 
-                if (this.CanSort() && currentSortDirection != SortDirection.None)
+                if (this.AllowSelection)
                 {
+                    seq++;
+                    builder.AddAttribute(seq, "style", "width: 2rem;");
+                    seq++;
+                    builder.OpenElement(seq, "div");
+                    seq++;
+                    builder.AddAttribute(seq, "class", "form-check");
+                    seq++;
+                    builder.OpenElement(seq, "input");
+                    seq++;
+                    builder.AddAttribute(seq, "class", "form-check-input");
+                    seq++;
+                    builder.AddAttribute(seq, "type", "checkbox");
+
+                    builder.CloseElement(); // close: input
+
+                    builder.CloseElement(); // close: div
+                }
+                else
+                {
+                    if (this.CanSort())
+                    {
+                        seq++;
+                        builder.AddAttribute(seq, "role", "button");
+                        seq++;
+                        builder.AddAttribute(seq, "onclick", async () => await OnSortClickAsync());
+                    }
+                    if (this.HeaderTextAlignment != Alignment.None)
+                    {
+                        seq++;
+                        builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
+                    }
                     seq++;
                     builder.OpenElement(seq, "span");
                     seq++;
-                    builder.OpenElement(seq, "i");
+                    builder.AddAttribute(seq, "class", "me-2");
                     seq++;
-
-                    var sortIcon = ""; // TODO: Add Parameter for this
-                    if (currentSortDirection == SortDirection.Ascending)
-                        sortIcon = "bi bi-sort-alpha-down";
-                    else if (currentSortDirection == SortDirection.Descending)
-                        sortIcon = "bi bi-sort-alpha-down-alt";
-
-                    builder.AddAttribute(seq, "class", sortIcon);
-                    builder.CloseElement(); // close: i
+                    builder.AddContent(seq, HeaderText);
+                    seq++;
                     builder.CloseElement(); // close: span
+
+                    if (this.CanSort() && currentSortDirection != SortDirection.None)
+                    {
+                        seq++;
+                        builder.OpenElement(seq, "span");
+                        seq++;
+                        builder.OpenElement(seq, "i");
+                        seq++;
+
+                        var sortIcon = ""; // TODO: Add Parameter for this
+                        if (currentSortDirection == SortDirection.Ascending)
+                            sortIcon = "bi bi-sort-alpha-down";
+                        else if (currentSortDirection == SortDirection.Descending)
+                            sortIcon = "bi bi-sort-alpha-down-alt";
+
+                        builder.AddAttribute(seq, "class", sortIcon);
+                        builder.CloseElement(); // close: i
+                        builder.CloseElement(); // close: span
+                    }
                 }
 
                 builder.CloseElement(); // close: th
@@ -281,7 +304,7 @@ public partial class GridColumn<TItem> : BaseComponent
 
                 // custom column class
                 var columnClass = ColumnClass?.Invoke(rowData) ?? "";
-                if(!string.IsNullOrWhiteSpace(columnClass))
+                if (!string.IsNullOrWhiteSpace(columnClass))
                     classList.Add(columnClass);
 
                 if (classList.Any())
@@ -293,6 +316,8 @@ public partial class GridColumn<TItem> : BaseComponent
             });
         }
     }
+
+    internal RenderFragment<TItem> EditTemplate { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the header text alignment.
@@ -318,6 +343,8 @@ public partial class GridColumn<TItem> : BaseComponent
     /// Gets or sets the column class.
     /// </summary>
     [Parameter] public Func<TItem, string>? ColumnClass { get; set; }
+
+    internal bool AllowSelection { get; set; }
 
     #endregion Properties
 }

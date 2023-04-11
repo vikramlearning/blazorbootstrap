@@ -25,7 +25,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private object? lastAssignedDataOrDataProvider;
 
-    private CancellationTokenSource cancellationTokenSource;
+    private CancellationTokenSource cancellationTokenSource = default!;
 
     #endregion Members
 
@@ -34,6 +34,11 @@ public partial class Grid<TItem> : BaseComponent
     protected override void OnInitialized()
     {
         this.pageSize = this.PageSize;
+
+        if (this.AllowSelection)
+        {
+            columns.Add(new GridColumn<TItem> { AllowSelection = true });
+        }
 
         base.OnInitialized();
     }
@@ -321,6 +326,10 @@ public partial class Grid<TItem> : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
+    [Parameter] public int AllowDelete { get; set; }
+
+    [Parameter] public int AllowEdit { get; set; }
+
     /// <summary>
     /// Gets or sets the grid filtering.
     /// </summary>
@@ -331,6 +340,8 @@ public partial class Grid<TItem> : BaseComponent
     /// </summary>
     [Parameter] public bool AllowPaging { get; set; }
 
+    [Parameter] public bool AllowSelection { get; set; }
+
     /// <summary>
     /// Gets or sets the grid sorting.
     /// </summary>
@@ -339,18 +350,18 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Specifies the content to be rendered inside the grid.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the grid data.
     /// </summary>
-    [Parameter] public IEnumerable<TItem> Data { get; set; }
+    [Parameter] public IEnumerable<TItem> Data { get; set; } = default!;
 
     /// <summary>
     /// DataProvider is for items to render. 
     /// The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
     /// </summary>
-    [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
+    [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; } = default!;
 
     /// <summary>
     /// Shows text on no records.
@@ -360,7 +371,7 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Template to render when there are no rows to display.
     /// </summary>
-    public RenderFragment EmptyDataTemplate { get; set; }
+    public RenderFragment EmptyDataTemplate { get; set; } = default!;
 
     /// <summary>
     /// This event is fired when the grid state is changed.
@@ -391,7 +402,7 @@ public partial class Grid<TItem> : BaseComponent
     /// Settings is for grid to render. 
     /// The provider should always return an instance of 'GridSettings', and 'null' is not allowed.
     /// </summary>
-    [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; }
+    [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
 
     #endregion Properties
 }
