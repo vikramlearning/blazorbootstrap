@@ -12,6 +12,14 @@
         <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
             <thead>
                 <tr>
+                    @if (AllowSelection)
+                    {
+                        <th style="width: 2rem;">
+                            <div class="form-check">
+                                        <input @ref="headerCheckboxRef" class="form-check-input" type="checkbox" id="@headerCheckboxId" role="button" @onchange="OnHeaderCheckboxChange">
+                            </div>
+                        </th>
+                    }
                     @foreach (var column in columns)
                     {
                         @column.HeaderTemplate
@@ -54,7 +62,10 @@
                 {
                     // show empty
                     <tr>
-                        <td colspan="@columns.Count">
+                        @{
+                            var columnCount = this.AllowSelection ? columns.Count + 1 : columns.Count;
+                        }
+                        <td colspan="@columnCount">
                             @if (EmptyDataTemplate == null)
                             {
                                 <div class="text-center text-secondary my-5">
@@ -79,20 +90,18 @@
                         {
                             var rowClass = RowClass?.Invoke(item) ?? "";
                             <tr @key="item?.GetHashCode()" class="@rowClass">
+                                @if (AllowSelection)
+                                {
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" role="button" @onchange="OnRowCheckboxChange">
+                                        </div>
+                                    </td>
+                                }
+
                                 @foreach (var column in columns)
                                 {
-                                    @if (column.AllowSelection)
-                                    {
-                                        <td>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="">
-                                            </div>
-                                        </td>
-                                    }
-                                    else
-                                    {
-                                        @column.CellTemplate(item)
-                                    }
+                                    @column.CellTemplate(item)
                                 }
                             </tr>
                         }

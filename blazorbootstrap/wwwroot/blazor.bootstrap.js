@@ -156,6 +156,16 @@ window.blazorBootstrap = {
             return nextSelectedIndex;
         }
     },
+    checkbox: {
+        setState: (elementRef, state) => {
+            if (state === 1) // checked
+                elementRef.indeterminate = false;
+            else if (state === 2) // unchecked
+                elementRef.indeterminate = false;
+            else if (state === 3) // indeterminate 
+                elementRef.indeterminate = true;
+        }
+    },
     collapse: {
         initialize: (elementId, parent, toggle, dotNetHelper) => {
             let collapseEl = document.getElementById(elementId);

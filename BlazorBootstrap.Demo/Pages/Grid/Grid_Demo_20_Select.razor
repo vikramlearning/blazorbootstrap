@@ -24,13 +24,8 @@
 </Grid>
 
 @code {
-    Grid<Employee1> grid;
-    private IEnumerable<Employee1> employees;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-    }
+    Grid<Employee1> grid = default!;
+    private IEnumerable<Employee1> employees = default!;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {

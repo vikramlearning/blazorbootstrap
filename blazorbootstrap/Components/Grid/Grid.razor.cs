@@ -27,18 +27,22 @@ public partial class Grid<TItem> : BaseComponent
 
     private CancellationTokenSource cancellationTokenSource = default!;
 
+
+    private CheckboxState headerCheckboxState = CheckboxState.Unchecked;
+
+    private string headerCheckboxId = default!;
+
+    private ElementReference headerCheckboxRef;
+
     #endregion Members
 
     #region Methods
 
     protected override void OnInitialized()
     {
-        this.pageSize = this.PageSize;
+        headerCheckboxId = IdGenerator.Generate;
 
-        if (this.AllowSelection)
-        {
-            columns.Add(new GridColumn<TItem> { AllowSelection = true });
-        }
+        this.pageSize = this.PageSize;
 
         base.OnInitialized();
     }
@@ -77,6 +81,22 @@ public partial class Grid<TItem> : BaseComponent
     internal void AddColumn(GridColumn<TItem> column)
     {
         columns.Add(column);
+    }
+
+    private void OnHeaderCheckboxChange(ChangeEventArgs args)
+    {
+        Console.WriteLine($"OnHeaderCheckboxChange: args={args.Value}");
+    }
+
+    private async Task OnRowCheckboxChange(ChangeEventArgs args)
+    {
+        Console.WriteLine($"CheckboxChange: args={args.Value}");
+        await SetCheckboxStateAsync();
+    }
+
+    private async Task SetCheckboxStateAsync()
+    {
+        await JS.InvokeVoidAsync("window.blazorBootstrap.checkbox.setState", headerCheckboxRef, (int)CheckboxState.Indeterminate);
     }
 
     /// <summary>
