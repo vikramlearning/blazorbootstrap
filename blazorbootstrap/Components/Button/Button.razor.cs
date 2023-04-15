@@ -195,10 +195,11 @@ public partial class Button : BaseComponent
             if (Attributes.TryGetValue("aria-disabled", out _))
                 Attributes.Remove("aria-disabled");
 
-            if (this.Disabled && !Attributes.TryGetValue("disabled", out _))
-                Attributes.Add("disabled", "disabled");
-            else if (!this.Disabled && Attributes.TryGetValue("disabled", out _))
-                Attributes.Remove("disabled");
+            // NOTE: This is handled in .razor page - #182
+            //if (this.Disabled && !Attributes.TryGetValue("disabled", out _))
+            //    Attributes.Add("disabled", "disabled");
+            //else if (!this.Disabled && Attributes.TryGetValue("disabled", out _))
+            //    Attributes.Remove("disabled");
 
             if (this.TabIndex is not null && !Attributes.TryGetValue("tabindex", out _))
                 Attributes.Add("tabindex", TabIndex);
