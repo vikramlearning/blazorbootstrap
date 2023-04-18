@@ -18,7 +18,7 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     #region Members
 
-    private DotNetObjectReference<AutoComplete<TItem>> objRef;
+    private DotNetObjectReference<AutoComplete<TItem>> objRef = default!;
 
     private FieldIdentifier fieldIdentifier;
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
@@ -30,15 +30,15 @@ public partial class AutoComplete<TItem> : BaseComponent
     private TItem? selectedItem;
     private int selectedIndex = -1;
     private bool disabled;
-    private Button closeButton;
+    private Button closeButton = default!;
     private ElementReference list; // ul element reference
 
     /// <summary>
     /// Gets selected item.
     /// </summary>
-    public TItem SelectedItem => selectedItem;
+    public TItem SelectedItem => selectedItem = default!;
 
-    private CancellationTokenSource cancellationTokenSource;
+    private CancellationTokenSource cancellationTokenSource = default!;
 
     #endregion Members
 
@@ -55,11 +55,13 @@ public partial class AutoComplete<TItem> : BaseComponent
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-
         Attributes ??= new Dictionary<string, object>();
-
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
         this.disabled = this.Disabled;
+
+        // check the default value is assigned.
+        if (Value is not null && Value.Length > 0)
+            SetInputHasValue();
 
         await base.OnInitializedAsync();
 
@@ -311,7 +313,7 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [CascadingParameter] private EditContext EditContext { get; set; }
+    [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
     /// DataProvider is for items to render. 
@@ -349,9 +351,9 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// </summary>
     [Parameter] public StringFilterOperator StringFilterOperator { get; set; } = StringFilterOperator.Contains;
 
-    [Parameter] public string Value { get; set; }
+    [Parameter] public string Value { get; set; } = default!;
 
-    [Parameter] public Expression<Func<string?>> ValueExpression { get; set; }
+    [Parameter] public Expression<Func<string?>> ValueExpression { get; set; } = default!;
 
     #endregion Properties
 }
