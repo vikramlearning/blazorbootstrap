@@ -4,10 +4,27 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Mon, 10 Apr 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 19 Apr 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.7.1]]></title>
+            <link>https://getblazorbootstrap.com/blog/2023/04/19/blazorbootstrap-1.7.1</link>
+            <guid>/2023/04/19/blazorbootstrap-1.7.1</guid>
+            <pubDate>Wed, 19 Apr 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.7.1 with Auto complete and Buttons updates!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.7.1 with Auto complete and Buttons updates!!!</p><img loading="lazy" src="https://i.imgur.com/gRcdvc0.png" alt="Blazor Bootstrap: Accordion Component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><p><code>Auto Complete</code> component</p><ul><li>Show Autocomplete reset button when default value set <a href="https://github.com/vikramlearning/blazorbootstrap/issues/183" target="_blank" rel="noopener noreferrer">#183</a></li></ul></li><li><p><code>Buttons</code> component</p><ul><li>Button Disabled parameter doesn't work properly on first render in Tabs / Modal <a href="https://github.com/vikramlearning/blazorbootstrap/issues/182" target="_blank" rel="noopener noreferrer">#182</a></li></ul><p><code>CSS</code></p><ul><li>A CSS rule could be more targeted to not interfere with others <a href="https://github.com/vikramlearning/blazorbootstrap/issues/184" target="_blank" rel="noopener noreferrer">#184</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/autocomplete" target="_blank" rel="noopener noreferrer">Blazor Auto Complete Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/buttons" target="_blank" rel="noopener noreferrer">Blazor Buttons Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.7.1</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>autocomplete</category>
+            <category>blazorautocomplete</category>
+            <category>buttons</category>
+            <category>blazorbuttons</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.7.0]]></title>
             <link>https://getblazorbootstrap.com/blog/2023/04/10/blazorbootstrap-1.7.0</link>
