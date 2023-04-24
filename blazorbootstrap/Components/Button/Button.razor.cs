@@ -34,6 +34,8 @@ public partial class Button : BaseComponent
 
     private bool setButtonAttributesAgain = false;
 
+    private bool isFirstRenderComplete = false;
+
     #endregion
 
     #region Methods
@@ -69,67 +71,81 @@ public partial class Button : BaseComponent
 
         base.OnInitialized();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
+        if (!string.IsNullOrWhiteSpace(this.TooltipTitle))
+        {
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            isFirstRenderComplete = true;
+
+        base.OnAfterRender(firstRender);
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (previousDisabled != Disabled)
+        if (isFirstRenderComplete)
         {
-            previousDisabled = Disabled;
-            setButtonAttributesAgain = true;
-        }
+            if (previousDisabled != Disabled)
+            {
+                previousDisabled = Disabled;
+                setButtonAttributesAgain = true;
+            }
 
-        if (previousActive != Active)
-        {
-            previousActive = Active;
-            setButtonAttributesAgain = true;
-        }
+            if (previousActive != Active)
+            {
+                previousActive = Active;
+                setButtonAttributesAgain = true;
+            }
 
-        if (previousType != Type)
-        {
-            previousType = Type;
-            setButtonAttributesAgain = true;
-        }
+            if (previousType != Type)
+            {
+                previousType = Type;
+                setButtonAttributesAgain = true;
+            }
 
-        if (previousTarget != Target)
-        {
-            previousTarget = Target;
-            setButtonAttributesAgain = true;
-        }
+            if (previousTarget != Target)
+            {
+                previousTarget = Target;
+                setButtonAttributesAgain = true;
+            }
 
-        if (previousTabIndex != TabIndex)
-        {
-            previousTabIndex = TabIndex;
-            setButtonAttributesAgain = true;
-        }
+            if (previousTabIndex != TabIndex)
+            {
+                previousTabIndex = TabIndex;
+                setButtonAttributesAgain = true;
+            }
 
-        if (setButtonAttributesAgain)
-        {
-            SetAttributes();
-            setButtonAttributesAgain = false;
-        }
+            if (setButtonAttributesAgain)
+            {
+                SetAttributes();
+                setButtonAttributesAgain = false;
+            }
 
-        // additional scenario
-        if (!Disabled && previousTooltipTitle != TooltipTitle)
-        {
-            previousTooltipTitle = TooltipTitle;
-
-            if (Attributes is not null && Attributes.TryGetValue("title", out _))
-                Attributes["title"] = TooltipTitle;
-
-            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementId);
-            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementId);
-        }
-        else if (Disabled)
-        {
-            if (previousTooltipTitle != TooltipTitle)
+            // additional scenario
+            if (!Disabled && previousTooltipTitle != TooltipTitle)
+            {
                 previousTooltipTitle = TooltipTitle;
 
-            if (Attributes is not null && Attributes.TryGetValue("title", out _))
-            {
-                Attributes.Remove("title");
+                if (Attributes is not null && Attributes.TryGetValue("title", out _))
+                    Attributes["title"] = TooltipTitle;
+
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementId);
+                await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementId);
+            }
+            else if (Disabled)
+            {
+                if (previousTooltipTitle != TooltipTitle)
+                    previousTooltipTitle = TooltipTitle;
+
+                if (Attributes is not null && Attributes.TryGetValue("title", out _))
+                {
+                    Attributes.Remove("title");
+                    await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementId);
+                }
             }
         }
     }
