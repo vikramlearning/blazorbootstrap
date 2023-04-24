@@ -2,11 +2,31 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-04-19T00:00:00.000Z</updated>
+    <updated>2023-04-24T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.7.2]]></title>
+        <id>/2023/04/24/blazorbootstrap-1.7.2</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/04/24/blazorbootstrap-1.7.2"/>
+        <updated>2023-04-24T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.7.2 with Currency Input updates!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.7.2 with Currency Input updates!!!</p><img loading="lazy" src="https://i.imgur.com/mihpoXk.png" alt="Blazor Bootstrap: Currency Input Component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Currency Input</code> component<ul><li>CurrencyInput InvalidOperationException <a href="https://github.com/vikramlearning/blazorbootstrap/issues/192" target="_blank" rel="noopener noreferrer">#192</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/currency-input" target="_blank" rel="noopener noreferrer">Blazor Currency Input Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.7.2" term="v1.7.2"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="currency" term="currency"/>
+        <category label="currencyinput" term="currencyinput"/>
+        <category label="blazorcurrencyinput" term="blazorcurrencyinput"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.7.1]]></title>
         <id>/2023/04/19/blazorbootstrap-1.7.1</id>
