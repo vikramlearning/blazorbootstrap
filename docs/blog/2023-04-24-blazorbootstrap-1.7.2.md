@@ -1,5 +1,5 @@
 ---
-title: Blazor Bootstrap v1.7.1
+title: Blazor Bootstrap v1.7.2
 authors:
   name: Vikram Reddy
   title: Creator
