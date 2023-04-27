@@ -73,7 +73,7 @@ public partial class Button : BaseComponent
 
         if (!string.IsNullOrWhiteSpace(this.TooltipTitle))
         {
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementId); });
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef); });
         }
     }
 
@@ -133,8 +133,8 @@ public partial class Button : BaseComponent
                 if (Attributes is not null && Attributes.TryGetValue("title", out _))
                     Attributes["title"] = TooltipTitle;
 
-                await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementId);
-                await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementId);
+                await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
+                await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
             }
             else if (Disabled)
             {
@@ -144,7 +144,7 @@ public partial class Button : BaseComponent
                 if (Attributes is not null && Attributes.TryGetValue("title", out _))
                 {
                     Attributes.Remove("title");
-                    await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementId);
+                    await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
                 }
             }
         }
