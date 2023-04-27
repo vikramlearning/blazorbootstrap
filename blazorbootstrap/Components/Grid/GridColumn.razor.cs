@@ -269,7 +269,12 @@ public partial class GridColumn<TItem> : BaseComponent
                         builder.CloseElement(); // close: span
                     }
                 }
-                builder.AddContent(seq, HeaderContent);
+                else
+                {
+                    // If headercontent is used, filters and sorting wont be added.
+                    builder.AddContent(seq, HeaderContent);
+                }
+
                 builder.CloseElement(); // close: th
             });
         }
