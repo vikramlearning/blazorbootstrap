@@ -44,13 +44,14 @@ public partial class Grid<TItem> : BaseComponent
     {
         if (isFirstRenderComplete)
         {
+            if (Data is null && DataProvider is null)
+                throw new InvalidOperationException($"Grid requires one of {nameof(Data)} or {nameof(DataProvider)}, but both were not specified.");
+
             if (Data is not null && DataProvider is not null)
-            {
                 throw new InvalidOperationException($"Grid requires one of {nameof(Data)} or {nameof(DataProvider)}, but both were specified.");
-            }
 
             // Perform a re-query only if the data source or something else has changed
-            var newDataOrDataProvider = Data ?? (object?)DataProvider;
+            var newDataOrDataProvider = Data; //?? (object?)DataProvider;
             var dataSourceHasChanged = newDataOrDataProvider != lastAssignedDataOrDataProvider;
             if (dataSourceHasChanged)
             {
