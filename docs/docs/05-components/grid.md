@@ -1476,7 +1476,7 @@ In the below example, we use `<HeaderContent>` and `<ChildContent>` tags to defi
 
 <img src="https://i.imgur.com/yeTbaNT.png" alt="Blazor Bootstrap: Grid Component - Custom column headers" />
 
-```cshtml {} showLineNumbers
+```cshtml {23-29} showLineNumbers
 <Grid TItem="Employee1"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
@@ -1509,7 +1509,7 @@ In the below example, we use `<HeaderContent>` and `<ChildContent>` tags to defi
 
 </Grid>
 ```
-```cs {} showLineNumbers
+```cs {4-8} showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
 
@@ -1518,6 +1518,7 @@ In the below example, we use `<HeaderContent>` and `<ChildContent>` tags to defi
         get => employees.All(e => e.IsActive);
         set => Array.ForEach(employees.ToArray(), e => e.IsActive = value);
     }
+
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
         if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
