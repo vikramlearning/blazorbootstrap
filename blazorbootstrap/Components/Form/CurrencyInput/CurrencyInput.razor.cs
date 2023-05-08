@@ -21,11 +21,11 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     private bool disabled;
 
-    private string formattedValue;
+    private string formattedValue = default!;
 
-    private bool isFirstRender = true;
+    private bool isFirstRenderComplete = false;
 
-    private CultureInfo cultureInfo;
+    private CultureInfo cultureInfo = default!;
 
     #endregion
 
@@ -101,6 +101,8 @@ public partial class CurrencyInput<TValue> : BaseComponent
             await SetFormattedValueAsync();
 
             await InvokeAsync(StateHasChanged);
+
+            isFirstRenderComplete = true;
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -108,7 +110,8 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
     protected override async Task OnParametersSetAsync()
     {
-        await SetFormattedValueAsync();
+        if (isFirstRenderComplete)
+            await SetFormattedValueAsync();
 
         await base.OnParametersSetAsync();
     }
@@ -359,7 +362,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
         }
 
         options.CurrencySign = CurrencySign == CurrencySign.Accounting ? "accounting" : "standard";
-        
+
         options.MinimumIntegerDigits = MinimumIntegerDigits;
 
         if (isFloatingNumber())
@@ -370,7 +373,8 @@ public partial class CurrencyInput<TValue> : BaseComponent
             if (MaximumFractionDigits.HasValue)
                 options.MaximumFractionDigits = MaximumFractionDigits.Value;
         }
-        else {
+        else
+        {
             options.MinimumFractionDigits = 0;
             options.MaximumFractionDigits = 0;
         }
@@ -402,7 +406,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// </summary>
     [Parameter] public bool Disabled { get; set; }
 
-    [CascadingParameter] private EditContext EditContext { get; set; }
+    [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
     /// Determines whether to restrict the user input to Min and Max range.
@@ -424,7 +428,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// Gets or sets the max.
     /// Max ignored if EnableMinMax="false".
     /// </summary>
-    [Parameter] public TValue Max { get; set; }
+    [Parameter] public TValue Max { get; set; } = default!;
 
     /// <summary>
     /// The maximum number of fraction digits to use.
@@ -435,7 +439,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// Gets or sets the min.
     /// Min ignored if EnableMinMax="false".
     /// </summary>
-    [Parameter] public TValue Min { get; set; }
+    [Parameter] public TValue Min { get; set; } = default!;
 
     /// <summary>
     /// The minimum number of fraction digits to use.
@@ -461,9 +465,9 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
-    [Parameter] public TValue Value { get; set; }
+    [Parameter] public TValue Value { get; set; } = default!;
 
-    [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; }
+    [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

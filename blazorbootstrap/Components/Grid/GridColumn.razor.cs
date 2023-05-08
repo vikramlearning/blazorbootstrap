@@ -4,9 +4,9 @@ public partial class GridColumn<TItem>
 {
     #region Members
 
-    private RenderFragment headerTemplate = default!;
+    private RenderFragment? headerTemplate;
 
-    private RenderFragment<TItem> cellTemplate = default!;
+    private RenderFragment<TItem>? cellTemplate;
 
     private FilterOperator filterOperator;
 
@@ -208,6 +208,14 @@ public partial class GridColumn<TItem>
     /// </summary>
     [Parameter] public RenderFragment<TItem> ChildContent { get; set; } = default!;
 
+    /// <summary>
+    /// Specifies the content to be rendered inside the grid column header.
+    /// </summary>
+    [Parameter] public RenderFragment HeaderContent { get; set; }
+    
+    /// <summary>
+    /// Header template.
+    /// </summary>
     internal RenderFragment HeaderTemplate
     {
         get
@@ -217,52 +225,64 @@ public partial class GridColumn<TItem>
                 // th > span "title", span > i "icon"
                 var seq = 0;
                 builder.OpenElement(seq, "th");
+                if (HeaderContent is null)
+                {
+                    if (this.CanSort())
+                    {
+                        seq++;
+                        builder.AddAttribute(seq, "role", "button");
+                        seq++;
+                        builder.AddAttribute(seq, "onclick", async () => await OnSortClickAsync());
+                    }
 
-                if (this.CanSort())
-                {
-                    seq++;
-                    builder.AddAttribute(seq, "role", "button");
-                    seq++;
-                    builder.AddAttribute(seq, "onclick", async () => await OnSortClickAsync());
-                }
-                if (this.HeaderTextAlignment != Alignment.None)
-                {
-                    seq++;
-                    builder.AddAttribute(seq, "class", BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
-                }
-                seq++;
-                builder.OpenElement(seq, "span");
-                seq++;
-                builder.AddAttribute(seq, "class", "me-2");
-                seq++;
-                builder.AddContent(seq, HeaderText);
-                seq++;
-                builder.CloseElement(); // close: span
+                    if (this.HeaderTextAlignment != Alignment.None)
+                    {
+                        seq++;
+                        builder.AddAttribute(seq, "class",
+                            BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
+                    }
 
-                if (this.CanSort() && currentSortDirection != SortDirection.None)
-                {
                     seq++;
                     builder.OpenElement(seq, "span");
                     seq++;
-                    builder.OpenElement(seq, "i");
+                    builder.AddAttribute(seq, "class", "me-2");
                     seq++;
-
-                    var sortIcon = ""; // TODO: Add Parameter for this
-                    if (currentSortDirection == SortDirection.Ascending)
-                        sortIcon = "bi bi-sort-alpha-down";
-                    else if (currentSortDirection == SortDirection.Descending)
-                        sortIcon = "bi bi-sort-alpha-down-alt";
-
-                    builder.AddAttribute(seq, "class", sortIcon);
-                    builder.CloseElement(); // close: i
+                    builder.AddContent(seq, HeaderText);
+                    seq++;
                     builder.CloseElement(); // close: span
+
+                    if (this.CanSort() && currentSortDirection != SortDirection.None)
+                    {
+                        seq++;
+                        builder.OpenElement(seq, "span");
+                        seq++;
+                        builder.OpenElement(seq, "i");
+                        seq++;
+
+                        var sortIcon = ""; // TODO: Add Parameter for this
+                        if (currentSortDirection == SortDirection.Ascending)
+                            sortIcon = "bi bi-sort-alpha-down";
+                        else if (currentSortDirection == SortDirection.Descending)
+                            sortIcon = "bi bi-sort-alpha-down-alt";
+
+                        builder.AddAttribute(seq, "class", sortIcon);
+                        builder.CloseElement(); // close: i
+                        builder.CloseElement(); // close: span
+                    }
+                }
+                else
+                {
+                    // If headercontent is used, filters and sorting wont be added.
+                    builder.AddContent(seq, HeaderContent);
                 }
 
                 builder.CloseElement(); // close: th
             });
         }
     }
-
+    /// <summary>
+    /// Cell template.
+    /// </summary>
     internal RenderFragment<TItem> CellTemplate
     {
         get

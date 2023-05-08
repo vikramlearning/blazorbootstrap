@@ -189,9 +189,9 @@
     width: var(--bb-offcanvas-horizontal-width-lg);
 }
 
-/* grid */
-table button.dropdown-toggle::after {
-    content: none;
+/* grid - filters */
+table button.dropdown-toggle.bb-grid-filter::after {
+    content: none !important;
 }
 
 .filter-symbol {

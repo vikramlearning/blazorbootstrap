@@ -34,6 +34,8 @@ public partial class Grid<TItem> : BaseComponent
 
     private ElementReference headerCheckboxRef;
 
+    private bool isFirstRenderComplete = false;
+
     #endregion Members
 
     #region Methods
@@ -49,32 +51,40 @@ public partial class Grid<TItem> : BaseComponent
 
     protected override Task OnParametersSetAsync()
     {
-        if (Data is not null && DataProvider is not null)
+        if (isFirstRenderComplete)
         {
-            throw new InvalidOperationException($"Grid requires one of {nameof(Data)} or {nameof(DataProvider)}, but both were specified.");
+            if (Data is null && DataProvider is null)
+                throw new InvalidOperationException($"Grid requires one of {nameof(Data)} or {nameof(DataProvider)}, but both were not specified.");
+
+            if (Data is not null && DataProvider is not null)
+                throw new InvalidOperationException($"Grid requires one of {nameof(Data)} or {nameof(DataProvider)}, but both were specified.");
+
+            // Perform a re-query only if the data source or something else has changed
+            var newDataOrDataProvider = Data; //?? (object?)DataProvider;
+            var dataSourceHasChanged = newDataOrDataProvider != lastAssignedDataOrDataProvider;
+            if (dataSourceHasChanged)
+            {
+                lastAssignedDataOrDataProvider = newDataOrDataProvider;
+            }
+
+            var mustRefreshData = dataSourceHasChanged && !GridSettingsChanged.HasDelegate;
+
+            // We want to trigger the first data load when we've collected the initial set of columns
+            // because they might perform some action, like setting the default sort order. 
+            // It would be wasteful to have to re-query immediately.
+            return (columns.Count > 0 && mustRefreshData) ? RefreshDataAsync(false, default) : Task.CompletedTask;
         }
 
-        // Perform a re-query only if the data source or something else has changed
-        var newDataOrDataProvider = Data ?? (object?)DataProvider;
-        var dataSourceHasChanged = newDataOrDataProvider != lastAssignedDataOrDataProvider;
-        if (dataSourceHasChanged)
-        {
-            lastAssignedDataOrDataProvider = newDataOrDataProvider;
-        }
-
-        var mustRefreshData = dataSourceHasChanged && !GridSettingsChanged.HasDelegate;
-
-        // We want to trigger the first data load when we've collected the initial set of columns
-        // because they might perform some action, like setting the default sort order. 
-        // It would be wasteful to have to re-query immediately.
-        return (columns.Count > 0 && mustRefreshData) ? RefreshDataAsync(false, default) : Task.CompletedTask;
+        return base.OnParametersSetAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
+        {
             await RefreshDataAsync(firstRender);
-
+            isFirstRenderComplete = true;
+        }
         await base.OnAfterRenderAsync(firstRender);
     }
 

@@ -484,16 +484,14 @@ window.blazorBootstrap = {
         }
     },
     tooltip: {
-        initialize: (elementId) => {
-            let tooltipEl = document.getElementById(elementId);
-            bootstrap?.Tooltip?.getOrCreateInstance(tooltipEl);
+        initialize: (elementRef) => {
+            bootstrap?.Tooltip?.getOrCreateInstance(elementRef);
         },
-        update: (elementId) => {
-            let tooltipEl = document.getElementById(elementId);
-            bootstrap?.Tooltip?.getOrCreateInstance(tooltipEl)?.update();
+        update: (elementRef) => {
+            bootstrap?.Tooltip?.getOrCreateInstance(elementRef)?.update();
         },
-        dispose: (elementId) => {
-            bootstrap?.Tooltip?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
+        dispose: (elementRef) => {
+            bootstrap?.Tooltip?.getOrCreateInstance(elementRef)?.dispose();
         }
     },
     // global function

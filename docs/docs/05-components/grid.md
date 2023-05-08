@@ -53,6 +53,7 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 | FilterOperator | enum | Assigned based on the property type. | | Gets or sets the filter operator. | 1.0.0 |
 | FilterTextboxWidth | int | | | Gets or sets the filter textbox width in pixels. | 1.0.0 |
 | FilterValue | string | | | Gets or sets the filter value. | 1.0.0 |
+| HeaderContent | RenderFragment | | | Specifies the content to be rendered inside the grid column header. | 1.7.3 |
 | HeaderText | string | | ✔️ | Gets or sets the table column header. | 1.0.0 |
 | HeaderTextAlignment | enum | `Alignment.Start` | | Gets or sets the header text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
 | IsDefaultSortColumn | bool | false | | Gets or sets the default sort column. | 1.0.0 |
@@ -1468,3 +1469,81 @@ In the below example, we applied `table-danger` CSS class to the Active column w
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/grid#conditional-css-class-for-grid-column)
+
+### Custom column headers
+
+In the below example, we use `<HeaderContent>` and `<ChildContent>` tags to define custom column header and cell content. When defining header content, filters and sorting are removed from column.
+
+<img src="https://i.imgur.com/yeTbaNT.png" alt="Blazor Bootstrap: Grid Component - Custom column headers" />
+
+```cshtml {23-29} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      PageSize="5"
+      AllowSorting="true"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" PropertyName="IsActive" Filterable="false" Sortable="false">
+      <HeaderContent>
+        <Switch @bind-Value="IsAllChecked"/>
+      </HeaderContent>
+      <ChildContent>
+        <Switch @bind-Value="@context.IsActive"/>
+      </ChildContent>
+    </GridColumn>
+
+</Grid>
+```
+```cs {4-8} showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees;
+
+    private bool IsAllChecked
+    {
+        get => employees.All(e => e.IsActive);
+        set => Array.ForEach(employees.ToArray(), e => e.IsActive = value);
+    }
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
+            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
+        };
+    }
+}
+```
