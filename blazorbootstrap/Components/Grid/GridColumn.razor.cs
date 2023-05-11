@@ -116,7 +116,7 @@ public partial class GridColumn<TItem>
         if (SortKeySelector == null && string.IsNullOrWhiteSpace(this.SortString))
             yield break;
 
-        yield return new SortingItem<TItem>(this.SortString, this.SortKeySelector, this.currentSortDirection);
+        yield return new SortingItem<TItem>(this.SortString, this.SortKeySelector!, this.currentSortDirection);
     }
 
     private async Task OnSortClickAsync()
@@ -211,8 +211,8 @@ public partial class GridColumn<TItem>
     /// <summary>
     /// Specifies the content to be rendered inside the grid column header.
     /// </summary>
-    [Parameter] public RenderFragment HeaderContent { get; set; }
-    
+    [Parameter] public RenderFragment HeaderContent { get; set; } = default!;
+
     /// <summary>
     /// Header template.
     /// </summary>
@@ -280,6 +280,7 @@ public partial class GridColumn<TItem>
             });
         }
     }
+
     /// <summary>
     /// Cell template.
     /// </summary>
@@ -315,8 +316,6 @@ public partial class GridColumn<TItem>
             });
         }
     }
-
-    internal RenderFragment<TItem> EditTemplate { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the header text alignment.

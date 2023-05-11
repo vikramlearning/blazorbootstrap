@@ -211,85 +211,6 @@ window.blazorBootstrap = {
                 bodyEl[0].style['overflow'] = 'auto';
         }
     },
-    modal: {
-        initialize: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {
-            let modalEl = document.getElementById(elementId);
-
-            modalEl.addEventListener('show.bs.modal', function () {
-                dotNetHelper.invokeMethodAsync('bsShowModal');
-            });
-            modalEl.addEventListener('shown.bs.modal', function () {
-                dotNetHelper.invokeMethodAsync('bsShownModal');
-            });
-            modalEl.addEventListener('hide.bs.modal', function () {
-                dotNetHelper.invokeMethodAsync('bsHideModal');
-            });
-            modalEl.addEventListener('hidden.bs.modal', function () {
-                dotNetHelper.invokeMethodAsync('bsHiddenModal');
-            });
-            modalEl.addEventListener('hidePrevented.bs.modal', function () {
-                dotNetHelper.invokeMethodAsync('bsHidePreventedModal');
-            });
-
-            let options = { backdrop: useStaticBackdrop ? 'static' : true, keyboard: closeOnEscape };
-            bootstrap?.Modal?.getOrCreateInstance(modalEl, options);
-        },
-        show: (elementId) => {
-            bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.show();
-        },
-        hide: (elementId) => {
-            bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.hide();
-        },
-        dispose: (elementId) => {
-            bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
-        }
-    },
-    numberInput: {
-        initialize: (elementId, isFloat, allowNegativeNumbers) => {
-            let numberEl = document.getElementById(elementId);
-
-            numberEl?.addEventListener('keydown', function (event) {
-                let invalidChars = ["e", "E", "+"];
-                if (!isFloat)
-                    invalidChars.push("."); // restrict '.' for integer types
-
-                if (!allowNegativeNumbers) {
-                    invalidChars.push("-"); // restrict '-'
-                }
-
-                if (invalidChars.includes(event.key))
-                    event.preventDefault();
-            });
-
-            numberEl?.addEventListener('beforeinput', function (event) {
-                if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
-
-                    if (!allowNegativeNumbers) {
-                        // restrict 'e', 'E', '+', '-'
-                        if (isFloat && /[\e\E\+\-]/gi.test(event.data)) {
-                            event.preventDefault();
-                        }
-                        // restrict 'e', 'E', '.', '+', '-'
-                        else if (!isFloat && /[\e\E\.\+\-]/gi.test(event.data)) {
-                            event.preventDefault();
-                        }
-                    }
-                    // restrict 'e', 'E', '+'
-                    else if (isFloat && /[\e\E\+]/gi.test(event.data)) {
-                        event.preventDefault();
-                    }
-                    // restrict 'e', 'E', '.', '+'
-                    else if (!isFloat && /[\e\E\.\+]/gi.test(event.data)) {
-                        event.preventDefault();
-                    }
-
-                }
-            });
-        },
-        setValue: (elementId, value) => {
-            document.getElementById(elementId).value = value;
-        }
-    },
     currencyInput: {
         initialize: (elementId, isFloat, allowNegativeNumbers) => {
             let currencyEl = document.getElementById(elementId);
@@ -381,6 +302,85 @@ window.blazorBootstrap = {
 
             let _date = new Date(extractedValue);
             return _date.toLocaleDateString();
+        },
+        setValue: (elementId, value) => {
+            document.getElementById(elementId).value = value;
+        }
+    },
+    modal: {
+        initialize: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {
+            let modalEl = document.getElementById(elementId);
+
+            modalEl.addEventListener('show.bs.modal', function () {
+                dotNetHelper.invokeMethodAsync('bsShowModal');
+            });
+            modalEl.addEventListener('shown.bs.modal', function () {
+                dotNetHelper.invokeMethodAsync('bsShownModal');
+            });
+            modalEl.addEventListener('hide.bs.modal', function () {
+                dotNetHelper.invokeMethodAsync('bsHideModal');
+            });
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                dotNetHelper.invokeMethodAsync('bsHiddenModal');
+            });
+            modalEl.addEventListener('hidePrevented.bs.modal', function () {
+                dotNetHelper.invokeMethodAsync('bsHidePreventedModal');
+            });
+
+            let options = { backdrop: useStaticBackdrop ? 'static' : true, keyboard: closeOnEscape };
+            bootstrap?.Modal?.getOrCreateInstance(modalEl, options);
+        },
+        show: (elementId) => {
+            bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.show();
+        },
+        hide: (elementId) => {
+            bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.hide();
+        },
+        dispose: (elementId) => {
+            bootstrap?.Modal?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
+        }
+    },
+    numberInput: {
+        initialize: (elementId, isFloat, allowNegativeNumbers) => {
+            let numberEl = document.getElementById(elementId);
+
+            numberEl?.addEventListener('keydown', function (event) {
+                let invalidChars = ["e", "E", "+"];
+                if (!isFloat)
+                    invalidChars.push("."); // restrict '.' for integer types
+
+                if (!allowNegativeNumbers) {
+                    invalidChars.push("-"); // restrict '-'
+                }
+
+                if (invalidChars.includes(event.key))
+                    event.preventDefault();
+            });
+
+            numberEl?.addEventListener('beforeinput', function (event) {
+                if (event.inputType === 'insertFromPaste' || event.inputType === 'insertFromDrop') {
+
+                    if (!allowNegativeNumbers) {
+                        // restrict 'e', 'E', '+', '-'
+                        if (isFloat && /[\e\E\+\-]/gi.test(event.data)) {
+                            event.preventDefault();
+                        }
+                        // restrict 'e', 'E', '.', '+', '-'
+                        else if (!isFloat && /[\e\E\.\+\-]/gi.test(event.data)) {
+                            event.preventDefault();
+                        }
+                    }
+                    // restrict 'e', 'E', '+'
+                    else if (isFloat && /[\e\E\+]/gi.test(event.data)) {
+                        event.preventDefault();
+                    }
+                    // restrict 'e', 'E', '.', '+'
+                    else if (!isFloat && /[\e\E\.\+]/gi.test(event.data)) {
+                        event.preventDefault();
+                    }
+
+                }
+            });
         },
         setValue: (elementId, value) => {
             document.getElementById(elementId).value = value;

@@ -4,6 +4,10 @@ public partial class Grid<TItem> : BaseComponent
 {
     #region Members
 
+    private RenderFragment? headerSelectionTemplate;
+
+    private RenderFragment<TItem>? cellSelectionTemplate;
+
     /// <summary>
     /// Current grid state (filters, paging, sorting).
     /// </summary>
@@ -26,7 +30,6 @@ public partial class Grid<TItem> : BaseComponent
     private object? lastAssignedDataOrDataProvider;
 
     private CancellationTokenSource cancellationTokenSource = default!;
-
 
     private CheckboxState headerCheckboxState = CheckboxState.Unchecked;
 
@@ -433,6 +436,86 @@ public partial class Grid<TItem> : BaseComponent
     /// The provider should always return an instance of 'GridSettings', and 'null' is not allowed.
     /// </summary>
     [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
+
+    /// <summary>
+    /// Header selection template.
+    /// </summary>
+    internal RenderFragment HeaderSelectionTemplate
+    {
+        get
+        {
+            return headerSelectionTemplate ??= (builder =>
+            {
+                // th "style" > div "class" > input
+                var seq = 0;
+                builder.OpenElement(seq, "th");
+                seq++;
+                builder.AddAttribute(seq, "style", "width: 2rem;");
+
+                seq++;
+                builder.OpenElement(seq, "div");
+                seq++;
+                builder.AddAttribute(seq, "class", "form-check");
+
+                seq++;
+                builder.OpenElement(seq, "input");
+                //seq++;
+                //builder.AddAttribute(seq, "ref", "headerCheckboxRef");
+                seq++;
+                builder.AddAttribute(seq, "class", "form-check-input");
+                seq++;
+                builder.AddAttribute(seq, "type", "checkbox");
+                seq++;
+                builder.AddAttribute(seq, "role", "button");
+                seq++;
+                builder.AddAttribute(seq, "onchange", OnHeaderCheckboxChange);
+
+                builder.CloseElement(); // close: input
+
+                builder.CloseElement(); // close: div
+
+                builder.CloseElement(); // close: th
+            });
+        }
+    }
+
+    /// <summary>
+    /// Cell selection template.
+    /// </summary>
+    internal RenderFragment<TItem> CellSelectionTemplate
+    {
+        get
+        {
+            return cellSelectionTemplate ??= (rowData => builder =>
+            {
+                // td > div "class" > input
+                var seq = 0;
+                builder.OpenElement(seq, "td");
+
+                seq++;
+                builder.OpenElement(seq, "div");
+                seq++;
+                builder.AddAttribute(seq, "class", "form-check");
+
+                seq++;
+                builder.OpenElement(seq, "input");
+                seq++;
+                builder.AddAttribute(seq, "class", "form-check-input");
+                seq++;
+                builder.AddAttribute(seq, "type", "checkbox");
+                seq++;
+                builder.AddAttribute(seq, "role", "button");
+                seq++;
+                builder.AddAttribute(seq, "onchange", OnRowCheckboxChange);
+
+                builder.CloseElement(); // close: input
+
+                builder.CloseElement(); // close: div
+
+                builder.CloseElement(); // close: th
+            });
+        }
+    }
 
     #endregion Properties
 }
