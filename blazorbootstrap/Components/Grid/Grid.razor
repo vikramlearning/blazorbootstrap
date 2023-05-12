@@ -14,11 +14,6 @@
                 <tr>
                     @if (AllowSelection)
                     {
-                        @*<th style="width: 2rem;">
-                            <div class="form-check">
-                                <input @ref="headerCheckboxRef" class="form-check-input" type="checkbox" id="@headerCheckboxId" role="button" @onchange="OnHeaderCheckboxChange">
-                            </div>
-                        </th>*@
                         @HeaderSelectionTemplate
                     }
                     @foreach (var column in columns)
@@ -93,11 +88,6 @@
                             <tr @key="item?.GetHashCode()" class="@rowClass">
                                 @if (AllowSelection)
                                 {
-                                    @*<td>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" role="button" @onchange="OnRowCheckboxChange">
-                                        </div>
-                                    </td>*@
                                     @RowSelectionTemplate(item)
                                 }
 

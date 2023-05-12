@@ -19,8 +19,6 @@ public partial class Grid<TItem> : BaseComponent
 
     private HashSet<TItem> selectedItems = new HashSet<TItem>();
 
-    public int SelectedItemsCount = 0;
-
     private int pageSize;
 
     private int? totalCount = null;
@@ -40,6 +38,10 @@ public partial class Grid<TItem> : BaseComponent
     private string headerCheckboxId = default!;
 
     private ElementReference headerCheckboxRef;
+
+    public int SelectedItemsCount = 0;
+
+    public bool allItemsSelected = false;
 
     private bool isFirstRenderComplete = false;
 
@@ -100,33 +102,32 @@ public partial class Grid<TItem> : BaseComponent
         columns.Add(column);
     }
 
-    private void OnHeaderCheckboxChange(ChangeEventArgs args)
+    private void OnHeaderCheckboxChanged(ChangeEventArgs args)
     {
-        Console.WriteLine($"OnHeaderCheckboxChange: args={args.Value}");
+        Console.WriteLine($"OnHeaderCheckboxChanged: args={args.Value}");
     }
 
-    private async Task OnRowCheckboxChange(TItem item, ChangeEventArgs args)
+    private async Task OnRowCheckboxChanged(TItem item, ChangeEventArgs args)
     {
-        Console.WriteLine($"CheckboxChange: args={args.Value}");
-        if (bool.TryParse(args?.Value?.ToString(), out bool checkboxState) && checkboxState)
-            _ = selectedItems.Add(item);
-        else
-            _ = selectedItems.Remove(item);
+        _ = bool.TryParse(args?.Value?.ToString(), out bool checkboxState) && checkboxState
+            ? selectedItems.Add(item)
+            : selectedItems.Remove(item);
 
         SelectedItemsCount = selectedItems.Count;
 
-        Console.WriteLine($"SelectedItemsCount: {SelectedItemsCount}");
+        allItemsSelected = SelectedItemsCount == items.Count;
 
-        await SetCheckboxStateAsync();
-
-        //await InvokeAsync(StateHasChanged);
-
-        StateHasChanged();
+        if (allItemsSelected)
+            await SetHeaderCheckboxStateAsync(CheckboxState.Checked);
+        else if (SelectedItemsCount == 0)
+            await SetHeaderCheckboxStateAsync(CheckboxState.Unchecked);
+        else
+            await SetHeaderCheckboxStateAsync(CheckboxState.Indeterminate);
     }
 
-    private async Task SetCheckboxStateAsync()
+    private async Task SetHeaderCheckboxStateAsync(CheckboxState checkboxState)
     {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.checkbox.setState", headerCheckboxRef, (int)CheckboxState.Indeterminate);
+        await JS.InvokeVoidAsync("window.blazorBootstrap.checkbox.setState", headerCheckboxRef, (int)checkboxState);
     }
 
     /// <summary>
@@ -476,8 +477,6 @@ public partial class Grid<TItem> : BaseComponent
 
                 seq++;
                 builder.OpenElement(seq, "input");
-                //seq++;
-                //builder.AddAttribute(seq, "ref", "headerCheckboxRef");
                 seq++;
                 builder.AddAttribute(seq, "class", "form-check-input");
                 seq++;
@@ -485,7 +484,11 @@ public partial class Grid<TItem> : BaseComponent
                 seq++;
                 builder.AddAttribute(seq, "role", "button");
                 seq++;
-                builder.AddAttribute(seq, "onchange", OnHeaderCheckboxChange);
+                builder.AddAttribute(seq, "onchange", OnHeaderCheckboxChanged);
+                seq++;
+                builder.AddEventStopPropagationAttribute(seq, "onclick", true);
+                seq++;
+                builder.AddElementReferenceCapture(seq, elementRef => headerCheckboxRef = elementRef); // Note: keep this statement last
 
                 builder.CloseElement(); // close: input
 
@@ -524,15 +527,22 @@ public partial class Grid<TItem> : BaseComponent
                 builder.AddAttribute(seq, "type", "checkbox");
                 seq++;
                 builder.AddAttribute(seq, "role", "button");
-                seq++;
 
                 // disable the checkbox
                 // remove the onchange event binding
                 // add disabled attribute
                 if (DisableRowSelection?.Invoke(rowData) ?? true)
+                {
+                    seq++;
                     builder.AddAttribute(seq, "disabled", "disabled");
+                }
                 else
-                    builder.AddAttribute(seq, "onchange", async (ChangeEventArgs args) => await OnRowCheckboxChange(rowData, args));
+                {
+                    seq++;
+                    builder.AddAttribute(seq, "onchange", async (ChangeEventArgs args) => await OnRowCheckboxChanged(rowData, args));
+                    seq++;
+                    builder.AddEventStopPropagationAttribute(seq, "onclick", true);
+                }
 
                 builder.CloseElement(); // close: input
                 builder.CloseElement(); // close: div

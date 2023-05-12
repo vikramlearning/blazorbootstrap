@@ -158,12 +158,18 @@ window.blazorBootstrap = {
     },
     checkbox: {
         setState: (elementRef, state) => {
-            if (state === 1) // checked
+            if (state === 1) { // checked 
+                elementRef.checked = true;
                 elementRef.indeterminate = false;
-            else if (state === 2) // unchecked
+            }
+            else if (state === 2) { // unchecked
+                elementRef.checked = false;
                 elementRef.indeterminate = false;
-            else if (state === 3) // indeterminate 
+            }
+            else if (state === 3) { // indeterminate 
+                elementRef.checked = false;
                 elementRef.indeterminate = true;
+            }
         }
     },
     collapse: {
