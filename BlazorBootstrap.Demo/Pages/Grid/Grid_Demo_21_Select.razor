@@ -1,9 +1,9 @@
-﻿<Grid @ref="grid1"
-      TItem="Employee1"
+﻿<Grid TItem="Employee1"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
       AllowSelection="true"
       DisableRowSelection="DisableRowSelectionHandler"
+      SelectedItemsChanged="OnSelectedItemsChanged"
       Responsive="true">
 
     <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
@@ -25,19 +25,21 @@
 </Grid>
 
 <div class="mt-3">
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="SetCount">Show Count</Button>
+    Selected Items Count: @selectedEmployees.Count
 </div>
 
 <div class="mt-3">
-    Selected Items Count: @selectedItemCount
+    Selected Employees: 
+    @foreach (var emp in selectedEmployees)
+    {
+        <span class="pe-2">@emp.Name, </span>
+    }
 </div>
 
 @code {
-    Grid<Employee1> grid1 = default!;
-
-    int selectedItemCount = 0;
-
     private IEnumerable<Employee1> employees = default!;
+
+    private HashSet<Employee1> selectedEmployees = new();
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
@@ -65,11 +67,15 @@
         };
     }
 
-    private void SetCount() => selectedItemCount = grid1?.SelectedItemsCount ?? 0;
-
     private bool DisableRowSelectionHandler(Employee1 emp)
     {
         return false;
         //return emp.Id < 105; // disable selection if EmployeeId < 105
+    }
+
+    private async Task OnSelectedItemsChanged(HashSet<Employee1> employees)
+    {
+        selectedEmployees = employees is not null && employees.Any() ? employees : new();
+        await Task.CompletedTask;
     }
 }

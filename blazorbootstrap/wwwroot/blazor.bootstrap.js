@@ -170,6 +170,15 @@ window.blazorBootstrap = {
                 elementRef.checked = false;
                 elementRef.indeterminate = true;
             }
+        },
+        checkUnCheckAll: (cssSelector, isChecked) => {
+            let chkEls = document.querySelectorAll(cssSelector);
+            if (chkEls.length === 0)
+                return;
+
+            chkEls.forEach((ele, index) => {
+                ele.checked = isChecked;
+            });
         }
     },
     collapse: {

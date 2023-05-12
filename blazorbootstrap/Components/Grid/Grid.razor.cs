@@ -6,7 +6,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private RenderFragment? headerSelectionTemplate;
 
-    private RenderFragment<TItem>? rowSelectionTemplate;
+    private RenderFragment<TItem>? childSelectionTemplate;
 
     /// <summary>
     /// Current grid state (filters, paging, sorting).
@@ -102,9 +102,15 @@ public partial class Grid<TItem> : BaseComponent
         columns.Add(column);
     }
 
-    private void OnHeaderCheckboxChanged(ChangeEventArgs args)
+    private async Task OnHeaderCheckboxChanged(ChangeEventArgs args)
     {
-        Console.WriteLine($"OnHeaderCheckboxChanged: args={args.Value}");
+        allItemsSelected = bool.TryParse(args?.Value?.ToString(), out bool checkboxState) && checkboxState;
+        selectedItems = allItemsSelected ? new(items) : new();
+        SelectedItemsCount = selectedItems.Count;
+        await JS.InvokeVoidAsync("window.blazorBootstrap.checkbox.checkUnCheckAll", ".bb-form-check-row > input.form-check-input", allItemsSelected);
+
+        if (SelectedItemsChanged.HasDelegate)
+            await SelectedItemsChanged.InvokeAsync(selectedItems);
     }
 
     private async Task OnRowCheckboxChanged(TItem item, ChangeEventArgs args)
@@ -114,7 +120,6 @@ public partial class Grid<TItem> : BaseComponent
             : selectedItems.Remove(item);
 
         SelectedItemsCount = selectedItems.Count;
-
         allItemsSelected = SelectedItemsCount == items.Count;
 
         if (allItemsSelected)
@@ -123,6 +128,9 @@ public partial class Grid<TItem> : BaseComponent
             await SetHeaderCheckboxStateAsync(CheckboxState.Unchecked);
         else
             await SetHeaderCheckboxStateAsync(CheckboxState.Indeterminate);
+
+        if (SelectedItemsChanged.HasDelegate)
+            await SelectedItemsChanged.InvokeAsync(selectedItems);
     }
 
     private async Task SetHeaderCheckboxStateAsync(CheckboxState checkboxState)
@@ -484,31 +492,32 @@ public partial class Grid<TItem> : BaseComponent
                 seq++;
                 builder.AddAttribute(seq, "role", "button");
                 seq++;
-                builder.AddAttribute(seq, "onchange", OnHeaderCheckboxChanged);
+                builder.AddAttribute(seq, "onchange", async (ChangeEventArgs args) => await OnHeaderCheckboxChanged(args));
                 seq++;
                 builder.AddEventStopPropagationAttribute(seq, "onclick", true);
                 seq++;
                 builder.AddElementReferenceCapture(seq, elementRef => headerCheckboxRef = elementRef); // Note: keep this statement last
 
                 builder.CloseElement(); // close: input
-
                 builder.CloseElement(); // close: div
-
                 builder.CloseElement(); // close: th
             });
         }
     }
 
+    /// <summary>
+    /// Enable/disable the header checkbox.
+    /// </summary>
     [Parameter] public Func<TItem, bool>? DisableHeaderSelection { get; set; }
 
     /// <summary>
-    /// Row selection template.
+    /// Child selection template.
     /// </summary>
-    internal RenderFragment<TItem> RowSelectionTemplate
+    internal RenderFragment<TItem> ChildSelectionTemplate
     {
         get
         {
-            return rowSelectionTemplate ??= (rowData => builder =>
+            return childSelectionTemplate ??= (rowData => builder =>
             {
                 // td > div "class" > input
                 var seq = 0;
@@ -517,7 +526,7 @@ public partial class Grid<TItem> : BaseComponent
                 seq++;
                 builder.OpenElement(seq, "div");
                 seq++;
-                builder.AddAttribute(seq, "class", "form-check");
+                builder.AddAttribute(seq, "class", "form-check bb-form-check-row");
 
                 seq++;
                 builder.OpenElement(seq, "input");
@@ -551,7 +560,15 @@ public partial class Grid<TItem> : BaseComponent
         }
     }
 
+    /// <summary>
+    /// Enable/disable the row level checkbox.
+    /// </summary>
     [Parameter] public Func<TItem, bool>? DisableRowSelection { get; set; }
+
+    /// <summary>
+    /// This event is fired when the items selection changed.
+    /// </summary>
+    [Parameter] public EventCallback<HashSet<TItem>> SelectedItemsChanged { get; set; }
 
     #endregion Properties
 }

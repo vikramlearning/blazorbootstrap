@@ -88,7 +88,7 @@
                             <tr @key="item?.GetHashCode()" class="@rowClass">
                                 @if (AllowSelection)
                                 {
-                                    @RowSelectionTemplate(item)
+                                    @ChildSelectionTemplate(item)
                                 }
 
                                 @foreach (var column in columns)
