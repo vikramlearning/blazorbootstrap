@@ -6,7 +6,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private RenderFragment? headerSelectionTemplate;
 
-    private RenderFragment<TItem>? cellSelectionTemplate;
+    private RenderFragment<TItem>? rowSelectionTemplate;
 
     /// <summary>
     /// Current grid state (filters, paging, sorting).
@@ -19,7 +19,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private HashSet<TItem> selectedItems = new HashSet<TItem>();
 
-    public int SelectedItemsCount => selectedItems?.Count ?? 0;
+    public int SelectedItemsCount = 0;
 
     private int pageSize;
 
@@ -105,10 +105,23 @@ public partial class Grid<TItem> : BaseComponent
         Console.WriteLine($"OnHeaderCheckboxChange: args={args.Value}");
     }
 
-    private async Task OnRowCheckboxChange(ChangeEventArgs args)
+    private async Task OnRowCheckboxChange(TItem item, ChangeEventArgs args)
     {
         Console.WriteLine($"CheckboxChange: args={args.Value}");
+        if (bool.TryParse(args?.Value?.ToString(), out bool checkboxState) && checkboxState)
+            _ = selectedItems.Add(item);
+        else
+            _ = selectedItems.Remove(item);
+
+        SelectedItemsCount = selectedItems.Count;
+
+        Console.WriteLine($"SelectedItemsCount: {SelectedItemsCount}");
+
         await SetCheckboxStateAsync();
+
+        //await InvokeAsync(StateHasChanged);
+
+        StateHasChanged();
     }
 
     private async Task SetCheckboxStateAsync()
@@ -483,14 +496,16 @@ public partial class Grid<TItem> : BaseComponent
         }
     }
 
+    [Parameter] public Func<TItem, bool>? DisableHeaderSelection { get; set; }
+
     /// <summary>
-    /// Cell selection template.
+    /// Row selection template.
     /// </summary>
-    internal RenderFragment<TItem> CellSelectionTemplate
+    internal RenderFragment<TItem> RowSelectionTemplate
     {
         get
         {
-            return cellSelectionTemplate ??= (rowData => builder =>
+            return rowSelectionTemplate ??= (rowData => builder =>
             {
                 // td > div "class" > input
                 var seq = 0;
@@ -510,16 +525,23 @@ public partial class Grid<TItem> : BaseComponent
                 seq++;
                 builder.AddAttribute(seq, "role", "button");
                 seq++;
-                builder.AddAttribute(seq, "onchange", OnRowCheckboxChange);
+
+                // disable the checkbox
+                // remove the onchange event binding
+                // add disabled attribute
+                if (DisableRowSelection?.Invoke(rowData) ?? true)
+                    builder.AddAttribute(seq, "disabled", "disabled");
+                else
+                    builder.AddAttribute(seq, "onchange", async (ChangeEventArgs args) => await OnRowCheckboxChange(rowData, args));
 
                 builder.CloseElement(); // close: input
-
                 builder.CloseElement(); // close: div
-
                 builder.CloseElement(); // close: th
             });
         }
     }
+
+    [Parameter] public Func<TItem, bool>? DisableRowSelection { get; set; }
 
     #endregion Properties
 }
