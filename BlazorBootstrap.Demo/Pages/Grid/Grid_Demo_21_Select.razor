@@ -1,6 +1,6 @@
-﻿<Grid @ref="grid"
+﻿<Grid @ref="grid1"
       TItem="Employee1"
-      Class="table table-hover table-bordered table-striped"
+      Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
       AllowSelection="true"
       Responsive="true">
@@ -23,12 +23,19 @@
 
 </Grid>
 
+<div class="mt-3">
+    Selected Items Count: @(grid1?.SelectedItemsCount ?? 0)
+</div>
+
 @code {
-    Grid<Employee1> grid = default!;
+    Grid<Employee1> grid1 = default!;
+
     private IEnumerable<Employee1> employees = default!;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
+        Console.WriteLine("EmployeesDataProvider called...");
+
         if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
             employees = GetEmployees(); // call a service or an API to pull the employees
 

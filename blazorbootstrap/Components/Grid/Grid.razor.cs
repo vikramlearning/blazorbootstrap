@@ -17,6 +17,10 @@ public partial class Grid<TItem> : BaseComponent
 
     private List<TItem> items = null;
 
+    private HashSet<TItem> selectedItems = new HashSet<TItem>();
+
+    public int SelectedItemsCount => selectedItems?.Count ?? 0;
+
     private int pageSize;
 
     private int? totalCount = null;
