@@ -299,21 +299,25 @@ window.blazorBootstrap = {
     },
     grid: {
         setSelectAllCheckboxState: (elementId, state) => {
+            console.log(`setSelectAllCheckboxState called...`);
             let checkboxEl = document.getElementById(elementId);
-            if (state === 1) { // checked 
-                checkboxEl.checked = true;
-                checkboxEl.indeterminate = false;
-            }
-            else if (state === 2) { // unchecked
-                checkboxEl.checked = false;
-                checkboxEl.indeterminate = false;
-            }
-            else if (state === 3) { // indeterminate 
-                checkboxEl.checked = false;
-                checkboxEl.indeterminate = true;
+            if (checkboxEl) {
+                if (state === 1) { // checked 
+                    checkboxEl.checked = true;
+                    checkboxEl.indeterminate = false;
+                }
+                else if (state === 2) { // unchecked
+                    checkboxEl.checked = false;
+                    checkboxEl.indeterminate = false;
+                }
+                else if (state === 3) { // indeterminate 
+                    checkboxEl.checked = false;
+                    checkboxEl.indeterminate = true;
+                }
             }
         },
         checkOrUnCheckAll: (cssSelector, isChecked) => {
+            console.log(`checkOrUnCheckAll called...`);
             let chkEls = document.querySelectorAll(cssSelector);
             if (chkEls.length === 0)
                 return;

@@ -113,6 +113,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private async Task OnRowCheckboxChanged(string id, TItem item, ChangeEventArgs args)
     {
+        Console.WriteLine($"OnRowCheckboxChanged > Id: {id}");
         bool.TryParse(args?.Value?.ToString(), out bool isChecked);
 
         if (SelectionMode == GridSelectionMode.Multiple)
@@ -143,7 +144,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private async Task CheckOrUnCheckAll()
     {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", ".bb-grid-form-check > input.form-check-input", allItemsSelected);
+        await JS.InvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", $".bb-grid-form-check-{headerCheckboxId} > input.form-check-input", allItemsSelected);
     }
 
     private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState)
@@ -498,9 +499,20 @@ public partial class Grid<TItem> : BaseComponent
                     builder.AddAttribute(106, "class", "form-check-input");
                     builder.AddAttribute(107, "type", "checkbox");
                     builder.AddAttribute(108, "role", "button");
-                    builder.AddAttribute(109, "id", headerCheckboxId);
-                    builder.AddAttribute(110, "onchange", async (ChangeEventArgs args) => await OnHeaderCheckboxChanged(args));
-                    builder.AddEventStopPropagationAttribute(111, "onclick", true);
+
+                    // disable the checkbox
+                    // remove the onchange event binding
+                    // add disabled attribute
+                    if (DisableAllRowsSelection?.Invoke(items) ?? false)
+                    {
+                        builder.AddAttribute(109, "disabled", "disabled");
+                    }
+                    else
+                    {
+                        builder.AddAttribute(110, "id", headerCheckboxId);
+                        builder.AddAttribute(111, "onchange", async (ChangeEventArgs args) => await OnHeaderCheckboxChanged(args));
+                        builder.AddEventStopPropagationAttribute(112, "onclick", true);
+                    }
 
                     builder.CloseElement(); // close: input
                     builder.CloseElement(); // close: div
@@ -514,7 +526,7 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Enable/disable the header checkbox.
     /// </summary>
-    [Parameter] public Func<TItem, bool>? DisableAllRowsSelection { get; set; }
+    [Parameter] public Func<IEnumerable<TItem>, bool>? DisableAllRowsSelection { get; set; }
 
     /// <summary>
     /// Child selection template.
@@ -525,28 +537,29 @@ public partial class Grid<TItem> : BaseComponent
         {
             return childSelectionTemplate ??= (rowData => builder =>
             {
-                var id = IdGenerator.Generate;
                 // td > div "class" > input
                 builder.OpenElement(101, "td");
 
                 builder.OpenElement(102, "div");
-                builder.AddAttribute(103, "class", "form-check bb-grid-form-check");
+                builder.AddAttribute(103, "class", $"form-check bb-grid-form-check-{headerCheckboxId}");
 
                 builder.OpenElement(104, "input");
                 builder.AddAttribute(105, "class", "form-check-input");
                 builder.AddAttribute(106, "type", "checkbox");
                 builder.AddAttribute(107, "role", "button");
-                builder.AddAttribute(108, "id", id);
 
                 // disable the checkbox
                 // remove the onchange event binding
                 // add disabled attribute
-                if (DisableRowSelection?.Invoke(rowData) ?? true)
+                if (DisableRowSelection?.Invoke(rowData) ?? false)
                 {
-                    builder.AddAttribute(109, "disabled", "disabled");
+                    builder.AddAttribute(108, "disabled", "disabled");
                 }
                 else
                 {
+                    var id = IdGenerator.Generate;
+                    Console.WriteLine($"ChildSelectionTemplate > Id: {id}");
+                    builder.AddAttribute(109, "id", id);
                     builder.AddAttribute(110, "onchange", async (ChangeEventArgs args) => await OnRowCheckboxChanged(id, rowData, args));
                     builder.AddEventStopPropagationAttribute(111, "onclick", true);
                 }

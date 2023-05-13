@@ -3,6 +3,7 @@
       DataProvider="EmployeesDataProvider"
       AllowSelection="true"
       SelectionMode="GridSelectionMode.Multiple"
+      DisableAllRowsSelection="DisableAllRowsSelectionHandler"
       DisableRowSelection="DisableRowSelectionHandler"
       SelectedItemsChanged="OnSelectedItemsChanged"
       Responsive="true">
@@ -30,7 +31,7 @@
 </div>
 
 <div class="mt-3">
-    Selected Employees: 
+    Selected Employees:
     @foreach (var emp in selectedEmployees)
     {
         <span class="pe-2">@emp.Name, </span>
@@ -68,15 +69,14 @@
         };
     }
 
+    private bool DisableAllRowsSelectionHandler(IEnumerable<Employee1> employees)
+    {
+        return employees.Any(x => x.Id < 105); // disable selection if EmployeeId < 105
+    }
+
     private bool DisableRowSelectionHandler(Employee1 emp)
     {
-        return false;
-        //return emp.Id < 105; // disable selection if EmployeeId < 105
-
-        // TODO: 
-        // GIVEN    Row selection disabled and `Select all` checkbox is not checked
-        // WHEN     User clicks on `Select all` checkbox
-        // THEN     ??? validate this scenario
+        return emp.Id < 105; // disable selection if EmployeeId < 105
     }
 
     private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
