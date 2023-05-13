@@ -2,6 +2,7 @@
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
       AllowSelection="true"
+      SelectionMode="GridSelectionMode.Multiple"
       DisableRowSelection="DisableRowSelectionHandler"
       SelectedItemsChanged="OnSelectedItemsChanged"
       Responsive="true">
@@ -71,11 +72,16 @@
     {
         return false;
         //return emp.Id < 105; // disable selection if EmployeeId < 105
+
+        // TODO: 
+        // GIVEN    Row selection disabled and `Select all` checkbox is not checked
+        // WHEN     User clicks on `Select all` checkbox
+        // THEN     ??? validate this scenario
     }
 
-    private async Task OnSelectedItemsChanged(HashSet<Employee1> employees)
+    private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
     {
         selectedEmployees = employees is not null && employees.Any() ? employees : new();
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 }

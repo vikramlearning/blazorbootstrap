@@ -156,31 +156,6 @@ window.blazorBootstrap = {
             return nextSelectedIndex;
         }
     },
-    checkbox: {
-        setState: (elementRef, state) => {
-            if (state === 1) { // checked 
-                elementRef.checked = true;
-                elementRef.indeterminate = false;
-            }
-            else if (state === 2) { // unchecked
-                elementRef.checked = false;
-                elementRef.indeterminate = false;
-            }
-            else if (state === 3) { // indeterminate 
-                elementRef.checked = false;
-                elementRef.indeterminate = true;
-            }
-        },
-        checkUnCheckAll: (cssSelector, isChecked) => {
-            let chkEls = document.querySelectorAll(cssSelector);
-            if (chkEls.length === 0)
-                return;
-
-            chkEls.forEach((ele, index) => {
-                ele.checked = isChecked;
-            });
-        }
-    },
     collapse: {
         initialize: (elementId, parent, toggle, dotNetHelper) => {
             let collapseEl = document.getElementById(elementId);
@@ -320,6 +295,32 @@ window.blazorBootstrap = {
         },
         setValue: (elementId, value) => {
             document.getElementById(elementId).value = value;
+        }
+    },
+    grid: {
+        setSelectAllCheckboxState: (elementId, state) => {
+            let checkboxEl = document.getElementById(elementId);
+            if (state === 1) { // checked 
+                checkboxEl.checked = true;
+                checkboxEl.indeterminate = false;
+            }
+            else if (state === 2) { // unchecked
+                checkboxEl.checked = false;
+                checkboxEl.indeterminate = false;
+            }
+            else if (state === 3) { // indeterminate 
+                checkboxEl.checked = false;
+                checkboxEl.indeterminate = true;
+            }
+        },
+        checkOrUnCheckAll: (cssSelector, isChecked) => {
+            let chkEls = document.querySelectorAll(cssSelector);
+            if (chkEls.length === 0)
+                return;
+
+            chkEls.forEach((ele, index) => {
+                ele.checked = isChecked;
+            });
         }
     },
     modal: {

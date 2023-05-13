@@ -223,41 +223,29 @@ public partial class GridColumn<TItem>
             return headerTemplate ??= (builder =>
             {
                 // th > span "title", span > i "icon"
-                var seq = 0;
-                builder.OpenElement(seq, "th");
+                builder.OpenElement(101, "th");
                 if (HeaderContent is null)
                 {
                     if (this.CanSort())
                     {
-                        seq++;
-                        builder.AddAttribute(seq, "role", "button");
-                        seq++;
-                        builder.AddAttribute(seq, "onclick", async () => await OnSortClickAsync());
+                        builder.AddAttribute(102, "role", "button");
+                        builder.AddAttribute(103, "onclick", async () => await OnSortClickAsync());
                     }
 
                     if (this.HeaderTextAlignment != Alignment.None)
                     {
-                        seq++;
-                        builder.AddAttribute(seq, "class",
-                            BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
+                        builder.AddAttribute(104, "class", BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
                     }
 
-                    seq++;
-                    builder.OpenElement(seq, "span");
-                    seq++;
-                    builder.AddAttribute(seq, "class", "me-2");
-                    seq++;
-                    builder.AddContent(seq, HeaderText);
-                    seq++;
+                    builder.OpenElement(105, "span");
+                    builder.AddAttribute(106, "class", "me-2");
+                    builder.AddContent(107, HeaderText);
                     builder.CloseElement(); // close: span
 
                     if (this.CanSort() && currentSortDirection != SortDirection.None)
                     {
-                        seq++;
-                        builder.OpenElement(seq, "span");
-                        seq++;
-                        builder.OpenElement(seq, "i");
-                        seq++;
+                        builder.OpenElement(108, "span");
+                        builder.OpenElement(109, "i");
 
                         var sortIcon = ""; // TODO: Add Parameter for this
                         if (currentSortDirection == SortDirection.Ascending)
@@ -265,7 +253,7 @@ public partial class GridColumn<TItem>
                         else if (currentSortDirection == SortDirection.Descending)
                             sortIcon = "bi bi-sort-alpha-down-alt";
 
-                        builder.AddAttribute(seq, "class", sortIcon);
+                        builder.AddAttribute(110, "class", sortIcon);
                         builder.CloseElement(); // close: i
                         builder.CloseElement(); // close: span
                     }
@@ -273,7 +261,7 @@ public partial class GridColumn<TItem>
                 else
                 {
                     // If headercontent is used, filters and sorting wont be added.
-                    builder.AddContent(seq, HeaderContent);
+                    builder.AddContent(111, HeaderContent);
                 }
 
                 builder.CloseElement(); // close: th
@@ -311,7 +299,6 @@ public partial class GridColumn<TItem>
                     builder.AddAttribute(101, "class", string.Join(" ", classList));
 
                 builder.AddContent(102, ChildContent, rowData);
-
                 builder.CloseElement();
             });
         }
