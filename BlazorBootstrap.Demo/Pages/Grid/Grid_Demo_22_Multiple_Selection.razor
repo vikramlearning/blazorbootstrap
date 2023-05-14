@@ -28,12 +28,14 @@
     Selected Items Count: @selectedEmployees.Count
 </div>
 
-<div class="mt-3">
+<div class="mt-2">
     Selected Employees:
-    @foreach (var emp in selectedEmployees)
-    {
-        <span class="pe-2">@emp.Name, </span>
-    }
+    <ul>
+        @foreach (var emp in selectedEmployees)
+        {
+            <li>@emp.Name</li>
+        }
+    </ul>
 </div>
 
 @code {

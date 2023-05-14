@@ -299,7 +299,6 @@ window.blazorBootstrap = {
     },
     grid: {
         setSelectAllCheckboxState: (elementId, state) => {
-            console.log(`setSelectAllCheckboxState called...`);
             let checkboxEl = document.getElementById(elementId);
             if (checkboxEl) {
                 if (state === 1) { // checked 
@@ -317,7 +316,6 @@ window.blazorBootstrap = {
             }
         },
         checkOrUnCheckAll: (cssSelector, isChecked) => {
-            console.log(`checkOrUnCheckAll called...`);
             let chkEls = document.querySelectorAll(cssSelector);
             if (chkEls.length === 0)
                 return;

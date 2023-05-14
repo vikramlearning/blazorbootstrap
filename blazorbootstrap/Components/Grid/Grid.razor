@@ -82,13 +82,14 @@
                 {
                     if (items != null)
                     {
+                        var rowIndex = 0;
                         foreach (var item in items)
                         {
                             var rowClass = RowClass?.Invoke(item) ?? "";
                             <tr @key="item?.GetHashCode()" class="@rowClass">
                                 @if (AllowSelection)
                                 {
-                                    @ChildSelectionTemplate(item)
+                                    @ChildSelectionTemplate(rowIndex, item)
                                 }
 
                                 @foreach (var column in columns)
@@ -96,6 +97,7 @@
                                     @column.CellTemplate(item)
                                 }
                             </tr>
+                            rowIndex++;
                         }
                     }
                 }
