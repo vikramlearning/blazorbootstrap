@@ -9,7 +9,7 @@
     Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
 </div>
 
-@*<SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
+<SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
 <div>For filtering, <code>AllowFiltering</code> and <code>PropertyName</code> parameters are required.</div>
 <div class="mb-3">Add <code>AllowFiltering="true"</code> parameter to Grid and <code>PropertyName</code> parameter to all the GridColumns.</div>
 <Demo Type="typeof(Grid_Demo_01_A_Client_Side_Filtering)" Tabs="true" />
@@ -128,15 +128,26 @@
 <SectionHeading Size="HeadingSize.H2" Text="Custom column headers" PageUrl="@pageUrl" HashTagName="custom-column-headers" />
 <div class="mb-3">In the below example, we use <code>&lt;HeaderContent&gt;</code> and <code>&lt;ChildContent&gt;</code> tags to define custom column header and cell content. When defining header content, filters and sorting are removed from column.</div>
 <Demo Type="typeof(Grid_Demo_20_Specify_Custom_Column_Header)" Tabs="true" />
-*@
 
 <SectionHeading Size="HeadingSize.H2" Text="Selection" PageUrl="@pageUrl" HashTagName="selection" />
+<div class="mb-3">
+    Set <code>AllowSelection="true"</code> to enable the selection on the <code>Grid</code>.
+    By default, <code>SelectionMode</code> is <b>Single</b>.
+</div>
 <Demo Type="typeof(Grid_Demo_21_Selection)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Multiple Selection" PageUrl="@pageUrl" HashTagName="multiple-selection" />
+<div class="mb-3">
+    To select multiple rows, set <code>SelectionMode="GridSelectionMode.Multiple"</code>.
+</div>
 <Demo Type="typeof(Grid_Demo_22_Multiple_Selection)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Disable Selection" PageUrl="@pageUrl" HashTagName="disable-selection" />
+<div class="mb-3">
+    We can disable the header checkbox or row level checkbox based on a condition. 
+    For this, we have <code>DisableAllRowsSelection</code> and <code>DisableRowSelection</code> delegate parameters. In the below example, we disabled the header checkbox if any of the employee Id is less than 105.
+    Also, disable check the row level checkbox if the employee Id is less than 105.
+</div>
 <Demo Type="typeof(Grid_Demo_23_Disable_Selection)" Tabs="true" />
 
 @code {
