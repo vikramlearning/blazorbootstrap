@@ -16,29 +16,40 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 ## Grid Parameters
 
 | Name | Type | Default | Required | Descritpion | Added Version |
-|--|--|--|--|--|--|
+|:--|:--|:--|:--|:--|:--|
 | AllowFiltering | bool | false | | Gets or sets the grid filtering. | 1.0.0 |
 | AllowPaging | bool | false | | Gets or sets the grid paging. | 1.0.0 |
+| AllowSelection | bool | false | | Gets or sets the grid selection. | 1.8.0 |
 | AllowSorting | bool | false | | Gets or sets the grid sorting. | 1.0.0 |
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid. | 1.0.0 |
-| EmptyDataTemplate | RenderFragment | | ✔️ | Template to render when there are no rows to display. | 1.0.0 |
-| EmptyText | string | No records to display | | Shows text on no records. | 1.0.0 |
 | Data | `IEnumerable<TItem>` | | | Gets or sets the grid data. | 1.4.3 |
 | DataProvider | `GridDataProviderDelegate<TItem>` | | | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | 1.0.0 |
-| GridSettingsChanged | `EventCallback<GridSettings>` | | | This event is fired when the grid state is changed. | 1.0.0 |
+| DisableAllRowsSelection | `Func<IEnumerable<TItem>, bool>?` | | | Enable or disable the header checkbox selection. | 1.8.0 |
+| DisableAllRowsSelection | `Func<TItem, bool>?` | | | Enable or disable the row level checkbox selection. | 1.8.0 |
+| EmptyDataTemplate | RenderFragment | | ✔️ | Template to render when there are no rows to display. | 1.0.0 |
+| EmptyText | string | No records to display | | Shows text on no records. | 1.0.0 |
 | PageSize | int | 10 | | Gets or sets the page size of the grid. | 1.0.0 |
-| PaginationAlignment | enum | `Alignment.Start` | | Gets or sets the pagination alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
+| PaginationAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the pagination alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
 | RowClass | Func<TItem, string>? | | | Gets or sets the row class. | 1.6.0 |
 | Responsive | bool | false | | Gets or sets a value indicating whether Grid is responsive. | 1.0.0 |
+| SelectionMode | `GridSelectionMode` | | | Gets or sets the grid selection mode. | 1.8.0 |
 | SettingsProvider | `GridSettingsProviderDelegate` | | | Settings are for the grid to render. The provider should always return an instance of 'GridSettings', and 'null' is not allowed. | 1.0.0 |
 
 :::note IMPORTANT
 Grid requires either `Data` or `DataProvider` parameter, but not both.
 :::
 
+## Grid Callback Events
+
+
+| Name | Type | Descritpion | Added Version |
+|:--|:--|:--|:--|
+| GridSettingsChanged | `EventCallback<GridSettings>` | This event is fired when the grid state is changed. | 1.0.0 |
+| SelectedItemsChanged | `EventCallback<HashSet<TItem>>` | This event is fired when the items selection changed. | 1.8.0 |
+
 ## Grid Methods
 | Name | Return Type | Description | Added Version |
-|--|--|--|--|
+|:--|:--|:--|:--|
 | GetFilters() | `IEnumerable<FilterItem>` | Get filters. | 1.0.0 |
 | RefreshDataAsync(CancellationToken cancellationToken = default) | Task | Refresh the grid data. | 1.0.0 |
 | ResetPageNumber() | ValueTask | Reset the page number to 1 and refresh the grid. | 1.4.3 |
@@ -46,7 +57,7 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 ## GridColumn Parameters
 
 | Name | Type | Default | Required | Descritpion | Added Version |
-|--|--|--|--|--|--|
+|:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid column. | 1.0.0 |
 | ColumnClass | Func<TItem, string>? | | | Gets or sets the column class. | 1.6.0 |
 | Filterable | bool | true | | Enable or disable the filter on a specific column. The filter is enabled or disabled based on the grid `AllowFiltering` parameter. | 1.0.0 |
@@ -69,7 +80,7 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 ## GridSettings Properties
 
 | Name | Type | Default | Required | Description | Added Version |
-|--|--|--|--|--|--|
+|:--|:--|:--|:--|:--|:--|
 | PageNumber | int | | | Page number. | 1.0.0 |
 | PageSize | int | | | Size of the page. | 1.0.0 |
 | Filters | `IEnumerable<FilterItem>` | | | Current filters. | 1.0.0 |
@@ -1544,6 +1555,279 @@ In the below example, we use `<HeaderContent>` and `<ChildContent>` tags to defi
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
             new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
         };
+    }
+}
+```
+
+### Selection
+Set `AllowSelection="true"` to enable the selection on the Grid. By default, SelectionMode is **Single**.
+
+<img src="https://i.imgur.com/u1lV12d.png" alt="Blazor Bootstrap: Grid Component - Selection" />
+
+```cshtml {4-5} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered"
+      DataProvider="EmployeesDataProvider"
+      AllowSelection="true"
+      SelectedItemsChanged="OnSelectedItemsChanged"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<div class="mt-3">
+    Selected Items Count: @selectedEmployees.Count
+</div>
+
+<div class="mt-2">
+    Selected Employees:
+    <ul>
+        @foreach (var emp in selectedEmployees)
+        {
+            <li>@emp.Name</li>
+        }
+    </ul>
+</div>
+```
+
+```cs {32-36} showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    private HashSet<Employee1> selectedEmployees = new();
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        Console.WriteLine("EmployeesDataProvider called...");
+
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+        };
+    }
+
+    private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
+    {
+        selectedEmployees = employees is not null && employees.Any() ? employees : new();
+        return Task.CompletedTask;
+    }
+}
+```
+
+### Multiple selection
+To select multiple rows, set `SelectionMode="GridSelectionMode.Multiple"`.
+
+<img src="https://i.imgur.com/yzJETf8.png" alt="Blazor Bootstrap: Grid Component - Multiple selection" />
+
+```cshtml {4-6} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered"
+      DataProvider="EmployeesDataProvider"
+      AllowSelection="true"
+      SelectionMode="GridSelectionMode.Multiple"
+      SelectedItemsChanged="OnSelectedItemsChanged"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<div class="mt-3">
+    Selected Items Count: @selectedEmployees.Count
+</div>
+
+<div class="mt-2">
+    Selected Employees:
+    <ul>
+        @foreach (var emp in selectedEmployees)
+        {
+            <li>@emp.Name</li>
+        }
+    </ul>
+</div>
+```
+
+```cs {32-36} showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    private HashSet<Employee1> selectedEmployees = new();
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        Console.WriteLine("EmployeesDataProvider called...");
+
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+        };
+    }
+
+    private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
+    {
+        selectedEmployees = employees is not null && employees.Any() ? employees : new();
+        return Task.CompletedTask;
+    }
+}
+```
+
+### Disable selection
+We can disable the header checkbox or row level checkbox based on a condition. 
+For this, we have `DisableAllRowsSelection` and `DisableRowSelection` delegate parameters. 
+In the below example, we disabled the header checkbox if any of the employee Id is less than 105. 
+Also, disable check the row level checkbox if the employee Id is less than 105.
+
+<img src="https://i.imgur.com/v0x4C16.png" alt="Blazor Bootstrap: Grid Component - Disable selection" />
+
+```cshtml {4-8} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered"
+      DataProvider="EmployeesDataProvider"
+      AllowSelection="true"
+      SelectionMode="GridSelectionMode.Multiple"
+      DisableAllRowsSelection="DisableAllRowsSelectionHandler"
+      DisableRowSelection="DisableRowSelectionHandler"
+      SelectedItemsChanged="OnSelectedItemsChanged"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<div class="mt-3">
+    Selected Items Count: @selectedEmployees.Count
+</div>
+
+<div class="mt-2">
+    Selected Employees:
+    <ul>
+        @foreach (var emp in selectedEmployees)
+        {
+            <li>@emp.Name</li>
+        }
+    </ul>
+</div>
+```
+
+```cs {30-33,35-38,40-44} showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    private HashSet<Employee1> selectedEmployees = new();
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+        };
+    }
+
+    private bool DisableAllRowsSelectionHandler(IEnumerable<Employee1> employees)
+    {
+        return employees.Any(x => x.Id < 105); // disable selection if EmployeeId < 105
+    }
+
+    private bool DisableRowSelectionHandler(Employee1 emp)
+    {
+        return emp.Id < 105; // disable selection if EmployeeId < 105
+    }
+
+    private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
+    {
+        selectedEmployees = employees is not null && employees.Any() ? employees : new();
+        return Task.CompletedTask;
     }
 }
 ```

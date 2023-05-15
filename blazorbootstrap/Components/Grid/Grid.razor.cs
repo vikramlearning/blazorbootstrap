@@ -4,6 +4,8 @@ public partial class Grid<TItem> : BaseComponent
 {
     #region Members
 
+    private RenderFragment? headerSelectionTemplate;
+
     /// <summary>
     /// Current grid state (filters, paging, sorting).
     /// </summary>
@@ -12,6 +14,8 @@ public partial class Grid<TItem> : BaseComponent
     private List<GridColumn<TItem>> columns = new List<GridColumn<TItem>>();
 
     private List<TItem> items = null;
+
+    private HashSet<TItem> selectedItems = new HashSet<TItem>();
 
     private int pageSize;
 
@@ -25,7 +29,17 @@ public partial class Grid<TItem> : BaseComponent
 
     private object? lastAssignedDataOrDataProvider;
 
-    private CancellationTokenSource cancellationTokenSource;
+    private CancellationTokenSource cancellationTokenSource = default!;
+
+    private CheckboxState headerCheckboxState = CheckboxState.Unchecked;
+
+    private string headerCheckboxId = default!;
+
+    private Dictionary<int, string> checkboxIds = new Dictionary<int, string>();
+
+    public int SelectedItemsCount = 0;
+
+    public bool allItemsSelected = false;
 
     private bool isFirstRenderComplete = false;
 
@@ -35,6 +49,8 @@ public partial class Grid<TItem> : BaseComponent
 
     protected override void OnInitialized()
     {
+        headerCheckboxId = IdGenerator.Generate;
+
         this.pageSize = this.PageSize;
 
         base.OnInitialized();
@@ -82,6 +98,57 @@ public partial class Grid<TItem> : BaseComponent
     internal void AddColumn(GridColumn<TItem> column)
     {
         columns.Add(column);
+    }
+
+    private async Task OnHeaderCheckboxChanged(ChangeEventArgs args)
+    {
+        allItemsSelected = bool.TryParse(args?.Value?.ToString(), out bool checkboxState) && checkboxState;
+        selectedItems = allItemsSelected ? new(items) : new();
+        SelectedItemsCount = selectedItems.Count;
+        await CheckOrUnCheckAll();
+
+        if (SelectedItemsChanged.HasDelegate)
+            await SelectedItemsChanged.InvokeAsync(selectedItems);
+    }
+
+    private async Task OnRowCheckboxChanged(string id, TItem item, ChangeEventArgs args)
+    {
+        bool.TryParse(args?.Value?.ToString(), out bool isChecked);
+
+        if (SelectionMode == GridSelectionMode.Multiple)
+        {
+            _ = isChecked ? selectedItems.Add(item) : selectedItems.Remove(item);
+            SelectedItemsCount = selectedItems.Count;
+            allItemsSelected = SelectedItemsCount == items.Count;
+
+            if (allItemsSelected)
+                await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
+            else if (SelectedItemsCount == 0)
+                await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
+            else
+                await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Indeterminate);
+        }
+        else
+        {
+            selectedItems = new() { item };
+            SelectedItemsCount = 1;
+            allItemsSelected = false;
+            await CheckOrUnCheckAll();
+            await SetCheckboxStateAsync(id, isChecked ? CheckboxState.Checked : CheckboxState.Unchecked);
+        }
+
+        if (SelectedItemsChanged.HasDelegate)
+            await SelectedItemsChanged.InvokeAsync(selectedItems);
+    }
+
+    private async Task CheckOrUnCheckAll()
+    {
+        await JS.InvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", $".bb-grid-form-check-{headerCheckboxId} > input.form-check-input", allItemsSelected);
+    }
+
+    private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState)
+    {
+        await JS.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
     }
 
     /// <summary>
@@ -304,6 +371,9 @@ public partial class Grid<TItem> : BaseComponent
             totalCount = 0;
         }
 
+        if (AllowSelection)
+            PrepareCheckboxIds();
+
         requestInProgress = false;
 
         await InvokeAsync(StateHasChanged);
@@ -324,12 +394,76 @@ public partial class Grid<TItem> : BaseComponent
         return GridSettingsChanged.InvokeAsync(settings);
     }
 
+    /// <summary>
+    /// Child selection template.
+    /// </summary>
+    private RenderFragment ChildSelectionTemplate(int rowIndex, TItem rowData)
+    {
+        return builder =>
+        {
+            // td > div "class" > input
+            builder.OpenElement(101, "td");
+
+            builder.OpenElement(102, "div");
+            builder.AddAttribute(103, "class", $"form-check bb-grid-form-check-{headerCheckboxId}");
+
+            builder.OpenElement(104, "input");
+            builder.AddAttribute(105, "class", "form-check-input");
+            builder.AddAttribute(106, "type", "checkbox");
+            builder.AddAttribute(107, "role", "button");
+
+            // disable the checkbox
+            // remove the onchange event binding
+            // add disabled attribute
+            if (DisableRowSelection?.Invoke(rowData) ?? false)
+            {
+                builder.AddAttribute(108, "disabled", "disabled");
+            }
+            else
+            {
+                var id = checkboxIds[rowIndex];
+                builder.AddAttribute(109, "id", id);
+                builder.AddAttribute(110, "onchange", async (ChangeEventArgs args) => await OnRowCheckboxChanged(id, rowData, args));
+                builder.AddEventStopPropagationAttribute(111, "onclick", true);
+            }
+
+            builder.CloseElement(); // close: input
+            builder.CloseElement(); // close: div
+            builder.CloseElement(); // close: th
+        };
+    }
+
+    private void PrepareCheckboxIds()
+    {
+        checkboxIds = checkboxIds ?? new Dictionary<int, string>();
+        var currentLength = checkboxIds.Count;
+        var itemsCount = items.Count;
+        if (currentLength < itemsCount)
+        {
+            var remaining = itemsCount - currentLength;
+            for (int i = currentLength; i < itemsCount; i++)
+            {
+                checkboxIds[i] = IdGenerator.Generate;
+            }
+        }
+    }
+
     #endregion Methods
 
     #region Properties
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
+
+    /// <summary>
+    /// Gets or sets the grid delete.
+    /// </summary>
+    //[Parameter] public int AllowDelete { get; set; }
+
+    /// <summary>
+    /// Gets or sets the grid edit.
+    /// </summary>
+    //[Parameter] public int AllowEdit { get; set; }
 
     /// <summary>
     /// Gets or sets the grid filtering.
@@ -342,6 +476,11 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public bool AllowPaging { get; set; }
 
     /// <summary>
+    /// Gets or sets the grid selection.
+    /// </summary>
+    [Parameter] public bool AllowSelection { get; set; }
+
+    /// <summary>
     /// Gets or sets the grid sorting.
     /// </summary>
     [Parameter] public bool AllowSorting { get; set; }
@@ -349,18 +488,33 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Specifies the content to be rendered inside the grid.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the grid data.
     /// </summary>
-    [Parameter] public IEnumerable<TItem> Data { get; set; }
+    [Parameter] public IEnumerable<TItem> Data { get; set; } = default!;
 
     /// <summary>
     /// DataProvider is for items to render. 
     /// The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
     /// </summary>
-    [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; }
+    [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; } = default!;
+
+    /// <summary>
+    /// Enable or disable the header checkbox selection.
+    /// </summary>
+    [Parameter] public Func<IEnumerable<TItem>, bool>? DisableAllRowsSelection { get; set; }
+
+    /// <summary>
+    /// Enable or disable the row level checkbox selection.
+    /// </summary>
+    [Parameter] public Func<TItem, bool>? DisableRowSelection { get; set; }
+
+    /// <summary>
+    /// Template to render when there are no rows to display.
+    /// </summary>
+    public RenderFragment EmptyDataTemplate { get; set; } = default!;
 
     /// <summary>
     /// Shows text on no records.
@@ -368,19 +522,55 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public string EmptyText { get; set; } = "No records to display";
 
     /// <summary>
-    /// Template to render when there are no rows to display.
-    /// </summary>
-    public RenderFragment EmptyDataTemplate { get; set; }
-
-    /// <summary>
     /// This event is fired when the grid state is changed.
     /// </summary>
     [Parameter] public EventCallback<GridSettings> GridSettingsChanged { get; set; }
 
     /// <summary>
-    /// Gets or sets the pagination alignment.
+    /// Header selection template.
     /// </summary>
-    [Parameter] public Alignment PaginationAlignment { get; set; } = Alignment.Start;
+    private RenderFragment HeaderSelectionTemplate
+    {
+        get
+        {
+            return headerSelectionTemplate ??= (builder =>
+            {
+                // th "style" > div "class" > input
+                builder.OpenElement(101, "th");
+                builder.AddAttribute(102, "style", "width: 2rem;");
+
+                if (SelectionMode == GridSelectionMode.Multiple)
+                {
+                    builder.OpenElement(103, "div");
+                    builder.AddAttribute(104, "class", "form-check");
+
+                    builder.OpenElement(105, "input");
+                    builder.AddAttribute(106, "class", "form-check-input");
+                    builder.AddAttribute(107, "type", "checkbox");
+                    builder.AddAttribute(108, "role", "button");
+
+                    // disable the checkbox
+                    // remove the onchange event binding
+                    // add disabled attribute
+                    if (DisableAllRowsSelection?.Invoke(items) ?? false)
+                    {
+                        builder.AddAttribute(109, "disabled", "disabled");
+                    }
+                    else
+                    {
+                        builder.AddAttribute(110, "id", headerCheckboxId);
+                        builder.AddAttribute(111, "onchange", async (ChangeEventArgs args) => await OnHeaderCheckboxChanged(args));
+                        builder.AddEventStopPropagationAttribute(112, "onclick", true);
+                    }
+
+                    builder.CloseElement(); // close: input
+                    builder.CloseElement(); // close: div
+                }
+
+                builder.CloseElement(); // close: th
+            });
+        }
+    }
 
     /// <summary>
     /// Gets or sets the page size of the grid.
@@ -388,9 +578,9 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public int PageSize { get; set; } = 10;
 
     /// <summary>
-    /// Gets or sets a value indicating whether Grid is responsive.
+    /// Gets or sets the pagination alignment.
     /// </summary>
-    [Parameter] public bool Responsive { get; set; }
+    [Parameter] public Alignment PaginationAlignment { get; set; } = Alignment.Start;
 
     /// <summary>
     /// Gets or sets the row class.
@@ -398,10 +588,25 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public Func<TItem, string>? RowClass { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether Grid is responsive.
+    /// </summary>
+    [Parameter] public bool Responsive { get; set; }
+
+    /// <summary>
+    /// This event is fired when the items selection changed.
+    /// </summary>
+    [Parameter] public EventCallback<HashSet<TItem>> SelectedItemsChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the grid selection mode.
+    /// </summary>
+    [Parameter] public GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.Single;
+
+    /// <summary>
     /// Settings is for grid to render. 
     /// The provider should always return an instance of 'GridSettings', and 'null' is not allowed.
     /// </summary>
-    [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; }
+    [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
 
     #endregion Properties
 }

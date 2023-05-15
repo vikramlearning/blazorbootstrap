@@ -12,6 +12,10 @@
         <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
             <thead>
                 <tr>
+                    @if (AllowSelection)
+                    {
+                        @HeaderSelectionTemplate
+                    }
                     @foreach (var column in columns)
                     {
                         @column.HeaderTemplate
@@ -54,7 +58,10 @@
                 {
                     // show empty
                     <tr>
-                        <td colspan="@columns.Count">
+                        @{
+                            var columnCount = this.AllowSelection ? columns.Count + 1 : columns.Count;
+                        }
+                        <td colspan="@columnCount">
                             @if (EmptyDataTemplate == null)
                             {
                                 <div class="text-center text-secondary my-5">
@@ -75,15 +82,22 @@
                 {
                     if (items != null)
                     {
+                        var rowIndex = 0;
                         foreach (var item in items)
                         {
                             var rowClass = RowClass?.Invoke(item) ?? "";
                             <tr @key="item?.GetHashCode()" class="@rowClass">
+                                @if (AllowSelection)
+                                {
+                                    @ChildSelectionTemplate(rowIndex, item)
+                                }
+
                                 @foreach (var column in columns)
                                 {
                                     @column.CellTemplate(item)
                                 }
                             </tr>
+                            rowIndex++;
                         }
                     }
                 }

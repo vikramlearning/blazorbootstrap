@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class GridColumn<TItem> : BaseComponent
+public partial class GridColumn<TItem>
 {
     #region Members
 
@@ -10,7 +10,7 @@ public partial class GridColumn<TItem> : BaseComponent
 
     private FilterOperator filterOperator;
 
-    private string filterValue;
+    private string filterValue = default!;
 
     internal SortDirection currentSortDirection;
 
@@ -108,14 +108,15 @@ public partial class GridColumn<TItem> : BaseComponent
         }
     }
 
-    internal bool CanSort() => Parent.AllowSorting && this.Sortable && this.SortKeySelector != null;
+    internal bool CanSort()
+        => Parent is not null && Parent.AllowSorting && this.Sortable && this.SortKeySelector is not null;
 
     internal IEnumerable<SortingItem<TItem>> GetSorting()
     {
         if (SortKeySelector == null && string.IsNullOrWhiteSpace(this.SortString))
             yield break;
 
-        yield return new SortingItem<TItem>(this.SortString, this.SortKeySelector, this.currentSortDirection);
+        yield return new SortingItem<TItem>(this.SortString, this.SortKeySelector!, this.currentSortDirection);
     }
 
     private async Task OnSortClickAsync()
@@ -140,18 +141,18 @@ public partial class GridColumn<TItem> : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [CascadingParameter] public Grid<TItem> Parent { get; set; }
+    [CascadingParameter] public Grid<TItem> Parent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the table column header.
     /// </summary>
-    [Parameter] public string HeaderText { get; set; }
+    [Parameter] public string HeaderText { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the property name.
     /// This is required when `AllowFiltering` is true.
     /// </summary>
-    [Parameter] public string PropertyName { get; set; }
+    [Parameter] public string PropertyName { get; set; } = default!;
 
     /// <summary>
     /// Enable or disable the filter on a specific column.
@@ -167,7 +168,7 @@ public partial class GridColumn<TItem> : BaseComponent
     /// <summary>
     /// Gets or sets the filter value.
     /// </summary>
-    [Parameter] public string FilterValue { get; set; }
+    [Parameter] public string FilterValue { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the StringComparison.
@@ -185,12 +186,12 @@ public partial class GridColumn<TItem> : BaseComponent
     /// This value will be passed to the backend/API for sorting. 
     /// And this property is ignored for the client-side sorting.
     /// </summary>
-    [Parameter] public string SortString { get; set; }
+    [Parameter] public string SortString { get; set; } = default!;
 
     /// <summary>
     /// Expression used for sorting.
     /// </summary>
-    [Parameter] public Expression<Func<TItem, IComparable>> SortKeySelector { get; set; }
+    [Parameter] public Expression<Func<TItem, IComparable>> SortKeySelector { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the default sort direction of a column.
@@ -205,13 +206,13 @@ public partial class GridColumn<TItem> : BaseComponent
     /// <summary>
     /// Specifies the content to be rendered inside the grid column.
     /// </summary>
-    [Parameter] public RenderFragment<TItem> ChildContent { get; set; }
+    [Parameter] public RenderFragment<TItem> ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Specifies the content to be rendered inside the grid column header.
     /// </summary>
-    [Parameter] public RenderFragment HeaderContent { get; set; }
-    
+    [Parameter] public RenderFragment HeaderContent { get; set; } = default!;
+
     /// <summary>
     /// Header template.
     /// </summary>
@@ -222,41 +223,29 @@ public partial class GridColumn<TItem> : BaseComponent
             return headerTemplate ??= (builder =>
             {
                 // th > span "title", span > i "icon"
-                var seq = 0;
-                builder.OpenElement(seq, "th");
+                builder.OpenElement(101, "th");
                 if (HeaderContent is null)
                 {
                     if (this.CanSort())
                     {
-                        seq++;
-                        builder.AddAttribute(seq, "role", "button");
-                        seq++;
-                        builder.AddAttribute(seq, "onclick", async () => await OnSortClickAsync());
+                        builder.AddAttribute(102, "role", "button");
+                        builder.AddAttribute(103, "onclick", async () => await OnSortClickAsync());
                     }
 
                     if (this.HeaderTextAlignment != Alignment.None)
                     {
-                        seq++;
-                        builder.AddAttribute(seq, "class",
-                            BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
+                        builder.AddAttribute(104, "class", BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
                     }
 
-                    seq++;
-                    builder.OpenElement(seq, "span");
-                    seq++;
-                    builder.AddAttribute(seq, "class", "me-2");
-                    seq++;
-                    builder.AddContent(seq, HeaderText);
-                    seq++;
+                    builder.OpenElement(105, "span");
+                    builder.AddAttribute(106, "class", "me-2");
+                    builder.AddContent(107, HeaderText);
                     builder.CloseElement(); // close: span
 
                     if (this.CanSort() && currentSortDirection != SortDirection.None)
                     {
-                        seq++;
-                        builder.OpenElement(seq, "span");
-                        seq++;
-                        builder.OpenElement(seq, "i");
-                        seq++;
+                        builder.OpenElement(108, "span");
+                        builder.OpenElement(109, "i");
 
                         var sortIcon = ""; // TODO: Add Parameter for this
                         if (currentSortDirection == SortDirection.Ascending)
@@ -264,7 +253,7 @@ public partial class GridColumn<TItem> : BaseComponent
                         else if (currentSortDirection == SortDirection.Descending)
                             sortIcon = "bi bi-sort-alpha-down-alt";
 
-                        builder.AddAttribute(seq, "class", sortIcon);
+                        builder.AddAttribute(110, "class", sortIcon);
                         builder.CloseElement(); // close: i
                         builder.CloseElement(); // close: span
                     }
@@ -272,13 +261,14 @@ public partial class GridColumn<TItem> : BaseComponent
                 else
                 {
                     // If headercontent is used, filters and sorting wont be added.
-                    builder.AddContent(seq, HeaderContent);
+                    builder.AddContent(111, HeaderContent);
                 }
 
                 builder.CloseElement(); // close: th
             });
         }
     }
+
     /// <summary>
     /// Cell template.
     /// </summary>
@@ -302,14 +292,13 @@ public partial class GridColumn<TItem> : BaseComponent
 
                 // custom column class
                 var columnClass = ColumnClass?.Invoke(rowData) ?? "";
-                if(!string.IsNullOrWhiteSpace(columnClass))
+                if (!string.IsNullOrWhiteSpace(columnClass))
                     classList.Add(columnClass);
 
                 if (classList.Any())
                     builder.AddAttribute(101, "class", string.Join(" ", classList));
 
                 builder.AddContent(102, ChildContent, rowData);
-
                 builder.CloseElement();
             });
         }
@@ -342,4 +331,3 @@ public partial class GridColumn<TItem> : BaseComponent
 
     #endregion Properties
 }
-

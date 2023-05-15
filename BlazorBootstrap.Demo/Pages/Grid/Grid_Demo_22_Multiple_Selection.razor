@@ -1,43 +1,47 @@
 ﻿<Grid TItem="Employee1"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
-      AllowFiltering="true"
-      AllowPaging="true"
-      PageSize="5"
-      AllowSorting="true"
+      AllowSelection="true"
+      SelectionMode="GridSelectionMode.Multiple"
+      SelectedItemsChanged="OnSelectedItemsChanged"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
         @context.Name
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
         @context.Designation
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
         @context.DOJ
     </GridColumn>
-    <GridColumn TItem="Employee1" PropertyName="IsActive" Filterable="false" Sortable="false">
-      <HeaderContent>
-        <Switch @bind-Value="IsAllChecked"/>
-      </HeaderContent>
-      <ChildContent>
-        <Switch @bind-Value="@context.IsActive"/>
-      </ChildContent>
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
     </GridColumn>
 
 </Grid>
 
+<div class="mt-3">
+    Selected Items Count: @selectedEmployees.Count
+</div>
+
+<div class="mt-2">
+    Selected Employees:
+    <ul>
+        @foreach (var emp in selectedEmployees)
+        {
+            <li>@emp.Name</li>
+        }
+    </ul>
+</div>
+
 @code {
     private IEnumerable<Employee1> employees = default!;
 
-    private bool IsAllChecked
-    {
-        get => employees.All(e => e.IsActive);
-        set => Array.ForEach(employees.ToArray(), e => e.IsActive = value);
-    }
+    private HashSet<Employee1> selectedEmployees = new();
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
@@ -60,11 +64,14 @@
             new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
             new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
             new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
-            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
-            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
             new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
-            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
         };
+    }
+
+    private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
+    {
+        selectedEmployees = employees is not null && employees.Any() ? employees : new();
+        return Task.CompletedTask;
     }
 }
