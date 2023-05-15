@@ -58,14 +58,16 @@ public partial class Grid<TItem> : BaseComponent
 
     protected override Task OnParametersSetAsync()
     {
+        if ((Data is null && DataProvider is null) || (Data is not null && DataProvider is not null))
+        {
+            throw new ArgumentException($"Grid requires either {nameof(Data)} or {nameof(DataProvider)}, but not both or neither.");
+        }
+
+        if (AllowPaging && PageSize < 0)
+            throw new ArgumentException($"{nameof(PageSize)} must be greater than zero.");
+
         if (isFirstRenderComplete)
         {
-            if (Data is null && DataProvider is null)
-                throw new InvalidOperationException($"Grid requires one of {nameof(Data)} or {nameof(DataProvider)}, but both were not specified.");
-
-            if (Data is not null && DataProvider is not null)
-                throw new InvalidOperationException($"Grid requires one of {nameof(Data)} or {nameof(DataProvider)}, but both were specified.");
-
             // Perform a re-query only if the data source or something else has changed
             var newDataOrDataProvider = Data; //?? (object?)DataProvider;
             var dataSourceHasChanged = newDataOrDataProvider != lastAssignedDataOrDataProvider;
@@ -75,6 +77,14 @@ public partial class Grid<TItem> : BaseComponent
             }
 
             var mustRefreshData = dataSourceHasChanged && !GridSettingsChanged.HasDelegate;
+
+            // page size changed
+            if (!mustRefreshData && pageSize != PageSize)
+            {
+                mustRefreshData = true;
+                pageSize = PageSize;
+                OnPageSizeChangedAsync(false);
+            }
 
             // We want to trigger the first data load when we've collected the initial set of columns
             // because they might perform some action, like setting the default sort order. 
@@ -212,6 +222,15 @@ public partial class Grid<TItem> : BaseComponent
         gridCurrentState = new GridState<TItem>(newPageNumber, gridCurrentState.Sorting);
         await SaveGridSettingsAsync();
         await RefreshDataAsync(false, default);
+    }
+
+    private async Task OnPageSizeChangedAsync(bool refreshGrid = false)
+    {
+        await ResetPageNumberAsync(false);
+        await SaveGridSettingsAsync();
+
+        if (refreshGrid)
+            await RefreshDataAsync(false, default);
     }
 
     /// <summary>
