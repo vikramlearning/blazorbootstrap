@@ -455,9 +455,15 @@ public partial class Grid<TItem> : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Parameter] public int AllowDelete { get; set; }
+    /// <summary>
+    /// Gets or sets the grid delete.
+    /// </summary>
+    //[Parameter] public int AllowDelete { get; set; }
 
-    [Parameter] public int AllowEdit { get; set; }
+    /// <summary>
+    /// Gets or sets the grid edit.
+    /// </summary>
+    //[Parameter] public int AllowEdit { get; set; }
 
     /// <summary>
     /// Gets or sets the grid filtering.
@@ -469,6 +475,9 @@ public partial class Grid<TItem> : BaseComponent
     /// </summary>
     [Parameter] public bool AllowPaging { get; set; }
 
+    /// <summary>
+    /// Gets or sets the grid selection.
+    /// </summary>
     [Parameter] public bool AllowSelection { get; set; }
 
     /// <summary>
@@ -493,9 +502,14 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public GridDataProviderDelegate<TItem> DataProvider { get; set; } = default!;
 
     /// <summary>
-    /// Shows text on no records.
+    /// Enable or disable the header checkbox selection.
     /// </summary>
-    [Parameter] public string EmptyText { get; set; } = "No records to display";
+    [Parameter] public Func<IEnumerable<TItem>, bool>? DisableAllRowsSelection { get; set; }
+
+    /// <summary>
+    /// Enable or disable the row level checkbox selection.
+    /// </summary>
+    [Parameter] public Func<TItem, bool>? DisableRowSelection { get; set; }
 
     /// <summary>
     /// Template to render when there are no rows to display.
@@ -503,35 +517,14 @@ public partial class Grid<TItem> : BaseComponent
     public RenderFragment EmptyDataTemplate { get; set; } = default!;
 
     /// <summary>
+    /// Shows text on no records.
+    /// </summary>
+    [Parameter] public string EmptyText { get; set; } = "No records to display";
+
+    /// <summary>
     /// This event is fired when the grid state is changed.
     /// </summary>
     [Parameter] public EventCallback<GridSettings> GridSettingsChanged { get; set; }
-
-    /// <summary>
-    /// Gets or sets the pagination alignment.
-    /// </summary>
-    [Parameter] public Alignment PaginationAlignment { get; set; } = Alignment.Start;
-
-    /// <summary>
-    /// Gets or sets the page size of the grid.
-    /// </summary>
-    [Parameter] public int PageSize { get; set; } = 10;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether Grid is responsive.
-    /// </summary>
-    [Parameter] public bool Responsive { get; set; }
-
-    /// <summary>
-    /// Gets or sets the row class.
-    /// </summary>
-    [Parameter] public Func<TItem, string>? RowClass { get; set; }
-
-    /// <summary>
-    /// Settings is for grid to render. 
-    /// The provider should always return an instance of 'GridSettings', and 'null' is not allowed.
-    /// </summary>
-    [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
 
     /// <summary>
     /// Header selection template.
@@ -580,14 +573,24 @@ public partial class Grid<TItem> : BaseComponent
     }
 
     /// <summary>
-    /// Enable/disable the header checkbox.
+    /// Gets or sets the page size of the grid.
     /// </summary>
-    [Parameter] public Func<IEnumerable<TItem>, bool>? DisableAllRowsSelection { get; set; }
+    [Parameter] public int PageSize { get; set; } = 10;
 
     /// <summary>
-    /// Enable/disable the row level checkbox.
+    /// Gets or sets the pagination alignment.
     /// </summary>
-    [Parameter] public Func<TItem, bool>? DisableRowSelection { get; set; }
+    [Parameter] public Alignment PaginationAlignment { get; set; } = Alignment.Start;
+
+    /// <summary>
+    /// Gets or sets the row class.
+    /// </summary>
+    [Parameter] public Func<TItem, string>? RowClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether Grid is responsive.
+    /// </summary>
+    [Parameter] public bool Responsive { get; set; }
 
     /// <summary>
     /// This event is fired when the items selection changed.
@@ -598,6 +601,12 @@ public partial class Grid<TItem> : BaseComponent
     /// Gets or sets the grid selection mode.
     /// </summary>
     [Parameter] public GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.Single;
+
+    /// <summary>
+    /// Settings is for grid to render. 
+    /// The provider should always return an instance of 'GridSettings', and 'null' is not allowed.
+    /// </summary>
+    [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
 
     #endregion Properties
 }
