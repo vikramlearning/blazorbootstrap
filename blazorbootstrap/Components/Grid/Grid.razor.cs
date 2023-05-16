@@ -599,6 +599,7 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Gets or sets the pagination alignment.
     /// </summary>
+    [Obsolete("Aligment support removed from 1.8.0 version onwards")]
     [Parameter] public Alignment PaginationAlignment { get; set; } = Alignment.Start;
 
     /// <summary>

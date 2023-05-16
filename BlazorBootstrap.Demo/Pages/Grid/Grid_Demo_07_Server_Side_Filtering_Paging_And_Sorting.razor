@@ -1,4 +1,12 @@
-﻿<Grid TItem="Customer2" class="table table-hover table-bordered table-striped" DataProvider="CustomersDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
+﻿<Grid TItem="Customer2"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="CustomersDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      PageSize="@pageSize"
+      AllowSorting="true"
+      Responsive="true">
+
     <GridColumn TItem="Customer2" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
         @context.CustomerId
     </GridColumn>
@@ -11,7 +19,7 @@
     <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
         @context.Email
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="120">
+    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
         @context.Address
     </GridColumn>
     <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
@@ -20,13 +28,22 @@
     <GridColumn TItem="Customer2" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
         @context.Country
     </GridColumn>
+
 </Grid>
 
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="async () => await ChangeSize(5)">Grid Size 5</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="async () => await ChangeSize(10)">Grid Size 10</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="async () => await ChangeSize(15)">Grid Size 15</Button>
+
 @code {
+    private int pageSize = 5;
+
     [Inject] public ICustomerService _customerService { get; set; }
 
     private async Task<GridDataProviderResult<Customer2>> CustomersDataProvider(GridDataProviderRequest<Customer2> request)
     {
+        Console.WriteLine("EmployeesDataProvider called...");
+
         string sortString = "";
         SortDirection sortDirection = SortDirection.None;
 
@@ -38,5 +55,11 @@
         }
         var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
         return await Task.FromResult(new GridDataProviderResult<Customer2> { Data = result.Item1, TotalCount = result.Item2 });
+    }
+
+    private async Task ChangeSize(int size)
+    {
+        pageSize = size;
+        Console.WriteLine($"Size={pageSize}");
     }
 }

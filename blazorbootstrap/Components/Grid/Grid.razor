@@ -107,7 +107,7 @@
 
     @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0)
     {
-        <div class="mt-2">
+        <div class="d-flex justify-content-between align-middle mt-2">
             <Pagination ActivePageNumber="@gridCurrentState.PageIndex"
                 TotalPages="@totalPages"
                 PageChanged="OnPageChangedAsync"
@@ -115,7 +115,24 @@
                 PreviousLinkIcon="IconName.ChevronLeft"
                 NextLinkIcon="IconName.ChevronRight"
                 LastLinkIcon="IconName.ChevronDoubleRight"
-                Alignment="@PaginationAlignment" />
+                Alignment="Alignment.Start" />
+
+            <div>
+                <div class="d-flex justify-content-center align-middle">
+                    <div>
+                        <select class="form-select" role="button">
+                            <option>10</option>
+                            <option>20</option>
+                            <option>50</option>
+                        </select>
+                    </div>
+                    <div class="bb-grid-pagination-text">Items per page</div>
+                </div>
+            </div>
+
+            <div class="bb-grid-pagination-text">
+                1 - 10 of 37 items
+            </div>
         </div>
     }
 }
