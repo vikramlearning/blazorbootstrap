@@ -22,6 +22,9 @@ We are excited to release 1.8.0 with Grid updates!!!
 	  - Multiple selection
 	  - Disable selection
 	  - Disable all rows selection
+  - Grid Paging [#196](https://github.com/vikramlearning/blazorbootstrap/issues/196)
+	  - Dynamic Page Size		
+	  - Page Size Selection
 
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)

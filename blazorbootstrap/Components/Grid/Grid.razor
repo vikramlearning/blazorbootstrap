@@ -30,10 +30,10 @@
                                 @if (column.Filterable)
                                 {
                                     <GridColumnFilter PropertyTypeName="@column.GetPropertyTypeName()"
-                                      FilterOperator="@column.FilterOperator"
-                                      FilterValue="@column.FilterValue"
-                                      FilterWidth="@column.FilterTextboxWidth"
-                                      GridColumnFilterChanged="(async (args) => await column.OnFilterChangedAsync(args, column))" />
+                                                      FilterOperator="@column.FilterOperator"
+                                                      FilterValue="@column.FilterValue"
+                                                      FilterWidth="@column.FilterTextboxWidth"
+                                                      GridColumnFilterChanged="(async (args) => await column.OnFilterChangedAsync(args, column))" />
                                 }
                             </th>
                         }
@@ -107,15 +107,36 @@
 
     @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0)
     {
-        <div class="mt-2">
+        <div class="d-flex justify-content-between align-middle mt-2">
             <Pagination ActivePageNumber="@gridCurrentState.PageIndex"
-                TotalPages="@totalPages"
-                PageChanged="OnPageChangedAsync"
-                FirstLinkIcon="IconName.ChevronDoubleLeft"
-                PreviousLinkIcon="IconName.ChevronLeft"
-                NextLinkIcon="IconName.ChevronRight"
-                LastLinkIcon="IconName.ChevronDoubleRight"
-                Alignment="@PaginationAlignment" />
+                        TotalPages="@totalPages"
+                        PageChanged="OnPageChangedAsync"
+                        FirstLinkIcon="IconName.ChevronDoubleLeft"
+                        PreviousLinkIcon="IconName.ChevronLeft"
+                        NextLinkIcon="IconName.ChevronRight"
+                        LastLinkIcon="IconName.ChevronDoubleRight"
+                        Alignment="Alignment.Start" />
+
+            @if (PageSizeSelectorVisible && PageSizeSelectorItems is not null && PageSizeSelectorItems.Any())
+            {
+                <div>
+                    <div class="d-flex justify-content-center align-middle">
+                        <div>
+                            <select class="form-select" role="button" @onchange="OnPageSizeChangedAsync">
+                                @foreach (var i in PageSizeSelectorItems)
+                                {
+                                    <option>@i</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="bb-grid-pagination-text">Items per page</div>
+                    </div>
+                </div>
+            }
+
+            <div class="bb-grid-pagination-text">
+                @paginationItemsText
+            </div>
         </div>
     }
 }

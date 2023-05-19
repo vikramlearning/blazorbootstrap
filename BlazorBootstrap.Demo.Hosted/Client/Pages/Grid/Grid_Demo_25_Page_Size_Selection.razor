@@ -2,7 +2,9 @@
       Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
       AllowPaging="true"
-      PageSize="5"
+      PageSize="10"
+      PageSizeSelectorVisible="true"
+      PageSizeSelectorItems="@(new int[] { 5,10,20 })"
       Responsive="true">
 
     <GridColumn TItem="Employee1" HeaderText="Id">

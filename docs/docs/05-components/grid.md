@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Grid Component
 description: Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
-image: https://i.imgur.com/36RsWZ3.png
+image: https://user-images.githubusercontent.com/2337067/239613340-3917f4fa-a252-4e5e-a3b5-27b83304cbc2.png
 
 sidebar_label: Grid
 sidebar_position: 9
@@ -11,7 +11,7 @@ sidebar_position: 9
 
 Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
 
-<img src="https://i.imgur.com/36RsWZ3.png" alt="Blazor Bootstrap: Grid Component" />
+<img src="https://user-images.githubusercontent.com/2337067/239613340-3917f4fa-a252-4e5e-a3b5-27b83304cbc2.png" alt="Blazor Bootstrap: Grid Component" />
 
 ## Grid Parameters
 
@@ -25,11 +25,13 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | Data | `IEnumerable<TItem>` | | | Gets or sets the grid data. | 1.4.3 |
 | DataProvider | `GridDataProviderDelegate<TItem>` | | | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | 1.0.0 |
 | DisableAllRowsSelection | `Func<IEnumerable<TItem>, bool>?` | | | Enable or disable the header checkbox selection. | 1.8.0 |
-| DisableAllRowsSelection | `Func<TItem, bool>?` | | | Enable or disable the row level checkbox selection. | 1.8.0 |
+| DisableRowSelection | `Func<TItem, bool>?` | | | Enable or disable the row level checkbox selection. | 1.8.0 |
 | EmptyDataTemplate | RenderFragment | | ✔️ | Template to render when there are no rows to display. | 1.0.0 |
 | EmptyText | string | No records to display | | Shows text on no records. | 1.0.0 |
 | PageSize | int | 10 | | Gets or sets the page size of the grid. | 1.0.0 |
-| PaginationAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the pagination alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
+| PageSizeSelectorItems | int[] | new int[] { 10, 20, 50 } | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
+| PageSizeSelectorVisible | bool | false | ✔️ | Gets or sets the page size selector visible. | 1.8.0 |
+| PaginationItemsTextFormat | string | `{0} - {1} of {2} items` | ✔️ | Gets or sets the pagination items text format. | 1.8.0 |
 | RowClass | Func<TItem, string>? | | | Gets or sets the row class. | 1.6.0 |
 | Responsive | bool | false | | Gets or sets a value indicating whether Grid is responsive. | 1.0.0 |
 | SelectionMode | `GridSelectionMode` | | | Gets or sets the grid selection mode. | 1.8.0 |
@@ -40,7 +42,6 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 :::
 
 ## Grid Callback Events
-
 
 | Name | Type | Descritpion | Added Version |
 |:--|:--|:--|:--|
@@ -1828,6 +1829,143 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
     {
         selectedEmployees = employees is not null && employees.Any() ? employees : new();
         return Task.CompletedTask;
+    }
+}
+```
+
+### Dynamic page size
+
+<img src="https://user-images.githubusercontent.com/2337067/239613002-c7b4b6f6-be67-4f14-accc-b3dd390eb0f9.png" alt="Blazor Bootstrap: Grid Component - Dynamic page size" />
+
+```cshtml {5,26-28} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowPaging="true"
+      PageSize="@pageSize"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Employee Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Active">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => ChangeSize(5)">Grid Size 5</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="() => ChangeSize(10)">Grid Size 10</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="() => ChangeSize(15)">Grid Size 15</Button>
+```
+
+```cs {2,32} showLineNumbers
+@code {
+    private int pageSize = 5;
+    private IEnumerable<Employee1> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
+            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
+        };
+    }
+
+    private void ChangeSize(int size) => pageSize = size;
+}
+```
+
+### Page size selection
+
+<img src="https://user-images.githubusercontent.com/2337067/239613340-3917f4fa-a252-4e5e-a3b5-27b83304cbc2.png" alt="Blazor Bootstrap: Grid Component - Page size selection" />
+
+```cshtml {5-7} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowPaging="true"
+      PageSize="10"
+      PageSizeSelectorVisible="true"
+      PageSizeSelectorItems="@(new int[] { 5,10,20 })"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Employee Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Active">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+```
+
+```cs {} showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
+            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
+        };
     }
 }
 ```

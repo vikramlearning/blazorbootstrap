@@ -199,6 +199,10 @@ table button.dropdown-toggle.bb-grid-filter::after {
     display: inline-block;
 }
 
+.bb-grid-pagination-text {
+    padding: .375rem;
+}
+
 /* scrollbar */
 .v-scroll-auto {
     overflow-y: auto !important;
