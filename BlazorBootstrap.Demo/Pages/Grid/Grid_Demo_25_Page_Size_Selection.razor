@@ -2,7 +2,9 @@
       Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
       AllowPaging="true"
-      PageSize="@pageSize"
+      PageSize="10"
+      PageSizeSelectorVisible="true"
+      PageSizeSelectorItems="@(new int[] { 5,10,20 })"
       Responsive="true">
 
     <GridColumn TItem="Employee1" HeaderText="Id">
@@ -23,12 +25,7 @@
 
 </Grid>
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => ChangeSize(5)">Grid Size 5</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="() => ChangeSize(10)">Grid Size 10</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="() => ChangeSize(15)">Grid Size 15</Button>
-
 @code {
-    private int pageSize = 5;
     private IEnumerable<Employee1> employees = default!;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
@@ -57,6 +54,4 @@
             new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
         };
     }
-
-    private void ChangeSize(int size) => pageSize = size;
 }

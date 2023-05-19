@@ -1,9 +1,8 @@
 ﻿<Grid TItem="Customer2"
-      Class="table table-hover table-bordered table-striped"
+Class="table table-hover table-bordered table-striped"
       DataProvider="CustomersDataProvider"
       AllowFiltering="true"
       AllowPaging="true"
-      PageSize="@pageSize"
       AllowSorting="true"
       Responsive="true">
 
@@ -31,19 +30,11 @@
 
 </Grid>
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="async () => await ChangeSize(5)">Grid Size 5</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="async () => await ChangeSize(10)">Grid Size 10</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="async () => await ChangeSize(15)">Grid Size 15</Button>
-
 @code {
-    private int pageSize = 5;
-
-    [Inject] public ICustomerService _customerService { get; set; }
+    [Inject] public ICustomerService _customerService { get; set; } = default!;
 
     private async Task<GridDataProviderResult<Customer2>> CustomersDataProvider(GridDataProviderRequest<Customer2> request)
     {
-        Console.WriteLine("EmployeesDataProvider called...");
-
         string sortString = "";
         SortDirection sortDirection = SortDirection.None;
 
@@ -55,11 +46,5 @@
         }
         var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
         return await Task.FromResult(new GridDataProviderResult<Customer2> { Data = result.Item1, TotalCount = result.Item2 });
-    }
-
-    private async Task ChangeSize(int size)
-    {
-        pageSize = size;
-        Console.WriteLine($"Size={pageSize}");
     }
 }

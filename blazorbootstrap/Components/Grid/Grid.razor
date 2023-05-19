@@ -30,10 +30,10 @@
                                 @if (column.Filterable)
                                 {
                                     <GridColumnFilter PropertyTypeName="@column.GetPropertyTypeName()"
-                                      FilterOperator="@column.FilterOperator"
-                                      FilterValue="@column.FilterValue"
-                                      FilterWidth="@column.FilterTextboxWidth"
-                                      GridColumnFilterChanged="(async (args) => await column.OnFilterChangedAsync(args, column))" />
+                                                      FilterOperator="@column.FilterOperator"
+                                                      FilterValue="@column.FilterValue"
+                                                      FilterWidth="@column.FilterTextboxWidth"
+                                                      GridColumnFilterChanged="(async (args) => await column.OnFilterChangedAsync(args, column))" />
                                 }
                             </th>
                         }
@@ -109,29 +109,33 @@
     {
         <div class="d-flex justify-content-between align-middle mt-2">
             <Pagination ActivePageNumber="@gridCurrentState.PageIndex"
-                TotalPages="@totalPages"
-                PageChanged="OnPageChangedAsync"
-                FirstLinkIcon="IconName.ChevronDoubleLeft"
-                PreviousLinkIcon="IconName.ChevronLeft"
-                NextLinkIcon="IconName.ChevronRight"
-                LastLinkIcon="IconName.ChevronDoubleRight"
-                Alignment="Alignment.Start" />
+                        TotalPages="@totalPages"
+                        PageChanged="OnPageChangedAsync"
+                        FirstLinkIcon="IconName.ChevronDoubleLeft"
+                        PreviousLinkIcon="IconName.ChevronLeft"
+                        NextLinkIcon="IconName.ChevronRight"
+                        LastLinkIcon="IconName.ChevronDoubleRight"
+                        Alignment="Alignment.Start" />
 
-            <div>
-                <div class="d-flex justify-content-center align-middle">
-                    <div>
-                        <select class="form-select" role="button">
-                            <option>10</option>
-                            <option>20</option>
-                            <option>50</option>
-                        </select>
+            @if (PageSizeSelectorVisible && PageSizeSelectorItems is not null && PageSizeSelectorItems.Any())
+            {
+                <div>
+                    <div class="d-flex justify-content-center align-middle">
+                        <div>
+                            <select class="form-select" role="button" @onchange="OnPageSizeChangedAsync">
+                                @foreach (var i in PageSizeSelectorItems)
+                                {
+                                    <option>@i</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="bb-grid-pagination-text">Items per page</div>
                     </div>
-                    <div class="bb-grid-pagination-text">Items per page</div>
                 </div>
-            </div>
+            }
 
             <div class="bb-grid-pagination-text">
-                1 - 10 of 37 items
+                @paginationItemsText
             </div>
         </div>
     }

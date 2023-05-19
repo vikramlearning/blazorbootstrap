@@ -23,6 +23,8 @@ public partial class Grid<TItem> : BaseComponent
 
     private int totalPages => GetTotalPagesCount();
 
+    private string paginationItemsText => GetPaginationItemsText();
+
     private bool requestInProgress = false;
 
     private string responsiveCssClass => this.Responsive ? "table-responsive" : "";
@@ -83,7 +85,8 @@ public partial class Grid<TItem> : BaseComponent
             {
                 mustRefreshData = true;
                 pageSize = PageSize;
-                OnPageSizeChangedAsync(false);
+                _ = ResetPageNumberAsync(false);
+                SaveGridSettingsAsync();
             }
 
             // We want to trigger the first data load when we've collected the initial set of columns
@@ -224,13 +227,13 @@ public partial class Grid<TItem> : BaseComponent
         await RefreshDataAsync(false, default);
     }
 
-    private async Task OnPageSizeChangedAsync(bool refreshGrid = false)
+    private async Task OnPageSizeChangedAsync(ChangeEventArgs args)
     {
+        int.TryParse(args?.Value?.ToString(), out int newPageSize);
+        pageSize = PageSize = newPageSize;
         await ResetPageNumberAsync(false);
         await SaveGridSettingsAsync();
-
-        if (refreshGrid)
-            await RefreshDataAsync(false, default);
+        await RefreshDataAsync(false, default);
     }
 
     /// <summary>
@@ -467,6 +470,17 @@ public partial class Grid<TItem> : BaseComponent
         }
     }
 
+    private string GetPaginationItemsText()
+    {
+        var startRecord = (gridCurrentState.PageIndex - 1) * pageSize + 1;
+        var endRecord = gridCurrentState.PageIndex * pageSize;
+
+        if (endRecord > totalCount)
+            endRecord = totalCount ?? 0;
+
+        return string.Format(PaginationItemsTextFormat, startRecord, endRecord, totalCount);
+    }
+
     #endregion Methods
 
     #region Properties
@@ -597,10 +611,25 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public int PageSize { get; set; } = 10;
 
     /// <summary>
+    /// Gets or sets the page size selector items.
+    /// </summary>
+    [Parameter, EditorRequired] public int[] PageSizeSelectorItems { get; set; } = new int[] { 10, 20, 50 };
+
+    /// <summary>
+    /// Gets or sets the page size selector visible.
+    /// </summary>
+    [Parameter] public bool PageSizeSelectorVisible { get; set; }
+
+    [Obsolete("PaginationAlignment parameter is not supported from 1.8.0 version onwards")]
+    /// <summary>
     /// Gets or sets the pagination alignment.
     /// </summary>
-    [Obsolete("Aligment support removed from 1.8.0 version onwards")]
     [Parameter] public Alignment PaginationAlignment { get; set; } = Alignment.Start;
+
+    /// <summary>
+    /// Gets or sets the pagination items text format.
+    /// </summary>
+    [Parameter, EditorRequired] public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items";
 
     /// <summary>
     /// Gets or sets the row class.
