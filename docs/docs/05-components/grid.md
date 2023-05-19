@@ -1837,7 +1837,7 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 
 <img src="https://user-images.githubusercontent.com/2337067/239613002-c7b4b6f6-be67-4f14-accc-b3dd390eb0f9.png" alt="Blazor Bootstrap: Grid Component - Dynamic page size" />
 
-```cshtml {} showLineNumbers
+```cshtml {5,26-28} showLineNumbers
 <Grid TItem="Employee1"
       Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
@@ -1868,7 +1868,7 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="() => ChangeSize(15)">Grid Size 15</Button>
 ```
 
-```cs {} showLineNumbers
+```cs {2,32} showLineNumbers
 @code {
     private int pageSize = 5;
     private IEnumerable<Employee1> employees = default!;
@@ -1908,7 +1908,7 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 
 <img src="https://user-images.githubusercontent.com/2337067/239613340-3917f4fa-a252-4e5e-a3b5-27b83304cbc2.png" alt="Blazor Bootstrap: Grid Component - Page size selection" />
 
-```cshtml {} showLineNumbers
+```cshtml {5-7} showLineNumbers
 <Grid TItem="Employee1"
       Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
