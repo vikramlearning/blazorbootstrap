@@ -4,17 +4,17 @@
     {
         #region Members
 
-        private string title;
+        private string title = default!;
 
         private Type? childComponent;
 
-        private Dictionary<string, object> parameters;
+        private Dictionary<string, object> parameters = default!;
 
         private Placement placement = Placement.End;
 
         private OffcanvasSize size = OffcanvasSize.Regular;
 
-        private DotNetObjectReference<Offcanvas> objRef;
+        private DotNetObjectReference<Offcanvas> objRef = default!;
 
         #endregion Members
 
@@ -35,7 +35,7 @@
             objRef ??= DotNetObjectReference.Create(this);
             await base.OnInitializedAsync();
 
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseBackdrop, CloseOnEscape, IsScrollable, objRef); });
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseStaticBackdrop ? "static" : true, CloseOnEscape, IsScrollable, objRef); });
         }
 
         /// <summary>
@@ -103,22 +103,22 @@
         /// <summary>
         /// Text for the title in header.
         /// </summary>
-        [Parameter] public string Title { get; set; }
+        [Parameter] public string Title { get; set; } = default!;
 
         /// <summary>
         /// Content for the header.
         /// </summary>
-        [Parameter] public RenderFragment HeaderTemplate { get; set; }
+        [Parameter] public RenderFragment HeaderTemplate { get; set; } = default!;
 
         /// <summary>
         /// Body content.
         /// </summary>
-        [Parameter] public RenderFragment BodyTemplate { get; set; }
+        [Parameter] public RenderFragment BodyTemplate { get; set; } = default!;
 
         /// <summary>
         /// Footer content.
         /// </summary>
-        [Parameter] public RenderFragment FooterTemplate { get; set; }
+        [Parameter] public RenderFragment FooterTemplate { get; set; } = default!;
 
         /// <summary>
         /// Specifies the placement.
@@ -162,11 +162,17 @@
         /// </summary>
         [Parameter] public bool CloseOnEscape { get; set; } = true;
 
+        [Obsolete("Use `UseStaticBackdrop` parameter.")]
         /// <summary>
         /// Indicates whether to apply a backdrop on body while offcanvas is open.
         /// Default value is true.
         /// </summary>
         [Parameter] public bool UseBackdrop { get; set; } = true;
+
+        /// <summary>
+        /// When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it.
+        /// </summary>
+        [Parameter] public bool UseStaticBackdrop { get; set; }
 
         /// <summary>
         /// Indicates whether body (page) scrolling is allowed while offcanvas is open.
@@ -177,17 +183,17 @@
         /// <summary>
         /// Additional header CSS class.
         /// </summary>
-        [Parameter] public string HeaderCssClass { get; set; }
+        [Parameter] public string HeaderCssClass { get; set; } = default!;
 
         /// <summary>
         /// Additional body CSS class.
         /// </summary>
-        [Parameter] public string BodyCssClass { get; set; }
+        [Parameter] public string BodyCssClass { get; set; } = default!;
 
         /// <summary>
         /// Additional footer CSS class.
         /// </summary>
-        [Parameter] public string FooterCssClass { get; set; }
+        [Parameter] public string FooterCssClass { get; set; } = default!;
 
         /// <summary>
         /// This event fires immediately when the show instance method is called.
