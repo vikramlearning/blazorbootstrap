@@ -17,7 +17,6 @@ Build hidden sidebars into your project for navigation, shopping carts, and more
 |--|--|--|--|--|--|
 | BodyCssClass | string | Additional body CSS class. | | | 1.0.0 |
 | BodyTemplate | RenderFragment | Body content. | ✔️ | | 1.0.0 |
-| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | | 1.0.0 |
 | CloseOnEscape | bool | Indicates whether the offcanvas closes when escape key is pressed. | | true | 1.0.0 |
 | FooterCssClass | string | Additional footer CSS class. | | | 1.0.0 |
 | FooterTemplate | RenderFragment | Footer content. | | | 1.0.0 |
@@ -29,7 +28,7 @@ Build hidden sidebars into your project for navigation, shopping carts, and more
 | Size | `OffcanvasSize` | Size of the offcanvas. | | `OffcanvasSize.Regular` | 1.0.0 |
 | TabIndex | int | Gets or sets the tab index. | | -1 | 1.6.0 |
 | Title | string | Text for the title in header. | ✔️ | | 1.0.0 |
-| UseBackdrop | bool | Indicates whether to apply a backdrop on body while offcanvas is open. | | true | 1.0.0 |
+| UseStaticBackdrop | bool | When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it. | | false | 1.8.0 |
 
 ## Methods
 
@@ -255,14 +254,14 @@ Try the top, bottom, and left examples out below.
 
 [See demo here.](https://demos.blazorbootstrap.com/offcanvas#placement)
 
-### Backdrop
+### Static backdrop
 
-By default backdrop is enabled, you can disable it using the `UseBackground="false"` parameter.
+When **UseStaticBackdrop** is set to **true**, the offcanvas will not close when clicking outside of it.
 
-<img src="https://i.imgur.com/ev2Q8ON.jpg" alt="Offcanvas - Backdrop" />
+<img src="https://i.imgur.com/J7g2eeA.png" alt="Offcanvas - Static backdrop" />
 
-```cshtml showLineNumbers
-<Offcanvas @ref="offcanvas" Title="Offcanvas title" UseBackdrop="false">
+```cshtml {1} showLineNumbers
+<Offcanvas @ref="offcanvas" Title="Offcanvas title" UseStaticBackdrop="true">
     <BodyTemplate>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tincidunt blandit mauris. Aliquam sit amet lorem laoreet, laoreet elit ut, placerat tellus. In mollis ultricies elit, volutpat maximus ipsum sodales interdum. Suspendisse eget tellus mollis, rutrum mauris ac, vulputate enim. Cras porta neque vitae lacinia elementum. Nunc sit amet pulvinar nibh. Curabitur interdum eget odio in tempor. Nulla dictum orci quis ligula auctor fermentum. Pellentesque finibus tellus ac massa convallis malesuada. Nam id pharetra velit, sed eleifend mi. Sed sed justo lorem. Quisque et nulla ut dolor feugiat vestibulum. Nunc at porttitor orci, at dignissim metus. Donec vitae metus vitae felis semper placerat.</p>
         <p>Proin quis congue enim, ut ultricies erat. Nulla facilisi. Fusce pretium, metus eget tempor vehicula, nisl lorem tincidunt metus, consectetur molestie lorem leo vel lectus. Vivamus pellentesque pharetra mattis. Aenean dignissim quam non velit ultrices rutrum. Aliquam lacinia faucibus sapien vel pretium. Nullam libero massa, ultricies id lacinia nec, scelerisque ut felis. Vivamus ac egestas urna, sit amet condimentum odio. Suspendisse ultrices, libero sed interdum pulvinar, lectus felis pellentesque enim, eu finibus magna massa id augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis eget tempor libero. Cras ut interdum purus. Donec eu pulvinar urna, ut porttitor purus. Suspendisse sed sodales nunc. Quisque posuere augue sed luctus placerat.</p>
@@ -278,7 +277,7 @@ By default backdrop is enabled, you can disable it using the `UseBackground="fal
 <Button Color="ButtonColor.Primary" @onclick="OnShowOffcanvasClick">Show offcanvas</Button>
 ```
 
-```cs showLineNumbers
+```cs {} showLineNumbers
 @code {
     private Offcanvas offcanvas;
 
@@ -289,7 +288,7 @@ By default backdrop is enabled, you can disable it using the `UseBackground="fal
 }
 ```
 
-[See demo here.](https://demos.blazorbootstrap.com/offcanvas#backdrop)
+[See demo here.](https://demos.blazorbootstrap.com/offcanvas#static-backdrop)
 
 ### Sizes
 
