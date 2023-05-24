@@ -1,43 +1,41 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<CascadingValue Value="@this" IsFixed="true">
-    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" tabindex="@TabIndex">
-        @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
-        {
-            <div class="offcanvas-header @HeaderCssClass">
-                @if (!string.IsNullOrWhiteSpace(title))
-                {
-                    <h5>@title</h5>
-                }
-                else if (HeaderTemplate is not null)
-                {
-                    @HeaderTemplate
-                }
+<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" tabindex="@TabIndex">
+    @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
+    {
+        <div class="offcanvas-header @HeaderCssClass">
+            @if (!string.IsNullOrWhiteSpace(title))
+            {
+                <h5>@title</h5>
+            }
+            else if (HeaderTemplate is not null)
+            {
+                @HeaderTemplate
+            }
 
-                @if (ShowCloseButton)
-                {
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                }
-            </div>
-        }
-        @if (childComponent is not null)
-        {
-            <div class="offcanvas-body @BodyCssClass">
-                <DynamicComponent Type="@childComponent" Parameters="@parameters" />
-            </div>
-        }
-        else if (BodyTemplate != null)
-        {
-            <div class="offcanvas-body @BodyCssClass">
-                @BodyTemplate
-            </div>
-        }
-        @if (FooterTemplate != null)
-        {
-            <div class="offcanvas-footer @FooterCssClass">
-                @FooterTemplate
-            </div>
-        }
-    </div>
-</CascadingValue>
+            @if (ShowCloseButton)
+            {
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            }
+        </div>
+    }
+    @if (childComponent is not null)
+    {
+        <div class="offcanvas-body @BodyCssClass">
+            <DynamicComponent Type="@childComponent" Parameters="@parameters" />
+        </div>
+    }
+    else if (BodyTemplate != null)
+    {
+        <div class="offcanvas-body @BodyCssClass">
+            @BodyTemplate
+        </div>
+    }
+    @if (FooterTemplate != null)
+    {
+        <div class="offcanvas-footer @FooterCssClass">
+            @FooterTemplate
+        </div>
+    }
+</div>

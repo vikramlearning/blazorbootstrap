@@ -4,17 +4,17 @@
     {
         #region Members
 
-        private string title;
+        private string title = default!;
 
         private Type? childComponent;
 
-        private Dictionary<string, object> parameters;
+        private Dictionary<string, object> parameters = default!;
 
         private Placement placement = Placement.End;
 
         private OffcanvasSize size = OffcanvasSize.Regular;
 
-        private DotNetObjectReference<Offcanvas> objRef;
+        private DotNetObjectReference<Offcanvas> objRef = default!;
 
         #endregion Members
 
@@ -35,7 +35,7 @@
             objRef ??= DotNetObjectReference.Create(this);
             await base.OnInitializedAsync();
 
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseBackdrop, CloseOnEscape, IsScrollable, objRef); });
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseStaticBackdrop ? "static" : true, CloseOnEscape, IsScrollable, objRef); });
         }
 
         /// <summary>
@@ -101,24 +101,46 @@
         protected override bool ShouldAutoGenerateId => true;
 
         /// <summary>
-        /// Text for the title in header.
+        /// Additional body CSS class.
         /// </summary>
-        [Parameter] public string Title { get; set; }
-
-        /// <summary>
-        /// Content for the header.
-        /// </summary>
-        [Parameter] public RenderFragment HeaderTemplate { get; set; }
+        [Parameter] public string BodyCssClass { get; set; } = default!;
 
         /// <summary>
         /// Body content.
         /// </summary>
-        [Parameter] public RenderFragment BodyTemplate { get; set; }
+        [Parameter] public RenderFragment BodyTemplate { get; set; } = default!;
+
+        /// <summary>
+        /// Indicates whether the offcanvas closes when escape key is pressed.
+        /// Default value is true.
+        /// </summary>
+        [Parameter] public bool CloseOnEscape { get; set; } = true;
+
+        /// <summary>
+        /// Additional footer CSS class.
+        /// </summary>
+        [Parameter] public string FooterCssClass { get; set; } = default!;
 
         /// <summary>
         /// Footer content.
         /// </summary>
-        [Parameter] public RenderFragment FooterTemplate { get; set; }
+        [Parameter] public RenderFragment FooterTemplate { get; set; } = default!;
+
+        /// <summary>
+        /// Additional header CSS class.
+        /// </summary>
+        [Parameter] public string HeaderCssClass { get; set; } = default!;
+
+        /// <summary>
+        /// Content for the header.
+        /// </summary>
+        [Parameter] public RenderFragment HeaderTemplate { get; set; } = default!;
+
+        /// <summary>
+        /// Indicates whether body (page) scrolling is allowed while offcanvas is open.
+        /// Default value is false.
+        /// </summary>
+        [Parameter] public bool IsScrollable { get; set; }
 
         /// <summary>
         /// Specifies the placement.
@@ -136,6 +158,13 @@
         }
 
         /// <summary>
+        /// Indicates whether the modal shows close button in header.
+        /// Default value is true.
+        /// Use <see cref="CloseButtonIcon"/> to change shape of the button.
+        /// </summary>
+        [Parameter] public bool ShowCloseButton { get; set; } = true;
+
+        /// <summary>
         /// Size of the offcanvas. Default is <see cref="OffcanvasSize.Regular"/>.
         /// </summary>
         [Parameter]
@@ -150,18 +179,16 @@
         }
 
         /// <summary>
-        /// Indicates whether the modal shows close button in header.
-        /// Default value is true.
-        /// Use <see cref="CloseButtonIcon"/> to change shape of the button.
+        /// Gets or sets the tab index.
         /// </summary>
-        [Parameter] public bool ShowCloseButton { get; set; } = true;
+        [Parameter] public int TabIndex { get; set; } = -1;
 
         /// <summary>
-        /// Indicates whether the offcanvas closes when escape key is pressed.
-        /// Default value is true.
+        /// Text for the title in header.
         /// </summary>
-        [Parameter] public bool CloseOnEscape { get; set; } = true;
+        [Parameter] public string Title { get; set; } = default!;
 
+        [Obsolete("Use `UseStaticBackdrop` parameter.")]
         /// <summary>
         /// Indicates whether to apply a backdrop on body while offcanvas is open.
         /// Default value is true.
@@ -169,25 +196,9 @@
         [Parameter] public bool UseBackdrop { get; set; } = true;
 
         /// <summary>
-        /// Indicates whether body (page) scrolling is allowed while offcanvas is open.
-        /// Default value is false.
+        /// When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it.
         /// </summary>
-        [Parameter] public bool IsScrollable { get; set; }
-
-        /// <summary>
-        /// Additional header CSS class.
-        /// </summary>
-        [Parameter] public string HeaderCssClass { get; set; }
-
-        /// <summary>
-        /// Additional body CSS class.
-        /// </summary>
-        [Parameter] public string BodyCssClass { get; set; }
-
-        /// <summary>
-        /// Additional footer CSS class.
-        /// </summary>
-        [Parameter] public string FooterCssClass { get; set; }
+        [Parameter] public bool UseStaticBackdrop { get; set; }
 
         /// <summary>
         /// This event fires immediately when the show instance method is called.
@@ -200,19 +211,14 @@
         [Parameter] public EventCallback OnShown { get; set; }
 
         /// <summary>
-        /// This event is fired immediately when the hide method has been called.
-        /// </summary>
-        [Parameter] public EventCallback OnHiding { get; set; }
-
-        /// <summary>
         /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to complete).
         /// </summary>
         [Parameter] public EventCallback OnHidden { get; set; }
 
         /// <summary>
-        /// Gets or sets the tab index.
+        /// This event is fired immediately when the hide method has been called.
         /// </summary>
-        [Parameter] public int TabIndex { get; set; } = -1;
+        [Parameter] public EventCallback OnHiding { get; set; }
 
         #endregion Properties
     }
