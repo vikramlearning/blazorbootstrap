@@ -26,6 +26,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
     private bool isFirstRenderComplete = false;
 
     private CultureInfo cultureInfo = default!;
+    //private bool disabled1;
 
     #endregion
 
@@ -65,7 +66,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
-        this.disabled = this.Disabled;
+        //this.disabled = this.Disabled;
 
         try
         {
@@ -111,7 +112,12 @@ public partial class CurrencyInput<TValue> : BaseComponent
     protected override async Task OnParametersSetAsync()
     {
         if (isFirstRenderComplete)
+        {
             await SetFormattedValueAsync();
+
+            //if (disabled != Disabled)
+            //    disabled = Disabled;
+        }
 
         await base.OnParametersSetAsync();
     }
@@ -121,7 +127,9 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// </summary>
     public void Disable()
     {
-        this.disabled = true;
+        this.Disabled = true;
+        //StateHasChanged();
+        Console.WriteLine($"Disable(): {this.disabled}");
     }
 
     /// <summary>
@@ -129,7 +137,9 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// </summary>
     public void Enable()
     {
-        this.disabled = false;
+        this.Disabled = false;
+        //StateHasChanged();
+        Console.WriteLine($"Enable(): {this.disabled}");
     }
 
     private async Task OnChange(ChangeEventArgs e)
@@ -404,7 +414,14 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// <summary>
     /// Gets or sets the disabled.
     /// </summary>
-    [Parameter] public bool Disabled { get; set; }
+    [Parameter]
+    public bool Disabled
+    {
+        get => disabled;
+        set { disabled = value;
+            Console.WriteLine($"Disabled: {this.disabled}");
+        }
+    }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 

@@ -1,16 +1,30 @@
 ﻿<div class="mb-3">
     <label class="form-label">Amount</label>
-    <CurrencyInput @ref="currencyInput" TValue="int?" @bind-Value="@amount" ShowCurrencySymbol="true" Disabled="true" Placeholder="Enter amount" />
+    <CurrencyInput @ref="currencyInput"
+                   TValue="int?"
+                   @bind-Value="@amount"
+                   Disabled="@disabled"
+                   Placeholder="Enter amount" />
 </div>
 
-<Button Color="ButtonColor.Primary" @onclick="enableNumberInput"> Enable </Button>
-<Button Color="ButtonColor.Secondary" @onclick="disableNumberInput"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable1"> Enable() </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable1"> Disable() </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable2"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable2"> Disable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Toggle"> Toggle </Button>
 
 @code {
-    private CurrencyInput<int?> currencyInput;
+    private CurrencyInput<int?> currencyInput = default!;
     private int? amount;
+    private bool disabled = true;
 
-    private void enableNumberInput() => currencyInput.Enable();
+    private void Enable1() => currencyInput.Enable();
 
-    private void disableNumberInput() => currencyInput.Disable();
+    private void Disable1() => currencyInput.Disable();
+
+    private void Enable2() => disabled = false;
+
+    private void Disable2() => disabled = true;
+
+    private void Toggle() => disabled = !disabled;
 }
