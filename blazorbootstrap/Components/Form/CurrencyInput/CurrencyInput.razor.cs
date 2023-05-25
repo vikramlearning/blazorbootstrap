@@ -125,22 +125,12 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// <summary>
     /// Disables currency input.
     /// </summary>
-    public void Disable()
-    {
-        this.Disabled = true;
-        //StateHasChanged();
-        Console.WriteLine($"Disable(): {this.disabled}");
-    }
+    public void Disable() => this.Disabled = true;
 
     /// <summary>
     /// Enables currency input.
     /// </summary>
-    public void Enable()
-    {
-        this.Disabled = false;
-        //StateHasChanged();
-        Console.WriteLine($"Enable(): {this.disabled}");
-    }
+    public void Enable() => this.Disabled = false;
 
     private async Task OnChange(ChangeEventArgs e)
     {
@@ -418,9 +408,7 @@ public partial class CurrencyInput<TValue> : BaseComponent
     public bool Disabled
     {
         get => disabled;
-        set { disabled = value;
-            Console.WriteLine($"Disabled: {this.disabled}");
-        }
+        set => disabled = value;
     }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;

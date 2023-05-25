@@ -7,10 +7,8 @@
                    Placeholder="Enter amount" />
 </div>
 
-<Button Color="ButtonColor.Primary" @onclick="Enable1"> Enable() </Button>
-<Button Color="ButtonColor.Secondary" @onclick="Disable1"> Disable() </Button>
-<Button Color="ButtonColor.Primary" @onclick="Enable2"> Enable </Button>
-<Button Color="ButtonColor.Secondary" @onclick="Disable2"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
 <Button Color="ButtonColor.Secondary" @onclick="Toggle"> Toggle </Button>
 
 @code {
@@ -18,13 +16,9 @@
     private int? amount;
     private bool disabled = true;
 
-    private void Enable1() => currencyInput.Enable();
+    private void Enable() => disabled = false;
 
-    private void Disable1() => currencyInput.Disable();
-
-    private void Enable2() => disabled = false;
-
-    private void Disable2() => disabled = true;
+    private void Disable() => disabled = true;
 
     private void Toggle() => disabled = !disabled;
 }
