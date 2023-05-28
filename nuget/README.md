@@ -6,7 +6,7 @@
 
 - [Quick start](#quick-start)
 - [Online Demos](#online-demos)
-- [Documentation](#blazor-bootstrap-components)
+- [Components](#blazor-bootstrap-components)
 - [Documentation](#documentation)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
