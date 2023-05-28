@@ -4,7 +4,7 @@ description: The Blazor Bootstrap `TimeInput` component is constructed using an 
 image: https://i.imgur.com/TlvjRlP.png
 
 sidebar_label: Time Input
-sidebar_position: 3
+sidebar_position: 6
 ---
 
 # Blazor Time Input
@@ -151,29 +151,57 @@ If the user input exceeds the Max value, it will override with the Max value.
 
 ### Disable
 
-Use the `Disabled` parameter to disable the `TimeInput`. Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the `TimeInput`.
+Use the <b>Disabled</b> parameter to disable the TimeInput.
 
-<img src="https://i.imgur.com/8NcaVEq.png" alt="Blazor Bootstrap: Time Input Component - Disable" />
-
-```cshtml {} showLineNumbers
+```cshtml {2,6-8} showLineNumbers
 <div class="mb-3">
-    <TimeInput @ref="timeInput" TValue="TimeOnly" @bind-Value="@time1" Disabled="true" />
+    <TimeInput TValue="TimeOnly" @bind-Value="@time1" Disabled="@disabled" />
 </div>
 <div class="mb-3">Entered time: @time1</div>
 
-<Button Color="ButtonColor.Primary" @onclick="enableTimeInput"> Enable </Button>
-<Button Color="ButtonColor.Secondary" @onclick="disableTimeInput"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
 ```
 
-```cs {} showLineNumbers
+```cs {3,5,7,9} showLineNumbers
 @code {
-    private TimeInput<TimeOnly> timeInput = default!;
+    private TimeOnly time1 = new TimeOnly(10, 50); // 10:50 AM
+    private bool disabled = true;
+
+    private void Enable() => disabled = false;
+
+    private void Disable() => disabled = true;
+
+    private void Toggle() => disabled = !disabled;
+}
+```
+
+Also, use **Enable()** and **Disable()** methods to enable and disable the TimeInput.
+
+:::caution NOTE
+Do not use both the **Disabled** parameter and **Enable()** & **Disable()** methods.
+:::
+
+```cshtml {2,6-7} showLineNumbers
+<div class="mb-3">
+    <TimeInput @ref="timeInput1" TValue="TimeOnly" @bind-Value="@time1" />
+</div>
+<div class="mb-3">Entered time: @time1</div>
+
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+```
+
+```cs {2,6,8} showLineNumbers
+@code {
+    private TimeInput<TimeOnly> timeInput1 = default!;
 
     private TimeOnly time1 = new TimeOnly(10, 50); // 10:50 AM
 
-    private void enableTimeInput() => timeInput.Enable();
+    private void Disable() => timeInput1.Disable();
 
-    private void disableTimeInput() => timeInput.Disable();
+    private void Enable() => timeInput1.Enable();
 }
 ```
 

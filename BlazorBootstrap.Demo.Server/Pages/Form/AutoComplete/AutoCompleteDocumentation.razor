@@ -72,6 +72,15 @@
     </div>
 </div>
 
+<SectionHeading Size="HeadingSize.H2" Text="Disable" PageUrl="@pageUrl" HashTagName="disable" />
+<div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>AutoComplete</code>.</div>
+<Demo Type="typeof(AutoComplete_Demo_05_A_Disable)" Tabs="false" />
+<div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>AutoComplete</code>.</div>
+<Callout Type="CalloutType.Warning" Heading="NOTE">
+    Do not use both the <b>Disabled</b> parameter and <b>Enable()</b> &amp; <b>Disable()</b> methods.
+</Callout>
+<Demo Type="typeof(AutoComplete_Demo_05_B_Disable)" Tabs="false" />
+
 @code {
     private string pageUrl = "/autocomplete";
     private string title = "Blazor AutoComplete Component";

@@ -65,8 +65,6 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
-        this.disabled = this.Disabled;
-
         try
         {
             this.cultureInfo = new CultureInfo(Locale);
@@ -111,7 +109,9 @@ public partial class CurrencyInput<TValue> : BaseComponent
     protected override async Task OnParametersSetAsync()
     {
         if (isFirstRenderComplete)
+        {
             await SetFormattedValueAsync();
+        }
 
         await base.OnParametersSetAsync();
     }
@@ -119,18 +119,12 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// <summary>
     /// Disables currency input.
     /// </summary>
-    public void Disable()
-    {
-        this.disabled = true;
-    }
+    public void Disable() => this.Disabled = true;
 
     /// <summary>
     /// Enables currency input.
     /// </summary>
-    public void Enable()
-    {
-        this.disabled = false;
-    }
+    public void Enable() => this.Disabled = false;
 
     private async Task OnChange(ChangeEventArgs e)
     {
@@ -404,7 +398,12 @@ public partial class CurrencyInput<TValue> : BaseComponent
     /// <summary>
     /// Gets or sets the disabled.
     /// </summary>
-    [Parameter] public bool Disabled { get; set; }
+    [Parameter]
+    public bool Disabled
+    {
+        get => disabled;
+        set => disabled = value;
+    }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 

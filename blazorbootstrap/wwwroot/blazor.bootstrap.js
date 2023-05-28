@@ -405,7 +405,7 @@ window.blazorBootstrap = {
         }
     },
     offcanvas: {
-        initialize: (elementId, backdrop, closeOnEscape, isScrollable, dotNetHelper) => {
+        initialize: (elementId, useStaticBackdrop, closeOnEscape, isScrollable, dotNetHelper) => {
             let offcanvasEl = document.getElementById(elementId);
 
             offcanvasEl.addEventListener('show.bs.offcanvas', function () {
@@ -421,7 +421,7 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenOffcanvas');
             });
 
-            let options = { backdrop: backdrop, keyboard: closeOnEscape, scroll: isScrollable };
+            let options = { backdrop: useStaticBackdrop ? 'static' : true, keyboard: closeOnEscape, scroll: isScrollable };
             bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl, options);
         },
         show: (elementId) => {

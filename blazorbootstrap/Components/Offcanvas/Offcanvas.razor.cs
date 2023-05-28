@@ -35,7 +35,7 @@
             objRef ??= DotNetObjectReference.Create(this);
             await base.OnInitializedAsync();
 
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseStaticBackdrop ? "static" : true, CloseOnEscape, IsScrollable, objRef); });
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, IsScrollable, objRef); });
         }
 
         /// <summary>
