@@ -26,8 +26,7 @@
 ## Table of contents
 
 - [Quick start](#quick-start)
-- [Status](#status)
-- [Components](#components)
+- [Documentation](#blazor-bootstrap-components)
 - [Documentation](#documentation)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
