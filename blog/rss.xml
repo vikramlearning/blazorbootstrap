@@ -4,10 +4,39 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Sat, 29 Apr 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 28 May 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.8.0]]></title>
+            <link>https://getblazorbootstrap.com/blog/2023/05/28/blazorbootstrap-1.8.0</link>
+            <guid>/2023/05/28/blazorbootstrap-1.8.0</guid>
+            <pubDate>Sun, 28 May 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.8.0 with Grid, Offcanvas and Form components updates!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.8.0 with Grid, Offcanvas and Form components updates!!!</p><img loading="lazy" src="https://i.imgur.com/yzJETf8.png" alt="Blazor Bootstrap: Grid Component" class="img_ev3q"><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><p><code>Grid</code> component</p><ul><li>Grid Selection <a href="https://github.com/vikramlearning/blazorbootstrap/issues/179" target="_blank" rel="noopener noreferrer">#179</a><ul><li>Single selection</li><li>Multiple selection</li><li>Disable selection</li><li>Disable all rows selection</li></ul></li><li>Grid Paging <a href="https://github.com/vikramlearning/blazorbootstrap/issues/196" target="_blank" rel="noopener noreferrer">#196</a><ul><li>Dynamic Page Size		</li><li>Page Size Selection</li></ul></li></ul></li><li><p><code>Offcanvas</code> component</p><ul><li>Static backdrop <a href="https://github.com/vikramlearning/blazorbootstrap/pull/210" target="_blank" rel="noopener noreferrer">#210</a></li></ul></li><li><p><code>Auto Complete</code> component</p><ul><li>Disable parameter<ul><li>Use either the <code>Disable</code> parameter or use <code>Disable()</code> and <code>Enable()</code> methods to disable/enable the component.</li></ul></li></ul></li><li><p><code>Currency Input</code> component</p><ul><li>Disable parameter<ul><li>Use either the <code>Disable</code> parameter or use <code>Disable()</code> and <code>Enable()</code> methods to disable/enable the component.</li></ul></li></ul></li><li><p><code>Date Input</code> component</p><ul><li>Disable parameter<ul><li>Use either the <code>Disable</code> parameter or use <code>Disable()</code> and <code>Enable()</code> methods to disable/enable the component.</li></ul></li></ul></li><li><p><code>Number Input</code> component</p><ul><li>Disable parameter<ul><li>Use either the <code>Disable</code> parameter or use <code>Disable()</code> and <code>Enable()</code> methods to disable/enable the component.</li></ul></li></ul></li><li><p><code>Switch</code> component</p><ul><li>Disable parameter<ul><li>Use either the <code>Disable</code> parameter or use <code>Disable()</code> and <code>Enable()</code> methods to disable/enable the component.</li></ul></li></ul></li><li><p><code>Time Input</code> component</p><ul><li>Disable parameter<ul><li>Use either the <code>Disable</code> parameter or use <code>Disable()</code> and <code>Enable()</code> methods to disable/enable the component.</li></ul></li></ul></li><li><p><code>Blazor Bootstrap Templates</code></p><ul><li>Install with .NET CLI: <code>dotnet new install Blazor.Bootstrap.Templates::1.8.0</code></li></ul><img loading="lazy" src="https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png" alt="Blazor Bootstrap Templates" class="img_ev3q"></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Blazor Grid Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/offcanvas" target="_blank" rel="noopener noreferrer">Blazor Offcanvas Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/autocomplete" target="_blank" rel="noopener noreferrer">Blazor Auto Complete Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/currency-input" target="_blank" rel="noopener noreferrer">Blazor Currency Input Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/date-input" target="_blank" rel="noopener noreferrer">Blazor Date Input Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/number-input" target="_blank" rel="noopener noreferrer">Blazor Number Input Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/switch" target="_blank" rel="noopener noreferrer">Blazor Switch Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/time-input" target="_blank" rel="noopener noreferrer">Blazor Time Input Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.8.0</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>grid</category>
+            <category>blazorgrid</category>
+            <category>offcanvas</category>
+            <category>blazoroffcanvas</category>
+            <category>autocomplete</category>
+            <category>blazorautocomplete</category>
+            <category>currencyinput</category>
+            <category>blazorcurrencyinput</category>
+            <category>dateinput</category>
+            <category>blazordateinput</category>
+            <category>numberinput</category>
+            <category>blazornumberinput</category>
+            <category>switch</category>
+            <category>blazorswitch</category>
+            <category>timeinput</category>
+            <category>blazortimeinput</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.7.3]]></title>
             <link>https://getblazorbootstrap.com/blog/2023/04/29/blazorbootstrap-1.7.3</link>
