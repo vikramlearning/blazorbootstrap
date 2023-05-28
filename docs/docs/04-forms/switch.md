@@ -60,31 +60,60 @@ Use the Blazor Bootstrap `Switch` component to show the consistent cross-browser
 
 ### Disable
 
-Use the `Disabled` parameter to disable the `Switch`. Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the `Switch`.
+### Disable
 
-<img src="https://i.imgur.com/85KPLgp.png" alt="Blazor Bootstrap: Switch Component - Disable" />
+Use the <b>Disabled</b> parameter to disable the Switch.
 
-```cshtml {} showLineNumbers
+```cshtml {2,5-7} showLineNumbers
 <div class="mb-3">
-    <Switch @ref="_switch" @bind-Value="agree" Disabled="true" Label="Disabled switch checkbox input" />
+    <Switch @bind-Value="agree" Disabled="@disabled" Label="Disabled switch checkbox input" />
 </div>
 
-<Button Color="ButtonColor.Primary" Size="Size.Small" @onclick="enableSwitch"> Enable </Button>
-<Button Color="ButtonColor.Secondary" Size="Size.Small" @onclick="disableSwitch"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
 ```
 
-```cs {} showLineNumbers
+```cs {3,5,7,9} showLineNumbers
 @code {
-    private Switch _switch;
     private bool agree = true;
+    private bool disabled = true;
 
-    private void enableSwitch() => _switch.Enable();
+    private void Enable() => disabled = false;
 
-    private void disableSwitch() => _switch.Disable();
+    private void Disable() => disabled = true;
+
+    private void Toggle() => disabled = !disabled;
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/switch#disable)
+Also, use **Enable()** and **Disable()** methods to enable and disable the Switch.
+
+:::caution NOTE
+Do not use both the **Disabled** parameter and **Enable()** & **Disable()** methods.
+:::
+
+```cshtml {2,5-6} showLineNumbers
+<div class="mb-3">
+    <Switch @ref="switch1" @bind-Value="agree" Label="Disabled switch checkbox input" />
+</div>
+
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+```
+
+```cs {2,5,7} showLineNumbers
+@code {
+    private Switch switch1 = default!;
+    private bool agree = true;
+
+    private void Disable() => switch1.Disable();
+
+    private void Enable() => switch1.Enable();
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/autocomplete#disable)
 
 ### Reverse
 

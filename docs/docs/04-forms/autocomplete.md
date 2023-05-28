@@ -71,6 +71,7 @@ Blazor Bootstrap autocomplete component supports the following keyboard shortcut
     </div>
 </div>
 ```
+
 ```cs {6-12} showLineNumbers
 @code {
     private string customerName;
@@ -152,6 +153,7 @@ By default, `StringComparison.OrdinalIgnoreCase` is used to compare culture-agno
     </div>
 </div>
 ```
+
 ```cs {6-12} showLineNumbers
 @code {
     private string customerName;
@@ -226,6 +228,7 @@ public record Customer(int CustomerId, string CustomerName);
     </div>
 </div>
 ```
+
 ```cs {6-10} showLineNumbers
 @code {
     private string customerName;
@@ -430,3 +433,106 @@ public record Customer(int CustomerId, string CustomerName);
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/autocomplete#validations)
+
+### Disable
+
+Use the <b>Disabled</b> parameter to disable the AutoComplete.
+
+```cshtml {8,13-15} showLineNumbers
+<div class="row mb-3">
+    <div class="col-md-5 col-sm-12">
+        <AutoComplete @bind-Value="customerName"
+                      TItem="Customer2"
+                      DataProvider="CustomersDataProvider"
+                      PropertyName="CustomerName"
+                      Placeholder="Search a customer..."
+                      Disabled="@disabled"
+                      OnChanged="(Customer2 customer) => OnAutoCompleteChanged(customer)" />
+    </div>
+</div>
+
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
+```
+
+```cs {3,21,23,25} showLineNumbers
+@code {
+    private string customerName = default!;
+    private bool disabled = true;
+
+    [Inject] ICustomerService _customerService { get; set; } = default!;
+
+    private async Task<AutoCompleteDataProviderResult<Customer2>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer2> request)
+    {
+        var customers = await _customerService.GetCustomersAsync(request.Filter, request.CancellationToken); // API call
+        return await Task.FromResult(new AutoCompleteDataProviderResult<Customer2> { Data = customers, TotalCount = customers.Count() });
+    }
+
+    private void OnAutoCompleteChanged(Customer2 customer)
+    {
+        // TODO: handle your own logic
+
+        // NOTE: do null check
+        Console.WriteLine($"'{customer?.CustomerName}' selected.");
+    }
+
+    private void Enable() => disabled = false;
+
+    private void Disable() => disabled = true;
+
+    private void Toggle() => disabled = !disabled;
+}
+```
+
+Also, use **Enable()** and **Disable()** methods to enable and disable the AutoComplete.
+
+:::caution NOTE
+Do not use both the **Disabled** parameter and **Enable()** & **Disable()** methods.
+:::
+
+```cshtml {3,13-14} showLineNumbers
+<div class="row mb-3">
+    <div class="col-md-5 col-sm-12">
+        <AutoComplete @ref="autoComplete1" 
+                      @bind-Value="customerName"
+                      TItem="Customer2"
+                      DataProvider="CustomersDataProvider"
+                      PropertyName="CustomerName"
+                      Placeholder="Search a customer..."
+                      OnChanged="(Customer2 customer) => OnAutoCompleteChanged(customer)" />
+    </div>
+</div>
+
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+```
+
+```cs {2,21,23} showLineNumbers
+@code {
+    private AutoComplete<Customer2> autoComplete1 = default!;
+    private string customerName = default!;
+
+    [Inject] ICustomerService _customerService { get; set; } = default!;
+
+    private async Task<AutoCompleteDataProviderResult<Customer2>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer2> request)
+    {
+        var customers = await _customerService.GetCustomersAsync(request.Filter, request.CancellationToken); // API call
+        return await Task.FromResult(new AutoCompleteDataProviderResult<Customer2> { Data = customers, TotalCount = customers.Count() });
+    }
+
+    private void OnAutoCompleteChanged(Customer2 customer)
+    {
+        // TODO: handle your own logic
+
+        // NOTE: do null check
+        Console.WriteLine($"'{customer?.CustomerName}' selected.");
+    }
+
+    private void Disable() => autoComplete1.Disable();
+
+    private void Enable() => autoComplete1.Enable();
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/autocomplete#disable)

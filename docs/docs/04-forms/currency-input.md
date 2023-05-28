@@ -371,28 +371,62 @@ By default, negative numbers are not allowed. Set the `AllowNegativeNumbers` par
 
 ### Disable
 
-Use the `Disabled` parameter to disable the `CurrencyInput`. Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the `CurrencyInput`.
+Use the <b>Disabled</b> parameter to disable the CurrencyInput.
 
-<img src="https://i.imgur.com/bzh72b2.png" alt="Blazor Bootstrap: Currency Input Component - Disable" />
-
-```cshtml {3} showLineNumbers
+```cshtml {5,9-11} showLineNumbers
 <div class="mb-3">
     <label class="form-label">Amount</label>
-    <CurrencyInput @ref="currencyInput" TValue="int?" @bind-Value="@amount" ShowCurrencySymbol="true" Disabled="true" Placeholder="Enter amount" />
+    <CurrencyInput TValue="int?"
+                   @bind-Value="@amount"
+                   Disabled="@disabled"
+                   Placeholder="Enter amount" />
 </div>
 
-<Button Color="ButtonColor.Primary" @onclick="enableNumberInput"> Enable </Button>
-<Button Color="ButtonColor.Secondary" @onclick="disableNumberInput"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
+```
+
+```cs {3,5,7,9} showLineNumbers
+@code {
+    private int? amount;
+    private bool disabled = true;
+
+    private void Enable() => disabled = false;
+
+    private void Disable() => disabled = true;
+
+    private void Toggle() => disabled = !disabled;
+}
+```
+
+Also, use **Enable()** and **Disable()** methods to enable and disable the CurrencyInput.
+
+:::caution NOTE
+Do not use both the **Disabled** parameter and **Enable()** & **Disable()** methods.
+:::
+
+```cshtml {3,9-10} showLineNumbers
+<div class="mb-3">
+    <label class="form-label">Amount</label>
+    <CurrencyInput @ref="currencyInput"
+                   TValue="int?"
+                   @bind-Value="@amount"
+                   Placeholder="Enter amount" />
+</div>
+
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
 ```
 
 ```cs {2,5,7} showLineNumbers
 @code {
-    private CurrencyInput<int?> currencyInput;
+    private CurrencyInput<int?> currencyInput = default!;
     private int? amount;
 
-    private void enableNumberInput() => currencyInput.Enable();
+    private void Disable() => currencyInput.Disable();
 
-    private void disableNumberInput() => currencyInput.Disable();
+    private void Enable() => currencyInput.Enable();
 }
 ```
 

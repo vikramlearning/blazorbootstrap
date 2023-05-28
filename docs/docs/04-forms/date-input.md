@@ -207,29 +207,63 @@ If the user input exceeds the Max value, it will override with the Max value.
 
 ### Disable
 
-Use the `Disabled` parameter to disable the `DateInput`. Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the `DateInput`.
+Use the <b>Disabled</b> parameter to disable the DateInput.
 
-<img src="https://i.imgur.com/wlEZFWI.png" alt="Blazor Bootstrap: Date Input Component - Disable" />
-
-```cshtml {} showLineNumbers
+```cshtml {4,9-11} showLineNumbers
 <div class="mb-3">
-    <DateInput @ref="dateInput" TValue="DateOnly" @bind-Value="@date1" Disabled="true" Placeholder="Enter Date" />
+    <DateInput TValue="DateOnly"
+               @bind-Value="@date1"
+               Disabled="@disabled"
+               Placeholder="Enter Date" />
 </div>
 <div class="mb-3">Entered date: @date1</div>
 
-<Button Color="ButtonColor.Primary" @onclick="enableDateInput"> Enable </Button>
-<Button Color="ButtonColor.Secondary" @onclick="disableDateInput"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
 ```
 
-```cs {} showLineNumbers
+```cs {3,5,7,9} showLineNumbers
 @code {
-    private DateInput<DateOnly> dateInput;
+    private DateOnly date1 = DateOnly.FromDateTime(DateTime.Now);
+    private bool disabled = true;
+
+    private void Enable() => disabled = false;
+
+    private void Disable() => disabled = true;
+
+    private void Toggle() => disabled = !disabled;
+}
+```
+
+Also, use **Enable()** and **Disable()** methods to enable and disable the DateInput.
+
+:::caution NOTE
+Do not use both the **Disabled** parameter and **Enable()** & **Disable()** methods.
+:::
+
+```cshtml {2,9-10} showLineNumbers
+<div class="mb-3">
+    <DateInput @ref="dateInput"
+               TValue="DateOnly"
+               @bind-Value="@date1"
+               Placeholder="Enter Date" />
+</div>
+<div class="mb-3">Entered date: @date1</div>
+
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+```
+
+```cs {2,6,8} showLineNumbers
+@code {
+    private DateInput<DateOnly> dateInput = default!;
 
     private DateOnly date1 = DateOnly.FromDateTime(DateTime.Now);
 
-    private void enableDateInput() => dateInput.Enable();
+    private void Disable() => dateInput.Disable();
 
-    private void disableDateInput() => dateInput.Disable();
+    private void Enable() => dateInput.Enable();
 }
 ```
 
