@@ -5,39 +5,26 @@
 ## Table of contents
 
 - [Quick start](#quick-start)
-- [Status](#status)
-- [Components](#components)
+- [Online Demos](#online-demos)
+- [Components](#blazor-bootstrap-components)
 - [Documentation](#documentation)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
 
 ## Quick start
 
-Several quick start options are available:
+Get started any way you want
 
-- Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.7.3` 
+- Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.8.0`
 
-Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
+  ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
+
+- Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework installation, contents, examples, and more.
 
 ## Online Demos
 
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
-
-## Starter templates
-
-### .NET 6
-
-- [Blazor Bootstrap - WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
-- [Blazor Bootstrap - Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorServerApp)
-
-### .NET 7
-
-- [Blazor Bootstrap - WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyApp)
-- [Blazor Bootstrap - Empty WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyAppEmpty)
-- [Blazor Bootstrap - Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerApp)
-- [Blazor Bootstrap - Empty Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerAppEmpty)
 
 ## Blazor Bootstrap Components
 
