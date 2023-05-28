@@ -23,13 +23,6 @@
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
 
-## Blazor Bootstrap templates
-
-- [Repo](https://github.com/vikramlearning/blazorbootstrap-project-templates): `git clone https://github.com/vikramlearning/blazorbootstrap-project-templates.git`
-- Install with .NET CLI: `dotnet new install Blazor.Bootstrap.Templates::1.8.0`
-
-  ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
-
 ## Table of contents
 
 - [Quick start](#quick-start)
@@ -43,8 +36,10 @@
 
 Several quick start options are available:
 
-- Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
+- Clone the [Blazor Bootstrap templates repo](https://github.com/vikramlearning/blazorbootstrap-project-templates): `git clone https://github.com/vikramlearning/blazorbootstrap.git`
 - Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.8.0`
+
+  ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
 
