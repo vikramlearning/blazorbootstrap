@@ -65,8 +65,6 @@ public partial class CurrencyInput<TValue> : BaseComponent
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
-        //this.disabled = this.Disabled;
-
         try
         {
             this.cultureInfo = new CultureInfo(Locale);
