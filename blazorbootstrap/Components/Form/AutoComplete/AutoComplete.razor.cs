@@ -269,18 +269,12 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// <summary>
     /// Disables autocomplete.
     /// </summary>
-    public void Disable()
-    {
-        this.disabled = true;
-    }
+    public void Disable() => this.disabled = true;
 
     /// <summary>
     /// Enables autocomplete.
     /// </summary>
-    public void Enable()
-    {
-        this.disabled = false;
-    }
+    public void Enable() => this.disabled = false;
 
     /// <summary>
     /// Refresh the autocomplete data.
@@ -324,7 +318,12 @@ public partial class AutoComplete<TItem> : BaseComponent
     /// <summary>
     /// Gets or sets the disabled.
     /// </summary>
-    [Parameter] public bool Disabled { get; set; }
+    [Parameter]
+    public bool Disabled
+    {
+        get => disabled;
+        set => disabled = value;
+    }
 
     /// <summary>
     /// Gets or sets the placeholder.

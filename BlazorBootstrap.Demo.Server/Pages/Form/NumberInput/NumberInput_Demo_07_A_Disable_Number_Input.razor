@@ -1,9 +1,9 @@
 ﻿<div class="mb-3">
     <label class="form-label">Amount</label>
-    <CurrencyInput TValue="int?"
-                   @bind-Value="@amount"
-                   Disabled="@disabled"
-                   Placeholder="Enter amount" />
+    <NumberInput TValue="int?"
+                 @bind-Value="@amount"
+                 Disabled="@disabled"
+                 Placeholder="Enter amount" />
 </div>
 
 <Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>

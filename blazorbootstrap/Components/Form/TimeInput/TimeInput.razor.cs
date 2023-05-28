@@ -26,15 +26,15 @@ public partial class TimeInput<TValue> : BaseComponent
 
     private bool disabled;
 
-    private TValue max;
+    private TValue max = default!;
 
-    private TValue min;
+    private TValue min = default!;
 
-    private string formattedMax;
+    private string formattedMax = default!;
 
-    private string formattedMin;
+    private string formattedMin = default!;
 
-    private string formattedValue;
+    private string formattedValue = default!;
 
     private bool isFirstRender = true;
 
@@ -254,18 +254,12 @@ public partial class TimeInput<TValue> : BaseComponent
     /// <summary>
     /// Disables currency input.
     /// </summary>
-    public void Disable()
-    {
-        this.disabled = true;
-    }
+    public void Disable() => this.disabled = true;
 
     /// <summary>
     /// Enables currency input.
     /// </summary>
-    public void Enable()
-    {
-        this.disabled = false;
-    }
+    public void Enable() => this.disabled = false;
 
     #endregion
 
@@ -282,9 +276,14 @@ public partial class TimeInput<TValue> : BaseComponent
     /// <summary>
     /// Gets or sets the disabled.
     /// </summary>
-    [Parameter] public bool Disabled { get; set; }
+    [Parameter]
+    public bool Disabled
+    {
+        get => disabled;
+        set => disabled = value;
+    }
 
-    [CascadingParameter] private EditContext EditContext { get; set; }
+    [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
     /// Determines whether to restrict the user input to Min and Max range.

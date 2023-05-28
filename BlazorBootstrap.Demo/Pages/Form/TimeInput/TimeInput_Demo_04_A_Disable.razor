@@ -1,17 +1,14 @@
 ﻿<div class="mb-3">
-    <label class="form-label">Amount</label>
-    <CurrencyInput TValue="int?"
-                   @bind-Value="@amount"
-                   Disabled="@disabled"
-                   Placeholder="Enter amount" />
+    <TimeInput TValue="TimeOnly" @bind-Value="@time1" Disabled="@disabled" />
 </div>
+<div class="mb-3">Entered time: @time1</div>
 
 <Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
 <Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
 <Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
 
 @code {
-    private int? amount;
+    private TimeOnly time1 = new TimeOnly(10, 50); // 10:50 AM
     private bool disabled = true;
 
     private void Enable() => disabled = false;

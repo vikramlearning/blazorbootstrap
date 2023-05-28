@@ -21,7 +21,7 @@ public partial class NumberInput<TValue> : BaseComponent
 
     private bool disabled;
 
-    private string step;
+    private string step = default!;
 
     #endregion
 
@@ -94,18 +94,12 @@ public partial class NumberInput<TValue> : BaseComponent
     /// <summary>
     /// Disables number input.
     /// </summary>
-    public void Disable()
-    {
-        this.disabled = true;
-    }
+    public void Disable() => this.disabled = true;
 
     /// <summary>
     /// Enables number input.
     /// </summary>
-    public void Enable()
-    {
-        this.disabled = false;
-    }
+    public void Enable() => this.disabled = false;
 
     private async Task OnChange(ChangeEventArgs e)
     {
@@ -286,13 +280,13 @@ public partial class NumberInput<TValue> : BaseComponent
                 return true;
             }
 
-            newValue = default;
+            newValue = default!;
             return false;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"exception: {ex.Message}");
-            newValue = default;
+            newValue = default!;
             return false;
         }
     }
@@ -327,9 +321,14 @@ public partial class NumberInput<TValue> : BaseComponent
     /// <summary>
     /// Gets or sets the disabled.
     /// </summary>
-    [Parameter] public bool Disabled { get; set; }
+    [Parameter]
+    public bool Disabled
+    {
+        get => disabled;
+        set => disabled = value;
+    }
 
-    [CascadingParameter] private EditContext EditContext { get; set; }
+    [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
     /// Determines whether to restrict the user input to Min and Max range.
@@ -341,13 +340,13 @@ public partial class NumberInput<TValue> : BaseComponent
     /// Gets or sets the max.
     /// Max ignored if EnableMinMax="false".
     /// </summary>
-    [Parameter] public TValue Max { get; set; }
+    [Parameter] public TValue Max { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the min.
     /// Min ignored if EnableMinMax="false".
     /// </summary>
-    [Parameter] public TValue Min { get; set; }
+    [Parameter] public TValue Min { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the placeholder.
@@ -367,9 +366,9 @@ public partial class NumberInput<TValue> : BaseComponent
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
-    [Parameter] public TValue Value { get; set; }
+    [Parameter] public TValue Value { get; set; } = default!;
 
-    [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; }
+    [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

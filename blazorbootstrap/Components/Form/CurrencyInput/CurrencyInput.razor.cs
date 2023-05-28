@@ -26,7 +26,6 @@ public partial class CurrencyInput<TValue> : BaseComponent
     private bool isFirstRenderComplete = false;
 
     private CultureInfo cultureInfo = default!;
-    //private bool disabled1;
 
     #endregion
 
@@ -114,9 +113,6 @@ public partial class CurrencyInput<TValue> : BaseComponent
         if (isFirstRenderComplete)
         {
             await SetFormattedValueAsync();
-
-            //if (disabled != Disabled)
-            //    disabled = Disabled;
         }
 
         await base.OnParametersSetAsync();

@@ -1,17 +1,17 @@
 ﻿<div class="mb-3">
-    <label class="form-label">Amount</label>
-    <CurrencyInput TValue="int?"
-                   @bind-Value="@amount"
-                   Disabled="@disabled"
-                   Placeholder="Enter amount" />
+    <DateInput TValue="DateOnly"
+               @bind-Value="@date1"
+               Disabled="@disabled"
+               Placeholder="Enter Date" />
 </div>
+<div class="mb-3">Entered date: @date1</div>
 
 <Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
 <Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
 <Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
 
 @code {
-    private int? amount;
+    private DateOnly date1 = DateOnly.FromDateTime(DateTime.Now);
     private bool disabled = true;
 
     private void Enable() => disabled = false;

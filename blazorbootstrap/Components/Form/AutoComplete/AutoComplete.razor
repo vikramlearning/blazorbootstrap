@@ -19,8 +19,14 @@
 
         @if (inputHasValue)
         {
-            <Button @ref="closeButton" Class="border-0" Style="margin-left: -42px; z-index: 100; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" @onclick="ClearInputTextAsync">
+            <Button @ref="closeButton"
+                    Class="border-0"
+                    Style="margin-left: -42px; z-index: 100; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;"
+                    disabled="@disabled"
+                    @onclick="ClearInputTextAsync">
+
                 <Icon Name="IconName.XLg"></Icon>
+
             </Button>
         }
         <ul @ref="list" class="dropdown-menu autocomplete-list" data-popper-placement="bottom-start">
