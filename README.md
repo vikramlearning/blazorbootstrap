@@ -25,7 +25,7 @@
 
 ## Blazor Bootstrap templates
 
-- Repo: `git clone https://github.com/vikramlearning/blazorbootstrap-project-templates.git`
+- [Repo](https://github.com/vikramlearning/blazorbootstrap-project-templates): `git clone https://github.com/vikramlearning/blazorbootstrap-project-templates.git`
 - Install with .NET CLI: `dotnet new install Blazor.Bootstrap.Templates::1.8.0`
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
