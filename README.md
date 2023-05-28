@@ -13,24 +13,22 @@
   <br>
 </p>
 
-## Online Demos
+## Status
+
+[![NuGet](https://img.shields.io/nuget/vpre/blazor.bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
+[![NuGet](https://img.shields.io/nuget/dt/blazor.bootstrap.svg)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
+
+## Online demos
 
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
 
-## Starter templates
+## Blazor Bootstrap templates
 
-### .NET 6
+- Repo: `git clone https://github.com/vikramlearning/blazorbootstrap-project-templates.git`
+- Install with .NET CLI: `dotnet new install Blazor.Bootstrap.Templates::1.8.0`
 
-- [Blazor Bootstrap - WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
-- [Blazor Bootstrap - Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorServerApp)
-
-### .NET 7
-
-- [Blazor Bootstrap - WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyApp)
-- [Blazor Bootstrap - Empty WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyAppEmpty)
-- [Blazor Bootstrap - Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerApp)
-- [Blazor Bootstrap - Empty Server App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorServerAppEmpty)
+  ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
 
 ## Table of contents
 
@@ -46,14 +44,9 @@
 Several quick start options are available:
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.7.3`
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.8.0`
 
 Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework contents, examples, and more.
-
-## Status
-
-[![NuGet](https://img.shields.io/nuget/vpre/blazor.bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
-[![NuGet](https://img.shields.io/nuget/dt/blazor.bootstrap.svg)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 
 ## Blazor Bootstrap Components
 
