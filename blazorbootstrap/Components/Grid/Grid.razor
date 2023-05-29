@@ -24,6 +24,10 @@
                 @if (AllowFiltering)
                 {
                     <tr>
+                        @if (AllowSelection)
+                        {
+                            <th></th>
+                        }
                         @foreach (var column in columns)
                         {
                             <th>
