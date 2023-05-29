@@ -53,6 +53,7 @@ public partial class Tooltip : BaseComponent
     {
         if (disposing)
         {
+            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
             objRef?.Dispose();
         }
 
@@ -82,7 +83,7 @@ public partial class Tooltip : BaseComponent
     [Parameter]
     public TooltipPlacement Placement
     {
-        get => _placement; 
+        get => _placement;
         set
         {
             _placement = value;
