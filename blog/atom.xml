@@ -2,11 +2,32 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-05-28T00:00:00.000Z</updated>
+    <updated>2023-05-31T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.8.1]]></title>
+        <id>/2023/05/31/blazorbootstrap-1.8.1</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/05/31/blazorbootstrap-1.8.1"/>
+        <updated>2023-05-31T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.8.1 with Grid and Tooltip components updates!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.8.1 with Grid and Tooltip components updates!!!</p><p><img loading="lazy" src="https://github.com/vikramlearning/blazorbootstrap/assets/2337067/027363dc-d293-4b12-8155-e0380e8dfc6f" alt="image" title="Blazor Bootstrap: Grid Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><p><code>Grid</code> component</p><ul><li>Selection and filters both active bug <a href="https://github.com/vikramlearning/blazorbootstrap/issues/214" target="_blank" rel="noopener noreferrer">#214</a></li></ul></li><li><p><code>Tooltip</code> component</p><ul><li>Tooltip does not disappear <a href="https://github.com/vikramlearning/blazorbootstrap/issues/213" target="_blank" rel="noopener noreferrer">#213</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Blazor Grid Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/offcanvas" target="_blank" rel="noopener noreferrer">Blazor Offcanvas Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/autocomplete" target="_blank" rel="noopener noreferrer">Blazor Auto Complete Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/currency-input" target="_blank" rel="noopener noreferrer">Blazor Currency Input Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/date-input" target="_blank" rel="noopener noreferrer">Blazor Date Input Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/number-input" target="_blank" rel="noopener noreferrer">Blazor Number Input Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/switch" target="_blank" rel="noopener noreferrer">Blazor Switch Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/time-input" target="_blank" rel="noopener noreferrer">Blazor Time Input Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.8.1" term="v1.8.1"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="grid" term="grid"/>
+        <category label="blazorgrid" term="blazorgrid"/>
+        <category label="tooltip" term="tooltip"/>
+        <category label="blazortooltip" term="blazortooltip"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.8.0]]></title>
         <id>/2023/05/28/blazorbootstrap-1.8.0</id>
