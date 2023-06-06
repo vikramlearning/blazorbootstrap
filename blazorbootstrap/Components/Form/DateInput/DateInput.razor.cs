@@ -95,8 +95,6 @@ public partial class DateInput<TValue> : BaseComponent
             || (oldValue is not null && Value is null)
             || !oldValue.Equals(Value))
         {
-            Console.WriteLine("OnParametersSetAsync called...");
-
             await SetValueAsync(oldValue, Value);
             oldValue = Value;
         }
@@ -146,8 +144,6 @@ public partial class DateInput<TValue> : BaseComponent
 
     private async Task OnChange(ChangeEventArgs e)
     {
-        Console.WriteLine("OnChange called...");
-
         var oldValue = Value;
         var newValue = e.Value; // object
 
@@ -158,8 +154,6 @@ public partial class DateInput<TValue> : BaseComponent
 
     private async Task SetValueAsync(TValue oldValue, object? newValue)
     {
-        Console.WriteLine("SetValueAsync called...");
-
         if (newValue is null || !TryParseValue(newValue, out TValue value))
         {
             if (EnableMinMax
