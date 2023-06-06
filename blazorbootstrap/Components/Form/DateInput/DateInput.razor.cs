@@ -38,6 +38,8 @@ public partial class DateInput<TValue> : BaseComponent
 
     private bool isFirstRender = true;
 
+    private TValue oldValue;
+
     #endregion
 
     #region Methods
@@ -75,7 +77,7 @@ public partial class DateInput<TValue> : BaseComponent
         await base.OnInitializedAsync();
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (EnableMinMax && !min.Equals(Min))
         {
@@ -87,6 +89,16 @@ public partial class DateInput<TValue> : BaseComponent
         {
             max = Max;
             this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+        }
+
+        if ((oldValue is null && Value is not null)
+            || (oldValue is not null && Value is null)
+            || !oldValue.Equals(Value))
+        {
+            Console.WriteLine("OnParametersSetAsync called...");
+
+            await SetValueAsync(oldValue, Value);
+            oldValue = Value;
         }
     }
 
@@ -134,8 +146,19 @@ public partial class DateInput<TValue> : BaseComponent
 
     private async Task OnChange(ChangeEventArgs e)
     {
+        Console.WriteLine("OnChange called...");
+
         var oldValue = Value;
         var newValue = e.Value; // object
+
+        await SetValueAsync(oldValue, newValue);
+
+        this.oldValue = Value;            
+    }
+
+    private async Task SetValueAsync(TValue oldValue, object? newValue)
+    {
+        Console.WriteLine("SetValueAsync called...");
 
         if (newValue is null || !TryParseValue(newValue, out TValue value))
         {
