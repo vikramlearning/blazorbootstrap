@@ -280,6 +280,17 @@ public partial class Button : BaseComponent
         this.StateHasChanged();
     }
 
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsync(bool disposing)
+    {
+        if (disposing)
+        {
+            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
+        }
+
+        await base.DisposeAsync(disposing);
+    }
+
     #endregion
 
     #region Properties
