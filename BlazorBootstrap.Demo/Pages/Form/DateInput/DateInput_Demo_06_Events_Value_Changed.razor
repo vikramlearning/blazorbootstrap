@@ -3,6 +3,8 @@
 </div>
 <div class="mb-3">Changed date: @date1</div>
 
+<Button Color="ButtonColor.Primary" @onclick="ChangeDate"> Change Date </Button>
+
 @code {
     private DateOnly date1 = DateOnly.FromDateTime(DateTime.Now);
 
@@ -10,4 +12,6 @@
     {
         date1 = dateOnly;    
     }
+
+    private void ChangeDate() => date1 = DateOnly.FromDateTime(DateTime.Now.AddDays(3));
 }

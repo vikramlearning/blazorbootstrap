@@ -91,12 +91,12 @@ public partial class DateInput<TValue> : BaseComponent
             this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
         }
 
-        if ((oldValue is null && Value is not null)
-            || (oldValue is not null && Value is null)
-            || !oldValue.Equals(Value))
+        if ((this.oldValue is null && Value is not null)
+            || (this.oldValue is not null && Value is null)
+            || !this.oldValue.Equals(Value))
         {
             await SetValueAsync(oldValue, Value);
-            oldValue = Value;
+            this.oldValue = Value;
         }
     }
 
