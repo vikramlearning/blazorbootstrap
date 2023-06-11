@@ -2,11 +2,36 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-05-31T00:00:00.000Z</updated>
+    <updated>2023-06-11T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.8.2]]></title>
+        <id>/2023/06/11/blazorbootstrap-1.8.2</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/06/11/blazorbootstrap-1.8.2"/>
+        <updated>2023-06-11T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.8.2 with Grid, Button and DateInput components updates!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.8.2 with Grid, Button and DateInput components updates!!!</p><p><img loading="lazy" src="https://github.com/vikramlearning/blazorbootstrap/assets/2337067/027363dc-d293-4b12-8155-e0380e8dfc6f" alt="image" title="Blazor Bootstrap: Grid Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><p><code>Grid</code> component</p><ul><li>Grid local filter with null strings <a href="https://github.com/vikramlearning/blazorbootstrap/issues/227" target="_blank" rel="noopener noreferrer">#227</a></li><li>Grid Single Select <a href="https://github.com/vikramlearning/blazorbootstrap/issues/230" target="_blank" rel="noopener noreferrer">#230</a></li></ul></li><li><p><code>Button</code> component</p><ul><li>Button TooltipTitle does not disappear when clicked <a href="https://github.com/vikramlearning/blazorbootstrap/issues/222" target="_blank" rel="noopener noreferrer">#222</a></li></ul></li><li><p><code>DateInput</code> component</p><ul><li>DateInput no reaction to null <a href="https://github.com/vikramlearning/blazorbootstrap/issues/221" target="_blank" rel="noopener noreferrer">#221</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Blazor Grid Documentation</a></li><li><a href="https://demos.blazorbootstrap.com/buttons" target="_blank" rel="noopener noreferrer">Blazor Buttons Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/date-input" target="_blank" rel="noopener noreferrer">Blazor Date Input Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.8.2" term="v1.8.2"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="grid" term="grid"/>
+        <category label="blazorgrid" term="blazorgrid"/>
+        <category label="button" term="button"/>
+        <category label="blazorbutton" term="blazorbutton"/>
+        <category label="date" term="date"/>
+        <category label="dateinput" term="dateinput"/>
+        <category label="input" term="input"/>
+        <category label="blazordateinput" term="blazordateinput"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.8.1]]></title>
         <id>/2023/05/31/blazorbootstrap-1.8.1</id>
