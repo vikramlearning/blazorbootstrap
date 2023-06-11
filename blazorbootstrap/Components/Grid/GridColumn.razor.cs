@@ -43,13 +43,7 @@ public partial class GridColumn<TItem>
         SetDefaultFilter();
     }
 
-    internal string GetPropertyTypeName()
-    {
-        if (string.IsNullOrWhiteSpace(this.PropertyName))
-            return string.Empty;
-
-        return typeof(TItem).GetProperty(this.PropertyName)?.PropertyType?.Name;
-    }
+    internal string GetPropertyTypeName() => typeof(TItem).GetPropertyTypeName(this.PropertyName);
 
     #region Filters
 

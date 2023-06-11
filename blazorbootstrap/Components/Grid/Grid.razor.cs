@@ -143,8 +143,8 @@ public partial class Grid<TItem> : BaseComponent
         }
         else
         {
-            selectedItems = new() { item };
-            SelectedItemsCount = 1;
+            selectedItems = isChecked ? new() { item } : new();
+            SelectedItemsCount = selectedItems.Count;
             allItemsSelected = false;
             await CheckOrUnCheckAll();
             await SetCheckboxStateAsync(id, isChecked ? CheckboxState.Checked : CheckboxState.Unchecked);

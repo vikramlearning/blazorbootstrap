@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public static class ExpressionExtensions
 {
@@ -30,11 +28,7 @@ public static class ExpressionExtensions
 
     public static Expression<Func<TItem, bool>> GetExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
-        var propertyInfo = typeof(TItem).GetProperty(filterItem.PropertyName);
-        if (propertyInfo == null)
-            return null;
-
-        var propertyTypeName = propertyInfo.PropertyType.Name;
+        var propertyTypeName = typeof(TItem).GetPropertyTypeName(filterItem.PropertyName);
 
         if (propertyTypeName == StringConstants.PropertyTypeNameInt16
             || propertyTypeName == StringConstants.PropertyTypeNameInt32
@@ -97,82 +91,240 @@ public static class ExpressionExtensions
 
     public static Expression<Func<TItem, bool>> GetNumberEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.Equal(property, GetNumberConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
+
+        // Handle null check
+        Expression nullCheckExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
+        }
+        else
+        {
+            nullCheckExpression = Expression.Constant(true);
+        }
+
+        // Perform the greater than or equal comparison
+        Expression comparisonExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            comparisonExpression = Expression.Equal(nullableValueExpression, constantExpression);
+        }
+        else
+        {
+            comparisonExpression = Expression.Equal(propertyExpression, constantExpression);
+        }
+
+        var finalExpression = Expression.AndAlso(nullCheckExpression, comparisonExpression);
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetNumberNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.NotEqual(property, GetNumberConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
+
+        // Handle null check
+        Expression nullCheckExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
+        }
+        else
+        {
+            nullCheckExpression = Expression.Constant(true);
+        }
+
+        // Perform the greater than or equal comparison
+        Expression comparisonExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            comparisonExpression = Expression.NotEqual(nullableValueExpression, constantExpression);
+        }
+        else
+        {
+            comparisonExpression = Expression.NotEqual(propertyExpression, constantExpression);
+        }
+
+        var finalExpression = Expression.AndAlso(nullCheckExpression, comparisonExpression);
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetNumberLessThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.LessThan(property, GetNumberConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
+
+        // Handle null check
+        Expression nullCheckExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
+        }
+        else
+        {
+            nullCheckExpression = Expression.Constant(true);
+        }
+
+        // Perform the greater than or equal comparison
+        Expression comparisonExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            comparisonExpression = Expression.LessThan(nullableValueExpression, constantExpression);
+        }
+        else
+        {
+            comparisonExpression = Expression.LessThan(propertyExpression, constantExpression);
+        }
+
+        var finalExpression = Expression.AndAlso(nullCheckExpression, comparisonExpression);
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetNumberLessThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.LessThanOrEqual(property, GetNumberConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
+
+        // Handle null check
+        Expression nullCheckExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
+        }
+        else
+        {
+            nullCheckExpression = Expression.Constant(true);
+        }
+
+        // Perform the greater than or equal comparison
+        Expression comparisonExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            comparisonExpression = Expression.LessThanOrEqual(nullableValueExpression, constantExpression);
+        }
+        else
+        {
+            comparisonExpression = Expression.LessThanOrEqual(propertyExpression, constantExpression);
+        }
+
+        var finalExpression = Expression.AndAlso(nullCheckExpression, comparisonExpression);
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetNumberGreaterThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.GreaterThan(property, GetNumberConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
+
+        // Handle null check
+        Expression nullCheckExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
+        }
+        else
+        {
+            nullCheckExpression = Expression.Constant(true);
+        }
+
+        // Perform the greater than or equal comparison
+        Expression comparisonExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            comparisonExpression = Expression.GreaterThan(nullableValueExpression, constantExpression);
+        }
+        else
+        {
+            comparisonExpression = Expression.GreaterThan(propertyExpression, constantExpression);
+        }
+
+        var finalExpression = Expression.AndAlso(nullCheckExpression, comparisonExpression);
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetNumberGreaterThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.GreaterThanOrEqual(property, GetNumberConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
+
+        // Handle null check
+        Expression nullCheckExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
+        }
+        else
+        {
+            nullCheckExpression = Expression.Constant(true);
+        }
+
+        // Perform the greater than or equal comparison
+        Expression comparisonExpression;
+        if (propertyExpression.Type.IsNullableType())
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            comparisonExpression = Expression.GreaterThanOrEqual(nullableValueExpression, constantExpression);
+        }
+        else
+        {
+            comparisonExpression = Expression.GreaterThanOrEqual(propertyExpression, constantExpression);
+        }
+
+        var finalExpression = Expression.AndAlso(nullCheckExpression, comparisonExpression);
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
+    }
+
+    public static bool IsNullableType(this Type type)
+    {
+        return Nullable.GetUnderlyingType(type) != null;
     }
 
     public static ConstantExpression GetNumberConstantExpression(FilterItem filterItem, string propertyTypeName)
     {
-        ConstantExpression value = null;
+        if (filterItem.Value is null)
+            return Expression.Constant(null);
+
+        ConstantExpression constantExpression = null;
 
         if (propertyTypeName == StringConstants.PropertyTypeNameInt16)
         {
             _ = short.TryParse(filterItem.Value, out short filterValue);
-            value = Expression.Constant(filterValue);
+            constantExpression = Expression.Constant((short?)filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameInt32)
         {
             _ = int.TryParse(filterItem.Value, out int filterValue);
-            value = Expression.Constant(filterValue);
+            constantExpression = Expression.Constant((int?)filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameInt64)
         {
             _ = long.TryParse(filterItem.Value, out long filterValue);
-            value = Expression.Constant(filterValue);
+            constantExpression = Expression.Constant((long?)filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameSingle)
         {
             _ = float.TryParse(filterItem.Value, out float filterValue);
-            value = Expression.Constant(filterValue);
+            constantExpression = Expression.Constant((float?)filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameDecimal)
         {
             _ = decimal.TryParse(filterItem.Value, out decimal filterValue);
-            value = Expression.Constant(filterValue);
+            constantExpression = Expression.Constant((decimal?)filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameDouble)
         {
             _ = double.TryParse(filterItem.Value, out double filterValue);
-            value = Expression.Constant(filterValue);
+            constantExpression = Expression.Constant((double?)filterValue);
         }
 
-        return value;
+        return constantExpression;
     }
 
     #endregion Number
@@ -182,41 +334,77 @@ public static class ExpressionExtensions
     public static Expression<Func<TItem, bool>> GetStringContainsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var methodInfo = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
         var comparisonExpression = Expression.Constant(filterItem.StringComparison);
-        var expression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+
+        // Handle null check
+        var nullCheckExpression = Expression.NotEqual(propertyExp, Expression.Constant(null, typeof(string)));
+
+        // Create method call expression for Contains method
+        var methodInfo = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) });
+        var containsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+
+        // Combine null check and contains expression using AndAlso
+        var finalExpression = Expression.AndAlso(nullCheckExpression, containsExpression);
+
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetStringEqualsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var methodInfo = typeof(string).GetMethod(nameof(string.Equals), new[] { typeof(string), typeof(StringComparison) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
         var comparisonExpression = Expression.Constant(filterItem.StringComparison);
-        var expression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+
+        // Handle null check
+        var nullCheckExpression = Expression.NotEqual(propertyExp, Expression.Constant(null, typeof(string)));
+
+        // Create method call expression for Equals method
+        var methodInfo = typeof(string).GetMethod(nameof(string.Equals), new[] { typeof(string), typeof(StringComparison) });
+        var equalsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+
+        // Combine null check and equals expression using AndAlso
+        var finalExpression = Expression.AndAlso(nullCheckExpression, equalsExpression);
+
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetStringStartsWithExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var methodInfo = typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string), typeof(StringComparison) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
         var comparisonExpression = Expression.Constant(filterItem.StringComparison);
-        var expression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+
+        // Handle null check
+        var nullCheckExpression = Expression.NotEqual(propertyExp, Expression.Constant(null, typeof(string)));
+
+        // Create method call expression for Equals method
+        var methodInfo = typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string), typeof(StringComparison) });
+        var equalsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+
+        // Combine null check and equals expression using AndAlso
+        var finalExpression = Expression.AndAlso(nullCheckExpression, equalsExpression);
+
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetStringEndsWithExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var method = typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string), typeof(StringComparison) });
         var someValue = Expression.Constant(filterItem.Value, typeof(string));
         var comparisonExpression = Expression.Constant(filterItem.StringComparison);
-        var expression = Expression.Call(propertyExp, method, someValue, comparisonExpression);
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+
+        // Handle null check
+        var nullCheckExpression = Expression.NotEqual(propertyExp, Expression.Constant(null, typeof(string)));
+
+        // Create method call expression for Equals method
+        var methodInfo = typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string), typeof(StringComparison) });
+        var equalsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+
+        // Combine null check and equals expression using AndAlso
+        var finalExpression = Expression.AndAlso(nullCheckExpression, equalsExpression);
+
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
     #endregion string
@@ -225,62 +413,251 @@ public static class ExpressionExtensions
 
     public static Expression<Func<TItem, bool>> GetDateEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.Equal(property, GetDateConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var dateConstantExpression = GetDateConstantExpression(filterItem, propertyTypeName);
+
+        Expression nonNullComparisonExpression;
+
+        if (propertyExpression.Type == typeof(DateOnly))
+        {
+            nonNullComparisonExpression = Expression.Equal(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+        }
+        else if (propertyExpression.Type == typeof(DateTime))
+        {
+            nonNullComparisonExpression = Expression.Equal(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+        }
+        else if (propertyExpression.Type == typeof(DateOnly?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.Equal(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else if (propertyExpression.Type == typeof(DateTime?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.Equal(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else
+        {
+            // Property type is not supported
+            throw new ArgumentException($"Unsupported property type: {propertyExpression.Type}");
+        }
+
+        return Expression.Lambda<Func<TItem, bool>>(nonNullComparisonExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetDateNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.NotEqual(property, GetDateConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var dateConstantExpression = GetDateConstantExpression(filterItem, propertyTypeName);
+
+        Expression nonNullComparisonExpression;
+
+        if (propertyExpression.Type == typeof(DateOnly))
+        {
+            nonNullComparisonExpression = Expression.NotEqual(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+        }
+        else if (propertyExpression.Type == typeof(DateTime))
+        {
+            nonNullComparisonExpression = Expression.NotEqual(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+        }
+        else if (propertyExpression.Type == typeof(DateOnly?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.NotEqual(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else if (propertyExpression.Type == typeof(DateTime?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.NotEqual(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else
+        {
+            // Property type is not supported
+            throw new ArgumentException($"Unsupported property type: {propertyExpression.Type}");
+        }
+
+        return Expression.Lambda<Func<TItem, bool>>(nonNullComparisonExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetDateLessThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.LessThan(property, GetDateConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var dateConstantExpression = GetDateConstantExpression(filterItem, propertyTypeName);
+
+        Expression nonNullComparisonExpression;
+
+        if (propertyExpression.Type == typeof(DateOnly))
+        {
+            nonNullComparisonExpression = Expression.LessThan(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+        }
+        else if (propertyExpression.Type == typeof(DateTime))
+        {
+            nonNullComparisonExpression = Expression.LessThan(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+        }
+        else if (propertyExpression.Type == typeof(DateOnly?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.LessThan(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else if (propertyExpression.Type == typeof(DateTime?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.LessThan(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else
+        {
+            // Property type is not supported
+            throw new ArgumentException($"Unsupported property type: {propertyExpression.Type}");
+        }
+
+        return Expression.Lambda<Func<TItem, bool>>(nonNullComparisonExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetDateLessThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.LessThanOrEqual(property, GetDateConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var dateConstantExpression = GetDateConstantExpression(filterItem, propertyTypeName);
+
+        Expression nonNullComparisonExpression;
+
+        if (propertyExpression.Type == typeof(DateOnly))
+        {
+            nonNullComparisonExpression = Expression.LessThanOrEqual(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+        }
+        else if (propertyExpression.Type == typeof(DateTime))
+        {
+            nonNullComparisonExpression = Expression.LessThanOrEqual(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+        }
+        else if (propertyExpression.Type == typeof(DateOnly?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.LessThanOrEqual(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else if (propertyExpression.Type == typeof(DateTime?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.LessThanOrEqual(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else
+        {
+            // Property type is not supported
+            throw new ArgumentException($"Unsupported property type: {propertyExpression.Type}");
+        }
+
+        return Expression.Lambda<Func<TItem, bool>>(nonNullComparisonExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetDateGreaterThanExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.GreaterThan(property, GetDateConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var dateConstantExpression = GetDateConstantExpression(filterItem, propertyTypeName);
+
+        Expression nonNullComparisonExpression;
+
+        if (propertyExpression.Type == typeof(DateOnly))
+        {
+            nonNullComparisonExpression = Expression.GreaterThan(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+        }
+        else if (propertyExpression.Type == typeof(DateTime))
+        {
+            nonNullComparisonExpression = Expression.GreaterThan(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+        }
+        else if (propertyExpression.Type == typeof(DateOnly?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.GreaterThan(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else if (propertyExpression.Type == typeof(DateTime?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.GreaterThan(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else
+        {
+            // Property type is not supported
+            throw new ArgumentException($"Unsupported property type: {propertyExpression.Type}");
+        }
+
+        return Expression.Lambda<Func<TItem, bool>>(nonNullComparisonExpression, parameterExpression);
     }
 
     public static Expression<Func<TItem, bool>> GetDateGreaterThanOrEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
     {
-        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.GreaterThanOrEqual(property, GetDateConstantExpression(filterItem, propertyTypeName));
-        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+        var propertyExpression = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var dateConstantExpression = GetDateConstantExpression(filterItem, propertyTypeName);
+
+        Expression nonNullComparisonExpression;
+
+        if (propertyExpression.Type == typeof(DateOnly))
+        {
+            nonNullComparisonExpression = Expression.GreaterThanOrEqual(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+        }
+        else if (propertyExpression.Type == typeof(DateTime))
+        {
+            nonNullComparisonExpression = Expression.GreaterThanOrEqual(propertyExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+        }
+        else if (propertyExpression.Type == typeof(DateOnly?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.GreaterThanOrEqual(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateOnly)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else if (propertyExpression.Type == typeof(DateTime?))
+        {
+            var nullableValueExpression = Expression.Property(propertyExpression, "Value");
+            nonNullComparisonExpression = Expression.GreaterThanOrEqual(nullableValueExpression, Expression.Convert(dateConstantExpression, typeof(DateTime)));
+            var nullCheckExpression = Expression.Property(propertyExpression, "HasValue");
+            nonNullComparisonExpression = Expression.Condition(nullCheckExpression, nonNullComparisonExpression, Expression.Constant(false));
+        }
+        else
+        {
+            // Property type is not supported
+            throw new ArgumentException($"Unsupported property type: {propertyExpression.Type}");
+        }
+
+        return Expression.Lambda<Func<TItem, bool>>(nonNullComparisonExpression, parameterExpression);
     }
 
     public static ConstantExpression GetDateConstantExpression(FilterItem filterItem, string propertyTypeName)
     {
-        ConstantExpression value = null;
+        if (filterItem.Value == null)
+            return Expression.Constant(null);
+
+        ConstantExpression constantExpression = null;
 
         if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly)
         {
             _ = DateOnly.TryParse(filterItem.Value, out DateOnly filterValue);
-            value = Expression.Constant(filterValue);
+            constantExpression = Expression.Constant(filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameDateTime)
         {
             _ = DateTime.TryParse(filterItem.Value, out DateTime filterValue);
-            value = Expression.Constant(filterValue);
+            constantExpression = Expression.Constant(filterValue);
         }
 
-        return value;
+        return constantExpression;
     }
 
     #endregion Date
