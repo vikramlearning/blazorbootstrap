@@ -1,4 +1,9 @@
-﻿<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
+﻿<Grid TItem="Employee1" 
+    Class="table table-hover table-bordered table-striped" 
+    DataProvider="EmployeesDataProvider" 
+    AllowFiltering="true" 
+    Responsive="true">
+
     <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" FilterOperator="FilterOperator.GreaterThanOrEquals" FilterValue="105">
         @context.Id
     </GridColumn>
@@ -14,6 +19,7 @@
     <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
         @context.IsActive
     </GridColumn>
+
 </Grid>
 
 @code {

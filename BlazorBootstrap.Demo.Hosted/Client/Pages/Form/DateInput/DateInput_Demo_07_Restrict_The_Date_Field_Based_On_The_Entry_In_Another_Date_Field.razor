@@ -44,7 +44,7 @@
                        EnableMinMax="true"
                        Min="courseMinDate"
                        Max="courseMaxDate"
-                       Disabled="true" />
+                       Disabled="@disableEndDate" />
             <ValidationMessage For="@(() => onlineCourseForm.EndDate)" />
         </div>
     </div>
@@ -59,6 +59,7 @@
 
 @code {
     DateInput<DateTime?> endDateInput = default!;
+    private bool disableEndDate = true;
 
     private OnlineCourseForm onlineCourseForm = new();
     private EditContext editContext;
@@ -82,7 +83,7 @@
             onlineCourseForm.EndDate = null;
             courseMinDate = null;
             courseMaxDate = null;
-            endDateInput.Disable();
+            disableEndDate = true;
 
             return;
         }
@@ -91,7 +92,7 @@
         onlineCourseForm.EndDate = null;
         courseMinDate = startDate.Value;
         courseMaxDate = startDate.Value.AddDays(5);
-        endDateInput.Enable();
+        disableEndDate = false;
     }
 
     public void HandleValidSubmit()
