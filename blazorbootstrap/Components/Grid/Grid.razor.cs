@@ -126,8 +126,6 @@ public partial class Grid<TItem> : BaseComponent
 
     private async Task OnRowCheckboxChanged(string id, TItem item, ChangeEventArgs args)
     {
-        Console.WriteLine("OnRowCheckboxChanged called...");
-
         bool.TryParse(args?.Value?.ToString(), out bool isChecked);
 
         if (SelectionMode == GridSelectionMode.Multiple)
@@ -158,13 +156,11 @@ public partial class Grid<TItem> : BaseComponent
 
     private async Task CheckOrUnCheckAll()
     {
-        Console.WriteLine("CheckOrUnCheckAll called...");
         await JS.InvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", $".bb-grid-form-check-{headerCheckboxId} > input.form-check-input", allItemsSelected);
     }
 
     private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState)
     {
-        Console.WriteLine("SetCheckboxStateAsync called...");
         await JS.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
     }
 
@@ -402,7 +398,7 @@ public partial class Grid<TItem> : BaseComponent
             PrepareCheckboxIds();
 
             if (!firstRender)
-                await ResetSelectionAsync();
+                await RefreshSelectionAsync();
         }
 
         requestInProgress = false;
@@ -470,20 +466,23 @@ public partial class Grid<TItem> : BaseComponent
     }
 
     /// <summary>
-    /// Reset selection
+    /// Refresh selection
     /// </summary>
-    private async Task ResetSelectionAsync()
+    private async Task RefreshSelectionAsync()
     {
-        Console.WriteLine("ResetSelectionAsync called...");
-
         selectedItems = (items.Count == 0)
                         ? new()
                         : selectedItems?.Intersect(items).ToHashSet() ?? new();
 
         SelectedItemsCount = selectedItems.Count;
         allItemsSelected = selectedItems.Count > 0 && items.Count == selectedItems.Count;
-        await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
-        //await CheckOrUnCheckAll();
+
+        if (allItemsSelected)
+            await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
+        else if(selectedItems.Count > 0)
+            await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Indeterminate);
+        else
+            await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
 
         if (SelectedItemsChanged.HasDelegate)
             await SelectedItemsChanged.InvokeAsync(selectedItems);
