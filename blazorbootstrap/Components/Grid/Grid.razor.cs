@@ -394,7 +394,12 @@ public partial class Grid<TItem> : BaseComponent
         }
 
         if (AllowSelection)
+        {
             PrepareCheckboxIds();
+
+            if (!firstRender)
+                await RefreshSelectionAsync();
+        }
 
         requestInProgress = false;
 
@@ -434,18 +439,23 @@ public partial class Grid<TItem> : BaseComponent
             builder.AddAttribute(106, "type", "checkbox");
             builder.AddAttribute(107, "role", "button");
 
+            if (IsItemSelected(rowData))
+            {
+                builder.AddAttribute(108, "checked", "checked");
+            }
+
             // disable the checkbox
             // remove the onchange event binding
             // add disabled attribute
             if (DisableRowSelection?.Invoke(rowData) ?? false)
             {
-                builder.AddAttribute(108, "disabled", "disabled");
+                builder.AddAttribute(109, "disabled", "disabled");
             }
             else
             {
                 var id = checkboxIds[rowIndex];
-                builder.AddAttribute(109, "id", id);
-                builder.AddAttribute(110, "onchange", async (ChangeEventArgs args) => await OnRowCheckboxChanged(id, rowData, args));
+                builder.AddAttribute(110, "id", id);
+                builder.AddAttribute(111, "onchange", async (ChangeEventArgs args) => await OnRowCheckboxChanged(id, rowData, args));
                 builder.AddEventStopPropagationAttribute(111, "onclick", true);
             }
 
@@ -454,6 +464,36 @@ public partial class Grid<TItem> : BaseComponent
             builder.CloseElement(); // close: th
         };
     }
+
+    /// <summary>
+    /// Refresh selection
+    /// </summary>
+    private async Task RefreshSelectionAsync()
+    {
+        selectedItems = (items.Count == 0)
+                        ? new()
+                        : selectedItems?.Intersect(items).ToHashSet() ?? new();
+
+        SelectedItemsCount = selectedItems.Count;
+        allItemsSelected = selectedItems.Count > 0 && items.Count == selectedItems.Count;
+
+        if (allItemsSelected)
+            await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
+        else if(selectedItems.Count > 0)
+            await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Indeterminate);
+        else
+            await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
+
+        if (SelectedItemsChanged.HasDelegate)
+            await SelectedItemsChanged.InvokeAsync(selectedItems);
+    }
+
+    /// <summary>
+    /// Determines whether the item is already selected.
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns>bool</returns>
+    private bool IsItemSelected(TItem item) => selectedItems.Contains(item);
 
     private void PrepareCheckboxIds()
     {
