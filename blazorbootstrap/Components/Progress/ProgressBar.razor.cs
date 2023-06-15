@@ -6,7 +6,7 @@ public partial class ProgressBar
 
     private ProgressColor color = ProgressColor.None;
 
-    private string label;
+    private string label = default!;
 
     private ProgressType type = ProgressType.Default;
 
@@ -39,6 +39,41 @@ public partial class ProgressBar
         // FIX: Toast progressbar not showing: https://github.com/vikramlearning/blazorbootstrap/issues/155
         builder.Append($"width:{width.ToString(CultureInfo.InvariantCulture)}%", width >= 0 && width <= 100);
         base.BuildStyles(builder);
+    }
+
+    protected override void OnParametersSet()
+    {
+        var stateChanged = false;
+
+        if (this.color != Color)
+        {
+            this.color = Color;
+            stateChanged = true;
+        }
+
+        if (this.type != Type)
+        {
+            this.type = Type;
+            stateChanged = true;
+        }
+
+        if (this.width != Width)
+        {
+            if (Width < 0 || Width > 100)
+                throw new ArgumentOutOfRangeException("Width");
+
+            this.width = Width;
+            stateChanged = true;
+        }
+
+        if (stateChanged)
+        {
+            DirtyClasses();
+            DirtyStyles();
+            StateHasChanged();
+        }
+
+        base.OnParametersSet();
     }
 
     /// <summary>
@@ -124,7 +159,12 @@ public partial class ProgressBar
     /// <summary>
     /// Gets or sets the progress bar label.
     /// </summary>
-    [Parameter] public string Label { get; set; }
+    [Parameter]
+    public string Label
+    {
+        get => label;
+        set => label = value;
+    }
 
     /// <summary>
     /// Gets or sets the progress bar type.

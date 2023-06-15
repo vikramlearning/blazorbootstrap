@@ -1,0 +1,78 @@
+﻿@using System.Globalization;
+<Progress Class="mb-3">
+    <ProgressBar Width="@width" Label="@label" Type="progressType" Color="progressColor" />
+</Progress>
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="IncreaseProgressBar">Increase by 10%</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="DecreaseProgressBar">Decrease by 10%</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="ResetProgressBar">Reset</Button>
+
+@code {
+    private double width = 10;
+    private string label = "10%";
+    private ProgressType progressType = ProgressType.StripedAndAnimated;
+    private ProgressColor progressColor = ProgressColor.Secondary;
+
+    private void IncreaseProgressBar()
+    {
+        if ((width + 10) > 100)
+            return;
+
+        width += 10;
+        UpdateProgress(width);
+    }
+
+    private void DecreaseProgressBar()
+    {
+        if ((width - 10) < 0)
+            return;
+
+        width -= 10;
+        UpdateProgress(width);
+    }
+
+    private void ResetProgressBar()
+    {
+        width = 0;
+        UpdateProgress(width);
+    }
+
+    private void UpdateProgress(double w)
+    {
+        if(w == 100)
+        {
+            width = w;
+            label = $"{width.ToString(CultureInfo.InvariantCulture)}%";
+            progressType = ProgressType.Striped;
+            progressColor = ProgressColor.Success;
+        }
+        else if (w > 66 && w < 100)
+        {
+            width = w;
+            label = $"{width.ToString(CultureInfo.InvariantCulture)}%";
+            progressType = ProgressType.StripedAndAnimated;
+            progressColor = ProgressColor.Success;
+        }
+        else if (w <= 66 && w > 33)
+        {
+            width = w;
+            label = $"{width.ToString(CultureInfo.InvariantCulture)}%";
+            progressType = ProgressType.StripedAndAnimated;
+            progressColor = ProgressColor.Warning;
+        }
+        else if (w <= 33 && w > 0)
+        {
+            width = w;
+            label = $"{width.ToString(CultureInfo.InvariantCulture)}%";
+            progressType = ProgressType.StripedAndAnimated;
+            progressColor = ProgressColor.Secondary;
+        }
+        else if(w == 0)
+        {
+            width = w;
+            label = $"{width.ToString(CultureInfo.InvariantCulture)}%";
+            progressType = ProgressType.Striped;
+            progressColor = ProgressColor.Danger;
+        }
+    }
+}
