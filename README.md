@@ -9,7 +9,7 @@
 <p align="center">
   Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
   <br>
-  <a href="https://getblazorbootstrap.com/docs/intro"><strong>Explore Blazor Bootstrap docs »</strong></a>
+  <a href="https://getblazorbootstrap.com/docs/getting-started/blazor-webassembly"><strong>Explore Blazor Bootstrap docs »</strong></a>
   <br>
 </p>
 
@@ -41,7 +41,7 @@ Get started any way you want
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
 
-- Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework installation, contents, examples, and more.
+- Read the [Getting started page](https://getblazorbootstrap.com/docs/getting-started/blazor-webassembly) for information on the framework installation, contents, examples, and more.
 
 ## Blazor Bootstrap Components
 
