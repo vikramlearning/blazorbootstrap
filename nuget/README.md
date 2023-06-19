@@ -21,7 +21,7 @@ Get started any way you want
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
 
-- Read the [Getting started page](https://getblazorbootstrap.com/docs/intro) for information on the framework installation, contents, examples, and more.
+- Read the [Getting started page](https://getblazorbootstrap.com/docs/getting-started/blazor-webassembly) for information on the framework installation, contents, examples, and more.
 
 ## Online Demos
 
