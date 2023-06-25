@@ -1,0 +1,18 @@
+﻿@page "/modal-service"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Modal Service</h1>
+<div class="lead mb-3">Documentation and examples for using Blazor Bootstrap modal service.</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
+<Demo Type="typeof(ModalService_Demo_01_How_It_Works)" />
+
+@code {
+    private string pageUrl = "/modal-service";
+    private string title = "Blazor Modal Service";
+    private string description = "Documentation and examples for using Blazor Bootstrap modal service.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg"; // TODO: update this image url
+}
