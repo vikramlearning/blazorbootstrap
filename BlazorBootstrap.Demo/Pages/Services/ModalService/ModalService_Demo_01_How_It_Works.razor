@@ -1,5 +1,22 @@
-﻿<h3>ModalService_Demo_01_How_It_Works</h3>
+﻿
+<Button Color="ButtonColor.Primary" @onclick="() => ShowModal(ModalType.Default)">Show Default Modal</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => ShowModal(ModalType.Success)">Show Success Modal</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => ShowModal(ModalType.Danger)">Show Danger Modal</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => ShowModal(ModalType.Warning)">Show Warning Modal</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => ShowModal(ModalType.Info)">Show Info Modal</Button>
 
 @code {
+    [Inject] ModalService ModalService { get; set; } = default!;
 
+    private async Task ShowModal(ModalType modalType)
+    {
+        var modalOption = new ModalOption
+            {
+                Title = "Modal title",
+                Message = "Modal body text goes here.",
+                Type = modalType
+            };
+
+        await ModalService.ShowAsync(modalOption);
+    }
 }
