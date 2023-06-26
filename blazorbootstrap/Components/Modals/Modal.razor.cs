@@ -63,7 +63,14 @@ public partial class Modal : BaseComponent
 
     private Task OnShowAsync(ModalOption modalOption)
     {
-        if (modalOption.Type == ModalType.Success)
+        if(modalOption is null)
+            throw new ArgumentNullException(nameof(modalOption));
+
+        if (modalOption.Type == ModalType.Primary)
+            HeaderCssClass = "text-bg-primary border-bottom border-primary";
+        else if (modalOption.Type == ModalType.Secondary)
+            HeaderCssClass = "text-bg-secondary border-bottom border-secondary";
+        else if (modalOption.Type == ModalType.Success)
             HeaderCssClass = "text-bg-success border-bottom border-success";
         else if (modalOption.Type == ModalType.Danger)
             HeaderCssClass = "text-bg-danger border-bottom border-danger";
@@ -71,8 +78,16 @@ public partial class Modal : BaseComponent
             HeaderCssClass = "text-bg-warning border-bottom border-warning";
         else if (modalOption.Type == ModalType.Info)
             HeaderCssClass = "text-bg-info border-bottom border-info";
+        else if (modalOption.Type == ModalType.Light)
+            HeaderCssClass = "text-bg-light border-bottom border-light";
+        else if (modalOption.Type == ModalType.Dark)
+            HeaderCssClass = "text-bg-dark border-bottom border-dark";
         else
             HeaderCssClass = "";
+
+        Size = modalOption.Size;
+
+        IsVerticallyCentered = modalOption.IsVerticallyCentered;
 
         showFooterButton = modalOption.ShowFooterButton;
         if (showFooterButton)
