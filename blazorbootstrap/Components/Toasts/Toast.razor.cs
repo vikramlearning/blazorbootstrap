@@ -4,13 +4,15 @@ public partial class Toast : BaseComponent, IDisposable
 {
     #region Members
 
-    private ProgressBar toastProgressBar;
+    private ProgressBar toastProgressBar = default!;
 
-    private DotNetObjectReference<Toast> objRef;
+    private double toastProgressBarWidth = 100;
+
+    private DotNetObjectReference<Toast> objRef = default!;
 
     private IconName iconName => GetToastIconName();
 
-    private string customIconName;
+    private string customIconName = default!;
 
     private string iconClass => $"{GetIconClass()} me-2".Trim();
 
@@ -19,6 +21,11 @@ public partial class Toast : BaseComponent, IDisposable
     #endregion Members
 
     #region Methods
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 
     protected override void BuildClasses(ClassBuilder builder)
     {
@@ -127,11 +134,21 @@ public partial class Toast : BaseComponent, IDisposable
 
         if (firstRender && AutoHide && Delay > 0)
         {
-            var width = ((double)10000 / Delay);
+            var decrementWidth = ((double)10000 / Delay);
             using var periodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(100));
             while (await periodicTimer.WaitForNextTickAsync())
             {
-                toastProgressBar.DecreaseWidth(width);
+                if (toastProgressBarWidth == 0)
+                    break;
+
+                if (decrementWidth < 0 || decrementWidth > 100)
+                    continue;
+                else if (toastProgressBarWidth - decrementWidth < 0)
+                    toastProgressBarWidth = 0;
+                else
+                    toastProgressBarWidth -= decrementWidth;
+
+                StateHasChanged();
             }
         }
     }
@@ -143,7 +160,7 @@ public partial class Toast : BaseComponent, IDisposable
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Parameter] public ToastMessage ToastMessage { get; set; }
+    [Parameter] public ToastMessage ToastMessage { get; set; } = default!;
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.

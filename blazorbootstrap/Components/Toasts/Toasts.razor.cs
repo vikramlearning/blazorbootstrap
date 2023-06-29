@@ -63,15 +63,15 @@ public partial class Toasts : BaseComponent, IDisposable
 
     private void OnNotify(ToastMessage toastMessage)
     {
-        if (Messages is null)
-            Messages = new();
-
         if (toastMessage is null)
             return;
 
+        if (Messages is null)
+            Messages = new();
+
         Messages.Add(toastMessage);
 
-        StateHasChanged();
+        //StateHasChanged();
     }
 
     /// <inheritdoc />
@@ -95,12 +95,12 @@ public partial class Toasts : BaseComponent, IDisposable
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Inject] public ToastService ToastService { get; set; }
+    [Inject] public ToastService ToastService { get; set; } = default!;
 
     /// <summary>
     /// List of all the toasts.
     /// </summary>
-    [Parameter] public List<ToastMessage> Messages { get; set; }
+    [Parameter] public List<ToastMessage> Messages { get; set; } = default!;
 
     /// <summary>
     /// Auto hide the toast. Default is false.

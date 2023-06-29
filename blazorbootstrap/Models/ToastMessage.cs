@@ -21,6 +21,8 @@ public class ToastMessage : IEquatable<ToastMessage>
 
     internal string ElementId { get; private set; }
 
+    public bool AutoHide { get; set; }
+
     public ToastMessage()
     {
         this.Id = Guid.NewGuid();
@@ -77,6 +79,17 @@ public class ToastMessage : IEquatable<ToastMessage>
         this.Title = title;
         this.HelpText = helpText;
         this.Message = message;
+    }
+
+    public ToastMessage(ToastType type, string customIconName, string title, string helpText, string message, bool autoHide)
+    {
+        this.Id = Guid.NewGuid();
+        this.Type = type;
+        this.CustomIconName = customIconName;
+        this.Title = title;
+        this.HelpText = helpText;
+        this.Message = message;
+        this.AutoHide = autoHide;
     }
 
     internal void SetElementId(string elementId) => this.ElementId= elementId;

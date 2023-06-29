@@ -16,15 +16,6 @@ public partial class ProgressBar
 
     #region Methods
 
-    protected override void OnInitialized()
-    {
-        this.color = Color;
-        this.label = Label;
-        this.type = Type;
-        this.width = Width;
-        base.OnInitialized();
-    }
-
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.ProgressBar());
@@ -41,53 +32,18 @@ public partial class ProgressBar
         base.BuildStyles(builder);
     }
 
-    protected override void OnParametersSet()
-    {
-        var stateChanged = false;
-
-        if (this.color != Color)
-        {
-            this.color = Color;
-            stateChanged = true;
-        }
-
-        if (this.type != Type)
-        {
-            this.type = Type;
-            stateChanged = true;
-        }
-
-        if (this.width != Width)
-        {
-            if (Width < 0 || Width > 100)
-                throw new ArgumentOutOfRangeException("Width");
-
-            this.width = Width;
-            stateChanged = true;
-        }
-
-        if (stateChanged)
-        {
-            DirtyClasses();
-            DirtyStyles();
-            StateHasChanged();
-        }
-
-        base.OnParametersSet();
-    }
-
     /// <summary>
     /// Decrease the progress bar width.
     /// </summary>
     /// <param name="width"></param>
     public void DecreaseWidth(double width)
     {
-        if (width < 0 || width > 100 || this.width - width < 0)
+        if (width < 0 || width > 100)
             return;
-
-        this.width -= width;
-        DirtyStyles();
-        StateHasChanged();
+        else if (this.Width - width < 0)
+            this.Width = 0;
+        else
+            this.Width -= width;
     }
 
     /// <summary>
@@ -102,12 +58,12 @@ public partial class ProgressBar
     /// <param name="width"></param>
     public void IncreaseWidth(double width)
     {
-        if (width < 0 || width > 100 || this.width + width > 100)
+        if (width < 0 || width > 100)
             return;
-
-        this.width += width;
-        DirtyStyles();
-        StateHasChanged();
+        else if (this.Width + width > 100)
+            this.Width = 100;
+        else
+            this.Width += width;
     }
 
     /// <summary>
@@ -116,9 +72,7 @@ public partial class ProgressBar
     /// <param name="color"></param>
     public void SetColor(ProgressColor color)
     {
-        this.color = color;
-        DirtyClasses();
-        StateHasChanged();
+        this.Color = color;
     }
 
     /// <summary>
@@ -127,21 +81,19 @@ public partial class ProgressBar
     /// <param name="text"></param>
     public void SetLabel(string text)
     {
-        this.label = text;
+        this.Label = text;
     }
 
     /// <summary>
     /// Set the progress bar width.
     /// </summary>
-    /// <param name="barPercentage"></param>
-    public void SetWidth(double barPercentage)
+    /// <param name="width"></param>
+    public void SetWidth(double width)
     {
         if (width < 0 || width > 100)
             return;
 
-        this.width = barPercentage;
-        DirtyStyles();
-        StateHasChanged();
+        this.Width = width;
     }
 
     #endregion
@@ -154,7 +106,17 @@ public partial class ProgressBar
     /// <summary>
     /// Gets or sets the progress color.
     /// </summary>
-    [Parameter] public ProgressColor Color { get; set; }
+    [Parameter]
+    public ProgressColor Color
+    {
+        get => color;
+        set
+        {
+            color = value;
+            DirtyClasses();
+            StateHasChanged();
+        }
+    }
 
     /// <summary>
     /// Gets or sets the progress bar label.
@@ -169,12 +131,32 @@ public partial class ProgressBar
     /// <summary>
     /// Gets or sets the progress bar type.
     /// </summary>
-    [Parameter] public ProgressType Type { get; set; }
+    [Parameter]
+    public ProgressType Type
+    {
+        get => type;
+        set
+        {
+            type = value;
+            DirtyClasses();
+            StateHasChanged();
+        }
+    }
 
     /// <summary>
     /// Get or sets the progress bar width.
     /// </summary>
-    [Parameter] public double Width { get; set; }
+    [Parameter]
+    public double Width
+    {
+        get => width;
+        set
+        {
+            width = value;
+            DirtyStyles();
+            StateHasChanged();
+        }
+    }
 
     #endregion
 }
