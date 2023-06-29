@@ -21,7 +21,7 @@
                         @if (ShowCloseButton)
                         {
                             @*<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>*@
-                            <Icon Color="@closeIconColor" Name="IconName.XLg" role="button"></Icon>
+                            <Icon Color="@closeIconColor" Name="IconName.XLg" role="button" @onclick="HideAsync"></Icon>
                         }
                     </div>
                 }

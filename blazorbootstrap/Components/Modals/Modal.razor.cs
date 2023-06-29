@@ -77,6 +77,8 @@ public partial class Modal : BaseComponent
         showFooterButton = modalOption.ShowFooterButton;
         if (showFooterButton)
         {
+            footerButtonColor = modalOption.FooterButtonColor;
+            footerButtonCSSClass = modalOption.FooterButtonCSSClass;
             footerButtonText = modalOption.FooterButtonText;
             FooterCssClass = "border-top-0";
         }
