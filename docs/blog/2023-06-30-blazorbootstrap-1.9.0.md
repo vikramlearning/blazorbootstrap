@@ -26,6 +26,9 @@ We are excited to release 1.9.0 with Modal Service, Modal and Icon components up
 
 - `Icon` component
 
+- `Toasts` component
+  - ToastService.Notify method does not have AutoHide [#238](https://github.com/vikramlearning/blazorbootstrap/issues/238)
+
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)

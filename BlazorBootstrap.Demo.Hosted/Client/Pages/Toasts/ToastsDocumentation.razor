@@ -22,7 +22,12 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Auto hide" PageUrl="@pageUrl" HashTagName="auto-hide" />
 <div>Add <code>AutoHide="true"</code> parameter to hide the Blazor Toasts after the delay. The default delay is 5000 milliseconds, be sure to update the delay timeout so that users have enough time to read the toast.</div>
-<Demo Type="typeof(Toasts_Demo_03_Auto_Hide)" />
+<Demo Type="typeof(Toasts_Demo_03_A_Auto_Hide)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Auto hide individual messages" PageUrl="@pageUrl" HashTagName="auto-hide-individual-messages" />
+<div class="mb-3">Set <code>AutoHide="true"</code> property on <code>ToastMessage</code> to hide individual Blazor Toast message after the delay. The default delay is 5000 milliseconds, be sure to update the delay timeout so that users have enough time to read the toast.</div>
+<div>In the below example, <code>AutoHide="false"</code> for <b>Danger</b> and <b>Warning</b> messages.</div>
+<Demo Type="typeof(Toasts_Demo_03_B_Auto_Hide_Individual_Messages)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Placement" PageUrl="@pageUrl" HashTagName="placement" />
 <div>Change the Blazor Toasts placement according to your need. The default placement will be top right corner. Use the <code>ToastsPlacement</code> parameter to update the Blazor Toasts placement.</div>
