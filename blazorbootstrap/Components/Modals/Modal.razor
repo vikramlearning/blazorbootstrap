@@ -20,14 +20,21 @@
 
                         @if (ShowCloseButton)
                         {
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <Icon Color="@closeIconColor" Name="IconName.XLg" role="button" @onclick="HideAsync"></Icon>
                         }
                     </div>
                 }
+
                 @if (childComponent is not null)
                 {
                     <div class="modal-body @BodyCssClass">
                         <DynamicComponent Type="@childComponent" Parameters="@parameters" />
+                    </div>
+                }
+                else if (!string.IsNullOrWhiteSpace(message))
+                {
+                    <div class="modal-body @BodyCssClass">
+                        @message
                     </div>
                 }
                 else if (BodyTemplate != null)
@@ -36,10 +43,17 @@
                         @BodyTemplate
                     </div>
                 }
+
                 @if (FooterTemplate != null)
                 {
                     <div class="modal-footer @FooterCssClass">
                         @FooterTemplate
+                    </div>
+                }
+                else if (showFooterButton)
+                {
+                    <div class="modal-footer @FooterCssClass">
+                        <Button Class="@footerButtonCSSClass" Color="@footerButtonColor" data-bs-dismiss="modal" aria-label="Close">@footerButtonText</Button>
                     </div>
                 }
             }

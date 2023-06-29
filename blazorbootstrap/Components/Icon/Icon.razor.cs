@@ -15,6 +15,8 @@ namespace BlazorBootstrap
 
         private IconSize size = IconSize.None;
 
+        private IconColor color = IconColor.None;
+
         #endregion
 
         #region Methods
@@ -26,6 +28,7 @@ namespace BlazorBootstrap
             builder.Append(BootstrapIconProvider.Icon(Name), string.IsNullOrWhiteSpace(CustomIconName));
             builder.Append(customName, !string.IsNullOrWhiteSpace(CustomIconName));
             builder.Append(BootstrapIconProvider.IconSize(Size), Size != IconSize.None);
+            builder.Append(BootstrapClassProvider.IconColor(color), Color != IconColor.None);
 
             base.BuildClasses(builder);
         }
@@ -42,7 +45,8 @@ namespace BlazorBootstrap
         /// <summary>
         /// Icon name that can be either a string or <see cref="IconName"/>.
         /// </summary>
-        [Parameter] public IconName Name
+        [Parameter]
+        public IconName Name
         {
             get => name;
             set
@@ -56,7 +60,8 @@ namespace BlazorBootstrap
         /// <summary>
         /// Icon name that can be either a string or <see cref="IconName"/>.
         /// </summary>
-        [Parameter] public string CustomIconName
+        [Parameter]
+        public string CustomIconName
         {
             get => customName;
             set
@@ -70,7 +75,8 @@ namespace BlazorBootstrap
         /// <summary>
         /// Defines the icon size.
         /// </summary>
-        [Parameter] public IconSize Size
+        [Parameter]
+        public IconSize Size
         {
             get => size;
             set
@@ -80,6 +86,21 @@ namespace BlazorBootstrap
                 DirtyClasses();
             }
         }
+
+        /// <summary>
+        /// Gets or sets the icon color.
+        /// </summary>
+        [Parameter]
+        public IconColor Color
+        {
+            get => color;
+            set
+            {
+                color = value;
+                DirtyClasses();
+            }
+        }
+
 
         #endregion
     }

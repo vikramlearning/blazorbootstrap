@@ -12,6 +12,8 @@ public static class Config
         serviceCollection.AddSingleton<BootstrapClassProvider>();
         serviceCollection.AddSingleton<BootstrapIconProvider>();
         serviceCollection.AddScoped<IIdGenerator, IdGenerator>();
+
+        serviceCollection.AddScoped<ModalService>();
         serviceCollection.AddScoped<PreloadService>();
         serviceCollection.AddScoped<ToastService>();
 

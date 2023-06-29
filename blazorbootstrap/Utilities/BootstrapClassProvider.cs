@@ -167,6 +167,10 @@ namespace BlazorBootstrap.Utilities
         #region Modal
 
         public string Modal() => "modal";
+
+        public string ModalHeader(ModalType modalType) 
+            => $"text-bg-{ToModalTypeColor(modalType)} border-bottom {ToModalHeaderBottomBorderColor(modalType)}";
+
         public string ModalFade() => Fade();
 
         #endregion Modal
@@ -650,6 +654,21 @@ namespace BlazorBootstrap.Utilities
             };
         }
 
+        public string ToModalFullscreen(ModalFullscreen fullscreen)
+        {
+            return fullscreen switch
+            {
+                BlazorBootstrap.ModalFullscreen.Disabled => null,
+                BlazorBootstrap.ModalFullscreen.Always => "modal-fullscreen",
+                BlazorBootstrap.ModalFullscreen.SmallDown => "modal-fullscreen-sm-down",
+                BlazorBootstrap.ModalFullscreen.MediumDown => "modal-fullscreen-md-down",
+                BlazorBootstrap.ModalFullscreen.LargeDown => "modal-fullscreen-lg-down",
+                BlazorBootstrap.ModalFullscreen.ExtraLargeDown => "modal-fullscreen-xl-down",
+                BlazorBootstrap.ModalFullscreen.ExtraExtraLargeDown => "modal-fullscreen-xxl-down",
+                _ => null,
+            };
+        }
+
         public string ToModalSize(ModalSize size)
         {
             return size switch
@@ -662,17 +681,34 @@ namespace BlazorBootstrap.Utilities
             };
         }
 
-        public string ToModalFullscreen(ModalFullscreen fullscreen)
+        public string ToModalTypeColor(ModalType modalType)
         {
-            return fullscreen switch
+            return modalType switch
             {
-                BlazorBootstrap.ModalFullscreen.Disabled => null,
-                BlazorBootstrap.ModalFullscreen.Always => "modal-fullscreen",
-                BlazorBootstrap.ModalFullscreen.SmallDown => "modal-fullscreen-sm-down",
-                BlazorBootstrap.ModalFullscreen.MediumDown => "modal-fullscreen-md-down",
-                BlazorBootstrap.ModalFullscreen.LargeDown => "modal-fullscreen-lg-down",
-                BlazorBootstrap.ModalFullscreen.ExtraLargeDown => "modal-fullscreen-xl-down",
-                BlazorBootstrap.ModalFullscreen.ExtraExtraLargeDown => "modal-fullscreen-xxl-down",
+                BlazorBootstrap.ModalType.Primary => "primary",
+                BlazorBootstrap.ModalType.Secondary => "secondary",
+                BlazorBootstrap.ModalType.Success => "success",
+                BlazorBootstrap.ModalType.Danger => "danger",
+                BlazorBootstrap.ModalType.Warning => "warning",
+                BlazorBootstrap.ModalType.Info => "info",
+                BlazorBootstrap.ModalType.Light => "light",
+                BlazorBootstrap.ModalType.Dark => "dark",
+                _ => null,
+            };
+        }
+
+        public string ToModalHeaderBottomBorderColor(ModalType modalType)
+        {
+            return modalType switch
+            {
+                BlazorBootstrap.ModalType.Primary => "border-primary",
+                BlazorBootstrap.ModalType.Secondary => "border-secondary",
+                BlazorBootstrap.ModalType.Success => "border-success",
+                BlazorBootstrap.ModalType.Danger => "border-danger",
+                BlazorBootstrap.ModalType.Warning => "border-warning",
+                BlazorBootstrap.ModalType.Info => "border-info",
+                BlazorBootstrap.ModalType.Light => null,
+                BlazorBootstrap.ModalType.Dark => "border-dark",
                 _ => null,
             };
         }
