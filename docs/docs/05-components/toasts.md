@@ -36,6 +36,7 @@ Blazor Toasts are lightweight notifications designed to mimic the push notificat
 
 | Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
+| AutoHide | bool | Gets or sets the auto hide behavior to a message. | | false | 1.9.0 |
 | CustomIconName | string | Gets or sets the custom icon name. | | | 1.0.0 |
 | HelpText | string | Gets or sets the help text. | | | 1.0.0 |
 | IconName | `IconName` | Gets or sets the bootstarp icon name. | | | 1.0.0 |
@@ -165,6 +166,48 @@ Add `AutoHide="true"` parameter to hide the Blazor Toasts after the delay. The d
 ```
 
 [See auto hide toasts demo here.](https://demos.blazorbootstrap.com/toasts#auto-hide)
+
+### Auto hide individual messages
+
+Set `AutoHide="true"` property on **ToastMessage** to hide individual Blazor Toast message after the delay. The default delay is 5000 milliseconds, be sure to update the delay timeout so that users have enough time to read the toast.
+
+In the below example, `AutoHide="false"` for **Danger** and **Warning** messages.
+
+```cshtml {1} showLineNumbers
+<Toasts class="p-3" Messages="messages" Delay="6000" Placement="ToastsPlacement.TopRight" />
+
+<Button Color="ButtonColor.Primary" @onclick="() => ShowMessage(ToastType.Primary)">Primary Toast</Button>
+<Button Color="ButtonColor.Secondary" @onclick="() => ShowMessage(ToastType.Secondary)">Secondary Toast</Button>
+<Button Color="ButtonColor.Success" @onclick="() => ShowMessage(ToastType.Success)">Success Toast</Button>
+<Button Color="ButtonColor.Danger" @onclick="() => ShowMessage(ToastType.Danger)">Danger Toast</Button>
+<Button Color="ButtonColor.Warning" @onclick="() => ShowMessage(ToastType.Warning)">Warning Toast</Button>
+<Button Color="ButtonColor.Info" @onclick="() => ShowMessage(ToastType.Info)">Info Toast</Button>
+<Button Color="ButtonColor.Dark" @onclick="() => ShowMessage(ToastType.Dark)">Dark Toast</Button>
+```
+
+```cs {15} showLineNumbers
+@code {
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    private void ShowMessage(ToastType toastType) => messages.Add(CreateToastMessage(toastType));
+
+    private ToastMessage CreateToastMessage(ToastType toastType)
+    {
+        var toastMessage = new ToastMessage();
+
+        toastMessage.Type = toastType;
+        toastMessage.Title = "Blazor Bootstrap";
+        toastMessage.HelpText = $"{DateTime.Now}";
+        toastMessage.Message = $"Hello, world! This is a toast message. DateTime: {DateTime.Now}";
+        // disable auto hide for `danger` and `warning` messages.
+        toastMessage.AutoHide = !(toastType == ToastType.Danger || toastType == ToastType.Warning);
+
+        return toastMessage;
+    }
+}
+```
+
+[See auto hide individual toasts demo here.](https://demos.blazorbootstrap.com/toasts#auto-hide-individual-messages)
 
 ### Placement
 

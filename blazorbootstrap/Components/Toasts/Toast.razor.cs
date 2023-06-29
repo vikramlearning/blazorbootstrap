@@ -22,11 +22,6 @@ public partial class Toast : BaseComponent, IDisposable
 
     #region Methods
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
-
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Toast());
