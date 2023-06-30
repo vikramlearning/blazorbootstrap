@@ -8,7 +8,7 @@
             {
                 @if (!string.IsNullOrWhiteSpace(title) || HeaderTemplate != null || ShowCloseButton)
                 {
-                    <div class="modal-header @HeaderCssClass">
+                    <div class="modal-header @headerCssClassInternal @HeaderCssClass">
                         @if (!string.IsNullOrWhiteSpace(title))
                         {
                             <h5 class="modal-title">@title</h5>

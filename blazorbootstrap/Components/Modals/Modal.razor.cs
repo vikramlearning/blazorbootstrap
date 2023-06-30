@@ -26,6 +26,10 @@ public partial class Modal : BaseComponent
 
     private string modalFullscreen => BootstrapClassProvider.ToModalFullscreen(Fullscreen);
 
+    private ModalType modalType;
+
+    private string headerCssClassInternal => BootstrapClassProvider.ModalHeader(modalType);
+
     private IconColor closeIconColor;
 
     private bool showFooterButton = false;
@@ -68,7 +72,7 @@ public partial class Modal : BaseComponent
         if (modalOption is null)
             throw new ArgumentNullException(nameof(modalOption));
 
-        HeaderCssClass = BootstrapClassProvider.ModalHeader(modalOption.Type);
+        modalType = modalOption.Type;
 
         Size = modalOption.Size;
 
@@ -121,8 +125,9 @@ public partial class Modal : BaseComponent
         this.childComponent = type;
         this.parameters = parameters;
 
-        await JS.InvokeVoidAsync("window.blazorBootstrap.modal.show", ElementId);
         await InvokeAsync(StateHasChanged);
+
+        await JS.InvokeVoidAsync("window.blazorBootstrap.modal.show", ElementId);
     }
 
     /// <summary>
@@ -141,6 +146,9 @@ public partial class Modal : BaseComponent
         {
             await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId);
             objRef?.Dispose();
+
+            if (ModalService is not null)
+                ModalService.OnShow -= OnShowAsync;
         }
 
         await base.DisposeAsync(disposing);
@@ -235,7 +243,8 @@ public partial class Modal : BaseComponent
     public IconColor CloseIconColor
     {
         get => closeIconColor;
-        set {
+        set
+        {
             closeIconColor = value;
             DirtyClasses();
         }
