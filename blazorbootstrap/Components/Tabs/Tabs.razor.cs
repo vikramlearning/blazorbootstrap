@@ -28,11 +28,13 @@ public partial class Tabs : BaseComponent
 
     #region Members
 
-    private DotNetObjectReference<Tabs> objRef;
+    private DotNetObjectReference<Tabs> objRef = default!;
 
     private List<Tab> tabs = new List<Tab>();
 
-    private Tab activeTab;
+    private Tab activeTab = default!;
+
+    private bool isDefaultActiveTabSet = false;
 
     #endregion Members
 
@@ -60,11 +62,11 @@ public partial class Tabs : BaseComponent
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await base.OnAfterRenderAsync(firstRender);
-
         // Set active tab
-        if (firstRender)
+        if (firstRender && !isDefaultActiveTabSet)
             await SetDefaultActiveTabAsync();
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     /// <summary>
@@ -142,7 +144,13 @@ public partial class Tabs : BaseComponent
             await ShowTabAsync(tab.ElementId);
     }
 
-    private async Task ShowTabAsync(string elementId) => await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", elementId);
+    private async Task ShowTabAsync(string elementId)
+    {
+        if (!isDefaultActiveTabSet)
+            isDefaultActiveTabSet = true;
+
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", elementId);
+    }
 
     [JSInvokable]
     public async Task bsShowTab(string activeTabId, string previousActiveTabId)
@@ -203,19 +211,19 @@ public partial class Tabs : BaseComponent
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Get or sets the nav style.
-    /// </summary>
-    [Parameter] public NavStyle NavStyle { get; set; } = NavStyle.Tabs;
-
-    /// <summary>
     /// Specifies the content to be rendered inside this.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the tabs fade effect.
     /// </summary>
     [Parameter] public bool EnableFadeEffect { get; set; }
+
+    /// <summary>
+    /// Get or sets the nav style.
+    /// </summary>
+    [Parameter] public NavStyle NavStyle { get; set; } = NavStyle.Tabs;
 
     #endregion Properties
 }

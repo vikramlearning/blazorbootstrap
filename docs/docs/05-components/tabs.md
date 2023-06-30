@@ -289,6 +289,8 @@ You can activate individual tabs in several ways. Use predefined methods `ShowFi
 }
 ```
 
+[See demo here.](https://demos.blazorbootstrap.com/tabs#activate-individual-tabs)
+
 ### Callback Events
 
 When showing a new tab, the events fire in the following order:
@@ -303,3 +305,68 @@ If no tab was already active, then the `OnHiding` and `OnHidden` events will not
 :::
 
 [See demo here.](https://demos.blazorbootstrap.com/tabs#events)
+
+
+### Set active tab OnAfterRender
+
+<img src="https://i.imgur.com/NdE5oqH.png" alt="Blazor Tabs Component - Activate individual tabs" />
+
+```cshtml showLineNumbers
+<Tabs @ref="tabs">
+    <Tab Title="Home">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Home</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Profile</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Contact</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="About">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>About</b> tab.</p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+```cs showLineNumbers
+@code {
+    Tabs tabs = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            string userDefaultPreferredTab = "Profile"; // Get the value from Service / API
+
+            switch (userDefaultPreferredTab)
+            {
+                case "Home":
+                    await tabs.ShowTabByIndexAsync(0);
+                    break;
+                case "Profile":
+                    await tabs.ShowTabByIndexAsync(1);                    
+                    break;
+                case "Contact":
+                    await tabs.ShowTabByIndexAsync(2);
+                    break;
+                case "About":
+                    await tabs.ShowTabByIndexAsync(3);
+                    break;
+                default:
+                    await tabs.ShowTabByIndexAsync(0);
+                    break;
+            }
+        }
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#set-active-tab-onafterrender)
