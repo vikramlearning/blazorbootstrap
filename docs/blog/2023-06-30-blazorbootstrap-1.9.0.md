@@ -10,7 +10,7 @@ tags: [v1.8.3, blazor, bootstrap, bootstrap5, blazorbootstrap, modal, blazormoda
 
 We are excited to release 1.9.0 with Modal Service, Modals, Icons, Toasts, and Tabs updates!!!
 
-![image](https://i.imgur.com/Tze7msN.png "Blazor Bootstrap: Grid Component")
+![image](https://i.imgur.com/vIELA4s.png "Blazor Bootstrap: Modal Component")
 
 <!--truncate-->
 
