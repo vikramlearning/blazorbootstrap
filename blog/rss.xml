@@ -4,10 +4,33 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Fri, 16 Jun 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 30 Jun 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.9.0]]></title>
+            <link>https://getblazorbootstrap.com/blog/2023/06/30/blazorbootstrap-1.9.0</link>
+            <guid>/2023/06/30/blazorbootstrap-1.9.0</guid>
+            <pubDate>Fri, 30 Jun 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.9.0 with Modal Service, Modals, Icons, Toasts, and Tabs updates!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.9.0 with Modal Service, Modals, Icons, Toasts, and Tabs updates!!!</p><p><img loading="lazy" src="https://i.imgur.com/Tze7msN.png" alt="image" title="Blazor Bootstrap: Grid Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's new<a class="hash-link" href="#whats-new" title="Direct link to heading">​</a></h2><ul><li><code>Modal</code> service<ul><li>Global service for the application</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><p><code>Modal</code> component</p><ul><li>Dynamic modal title does not work when using static content <a href="https://github.com/vikramlearning/blazorbootstrap/issues/242" target="_blank" rel="noopener noreferrer">#242</a></li></ul></li><li><p><code>Icon</code> component</p><ul><li>New <code>Color</code> parameter added </li></ul></li><li><p><code>Toasts</code> component</p><ul><li>ToastService.Notify method does not have AutoHide <a href="https://github.com/vikramlearning/blazorbootstrap/issues/238" target="_blank" rel="noopener noreferrer">#238</a></li></ul></li><li><p><code>Tabs</code> component</p><ul><li>ShowTabByIndexAsync not working after OnAfterRenderAsync <a href="https://github.com/vikramlearning/blazorbootstrap/issues/243" target="_blank" rel="noopener noreferrer">#243</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/modal" target="_blank" rel="noopener noreferrer">Blazor Modal Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/services/modal" target="_blank" rel="noopener noreferrer">Blazor Modal Service Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/content/icons" target="_blank" rel="noopener noreferrer">Blazor Icon Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/toasts" target="_blank" rel="noopener noreferrer">Blazor Toasts Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/tabs" target="_blank" rel="noopener noreferrer">Blazor Tabs Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.8.3</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>modal</category>
+            <category>blazormodal</category>
+            <category>icon</category>
+            <category>blazoricon</category>
+            <category>modalservice</category>
+            <category>blazormodalservice</category>
+            <category>toasts</category>
+            <category>blazortoasts</category>
+            <category>tabs</category>
+            <category>blazortabs</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.8.3]]></title>
             <link>https://getblazorbootstrap.com/blog/2023/06/16/blazorbootstrap-1.8.3</link>
