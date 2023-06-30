@@ -23,16 +23,15 @@ Blazor Bootstrap icon component will display an icon from any icon font.
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default |
-|--|--|--|--|--|
-| CustomIconName | string | Specify custom icons of your own, like `fontawesome`. Example: `fas fa-alarm-clock` | ✔️ | |
-| Name | `IconName` | Gets or sets the icon name. | ✔️ | |
-| Size | `IconSize` | Gets or sets the icon size. | | `IconSize.None` |
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Color | `IconColor` | Gets or sets the icon color. | | `IconColor.None` | 1.9.0 |
+| CustomIconName | string | Specify custom icons of your own, like `fontawesome`. Example: `fas fa-alarm-clock` | ✔️ | | 1.0.0 |
+| Name | `IconName` | Gets or sets the icon name. | ✔️ | | 1.0.0 |
+| Size | `IconSize` | Gets or sets the icon size. | | `IconSize.None` | 1.0.0 |
 
 :::caution NOTE
-
 Either `Name` or `CustomIconName` parameter is mandatory.
-
 :::
 
 ## Examples
@@ -41,36 +40,51 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 <img src="https://i.imgur.com/WClg4kQ.jpg" alt="Blazor Bootstrap: Icon Component" />
 
-```cshtml
-<p>
-    <Icon Name="IconName.Alarm"></Icon>
-    <Icon Name="IconName.AlarmFill"></Icon>
-</p>
+```cshtml {} showLineNumbers
+<Icon Name="IconName.Alarm" />
+<Icon Name="IconName.AlarmFill" />
+<Icon Name="IconName.Window" />
+<Icon Name="IconName.Apple" />
 ```
 [See icons demo here.](https://demos.blazorbootstrap.com/icons#examples)
 
 ### Sizes
 
-<img src="https://i.imgur.com/ko7c6k3.jpg" alt="Blazor Bootstrap: Icon Component" />
+<img src="https://i.imgur.com/ko7c6k3.jpg" alt="Blazor Bootstrap: Icon Component - Sizes" />
 
-```cshtml
-<p>
-    <Icon Name="IconName.Alarm" Size="IconSize.x2"></Icon>
-    <Icon Name="IconName.Alarm" Size="IconSize.x3"></Icon>
-    <Icon Name="IconName.Alarm" Size="IconSize.x4"></Icon>
-    <Icon Name="IconName.Alarm" Size="IconSize.x5"></Icon>
-</p>
+```cshtml {} showLineNumbers
+<Icon Name="IconName.Alarm" Size="IconSize.x2" />
+<Icon Name="IconName.Alarm" Size="IconSize.x3" />
+<Icon Name="IconName.Alarm" Size="IconSize.x4" />
+<Icon Name="IconName.Alarm" Size="IconSize.x5" />
 ```
 [See icons with different size demo here.](https://demos.blazorbootstrap.com/icons#sizes)
+
+### Colors
+
+<img src="https://i.imgur.com/pUutAt8.png" alt="Blazor Bootstrap: Icon Component - Colors" />
+
+```cshtml {} showLineNumbers
+<Icon Name="IconName.Facebook" Size="IconSize.x2" Color="IconColor.Primary" />
+<Icon Name="IconName.CloudLightningRainFill" Size="IconSize.x2" Color="IconColor.Secondary" />
+<Icon Name="IconName.CheckAll" Size="IconSize.x2" Color="IconColor.Success" />
+<Icon Name="IconName.Bug" Size="IconSize.x2" Color="IconColor.Danger" />
+<Icon Name="IconName.ExclamationDiamondFill" Size="IconSize.x2" Color="IconColor.Warning" />
+<Icon Name="IconName.InfoCircleFill" Size="IconSize.x2" Color="IconColor.Info" />
+<Icon Name="IconName.CreditCard2FrontFill" Size="IconSize.x2" Color="IconColor.Light" />
+<Icon Name="IconName.Apple" Size="IconSize.x2" Color="IconColor.Dark" />
+<Icon Name="IconName.Asterisk" Size="IconSize.x2" Color="IconColor.Body" />
+<Icon Name="IconName.VolumeMuteFill" Size="IconSize.x2" Color="IconColor.Muted" />
+<Icon Name="IconName.BrowserSafari" Size="IconSize.x2" Color="IconColor.White" />
+```
+[See icons with different size demo here.](https://demos.blazorbootstrap.com/icons#colors)
 
 ### Inline text with icon
 
 <img src="https://i.imgur.com/eNKFAKg.jpg" alt="Blazor Bootstrap: Icon Component - Inline text with icon" />
 
-```cshtml
-<p>
-    Inline text <Icon Name="IconName.Alarm" />
-</p>
+```cshtml {} showLineNumbers
+Inline text <Icon Name="IconName.Alarm" />
 ```
 [See inline text with icon demo here.](https://demos.blazorbootstrap.com/icons#inline-text-with-icon)
 
@@ -78,12 +92,10 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 <img src="https://i.imgur.com/pDpv29z.jpg" alt="Blazor Bootstrap: Icon Component - Link with icon" />
 
-```cshtml
-<p>
-    <a href="#" class="text-decoration-none">
-        Example link text <Icon Name="IconName.Alarm" />
-    </a>
-</p>
+```cshtml {} showLineNumbers
+<a href="#" class="text-decoration-none">
+    Example link text <Icon Name="IconName.Alarm" />
+</a>
 ```
 [See link with icon demo here.](https://demos.blazorbootstrap.com/icons#link-with-icon)
 
@@ -91,12 +103,10 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 <img src="https://i.imgur.com/KNFvgiS.jpg" alt="Blazor Bootstrap: Icon Component - Link with custom icon" />
 
-```cshtml
-<p>
-    <a href="#" class="text-decoration-none">
-        Example link text <Icon CustomIconName="bi bi-bootstrap" />
-    </a>
-</p>
+```cshtml {} showLineNumbers
+<a href="#" class="text-decoration-none">
+    Example link text <Icon CustomIconName="bi bi-bootstrap" />
+</a>
 ```
 [See link with custom icon demo here.](https://demos.blazorbootstrap.com/icons#link-with-custom-icon)
 
@@ -104,12 +114,10 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 <img src="https://i.imgur.com/Pkzbm1Q.jpg" alt="Blazor Bootstrap: Icon Component - Button with icon and text" />
 
-```cshtml
-<p>
-    <Button Color="ButtonColor.Primary"><Icon Name="IconName.Alarm" /> Button </Button>
-    <Button Color="ButtonColor.Success"><Icon Name="IconName.Alarm" /> Button </Button>
-    <Button Color="ButtonColor.Danger" Outline="true"><Icon Name="IconName.AlarmFill" /> Button </Button>
-</p>
+```cshtml {} showLineNumbers
+<Button Color="ButtonColor.Primary"><Icon Name="IconName.Alarm" /> Button </Button>
+<Button Color="ButtonColor.Success"><Icon Name="IconName.Alarm" /> Button </Button>
+<Button Color="ButtonColor.Danger" Outline="true"><Icon Name="IconName.AlarmFill" /> Button </Button>
 ```
 [See button with icon and text demo here.](https://demos.blazorbootstrap.com/icons#button-with-icon-and-text)
 
@@ -117,10 +125,8 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 
 <img src="https://i.imgur.com/3WClQmS.jpg" alt="Blazor Bootstrap: Icon Component - Button with icon only" />
 
-```cshtml
-<p>
-    <Button Color="ButtonColor.Secondary"><Icon Name="IconName.Alarm" /></Button>
-</p>
+```cshtml {} showLineNumbers
+<Button Color="ButtonColor.Secondary"><Icon Name="IconName.Alarm" /></Button>
 ```
 [See button with icon only demo here.](https://demos.blazorbootstrap.com/icons#button-with-icon-only)
 

@@ -11,7 +11,7 @@ namespace BlazorBootstrap
 
         private IconName name;
 
-        private string customName;
+        private string customName = default!;
 
         private IconSize size = IconSize.None;
 
@@ -40,52 +40,7 @@ namespace BlazorBootstrap
         /// <summary>
         /// An icon provider that is responsible to give the icon a class-name.
         /// </summary>
-        [Inject] protected BootstrapIconProvider BootstrapIconProvider { get; set; }
-
-        /// <summary>
-        /// Icon name that can be either a string or <see cref="IconName"/>.
-        /// </summary>
-        [Parameter]
-        public IconName Name
-        {
-            get => name;
-            set
-            {
-                name = value;
-
-                DirtyClasses();
-            }
-        }
-
-        /// <summary>
-        /// Icon name that can be either a string or <see cref="IconName"/>.
-        /// </summary>
-        [Parameter]
-        public string CustomIconName
-        {
-            get => customName;
-            set
-            {
-                customName = value;
-
-                DirtyClasses();
-            }
-        }
-
-        /// <summary>
-        /// Defines the icon size.
-        /// </summary>
-        [Parameter]
-        public IconSize Size
-        {
-            get => size;
-            set
-            {
-                size = value;
-
-                DirtyClasses();
-            }
-        }
+        [Inject] protected BootstrapIconProvider BootstrapIconProvider { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the icon color.
@@ -101,6 +56,47 @@ namespace BlazorBootstrap
             }
         }
 
+        /// <summary>
+        /// Icon name that can be either a string or <see cref="IconName"/>.
+        /// </summary>
+        [Parameter]
+        public string CustomIconName
+        {
+            get => customName;
+            set
+            {
+                customName = value;
+                DirtyClasses();
+            }
+        }
+
+        /// <summary>
+        /// Icon name that can be either a string or <see cref="IconName"/>.
+        /// </summary>
+        [Parameter]
+        public IconName Name
+        {
+            get => name;
+            set
+            {
+                name = value;
+                DirtyClasses();
+            }
+        }
+
+        /// <summary>
+        /// Defines the icon size.
+        /// </summary>
+        [Parameter]
+        public IconSize Size
+        {
+            get => size;
+            set
+            {
+                size = value;
+                DirtyClasses();
+            }
+        }
 
         #endregion
     }
