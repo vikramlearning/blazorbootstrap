@@ -141,6 +141,9 @@ public partial class Modal : BaseComponent
         {
             await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId);
             objRef?.Dispose();
+
+            if (ModalService is not null)
+                ModalService.OnShow -= OnShowAsync;
         }
 
         await base.DisposeAsync(disposing);
