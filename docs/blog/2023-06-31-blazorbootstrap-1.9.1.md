@@ -5,7 +5,7 @@ authors:
   title: Creator
   url: https://github.com/gvreddy04
   image_url: https://avatars.githubusercontent.com/u/2337067
-tags: [v1.8.3, blazor, bootstrap, bootstrap5, blazorbootstrap, modal, blazormodal]
+tags: [v1.9.1, blazor, bootstrap, bootstrap5, blazorbootstrap, modal, blazormodal]
 ---
 
 We are excited to release 1.9.1 with Modal Service updates!!!
