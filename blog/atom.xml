@@ -18,13 +18,36 @@
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
-        <category label="v1.8.3" term="v1.8.3"/>
+        <category label="v1.9.1" term="v1.9.1"/>
         <category label="blazor" term="blazor"/>
         <category label="bootstrap" term="bootstrap"/>
         <category label="bootstrap5" term="bootstrap5"/>
         <category label="blazorbootstrap" term="blazorbootstrap"/>
         <category label="modal" term="modal"/>
         <category label="blazormodal" term="blazormodal"/>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.9.2]]></title>
+        <id>/2023/07/01/blazorbootstrap-1.9.2</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/07/01/blazorbootstrap-1.9.2"/>
+        <updated>2023-07-01T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.9.2 with New Breadcrumb service and Toast Service updates!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.9.2 with New Breadcrumb service and Toast Service updates!!!</p><p><img loading="lazy" src="https://i.imgur.com/W1YkmJH.png" alt="image" title="Blazor Bootstrap: Toast Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's new<a class="hash-link" href="#whats-new" title="Direct link to heading">​</a></h2><ul><li><code>Breadcrumb</code> service<ul><li>Global service for the application</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Toast</code> service<ul><li>ToastService not working anymore in version 1.9.1 <a href="https://github.com/vikramlearning/blazorbootstrap/issues/261" target="_blank" rel="noopener noreferrer">#261</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.9.2" term="v1.9.2"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="breadcrumbservice" term="breadcrumbservice"/>
+        <category label="breadcrumb" term="breadcrumb"/>
+        <category label="blazorbreadcrumb" term="blazorbreadcrumb"/>
+        <category label="toast" term="toast"/>
+        <category label="blazortoast" term="blazortoast"/>
+        <category label="toastservice" term="toastservice"/>
     </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.9.0]]></title>
@@ -37,7 +60,7 @@
             <name>Vikram Reddy</name>
             <uri>https://github.com/gvreddy04</uri>
         </author>
-        <category label="v1.8.3" term="v1.8.3"/>
+        <category label="v1.9.0" term="v1.9.0"/>
         <category label="blazor" term="blazor"/>
         <category label="bootstrap" term="bootstrap"/>
         <category label="bootstrap5" term="bootstrap5"/>
