@@ -5,7 +5,7 @@ authors:
   title: Creator
   url: https://github.com/gvreddy04
   image_url: https://avatars.githubusercontent.com/u/2337067
-tags: [v1.8.3, blazor, bootstrap, bootstrap5, blazorbootstrap, modal, blazormodal, icon, blazoricon, modalservice, blazormodalservice, icon, blazoricon, toasts, blazortoasts, tabs, blazortabs]
+tags: [v1.9.0, blazor, bootstrap, bootstrap5, blazorbootstrap, modal, blazormodal, icon, blazoricon, modalservice, blazormodalservice, icon, blazoricon, toasts, blazortoasts, tabs, blazortabs]
 ---
 
 We are excited to release 1.9.0 with Modal Service, Modals, Icons, Toasts, and Tabs updates!!!
