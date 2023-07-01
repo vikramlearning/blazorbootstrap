@@ -71,7 +71,7 @@ public partial class Toasts : BaseComponent, IDisposable
 
         Messages.Add(toastMessage);
 
-        //StateHasChanged();
+        StateHasChanged();
     }
 
     /// <inheritdoc />
