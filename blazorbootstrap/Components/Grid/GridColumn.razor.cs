@@ -243,21 +243,18 @@ public partial class GridColumn<TItem>
 
                     if (this.CanSort())
                     {
-                        //if (currentSortDirection != SortDirection.None)
-                        {
-                            builder.OpenElement(108, "span");
-                            builder.OpenElement(109, "i");
+                        builder.OpenElement(108, "span");
+                        builder.OpenElement(109, "i");
 
-                            var sortIcon = "bi bi-arrow-down-up"; // TODO: Add Parameter for this
-                            if (currentSortDirection != SortDirection.None && currentSortDirection == SortDirection.Ascending)
-                                sortIcon = "bi bi-sort-alpha-down";
-                            else if (currentSortDirection != SortDirection.None && currentSortDirection == SortDirection.Descending)
-                                sortIcon = "bi bi-sort-alpha-down-alt";
+                        var sortIcon = "bi bi-arrow-down-up"; // default icon
+                        if (currentSortDirection != SortDirection.None && currentSortDirection == SortDirection.Ascending)
+                            sortIcon = "bi bi-sort-alpha-down";
+                        else if (currentSortDirection != SortDirection.None && currentSortDirection == SortDirection.Descending)
+                            sortIcon = "bi bi-sort-alpha-down-alt";
 
-                            builder.AddAttribute(110, "class", sortIcon);
-                            builder.CloseElement(); // close: i
-                            builder.CloseElement(); // close: span
-                        }
+                        builder.AddAttribute(110, "class", sortIcon);
+                        builder.CloseElement(); // close: i
+                        builder.CloseElement(); // close: span
                     }
                 }
                 else
