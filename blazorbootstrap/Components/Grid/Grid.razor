@@ -11,7 +11,7 @@
     <div class="@responsiveCssClass">
         <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
             <thead>
-                <tr>
+                <tr class="@HeaderRowCssClass">
                     @if (AllowSelection)
                     {
                         @HeaderSelectionTemplate
@@ -23,14 +23,14 @@
                 </tr>
                 @if (AllowFiltering)
                 {
-                    <tr>
+                    <tr class="@FiltersRowCssClass">
                         @if (AllowSelection)
                         {
                             <th></th>
                         }
                         @foreach (var column in columns)
                         {
-                            <th>
+                            <th class="@column.Class">
                                 @if (column.Filterable)
                                 {
                                     <GridColumnFilter PropertyTypeName="@column.GetPropertyTypeName()"

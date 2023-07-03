@@ -164,6 +164,11 @@ public partial class GridColumn<TItem>
     /// </summary>
     [Parameter] public string FilterValue { get; set; } = default!;
 
+    ///// <summary>
+    ///// Gets or sets the column css class.
+    ///// </summary>
+    //[Parameter] public string ColumnCssClass { get; set; } = default!;
+
     /// <summary>
     /// Gets or sets the StringComparison.
     /// </summary>
@@ -236,20 +241,23 @@ public partial class GridColumn<TItem>
                     builder.AddContent(107, HeaderText);
                     builder.CloseElement(); // close: span
 
-                    if (this.CanSort() && currentSortDirection != SortDirection.None)
+                    if (this.CanSort())
                     {
-                        builder.OpenElement(108, "span");
-                        builder.OpenElement(109, "i");
+                        //if (currentSortDirection != SortDirection.None)
+                        {
+                            builder.OpenElement(108, "span");
+                            builder.OpenElement(109, "i");
 
-                        var sortIcon = ""; // TODO: Add Parameter for this
-                        if (currentSortDirection == SortDirection.Ascending)
-                            sortIcon = "bi bi-sort-alpha-down";
-                        else if (currentSortDirection == SortDirection.Descending)
-                            sortIcon = "bi bi-sort-alpha-down-alt";
+                            var sortIcon = "bi bi-arrow-down-up"; // TODO: Add Parameter for this
+                            if (currentSortDirection != SortDirection.None && currentSortDirection == SortDirection.Ascending)
+                                sortIcon = "bi bi-sort-alpha-down";
+                            else if (currentSortDirection != SortDirection.None && currentSortDirection == SortDirection.Descending)
+                                sortIcon = "bi bi-sort-alpha-down-alt";
 
-                        builder.AddAttribute(110, "class", sortIcon);
-                        builder.CloseElement(); // close: i
-                        builder.CloseElement(); // close: span
+                            builder.AddAttribute(110, "class", sortIcon);
+                            builder.CloseElement(); // close: i
+                            builder.CloseElement(); // close: span
+                        }
                     }
                 }
                 else
