@@ -236,15 +236,15 @@ public partial class GridColumn<TItem>
                     builder.AddContent(107, HeaderText);
                     builder.CloseElement(); // close: span
 
-                    if (this.CanSort() && currentSortDirection != SortDirection.None)
+                    if (this.CanSort())
                     {
                         builder.OpenElement(108, "span");
                         builder.OpenElement(109, "i");
 
-                        var sortIcon = ""; // TODO: Add Parameter for this
-                        if (currentSortDirection == SortDirection.Ascending)
+                        var sortIcon = "bi bi-arrow-down-up"; // default icon
+                        if (currentSortDirection != SortDirection.None && currentSortDirection == SortDirection.Ascending)
                             sortIcon = "bi bi-sort-alpha-down";
-                        else if (currentSortDirection == SortDirection.Descending)
+                        else if (currentSortDirection != SortDirection.None && currentSortDirection == SortDirection.Descending)
                             sortIcon = "bi bi-sort-alpha-down-alt";
 
                         builder.AddAttribute(110, "class", sortIcon);

@@ -28,6 +28,8 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | DisableRowSelection | `Func<TItem, bool>?` | | | Enable or disable the row level checkbox selection. | 1.8.0 |
 | EmptyDataTemplate | RenderFragment | | ✔️ | Template to render when there are no rows to display. | 1.0.0 |
 | EmptyText | string | No records to display | | Shows text on no records. | 1.0.0 |
+| FiltersRowCssClass | string | | | Gets or sets the filters row css class. | 1.9.2 |
+| HeaderRowCssClass | string | | | Gets or sets the header row css class but not the thead tag class. | 1.9.2 |
 | PageSize | int | 10 | | Gets or sets the page size of the grid. | 1.0.0 |
 | PageSizeSelectorItems | int[] | new int[] { 10, 20, 50 } | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
 | PageSizeSelectorVisible | bool | false | ✔️ | Gets or sets the page size selector visible. | 1.8.0 |
@@ -1561,6 +1563,7 @@ In the below example, we use `<HeaderContent>` and `<ChildContent>` tags to defi
 ```
 
 ### Selection
+
 Set `AllowSelection="true"` to enable the selection on the Grid. By default, SelectionMode is **Single**.
 
 <img src="https://i.imgur.com/u1lV12d.png" alt="Blazor Bootstrap: Grid Component - Selection" />
@@ -1646,7 +1649,10 @@ Set `AllowSelection="true"` to enable the selection on the Grid. By default, Sel
 }
 ```
 
+[See demo here](https://demos.blazorbootstrap.com/grid#selection)
+
 ### Multiple selection
+
 To select multiple rows, set `SelectionMode="GridSelectionMode.Multiple"`.
 
 <img src="https://i.imgur.com/yzJETf8.png" alt="Blazor Bootstrap: Grid Component - Multiple selection" />
@@ -1733,7 +1739,10 @@ To select multiple rows, set `SelectionMode="GridSelectionMode.Multiple"`.
 }
 ```
 
+[See demo here](https://demos.blazorbootstrap.com/grid#multiple-selection)
+
 ### Disable selection
+
 We can disable the header checkbox or row level checkbox based on a condition. 
 For this, we have `DisableAllRowsSelection` and `DisableRowSelection` delegate parameters. 
 In the below example, we disabled the header checkbox if any of the employee Id is less than 105. 
@@ -1833,6 +1842,8 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 }
 ```
 
+[See demo here](https://demos.blazorbootstrap.com/grid#disable-selection)
+
 ### Dynamic page size
 
 <img src="https://user-images.githubusercontent.com/2337067/239613002-c7b4b6f6-be67-4f14-accc-b3dd390eb0f9.png" alt="Blazor Bootstrap: Grid Component - Dynamic page size" />
@@ -1904,6 +1915,8 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 }
 ```
 
+[See demo here](https://demos.blazorbootstrap.com/grid#dynamic-page-size)
+
 ### Page size selection
 
 <img src="https://user-images.githubusercontent.com/2337067/239613340-3917f4fa-a252-4e5e-a3b5-27b83304cbc2.png" alt="Blazor Bootstrap: Grid Component - Page size selection" />
@@ -1969,3 +1982,408 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
     }
 }
 ```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#page-size-selection)
+
+### Header row css class
+
+<img src="https://i.imgur.com/KIqBefV.png" alt="Blazor Bootstrap: Grid Component - Header row css class" />
+
+```cshtml {5,34,63,92} showLineNumbers
+<Grid TItem="Employee1"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-primary text-white border-bottom-0"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<Grid TItem="Employee1"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-primary text-white bg-opacity-75 border-bottom-0"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<Grid TItem="Employee1"
+             AllowSorting="true"
+             Class="table table-hover"
+             DataProvider="EmployeesDataProvider"
+             HeaderRowCssClass="bg-success text-white border-bottom-0"
+             Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<Grid TItem="Employee1"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-success text-white bg-opacity-75 border-bottom-0"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+```
+
+```cs {} showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+        };
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#header-row-css-class)
+
+### Filters row css class
+
+<img src="https://i.imgur.com/11SK9v4.png" alt="Blazor Bootstrap: Grid Component - Filters row css class" />
+
+```cshtml {7,38,69,100,131,162,193} showLineNumbers
+<Grid TItem="Employee1"
+      AllowFiltering="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-primary text-white border-bottom-0"
+      FiltersRowCssClass="bg-primary text-white bg-opacity-25 border-bottom-0"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<Grid TItem="Employee1"
+      AllowFiltering="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-warning text-white border-bottom-0"
+      FiltersRowCssClass="bg-warning text-white bg-opacity-25 border-bottom-0"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<Grid TItem="Employee1"
+      AllowFiltering="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-danger text-white border-bottom-0"
+      FiltersRowCssClass="bg-danger text-white bg-opacity-25 border-bottom-0"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<Grid TItem="Employee1"
+      AllowFiltering="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-success text-white border-bottom-0"
+      FiltersRowCssClass="bg-success text-white bg-opacity-25 border-bottom-0"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<Grid TItem="Employee1"
+      AllowFiltering="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-info text-white border-bottom-0"
+      FiltersRowCssClass="bg-info text-white bg-opacity-25 border-bottom-0"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<Grid TItem="Employee1"
+      AllowFiltering="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-dark text-white border-bottom-0"
+      FiltersRowCssClass="bg-dark text-white bg-opacity-25 border-bottom-0"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+
+<Grid TItem="Employee1"
+      AllowFiltering="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-secondary text-white border-bottom-0"
+      FiltersRowCssClass="bg-secondary text-white bg-opacity-25 border-bottom-0"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+```
+
+```cs {} showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+        };
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#filters-row-css-class)

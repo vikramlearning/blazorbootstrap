@@ -141,6 +141,9 @@
     To select multiple rows, set <code>SelectionMode="GridSelectionMode.Multiple"</code>.
 </div>
 <Demo Type="typeof(Grid_Demo_22_Multiple_Selection)" Tabs="true" />
+<Callout Type="CalloutType.Danger" Heading="Note">
+    <p>Selected items are removed from the selection if they are not rendered after paging, sorting, filtering, etc.</p>
+</Callout>
 
 <SectionHeading Size="HeadingSize.H2" Text="Disable Selection" PageUrl="@pageUrl" HashTagName="disable-selection" />
 <div class="mb-3">
@@ -157,6 +160,14 @@
 <SectionHeading Size="HeadingSize.H2" Text="Page size selection" PageUrl="@pageUrl" HashTagName="page-size-selection" />
 <div class="mb-3"></div>
 <Demo Type="typeof(Grid_Demo_25_Page_Size_Selection)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Header row css class" PageUrl="@pageUrl" HashTagName="header-row-css-class" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_26_Header_Row_CSS_Class)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Filters row css class" PageUrl="@pageUrl" HashTagName="filters-row-css-class" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_27_Filters_Row_CSS_Class)" Tabs="true" />
 
 @code {
     private string pageUrl = "/grid";

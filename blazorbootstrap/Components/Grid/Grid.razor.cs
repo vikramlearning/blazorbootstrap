@@ -278,7 +278,7 @@ public partial class Grid<TItem> : BaseComponent
 
                 gridCurrentState = new GridState<TItem>(gridCurrentState.PageIndex, c.GetSorting());
             }
-            else if (c.ElementId == column.ElementId && c.SortDirection != SortDirection.None)
+            else if (c.ElementId == column.ElementId && c.SortDirection != SortDirection.None) // TODO: this condition is not required. 1 -> ASC, 2 -> DESC, 3 -> None. Here 3 scenario is not working
             {
                 gridCurrentState = new GridState<TItem>(gridCurrentState.PageIndex, c.GetSorting());
             }
@@ -595,9 +595,20 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public string EmptyText { get; set; } = "No records to display";
 
     /// <summary>
+    /// Gets or sets the filters row css class.
+    /// </summary>
+    [Parameter] public string FiltersRowCssClass { get; set; } = default!;
+
+
+    /// <summary>
     /// This event is fired when the grid state is changed.
     /// </summary>
     [Parameter] public EventCallback<GridSettings> GridSettingsChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the header row css class but not the thead tag class.
+    /// </summary>
+    [Parameter] public string HeaderRowCssClass { get; set; } = default!;
 
     /// <summary>
     /// Header selection template.
