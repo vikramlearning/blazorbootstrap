@@ -2,11 +2,30 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-07-01T00:00:00.000Z</updated>
+    <updated>2023-07-04T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.9.3]]></title>
+        <id>/2023/07/04/blazorbootstrap-1.9.3</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/07/04/blazorbootstrap-1.9.3"/>
+        <updated>2023-07-04T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.9.3 with Grid component updates!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.9.3 with Grid component updates!!!</p><p><img loading="lazy" src="https://i.imgur.com/11SK9v4.png" alt="image" title="Blazor Bootstrap: Grid Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><code>Grid</code> service<ul><li>New <code>HeaderRowCssClass</code> parameter</li><li>New <code>FiltersRowCssClass</code> parameter</li><li>Default sorting icon to indicate the column is sortable</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Blazor Grid Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.9.3" term="v1.9.3"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="grid" term="grid"/>
+        <category label="blazorgrid" term="blazorgrid"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.9.1]]></title>
         <id>/2023/06/31/blazorbootstrap-1.9.1</id>
