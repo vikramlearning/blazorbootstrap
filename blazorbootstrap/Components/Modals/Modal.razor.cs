@@ -268,7 +268,7 @@ public partial class Modal : BaseComponent
     [Parameter] public bool IsScrollable { get; set; }
 
     /// <summary>
-    /// Indicates whether the modal is related modal service or not.
+    /// Indicates whether the modal is related to a modal service or not.
     /// </summary>
     [Parameter] public bool IsServiceModal { get; set; } = false;
 
