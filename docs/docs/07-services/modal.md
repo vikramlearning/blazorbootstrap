@@ -209,7 +209,7 @@ Use Blazor Bootstrap modal service to show quick dialogs to your site for lightb
 
 ...
 
-<Modal />
+<Modal IsServiceModal="true" />
 ```
 
 1. Inject **ModalService**, then call the `ShowAsync(...)` method as shown below. 

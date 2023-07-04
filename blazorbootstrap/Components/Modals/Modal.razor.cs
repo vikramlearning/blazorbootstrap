@@ -56,7 +56,7 @@ public partial class Modal : BaseComponent
 
     protected override async Task OnInitializedAsync()
     {
-        if (ModalService is not null)
+        if (ModalService is not null && IsServiceModal)
             ModalService.OnShow += OnShowAsync;
 
         objRef ??= DotNetObjectReference.Create(this);
@@ -147,7 +147,7 @@ public partial class Modal : BaseComponent
             await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId);
             objRef?.Dispose();
 
-            if (ModalService is not null)
+            if (ModalService is not null && IsServiceModal)
                 ModalService.OnShow -= OnShowAsync;
         }
 
@@ -266,6 +266,11 @@ public partial class Modal : BaseComponent
     /// Allows modal body scroll.
     /// </summary>
     [Parameter] public bool IsScrollable { get; set; }
+
+    /// <summary>
+    /// Indicates whether the modal is related modal service or not.
+    /// </summary>
+    [Parameter] public bool IsServiceModal { get; set; } = false;
 
     /// <summary>
     /// Shows the modal vertically in the center.
