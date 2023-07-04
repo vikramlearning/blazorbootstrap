@@ -278,7 +278,7 @@ public partial class Grid<TItem> : BaseComponent
 
                 gridCurrentState = new GridState<TItem>(gridCurrentState.PageIndex, c.GetSorting());
             }
-            else if (c.ElementId == column.ElementId && c.SortDirection != SortDirection.None)
+            else if (c.ElementId == column.ElementId && c.SortDirection != SortDirection.None) // TODO: this condition is not required. 1 -> ASC, 2 -> DESC, 3 -> None. Here 3 scenario is not working
             {
                 gridCurrentState = new GridState<TItem>(gridCurrentState.PageIndex, c.GetSorting());
             }
