@@ -164,11 +164,6 @@ public partial class GridColumn<TItem>
     /// </summary>
     [Parameter] public string FilterValue { get; set; } = default!;
 
-    ///// <summary>
-    ///// Gets or sets the column css class.
-    ///// </summary>
-    //[Parameter] public string ColumnCssClass { get; set; } = default!;
-
     /// <summary>
     /// Gets or sets the StringComparison.
     /// </summary>
