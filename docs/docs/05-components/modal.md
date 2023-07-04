@@ -26,6 +26,7 @@ Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes,
 | HeaderTemplate | RenderFragment | Header template. | ✔️ | | 1.0.0 |
 | HeaderCssClass | string | Additional header CSS class. | | | 1.0.0 |
 | IsScrollable | bool | Allows modal body scroll. | | false | 1.0.0 |
+| IsServiceModal | bool | Indicates whether the modal is related to a modal service or not. | | false | 1.9.4 |
 | IsVerticallyCentered | bool | Shows the modal vertically in the center. | | false | 1.0.0 |
 | Size | `ModalSize` | Size of the modal. | | `ModalSize.Regular` | 1.0.0 |
 | ShowCloseButton | bool | Indicates whether the modal shows close button in header. | | true | 1.0.0 |
