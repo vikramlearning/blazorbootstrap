@@ -16,7 +16,7 @@ We are excited to release 1.9.3 with Grid component updates!!!
 
 ## What's changed
 
-- `Grid` service
+- `Grid` component
   - New `HeaderRowCssClass` parameter
   - New `FiltersRowCssClass` parameter
   - Default sorting icon to indicate the column is sortable
