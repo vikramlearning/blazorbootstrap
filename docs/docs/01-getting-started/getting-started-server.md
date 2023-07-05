@@ -14,7 +14,7 @@ Get started with the Enterprise-class Blazor Bootstrap Component library built o
 Looking to quickly add **Blazor Bootstrap** to your project? Use NuGet package manager.
 
 ```shell
-Install-Package Blazor.Bootstrap -Version 1.9.3
+Install-Package Blazor.Bootstrap -Version 1.9.4
 ```
 
 ## Add CSS references
