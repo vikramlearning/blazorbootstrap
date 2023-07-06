@@ -154,6 +154,18 @@ public partial class Grid<TItem> : BaseComponent
             await SelectedItemsChanged.InvokeAsync(selectedItems);
     }
 
+    private async Task RowClick(TItem item, EventArgs args)
+    {
+        if (AllowRowClick && OnRowClick.HasDelegate)
+            await OnRowClick.InvokeAsync(new GridRowEventArgs<TItem>(item));
+    }
+
+    private async Task RowDoubleClick(TItem item, EventArgs args)
+    {
+        if (AllowRowClick && OnRowDoubleClick.HasDelegate)
+            await OnRowDoubleClick.InvokeAsync(new GridRowEventArgs<TItem>(item));
+    }
+
     private async Task CheckOrUnCheckAll()
     {
         await JS.InvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", $".bb-grid-form-check-{headerCheckboxId} > input.form-check-input", allItemsSelected);
@@ -479,7 +491,7 @@ public partial class Grid<TItem> : BaseComponent
 
         if (allItemsSelected)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
-        else if(selectedItems.Count > 0)
+        else if (selectedItems.Count > 0)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Indeterminate);
         else
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
@@ -547,6 +559,11 @@ public partial class Grid<TItem> : BaseComponent
     /// Gets or sets the grid paging.
     /// </summary>
     [Parameter] public bool AllowPaging { get; set; }
+
+    /// <summary>
+    /// Gets or sets the allow row click.
+    /// </summary>
+    [Parameter] public bool AllowRowClick { get; set; }
 
     /// <summary>
     /// Gets or sets the grid selection.
@@ -693,7 +710,19 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public bool Responsive { get; set; }
 
     /// <summary>
-    /// This event is fired when the items selection changed.
+    /// This event is triggered when the user clicks on the row. 
+    /// Set AllowRowClick to true to enable row clicking.
+    /// </summary>
+    [Parameter] public EventCallback<GridRowEventArgs<TItem>> OnRowClick { get; set; }
+
+    /// <summary>
+    /// This event is triggered when the user double clicks on the row.
+    /// Set AllowRowClick to true to enable row double clicking.
+    /// </summary>
+    [Parameter] public EventCallback<GridRowEventArgs<TItem>> OnRowDoubleClick { get; set; }
+
+    /// <summary>
+    /// This event is fired when the item selection changes.
     /// </summary>
     [Parameter] public EventCallback<HashSet<TItem>> SelectedItemsChanged { get; set; }
 
