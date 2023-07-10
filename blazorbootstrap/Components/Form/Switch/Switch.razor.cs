@@ -25,12 +25,6 @@ public partial class Switch : BaseComponent
 
     #region Methods
 
-    protected override void BuildClasses(ClassBuilder builder)
-    {
-        builder.Append(BootstrapClassProvider.Checks());
-        base.BuildClasses(builder);
-    }
-
     protected override async Task OnInitializedAsync()
     {
         Attributes ??= new Dictionary<string, object>();
