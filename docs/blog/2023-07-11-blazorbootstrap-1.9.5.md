@@ -5,7 +5,7 @@ authors:
   title: Creator
   url: https://github.com/gvreddy04
   image_url: https://avatars.githubusercontent.com/u/2337067
-tags: [v1.9.5, blazor, bootstrap, bootstrap5, blazorbootstrap, grid, blazorgrid]
+tags: [v1.9.5, blazor, bootstrap, bootstrap5, blazorbootstrap, grid, blazorgrid, timeinput, blazortimeinput]
 ---
 
 We are excited to release 1.9.5 with Grid updates!!!
@@ -21,7 +21,11 @@ We are excited to release 1.9.5 with Grid updates!!!
   - New **OnRowDoubleClick** event
   - Grid Component: Row Click Event [#264](https://github.com/vikramlearning/blazorbootstrap/issues/264)
 
+- `TimeInput` component
+  - TimeInput: Changing value does not work [#271](https://github.com/vikramlearning/blazorbootstrap/issues/271)
+
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
 - [Blazor Grid Component Documentation](https://getblazorbootstrap.com/docs/components/grid)
+- [Blazor TimeInput Component Documentation](https://getblazorbootstrap.com/docs/forms/time-input)

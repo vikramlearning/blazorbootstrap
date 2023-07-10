@@ -36,7 +36,7 @@
                        EnableMinMax="true"
                        Min="arrivalMinTime"
                        Max="arrivalMaxTime"
-                       Disabled="true" />
+                       Disabled="@disableArrivalTimeInput" />
             <ValidationMessage For="@(() => flightForm.ArrivalTime)" />
         </div>
     </div>
@@ -50,7 +50,8 @@
 </EditForm>
 
 @code {
-    TimeInput<TimeOnly?> arrivalTimeInput = default!;
+    private TimeInput<TimeOnly?> arrivalTimeInput = default!;
+    private bool disableArrivalTimeInput = true;
 
     private FlightForm flightForm = new();
     private EditContext editContext;
@@ -74,7 +75,7 @@
             flightForm.ArrivalTime = null;
             arrivalMinTime = null;
             arrivalMaxTime = null;
-            arrivalTimeInput.Disable();
+            disableArrivalTimeInput = true;
 
             return;
         }
@@ -83,7 +84,7 @@
         flightForm.ArrivalTime = null;
         arrivalMinTime = departureTime.Value.AddHours(1);
         arrivalMaxTime = departureTime.Value.AddHours(12);
-        arrivalTimeInput.Enable();
+        disableArrivalTimeInput = false;
     }
 
     public void HandleValidSubmit()
