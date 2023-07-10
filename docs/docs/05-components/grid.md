@@ -19,6 +19,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 |:--|:--|:--|:--|:--|:--|
 | AllowFiltering | bool | false | | Gets or sets the grid filtering. | 1.0.0 |
 | AllowPaging | bool | false | | Gets or sets the grid paging. | 1.0.0 |
+| AllowRowClick | bool | false | | Gets or sets the allow row click. | 1.9.5 |
 | AllowSelection | bool | false | | Gets or sets the grid selection. | 1.8.0 |
 | AllowSorting | bool | false | | Gets or sets the grid sorting. | 1.0.0 |
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid. | 1.0.0 |
@@ -48,6 +49,8 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 | Name | Type | Descritpion | Added Version |
 |:--|:--|:--|:--|
 | GridSettingsChanged | `EventCallback<GridSettings>` | This event is fired when the grid state is changed. | 1.0.0 |
+| OnRowClick | `EventCallback<GridRowEventArgs<TItem>>` | This event is triggered when the user clicks on the row. Set AllowRowClick to true to enable row clicking. | 1.9.5 |
+| OnRowDoubleClick | `EventCallback<GridRowEventArgs<TItem>>` | This event is triggered when the user double clicks on the row. Set AllowRowClick to true to enable row double clicking. | 1.9.5 |
 | SelectedItemsChanged | `EventCallback<HashSet<TItem>>` | This event is fired when the items selection changed. | 1.8.0 |
 
 ## Grid Methods
@@ -2387,3 +2390,145 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/grid#filters-row-css-class)
+
+### Row click event
+
+```cshtml {2,7} showLineNumbers
+<Grid TItem="Employee1"
+      AllowRowClick="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-primary text-white border-bottom-0"
+      OnRowClick="OnRowClick"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+```
+
+```cs {27-30} showLineNumbers
+@code {
+    [Inject] ModalService ModalService { get; set; } = default!;
+
+    private IEnumerable<Employee1> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+        };
+    }
+
+    private async Task OnRowClick(GridRowEventArgs<Employee1> args)
+    {
+        await ModalService.ShowAsync(new ModalOption { Type = ModalType.Primary, Title = "Event: Row Click", Message = $"Id: {args.Item.Id}, Name: {args.Item.Name}" });
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#)
+
+### Row double click event
+
+```cshtml {2,7} showLineNumbers
+<Grid TItem="Employee1"
+      AllowRowClick="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-danger text-white border-bottom-0"
+      OnRowDoubleClick="OnRowDoubleClick"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+        @context.Id
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+        @context.Name
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+        @context.Designation
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+        @context.DOJ
+    </GridColumn>
+
+    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+```
+
+```cs {27-30} showLineNumbers
+@code {
+    [Inject] ModalService ModalService { get; set; } = default!;
+
+    private IEnumerable<Employee1> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+        };
+    }
+
+    private async Task OnRowDoubleClick(GridRowEventArgs<Employee1> args)
+    {
+        await ModalService.ShowAsync(new ModalOption { Type = ModalType.Primary, Title = "Event: Row Double Click", Message = $"Id: {args.Item.Id}, Name: {args.Item.Name}" });
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#)
