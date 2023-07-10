@@ -3,6 +3,8 @@
 </div>
 <div class="mb-3">Changed time: @time1</div>
 
+<Button Color="ButtonColor.Primary" @onclick="UpdateTime">Update Time</Button>
+
 @code {
     private TimeOnly time1 = new TimeOnly(10, 0); // 10:00 AM
 
@@ -10,4 +12,6 @@
     {
         time1 = timeOnly;
     }
+
+    private void UpdateTime() => time1 = new TimeOnly(11, 0);
 }
