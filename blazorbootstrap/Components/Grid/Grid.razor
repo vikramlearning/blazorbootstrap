@@ -90,7 +90,7 @@
                         foreach (var item in items)
                         {
                             var rowClass = RowClass?.Invoke(item) ?? "";
-                            <tr @key="item?.GetHashCode()" class="@rowClass">
+                            <tr @key="item?.GetHashCode()" class="@rowClass" @onclick="(args) => RowClick(item, args)" @ondblclick="(args) => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
                                 @if (AllowSelection)
                                 {
                                     @ChildSelectionTemplate(rowIndex, item)
