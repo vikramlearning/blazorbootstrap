@@ -17,8 +17,8 @@ We are excited to release 1.9.5 with Grid updates!!!
 ## What's changed
 
 - `Grid` component
-  - New OnRowClick event
-  - New OnRowDoubleClick event
+  - New **OnRowClick** event
+  - New **OnRowDoubleClick** event
   - Grid Component: Row Click Event [#264](https://github.com/vikramlearning/blazorbootstrap/issues/264)
 
 ## Links
