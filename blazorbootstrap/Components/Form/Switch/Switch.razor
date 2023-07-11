@@ -1,13 +1,12 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<div class="form-check form-switch @reverse">
+<div class="form-check form-switch @ClassNames @reverse" style="@StyleNames">
     <input @ref="@ElementRef"
            @attributes="@Attributes"
            type="checkbox" 
            id="@ElementId"
-           class="@ClassNames"
-           style="@StyleNames"
+           class="form-check-input"
            disabled="@disabled"
            checked="@Value"
            @onchange="OnChange"

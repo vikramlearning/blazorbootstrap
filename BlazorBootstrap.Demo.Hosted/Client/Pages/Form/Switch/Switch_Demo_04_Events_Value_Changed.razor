@@ -1,13 +1,18 @@
-﻿<Switch Value="agree" Label="Default switch checkbox input" ValueExpression="() => agree" ValueChanged="SwitchChanged" />
+﻿<Switch Class="mt-3" Value="agree" Label="Default switch checkbox input" ValueExpression="() => agree" ValueChanged="SwitchChanged" />
+
 <div class="mt-3">@displaySwitchStatus</div>
+
+<Button Color="ButtonColor.Primary" @onclick="ToogleSwitch"> Toogle Switch </Button>
 
 @code {
     private bool agree;
-    private string displaySwitchStatus;
+    private string displaySwitchStatus = default!;
 
     private void SwitchChanged(bool value)
     {
         agree = value; // this is mandatory
         displaySwitchStatus = $"Switch Status: {value}, changed at {DateTime.Now.ToLocalTime()}.";
     }
+
+    private void ToogleSwitch() => agree = !agree;
 }

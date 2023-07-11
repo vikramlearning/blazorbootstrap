@@ -21,15 +21,11 @@ public partial class Switch : BaseComponent
 
     private string reverse => this.Reverse ? BootstrapClassProvider.ChecksReverse() : "";
 
+    private bool oldValue;
+
     #endregion
 
     #region Methods
-
-    protected override void BuildClasses(ClassBuilder builder)
-    {
-        builder.Append(BootstrapClassProvider.Checks());
-        base.BuildClasses(builder);
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,6 +38,18 @@ public partial class Switch : BaseComponent
         await base.OnInitializedAsync();
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        if(this.oldValue != Value)
+        {
+            await ValueChanged.InvokeAsync(Value);
+
+            EditContext?.NotifyFieldChanged(fieldIdentifier);
+
+            this.oldValue = Value;
+        }
+    }
+
     /// <summary>
     /// Disables switch.
     /// </summary>
@@ -52,13 +60,16 @@ public partial class Switch : BaseComponent
     /// </summary>
     public void Enable() => this.disabled = false;
 
-    private async Task OnChange(ChangeEventArgs e)
+    private async Task OnChange(ChangeEventArgs args)
     {
-        bool.TryParse(e.Value?.ToString(), out bool newValue);
+        bool.TryParse(args.Value?.ToString(), out bool newValue);
         this.Value = newValue;
+
         await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
+
+        this.oldValue = Value;
     }
 
     #endregion
