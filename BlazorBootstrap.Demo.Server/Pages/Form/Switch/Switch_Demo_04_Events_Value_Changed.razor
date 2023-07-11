@@ -2,6 +2,8 @@
 
 <div class="mt-3">@displaySwitchStatus</div>
 
+<Button Color="ButtonColor.Primary" @onclick="ToogleSwitch"> Toogle Switch </Button>
+
 @code {
     private bool agree;
     private string displaySwitchStatus = default!;
@@ -11,4 +13,6 @@
         agree = value; // this is mandatory
         displaySwitchStatus = $"Switch Status: {value}, changed at {DateTime.Now.ToLocalTime()}.";
     }
+
+    private void ToogleSwitch() => agree = !agree;
 }
