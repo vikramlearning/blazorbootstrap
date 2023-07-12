@@ -28,6 +28,7 @@ Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes,
 | IsScrollable | bool | Allows modal body scroll. | | false | 1.0.0 |
 | IsServiceModal | bool | Indicates whether the modal is related to a modal service or not. | | false | 1.9.4 |
 | IsVerticallyCentered | bool | Shows the modal vertically in the center. | | false | 1.0.0 |
+| ModalType | `ModalType` | Gets or sets the modal type. | | `ModalType.Light` | 1.9.5 |
 | Size | `ModalSize` | Size of the modal. | | `ModalSize.Regular` | 1.0.0 |
 | ShowCloseButton | bool | Indicates whether the modal shows close button in header. | | true | 1.0.0 |
 | TabIndex | int | Gets or sets the tab index. | | -1 | 1.6.0 |
