@@ -1,4 +1,3 @@
-using BlazorBootstrap;
 using BlazorBootstrap.Demo.Hosted.Client;
 
 var builder = WebApplication.CreateBuilder(args);

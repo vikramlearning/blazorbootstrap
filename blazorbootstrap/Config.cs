@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using BlazorBootstrap;
+
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class Config
 {

@@ -1,4 +1,3 @@
-using BlazorBootstrap;
 using BlazorBootstrap.Demo.Hosted.Client;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
