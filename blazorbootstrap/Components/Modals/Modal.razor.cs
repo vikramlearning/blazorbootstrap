@@ -26,7 +26,7 @@ public partial class Modal : BaseComponent
 
     private string modalFullscreen => BootstrapClassProvider.ToModalFullscreen(Fullscreen);
 
-    private ModalType modalType;
+    private ModalType modalType = ModalType.Light;
 
     private string headerCssClassInternal => BootstrapClassProvider.ModalHeader(modalType);
 
@@ -326,6 +326,20 @@ public partial class Modal : BaseComponent
     /// Gets or sets the tab index.
     /// </summary>
     [Parameter] public int TabIndex { get; set; } = -1;
+
+    /// <summary>
+    /// Gets or sets the modal type.
+    /// </summary>
+    [Parameter]
+    public ModalType ModalType
+    {
+        get => modalType;
+        set
+        {
+            modalType = value;
+            DirtyClasses();
+        }
+    }
 
     #endregion Properties
 
