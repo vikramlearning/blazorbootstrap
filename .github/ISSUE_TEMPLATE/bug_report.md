@@ -4,7 +4,6 @@ about: Create a report to help us improve
 title: ''
 labels: ''
 assignees: ''
-
 ---
 
 **Describe the bug**
@@ -27,6 +26,12 @@ If applicable, add screenshots to help explain your problem.
  - BlazorBootstrap: [e.g. 1.9.0, 19.2, 19.3]
  - Blazor WebAssembly / Server: [e.g. WebAssembly, Server]
  - .NET Version: [e.g. .NET 6, .NET 7]
+
+**Sample code**
+Sample code to reproduce the issue.
+
+**GitHub repo**
+GitHub repo with minimal code to reproduce the issue.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. iOS]
