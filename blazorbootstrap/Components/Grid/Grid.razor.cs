@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Runtime.ConstrainedExecution;
+
+namespace BlazorBootstrap;
 
 public partial class Grid<TItem> : BaseComponent
 {
@@ -736,6 +738,8 @@ public partial class Grid<TItem> : BaseComponent
     /// The provider should always return an instance of 'GridSettings', and 'null' is not allowed.
     /// </summary>
     [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
+
+    [Parameter, EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
 
     #endregion Properties
 }

@@ -31,6 +31,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | EmptyText | string | No records to display | | Shows text on no records. | 1.0.0 |
 | FiltersRowCssClass | string | | | Gets or sets the filters row css class. | 1.9.2 |
 | HeaderRowCssClass | string | | | Gets or sets the header row css class but not the thead tag class. | 1.9.2 |
+| ItemsPerPageText | string | `Items per page` | ✔️ | Gets or sets the ItemsPerPageText. | 1.9.5 |
 | PageSize | int | 10 | | Gets or sets the page size of the grid. | 1.0.0 |
 | PageSizeSelectorItems | int[] | new int[] { 10, 20, 50 } | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
 | PageSizeSelectorVisible | bool | false | ✔️ | Gets or sets the page size selector visible. | 1.8.0 |
@@ -2460,7 +2461,7 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/grid#)
+[See demo here](https://demos.blazorbootstrap.com/grid#row-click-event)
 
 ### Row double click event
 
@@ -2531,4 +2532,76 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/grid#)
+[See demo here](https://demos.blazorbootstrap.com/grid#row-double-click-event)
+
+### Translations
+
+In the example below, you will see translations related to pagination in **Dutch**.
+
+<img src="https://i.imgur.com/qH7G1ZT.png" alt="Blazor Bootstrap: Grid Component - Translations" />
+
+```cshtml {8,9} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowPaging="true"
+      PageSize="10"
+      PageSizeSelectorVisible="true"
+      PageSizeSelectorItems="@(new int[] { 5,10,20 })"
+      PaginationItemsTextFormat="{0} - {1} van {2} artikelen"
+      ItemsPerPageText="Artikelen per pagina"
+      Responsive="true">
+
+    <GridColumn TItem="Employee1" HeaderText="Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Employee Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee1" HeaderText="Active">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+```
+
+```cs {} showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
+            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
+        };
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#translations)
