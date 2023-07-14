@@ -10,7 +10,7 @@ tags: [v1.9.5, blazor, bootstrap, bootstrap5, blazorbootstrap, grid, blazorgrid,
 
 We are excited to release 1.9.5 with Grid, TimeInput, and Modal component updates!!!
 
-![image](https://i.imgur.com/11SK9v4.png "Blazor Bootstrap: Grid Component")
+![image](https://i.imgur.com/qH7G1ZT.png "Blazor Bootstrap: Grid Component")
 
 <!--truncate-->
 
@@ -20,6 +20,7 @@ We are excited to release 1.9.5 with Grid, TimeInput, and Modal component update
   - New **OnRowClick** event
   - New **OnRowDoubleClick** event
   - Grid Component: Row Click Event [#264](https://github.com/vikramlearning/blazorbootstrap/issues/264)
+  - Grid Component - Translatable page size selector [#287](https://github.com/vikramlearning/blazorbootstrap/pull/287)
 
 - `TimeInput` component
   - TimeInput: Changing value does not work [#271](https://github.com/vikramlearning/blazorbootstrap/issues/271)
