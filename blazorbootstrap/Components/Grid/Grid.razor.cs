@@ -739,7 +739,7 @@ public partial class Grid<TItem> : BaseComponent
     /// </summary>
     [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
 
-    [Parameter] public string ItemsPerPageText { get; set; } = "Items per page";
+    [Parameter, EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
 
     #endregion Properties
 }

@@ -31,6 +31,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | EmptyText | string | No records to display | | Shows text on no records. | 1.0.0 |
 | FiltersRowCssClass | string | | | Gets or sets the filters row css class. | 1.9.2 |
 | HeaderRowCssClass | string | | | Gets or sets the header row css class but not the thead tag class. | 1.9.2 |
+| ItemsPerPageText | string | `Items per page` | ✔️ | Gets or sets the ItemsPerPageText. | 1.9.5 |
 | PageSize | int | 10 | | Gets or sets the page size of the grid. | 1.0.0 |
 | PageSizeSelectorItems | int[] | new int[] { 10, 20, 50 } | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
 | PageSizeSelectorVisible | bool | false | ✔️ | Gets or sets the page size selector visible. | 1.8.0 |
