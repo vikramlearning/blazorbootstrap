@@ -1,9 +1,12 @@
 ﻿<Grid TItem="Employee1"
-      Class="table table-hover table-bordered table-striped table-striped"
+      Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
       AllowPaging="true"
-      PageSize="5"
-      PaginationAlignment="Alignment.End"
+      PageSize="10"
+      PageSizeSelectorVisible="true"
+      PageSizeSelectorItems="@(new int[] { 5,10,20 })"
+      PaginationItemsTextFormat="{0} - {1} van {2} artikelen"
+      ItemsPerPageText="Artikelen per pagina"
       Responsive="true">
 
     <GridColumn TItem="Employee1" HeaderText="Id">
@@ -25,7 +28,7 @@
 </Grid>
 
 @code {
-    private IEnumerable<Employee1> employees = default;
+    private IEnumerable<Employee1> employees = default!;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
