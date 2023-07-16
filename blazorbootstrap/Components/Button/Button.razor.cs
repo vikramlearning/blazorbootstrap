@@ -284,9 +284,7 @@ public partial class Button : BaseComponent
     protected override async ValueTask DisposeAsync(bool disposing)
     {
         if (disposing)
-        {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
-        }
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef); });
 
         await base.DisposeAsync(disposing);
     }

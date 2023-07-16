@@ -18,9 +18,7 @@ public partial class Tab : BaseComponent
     protected override async ValueTask DisposeAsync(bool disposing)
     {
         if (disposing)
-        {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", ElementId);
-        }
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", ElementId); });
 
         await base.DisposeAsync(disposing);
     }
