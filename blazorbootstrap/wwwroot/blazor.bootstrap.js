@@ -701,7 +701,7 @@ window.blazorChart.line = {
             const tooltipLine = {
                 id: 'tooltipLine',
                 beforeDraw: chart => {
-                    if (chart.tooltip._active && chart.tooltip._active.length) {
+                    if (chart.tooltip?._active && chart.tooltip?._active.length) {
                         const ctx = chart.ctx;
                         ctx.save();
                         const activePoint = chart.tooltip._active[0];
