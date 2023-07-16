@@ -25,12 +25,24 @@ We are excited to release 1.9.5 with Grid, TimeInput, and Modal component update
 - `TimeInput` component
   - TimeInput: Changing value does not work [#271](https://github.com/vikramlearning/blazorbootstrap/issues/271)
 
+- `Switch` component
+  -  Switch class not applied to label [#235](https://github.com/vikramlearning/blazorbootstrap/issues/235)
+
 - `Modal` component
   - Cannot change modal type on static modals [#278](https://github.com/vikramlearning/blazorbootstrap/issues/278)
+
+- `Line Chart` component
+  - Multiple of the same chart causing js exception [#283](https://github.com/vikramlearning/blazorbootstrap/issues/283)
+
+- `Sidebar` component
+  - SidebarItem without childs, CustomIconName not passed to Icon [#286](https://github.com/vikramlearning/blazorbootstrap/issues/286)
 
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
 - [Blazor Grid Component Documentation](https://getblazorbootstrap.com/docs/components/grid)
 - [Blazor TimeInput Component Documentation](https://getblazorbootstrap.com/docs/forms/time-input)
+- [Blazor Switch Component Documentation](https://getblazorbootstrap.com/docs/forms/switch)
 - [Blazor Modal Component Documentation](https://getblazorbootstrap.com/docs/components/modal)
+- [Blazor Line Chart Component Documentation](https://getblazorbootstrap.com/docs/components/charts)
+- [Blazor Sidebar Component Documentation](https://getblazorbootstrap.com/docs/components/sidebar)
