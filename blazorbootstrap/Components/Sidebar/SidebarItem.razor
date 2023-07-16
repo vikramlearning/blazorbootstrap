@@ -40,14 +40,14 @@
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Class="@iconColorCssClass" Name="@IconName" aria-hidden="true" />
+                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Class="@iconColorCssClass" Name="@IconName" aria-hidden="true" />
+                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
                     </span>
                 </Tooltip>
             }
