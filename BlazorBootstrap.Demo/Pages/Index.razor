@@ -71,7 +71,7 @@
         </div>
         <div class="col-sm-4 mb-2">
             <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/charts">
-                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.BarChartLineFill" class="me-2" /> Charts</h4>
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.BarChartLineFill" class="me-2" /> Charts <Badge Color="BadgeColor.Success">Updated</Badge></h4>
             </a>
         </div>
         <div class="col-sm-4 mb-2">
@@ -101,7 +101,7 @@
         </div>
         <div class="col-sm-4 mb-2">
             <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/icons">
-                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.PersonSquare" class="me-2" /> Icons <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.PersonSquare" class="me-2" /> Icons</h4>
             </a>
         </div>
         <div class="col-sm-4 mb-2">
@@ -141,27 +141,27 @@
         </div>
         <div class="col-sm-4 mb-2">
             <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/sidebar">
-                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.LayoutSidebarInset" class="me-2" /> Sidebar</h4>
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.LayoutSidebarInset" class="me-2" /> Sidebar <Badge Color="BadgeColor.Success">Updated</Badge></h4>
             </a>
         </div>
         <div class="col-sm-4 mb-2">
             <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/switch">
-                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ToggleOn" class="me-2" /> Switch</h4>
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ToggleOn" class="me-2" /> Switch <Badge Color="BadgeColor.Success">Updated</Badge></h4>
             </a>
         </div>
         <div class="col-sm-4 mb-2">
             <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/tabs">
-                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.WindowPlus" class="me-2" /> Tabs <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.WindowPlus" class="me-2" /> Tabs</h4>
             </a>
         </div>
         <div class="col-sm-4 mb-2">
             <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/time-input">
-                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ClockFill" class="me-2" /> Time Input</h4>
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ClockFill" class="me-2" /> Time Input <Badge Color="BadgeColor.Success">Updated</Badge></h4>
             </a>
         </div>
         <div class="col-sm-4 mb-2">
             <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/toasts">
-                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ExclamationTriangleFill" class="me-2" /> Toasts <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ExclamationTriangleFill" class="me-2" /> Toasts</h4>
             </a>
         </div>
         <div class="col-sm-4 mb-2">
@@ -185,10 +185,10 @@
     private string description = "Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.";
     private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg"; // TODO: update image
 
-    private string version;
-    private string releaseShortDescription;
+    private string version = default!;
+    private string releaseShortDescription = default!;
 
-    [Inject] public IConfiguration Configuration { get; set; }
+    [Inject] public IConfiguration Configuration { get; set; } = default!;
 
     protected override void OnInitialized()
     {
