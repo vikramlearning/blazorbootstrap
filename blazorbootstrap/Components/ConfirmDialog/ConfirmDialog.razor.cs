@@ -1,6 +1,4 @@
-﻿using BlazorBootstrap.Extensions;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class ConfirmDialog : BaseComponent
 {

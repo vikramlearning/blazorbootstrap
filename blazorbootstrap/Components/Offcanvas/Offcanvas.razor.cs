@@ -81,7 +81,7 @@
         {
             if (disposing)
             {
-                await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.dispose", ElementId);
+                ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.dispose", ElementId); });
                 objRef?.Dispose();
             }
 

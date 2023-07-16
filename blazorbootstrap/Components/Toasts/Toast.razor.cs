@@ -60,7 +60,7 @@ public partial class Toast : BaseComponent, IDisposable
     {
         if (disposing)
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", ElementId);
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", ElementId); });
             objRef?.Dispose();
         }
 
