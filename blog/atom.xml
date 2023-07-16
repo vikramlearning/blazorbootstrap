@@ -2,11 +2,34 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-07-05T00:00:00.000Z</updated>
+    <updated>2023-07-16T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.9.5]]></title>
+        <id>/2023/07/16/blazorbootstrap-1.9.5</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/07/16/blazorbootstrap-1.9.5"/>
+        <updated>2023-07-16T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.9.5 with Grid, TimeInput, and Modal component updates!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.9.5 with Grid, TimeInput, and Modal component updates!!!</p><p><img loading="lazy" src="https://i.imgur.com/qH7G1ZT.png" alt="image" title="Blazor Bootstrap: Grid Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><p><code>Grid</code> component</p><ul><li>New <strong>OnRowClick</strong> event</li><li>New <strong>OnRowDoubleClick</strong> event</li><li>Grid Component: Row Click Event <a href="https://github.com/vikramlearning/blazorbootstrap/issues/264" target="_blank" rel="noopener noreferrer">#264</a></li><li>Grid Component - Translatable page size selector <a href="https://github.com/vikramlearning/blazorbootstrap/pull/287" target="_blank" rel="noopener noreferrer">#287</a></li></ul></li><li><p><code>TimeInput</code> component</p><ul><li>TimeInput: Changing value does not work <a href="https://github.com/vikramlearning/blazorbootstrap/issues/271" target="_blank" rel="noopener noreferrer">#271</a></li></ul></li><li><p><code>Switch</code> component</p><ul><li>Switch class not applied to label <a href="https://github.com/vikramlearning/blazorbootstrap/issues/235" target="_blank" rel="noopener noreferrer">#235</a></li></ul></li><li><p><code>Modal</code> component</p><ul><li>Cannot change modal type on static modals <a href="https://github.com/vikramlearning/blazorbootstrap/issues/278" target="_blank" rel="noopener noreferrer">#278</a></li></ul></li><li><p><code>Line Chart</code> component</p><ul><li>Multiple of the same chart causing js exception <a href="https://github.com/vikramlearning/blazorbootstrap/issues/283" target="_blank" rel="noopener noreferrer">#283</a></li></ul></li><li><p><code>Sidebar</code> component</p><ul><li>SidebarItem without childs, CustomIconName not passed to Icon <a href="https://github.com/vikramlearning/blazorbootstrap/issues/286" target="_blank" rel="noopener noreferrer">#286</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Blazor Grid Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/time-input" target="_blank" rel="noopener noreferrer">Blazor TimeInput Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/switch" target="_blank" rel="noopener noreferrer">Blazor Switch Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/modal" target="_blank" rel="noopener noreferrer">Blazor Modal Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/charts" target="_blank" rel="noopener noreferrer">Blazor Line Chart Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/sidebar" target="_blank" rel="noopener noreferrer">Blazor Sidebar Component Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.9.5" term="v1.9.5"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="grid" term="grid"/>
+        <category label="blazorgrid" term="blazorgrid"/>
+        <category label="timeinput" term="timeinput"/>
+        <category label="blazortimeinput" term="blazortimeinput"/>
+        <category label="modal" term="modal"/>
+        <category label="blazormodal" term="blazormodal"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.9.4]]></title>
         <id>/2023/07/05/blazorbootstrap-1.9.4</id>
