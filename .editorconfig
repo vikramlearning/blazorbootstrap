@@ -274,6 +274,12 @@ dotnet_diagnostic.IDE0062.severity = none
 [*.{cs,vb}]
 dotnet_diagnostic.IDE0130.severity = none
 
+[*.{cs,vb}]
+dotnet_diagnostic.IDE0036.severity = none
+
+[*.{cs,vb}]
+dotnet_diagnostic.IDE0016.severity = none
+
 # var preferences - override
 csharp_style_var_elsewhere = true
 csharp_style_var_for_built_in_types = true
