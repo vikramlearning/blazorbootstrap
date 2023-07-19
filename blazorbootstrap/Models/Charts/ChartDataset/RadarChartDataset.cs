@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public class RadarChartDataset : ChartDataset
 {

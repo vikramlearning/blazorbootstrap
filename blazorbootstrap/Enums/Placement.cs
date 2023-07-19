@@ -1,10 +1,9 @@
-﻿namespace BlazorBootstrap
+﻿namespace BlazorBootstrap;
+
+public enum Placement
 {
-    public enum Placement
-    {
-        Start = 1,
-        End,
-        Top,
-        Bottom,
-    }
+    Start = 1,
+    End,
+    Top,
+    Bottom,
 }

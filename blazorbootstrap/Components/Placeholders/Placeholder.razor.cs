@@ -1,7 +1,4 @@
-﻿using BlazorBootstrap.Utilities;
-using Microsoft.AspNetCore.Components;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Placeholder : BaseComponent
 {

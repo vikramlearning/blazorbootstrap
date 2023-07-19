@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace BlazorBootstrap.Utilities;
+﻿namespace BlazorBootstrap.Utilities;
 
 /// <summary>
 /// Helper class for easier building of CSS classnames with additional conditions and rules.

@@ -92,11 +92,11 @@ public class ToastMessage : IEquatable<ToastMessage>
         this.AutoHide = autoHide;
     }
 
-    internal void SetElementId(string elementId) => this.ElementId= elementId;
+    internal void SetElementId(string elementId) => this.ElementId = elementId;
 
     public bool Equals(ToastMessage other)
     {
-        if(other == null) 
+        if (other == null)
             return false;
 
         return this.Id.Equals(other.Id);

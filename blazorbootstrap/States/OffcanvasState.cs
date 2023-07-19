@@ -1,7 +1,6 @@
-﻿namespace BlazorBootstrap.States
+﻿namespace BlazorBootstrap.States;
+
+public record OffcanvasState
 {
-    public record OffcanvasState
-    {
-        public bool Visible { get; init; }
-    }
+    public bool Visible { get; init; }
 }

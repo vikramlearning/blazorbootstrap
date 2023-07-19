@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public class NavItem
 {

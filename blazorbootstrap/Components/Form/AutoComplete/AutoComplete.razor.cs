@@ -130,7 +130,7 @@ public partial class AutoComplete<TItem> : BaseComponent
 
         closeButton?.ShowLoading();
 
-        if(cancellationTokenSource is not null 
+        if (cancellationTokenSource is not null
             && !cancellationTokenSource.IsCancellationRequested)
         {
             cancellationTokenSource.Cancel();
@@ -150,13 +150,13 @@ public partial class AutoComplete<TItem> : BaseComponent
     {
         var key = args.Code is not null ? args.Code : args.Key;
 
-        if(key == "ArrowDown" || key == "ArrowUp" || key == "Home" || key == "End")
+        if (key == "ArrowDown" || key == "ArrowUp" || key == "Home" || key == "End")
         {
             selectedIndex = await JS.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key, selectedIndex);
         }
-        else if(key == "Enter")
+        else if (key == "Enter")
         {
-            if(selectedIndex >= 0 && selectedIndex <= items.Count() - 1)
+            if (selectedIndex >= 0 && selectedIndex <= items.Count() - 1)
             {
                 await OnItemSelectedAsync(items.ElementAt(selectedIndex));
             }

@@ -149,7 +149,7 @@ public partial class DateInput<TValue> : BaseComponent
 
         await SetValueAsync(oldValue, newValue);
 
-        this.oldValue = Value;            
+        this.oldValue = Value;
     }
 
     private async Task SetValueAsync(TValue oldValue, object? newValue)

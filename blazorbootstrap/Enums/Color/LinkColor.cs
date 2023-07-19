@@ -1,53 +1,52 @@
-﻿namespace BlazorBootstrap
+﻿namespace BlazorBootstrap;
+
+/// <summary>
+/// Predefined set of contextual colors.
+/// </summary>
+public enum LinkColor
 {
     /// <summary>
-    /// Predefined set of contextual colors.
+    /// No color will be applied to an element.
     /// </summary>
-    public enum LinkColor
-    {
-        /// <summary>
-        /// No color will be applied to an element.
-        /// </summary>
-        None,
+    None,
 
-        /// <summary>
-        /// Primary color.
-        /// </summary>
-        Primary,
+    /// <summary>
+    /// Primary color.
+    /// </summary>
+    Primary,
 
-        /// <summary>
-        /// Secondary color.
-        /// </summary>
-        Secondary,
+    /// <summary>
+    /// Secondary color.
+    /// </summary>
+    Secondary,
 
-        /// <summary>
-        /// Success color.
-        /// </summary>
-        Success,
+    /// <summary>
+    /// Success color.
+    /// </summary>
+    Success,
 
-        /// <summary>
-        /// Danger color.
-        /// </summary>
-        Danger,
+    /// <summary>
+    /// Danger color.
+    /// </summary>
+    Danger,
 
-        /// <summary>
-        /// Warning color.
-        /// </summary>
-        Warning,
+    /// <summary>
+    /// Warning color.
+    /// </summary>
+    Warning,
 
-        /// <summary>
-        /// Info color.
-        /// </summary>
-        Info,
+    /// <summary>
+    /// Info color.
+    /// </summary>
+    Info,
 
-        /// <summary>
-        /// Light color.
-        /// </summary>
-        Light,
+    /// <summary>
+    /// Light color.
+    /// </summary>
+    Light,
 
-        /// <summary>
-        /// Dark color.
-        /// </summary>
-        Dark
-    }
+    /// <summary>
+    /// Dark color.
+    /// </summary>
+    Dark
 }

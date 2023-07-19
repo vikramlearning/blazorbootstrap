@@ -78,7 +78,7 @@ public partial class Callout : BaseComponent
     [Parameter]
     public CalloutType Type
     {
-        get => type; 
+        get => type;
         set
         {
             type = value;

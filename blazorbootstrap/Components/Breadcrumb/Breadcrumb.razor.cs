@@ -31,9 +31,9 @@ public partial class Breadcrumb : BaseComponent
 
     protected override ValueTask DisposeAsync(bool disposing)
     {
-        if(disposing)
+        if (disposing)
         {
-            if(BreadcrumbService is not null)
+            if (BreadcrumbService is not null)
                 BreadcrumbService.OnNotify -= OnNotify;
         }
 

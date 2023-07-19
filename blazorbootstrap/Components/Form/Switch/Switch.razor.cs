@@ -40,7 +40,7 @@ public partial class Switch : BaseComponent
 
     protected override async Task OnParametersSetAsync()
     {
-        if(this.oldValue != Value)
+        if (this.oldValue != Value)
         {
             await ValueChanged.InvokeAsync(Value);
 
