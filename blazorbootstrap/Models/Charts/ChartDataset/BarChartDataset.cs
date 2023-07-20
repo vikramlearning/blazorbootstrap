@@ -28,7 +28,7 @@ public class BarChartDataset : ChartDataset
     /// The label for the dataset which appears in the legend and tooltips.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string Label { get; set; }
+    public string? Label { get; set; }
 
     //MaxBarThickness
     //https://www.chartjs.org/docs/latest/api/interfaces/BarControllerDatasetOptions.html#maxbarthickness
@@ -40,11 +40,11 @@ public class BarChartDataset : ChartDataset
     /// The ID of the x axis to plot this dataset on.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string XAxisID { get; set; }
+    public string? XAxisID { get; set; }
 
     /// <summary>
     /// The ID of the y axis to plot this dataset on.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string YAxisID { get; set; }
+    public string? YAxisID { get; set; }
 }
