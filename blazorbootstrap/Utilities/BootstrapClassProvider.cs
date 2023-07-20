@@ -25,13 +25,13 @@ public class BootstrapClassProvider
 
     public string AlertShow() => Show();
 
-    public string AlertHasMessage() => null;
+    public string? AlertHasMessage() => null;
 
-    public string AlertHasDescription() => null;
+    public string? AlertHasDescription() => null;
 
-    public string AlertMessage() => null;
+    public string? AlertMessage() => null;
 
-    public string AlertDescription() => null;
+    public string? AlertDescription() => null;
 
     #endregion
 
@@ -61,7 +61,7 @@ public class BootstrapClassProvider
 
     public string ButtonDisabled() => "disabled";
 
-    public string ButtonLoading() => null;
+    public string? ButtonLoading() => null;
 
     #endregion
 
@@ -201,9 +201,9 @@ public class BootstrapClassProvider
 
     public string PaginationLink() => "page-link";
 
-    public string PaginationLinkActive() => null;
+    public string? PaginationLinkActive() => null;
 
-    public string PaginationLinkDisabled() => null;
+    public string? PaginationLinkDisabled() => null;
 
     #endregion
 
@@ -299,514 +299,406 @@ public class BootstrapClassProvider
 
     #region Methods
 
-    public string ToAlignment(Alignment alignment)
+    public string ToAlignment(Alignment alignment) => alignment switch
     {
-        return alignment switch
-        {
-            BlazorBootstrap.Alignment.Start => "start",
-            BlazorBootstrap.Alignment.Center => "center",
-            BlazorBootstrap.Alignment.End => "end",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.Alignment.Start => "start",
+        BlazorBootstrap.Alignment.Center => "center",
+        BlazorBootstrap.Alignment.End => "end",
+        _ => null,
+    };
 
-    public string ToBackgroundColor(BackgroundColor color)
+    public string ToBackgroundColor(BackgroundColor color) => color switch
     {
-        return color switch
-        {
-            BlazorBootstrap.BackgroundColor.Primary => "primary",
-            BlazorBootstrap.BackgroundColor.Secondary => "secondary",
-            BlazorBootstrap.BackgroundColor.Success => "success",
-            BlazorBootstrap.BackgroundColor.Danger => "danger",
-            BlazorBootstrap.BackgroundColor.Warning => "warning",
-            BlazorBootstrap.BackgroundColor.Info => "info",
-            BlazorBootstrap.BackgroundColor.Light => "light",
-            BlazorBootstrap.BackgroundColor.Dark => "dark",
-            BlazorBootstrap.BackgroundColor.Body => "body",
-            BlazorBootstrap.BackgroundColor.White => "white",
-            BlazorBootstrap.BackgroundColor.Transparent => "transparent",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.BackgroundColor.Primary => "primary",
+        BlazorBootstrap.BackgroundColor.Secondary => "secondary",
+        BlazorBootstrap.BackgroundColor.Success => "success",
+        BlazorBootstrap.BackgroundColor.Danger => "danger",
+        BlazorBootstrap.BackgroundColor.Warning => "warning",
+        BlazorBootstrap.BackgroundColor.Info => "info",
+        BlazorBootstrap.BackgroundColor.Light => "light",
+        BlazorBootstrap.BackgroundColor.Dark => "dark",
+        BlazorBootstrap.BackgroundColor.Body => "body",
+        BlazorBootstrap.BackgroundColor.White => "white",
+        BlazorBootstrap.BackgroundColor.Transparent => "transparent",
+        _ => null,
+    };
 
-    public string ToButtonColor(ButtonColor color)
+    public string ToButtonColor(ButtonColor color) => color switch
     {
-        return color switch
-        {
-            BlazorBootstrap.ButtonColor.Primary => "primary",
-            BlazorBootstrap.ButtonColor.Secondary => "secondary",
-            BlazorBootstrap.ButtonColor.Success => "success",
-            BlazorBootstrap.ButtonColor.Danger => "danger",
-            BlazorBootstrap.ButtonColor.Warning => "warning",
-            BlazorBootstrap.ButtonColor.Info => "info",
-            BlazorBootstrap.ButtonColor.Light => "light",
-            BlazorBootstrap.ButtonColor.Dark => "dark",
-            BlazorBootstrap.ButtonColor.Link => "link",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.ButtonColor.Primary => "primary",
+        BlazorBootstrap.ButtonColor.Secondary => "secondary",
+        BlazorBootstrap.ButtonColor.Success => "success",
+        BlazorBootstrap.ButtonColor.Danger => "danger",
+        BlazorBootstrap.ButtonColor.Warning => "warning",
+        BlazorBootstrap.ButtonColor.Info => "info",
+        BlazorBootstrap.ButtonColor.Light => "light",
+        BlazorBootstrap.ButtonColor.Dark => "dark",
+        BlazorBootstrap.ButtonColor.Link => "link",
+        _ => null,
+    };
 
-    public string ToProgressColor(ProgressColor color)
+    public string ToProgressColor(ProgressColor color) => color switch
     {
-        return color switch
-        {
-            BlazorBootstrap.ProgressColor.Primary => "primary",
-            BlazorBootstrap.ProgressColor.Secondary => "secondary",
-            BlazorBootstrap.ProgressColor.Success => "success",
-            BlazorBootstrap.ProgressColor.Danger => "danger",
-            BlazorBootstrap.ProgressColor.Warning => "warning",
-            BlazorBootstrap.ProgressColor.Info => "info",
-            BlazorBootstrap.ProgressColor.Dark => "dark",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.ProgressColor.Primary => "primary",
+        BlazorBootstrap.ProgressColor.Secondary => "secondary",
+        BlazorBootstrap.ProgressColor.Success => "success",
+        BlazorBootstrap.ProgressColor.Danger => "danger",
+        BlazorBootstrap.ProgressColor.Warning => "warning",
+        BlazorBootstrap.ProgressColor.Info => "info",
+        BlazorBootstrap.ProgressColor.Dark => "dark",
+        _ => null,
+    };
 
-    public string ToIconColor(IconColor color)
+    public string ToIconColor(IconColor color) => color switch
     {
-        return color switch
-        {
-            BlazorBootstrap.IconColor.Primary => "primary",
-            BlazorBootstrap.IconColor.Secondary => "secondary",
-            BlazorBootstrap.IconColor.Success => "success",
-            BlazorBootstrap.IconColor.Danger => "danger",
-            BlazorBootstrap.IconColor.Warning => "warning",
-            BlazorBootstrap.IconColor.Info => "info",
-            BlazorBootstrap.IconColor.Light => "light",
-            BlazorBootstrap.IconColor.Dark => "dark",
-            BlazorBootstrap.IconColor.Body => "body",
-            BlazorBootstrap.IconColor.Muted => "muted",
-            BlazorBootstrap.IconColor.White => "white",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.IconColor.Primary => "primary",
+        BlazorBootstrap.IconColor.Secondary => "secondary",
+        BlazorBootstrap.IconColor.Success => "success",
+        BlazorBootstrap.IconColor.Danger => "danger",
+        BlazorBootstrap.IconColor.Warning => "warning",
+        BlazorBootstrap.IconColor.Info => "info",
+        BlazorBootstrap.IconColor.Light => "light",
+        BlazorBootstrap.IconColor.Dark => "dark",
+        BlazorBootstrap.IconColor.Body => "body",
+        BlazorBootstrap.IconColor.Muted => "muted",
+        BlazorBootstrap.IconColor.White => "white",
+        _ => null,
+    };
 
-    public string ToTextColor(TextColor color)
+    public string ToTextColor(TextColor color) => color switch
     {
-        return color switch
-        {
-            BlazorBootstrap.TextColor.Primary => "primary",
-            BlazorBootstrap.TextColor.Secondary => "secondary",
-            BlazorBootstrap.TextColor.Success => "success",
-            BlazorBootstrap.TextColor.Danger => "danger",
-            BlazorBootstrap.TextColor.Warning => "warning",
-            BlazorBootstrap.TextColor.Info => "info",
-            BlazorBootstrap.TextColor.Light => "light",
-            BlazorBootstrap.TextColor.Dark => "dark",
-            BlazorBootstrap.TextColor.Body => "body",
-            BlazorBootstrap.TextColor.Muted => "muted",
-            BlazorBootstrap.TextColor.White => "white",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.TextColor.Primary => "primary",
+        BlazorBootstrap.TextColor.Secondary => "secondary",
+        BlazorBootstrap.TextColor.Success => "success",
+        BlazorBootstrap.TextColor.Danger => "danger",
+        BlazorBootstrap.TextColor.Warning => "warning",
+        BlazorBootstrap.TextColor.Info => "info",
+        BlazorBootstrap.TextColor.Light => "light",
+        BlazorBootstrap.TextColor.Dark => "dark",
+        BlazorBootstrap.TextColor.Body => "body",
+        BlazorBootstrap.TextColor.Muted => "muted",
+        BlazorBootstrap.TextColor.White => "white",
+        _ => null,
+    };
 
-    public string ToToastBackgroundColor(ToastType toastType)
+    public string ToToastBackgroundColor(ToastType toastType) => toastType switch
     {
-        return toastType switch
-        {
-            BlazorBootstrap.ToastType.Primary => "primary",
-            BlazorBootstrap.ToastType.Secondary => "secondary",
-            BlazorBootstrap.ToastType.Success => "success",
-            BlazorBootstrap.ToastType.Danger => "danger",
-            BlazorBootstrap.ToastType.Warning => "warning",
-            BlazorBootstrap.ToastType.Info => "info",
-            BlazorBootstrap.ToastType.Light => "light",
-            BlazorBootstrap.ToastType.Dark => "dark",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.ToastType.Primary => "primary",
+        BlazorBootstrap.ToastType.Secondary => "secondary",
+        BlazorBootstrap.ToastType.Success => "success",
+        BlazorBootstrap.ToastType.Danger => "danger",
+        BlazorBootstrap.ToastType.Warning => "warning",
+        BlazorBootstrap.ToastType.Info => "info",
+        BlazorBootstrap.ToastType.Light => "light",
+        BlazorBootstrap.ToastType.Dark => "dark",
+        _ => null,
+    };
 
-    public string ToToastTextColor(ToastType toastType)
+    public string ToToastTextColor(ToastType toastType) => toastType switch
     {
-        return toastType switch
-        {
-            BlazorBootstrap.ToastType.Primary
-            or BlazorBootstrap.ToastType.Secondary
-            or BlazorBootstrap.ToastType.Success
-            or BlazorBootstrap.ToastType.Danger
-            or BlazorBootstrap.ToastType.Dark => "white",
+        BlazorBootstrap.ToastType.Primary
+        or BlazorBootstrap.ToastType.Secondary
+        or BlazorBootstrap.ToastType.Success
+        or BlazorBootstrap.ToastType.Danger
+        or BlazorBootstrap.ToastType.Dark => "white",
 
-            BlazorBootstrap.ToastType.Warning
-            or BlazorBootstrap.ToastType.Info
-            or BlazorBootstrap.ToastType.Light => "dark",
+        BlazorBootstrap.ToastType.Warning
+        or BlazorBootstrap.ToastType.Info
+        or BlazorBootstrap.ToastType.Light => "dark",
 
-            _ => null,
-        };
-    }
+        _ => null,
+    };
 
-    public string ToAlertColor(AlertColor color)
+    public string ToAlertColor(AlertColor color) => color switch
     {
-        return color switch
-        {
-            BlazorBootstrap.AlertColor.Primary => "primary",
-            BlazorBootstrap.AlertColor.Secondary => "secondary",
-            BlazorBootstrap.AlertColor.Success => "success",
-            BlazorBootstrap.AlertColor.Danger => "danger",
-            BlazorBootstrap.AlertColor.Warning => "warning",
-            BlazorBootstrap.AlertColor.Info => "info",
-            BlazorBootstrap.AlertColor.Light => "light",
-            BlazorBootstrap.AlertColor.Dark => "dark",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.AlertColor.Primary => "primary",
+        BlazorBootstrap.AlertColor.Secondary => "secondary",
+        BlazorBootstrap.AlertColor.Success => "success",
+        BlazorBootstrap.AlertColor.Danger => "danger",
+        BlazorBootstrap.AlertColor.Warning => "warning",
+        BlazorBootstrap.AlertColor.Info => "info",
+        BlazorBootstrap.AlertColor.Light => "light",
+        BlazorBootstrap.AlertColor.Dark => "dark",
+        _ => null,
+    };
 
-    public string ToBadgeColor(BadgeColor color)
+    public string ToBadgeColor(BadgeColor color) => color switch
     {
-        return color switch
-        {
-            BlazorBootstrap.BadgeColor.Primary => "primary",
-            BlazorBootstrap.BadgeColor.Secondary => "secondary",
-            BlazorBootstrap.BadgeColor.Success => "success",
-            BlazorBootstrap.BadgeColor.Danger => "danger",
-            BlazorBootstrap.BadgeColor.Warning => "warning",
-            BlazorBootstrap.BadgeColor.Info => "info",
-            BlazorBootstrap.BadgeColor.Light => "light",
-            BlazorBootstrap.BadgeColor.Dark => "dark",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.BadgeColor.Primary => "primary",
+        BlazorBootstrap.BadgeColor.Secondary => "secondary",
+        BlazorBootstrap.BadgeColor.Success => "success",
+        BlazorBootstrap.BadgeColor.Danger => "danger",
+        BlazorBootstrap.BadgeColor.Warning => "warning",
+        BlazorBootstrap.BadgeColor.Info => "info",
+        BlazorBootstrap.BadgeColor.Light => "light",
+        BlazorBootstrap.BadgeColor.Dark => "dark",
+        _ => null,
+    };
 
-    public string ToBadgePlacement(BadgePlacement badgePlacement)
+    public string ToBadgePlacement(BadgePlacement badgePlacement) => badgePlacement switch
     {
-        return badgePlacement switch
-        {
-            BlazorBootstrap.BadgePlacement.TopLeft => "top-0 start-0 translate-middle",
-            BlazorBootstrap.BadgePlacement.TopCenter => "top-0 start-50 translate-middle",
-            BlazorBootstrap.BadgePlacement.TopRight => "top-0 start-100 translate-middle",
-            BlazorBootstrap.BadgePlacement.MiddleLeft => "top-50 start-0 translate-middle",
-            BlazorBootstrap.BadgePlacement.MiddleCenter => "top-50 start-50 translate-middle",
-            BlazorBootstrap.BadgePlacement.MiddleRight => "top-50 start-100 translate-middle",
-            BlazorBootstrap.BadgePlacement.BottomLeft => "top-100 start-0 translate-middle",
-            BlazorBootstrap.BadgePlacement.BottomCenter => "top-100 start-50 translate-middle",
-            BlazorBootstrap.BadgePlacement.BottomRight => "top-100 start-100 translate-middle",
-            _ => "top-0 start-100 translate-middle", // default: Top right
-        };
-    }
+        BlazorBootstrap.BadgePlacement.TopLeft => "top-0 start-0 translate-middle",
+        BlazorBootstrap.BadgePlacement.TopCenter => "top-0 start-50 translate-middle",
+        BlazorBootstrap.BadgePlacement.TopRight => "top-0 start-100 translate-middle",
+        BlazorBootstrap.BadgePlacement.MiddleLeft => "top-50 start-0 translate-middle",
+        BlazorBootstrap.BadgePlacement.MiddleCenter => "top-50 start-50 translate-middle",
+        BlazorBootstrap.BadgePlacement.MiddleRight => "top-50 start-100 translate-middle",
+        BlazorBootstrap.BadgePlacement.BottomLeft => "top-100 start-0 translate-middle",
+        BlazorBootstrap.BadgePlacement.BottomCenter => "top-100 start-50 translate-middle",
+        BlazorBootstrap.BadgePlacement.BottomRight => "top-100 start-100 translate-middle",
+        _ => "top-0 start-100 translate-middle", // default: Top right
+    };
 
-    public string ToBadgeIndicator(BadgeIndicatorType indicatorType)
+    public string ToBadgeIndicator(BadgeIndicatorType indicatorType) => indicatorType switch
     {
-        return indicatorType switch
-        {
-            BlazorBootstrap.BadgeIndicatorType.RoundedPill => "rounded-pill",
-            BlazorBootstrap.BadgeIndicatorType.RoundedCircle => "rounded-circle",
-            _ => "", // default: Top right
-        };
-    }
+        BlazorBootstrap.BadgeIndicatorType.RoundedPill => "rounded-pill",
+        BlazorBootstrap.BadgeIndicatorType.RoundedCircle => "rounded-circle",
+        _ => "", // default: Top right
+    };
 
-    public string ToCalloutType(CalloutType type)
+    public string ToCalloutType(CalloutType type) => type switch
     {
-        return type switch
-        {
-            BlazorBootstrap.CalloutType.Default => "",
-            BlazorBootstrap.CalloutType.Danger => $"{Callout()}-danger",
-            BlazorBootstrap.CalloutType.Warning => $"{Callout()}-warning",
-            BlazorBootstrap.CalloutType.Info => $"{Callout()}-info",
-            BlazorBootstrap.CalloutType.Tip => $"{Callout()}-success",
-            _ => "",
-        };
-    }
+        BlazorBootstrap.CalloutType.Default => "",
+        BlazorBootstrap.CalloutType.Danger => $"{Callout()}-danger",
+        BlazorBootstrap.CalloutType.Warning => $"{Callout()}-warning",
+        BlazorBootstrap.CalloutType.Info => $"{Callout()}-info",
+        BlazorBootstrap.CalloutType.Tip => $"{Callout()}-success",
+        _ => "",
+    };
 
-    public string ToColor(TextColor color)
+    public string ToColor(TextColor color) => color switch
     {
-        return color switch
-        {
-            BlazorBootstrap.TextColor.Primary => "primary",
-            BlazorBootstrap.TextColor.Secondary => "secondary",
-            BlazorBootstrap.TextColor.Success => "success",
-            BlazorBootstrap.TextColor.Danger => "danger",
-            BlazorBootstrap.TextColor.Warning => "warning",
-            BlazorBootstrap.TextColor.Info => "info",
-            BlazorBootstrap.TextColor.Light => "light",
-            BlazorBootstrap.TextColor.Dark => "dark",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.TextColor.Primary => "primary",
+        BlazorBootstrap.TextColor.Secondary => "secondary",
+        BlazorBootstrap.TextColor.Success => "success",
+        BlazorBootstrap.TextColor.Danger => "danger",
+        BlazorBootstrap.TextColor.Warning => "warning",
+        BlazorBootstrap.TextColor.Info => "info",
+        BlazorBootstrap.TextColor.Light => "light",
+        BlazorBootstrap.TextColor.Dark => "dark",
+        _ => null,
+    };
 
-    public string ToSize(Size size)
+    public string ToSize(Size size) => size switch
     {
-        return size switch
-        {
-            BlazorBootstrap.Size.ExtraSmall => "xs",
-            BlazorBootstrap.Size.Small => "sm",
-            BlazorBootstrap.Size.Medium => "md",
-            BlazorBootstrap.Size.Large => "lg",
-            BlazorBootstrap.Size.ExtraLarge => "xl",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.Size.ExtraSmall => "xs",
+        BlazorBootstrap.Size.Small => "sm",
+        BlazorBootstrap.Size.Medium => "md",
+        BlazorBootstrap.Size.Large => "lg",
+        BlazorBootstrap.Size.ExtraLarge => "xl",
+        _ => null,
+    };
 
-    public string ToToastsPlacement(ToastsPlacement toastsPlacement)
+    public string ToToastsPlacement(ToastsPlacement toastsPlacement) => toastsPlacement switch
     {
-        return toastsPlacement switch
-        {
-            BlazorBootstrap.ToastsPlacement.TopLeft => "top-0 start-0",
-            BlazorBootstrap.ToastsPlacement.TopCenter => "top-0 start-50 translate-middle-x",
-            BlazorBootstrap.ToastsPlacement.TopRight => "top-0 end-0",
-            BlazorBootstrap.ToastsPlacement.MiddleLeft => "top-50 start-0 translate-middle-y",
-            BlazorBootstrap.ToastsPlacement.MiddleCenter => "top-50 start-50 translate-middle",
-            BlazorBootstrap.ToastsPlacement.MiddleRight => "top-50 end-0 translate-middle-y",
-            BlazorBootstrap.ToastsPlacement.BottomLeft => "bottom-0 start-0",
-            BlazorBootstrap.ToastsPlacement.BottomCenter => "bottom-0 start-50 translate-middle-x",
-            BlazorBootstrap.ToastsPlacement.BottomRight => "bottom-0 end-0",
-            _ => "top-0 end-0", // default: Top right
-        };
-    }
+        BlazorBootstrap.ToastsPlacement.TopLeft => "top-0 start-0",
+        BlazorBootstrap.ToastsPlacement.TopCenter => "top-0 start-50 translate-middle-x",
+        BlazorBootstrap.ToastsPlacement.TopRight => "top-0 end-0",
+        BlazorBootstrap.ToastsPlacement.MiddleLeft => "top-50 start-0 translate-middle-y",
+        BlazorBootstrap.ToastsPlacement.MiddleCenter => "top-50 start-50 translate-middle",
+        BlazorBootstrap.ToastsPlacement.MiddleRight => "top-50 end-0 translate-middle-y",
+        BlazorBootstrap.ToastsPlacement.BottomLeft => "bottom-0 start-0",
+        BlazorBootstrap.ToastsPlacement.BottomCenter => "bottom-0 start-50 translate-middle-x",
+        BlazorBootstrap.ToastsPlacement.BottomRight => "bottom-0 end-0",
+        _ => "top-0 end-0", // default: Top right
+    };
 
-    public string ToTooltipPlacement(TooltipPlacement tooltipPlacement)
+    public string ToTooltipPlacement(TooltipPlacement tooltipPlacement) => tooltipPlacement switch
     {
-        return tooltipPlacement switch
-        {
-            BlazorBootstrap.TooltipPlacement.Bottom => "bottom",
-            BlazorBootstrap.TooltipPlacement.Left => "left",
-            BlazorBootstrap.TooltipPlacement.Right => "right",
-            _ => "top",
-        };
-    }
+        BlazorBootstrap.TooltipPlacement.Bottom => "bottom",
+        BlazorBootstrap.TooltipPlacement.Left => "left",
+        BlazorBootstrap.TooltipPlacement.Right => "right",
+        _ => "top",
+    };
 
-    public string ToAutoCompleteSize(AutoCompleteSize size)
+    public string ToAutoCompleteSize(AutoCompleteSize size) => size switch
     {
-        return size switch
-        {
-            BlazorBootstrap.AutoCompleteSize.Large => "form-control-lg",
-            BlazorBootstrap.AutoCompleteSize.Small => "form-control-sm",
-            _ => ""
-        };
-    }
+        BlazorBootstrap.AutoCompleteSize.Large => "form-control-lg",
+        BlazorBootstrap.AutoCompleteSize.Small => "form-control-sm",
+        _ => ""
+    };
 
-    public string ToHeadingSize(HeadingSize headingSize)
+    public string ToHeadingSize(HeadingSize headingSize) => headingSize switch
     {
-        return headingSize switch
-        {
-            BlazorBootstrap.HeadingSize.H1 => "1",
-            BlazorBootstrap.HeadingSize.H2 => "2",
-            BlazorBootstrap.HeadingSize.H3 => "3",
-            BlazorBootstrap.HeadingSize.H4 => "4",
-            BlazorBootstrap.HeadingSize.H5 => "5",
-            BlazorBootstrap.HeadingSize.H6 => "6",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.HeadingSize.H1 => "1",
+        BlazorBootstrap.HeadingSize.H2 => "2",
+        BlazorBootstrap.HeadingSize.H3 => "3",
+        BlazorBootstrap.HeadingSize.H4 => "4",
+        BlazorBootstrap.HeadingSize.H5 => "5",
+        BlazorBootstrap.HeadingSize.H6 => "6",
+        _ => null,
+    };
 
-    public string ToDisplayHeadingSize(DisplayHeadingSize displayHeadingSize)
+    public string ToDisplayHeadingSize(DisplayHeadingSize displayHeadingSize) => displayHeadingSize switch
     {
-        return displayHeadingSize switch
-        {
-            BlazorBootstrap.DisplayHeadingSize.H1 => "1",
-            BlazorBootstrap.DisplayHeadingSize.H2 => "2",
-            BlazorBootstrap.DisplayHeadingSize.H3 => "3",
-            BlazorBootstrap.DisplayHeadingSize.H4 => "4",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.DisplayHeadingSize.H1 => "1",
+        BlazorBootstrap.DisplayHeadingSize.H2 => "2",
+        BlazorBootstrap.DisplayHeadingSize.H3 => "3",
+        BlazorBootstrap.DisplayHeadingSize.H4 => "4",
+        _ => null,
+    };
 
-    public string ToDividerType(DividerType dividerType)
+    public string ToDividerType(DividerType dividerType) => dividerType switch
     {
-        return dividerType switch
-        {
-            BlazorBootstrap.DividerType.Dashed => "dashed",
-            BlazorBootstrap.DividerType.Dotted => "dotted",
-            BlazorBootstrap.DividerType.TextContent => "text",
-            _ => "solid",
-        };
-    }
+        BlazorBootstrap.DividerType.Dashed => "dashed",
+        BlazorBootstrap.DividerType.Dotted => "dotted",
+        BlazorBootstrap.DividerType.TextContent => "text",
+        _ => "solid",
+    };
 
-    public string ToScreenreader(Screenreader screenreader)
+    public string ToScreenreader(Screenreader screenreader) => screenreader switch
     {
-        return screenreader switch
-        {
-            BlazorBootstrap.Screenreader.Only => "sr-only",
-            BlazorBootstrap.Screenreader.OnlyFocusable => "sr-only-focusable",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.Screenreader.Only => "sr-only",
+        BlazorBootstrap.Screenreader.OnlyFocusable => "sr-only-focusable",
+        _ => null,
+    };
 
-    public string ToPaginationSize(PaginationSize size)
+    public string ToPaginationSize(PaginationSize size) => size switch
     {
-        return size switch
-        {
-            BlazorBootstrap.PaginationSize.Small => "sm",
-            BlazorBootstrap.PaginationSize.Large => "lg",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.PaginationSize.Small => "sm",
+        BlazorBootstrap.PaginationSize.Large => "lg",
+        _ => null,
+    };
 
-    public string ToPlacement(Placement placement)
+    public string ToPlacement(Placement placement) => placement switch
     {
-        return placement switch
-        {
-            BlazorBootstrap.Placement.Start => "start",
-            BlazorBootstrap.Placement.End => "end",
-            BlazorBootstrap.Placement.Top => "top",
-            _ => "bottom",
-        };
-    }
+        BlazorBootstrap.Placement.Start => "start",
+        BlazorBootstrap.Placement.End => "end",
+        BlazorBootstrap.Placement.Top => "top",
+        _ => "bottom",
+    };
 
-    public string ToDialogSize(DialogSize size)
+    public string ToDialogSize(DialogSize size) => size switch
     {
-        return size switch
-        {
-            BlazorBootstrap.DialogSize.Regular => null,
-            BlazorBootstrap.DialogSize.Small => "modal-sm",
-            BlazorBootstrap.DialogSize.Large => "modal-lg",
-            BlazorBootstrap.DialogSize.ExtraLarge => "modal-xl",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.DialogSize.Regular => null,
+        BlazorBootstrap.DialogSize.Small => "modal-sm",
+        BlazorBootstrap.DialogSize.Large => "modal-lg",
+        BlazorBootstrap.DialogSize.ExtraLarge => "modal-xl",
+        _ => null,
+    };
 
-    public string ToModalFullscreen(ModalFullscreen fullscreen)
+    public string ToModalFullscreen(ModalFullscreen fullscreen) => fullscreen switch
     {
-        return fullscreen switch
-        {
-            BlazorBootstrap.ModalFullscreen.Disabled => null,
-            BlazorBootstrap.ModalFullscreen.Always => "modal-fullscreen",
-            BlazorBootstrap.ModalFullscreen.SmallDown => "modal-fullscreen-sm-down",
-            BlazorBootstrap.ModalFullscreen.MediumDown => "modal-fullscreen-md-down",
-            BlazorBootstrap.ModalFullscreen.LargeDown => "modal-fullscreen-lg-down",
-            BlazorBootstrap.ModalFullscreen.ExtraLargeDown => "modal-fullscreen-xl-down",
-            BlazorBootstrap.ModalFullscreen.ExtraExtraLargeDown => "modal-fullscreen-xxl-down",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.ModalFullscreen.Disabled => null,
+        BlazorBootstrap.ModalFullscreen.Always => "modal-fullscreen",
+        BlazorBootstrap.ModalFullscreen.SmallDown => "modal-fullscreen-sm-down",
+        BlazorBootstrap.ModalFullscreen.MediumDown => "modal-fullscreen-md-down",
+        BlazorBootstrap.ModalFullscreen.LargeDown => "modal-fullscreen-lg-down",
+        BlazorBootstrap.ModalFullscreen.ExtraLargeDown => "modal-fullscreen-xl-down",
+        BlazorBootstrap.ModalFullscreen.ExtraExtraLargeDown => "modal-fullscreen-xxl-down",
+        _ => null,
+    };
 
-    public string ToModalSize(ModalSize size)
+    public string ToModalSize(ModalSize size) => size switch
     {
-        return size switch
-        {
-            BlazorBootstrap.ModalSize.Regular => null,
-            BlazorBootstrap.ModalSize.Small => "modal-sm",
-            BlazorBootstrap.ModalSize.Large => "modal-lg",
-            BlazorBootstrap.ModalSize.ExtraLarge => "modal-xl",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.ModalSize.Regular => null,
+        BlazorBootstrap.ModalSize.Small => "modal-sm",
+        BlazorBootstrap.ModalSize.Large => "modal-lg",
+        BlazorBootstrap.ModalSize.ExtraLarge => "modal-xl",
+        _ => null,
+    };
 
-    public string ToModalTypeColor(ModalType modalType)
+    public string ToModalTypeColor(ModalType modalType) => modalType switch
     {
-        return modalType switch
-        {
-            BlazorBootstrap.ModalType.Primary => "primary",
-            BlazorBootstrap.ModalType.Secondary => "secondary",
-            BlazorBootstrap.ModalType.Success => "success",
-            BlazorBootstrap.ModalType.Danger => "danger",
-            BlazorBootstrap.ModalType.Warning => "warning",
-            BlazorBootstrap.ModalType.Info => "info",
-            BlazorBootstrap.ModalType.Light => "light",
-            BlazorBootstrap.ModalType.Dark => "dark",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.ModalType.Primary => "primary",
+        BlazorBootstrap.ModalType.Secondary => "secondary",
+        BlazorBootstrap.ModalType.Success => "success",
+        BlazorBootstrap.ModalType.Danger => "danger",
+        BlazorBootstrap.ModalType.Warning => "warning",
+        BlazorBootstrap.ModalType.Info => "info",
+        BlazorBootstrap.ModalType.Light => "light",
+        BlazorBootstrap.ModalType.Dark => "dark",
+        _ => null,
+    };
 
-    public string ToModalHeaderBottomBorderColor(ModalType modalType)
+    public string ToModalHeaderBottomBorderColor(ModalType modalType) => modalType switch
     {
-        return modalType switch
-        {
-            BlazorBootstrap.ModalType.Primary => "border-primary",
-            BlazorBootstrap.ModalType.Secondary => "border-secondary",
-            BlazorBootstrap.ModalType.Success => "border-success",
-            BlazorBootstrap.ModalType.Danger => "border-danger",
-            BlazorBootstrap.ModalType.Warning => "border-warning",
-            BlazorBootstrap.ModalType.Info => "border-info",
-            BlazorBootstrap.ModalType.Light => null,
-            BlazorBootstrap.ModalType.Dark => "border-dark",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.ModalType.Primary => "border-primary",
+        BlazorBootstrap.ModalType.Secondary => "border-secondary",
+        BlazorBootstrap.ModalType.Success => "border-success",
+        BlazorBootstrap.ModalType.Danger => "border-danger",
+        BlazorBootstrap.ModalType.Warning => "border-warning",
+        BlazorBootstrap.ModalType.Info => "border-info",
+        BlazorBootstrap.ModalType.Light => null,
+        BlazorBootstrap.ModalType.Dark => "border-dark",
+        _ => null,
+    };
 
-    public string ToOffcanvasSize(OffcanvasSize size)
+    public string ToOffcanvasSize(OffcanvasSize size) => size switch
     {
-        return size switch
-        {
-            BlazorBootstrap.OffcanvasSize.Regular => null,
-            BlazorBootstrap.OffcanvasSize.Small => "bb-offcanvas-sm",
-            BlazorBootstrap.OffcanvasSize.Large => "bb-offcanvas-lg",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.OffcanvasSize.Regular => null,
+        BlazorBootstrap.OffcanvasSize.Small => "bb-offcanvas-sm",
+        BlazorBootstrap.OffcanvasSize.Large => "bb-offcanvas-lg",
+        _ => null,
+    };
 
-    public string ToPlaceholderAnimation(PlaceholderAnimation animation)
+    public string ToPlaceholderAnimation(PlaceholderAnimation animation) => animation switch
     {
-        return animation switch
-        {
-            BlazorBootstrap.PlaceholderAnimation.Glow => "glow",
-            BlazorBootstrap.PlaceholderAnimation.Wave => "wave",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.PlaceholderAnimation.Glow => "glow",
+        BlazorBootstrap.PlaceholderAnimation.Wave => "wave",
+        _ => null,
+    };
 
-    public string ToPlaceholderWidth(PlaceholderWidth width)
+    public string ToPlaceholderWidth(PlaceholderWidth width) => width switch
     {
-        return width switch
-        {
-            BlazorBootstrap.PlaceholderWidth.Col1 => "col-1",
-            BlazorBootstrap.PlaceholderWidth.Col2 => "col-2",
-            BlazorBootstrap.PlaceholderWidth.Col3 => "col-3",
-            BlazorBootstrap.PlaceholderWidth.Col4 => "col-4",
-            BlazorBootstrap.PlaceholderWidth.Col5 => "col-5",
-            BlazorBootstrap.PlaceholderWidth.Col6 => "col-6",
-            BlazorBootstrap.PlaceholderWidth.Col7 => "col-7",
-            BlazorBootstrap.PlaceholderWidth.Col8 => "col-8",
-            BlazorBootstrap.PlaceholderWidth.Col9 => "col-9",
-            BlazorBootstrap.PlaceholderWidth.Col10 => "col-10",
-            BlazorBootstrap.PlaceholderWidth.Col11 => "col-11",
-            BlazorBootstrap.PlaceholderWidth.Col12 => "col-12",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.PlaceholderWidth.Col1 => "col-1",
+        BlazorBootstrap.PlaceholderWidth.Col2 => "col-2",
+        BlazorBootstrap.PlaceholderWidth.Col3 => "col-3",
+        BlazorBootstrap.PlaceholderWidth.Col4 => "col-4",
+        BlazorBootstrap.PlaceholderWidth.Col5 => "col-5",
+        BlazorBootstrap.PlaceholderWidth.Col6 => "col-6",
+        BlazorBootstrap.PlaceholderWidth.Col7 => "col-7",
+        BlazorBootstrap.PlaceholderWidth.Col8 => "col-8",
+        BlazorBootstrap.PlaceholderWidth.Col9 => "col-9",
+        BlazorBootstrap.PlaceholderWidth.Col10 => "col-10",
+        BlazorBootstrap.PlaceholderWidth.Col11 => "col-11",
+        BlazorBootstrap.PlaceholderWidth.Col12 => "col-12",
+        _ => null,
+    };
 
-    public string ToPlaceholderColor(PlaceholderColor color)
+    public string ToPlaceholderColor(PlaceholderColor color) => color switch
     {
-        return color switch
-        {
-            BlazorBootstrap.PlaceholderColor.Primary => "primary",
-            BlazorBootstrap.PlaceholderColor.Secondary => "secondary",
-            BlazorBootstrap.PlaceholderColor.Success => "success",
-            BlazorBootstrap.PlaceholderColor.Danger => "danger",
-            BlazorBootstrap.PlaceholderColor.Warning => "warning",
-            BlazorBootstrap.PlaceholderColor.Info => "info",
-            BlazorBootstrap.PlaceholderColor.Light => "light",
-            BlazorBootstrap.PlaceholderColor.Dark => "dark",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.PlaceholderColor.Primary => "primary",
+        BlazorBootstrap.PlaceholderColor.Secondary => "secondary",
+        BlazorBootstrap.PlaceholderColor.Success => "success",
+        BlazorBootstrap.PlaceholderColor.Danger => "danger",
+        BlazorBootstrap.PlaceholderColor.Warning => "warning",
+        BlazorBootstrap.PlaceholderColor.Info => "info",
+        BlazorBootstrap.PlaceholderColor.Light => "light",
+        BlazorBootstrap.PlaceholderColor.Dark => "dark",
+        _ => null,
+    };
 
-    public string ToPlaceholderSize(PlaceholderSize size)
+    public string ToPlaceholderSize(PlaceholderSize size) => size switch
     {
-        return size switch
-        {
-            BlazorBootstrap.PlaceholderSize.ExtraSmall => "xs",
-            BlazorBootstrap.PlaceholderSize.Small => "sm",
-            BlazorBootstrap.PlaceholderSize.Large => "lg",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.PlaceholderSize.ExtraSmall => "xs",
+        BlazorBootstrap.PlaceholderSize.Small => "sm",
+        BlazorBootstrap.PlaceholderSize.Large => "lg",
+        _ => null,
+    };
 
-    public string ToPosition(Position position)
+    public string ToPosition(Position position) => position switch
     {
-        return position switch
-        {
-            BlazorBootstrap.Position.Static => PositionAbsolute(),
-            BlazorBootstrap.Position.Relative => PositionRelative(),
-            BlazorBootstrap.Position.Absolute => PositionAbsolute(),
-            BlazorBootstrap.Position.Fixed => PositionFixed(),
-            BlazorBootstrap.Position.Sticky => PositionSticky(),
-            _ => "",
-        };
-    }
+        BlazorBootstrap.Position.Static => PositionAbsolute(),
+        BlazorBootstrap.Position.Relative => PositionRelative(),
+        BlazorBootstrap.Position.Absolute => PositionAbsolute(),
+        BlazorBootstrap.Position.Fixed => PositionFixed(),
+        BlazorBootstrap.Position.Sticky => PositionSticky(),
+        _ => "",
+    };
 
-    public string ToTabColor(TabColor color)
+    public string ToTabColor(TabColor color) => color switch
     {
-        return color switch
-        {
-            BlazorBootstrap.TabColor.Primary => "bg-primary text-white",
-            BlazorBootstrap.TabColor.Secondary => "bg-secondary text-white",
-            BlazorBootstrap.TabColor.Success => "bg-success text-white",
-            BlazorBootstrap.TabColor.Danger => "bg-danger text-white",
-            BlazorBootstrap.TabColor.Warning => "bg-warning text-dark",
-            BlazorBootstrap.TabColor.Info => "bg-info text-dark",
-            BlazorBootstrap.TabColor.Light => "bg-light text-dark",
-            BlazorBootstrap.TabColor.Dark => "bg-dark text-white",
-            _ => null,
-        };
-    }
+        BlazorBootstrap.TabColor.Primary => "bg-primary text-white",
+        BlazorBootstrap.TabColor.Secondary => "bg-secondary text-white",
+        BlazorBootstrap.TabColor.Success => "bg-success text-white",
+        BlazorBootstrap.TabColor.Danger => "bg-danger text-white",
+        BlazorBootstrap.TabColor.Warning => "bg-warning text-dark",
+        BlazorBootstrap.TabColor.Info => "bg-info text-dark",
+        BlazorBootstrap.TabColor.Light => "bg-light text-dark",
+        BlazorBootstrap.TabColor.Dark => "bg-dark text-white",
+        _ => null,
+    };
 
     #endregion
 }

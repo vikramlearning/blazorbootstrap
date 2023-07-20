@@ -10,7 +10,7 @@ public abstract class BaseAfterRenderComponent : ComponentBase, IDisposable, IAs
     /// <summary>
     /// A stack of functions to execute after the rendering.
     /// </summary>
-    private Queue<Func<Task>> executeAfterRenderQueue;
+    private Queue<Func<Task>>? executeAfterRenderQueue;
 
     #endregion
 
@@ -46,10 +46,7 @@ public abstract class BaseAfterRenderComponent : ComponentBase, IDisposable, IAs
     }
 
     /// <inheritdoc/>
-    public void Dispose()
-    {
-        Dispose(true);
-    }
+    public void Dispose() => Dispose(true);
 
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="BaseComponent"/> and optionally releases the managed resources.

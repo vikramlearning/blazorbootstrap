@@ -7,7 +7,7 @@ public class StyleBuilder
 {
     #region Members
 
-    const char Delimiter = ';';
+    private const char Delimiter = ';';
 
     private readonly Action<StyleBuilder> buildStyles;
 
@@ -58,10 +58,7 @@ public class StyleBuilder
     /// <summary>
     /// Marks the builder as dirty to rebuild the values.
     /// </summary>
-    public void Dirty()
-    {
-        dirty = true;
-    }
+    public void Dirty() => dirty = true;
 
     #endregion
 

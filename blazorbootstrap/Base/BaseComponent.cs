@@ -60,7 +60,6 @@ public abstract class BaseComponent : BaseAfterRenderComponent
         return base.DisposeAsync(disposing);
     }
 
-
     /// <summary>
     /// Builds a list of classnames for this component.
     /// </summary>
@@ -86,18 +85,12 @@ public abstract class BaseComponent : BaseAfterRenderComponent
     /// <summary>
     /// Clears the class-names and mark them to be regenerated.
     /// </summary>
-    internal protected virtual void DirtyClasses()
-    {
-        ClassBuilder?.Dirty();
-    }
+    internal protected virtual void DirtyClasses() => ClassBuilder?.Dirty();
 
     /// <summary>
     /// Clears the styles-names and mark them to be regenerated.
     /// </summary>
-    protected virtual void DirtyStyles()
-    {
-        StyleBuilder?.Dirty();
-    }
+    protected virtual void DirtyStyles() => StyleBuilder?.Dirty();
 
     #endregion
 
@@ -128,7 +121,7 @@ public abstract class BaseComponent : BaseAfterRenderComponent
     /// <summary>
     /// Gets the class builder.
     /// </summary>
-    protected ClassBuilder ClassBuilder { get; private set; }
+    protected ClassBuilder? ClassBuilder { get; private set; }
 
     /// <summary>
     /// Gets the built class-names based on all the rules set by the component parameters.
@@ -138,7 +131,7 @@ public abstract class BaseComponent : BaseAfterRenderComponent
     /// <summary>
     /// Gets the style mapper.
     /// </summary>
-    protected StyleBuilder StyleBuilder { get; private set; }
+    protected StyleBuilder? StyleBuilder { get; private set; }
 
     /// <summary>
     /// Gets the built styles based on all the rules set by the component parameters.
