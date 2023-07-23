@@ -4,11 +4,6 @@ public partial class PaginationItem : BaseComponent
 {
     #region Members
 
-    /// <summary>
-    /// Holds the state of this pagination item.
-    /// </summary>
-    private PaginationItemState state = new();
-
     #endregion
 
     #region Methods
@@ -38,7 +33,7 @@ public partial class PaginationItem : BaseComponent
     /// <summary>
     /// Gets the reference to the pagination item state object.
     /// </summary>
-    protected PaginationItemState State => state;
+    protected PaginationItemState State { get; private set; } = new();
 
     /// <summary>
     /// Indicate the currently active page.
@@ -46,13 +41,13 @@ public partial class PaginationItem : BaseComponent
     [Parameter]
     public bool Active
     {
-        get => state.Active;
+        get => State.Active;
         set
         {
-            if (value == state.Active)
+            if (value == State.Active)
                 return;
 
-            state = state with { Active = value };
+            State = State with { Active = value };
 
             DirtyClasses();
         }
@@ -64,25 +59,25 @@ public partial class PaginationItem : BaseComponent
     [Parameter]
     public bool Disabled
     {
-        get => state.Disabled;
+        get => State.Disabled;
         set
         {
-            if (value == state.Disabled)
+            if (value == State.Disabled)
                 return;
 
-            state = state with { Disabled = value };
+            State = State with { Disabled = value };
 
             DirtyClasses();
         }
     }
 
-    [Parameter] public string Text { get; set; }
+    [Parameter] public string? Text { get; set; }
 
-    [Parameter] public string LinkText { get; set; }
+    [Parameter] public string? LinkText { get; set; }
 
     [Parameter] public IconName LinkIcon { get; set; }
 
-    [Parameter] public string AriaLabel { get; set; }
+    [Parameter] public string? AriaLabel { get; set; }
 
     #endregion
 }
