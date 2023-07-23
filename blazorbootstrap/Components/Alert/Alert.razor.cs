@@ -6,7 +6,7 @@ public partial class Alert
 
     private AlertColor color = AlertColor.None;
 
-    private DotNetObjectReference<Alert> objRef;
+    private DotNetObjectReference<Alert>? objRef;
 
     #endregion
 
@@ -33,10 +33,7 @@ public partial class Alert
     /// <summary>
     /// Closes an alert by removing it from the DOM.
     /// </summary>
-    public async Task CloseAsync()
-    {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.alert.close", ElementId);
-    }
+    public async Task CloseAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.alert.close", ElementId);
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
@@ -92,7 +89,7 @@ public partial class Alert
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="Alert"/>.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     #endregion
 
