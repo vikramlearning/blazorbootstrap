@@ -8,11 +8,11 @@ public partial class SidebarItem : BaseComponent
 
     #region Members
 
-    private string iconColorCssClass => BootstrapClassProvider.IconColor(this.IconColor);
+    private string iconColorCssClass => BootstrapClassProvider.IconColor(IconColor);
 
     private bool navitemGroupExpanded = false;
 
-    private string targetString => this.Target.ToTargetString();
+    private string targetString => Target.ToTargetString();
 
     #endregion Members
 
@@ -29,7 +29,8 @@ public partial class SidebarItem : BaseComponent
 
     protected override void OnParametersSet()
     {
-        if (!HasChilds || ChildItems is null || !ChildItems.Any()) return;
+        if (!HasChilds || ChildItems is null || !ChildItems.Any())
+            return;
 
         foreach (var childItem in ChildItems)
         {
@@ -45,22 +46,9 @@ public partial class SidebarItem : BaseComponent
     {
         var hrefAbsolute = (href == null) ? null : NavigationManager.ToAbsoluteUri(href).AbsoluteUri;
 
-        if (hrefAbsolute == null)
-        {
-            return false;
-        }
-
-        if (EqualsHrefExactlyOrIfTrailingSlashAdded(currentUriAbsolute, hrefAbsolute))
-        {
-            return true;
-        }
-
-        if (Match == NavLinkMatch.Prefix && IsStrictlyPrefixWithSeparator(currentUriAbsolute, hrefAbsolute))
-        {
-            return true;
-        }
-
-        return false;
+        return hrefAbsolute != null
+               && (EqualsHrefExactlyOrIfTrailingSlashAdded(currentUriAbsolute, hrefAbsolute)
+               || (Match == NavLinkMatch.Prefix && IsStrictlyPrefixWithSeparator(currentUriAbsolute, hrefAbsolute)));
     }
 
     private bool EqualsHrefExactlyOrIfTrailingSlashAdded(string currentUriAbsolute, string hrefAbsolute)
@@ -80,7 +68,7 @@ public partial class SidebarItem : BaseComponent
             // which in turn is because it's common for servers to return the same page
             // for http://host/vdir as they do for host://host/vdir/ as it's no
             // good to display a blank page in that case.
-            if (hrefAbsolute[hrefAbsolute.Length - 1] == '/'
+            if (hrefAbsolute[^1] == '/'
                 && hrefAbsolute.StartsWith(currentUriAbsolute, StringComparison.OrdinalIgnoreCase))
             {
                 return true;
@@ -93,29 +81,20 @@ public partial class SidebarItem : BaseComponent
     private static bool IsStrictlyPrefixWithSeparator(string value, string prefix)
     {
         var prefixLength = prefix.Length;
-        if (value.Length > prefixLength)
-        {
-            return value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
-                && (
-                    // Only match when there's a separator character either at the end of the
-                    // prefix or right after it.
-                    // Example: "/abc" is treated as a prefix of "/abc/def" but not "/abcdef"
-                    // Example: "/abc/" is treated as a prefix of "/abc/def" but not "/abcdef"
-                    prefixLength == 0
-                    || !char.IsLetterOrDigit(prefix[prefixLength - 1])
-                    || !char.IsLetterOrDigit(value[prefixLength])
-                );
-        }
-        else
-        {
-            return false;
-        }
+        return value.Length > prefixLength
+               && value.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)
+               && (
+                   // Only match when there's a separator character either at the end of the
+                   // prefix or right after it.
+                   // Example: "/abc" is treated as a prefix of "/abc/def" but not "/abcdef"
+                   // Example: "/abc/" is treated as a prefix of "/abc/def" but not "/abcdef"
+                   prefixLength == 0
+                   || !char.IsLetterOrDigit(prefix[prefixLength - 1])
+                   || !char.IsLetterOrDigit(value[prefixLength])
+               );
     }
 
-    private void ToggleNavItemGroup()
-    {
-        navitemGroupExpanded = !navitemGroupExpanded;
-    }
+    private void ToggleNavItemGroup() => navitemGroupExpanded = !navitemGroupExpanded;
 
     #endregion Methods
 
@@ -130,11 +109,11 @@ public partial class SidebarItem : BaseComponent
 
     [Parameter] public IEnumerable<NavItem>? ChildItems { get; set; }
 
-    [Parameter] public string CustomIconName { get; set; }
+    [Parameter] public string? CustomIconName { get; set; }
 
     [Parameter] public bool HasChilds { get; set; }
 
-    [Parameter] public string Href { get; set; }
+    [Parameter] public string? Href { get; set; }
 
     /// <summary>
     /// Gets or sets a value representing the URL matching behavior.
@@ -145,7 +124,7 @@ public partial class SidebarItem : BaseComponent
 
     [Parameter] public IconColor IconColor { get; set; }
 
-    [Parameter] public string Text { get; set; }
+    [Parameter] public string? Text { get; set; }
 
     [Parameter] public Target Target { get; set; }
 

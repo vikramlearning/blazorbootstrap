@@ -12,7 +12,7 @@ public partial class Sidebar : BaseComponent
 
     private bool collapseNavMenu = true;
 
-    private IEnumerable<NavItem> items = null;
+    private IEnumerable<NavItem>? items = null;
 
     private string? navMenuCssClass => GetNavMenuCssClass();
 
@@ -61,14 +61,7 @@ public partial class Sidebar : BaseComponent
         {
             var request = new SidebarDataProviderRequest();
             var result = await DataProvider.Invoke(request);
-            if (result != null)
-            {
-                items = result.Data;
-            }
-            else
-            {
-                items = new List<NavItem>();
-            }
+            items = result != null ? result.Data : new List<NavItem>();
         }
 
         requestInProgress = false;
@@ -78,7 +71,7 @@ public partial class Sidebar : BaseComponent
 
     private string GetNavMenuCssClass()
     {
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         if (collapseNavMenu)
             sb.Append(" collapse");
@@ -91,10 +84,7 @@ public partial class Sidebar : BaseComponent
         return sb.ToString();
     }
 
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
 
     /// <summary>
     /// Toggles sidebar.
@@ -116,18 +106,18 @@ public partial class Sidebar : BaseComponent
     /// <summary>
     /// Gets or sets the badge text.
     /// </summary>
-    [Parameter] public string BadgeText { get; set; }
+    [Parameter] public string? BadgeText { get; set; }
 
     /// <summary>
     /// Gets or sets the custom icon name.
     /// </summary>
-    [Parameter] public string CustomIconName { get; set; }
+    [Parameter] public string? CustomIconName { get; set; }
 
     /// <summary>
     /// DataProvider is for items to render. 
     /// The provider should always return an instance of 'SidebarDataProviderResult', and 'null' is not allowed.
     /// </summary>
-    [Parameter, EditorRequired] public SidebarDataProviderDelegate DataProvider { get; set; }
+    [Parameter, EditorRequired] public SidebarDataProviderDelegate? DataProvider { get; set; }
 
     /// <summary>
     /// Gets or sets the IconName.
@@ -137,12 +127,12 @@ public partial class Sidebar : BaseComponent
     /// <summary>
     /// Gets or sets the logo.
     /// </summary>
-    [Parameter] public string ImageSrc { get; set; }
+    [Parameter] public string? ImageSrc { get; set; }
 
     /// <summary>
     /// Gets or sets the title.
     /// </summary>
-    [Parameter, EditorRequired] public string Title { get; set; }
+    [Parameter, EditorRequired] public string? Title { get; set; }
 
     #endregion Properties
 }
