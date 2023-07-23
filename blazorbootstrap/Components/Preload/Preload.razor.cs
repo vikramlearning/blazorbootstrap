@@ -4,7 +4,7 @@ public partial class Preload : BaseComponent
 {
     #region Members
 
-    private string spinnerColor;
+    private string? spinnerColor;
 
     private bool showBackdrop;
 
@@ -42,8 +42,8 @@ public partial class Preload : BaseComponent
 
         showBackdrop = true;
 
-        this.DirtyClasses();
-        this.DirtyStyles();
+        DirtyClasses();
+        DirtyStyles();
 
         StateHasChanged();
     }
@@ -52,8 +52,8 @@ public partial class Preload : BaseComponent
     {
         showBackdrop = false;
 
-        this.DirtyClasses();
-        this.DirtyStyles();
+        DirtyClasses();
+        DirtyStyles();
 
         StateHasChanged();
     }
@@ -80,12 +80,12 @@ public partial class Preload : BaseComponent
     /// <summary>
     /// Gets or sets the <see cref="PageLoadingService" /> instance.
     /// </summary>
-    [Inject] PreloadService PageLoadingService { get; set; } = default!;
+    [Inject] private PreloadService PageLoadingService { get; set; } = default!;
 
     /// <summary>
     /// Specifies the content to be rendered inside this.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     #endregion Properties
 }
