@@ -20,7 +20,7 @@ public partial class Tooltip : BaseComponent
 
     protected override async Task OnInitializedAsync()
     {
-        this.title = this.Title;
+        title = Title;
         objRef ??= DotNetObjectReference.Create(this);
 
         await base.OnInitializedAsync();
