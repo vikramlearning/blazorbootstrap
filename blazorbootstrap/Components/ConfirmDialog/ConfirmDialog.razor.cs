@@ -6,27 +6,27 @@ public partial class ConfirmDialog : BaseComponent
 
     private bool isVisible;
 
-    private string title;
-    private string message1;
-    private string message2;
+    private string? title;
+    private string? message1;
+    private string? message2;
 
     private Type? childComponent;
-    private Dictionary<string, object> parameters;
+    private Dictionary<string, object>? parameters;
 
-    private string dialogCssClass;
+    private string? dialogCssClass;
     private bool dismissable;
-    private string headerCssClass;
-    private string scrollable;
-    private string verticallyCentered;
-    private string modalSize;
-    private string noButtonColor;
-    private string noButtonText;
-    private string yesButtonColor;
-    private string yesButtonText;
+    private string? headerCssClass;
+    private string? scrollable;
+    private string? verticallyCentered;
+    private string? modalSize;
+    private string? noButtonColor;
+    private string? noButtonText;
+    private string? yesButtonColor;
+    private string? yesButtonText;
 
     private bool showBackdrop;
 
-    private TaskCompletionSource<bool> taskCompletionSource;
+    private TaskCompletionSource<bool>? taskCompletionSource;
 
     #endregion Members
 
@@ -50,37 +50,36 @@ public partial class ConfirmDialog : BaseComponent
         base.BuildStyles(builder);
     }
 
-    private Task<bool> Show(string title, string message1, string message2, Type? type, Dictionary<string, object> parameters, ConfirmDialogOptions confirmDialogOptions)
+    private Task<bool> Show(string title, string? message1, string? message2, Type? type, Dictionary<string, object>? parameters, ConfirmDialogOptions confirmDialogOptions)
     {
         taskCompletionSource = new TaskCompletionSource<bool>();
-        Task<bool> task = taskCompletionSource.Task;
+        var task = taskCompletionSource.Task;
 
         this.title = title;
         this.message1 = message1;
         this.message2 = message2;
 
-        this.childComponent = type;
+        childComponent = type;
         this.parameters = parameters;
 
-        if (confirmDialogOptions is null)
-            confirmDialogOptions = new ConfirmDialogOptions();
+        confirmDialogOptions ??= new ConfirmDialogOptions();
 
-        this.dialogCssClass = confirmDialogOptions.DialogCssClass;
-        this.dismissable = confirmDialogOptions.Dismissable;
-        this.headerCssClass = confirmDialogOptions.HeaderCssClass;
-        this.scrollable = confirmDialogOptions.IsScrollable ? "modal-dialog-scrollable" : "";
-        this.verticallyCentered = confirmDialogOptions.IsVerticallyCentered ? "modal-dialog-centered" : "";
-        this.noButtonColor = confirmDialogOptions.NoButtonColor.ToButtonClass();
-        this.noButtonText = confirmDialogOptions.NoButtonText;
-        this.modalSize = BootstrapClassProvider.ToDialogSize(confirmDialogOptions.Size);
-        this.yesButtonColor = confirmDialogOptions.YesButtonColor.ToButtonClass();
-        this.yesButtonText = confirmDialogOptions.YesButtonText;
+        dialogCssClass = confirmDialogOptions.DialogCssClass;
+        dismissable = confirmDialogOptions.Dismissable;
+        headerCssClass = confirmDialogOptions.HeaderCssClass;
+        scrollable = confirmDialogOptions.IsScrollable ? "modal-dialog-scrollable" : "";
+        verticallyCentered = confirmDialogOptions.IsVerticallyCentered ? "modal-dialog-centered" : "";
+        noButtonColor = confirmDialogOptions.NoButtonColor.ToButtonClass();
+        noButtonText = confirmDialogOptions.NoButtonText;
+        modalSize = BootstrapClassProvider.ToDialogSize(confirmDialogOptions.Size);
+        yesButtonColor = confirmDialogOptions.YesButtonColor.ToButtonClass();
+        yesButtonText = confirmDialogOptions.YesButtonText;
 
-        this.isVisible = true;
-        this.showBackdrop = true;
+        isVisible = true;
+        showBackdrop = true;
 
-        this.DirtyClasses();
-        this.DirtyStyles();
+        DirtyClasses();
+        DirtyStyles();
 
         Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show"));
 
@@ -96,10 +95,7 @@ public partial class ConfirmDialog : BaseComponent
     /// <param name="message1">message1 for the confirmation dialog.</param>
     /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
     /// <returns>bool</returns>
-    public Task<bool> ShowAsync(string title, string message1, ConfirmDialogOptions confirmDialogOptions = null)
-    {
-        return Show(title: title, message1: message1, message2: null, type: null, parameters: null, confirmDialogOptions: confirmDialogOptions);
-    }
+    public Task<bool> ShowAsync(string title, string message1, ConfirmDialogOptions? confirmDialogOptions = null) => Show(title: title, message1: message1, message2: null, type: null, parameters: null, confirmDialogOptions: confirmDialogOptions);
 
     /// <summary>
     /// Shows confirm dialog.
@@ -109,10 +105,7 @@ public partial class ConfirmDialog : BaseComponent
     /// <param name="message2">message2 for the confirmation dialog. This is optional.</param>
     /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
     /// <returns>bool</returns>
-    public Task<bool> ShowAsync(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null)
-    {
-        return Show(title: title, message1: message1, message2: message2, type: null, parameters: null, confirmDialogOptions: confirmDialogOptions);
-    }
+    public Task<bool> ShowAsync(string title, string message1, string message2, ConfirmDialogOptions? confirmDialogOptions = null) => Show(title: title, message1: message1, message2: message2, type: null, parameters: null, confirmDialogOptions: confirmDialogOptions);
 
     /// <summary>
     /// Shows confirm dialog.
@@ -122,21 +115,18 @@ public partial class ConfirmDialog : BaseComponent
     /// <param name="parameters"></param>
     /// <param name="confirmDialogOptions"></param>
     /// <returns>bool</returns>
-    public Task<bool> ShowAsync<T>(string title, Dictionary<string, object> parameters = null, ConfirmDialogOptions confirmDialogOptions = null) where T : ComponentBase
-    {
-        return Show(title: title, message1: null, message2: null, type: typeof(T), parameters: parameters, confirmDialogOptions: confirmDialogOptions);
-    }
+    public Task<bool> ShowAsync<T>(string title, Dictionary<string, object>? parameters = null, ConfirmDialogOptions? confirmDialogOptions = null) where T : ComponentBase => Show(title: title, message1: null, message2: null, type: typeof(T), parameters: parameters, confirmDialogOptions: confirmDialogOptions);
 
     /// <summary>
     /// Hides confirm dialog.
     /// </summary>
     private void Hide()
     {
-        this.isVisible = false;
-        this.showBackdrop = false;
+        isVisible = false;
+        showBackdrop = false;
 
-        this.DirtyClasses();
-        this.DirtyStyles();
+        DirtyClasses();
+        DirtyStyles();
 
         Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide"));
 

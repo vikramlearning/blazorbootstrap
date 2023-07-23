@@ -5,7 +5,7 @@ public class ConfirmDialogOptions
     /// <summary>
     /// Additional CSS class for the dialog (div.modal-dialog element).
     /// </summary>
-    public string DialogCssClass { get; set; }
+    public string? DialogCssClass { get; set; }
 
     /// <summary>
     /// Adds a dismissable close button to the confirm dialog.
@@ -15,7 +15,7 @@ public class ConfirmDialogOptions
     /// <summary>
     /// Additional header CSS class (div.modal-header element).
     /// </summary>
-    public string HeaderCssClass { get; set; }
+    public string? HeaderCssClass { get; set; }
 
     /// <summary>
     /// Allows confirm dialog body to be scrollable.
