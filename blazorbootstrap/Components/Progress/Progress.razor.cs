@@ -12,7 +12,7 @@ public partial class Progress
 
     protected override void OnInitialized()
     {
-        this.height = Height;
+        height = Height;
         base.OnInitialized();
     }
 
@@ -38,7 +38,7 @@ public partial class Progress
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="Progress"/>.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the height of the Progress. Height is measured in pixels, and the default height is 16 pixels.
