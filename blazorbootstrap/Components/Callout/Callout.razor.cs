@@ -24,11 +24,8 @@ public partial class Callout : BaseComponent
         base.BuildClasses(builder);
     }
 
-    private string GetHeading()
-    {
-        if (string.IsNullOrWhiteSpace(this.Heading))
-        {
-            return this.type switch
+    private string GetHeading() => string.IsNullOrWhiteSpace(Heading)
+            ? type switch
             {
                 CalloutType.Default => "NOTE",
                 CalloutType.Info => "INFO",
@@ -36,24 +33,18 @@ public partial class Callout : BaseComponent
                 CalloutType.Danger => "DANGER",
                 CalloutType.Tip => "TIP",
                 _ => "",
-            };
-        }
+            }
+            : Heading;
 
-        return this.Heading;
-    }
-
-    private IconName GetIconName()
+    private IconName GetIconName() => type switch
     {
-        return this.type switch
-        {
-            CalloutType.Default => IconName.InfoCircleFill,
-            CalloutType.Info => IconName.InfoCircleFill,
-            CalloutType.Warning => IconName.ExclamationTriangleFill,
-            CalloutType.Danger => IconName.Fire,
-            CalloutType.Tip => IconName.Lightbulb,
-            _ => IconName.InfoCircleFill,
-        };
-    }
+        CalloutType.Default => IconName.InfoCircleFill,
+        CalloutType.Info => IconName.InfoCircleFill,
+        CalloutType.Warning => IconName.ExclamationTriangleFill,
+        CalloutType.Danger => IconName.Fire,
+        CalloutType.Tip => IconName.Lightbulb,
+        _ => IconName.InfoCircleFill,
+    };
 
     #endregion Methods
 
@@ -65,12 +56,12 @@ public partial class Callout : BaseComponent
     /// <summary>
     /// Specifies the content to be rendered inside this.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the callout heading.
     /// </summary>
-    [Parameter] public string Heading { get; set; }
+    [Parameter] public string? Heading { get; set; }
 
     /// <summary>
     /// Gets or sets the callout color.
