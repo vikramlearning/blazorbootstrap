@@ -7,7 +7,7 @@ public class SidebarDataProviderRequest
         if (data is null)
             return new SidebarDataProviderResult { Data = Enumerable.Empty<NavItem>() };
 
-        List<NavItem> result = new List<NavItem>();
+        var result = new List<NavItem>();
         var parentNavItems = data.Where(x => string.IsNullOrWhiteSpace(x.ParentId))?.OrderBy(x => x.Sequence);
 
         if (parentNavItems is null || !parentNavItems.Any())

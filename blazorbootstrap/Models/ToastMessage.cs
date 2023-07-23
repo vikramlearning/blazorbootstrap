@@ -25,80 +25,74 @@ public class ToastMessage : IEquatable<ToastMessage>
 
     public ToastMessage()
     {
-        this.Id = Guid.NewGuid();
+        Id = Guid.NewGuid();
     }
 
     public ToastMessage(ToastType type, string message)
     {
-        this.Id = Guid.NewGuid();
-        this.Type = type;
-        this.Message = message;
+        Id = Guid.NewGuid();
+        Type = type;
+        Message = message;
     }
 
     public ToastMessage(ToastType type, string title, string message)
     {
-        this.Id = Guid.NewGuid();
-        this.Type = type;
-        this.Title = title;
-        this.Message = message;
+        Id = Guid.NewGuid();
+        Type = type;
+        Title = title;
+        Message = message;
     }
 
     public ToastMessage(ToastType type, IconName iconName, string title, string message)
     {
-        this.Id = Guid.NewGuid();
-        this.Type = type;
-        this.IconName = iconName;
-        this.Title = title;
-        this.Message = message;
+        Id = Guid.NewGuid();
+        Type = type;
+        IconName = iconName;
+        Title = title;
+        Message = message;
     }
 
     public ToastMessage(ToastType type, string customIconName, string title, string message)
     {
-        this.Id = Guid.NewGuid();
-        this.Type = type;
-        this.CustomIconName = customIconName;
-        this.Title = title;
-        this.Message = message;
+        Id = Guid.NewGuid();
+        Type = type;
+        CustomIconName = customIconName;
+        Title = title;
+        Message = message;
     }
 
     public ToastMessage(ToastType type, IconName iconName, string title, string helpText, string message)
     {
-        this.Id = Guid.NewGuid();
-        this.Type = type;
-        this.IconName = iconName;
-        this.Title = title;
-        this.HelpText = helpText;
-        this.Message = message;
+        Id = Guid.NewGuid();
+        Type = type;
+        IconName = iconName;
+        Title = title;
+        HelpText = helpText;
+        Message = message;
     }
 
     public ToastMessage(ToastType type, string customIconName, string title, string helpText, string message)
     {
-        this.Id = Guid.NewGuid();
-        this.Type = type;
-        this.CustomIconName = customIconName;
-        this.Title = title;
-        this.HelpText = helpText;
-        this.Message = message;
+        Id = Guid.NewGuid();
+        Type = type;
+        CustomIconName = customIconName;
+        Title = title;
+        HelpText = helpText;
+        Message = message;
     }
 
     public ToastMessage(ToastType type, string customIconName, string title, string helpText, string message, bool autoHide)
     {
-        this.Id = Guid.NewGuid();
-        this.Type = type;
-        this.CustomIconName = customIconName;
-        this.Title = title;
-        this.HelpText = helpText;
-        this.Message = message;
-        this.AutoHide = autoHide;
+        Id = Guid.NewGuid();
+        Type = type;
+        CustomIconName = customIconName;
+        Title = title;
+        HelpText = helpText;
+        Message = message;
+        AutoHide = autoHide;
     }
 
-    internal void SetElementId(string elementId) => this.ElementId = elementId;
+    internal void SetElementId(string elementId) => ElementId = elementId;
 
-    public bool Equals(ToastMessage other)
-    {
-        if (other == null)
-            return false;
-
-        return this.Id.Equals(other.Id);
-    }
+    public bool Equals(ToastMessage other) => other != null && Id.Equals(other.Id);
 }
