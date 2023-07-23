@@ -66,8 +66,7 @@ public partial class Toasts : BaseComponent, IDisposable
         if (toastMessage is null)
             return;
 
-        if (Messages is null)
-            Messages = new();
+        Messages ??= new();
 
         Messages.Add(toastMessage);
 
@@ -100,7 +99,7 @@ public partial class Toasts : BaseComponent, IDisposable
     /// <summary>
     /// List of all the toasts.
     /// </summary>
-    [Parameter] public List<ToastMessage> Messages { get; set; } = default!;
+    [Parameter] public List<ToastMessage>? Messages { get; set; } = default!;
 
     /// <summary>
     /// Auto hide the toast. Default is false.
