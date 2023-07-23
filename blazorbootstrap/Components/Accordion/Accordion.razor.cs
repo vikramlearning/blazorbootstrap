@@ -28,7 +28,7 @@ public partial class Accordion
 
     #region Members
 
-    private List<AccordionItem> items = new List<AccordionItem>();
+    private List<AccordionItem>? items = new();
 
     #endregion
 
