@@ -4,8 +4,8 @@ public class ToastEventArgs : EventArgs
 {
     public ToastEventArgs(Guid toastId, string elementId)
     {
-        this.ToastId = toastId;
-        this.ElementId = elementId;
+        ToastId = toastId;
+        ElementId = elementId;
     }
 
     public Guid ToastId { get; set; }
