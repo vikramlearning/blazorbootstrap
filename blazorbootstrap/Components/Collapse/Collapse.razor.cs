@@ -30,7 +30,7 @@ public partial class Collapse
 
     private bool horizontal;
 
-    private DotNetObjectReference<Collapse> objRef;
+    private DotNetObjectReference<Collapse>? objRef;
 
     #endregion
 
@@ -40,7 +40,7 @@ public partial class Collapse
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Collapse());
-        builder.Append(BootstrapClassProvider.CollapseHorizontal(), this.Horizontal);
+        builder.Append(BootstrapClassProvider.CollapseHorizontal(), Horizontal);
 
         base.BuildClasses(builder);
     }
@@ -55,26 +55,17 @@ public partial class Collapse
     /// <summary>
     /// Shows a collapsible element.
     /// </summary>
-    public async Task ShowAsync()
-    {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.show", ElementId);
-    }
+    public async Task ShowAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.show", ElementId);
 
     /// <summary>
     /// Hides a collapsible element.
     /// </summary>
-    public async Task HideAsync()
-    {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.hide", ElementId);
-    }
+    public async Task HideAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.hide", ElementId);
 
     /// <summary>
     /// Toggles a collapsible element to shown or hidden.
     /// </summary>
-    public async Task ToggleAsync()
-    {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.toggle", ElementId);
-    }
+    public async Task ToggleAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.toggle", ElementId);
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
