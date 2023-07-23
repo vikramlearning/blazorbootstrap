@@ -1,18 +1,18 @@
 ﻿namespace BlazorBootstrap;
 
-partial class GridColumnFilter : BaseComponent
+public partial class GridColumnFilter : BaseComponent
 {
     #region Members
 
     private FilterOperator filterOperator;
 
-    private string filterValue;
+    private string? filterValue;
 
-    private IEnumerable<FilterOperatorInfo> filterOperators => FilterOperatorHelper.GetFilterOperators(this.PropertyTypeName);
+    private IEnumerable<FilterOperatorInfo> filterOperators => FilterOperatorHelper.GetFilterOperators(PropertyTypeName);
 
-    private string selectedFilterSymbol;
+    private string? selectedFilterSymbol;
 
-    private string filterStyle => this.FilterWidth > 0 ? $"width:{this.FilterWidth}px;" : "";
+    private string filterStyle => FilterWidth > 0 ? $"width:{FilterWidth}px;" : "";
 
     #endregion Members
 
@@ -20,8 +20,8 @@ partial class GridColumnFilter : BaseComponent
 
     protected override void OnInitialized()
     {
-        this.filterOperator = this.FilterOperator;
-        this.filterValue = this.FilterValue;
+        filterOperator = FilterOperator;
+        filterValue = FilterValue;
 
         base.OnInitialized();
     }
@@ -34,85 +34,85 @@ partial class GridColumnFilter : BaseComponent
 
     private async Task OnFilterOperatorChangedAsync(FilterOperatorInfo filterOperatorInfo)
     {
-        this.filterOperator = filterOperatorInfo.FilterOperator;
+        filterOperator = filterOperatorInfo.FilterOperator;
 
         if (filterOperatorInfo.Symbol == "x")
         {
             if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
-                this.filterValue = null; // TODO: fix reset symbol
+                filterValue = null; // TODO: fix reset symbol
             else
-                this.filterValue = string.Empty;
+                filterValue = string.Empty;
         }
 
         SetSelectedFilterSymbol();
 
         if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(this.filterValue, this.filterOperator));
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
     }
 
     private async Task OnFilterValueChangedAsync(ChangeEventArgs args)
     {
-        this.filterValue = args?.Value?.ToString();
+        filterValue = args?.Value?.ToString();
 
         if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(this.filterValue, this.filterOperator));
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
     }
 
     internal void SetDefaultFilter()
     {
-        if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
-            || PropertyTypeName == StringConstants.PropertyTypeNameInt32
-            || PropertyTypeName == StringConstants.PropertyTypeNameInt64
-            || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
-            || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
-            || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
+        if (PropertyTypeName is StringConstants.PropertyTypeNameInt16
+            or StringConstants.PropertyTypeNameInt32
+            or StringConstants.PropertyTypeNameInt64
+            or StringConstants.PropertyTypeNameSingle // float
+            or StringConstants.PropertyTypeNameDecimal
+            or StringConstants.PropertyTypeNameDouble)
         {
-            if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Equals;
+            if (filterOperator == FilterOperator.None)
+                filterOperator = FilterOperator.Equals;
         }
-        else if (PropertyTypeName == StringConstants.PropertyTypeNameString
-            || PropertyTypeName == StringConstants.PropertyTypeNameChar)
+        else if (PropertyTypeName is StringConstants.PropertyTypeNameString
+            or StringConstants.PropertyTypeNameChar)
         {
-            if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Contains;
+            if (filterOperator == FilterOperator.None)
+                filterOperator = FilterOperator.Contains;
         }
-        else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly
-            || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        else if (PropertyTypeName is StringConstants.PropertyTypeNameDateOnly
+            or StringConstants.PropertyTypeNameDateTime)
         {
-            if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Equals;
+            if (filterOperator == FilterOperator.None)
+                filterOperator = FilterOperator.Equals;
         }
         else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
         {
-            if (this.filterOperator == FilterOperator.None)
-                this.filterOperator = FilterOperator.Equals;
+            if (filterOperator == FilterOperator.None)
+                filterOperator = FilterOperator.Equals;
         }
     }
 
     private void SetSelectedFilterSymbol()
     {
-        if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
-            || PropertyTypeName == StringConstants.PropertyTypeNameInt32
-            || PropertyTypeName == StringConstants.PropertyTypeNameInt64
-            || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
-            || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
-            || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
+        if (PropertyTypeName is StringConstants.PropertyTypeNameInt16
+            or StringConstants.PropertyTypeNameInt32
+            or StringConstants.PropertyTypeNameInt64
+            or StringConstants.PropertyTypeNameSingle // float
+            or StringConstants.PropertyTypeNameDecimal
+            or StringConstants.PropertyTypeNameDouble)
         {
-            selectedFilterSymbol = FilterOperatorHelper.GetNumberFilterOperators().FirstOrDefault(x => x.FilterOperator == this.filterOperator)?.Symbol ?? "=";
+            selectedFilterSymbol = FilterOperatorHelper.GetNumberFilterOperators().FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol ?? "=";
         }
-        else if (PropertyTypeName == StringConstants.PropertyTypeNameString
-            || PropertyTypeName == StringConstants.PropertyTypeNameChar)
+        else if (PropertyTypeName is StringConstants.PropertyTypeNameString
+            or StringConstants.PropertyTypeNameChar)
         {
-            selectedFilterSymbol = FilterOperatorHelper.GetStringFilterOperators().FirstOrDefault(x => x.FilterOperator == this.filterOperator)?.Symbol ?? "*a*";
+            selectedFilterSymbol = FilterOperatorHelper.GetStringFilterOperators().FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol ?? "*a*";
         }
-        else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly
-            || PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        else if (PropertyTypeName is StringConstants.PropertyTypeNameDateOnly
+            or StringConstants.PropertyTypeNameDateTime)
         {
-            selectedFilterSymbol = FilterOperatorHelper.GetDateFilterOperators().FirstOrDefault(x => x.FilterOperator == this.filterOperator)?.Symbol ?? "=";
+            selectedFilterSymbol = FilterOperatorHelper.GetDateFilterOperators().FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol ?? "=";
         }
         else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
         {
-            selectedFilterSymbol = FilterOperatorHelper.GetBooleanFilterOperators().FirstOrDefault(x => x.FilterOperator == this.filterOperator)?.Symbol ?? "=";
+            selectedFilterSymbol = FilterOperatorHelper.GetBooleanFilterOperators().FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol ?? "=";
         }
     }
 
@@ -130,12 +130,12 @@ partial class GridColumnFilter : BaseComponent
     /// <summary>
     /// Gets or sets filter value.
     /// </summary>
-    [Parameter] public string FilterValue { get; set; }
+    [Parameter] public string? FilterValue { get; set; }
 
     /// <summary>
     /// Gets or sets the filter property name.
     /// </summary>
-    [Parameter] public string PropertyTypeName { get; set; }
+    [Parameter] public string? PropertyTypeName { get; set; }
 
     /// <summary>
     /// Gets or sets the filter textbox width.
