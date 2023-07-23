@@ -16,15 +16,13 @@ public partial class TimeInput<TValue> : BaseComponent
     /// <summary>
     /// Time format: HH:mm. 24-hours format.
     /// </summary>
-    private string defaultFormat = "HH:mm";
+    private readonly string defaultFormat = "HH:mm";
 
     private FieldIdentifier fieldIdentifier;
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
-    private string autoComplete => this.AutoComplete ? "true" : "false";
-
-    private bool disabled;
+    private string autoComplete => AutoComplete ? "true" : "false";
 
     private TValue max = default!;
 
@@ -36,9 +34,7 @@ public partial class TimeInput<TValue> : BaseComponent
 
     private string formattedValue = default!;
 
-    private bool isFirstRender = true;
-
-    private TValue oldValue;
+    private TValue? oldValue;
 
     #endregion
 
@@ -52,25 +48,27 @@ public partial class TimeInput<TValue> : BaseComponent
 
     protected override async Task OnInitializedAsync()
     {
-        this.max = Max;
-        this.min = Min;
+        max = Max;
+        min = Min;
 
         if (EnableMinMax
             && min is not null
             && max is not null
             && IsLeftGreaterThanRight(min, max))
+        {
             throw new InvalidOperationException("The Min parameter value is greater than the Max parameter value.");
+        }
 
         if (!(typeof(TValue) == typeof(TimeOnly)
             || typeof(TValue) == typeof(TimeOnly?)
             ))
+        {
             throw new InvalidOperationException($"{typeof(TValue)} is not supported.");
+        }
 
         Attributes ??= new Dictionary<string, object>();
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
-
-        this.disabled = this.Disabled;
 
         await base.OnInitializedAsync();
     }
@@ -80,21 +78,21 @@ public partial class TimeInput<TValue> : BaseComponent
         if (EnableMinMax && !min.Equals(Min))
         {
             min = Min;
-            this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
+            formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
         }
 
         if (EnableMinMax && !max.Equals(Max))
         {
             max = Max;
-            this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+            formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
         }
 
-        if ((this.oldValue is null && Value is not null)
-            || (this.oldValue is not null && Value is null)
-            || !this.oldValue.Equals(Value))
+        if ((oldValue is null && Value is not null)
+            || (oldValue is not null && Value is null)
+            || !oldValue.Equals(Value))
         {
             await SetValueAsync(oldValue, Value);
-            this.oldValue = Value;
+            oldValue = Value;
         }
     }
 
@@ -129,9 +127,9 @@ public partial class TimeInput<TValue> : BaseComponent
                 Value = value;
             }
 
-            this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
-            this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
-            this.formattedValue = GetFormattedValue(Value);
+            formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+            formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
+            formattedValue = GetFormattedValue(Value);
 
             await ValueChanged.InvokeAsync(Value);
         }
@@ -177,10 +175,10 @@ public partial class TimeInput<TValue> : BaseComponent
             Value = value;
         }
 
-        this.formattedValue = GetFormattedValue(Value);
+        formattedValue = GetFormattedValue(Value);
 
         if (oldValue.Equals(Value))
-            await JS.InvokeVoidAsync("window.blazorBootstrap.timeInput.setValue", ElementId, this.formattedValue);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.timeInput.setValue", ElementId, formattedValue);
 
         await ValueChanged.InvokeAsync(Value);
 
@@ -194,9 +192,9 @@ public partial class TimeInput<TValue> : BaseComponent
             // TimeOnly / TimeOnly?
             if (typeof(TValue) == typeof(TimeOnly) || typeof(TValue) == typeof(TimeOnly?))
             {
-                if (TimeOnly.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out TimeOnly time))
+                if (TimeOnly.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var time))
                 {
-                    newValue = (TValue)(object)(time);
+                    newValue = (TValue)(object)time;
                     return true;
                 }
 
@@ -229,8 +227,8 @@ public partial class TimeInput<TValue> : BaseComponent
         // TimeOnly / TimeOnly?
         if (typeof(TValue) == typeof(TimeOnly) || typeof(TValue) == typeof(TimeOnly?))
         {
-            if (TimeOnly.TryParse(left.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out TimeOnly lt)
-                && TimeOnly.TryParse(right.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out TimeOnly rt))
+            if (TimeOnly.TryParse(left.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var lt)
+                && TimeOnly.TryParse(right.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var rt))
             {
                 return lt > rt;
             }
@@ -241,7 +239,7 @@ public partial class TimeInput<TValue> : BaseComponent
 
     private string GetFormattedValue(object value)
     {
-        string formattedTime = "";
+        var formattedTime = "";
 
         try
         {
@@ -251,7 +249,7 @@ public partial class TimeInput<TValue> : BaseComponent
             // TimeOnly / TimeOnly?
             if (typeof(TValue) == typeof(TimeOnly) || typeof(TValue) == typeof(TimeOnly?))
             {
-                if (TimeOnly.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out TimeOnly t))
+                if (TimeOnly.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var t))
                 {
                     formattedTime = t.ToString(defaultFormat);
                 }
@@ -269,12 +267,12 @@ public partial class TimeInput<TValue> : BaseComponent
     /// <summary>
     /// Disables currency input.
     /// </summary>
-    public void Disable() => this.disabled = true;
+    public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables currency input.
     /// </summary>
-    public void Enable() => this.disabled = false;
+    public void Enable() => Disabled = false;
 
     #endregion
 
@@ -292,11 +290,7 @@ public partial class TimeInput<TValue> : BaseComponent
     /// Gets or sets the disabled.
     /// </summary>
     [Parameter]
-    public bool Disabled
-    {
-        get => disabled;
-        set => disabled = value;
-    }
+    public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 

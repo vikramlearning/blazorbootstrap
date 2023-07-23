@@ -17,9 +17,7 @@ public partial class NumberInput<TValue> : BaseComponent
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
-    private string autoComplete => this.AutoComplete ? "true" : "false";
-
-    private bool disabled;
+    private string autoComplete => AutoComplete ? "true" : "false";
 
     private string step = default!;
 
@@ -30,7 +28,7 @@ public partial class NumberInput<TValue> : BaseComponent
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.FormControl());
-        builder.Append(BootstrapClassProvider.TextAlignment(this.TextAlignment), this.TextAlignment != Alignment.None);
+        builder.Append(BootstrapClassProvider.TextAlignment(TextAlignment), TextAlignment != Alignment.None);
 
         base.BuildClasses(builder);
     }
@@ -55,15 +53,15 @@ public partial class NumberInput<TValue> : BaseComponent
             || typeof(TValue) == typeof(decimal)
             || typeof(TValue) == typeof(decimal?)
             ))
+        {
             throw new InvalidOperationException($"{typeof(TValue)} is not supported.");
+        }
 
         Attributes ??= new Dictionary<string, object>();
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
-        this.disabled = this.Disabled;
-
-        this.step = Step.HasValue ? $"{Step.Value}" : "any";
+        step = Step.HasValue ? $"{Step.Value}" : "any";
 
         await base.OnInitializedAsync();
     }
@@ -94,12 +92,12 @@ public partial class NumberInput<TValue> : BaseComponent
     /// <summary>
     /// Disables number input.
     /// </summary>
-    public void Disable() => this.disabled = true;
+    public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables number input.
     /// </summary>
-    public void Enable() => this.disabled = false;
+    public void Enable() => Disabled = false;
 
     private async Task OnChange(ChangeEventArgs e)
     {
@@ -134,99 +132,99 @@ public partial class NumberInput<TValue> : BaseComponent
         // sbyte
         if (typeof(TValue) == typeof(sbyte))
         {
-            sbyte l = Convert.ToSByte(left);
-            sbyte r = Convert.ToSByte(right);
+            var l = Convert.ToSByte(left);
+            var r = Convert.ToSByte(right);
             return l > r;
         }
         // sbyte?
         else if (typeof(TValue) == typeof(sbyte?))
         {
-            sbyte? l = left as sbyte?;
-            sbyte? r = right as sbyte?;
+            var l = left as sbyte?;
+            var r = right as sbyte?;
             return l.HasValue && r.HasValue && l > r;
         }
         // short / int16
         else if (typeof(TValue) == typeof(short))
         {
-            short l = Convert.ToInt16(left);
-            short r = Convert.ToInt16(right);
+            var l = Convert.ToInt16(left);
+            var r = Convert.ToInt16(right);
             return l > r;
         }
         // short? / int16?
         else if (typeof(TValue) == typeof(short?))
         {
-            short? l = left as short?;
-            short? r = right as short?;
+            var l = left as short?;
+            var r = right as short?;
             return l.HasValue && r.HasValue && l > r;
         }
         // int
         else if (typeof(TValue) == typeof(int))
         {
-            int l = Convert.ToInt32(left);
-            int r = Convert.ToInt32(right);
+            var l = Convert.ToInt32(left);
+            var r = Convert.ToInt32(right);
             return l > r;
         }
         // int?
         else if (typeof(TValue) == typeof(int?))
         {
-            int? l = left as int?;
-            int? r = right as int?;
+            var l = left as int?;
+            var r = right as int?;
             return l.HasValue && r.HasValue && l > r;
         }
         // long
         else if (typeof(TValue) == typeof(long))
         {
-            long l = Convert.ToInt64(left);
-            long r = Convert.ToInt64(right);
+            var l = Convert.ToInt64(left);
+            var r = Convert.ToInt64(right);
             return l > r;
         }
         // long?
         else if (typeof(TValue) == typeof(long?))
         {
-            long? l = left as long?;
-            long? r = right as long?;
+            var l = left as long?;
+            var r = right as long?;
             return l.HasValue && r.HasValue && l > r;
         }
         // float / single
         else if (typeof(TValue) == typeof(float))
         {
-            float l = Convert.ToSingle(left);
-            float r = Convert.ToSingle(right);
+            var l = Convert.ToSingle(left);
+            var r = Convert.ToSingle(right);
             return l > r;
         }
         // float? / single?
         else if (typeof(TValue) == typeof(float?))
         {
-            float? l = left as float?;
-            float? r = right as float?;
+            var l = left as float?;
+            var r = right as float?;
             return l.HasValue && r.HasValue && l > r;
         }
         // double
         else if (typeof(TValue) == typeof(double))
         {
-            double l = Convert.ToDouble(left);
-            double r = Convert.ToDouble(right);
+            var l = Convert.ToDouble(left);
+            var r = Convert.ToDouble(right);
             return l > r;
         }
         // double?
         else if (typeof(TValue) == typeof(double?))
         {
-            double? l = left as double?;
-            double? r = right as double?;
+            var l = left as double?;
+            var r = right as double?;
             return l.HasValue && r.HasValue && l > r;
         }
         // decimal
         else if (typeof(TValue) == typeof(decimal))
         {
-            decimal l = Convert.ToDecimal(left);
-            decimal r = Convert.ToDecimal(right);
+            var l = Convert.ToDecimal(left);
+            var r = Convert.ToDecimal(right);
             return l > r;
         }
         // decimal?
         else if (typeof(TValue) == typeof(decimal?))
         {
-            decimal? l = left as decimal?;
-            decimal? r = right as decimal?;
+            var l = left as decimal?;
+            var r = right as decimal?;
             return l.HasValue && r.HasValue && l > r;
         }
 
@@ -291,15 +289,12 @@ public partial class NumberInput<TValue> : BaseComponent
         }
     }
 
-    private bool isFloatingNumber()
-    {
-        return typeof(TValue) == typeof(float)
+    private bool isFloatingNumber() => typeof(TValue) == typeof(float)
             || typeof(TValue) == typeof(float?)
             || typeof(TValue) == typeof(double)
             || typeof(TValue) == typeof(double?)
             || typeof(TValue) == typeof(decimal)
             || typeof(TValue) == typeof(decimal?);
-    }
 
     #endregion
 
@@ -322,11 +317,7 @@ public partial class NumberInput<TValue> : BaseComponent
     /// Gets or sets the disabled.
     /// </summary>
     [Parameter]
-    public bool Disabled
-    {
-        get => disabled;
-        set => disabled = value;
-    }
+    public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
