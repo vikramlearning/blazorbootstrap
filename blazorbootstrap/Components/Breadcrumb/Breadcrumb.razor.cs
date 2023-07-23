@@ -21,8 +21,7 @@ public partial class Breadcrumb : BaseComponent
         if (items is null)
             return;
 
-        if (Items is null)
-            Items = new();
+        Items ??= new();
 
         Items = items;
 
@@ -47,7 +46,7 @@ public partial class Breadcrumb : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Inject] BreadcrumbService BreadcrumbService { get; set; } = default!;
+    [Inject] private BreadcrumbService BreadcrumbService { get; set; } = default!;
 
     /// <summary>
     /// List of all the items.
