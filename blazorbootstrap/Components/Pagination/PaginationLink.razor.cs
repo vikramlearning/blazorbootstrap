@@ -30,13 +30,13 @@ public partial class PaginationLink : BaseComponent
 
     #region Properties
 
-    [Parameter] public string Text { get; set; }
+    [Parameter] public string? Text { get; set; }
 
-    [Parameter] public string LinkText { get; set; }
+    [Parameter] public string? LinkText { get; set; }
 
     [Parameter] public IconName LinkIcon { get; set; }
 
-    [Parameter] public string LinkAriaLabel { get; set; }
+    [Parameter] public string? LinkAriaLabel { get; set; }
 
     #endregion
 }

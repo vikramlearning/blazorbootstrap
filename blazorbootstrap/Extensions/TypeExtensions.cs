@@ -13,7 +13,7 @@ public static class TypeExtensions
     /// <returns>string</returns>
     public static string GetPropertyTypeName(this Type type, string propertyName)
     {
-        if(type is null || string.IsNullOrWhiteSpace(propertyName))
+        if (type is null || string.IsNullOrWhiteSpace(propertyName))
             return string.Empty;
 
         var propertyTypeName = type.GetProperty(propertyName)?.PropertyType?.ToString();

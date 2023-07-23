@@ -17,9 +17,7 @@ public partial class Switch : BaseComponent
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
-    private bool disabled;
-
-    private string reverse => this.Reverse ? BootstrapClassProvider.ChecksReverse() : "";
+    private string reverse => Reverse ? BootstrapClassProvider.ChecksReverse() : "";
 
     private bool oldValue;
 
@@ -33,43 +31,41 @@ public partial class Switch : BaseComponent
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
-        this.disabled = this.Disabled;
-
         await base.OnInitializedAsync();
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        if(this.oldValue != Value)
+        if (oldValue != Value)
         {
             await ValueChanged.InvokeAsync(Value);
 
             EditContext?.NotifyFieldChanged(fieldIdentifier);
 
-            this.oldValue = Value;
+            oldValue = Value;
         }
     }
 
     /// <summary>
     /// Disables switch.
     /// </summary>
-    public void Disable() => this.disabled = true;
+    public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables switch.
     /// </summary>
-    public void Enable() => this.disabled = false;
+    public void Enable() => Disabled = false;
 
     private async Task OnChange(ChangeEventArgs args)
     {
-        bool.TryParse(args.Value?.ToString(), out bool newValue);
-        this.Value = newValue;
+        bool.TryParse(args.Value?.ToString(), out var newValue);
+        Value = newValue;
 
         await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
 
-        this.oldValue = Value;
+        oldValue = Value;
     }
 
     #endregion
@@ -83,11 +79,7 @@ public partial class Switch : BaseComponent
     /// Gets or sets the disabled.
     /// </summary>
     [Parameter]
-    public bool Disabled
-    {
-        get => disabled;
-        set => disabled = value;
-    }
+    public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 

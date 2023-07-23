@@ -1,33 +1,32 @@
-﻿namespace BlazorBootstrap
+﻿namespace BlazorBootstrap;
+
+/// <summary>
+/// Defines the placement of an element.
+/// </summary>
+public enum TooltipPlacement
 {
     /// <summary>
-    /// Defines the placement of an element.
+    /// Dynamically reorient the tooltip.
     /// </summary>
-    public enum TooltipPlacement
-    {
-        /// <summary>
-        /// Dynamically reorient the tooltip.
-        /// </summary>
-        Auto,
+    Auto,
 
-        /// <summary>
-        /// Top side.
-        /// </summary>
-        Top,
+    /// <summary>
+    /// Top side.
+    /// </summary>
+    Top,
 
-        /// <summary>
-        /// Bottom side.
-        /// </summary>
-        Bottom,
+    /// <summary>
+    /// Bottom side.
+    /// </summary>
+    Bottom,
 
-        /// <summary>
-        /// Left side.
-        /// </summary>
-        Left,
+    /// <summary>
+    /// Left side.
+    /// </summary>
+    Left,
 
-        /// <summary>
-        /// Right side.
-        /// </summary>
-        Right,
-    }
+    /// <summary>
+    /// Right side.
+    /// </summary>
+    Right,
 }

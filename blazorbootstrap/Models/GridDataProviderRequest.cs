@@ -62,7 +62,8 @@ public class GridDataProviderRequest<TItem>
             int index = 1;
             foreach (var sortItem in Sorting)
             {
-                if (index == 1) {
+                if (index == 1)
+                {
                     orderedData = (sortItem.SortDirection == SortDirection.Ascending)
                        ? resultData.OrderBy(sortItem.SortKeySelector.Compile())
                        : resultData.OrderByDescending(sortItem.SortKeySelector.Compile());

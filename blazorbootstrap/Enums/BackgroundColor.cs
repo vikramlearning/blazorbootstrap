@@ -1,72 +1,71 @@
-﻿namespace BlazorBootstrap
+﻿namespace BlazorBootstrap;
+
+/// <summary>
+/// Predefined set of contextual background colors.
+/// </summary>
+public enum BackgroundColor
 {
     /// <summary>
-    /// Predefined set of contextual background colors.
+    /// No color will be applied to an element.
     /// </summary>
-    public enum BackgroundColor
-    {
-        /// <summary>
-        /// No color will be applied to an element.
-        /// </summary>
-        None,
+    None,
 
-        /// <summary>
-        /// Primary color.
-        /// </summary>
-        Primary,
+    /// <summary>
+    /// Primary color.
+    /// </summary>
+    Primary,
 
-        /// <summary>
-        /// Secondary color.
-        /// </summary>
-        Secondary,
+    /// <summary>
+    /// Secondary color.
+    /// </summary>
+    Secondary,
 
-        /// <summary>
-        /// Success color.
-        /// </summary>
-        Success,
+    /// <summary>
+    /// Success color.
+    /// </summary>
+    Success,
 
-        /// <summary>
-        /// Danger color.
-        /// </summary>
-        Danger,
+    /// <summary>
+    /// Danger color.
+    /// </summary>
+    Danger,
 
-        /// <summary>
-        /// Warning color.
-        /// </summary>
-        Warning,
+    /// <summary>
+    /// Warning color.
+    /// </summary>
+    Warning,
 
-        /// <summary>
-        /// Info color.
-        /// </summary>
-        Info,
+    /// <summary>
+    /// Info color.
+    /// </summary>
+    Info,
 
-        /// <summary>
-        /// Light color.
-        /// </summary>
-        Light,
+    /// <summary>
+    /// Light color.
+    /// </summary>
+    Light,
 
-        /// <summary>
-        /// Dark color.
-        /// </summary>
-        Dark,
+    /// <summary>
+    /// Dark color.
+    /// </summary>
+    Dark,
 
-        /// <summary>
-        /// Body color.
-        /// </summary>
-        Body,
+    /// <summary>
+    /// Body color.
+    /// </summary>
+    Body,
 
-        /// <summary>
-        /// White color.
-        /// </summary>
-        White,
+    /// <summary>
+    /// White color.
+    /// </summary>
+    White,
 
-        /// <summary>
-        /// Transparent color.
-        /// </summary>
-        Transparent,
+    /// <summary>
+    /// Transparent color.
+    /// </summary>
+    Transparent,
 
-        // TODO:Review
-        // https://getbootstrap.com/docs/5.1/utilities/background/#background-gradient
-        // https://getbootstrap.com/docs/5.1/utilities/background/#opacity
-    }
+    // TODO:Review
+    // https://getbootstrap.com/docs/5.1/utilities/background/#background-gradient
+    // https://getbootstrap.com/docs/5.1/utilities/background/#opacity
 }

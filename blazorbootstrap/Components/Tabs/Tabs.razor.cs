@@ -30,7 +30,7 @@ public partial class Tabs : BaseComponent
 
     private DotNetObjectReference<Tabs> objRef = default!;
 
-    private List<Tab> tabs = new List<Tab>();
+    private List<Tab>? tabs = new();
 
     private Tab activeTab = default!;
 
@@ -44,7 +44,7 @@ public partial class Tabs : BaseComponent
     {
         builder.Append(BootstrapClassProvider.Nav);
 
-        if (this.NavStyle == NavStyle.Tabs)
+        if (NavStyle == NavStyle.Tabs)
             builder.Append(BootstrapClassProvider.NavTabs);
         else
             builder.Append(BootstrapClassProvider.NavPills);
@@ -74,7 +74,7 @@ public partial class Tabs : BaseComponent
     /// </summary>
     internal async Task SetDefaultActiveTabAsync()
     {
-        activeTab = activeTab ?? tabs.FirstOrDefault(x => !x.Disabled);
+        activeTab ??= tabs.FirstOrDefault(x => !x.Disabled);
 
         if (activeTab != null)
             await ShowTabAsync(activeTab.ElementId);
@@ -155,8 +155,8 @@ public partial class Tabs : BaseComponent
     [JSInvokable]
     public async Task bsShowTab(string activeTabId, string previousActiveTabId)
     {
-        string activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
-        string previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
+        var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
+        var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
         var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
         await OnShowing.InvokeAsync(args);
@@ -165,8 +165,8 @@ public partial class Tabs : BaseComponent
     [JSInvokable]
     public async Task bsShownTab(string activeTabId, string previousActiveTabId)
     {
-        string activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
-        string previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
+        var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
+        var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
         var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
         await OnShown.InvokeAsync(args);
@@ -175,8 +175,8 @@ public partial class Tabs : BaseComponent
     [JSInvokable]
     public async Task bsHideTab(string activeTabId, string previousActiveTabId)
     {
-        string activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
-        string previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
+        var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
+        var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
         var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
         await OnHiding.InvokeAsync(args);
@@ -185,8 +185,8 @@ public partial class Tabs : BaseComponent
     [JSInvokable]
     public async Task bsHiddenTab(string activeTabId, string previousActiveTabId)
     {
-        string activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
-        string previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
+        var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
+        var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
         var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
         await OnHidden.InvokeAsync(args);

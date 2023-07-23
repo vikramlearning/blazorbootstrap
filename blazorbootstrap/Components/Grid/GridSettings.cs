@@ -15,5 +15,5 @@ public class GridSettings
     /// <summary>
     /// Current filters.
     /// </summary>
-    public IEnumerable<FilterItem> Filters { get; set; }
+    public IEnumerable<FilterItem>? Filters { get; set; }
 }

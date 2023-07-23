@@ -8,7 +8,7 @@ public partial class Badge
 
     #region Members
 
-    private RenderFragment childContent;
+    private RenderFragment? childContent;
 
     private BadgeColor color = BadgeColor.Secondary;
 
@@ -18,8 +18,6 @@ public partial class Badge
 
     private Position position;
 
-    private string visuallyHiddenText = default!;
-
     #endregion
 
     #region Methods
@@ -28,10 +26,10 @@ public partial class Badge
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Badge());
-        builder.Append(BootstrapClassProvider.BadgeColor(this.Color), this.Color != BadgeColor.None);
-        builder.Append(BootstrapClassProvider.ToBadgeIndicator(this.IndicatorType), this.IndicatorType != BadgeIndicatorType.None);
-        builder.Append(BootstrapClassProvider.ToPosition(this.Position), this.Position != Position.None);
-        builder.Append(BootstrapClassProvider.ToBadgePlacement(this.Placement), this.Placement != BadgePlacement.None);
+        builder.Append(BootstrapClassProvider.BadgeColor(Color), Color != BadgeColor.None);
+        builder.Append(BootstrapClassProvider.ToBadgeIndicator(IndicatorType), IndicatorType != BadgeIndicatorType.None);
+        builder.Append(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
+        builder.Append(BootstrapClassProvider.ToBadgePlacement(Placement), Placement != BadgePlacement.None);
         builder.Append("p-2", childContent is null);
 
         base.BuildClasses(builder);
@@ -118,14 +116,7 @@ public partial class Badge
     /// Gets or sets the visually hidden text.
     /// </summary>
     [Parameter]
-    public string VisuallyHiddenText
-    {
-        get => visuallyHiddenText;
-        set
-        {
-            visuallyHiddenText = value;
-        }
-    }
+    public string VisuallyHiddenText { get; set; } = default!;
 
     #endregion
 }

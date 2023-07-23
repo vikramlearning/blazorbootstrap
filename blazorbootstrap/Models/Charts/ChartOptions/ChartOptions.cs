@@ -37,7 +37,7 @@ public class Interaction
     [JsonIgnore]
     public InteractionMode Mode
     {
-        get { return mode; }
+        get => mode;
         set
         {
             mode = value;
@@ -61,19 +61,16 @@ public class Interaction
         Mode = InteractionMode.Nearest;
     }
 
-    private void SetMode(InteractionMode interactionMode)
+    private void SetMode(InteractionMode interactionMode) => ChartInteractionMode = interactionMode switch
     {
-        ChartInteractionMode = interactionMode switch
-        {
-            InteractionMode.Dataset => "dataset",
-            InteractionMode.Index => "index",
-            InteractionMode.Nearest => "nearest",
-            InteractionMode.Point => "point",
-            InteractionMode.X => "x",
-            InteractionMode.Y => "y",
-            _ => ""
-        };
-    }
+        InteractionMode.Dataset => "dataset",
+        InteractionMode.Index => "index",
+        InteractionMode.Nearest => "nearest",
+        InteractionMode.Point => "point",
+        InteractionMode.X => "x",
+        InteractionMode.Y => "y",
+        _ => ""
+    };
 }
 
 public enum InteractionMode
@@ -92,7 +89,7 @@ public class Plugins
     public Title? Title { get; set; } = new Title();
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public ChartTooltip Tooltip { get; set; }
+    public ChartTooltip? Tooltip { get; set; }
 }
 
 public class Scales
@@ -228,7 +225,7 @@ public class ChartTooltip
     public string BodyColor { get; set; } = "#fff";
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public ChartFont BodyFont { get; set; }
+    public ChartFont? BodyFont { get; set; }
 
     /// <summary>
     /// Horizontal alignment of the body text lines. left/right/center.
@@ -280,10 +277,10 @@ public class ChartTooltip
     /// <summary>
     /// Position of the tooltip caret in the X direction. left/center/right.
     /// </summary>
-    public string XAlign { get; set; }
+    public string? XAlign { get; set; }
 
     /// <summary>
     /// Position of the tooltip caret in the Y direction. top/center/bottom.
     /// </summary>
-    public string YAlign { get; set; }
+    public string? YAlign { get; set; }
 }

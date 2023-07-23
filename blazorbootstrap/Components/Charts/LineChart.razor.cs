@@ -22,7 +22,7 @@ public partial class LineChart : BaseChart
         if (chartData is not null && chartData.Datasets is not null)
         {
             var datasets = chartData.Datasets.OfType<LineChartDataset>();
-            var data = new { Labels = chartData.Labels, Datasets = datasets };
+            var data = new { chartData.Labels, Datasets = datasets };
             await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), data, (LineChartOptions)chartOptions);
         }
     }
@@ -32,7 +32,7 @@ public partial class LineChart : BaseChart
         if (chartData is not null && chartData.Datasets is not null)
         {
             var datasets = chartData.Datasets.OfType<LineChartDataset>();
-            var data = new { Labels = chartData.Labels, Datasets = datasets };
+            var data = new { chartData.Labels, Datasets = datasets };
             await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), data, (LineChartOptions)chartOptions);
         }
     }

@@ -5,11 +5,6 @@ public partial class Modal : BaseComponent
     #region Members
 
     private bool isVisible;
-
-    private string title = default!;
-
-    private string message = default!;
-
     private Type? childComponent = default!;
 
     private Dictionary<string, object> parameters = default!;
@@ -95,10 +90,7 @@ public partial class Modal : BaseComponent
     /// <summary>
     /// Opens a modal.
     /// </summary>
-    public async Task ShowAsync()
-    {
-        await ShowAsync(title: null, message: null, type: null, parameters: null);
-    }
+    public async Task ShowAsync() => await ShowAsync(title: null, message: null, type: null, parameters: null);
 
     /// <summary>
     /// Opens a modal.
@@ -107,22 +99,19 @@ public partial class Modal : BaseComponent
     /// <param name="title"></param>
     /// <param name="message"></param>
     /// <param name="parameters"></param>
-    public async Task ShowAsync<T>(string title, string message = null, Dictionary<string, object> parameters = null)
-    {
-        await ShowAsync(title: title, message: message, type: typeof(T), parameters: parameters);
-    }
+    public async Task ShowAsync<T>(string title, string? message = null, Dictionary<string, object>? parameters = null) => await ShowAsync(title: title, message: message, type: typeof(T), parameters: parameters);
 
-    private async Task ShowAsync(string title, string message, Type? type, Dictionary<string, object> parameters)
+    private async Task ShowAsync(string? title, string? message, Type? type, Dictionary<string, object>? parameters)
     {
-        this.isVisible = true;
+        isVisible = true;
 
         if (!string.IsNullOrWhiteSpace(title))
-            this.Title = title;
+            Title = title;
 
         if (!string.IsNullOrWhiteSpace(message))
-            this.Message = message;
+            Message = message;
 
-        this.childComponent = type;
+        childComponent = type;
         this.parameters = parameters;
 
         await InvokeAsync(StateHasChanged);
@@ -135,7 +124,7 @@ public partial class Modal : BaseComponent
     /// </summary>
     public async Task HideAsync()
     {
-        this.isVisible = false;
+        isVisible = false;
         await JS.InvokeVoidAsync("window.blazorBootstrap.modal.hide", ElementId);
     }
 
@@ -171,11 +160,7 @@ public partial class Modal : BaseComponent
     /// Title in modal header.
     /// </summary>
     [Parameter]
-    public string Title
-    {
-        get => title;
-        set => title = value;
-    }
+    public string Title { get; set; } = default!;
 
     /// <summary>
     /// Header template.
@@ -186,11 +171,7 @@ public partial class Modal : BaseComponent
     /// Message in modal body.
     /// </summary>
     [Parameter]
-    public string Message
-    {
-        get => message;
-        set => message = value;
-    }
+    public string Message { get; set; } = default!;
 
     /// <summary>
     /// Body template.
@@ -345,7 +326,7 @@ public partial class Modal : BaseComponent
 
     #region Services
 
-    [Inject] public ModalService ModalService { get; set; } = default!;
+    [Inject] private ModalService ModalService { get; set; } = default!;
 
     #endregion
 }

@@ -21,8 +21,7 @@ public partial class Breadcrumb : BaseComponent
         if (items is null)
             return;
 
-        if (Items is null)
-            Items = new();
+        Items ??= new();
 
         Items = items;
 
@@ -31,9 +30,9 @@ public partial class Breadcrumb : BaseComponent
 
     protected override ValueTask DisposeAsync(bool disposing)
     {
-        if(disposing)
+        if (disposing)
         {
-            if(BreadcrumbService is not null)
+            if (BreadcrumbService is not null)
                 BreadcrumbService.OnNotify -= OnNotify;
         }
 
@@ -47,7 +46,7 @@ public partial class Breadcrumb : BaseComponent
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Inject] BreadcrumbService BreadcrumbService { get; set; } = default!;
+    [Inject] private BreadcrumbService BreadcrumbService { get; set; } = default!;
 
     /// <summary>
     /// List of all the items.

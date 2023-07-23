@@ -16,15 +16,13 @@ public partial class DateInput<TValue> : BaseComponent
     /// <summary>
     /// Date format: yyyy-MM-dd.
     /// </summary>
-    private string defaultFormat = "yyyy-MM-dd";
+    private readonly string defaultFormat = "yyyy-MM-dd";
 
     private FieldIdentifier fieldIdentifier;
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
-    private string autoComplete => this.AutoComplete ? "true" : "false";
-
-    private bool disabled;
+    private string autoComplete => AutoComplete ? "true" : "false";
 
     private TValue max = default!;
 
@@ -36,9 +34,7 @@ public partial class DateInput<TValue> : BaseComponent
 
     private string formattedValue = default!;
 
-    private bool isFirstRender = true;
-
-    private TValue oldValue;
+    private TValue? oldValue;
 
     #endregion
 
@@ -52,27 +48,31 @@ public partial class DateInput<TValue> : BaseComponent
 
     protected override async Task OnInitializedAsync()
     {
-        this.max = Max;
-        this.min = Min;
+        max = Max;
+        min = Min;
 
         if (EnableMinMax
             && min is not null
             && max is not null
             && IsLeftGreaterThanRight(min, max))
+        {
             throw new InvalidOperationException("The Min parameter value is greater than the Max parameter value.");
+        }
 
         if (!(typeof(TValue) == typeof(DateOnly)
             || typeof(TValue) == typeof(DateOnly?)
             || typeof(TValue) == typeof(DateTime)
             || typeof(TValue) == typeof(DateTime?)
             ))
+        {
             throw new InvalidOperationException($"{typeof(TValue)} is not supported.");
+        }
 
         Attributes ??= new Dictionary<string, object>();
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
-        this.disabled = this.Disabled;
+        Disabled = Disabled;
 
         await base.OnInitializedAsync();
     }
@@ -82,21 +82,21 @@ public partial class DateInput<TValue> : BaseComponent
         if (EnableMinMax && !min.Equals(Min))
         {
             min = Min;
-            this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
+            formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
         }
 
         if (EnableMinMax && !max.Equals(Max))
         {
             max = Max;
-            this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+            formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
         }
 
-        if ((this.oldValue is null && Value is not null)
-            || (this.oldValue is not null && Value is null)
-            || !this.oldValue.Equals(Value))
+        if ((oldValue is null && Value is not null)
+            || (oldValue is not null && Value is null)
+            || !oldValue.Equals(Value))
         {
             await SetValueAsync(oldValue, Value);
-            this.oldValue = Value;
+            oldValue = Value;
         }
     }
 
@@ -132,9 +132,9 @@ public partial class DateInput<TValue> : BaseComponent
                 Value = value;
             }
 
-            this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
-            this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
-            this.formattedValue = GetFormattedValue(Value);
+            formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
+            formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
+            formattedValue = GetFormattedValue(Value);
 
             await ValueChanged.InvokeAsync(Value);
         }
@@ -149,7 +149,7 @@ public partial class DateInput<TValue> : BaseComponent
 
         await SetValueAsync(oldValue, newValue);
 
-        this.oldValue = Value;            
+        this.oldValue = Value;
     }
 
     private async Task SetValueAsync(TValue oldValue, object? newValue)
@@ -182,10 +182,10 @@ public partial class DateInput<TValue> : BaseComponent
 
         //this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
         //this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
-        this.formattedValue = GetFormattedValue(Value);
+        formattedValue = GetFormattedValue(Value);
 
         if (oldValue.Equals(Value))
-            await JS.InvokeVoidAsync("window.blazorBootstrap.dateInput.setValue", ElementId, this.formattedValue);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.dateInput.setValue", ElementId, formattedValue);
 
         await ValueChanged.InvokeAsync(Value);
 
@@ -199,7 +199,7 @@ public partial class DateInput<TValue> : BaseComponent
             // DateOnly / DateOnly?
             if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
             {
-                if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime dt))
+                if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var dt))
                 {
                     newValue = (TValue)(object)DateOnly.FromDateTime(dt);
                     return true;
@@ -218,7 +218,7 @@ public partial class DateInput<TValue> : BaseComponent
             newValue = default!;
             return false;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             newValue = default!;
             return false;
@@ -239,11 +239,11 @@ public partial class DateInput<TValue> : BaseComponent
         // DateOnly / DateOnly?
         if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
         {
-            if (DateTime.TryParse(left.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime ldt)
-                && DateTime.TryParse(right.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime rdt))
+            if (DateTime.TryParse(left.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var ldt)
+                && DateTime.TryParse(right.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var rdt))
             {
-                DateOnly l = DateOnly.FromDateTime(ldt);
-                DateOnly r = DateOnly.FromDateTime(rdt);
+                var l = DateOnly.FromDateTime(ldt);
+                var r = DateOnly.FromDateTime(rdt);
 
                 return l > r;
             }
@@ -251,8 +251,8 @@ public partial class DateInput<TValue> : BaseComponent
         // DateTime / DateTime?
         else if (typeof(TValue) == typeof(DateTime) || typeof(TValue) == typeof(DateTime?))
         {
-            DateTime l = Convert.ToDateTime(left, CultureInfo.CurrentCulture);
-            DateTime r = Convert.ToDateTime(right, CultureInfo.CurrentCulture);
+            var l = Convert.ToDateTime(left, CultureInfo.CurrentCulture);
+            var r = Convert.ToDateTime(right, CultureInfo.CurrentCulture);
             return l > r;
         }
 
@@ -261,7 +261,7 @@ public partial class DateInput<TValue> : BaseComponent
 
     private string GetFormattedValue(object value)
     {
-        string formattedDate = "";
+        var formattedDate = "";
 
         try
         {
@@ -271,7 +271,7 @@ public partial class DateInput<TValue> : BaseComponent
             // DateOnly / DateOnly?
             if (typeof(TValue) == typeof(DateOnly) || typeof(TValue) == typeof(DateOnly?))
             {
-                if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime dt))
+                if (DateTime.TryParse(value.ToString(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var dt))
                 {
                     formattedDate = dt.ToString(defaultFormat);
                 }
@@ -294,12 +294,12 @@ public partial class DateInput<TValue> : BaseComponent
     /// <summary>
     /// Disables currency input.
     /// </summary>
-    public void Disable() => this.disabled = true;
+    public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables currency input.
     /// </summary>
-    public void Enable() => this.disabled = false;
+    public void Enable() => Disabled = false;
 
     #endregion
 
@@ -317,11 +317,7 @@ public partial class DateInput<TValue> : BaseComponent
     /// Gets or sets the disabled.
     /// </summary>
     [Parameter]
-    public bool Disabled
-    {
-        get => disabled;
-        set => disabled = value;
-    }
+    public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 

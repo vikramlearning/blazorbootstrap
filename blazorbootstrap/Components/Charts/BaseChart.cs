@@ -12,11 +12,6 @@ public class BaseChart : BaseComponent
 
     #region Methods
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-    }
-
     //public async Task Clear() { }
 
     /// <summary>
@@ -48,10 +43,7 @@ public class BaseChart : BaseComponent
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    public async Task ResizeAsync(int width, int height)
-    {
-        await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, width, height);
-    }
+    public async Task ResizeAsync(int width, int height) => await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, width, height);
 
     //public async Task Stop() { }
 
@@ -101,28 +93,25 @@ public class BaseChart : BaseComponent
 
         var data = new
         {
-            Labels = chartData.Labels,
+            chartData.Labels,
             Datasets = datasets
         };
 
         return data;
     }
 
-    protected string GetChartType()
+    protected string GetChartType() => chartType switch
     {
-        return chartType switch
-        {
-            ChartType.Bar => "bar",
-            ChartType.Bubble => "bubble",
-            ChartType.Doughnut => "doughnut",
-            ChartType.Line => "line",
-            ChartType.Pie => "pie",
-            ChartType.PolarArea => "polarArea",
-            ChartType.Radar => "radar",
-            ChartType.Scatter => "scatter",
-            _ => "line" // default
-        };
-    }
+        ChartType.Bar => "bar",
+        ChartType.Bubble => "bubble",
+        ChartType.Doughnut => "doughnut",
+        ChartType.Line => "line",
+        ChartType.Pie => "pie",
+        ChartType.PolarArea => "polarArea",
+        ChartType.Radar => "radar",
+        ChartType.Scatter => "scatter",
+        _ => "line" // default
+    };
 
     private string GetChartContainerSizeAsStyle()
     {

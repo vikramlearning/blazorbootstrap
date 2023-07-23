@@ -4,7 +4,7 @@ public partial class SimpleToast : BaseComponent, IDisposable
 {
     #region Members
 
-    private DotNetObjectReference<SimpleToast> objRef;
+    private DotNetObjectReference<SimpleToast>? objRef;
 
     #endregion Members
 
@@ -30,18 +30,12 @@ public partial class SimpleToast : BaseComponent, IDisposable
     /// <summary>
     /// Reveals an element’s toast.
     /// </summary>
-    public async Task ShowAsync()
-    {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.show", ElementId, AutoHide, Delay, objRef);
-    }
+    public async Task ShowAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.show", ElementId, AutoHide, Delay, objRef);
 
     /// <summary>
     /// Hides an element’s toast.
     /// </summary>
-    public async Task HideAsync()
-    {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", ElementId);
-    }
+    public async Task HideAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", ElementId);
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
@@ -55,10 +49,10 @@ public partial class SimpleToast : BaseComponent, IDisposable
         await base.DisposeAsync(disposing);
     }
 
-    [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
-    [JSInvokable] public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
-    [JSInvokable] public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
-    [JSInvokable] public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(this.ToastMessage.Id, this.ElementId));
+    [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    [JSInvokable] public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    [JSInvokable] public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    [JSInvokable] public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
 
     #endregion Methods
 
@@ -67,7 +61,7 @@ public partial class SimpleToast : BaseComponent, IDisposable
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [Parameter] public ToastMessage ToastMessage { get; set; }
+    [Parameter] public ToastMessage? ToastMessage { get; set; }
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.
@@ -104,10 +98,7 @@ public partial class SimpleToast : BaseComponent, IDisposable
     /// </summary>
     [Parameter] public int Delay { get; set; } = 5000;
 
-    private string CloseButtonClass
-    {
-        get { return $"btn-close-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}"; }
-    }
+    private string CloseButtonClass => $"btn-close-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}";
 
     #endregion Properties
 }

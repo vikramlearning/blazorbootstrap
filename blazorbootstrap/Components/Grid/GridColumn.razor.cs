@@ -38,32 +38,29 @@ public partial class GridColumn<TItem>
         await base.OnInitializedAsync();
     }
 
-    protected override void OnParametersSet()
-    {
-        SetDefaultFilter();
-    }
+    protected override void OnParametersSet() => SetDefaultFilter();
 
-    internal string GetPropertyTypeName() => typeof(TItem).GetPropertyTypeName(this.PropertyName);
+    internal string GetPropertyTypeName() => typeof(TItem).GetPropertyTypeName(PropertyName);
 
     #region Filters
 
-    internal FilterOperator GetFilterOperator() => this.filterOperator;
+    internal FilterOperator GetFilterOperator() => filterOperator;
 
-    internal string GetFilterValue() => this.filterValue;
+    internal string GetFilterValue() => filterValue;
 
     internal async Task OnFilterChangedAsync(FilterEventArgs args, GridColumn<TItem> column)
     {
-        if (this.filterValue != args.Text || this.filterOperator != args.FilterOperator)
-            await this.Parent.ResetPageNumberAsync(false);
+        if (filterValue != args.Text || filterOperator != args.FilterOperator)
+            await Parent.ResetPageNumberAsync(false);
 
-        this.filterValue = args.Text;
-        this.filterOperator = args.FilterOperator;
-        await this.Parent.FilterChangedAsync();
+        filterValue = args.Text;
+        filterOperator = args.FilterOperator;
+        await Parent.FilterChangedAsync();
     }
 
-    internal void SetFilterOperator(FilterOperator filterOperator) => this.FilterOperator = this.filterOperator = filterOperator;
+    internal void SetFilterOperator(FilterOperator filterOperator) => FilterOperator = this.filterOperator = filterOperator;
 
-    internal void SetFilterValue(string filterValue) => this.FilterValue = this.filterValue = filterValue;
+    internal void SetFilterValue(string filterValue) => FilterValue = this.filterValue = filterValue;
 
     #endregion Filters
 
@@ -71,46 +68,46 @@ public partial class GridColumn<TItem>
 
     internal void SetDefaultFilter()
     {
-        string propertyTypeName = this.GetPropertyTypeName();
+        var propertyTypeName = GetPropertyTypeName();
 
-        if (propertyTypeName == StringConstants.PropertyTypeNameInt16
-            || propertyTypeName == StringConstants.PropertyTypeNameInt32
-            || propertyTypeName == StringConstants.PropertyTypeNameInt64
-            || propertyTypeName == StringConstants.PropertyTypeNameSingle // float
-            || propertyTypeName == StringConstants.PropertyTypeNameDecimal
-            || propertyTypeName == StringConstants.PropertyTypeNameDouble)
+        if (propertyTypeName is StringConstants.PropertyTypeNameInt16
+            or StringConstants.PropertyTypeNameInt32
+            or StringConstants.PropertyTypeNameInt64
+            or StringConstants.PropertyTypeNameSingle // float
+            or StringConstants.PropertyTypeNameDecimal
+            or StringConstants.PropertyTypeNameDouble)
         {
-            if (this.filterOperator == FilterOperator.None)
-                this.FilterOperator = this.filterOperator = FilterOperator.Equals;
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.Equals;
         }
-        else if (propertyTypeName == StringConstants.PropertyTypeNameString
-            || propertyTypeName == StringConstants.PropertyTypeNameChar)
+        else if (propertyTypeName is StringConstants.PropertyTypeNameString
+            or StringConstants.PropertyTypeNameChar)
         {
-            if (this.filterOperator == FilterOperator.None)
-                this.FilterOperator = this.filterOperator = FilterOperator.Contains;
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.Contains;
         }
-        else if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly
-            || propertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        else if (propertyTypeName is StringConstants.PropertyTypeNameDateOnly
+            or StringConstants.PropertyTypeNameDateTime)
         {
-            if (this.filterOperator == FilterOperator.None)
-                this.FilterOperator = this.filterOperator = FilterOperator.Equals;
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.Equals;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
         {
-            if (this.filterOperator == FilterOperator.None)
-                this.FilterOperator = this.filterOperator = FilterOperator.Equals;
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.Equals;
         }
     }
 
     internal bool CanSort()
-        => Parent is not null && Parent.AllowSorting && this.Sortable && this.SortKeySelector is not null;
+        => Parent is not null && Parent.AllowSorting && Sortable && SortKeySelector is not null;
 
     internal IEnumerable<SortingItem<TItem>> GetSorting()
     {
-        if (SortKeySelector == null && string.IsNullOrWhiteSpace(this.SortString))
+        if (SortKeySelector == null && string.IsNullOrWhiteSpace(SortString))
             yield break;
 
-        yield return new SortingItem<TItem>(this.SortString, this.SortKeySelector!, this.currentSortDirection);
+        yield return new SortingItem<TItem>(SortString, SortKeySelector!, currentSortDirection);
     }
 
     private async Task OnSortClickAsync()
@@ -210,93 +207,81 @@ public partial class GridColumn<TItem>
     /// <summary>
     /// Header template.
     /// </summary>
-    internal RenderFragment HeaderTemplate
+    internal RenderFragment HeaderTemplate => headerTemplate ??= (builder =>
     {
-        get
+        // th > span "title", span > i "icon"
+        builder.OpenElement(101, "th");
+        if (HeaderContent is null)
         {
-            return headerTemplate ??= (builder =>
+            if (CanSort())
             {
-                // th > span "title", span > i "icon"
-                builder.OpenElement(101, "th");
-                if (HeaderContent is null)
-                {
-                    if (this.CanSort())
-                    {
-                        builder.AddAttribute(102, "role", "button");
-                        builder.AddAttribute(103, "onclick", async () => await OnSortClickAsync());
-                    }
+                builder.AddAttribute(102, "role", "button");
+                builder.AddAttribute(103, "onclick", async () => await OnSortClickAsync());
+            }
 
-                    if (this.HeaderTextAlignment != Alignment.None)
-                    {
-                        builder.AddAttribute(104, "class", BootstrapClassProvider.TextAlignment(this.HeaderTextAlignment));
-                    }
+            if (HeaderTextAlignment != Alignment.None)
+            {
+                builder.AddAttribute(104, "class", BootstrapClassProvider.TextAlignment(HeaderTextAlignment));
+            }
 
-                    builder.OpenElement(105, "span");
-                    builder.AddAttribute(106, "class", "me-2");
-                    builder.AddContent(107, HeaderText);
-                    builder.CloseElement(); // close: span
+            builder.OpenElement(105, "span");
+            builder.AddAttribute(106, "class", "me-2");
+            builder.AddContent(107, HeaderText);
+            builder.CloseElement(); // close: span
 
-                    if (this.CanSort())
-                    {
-                        builder.OpenElement(108, "span");
-                        builder.OpenElement(109, "i");
+            if (CanSort())
+            {
+                builder.OpenElement(108, "span");
+                builder.OpenElement(109, "i");
 
-                        var sortIcon = "bi bi-arrow-down-up"; // default icon
-                        if (currentSortDirection != SortDirection.None && currentSortDirection == SortDirection.Ascending)
-                            sortIcon = "bi bi-sort-alpha-down";
-                        else if (currentSortDirection != SortDirection.None && currentSortDirection == SortDirection.Descending)
-                            sortIcon = "bi bi-sort-alpha-down-alt";
+                var sortIcon = "bi bi-arrow-down-up"; // default icon
+                if (currentSortDirection is not SortDirection.None and SortDirection.Ascending)
+                    sortIcon = "bi bi-sort-alpha-down";
+                else if (currentSortDirection is not SortDirection.None and SortDirection.Descending)
+                    sortIcon = "bi bi-sort-alpha-down-alt";
 
-                        builder.AddAttribute(110, "class", sortIcon);
-                        builder.CloseElement(); // close: i
-                        builder.CloseElement(); // close: span
-                    }
-                }
-                else
-                {
-                    // If headercontent is used, filters and sorting wont be added.
-                    builder.AddContent(111, HeaderContent);
-                }
-
-                builder.CloseElement(); // close: th
-            });
+                builder.AddAttribute(110, "class", sortIcon);
+                builder.CloseElement(); // close: i
+                builder.CloseElement(); // close: span
+            }
         }
-    }
+        else
+        {
+            // If headercontent is used, filters and sorting wont be added.
+            builder.AddContent(111, HeaderContent);
+        }
+
+        builder.CloseElement(); // close: th
+    });
 
     /// <summary>
     /// Cell template.
     /// </summary>
-    internal RenderFragment<TItem> CellTemplate
+    internal RenderFragment<TItem> CellTemplate => cellTemplate ??= (rowData => builder =>
     {
-        get
-        {
-            return cellTemplate ??= (rowData => builder =>
-            {
-                builder.OpenElement(100, "td");
+        builder.OpenElement(100, "td");
 
-                var classList = new List<string>();
+        var classList = new List<string>();
 
-                // text alignment
-                if (this.TextAlignment != Alignment.None)
-                    classList.Add(BootstrapClassProvider.TextAlignment(this.TextAlignment));
+        // text alignment
+        if (TextAlignment != Alignment.None)
+            classList.Add(BootstrapClassProvider.TextAlignment(TextAlignment));
 
-                // text nowrap
-                if (this.TextNoWrap)
-                    classList.Add(BootstrapClassProvider.TextNoWrap());
+        // text nowrap
+        if (TextNoWrap)
+            classList.Add(BootstrapClassProvider.TextNoWrap());
 
-                // custom column class
-                var columnClass = ColumnClass?.Invoke(rowData) ?? "";
-                if (!string.IsNullOrWhiteSpace(columnClass))
-                    classList.Add(columnClass);
+        // custom column class
+        var columnClass = ColumnClass?.Invoke(rowData) ?? "";
+        if (!string.IsNullOrWhiteSpace(columnClass))
+            classList.Add(columnClass);
 
-                if (classList.Any())
-                    builder.AddAttribute(101, "class", string.Join(" ", classList));
+        if (classList.Any())
+            builder.AddAttribute(101, "class", string.Join(" ", classList));
 
-                builder.AddContent(102, ChildContent, rowData);
-                builder.CloseElement();
-            });
-        }
-    }
+        builder.AddContent(102, ChildContent, rowData);
+        builder.CloseElement();
+    });
 
     /// <summary>
     /// Gets or sets the header text alignment.

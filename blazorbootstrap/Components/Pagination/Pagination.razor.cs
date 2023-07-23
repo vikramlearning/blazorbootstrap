@@ -89,20 +89,14 @@ public partial class Pagination : BaseComponent
         if (q < 1)
             return 1;
         else if (q > 0 && r == 0)
-            return (q - 1) * DisplayPages + 1;
+            return ((q - 1) * DisplayPages) + 1;
         else if (q > 1 && r < DisplayPages)
             return (q * DisplayPages) + 1;
 
-        return (ActivePageNumber / DisplayPages) * DisplayPages + 1;
+        return (ActivePageNumber / DisplayPages * DisplayPages) + 1;
     }
 
-    private int GetPageToExclusive()
-    {
-        if (TotalPages == 0)
-            return 1;
-
-        return Math.Min(TotalPages, pageFromInclusive + DisplayPages - 1);
-    }
+    private int GetPageToExclusive() => TotalPages == 0 ? 1 : Math.Min(TotalPages, pageFromInclusive + DisplayPages - 1);
 
     #endregion
 
@@ -154,7 +148,7 @@ public partial class Pagination : BaseComponent
     /// <summary>
     /// Gets or sets first link text. 'FirstLinkText' is ignored if 'FirstLinkIcon' is specified.
     /// </summary>
-    [Parameter] public string FirstLinkText { get; set; }
+    [Parameter] public string? FirstLinkText { get; set; }
 
     /// <summary>
     /// Gets or sets first link icon.
@@ -164,7 +158,7 @@ public partial class Pagination : BaseComponent
     /// <summary>
     /// Gets or sets previous link text. 'PreviousLinkText' is ignored if 'PreviousLinkIcon' is specified.
     /// </summary>
-    [Parameter] public string PreviousLinkText { get; set; }
+    [Parameter] public string? PreviousLinkText { get; set; }
 
     /// <summary>
     /// Gets or sets previous link icon.
@@ -174,7 +168,7 @@ public partial class Pagination : BaseComponent
     /// <summary>
     /// Gets or sets next link text. 'NextLinkText' is ignored if 'NextLinkIcon' is specified.
     /// </summary>
-    [Parameter] public string NextLinkText { get; set; }
+    [Parameter] public string? NextLinkText { get; set; }
 
     /// <summary>
     /// Gets or sets next link icon.
@@ -184,7 +178,7 @@ public partial class Pagination : BaseComponent
     /// <summary>
     /// Gets or sets last link text. 'LastLinkText' is ignored if 'LastLinkIcon' is specified.
     /// </summary>
-    [Parameter] public string LastLinkText { get; set; }
+    [Parameter] public string? LastLinkText { get; set; }
 
     /// <summary>
     /// Gets or sets last link icon.

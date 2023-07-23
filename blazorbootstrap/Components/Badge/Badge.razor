@@ -3,8 +3,8 @@
 
 <span @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
     @ChildContent
-    @if (!string.IsNullOrWhiteSpace(visuallyHiddenText))
+    @if (!string.IsNullOrWhiteSpace(VisuallyHiddenText))
     {
-        <span class="visually-hidden">@visuallyHiddenText</span>
+        <span class="visually-hidden">@VisuallyHiddenText</span>
     }
 </span>

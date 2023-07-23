@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace BlazorBootstrap.Utilities;
+﻿namespace BlazorBootstrap.Utilities;
 
 /// <summary>
 /// Helper class for easier building of CSS classnames with additional conditions and rules.
@@ -63,18 +61,12 @@ public class ClassBuilder
     /// Appends a copy of the specified list of strings to this instance.
     /// </summary>
     /// <param name="values">The list of strings to append.</param>
-    public void Append(IEnumerable<string> values)
-    {
-        builder.Append(string.Join(Delimiter, values)).Append(Delimiter);
-    }
+    public void Append(IEnumerable<string> values) => builder.Append(string.Join(Delimiter, values)).Append(Delimiter);
 
     /// <summary>
     /// Marks the builder as dirty to rebuild the values.
     /// </summary>
-    public void Dirty()
-    {
-        dirty = true;
-    }
+    public void Dirty() => dirty = true;
 
     #endregion
 

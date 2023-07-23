@@ -60,7 +60,7 @@ public class CodeSnippet : ComponentBase
         builder.AddAttribute(301, "class", "highlight show-code-only");
         builder.OpenElement(400, "pre");
         builder.OpenElement(401, "code");
-        builder.AddAttribute(402, "class", $"language-{Language ?? GetLanguageFromFileExtension() ?? "cshtml"}" );
+        builder.AddAttribute(402, "class", $"language-{Language ?? GetLanguageFromFileExtension() ?? "cshtml"}");
         if (code != null)
         {
             builder.AddContent(403, code.Trim());

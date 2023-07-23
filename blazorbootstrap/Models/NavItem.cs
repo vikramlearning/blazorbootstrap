@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public class NavItem
 {
@@ -9,14 +7,14 @@ public class NavItem
     /// <summary>
     /// Gets or sets the custom icon name.
     /// </summary>
-    public string CustomIconName { get; set; }
+    public string? CustomIconName { get; set; }
 
     internal bool HasChilds { get; set; }
 
     /// <summary>
     /// Gets or sets the href.
     /// </summary>
-    public string Href { get; set; }
+    public string? Href { get; set; }
 
     /// <summary>
     /// Gets or sets the icon color.
@@ -31,7 +29,7 @@ public class NavItem
     /// <summary>
     /// Gets or sets the Id.
     /// </summary>
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
     /// <summary>
     /// Gets or sets the URL matching behavior.
@@ -41,7 +39,7 @@ public class NavItem
     /// <summary>
     /// Gets or sets the parent Id.
     /// </summary>
-    public string ParentId { get; set; }
+    public string? ParentId { get; set; }
 
     /// <summary>
     /// Gets or sets the sequence.
@@ -56,5 +54,5 @@ public class NavItem
     /// <summary>
     /// Gets or sets the navigation link text.
     /// </summary>
-    public string Text { get; set; }
+    public string? Text { get; set; }
 }

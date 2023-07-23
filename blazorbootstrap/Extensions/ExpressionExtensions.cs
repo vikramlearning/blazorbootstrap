@@ -26,16 +26,16 @@ public static class ExpressionExtensions
 
     #region Expression Delegate
 
-    public static Expression<Func<TItem, bool>> GetExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    public static Expression<Func<TItem, bool>>? GetExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyTypeName = typeof(TItem).GetPropertyTypeName(filterItem.PropertyName);
 
-        if (propertyTypeName == StringConstants.PropertyTypeNameInt16
-            || propertyTypeName == StringConstants.PropertyTypeNameInt32
-            || propertyTypeName == StringConstants.PropertyTypeNameInt64
-            || propertyTypeName == StringConstants.PropertyTypeNameSingle
-            || propertyTypeName == StringConstants.PropertyTypeNameDecimal
-            || propertyTypeName == StringConstants.PropertyTypeNameDouble)
+        if (propertyTypeName is StringConstants.PropertyTypeNameInt16
+            or StringConstants.PropertyTypeNameInt32
+            or StringConstants.PropertyTypeNameInt64
+            or StringConstants.PropertyTypeNameSingle
+            or StringConstants.PropertyTypeNameDecimal
+            or StringConstants.PropertyTypeNameDouble)
         {
             return filterItem.Operator switch
             {
@@ -48,8 +48,8 @@ public static class ExpressionExtensions
                 _ => GetNumberEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
             };
         }
-        else if (propertyTypeName == StringConstants.PropertyTypeNameString
-            || propertyTypeName == StringConstants.PropertyTypeNameChar)
+        else if (propertyTypeName is StringConstants.PropertyTypeNameString
+            or StringConstants.PropertyTypeNameChar)
         {
             return filterItem.Operator switch
             {
@@ -60,8 +60,8 @@ public static class ExpressionExtensions
                 _ => GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem),
             };
         }
-        else if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly
-            || propertyTypeName == StringConstants.PropertyTypeNameDateTime)
+        else if (propertyTypeName is StringConstants.PropertyTypeNameDateOnly
+            or StringConstants.PropertyTypeNameDateTime)
         {
             return filterItem.Operator switch
             {
@@ -95,15 +95,9 @@ public static class ExpressionExtensions
         var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
 
         // Handle null check
-        Expression nullCheckExpression;
-        if (propertyExpression.Type.IsNullableType())
-        {
-            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
-        }
-        else
-        {
-            nullCheckExpression = Expression.Constant(true);
-        }
+        var nullCheckExpression = propertyExpression.Type.IsNullableType()
+            ? Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type))
+            : (Expression)Expression.Constant(true);
 
         // Perform the greater than or equal comparison
         Expression comparisonExpression;
@@ -127,15 +121,9 @@ public static class ExpressionExtensions
         var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
 
         // Handle null check
-        Expression nullCheckExpression;
-        if (propertyExpression.Type.IsNullableType())
-        {
-            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
-        }
-        else
-        {
-            nullCheckExpression = Expression.Constant(true);
-        }
+        var nullCheckExpression = propertyExpression.Type.IsNullableType()
+            ? Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type))
+            : (Expression)Expression.Constant(true);
 
         // Perform the greater than or equal comparison
         Expression comparisonExpression;
@@ -159,15 +147,9 @@ public static class ExpressionExtensions
         var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
 
         // Handle null check
-        Expression nullCheckExpression;
-        if (propertyExpression.Type.IsNullableType())
-        {
-            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
-        }
-        else
-        {
-            nullCheckExpression = Expression.Constant(true);
-        }
+        var nullCheckExpression = propertyExpression.Type.IsNullableType()
+            ? Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type))
+            : (Expression)Expression.Constant(true);
 
         // Perform the greater than or equal comparison
         Expression comparisonExpression;
@@ -191,15 +173,9 @@ public static class ExpressionExtensions
         var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
 
         // Handle null check
-        Expression nullCheckExpression;
-        if (propertyExpression.Type.IsNullableType())
-        {
-            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
-        }
-        else
-        {
-            nullCheckExpression = Expression.Constant(true);
-        }
+        var nullCheckExpression = propertyExpression.Type.IsNullableType()
+            ? Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type))
+            : (Expression)Expression.Constant(true);
 
         // Perform the greater than or equal comparison
         Expression comparisonExpression;
@@ -223,15 +199,9 @@ public static class ExpressionExtensions
         var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
 
         // Handle null check
-        Expression nullCheckExpression;
-        if (propertyExpression.Type.IsNullableType())
-        {
-            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
-        }
-        else
-        {
-            nullCheckExpression = Expression.Constant(true);
-        }
+        var nullCheckExpression = propertyExpression.Type.IsNullableType()
+            ? Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type))
+            : (Expression)Expression.Constant(true);
 
         // Perform the greater than or equal comparison
         Expression comparisonExpression;
@@ -255,15 +225,9 @@ public static class ExpressionExtensions
         var constantExpression = GetNumberConstantExpression(filterItem, propertyTypeName);
 
         // Handle null check
-        Expression nullCheckExpression;
-        if (propertyExpression.Type.IsNullableType())
-        {
-            nullCheckExpression = Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type));
-        }
-        else
-        {
-            nullCheckExpression = Expression.Constant(true);
-        }
+        var nullCheckExpression = propertyExpression.Type.IsNullableType()
+            ? Expression.NotEqual(propertyExpression, Expression.Constant(null, propertyExpression.Type))
+            : (Expression)Expression.Constant(true);
 
         // Perform the greater than or equal comparison
         Expression comparisonExpression;
@@ -281,46 +245,43 @@ public static class ExpressionExtensions
         return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
-    public static bool IsNullableType(this Type type)
-    {
-        return Nullable.GetUnderlyingType(type) != null;
-    }
+    public static bool IsNullableType(this Type type) => Nullable.GetUnderlyingType(type) != null;
 
     public static ConstantExpression GetNumberConstantExpression(FilterItem filterItem, string propertyTypeName)
     {
         if (filterItem.Value is null)
             return Expression.Constant(null);
 
-        ConstantExpression constantExpression = null;
+        ConstantExpression? constantExpression = null;
 
         if (propertyTypeName == StringConstants.PropertyTypeNameInt16)
         {
-            _ = short.TryParse(filterItem.Value, out short filterValue);
+            _ = short.TryParse(filterItem.Value, out var filterValue);
             constantExpression = Expression.Constant((short?)filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameInt32)
         {
-            _ = int.TryParse(filterItem.Value, out int filterValue);
+            _ = int.TryParse(filterItem.Value, out var filterValue);
             constantExpression = Expression.Constant((int?)filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameInt64)
         {
-            _ = long.TryParse(filterItem.Value, out long filterValue);
+            _ = long.TryParse(filterItem.Value, out var filterValue);
             constantExpression = Expression.Constant((long?)filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameSingle)
         {
-            _ = float.TryParse(filterItem.Value, out float filterValue);
+            _ = float.TryParse(filterItem.Value, out var filterValue);
             constantExpression = Expression.Constant((float?)filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameDecimal)
         {
-            _ = decimal.TryParse(filterItem.Value, out decimal filterValue);
+            _ = decimal.TryParse(filterItem.Value, out var filterValue);
             constantExpression = Expression.Constant((decimal?)filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameDouble)
         {
-            _ = double.TryParse(filterItem.Value, out double filterValue);
+            _ = double.TryParse(filterItem.Value, out var filterValue);
             constantExpression = Expression.Constant((double?)filterValue);
         }
 
@@ -644,16 +605,16 @@ public static class ExpressionExtensions
         if (filterItem.Value == null)
             return Expression.Constant(null);
 
-        ConstantExpression constantExpression = null;
+        ConstantExpression? constantExpression = null;
 
         if (propertyTypeName == StringConstants.PropertyTypeNameDateOnly)
         {
-            _ = DateOnly.TryParse(filterItem.Value, out DateOnly filterValue);
+            _ = DateOnly.TryParse(filterItem.Value, out var filterValue);
             constantExpression = Expression.Constant(filterValue);
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameDateTime)
         {
-            _ = DateTime.TryParse(filterItem.Value, out DateTime filterValue);
+            _ = DateTime.TryParse(filterItem.Value, out var filterValue);
             constantExpression = Expression.Constant(filterValue);
         }
 
@@ -680,11 +641,11 @@ public static class ExpressionExtensions
 
     public static ConstantExpression GetBooleanConstantExpression(FilterItem filterItem, string propertyTypeName)
     {
-        ConstantExpression value = null;
+        ConstantExpression? value = null;
 
         if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
         {
-            _ = bool.TryParse(filterItem.Value, out bool filterValue);
+            _ = bool.TryParse(filterItem.Value, out var filterValue);
             value = Expression.Constant(filterValue);
         }
 
@@ -700,13 +661,5 @@ internal class SubstExpressionVisitor : ExpressionVisitor
 {
     public Dictionary<Expression, Expression> subst = new();
 
-    protected override Expression VisitParameter(ParameterExpression parameterExpression)
-    {
-        if (subst.TryGetValue(parameterExpression, out Expression newExpression))
-        {
-            return newExpression;
-        }
-
-        return parameterExpression;
-    }
+    protected override Expression VisitParameter(ParameterExpression parameterExpression) => subst.TryGetValue(parameterExpression, out var newExpression) ? newExpression : parameterExpression;
 }

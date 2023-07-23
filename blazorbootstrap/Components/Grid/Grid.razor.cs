@@ -1,6 +1,4 @@
-﻿using System.Runtime.ConstrainedExecution;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Grid<TItem> : BaseComponent
 {
@@ -11,13 +9,13 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Current grid state (filters, paging, sorting).
     /// </summary>
-    internal GridState<TItem> gridCurrentState = new GridState<TItem>(1, null);
+    internal GridState<TItem> gridCurrentState = new(1, null);
 
-    private List<GridColumn<TItem>> columns = new List<GridColumn<TItem>>();
+    private List<GridColumn<TItem>> columns = new();
 
     private List<TItem> items = null;
 
-    private HashSet<TItem> selectedItems = new HashSet<TItem>();
+    private HashSet<TItem> selectedItems = new();
 
     private int pageSize;
 
@@ -29,7 +27,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private bool requestInProgress = false;
 
-    private string responsiveCssClass => this.Responsive ? "table-responsive" : "";
+    private string responsiveCssClass => Responsive ? "table-responsive" : "";
 
     private object? lastAssignedDataOrDataProvider;
 
@@ -39,7 +37,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private string headerCheckboxId = default!;
 
-    private Dictionary<int, string> checkboxIds = new Dictionary<int, string>();
+    private Dictionary<int, string> checkboxIds = new();
 
     public int SelectedItemsCount = 0;
 
@@ -55,7 +53,7 @@ public partial class Grid<TItem> : BaseComponent
     {
         headerCheckboxId = IdGenerator.Generate;
 
-        this.pageSize = this.PageSize;
+        pageSize = PageSize;
 
         base.OnInitialized();
     }
@@ -107,17 +105,15 @@ public partial class Grid<TItem> : BaseComponent
             await RefreshDataAsync(firstRender);
             isFirstRenderComplete = true;
         }
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    internal void AddColumn(GridColumn<TItem> column)
-    {
-        columns.Add(column);
-    }
+    internal void AddColumn(GridColumn<TItem> column) => columns.Add(column);
 
     private async Task OnHeaderCheckboxChanged(ChangeEventArgs args)
     {
-        allItemsSelected = bool.TryParse(args?.Value?.ToString(), out bool checkboxState) && checkboxState;
+        allItemsSelected = bool.TryParse(args?.Value?.ToString(), out var checkboxState) && checkboxState;
         selectedItems = allItemsSelected ? new(items) : new();
         SelectedItemsCount = selectedItems.Count;
         await CheckOrUnCheckAll();
@@ -128,7 +124,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private async Task OnRowCheckboxChanged(string id, TItem item, ChangeEventArgs args)
     {
-        bool.TryParse(args?.Value?.ToString(), out bool isChecked);
+        bool.TryParse(args?.Value?.ToString(), out var isChecked);
 
         if (SelectionMode == GridSelectionMode.Multiple)
         {
@@ -168,29 +164,19 @@ public partial class Grid<TItem> : BaseComponent
             await OnRowDoubleClick.InvokeAsync(new GridRowEventArgs<TItem>(item));
     }
 
-    private async Task CheckOrUnCheckAll()
-    {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", $".bb-grid-form-check-{headerCheckboxId} > input.form-check-input", allItemsSelected);
-    }
+    private async Task CheckOrUnCheckAll() => await JS.InvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", $".bb-grid-form-check-{headerCheckboxId} > input.form-check-input", allItemsSelected);
 
-    private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState)
-    {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
-    }
+    private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState) => await JS.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
 
     /// <summary>
     /// Get filters.
     /// </summary>
     /// <returns>IEnumerable</returns>
-    public IEnumerable<FilterItem> GetFilters()
-    {
-        if (!AllowFiltering || columns == null || !columns.Any())
-            return null;
-
-        return columns
+    public IEnumerable<FilterItem>? GetFilters() => !AllowFiltering || columns == null || !columns.Any()
+            ? (IEnumerable<FilterItem>?)null
+            : (columns
                 .Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
-                ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison));
-    }
+                ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison)));
 
     /// <summary>
     /// Set filters.
@@ -243,7 +229,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private async Task OnPageSizeChangedAsync(ChangeEventArgs args)
     {
-        int.TryParse(args?.Value?.ToString(), out int newPageSize);
+        int.TryParse(args?.Value?.ToString(), out var newPageSize);
         pageSize = PageSize = newPageSize;
         await ResetPageNumberAsync(false);
         await SaveGridSettingsAsync();
@@ -253,10 +239,7 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Reset the page number to 1 and refresh the grid.
     /// </summary>
-    public async ValueTask ResetPageNumber()
-    {
-        await ResetPageNumberAsync(true);
-    }
+    public async ValueTask ResetPageNumber() => await ResetPageNumberAsync(true);
 
     internal async ValueTask ResetPageNumberAsync(bool refreshGrid = false)
     {
@@ -286,9 +269,13 @@ public partial class Grid<TItem> : BaseComponent
                 if (c.ElementId == column.ElementId
                 && c.currentSortDirection == SortDirection.None
                 && c.defaultSortDirection == SortDirection.Descending)
+                {
                     c.currentSortDirection = SortDirection.Ascending; // Default Sorting: DESC                
+                }
                 else
+                {
                     c.currentSortDirection = (c.defaultSortDirection != SortDirection.None) ? c.defaultSortDirection : SortDirection.Ascending;
+                }
 
                 gridCurrentState = new GridState<TItem>(gridCurrentState.PageIndex, c.GetSorting());
             }
@@ -302,15 +289,11 @@ public partial class Grid<TItem> : BaseComponent
         await RefreshDataAsync(false, default);
     }
 
-    private IEnumerable<SortingItem<TItem>> GetDefaultSorting()
-    {
-        if (!AllowSorting || columns == null || !columns.Any())
-            return null;
-
-        return columns?
+    private IEnumerable<SortingItem<TItem>>? GetDefaultSorting() => !AllowSorting || columns == null || !columns.Any()
+            ? (IEnumerable<SortingItem<TItem>>?)null
+            : (columns?
                 .Where(column => column.CanSort() && column.IsDefaultSortColumn)?
-                .SelectMany(item => item.GetSorting());
-    }
+                .SelectMany(item => item.GetSorting()));
 
     private int GetTotalPagesCount()
     {
@@ -319,10 +302,7 @@ public partial class Grid<TItem> : BaseComponent
             var q = totalCount.Value / pageSize;
             var r = totalCount.Value % pageSize;
 
-            if (q < 1)
-                return 1;
-
-            return q + (r > 0 ? 1 : 0);
+            return q < 1 ? 1 : q + (r > 0 ? 1 : 0);
         }
 
         return 1;
@@ -330,10 +310,10 @@ public partial class Grid<TItem> : BaseComponent
 
     private async Task LoadGridSettingsAsync()
     {
-        if (this.SettingsProvider is null)
+        if (SettingsProvider is null)
             return;
 
-        var settings = await this.SettingsProvider.Invoke();
+        var settings = await SettingsProvider.Invoke();
         if (settings is null)
             return;
 
@@ -345,30 +325,26 @@ public partial class Grid<TItem> : BaseComponent
             if (settings.PageSize > 0 && settings.PageNumber < settings.PageSize)
             {
                 gridCurrentState = new GridState<TItem>(settings.PageNumber, gridCurrentState.Sorting);
-                this.pageSize = settings.PageSize;
+                pageSize = settings.PageSize;
             }
             else
             {
                 gridCurrentState = new GridState<TItem>(1, null);
-                this.pageSize = 10;
+                pageSize = 10;
             }
         }
         else
         {
             gridCurrentState = new GridState<TItem>(1, null);
-            this.pageSize = 10;
+            pageSize = 10;
         }
-
     }
 
     /// <summary>
     /// Refresh the grid data.
     /// </summary>
     /// <returns>Task</returns>
-    public async Task RefreshDataAsync(CancellationToken cancellationToken = default)
-    {
-        await RefreshDataAsync(false, cancellationToken);
-    }
+    public async Task RefreshDataAsync(CancellationToken cancellationToken = default) => await RefreshDataAsync(false, cancellationToken);
 
     internal async Task RefreshDataAsync(bool firstRender = false, CancellationToken cancellationToken = default)
     {
@@ -382,10 +358,10 @@ public partial class Grid<TItem> : BaseComponent
 
         var request = new GridDataProviderRequest<TItem>
         {
-            PageNumber = this.AllowPaging ? gridCurrentState.PageIndex : 0,
-            PageSize = this.AllowPaging ? this.pageSize : 0,
-            Sorting = this.AllowSorting ? (gridCurrentState.Sorting ?? GetDefaultSorting()) : null,
-            Filters = this.AllowFiltering ? GetFilters() : null,
+            PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
+            PageSize = AllowPaging ? pageSize : 0,
+            Sorting = AllowSorting ? (gridCurrentState.Sorting ?? GetDefaultSorting()) : null,
+            Filters = AllowFiltering ? GetFilters() : null,
             CancellationToken = cancellationToken
         };
 
@@ -427,9 +403,9 @@ public partial class Grid<TItem> : BaseComponent
 
         var settings = new GridSettings
         {
-            PageNumber = this.AllowPaging ? gridCurrentState.PageIndex : 0,
-            PageSize = this.AllowPaging ? this.pageSize : 0,
-            Filters = this.AllowFiltering ? GetFilters() : null
+            PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
+            PageSize = AllowPaging ? pageSize : 0,
+            Filters = AllowFiltering ? GetFilters() : null
         };
 
         return GridSettingsChanged.InvokeAsync(settings);
@@ -438,46 +414,43 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Child selection template.
     /// </summary>
-    private RenderFragment ChildSelectionTemplate(int rowIndex, TItem rowData)
+    private RenderFragment ChildSelectionTemplate(int rowIndex, TItem rowData) => builder =>
     {
-        return builder =>
+        // td > div "class" > input
+        builder.OpenElement(101, "td");
+
+        builder.OpenElement(102, "div");
+        builder.AddAttribute(103, "class", $"form-check bb-grid-form-check-{headerCheckboxId}");
+
+        builder.OpenElement(104, "input");
+        builder.AddAttribute(105, "class", "form-check-input");
+        builder.AddAttribute(106, "type", "checkbox");
+        builder.AddAttribute(107, "role", "button");
+
+        if (IsItemSelected(rowData))
         {
-            // td > div "class" > input
-            builder.OpenElement(101, "td");
+            builder.AddAttribute(108, "checked", "checked");
+        }
 
-            builder.OpenElement(102, "div");
-            builder.AddAttribute(103, "class", $"form-check bb-grid-form-check-{headerCheckboxId}");
+        // disable the checkbox
+        // remove the onchange event binding
+        // add disabled attribute
+        if (DisableRowSelection?.Invoke(rowData) ?? false)
+        {
+            builder.AddAttribute(109, "disabled", "disabled");
+        }
+        else
+        {
+            var id = checkboxIds[rowIndex];
+            builder.AddAttribute(110, "id", id);
+            builder.AddAttribute(111, "onchange", async (ChangeEventArgs args) => await OnRowCheckboxChanged(id, rowData, args));
+            builder.AddEventStopPropagationAttribute(111, "onclick", true);
+        }
 
-            builder.OpenElement(104, "input");
-            builder.AddAttribute(105, "class", "form-check-input");
-            builder.AddAttribute(106, "type", "checkbox");
-            builder.AddAttribute(107, "role", "button");
-
-            if (IsItemSelected(rowData))
-            {
-                builder.AddAttribute(108, "checked", "checked");
-            }
-
-            // disable the checkbox
-            // remove the onchange event binding
-            // add disabled attribute
-            if (DisableRowSelection?.Invoke(rowData) ?? false)
-            {
-                builder.AddAttribute(109, "disabled", "disabled");
-            }
-            else
-            {
-                var id = checkboxIds[rowIndex];
-                builder.AddAttribute(110, "id", id);
-                builder.AddAttribute(111, "onchange", async (ChangeEventArgs args) => await OnRowCheckboxChanged(id, rowData, args));
-                builder.AddEventStopPropagationAttribute(111, "onclick", true);
-            }
-
-            builder.CloseElement(); // close: input
-            builder.CloseElement(); // close: div
-            builder.CloseElement(); // close: th
-        };
-    }
+        builder.CloseElement(); // close: input
+        builder.CloseElement(); // close: div
+        builder.CloseElement(); // close: th
+    };
 
     /// <summary>
     /// Refresh selection
@@ -511,13 +484,12 @@ public partial class Grid<TItem> : BaseComponent
 
     private void PrepareCheckboxIds()
     {
-        checkboxIds = checkboxIds ?? new Dictionary<int, string>();
+        checkboxIds ??= new Dictionary<int, string>();
         var currentLength = checkboxIds.Count;
         var itemsCount = items.Count;
         if (currentLength < itemsCount)
         {
-            var remaining = itemsCount - currentLength;
-            for (int i = currentLength; i < itemsCount; i++)
+            for (var i = currentLength; i < itemsCount; i++)
             {
                 checkboxIds[i] = IdGenerator.Generate;
             }
@@ -526,7 +498,7 @@ public partial class Grid<TItem> : BaseComponent
 
     private string GetPaginationItemsText()
     {
-        var startRecord = (gridCurrentState.PageIndex - 1) * pageSize + 1;
+        var startRecord = ((gridCurrentState.PageIndex - 1) * pageSize) + 1;
         var endRecord = gridCurrentState.PageIndex * pageSize;
 
         if (endRecord > totalCount)
@@ -618,7 +590,6 @@ public partial class Grid<TItem> : BaseComponent
     /// </summary>
     [Parameter] public string FiltersRowCssClass { get; set; } = default!;
 
-
     /// <summary>
     /// This event is fired when the grid state is changed.
     /// </summary>
@@ -632,48 +603,42 @@ public partial class Grid<TItem> : BaseComponent
     /// <summary>
     /// Header selection template.
     /// </summary>
-    private RenderFragment HeaderSelectionTemplate
+    private RenderFragment HeaderSelectionTemplate => headerSelectionTemplate ??= (builder =>
     {
-        get
+        // th "style" > div "class" > input
+        builder.OpenElement(101, "th");
+        builder.AddAttribute(102, "style", "width: 2rem;");
+
+        if (SelectionMode == GridSelectionMode.Multiple)
         {
-            return headerSelectionTemplate ??= (builder =>
+            builder.OpenElement(103, "div");
+            builder.AddAttribute(104, "class", "form-check");
+
+            builder.OpenElement(105, "input");
+            builder.AddAttribute(106, "class", "form-check-input");
+            builder.AddAttribute(107, "type", "checkbox");
+            builder.AddAttribute(108, "role", "button");
+
+            // disable the checkbox
+            // remove the onchange event binding
+            // add disabled attribute
+            if (DisableAllRowsSelection?.Invoke(items) ?? false)
             {
-                // th "style" > div "class" > input
-                builder.OpenElement(101, "th");
-                builder.AddAttribute(102, "style", "width: 2rem;");
+                builder.AddAttribute(109, "disabled", "disabled");
+            }
+            else
+            {
+                builder.AddAttribute(110, "id", headerCheckboxId);
+                builder.AddAttribute(111, "onchange", async (ChangeEventArgs args) => await OnHeaderCheckboxChanged(args));
+                builder.AddEventStopPropagationAttribute(112, "onclick", true);
+            }
 
-                if (SelectionMode == GridSelectionMode.Multiple)
-                {
-                    builder.OpenElement(103, "div");
-                    builder.AddAttribute(104, "class", "form-check");
-
-                    builder.OpenElement(105, "input");
-                    builder.AddAttribute(106, "class", "form-check-input");
-                    builder.AddAttribute(107, "type", "checkbox");
-                    builder.AddAttribute(108, "role", "button");
-
-                    // disable the checkbox
-                    // remove the onchange event binding
-                    // add disabled attribute
-                    if (DisableAllRowsSelection?.Invoke(items) ?? false)
-                    {
-                        builder.AddAttribute(109, "disabled", "disabled");
-                    }
-                    else
-                    {
-                        builder.AddAttribute(110, "id", headerCheckboxId);
-                        builder.AddAttribute(111, "onchange", async (ChangeEventArgs args) => await OnHeaderCheckboxChanged(args));
-                        builder.AddEventStopPropagationAttribute(112, "onclick", true);
-                    }
-
-                    builder.CloseElement(); // close: input
-                    builder.CloseElement(); // close: div
-                }
-
-                builder.CloseElement(); // close: th
-            });
+            builder.CloseElement(); // close: input
+            builder.CloseElement(); // close: div
         }
-    }
+
+        builder.CloseElement(); // close: th
+    });
 
     /// <summary>
     /// Gets or sets the page size of the grid.

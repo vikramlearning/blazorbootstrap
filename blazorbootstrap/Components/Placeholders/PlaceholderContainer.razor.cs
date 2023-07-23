@@ -1,7 +1,4 @@
-﻿using BlazorBootstrap.Utilities;
-using Microsoft.AspNetCore.Components;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class PlaceholderContainer : BaseComponent
 {
@@ -40,7 +37,7 @@ public partial class PlaceholderContainer : BaseComponent
     /// <summary>
     /// Specifies the content to be rendered inside this.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     #endregion
 }

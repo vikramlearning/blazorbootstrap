@@ -4,7 +4,7 @@ public partial class Button : BaseComponent
 {
     #region Members
 
-    private string buttonTypeString => this.Type.ToButtonTypeString();
+    private string buttonTypeString => Type.ToButtonTypeString();
 
     private ButtonColor color = ButtonColor.None;
 
@@ -51,27 +51,27 @@ public partial class Button : BaseComponent
         builder.Append(BootstrapClassProvider.ButtonActive(), Active);
         builder.Append(BootstrapClassProvider.ButtonBlock(), Block);
         builder.Append(BootstrapClassProvider.ButtonLoading(), Loading && LoadingTemplate != null);
-        builder.Append(BootstrapClassProvider.ToPosition(this.Position), this.Position != Position.None);
+        builder.Append(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
 
         base.BuildClasses(builder);
     }
 
     protected override void OnInitialized()
     {
-        this.previousDisabled = Disabled;
-        this.previousActive = Active;
-        this.loadingText = LoadingText;
-        this.LoadingTemplate ??= ProvideDefaultLoadingTemplate();
-        this.previousType = Type;
-        this.previousTarget = Target;
-        this.previousTabIndex = TabIndex;
-        this.previousTooltipTitle = TooltipTitle;
+        previousDisabled = Disabled;
+        previousActive = Active;
+        loadingText = LoadingText;
+        LoadingTemplate ??= ProvideDefaultLoadingTemplate();
+        previousType = Type;
+        previousTarget = Target;
+        previousTabIndex = TabIndex;
+        previousTooltipTitle = TooltipTitle;
 
         SetAttributes();
 
         base.OnInitialized();
 
-        if (!string.IsNullOrWhiteSpace(this.TooltipTitle))
+        if (!string.IsNullOrWhiteSpace(TooltipTitle))
         {
             ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef); });
         }
@@ -154,9 +154,9 @@ public partial class Button : BaseComponent
     {
         Attributes ??= new Dictionary<string, object>();
 
-        if (this.Active && !Attributes.TryGetValue("aria-pressed", out _))
+        if (Active && !Attributes.TryGetValue("aria-pressed", out _))
             Attributes.Add("aria-pressed", "true");
-        else if (!this.Active && Attributes.TryGetValue("aria-pressed", out _))
+        else if (!Active && Attributes.TryGetValue("aria-pressed", out _))
             Attributes.Remove("aria-pressed");
 
         // 'a' tag
@@ -191,9 +191,9 @@ public partial class Button : BaseComponent
                 if (Attributes.TryGetValue("aria-disabled", out _))
                     Attributes.Remove("aria-disabled");
 
-                if (this.TabIndex is not null && !Attributes.TryGetValue("tabindex", out _))
+                if (TabIndex is not null && !Attributes.TryGetValue("tabindex", out _))
                     Attributes.Add("tabindex", TabIndex);
-                else if (this.TabIndex is null && Attributes.TryGetValue("tabindex", out _))
+                else if (TabIndex is null && Attributes.TryGetValue("tabindex", out _))
                     Attributes.Remove("tabindex");
             }
         }
@@ -217,9 +217,9 @@ public partial class Button : BaseComponent
             //else if (!this.Disabled && Attributes.TryGetValue("disabled", out _))
             //    Attributes.Remove("disabled");
 
-            if (this.TabIndex is not null && !Attributes.TryGetValue("tabindex", out _))
+            if (TabIndex is not null && !Attributes.TryGetValue("tabindex", out _))
                 Attributes.Add("tabindex", TabIndex);
-            else if (this.TabIndex is null && Attributes.TryGetValue("tabindex", out _))
+            else if (TabIndex is null && Attributes.TryGetValue("tabindex", out _))
                 Attributes.Remove("tabindex");
         }
 
@@ -255,7 +255,7 @@ public partial class Button : BaseComponent
 
     protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder =>
     {
-        builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {this.loadingText}");
+        builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {loadingText}");
     };
 
     /// <summary>
@@ -264,10 +264,10 @@ public partial class Button : BaseComponent
     /// <param name="text"></param>
     public void ShowLoading(string text = "")
     {
-        this.loadingText = text;
-        this.Loading = true;
-        this.Disabled = true;
-        this.StateHasChanged();
+        loadingText = text;
+        Loading = true;
+        Disabled = true;
+        StateHasChanged();
     }
 
     /// <summary>
@@ -275,9 +275,9 @@ public partial class Button : BaseComponent
     /// </summary>
     public void HideLoading()
     {
-        this.Loading = false;
-        this.Disabled = false;
-        this.StateHasChanged();
+        Loading = false;
+        Disabled = false;
+        StateHasChanged();
     }
 
     /// <inheritdoc />
@@ -413,7 +413,7 @@ public partial class Button : BaseComponent
     /// <summary>
     /// Denotes the target route of the <see cref="ButtonType.Link"/> button.
     /// </summary>
-    [Parameter] public string To { get; set; }
+    [Parameter] public string? To { get; set; }
 
     /// <summary>
     /// The target attribute specifies where to open the linked document for a <see cref="ButtonType.Link"/>.

@@ -23,7 +23,7 @@ public class LineChartDataset : ChartDataset
     /// <summary>
     /// Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart.
     /// </summary>
-    public bool Hidden { get; set; }
+    public new bool Hidden { get; set; }
 
     /// <summary>
     /// Hover line dash.
@@ -143,6 +143,6 @@ public class LineChartDataset : ChartDataset
 
     public LineChartDataset()
     {
-        this.Type = "line";
+        Type = "line";
     }
 }

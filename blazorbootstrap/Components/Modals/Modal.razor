@@ -6,12 +6,12 @@
         <div class="modal-content">
             @if (isVisible)
             {
-                @if (!string.IsNullOrWhiteSpace(title) || HeaderTemplate != null || ShowCloseButton)
+                @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
                 {
                     <div class="modal-header @headerCssClassInternal @HeaderCssClass">
-                        @if (!string.IsNullOrWhiteSpace(title))
+                        @if (!string.IsNullOrWhiteSpace(Title))
                         {
-                            <h5 class="modal-title">@title</h5>
+                            <h5 class="modal-title">@Title</h5>
                         }
                         else if (HeaderTemplate != null)
                         {
@@ -31,10 +31,10 @@
                         <DynamicComponent Type="@childComponent" Parameters="@parameters" />
                     </div>
                 }
-                else if (!string.IsNullOrWhiteSpace(message))
+                else if (!string.IsNullOrWhiteSpace(Message))
                 {
                     <div class="modal-body @BodyCssClass">
-                        @message
+                        @Message
                     </div>
                 }
                 else if (BodyTemplate != null)
