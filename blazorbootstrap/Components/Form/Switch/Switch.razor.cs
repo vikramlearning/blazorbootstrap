@@ -5,7 +5,7 @@ public partial class Switch : BaseComponent
     #region Events
 
     /// <summary>
-    /// This event fired when the switch selection changed.
+    /// This event is fired when the switch selection changes.
     /// </summary>
     [Parameter] public EventCallback<bool> ValueChanged { get; set; } = default!;
 
@@ -27,6 +27,8 @@ public partial class Switch : BaseComponent
 
     protected override async Task OnInitializedAsync()
     {
+        oldValue = Value;
+
         Attributes ??= new Dictionary<string, object>();
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
@@ -56,6 +58,10 @@ public partial class Switch : BaseComponent
     /// </summary>
     public void Enable() => Disabled = false;
 
+    /// <summary>
+    /// This event is triggered only when the user changes the selection from the UI.
+    /// </summary>
+    /// <param name="args"></param>
     private async Task OnChange(ChangeEventArgs args)
     {
         bool.TryParse(args.Value?.ToString(), out var newValue);
