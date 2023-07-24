@@ -687,6 +687,27 @@ window.blazorChart.doughnut = {
 }
 
 window.blazorChart.line = {
+    addData: (elementId, data) => {
+        console.log(`addData called...`);
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            let count = chart.data.datasets.length;
+            if (count !== data.length) // validate the counts are matching
+                return;
+
+            for (let index = 0; index < count; index++) {
+                chart.data.datasets[index].data.push(data[index]);
+            }
+            chart.update();
+        }
+    },
+    addDataset: (elementId, newDataset) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.data.datasets.push(newDataset);
+            chart.update();
+        }
+    },
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
@@ -747,7 +768,8 @@ window.blazorChart.line = {
     },
     initialize: (elementId, type, data, options) => {
         let chart = window.blazorChart.line.get(elementId);
-        if (chart) return;
+        if (chart)
+            return;
         else
             window.blazorChart.line.create(elementId, type, data, options);
     },
@@ -761,10 +783,22 @@ window.blazorChart.line = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart) {
-            chart.data = data;
+            data.datasets.forEach(newDataset => {
+                if (chart.data && chart.data.datasets && chart.data.datasets.length > 0) {
+                    let datasetFoundIndex = chart.data.datasets.findIndex(chartDataset => chartDataset.oid === newDataset.oid);
+                    if (datasetFoundIndex > -1) {
+                        chart.data.datasets[datasetFoundIndex].data = newDataset.data;
+                    }
+                }
+                else {
+                    chart.data.datasets.push(newDataset);
+                }
+            });
+
             chart.options = options;
             chart.update();
-        } else {
+        }
+        else {
             window.blazorChart.line.create(elementId, type, data, options);
         }
     },

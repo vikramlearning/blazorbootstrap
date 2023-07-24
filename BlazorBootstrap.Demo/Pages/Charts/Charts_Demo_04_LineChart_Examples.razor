@@ -3,61 +3,110 @@
 
 <LineChart @ref="lineChart" Width="600" Class="mb-4" />
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDataAsync()">Add Random Data</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowHorizontalLineChartAsync()">Horizontal Line Chart</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowVerticalLineChartAsync()">Vertical Line Chart</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
 
 @code {
-    private LineChart lineChart;
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
 
-    private ChartData chartData;
-    private LineChartOptions chartOptions;
+    int count = 0;
 
     Random random = new Random();
 
     protected override void OnInitialized()
     {
         chartData = new ChartData
-        {
-            Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
-            Datasets = new List<IChartDataset>()
-        };
+            {
+                Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
+                Datasets = new List<IChartDataset>()
+            };
 
         chartData.Datasets.Add(GetRandomLineChartDataset());
         chartData.Datasets.Add(GetRandomLineChartDataset());
         chartData.Datasets.Add(GetRandomLineChartDataset());
 
-        chartOptions = new LineChartOptions 
-        { 
-            Responsive = true,
-            Interaction = new Interaction { Mode = InteractionMode.Index }
-        };
+        lineChartOptions = new LineChartOptions
+            {
+                Responsive = true,
+                Interaction = new Interaction { Mode = InteractionMode.Index }
+            };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await lineChart.UpdateAsync(chartData, chartOptions);
+        if (firstRender)
+        {
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+        }
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task RandomizeAsync()
+    {
+        if (chartData is null || chartData.Datasets is null) return;
+
+        var newDatasets = new List<IChartDataset>();
+
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is LineChartDataset lineChartDataset)
+            {
+                var data = lineChartDataset.Data;
+                var count = data.Count;
+
+                var newData = new List<double>();
+                for (var i = 0; i <= count; i++)
+                {
+                    newData.Add(random.Next(200));
+                }
+
+                lineChartDataset.Data = newData;
+                newDatasets.Add(lineChartDataset);
+            }
+        }
+
+        chartData.Datasets = newDatasets;
+
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    private async Task AddDatasetAsync()
+    {
+        if (chartData is null || chartData.Datasets is null) return;
+
+        var chartDataset = GetRandomLineChartDataset();
+        chartData.Datasets.Add(chartDataset);
+        await lineChart.AddDatasetAsync(chartDataset);
     }
 
     private async Task AddDataAsync()
     {
         if (chartData is null || chartData.Datasets is null) return;
 
-        chartData.Datasets.Add(GetRandomLineChartDataset());
-        await lineChart.UpdateAsync(chartData, chartOptions);
+        var count = chartData.Datasets.Count;
+        var newData = new List<double>();
+        for (var i = 0; i < count; i++)
+        {
+            newData.Add(random.Next(200));
+        }
+        await lineChart.AddDataAsync(newData);
     }
 
     private async Task ShowHorizontalLineChartAsync()
     {
-        chartOptions.IndexAxis = "y";
-        await lineChart.UpdateAsync(chartData, chartOptions);
+        lineChartOptions.IndexAxis = "y";
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
     }
 
     private async Task ShowVerticalLineChartAsync()
     {
-        chartOptions.IndexAxis = "x";
-        await lineChart.UpdateAsync(chartData, chartOptions);
+        lineChartOptions.IndexAxis = "x";
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
     }
 
     private LineChartDataset GetRandomLineChartDataset()
@@ -66,17 +115,18 @@
         var c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
         Console.WriteLine($"Line Chart: Color Name: {c.Name}, HEX: {c.ToHexString()}, RGB: {c.ToRgbString()}, IsNamedColor: {c.IsNamedColor}");
 
+        count += 1;
         return new LineChartDataset()
-        {
-            Label = $"Line chart dataset {chartData.Datasets.Count + 1}",
-            Data = new List<double> { random.Next(200), random.Next(200), random.Next(200), random.Next(200), random.Next(200), random.Next(200) },
-            BackgroundColor = new List<string> { c.ToRgbString() },
-            BorderColor = new List<string> { c.ToRgbString() },
-            BorderWidth = new List<double> { 2 },
-            HoverBorderWidth = new List<double> { 4 },
-            PointBackgroundColor = new List<string> { c.ToRgbString() },
-            PointRadius = new List<int> { 0 }, // hide points
-            PointHoverRadius = new List<int> { 4 },
-        };
+            {
+                Label = $"Line chart dataset {count}",
+                Data = new List<double> { random.Next(200), random.Next(200), random.Next(200), random.Next(200), random.Next(200), random.Next(200) },
+                BackgroundColor = new List<string> { c.ToRgbString() },
+                BorderColor = new List<string> { c.ToRgbString() },
+                BorderWidth = new List<double> { 2 },
+                HoverBorderWidth = new List<double> { 4 },
+                PointBackgroundColor = new List<string> { c.ToRgbString() },
+                PointRadius = new List<int> { 0 }, // hide points
+                PointHoverRadius = new List<int> { 4 },
+            };
     }
 }

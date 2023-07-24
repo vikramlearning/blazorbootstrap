@@ -51,6 +51,10 @@ public class BaseChart : BaseComponent
 
     //public async Task ToBase64Image(string type, double quality) { }
 
+    public virtual async Task AddDataAsync(List<double>? data) => await Task.CompletedTask;
+
+    public virtual async Task AddDatasetAsync(IChartDataset chartDataset) => await Task.CompletedTask;
+
     /// <summary>
     /// Update Bar Chart.
     /// </summary>

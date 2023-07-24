@@ -4,6 +4,16 @@ public interface IChartDataset { }
 
 public class ChartDataset : IChartDataset
 {
+    public ChartDataset()
+    {
+        Oid = Guid.NewGuid();
+    }
+
+    /// <summary>
+    /// Get unique object id.
+    /// </summary>
+    public Guid Oid { get; private set; }
+
     /// <summary>
     /// Get or sets the BackgroundColor.
     /// </summary>
