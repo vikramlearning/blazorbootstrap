@@ -14,27 +14,15 @@
     private LineChartOptions lineChartOptions = default!;
     private ChartData chartData = default!;
 
-    int count = 0;
+    int datasetsCount = 0;
+    int labelsCount = 0;
 
     Random random = new Random();
 
     protected override void OnInitialized()
     {
-        chartData = new ChartData
-            {
-                Labels = new List<string> { "Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6" },
-                Datasets = new List<IChartDataset>()
-            };
-
-        chartData.Datasets.Add(GetRandomLineChartDataset());
-        chartData.Datasets.Add(GetRandomLineChartDataset());
-        chartData.Datasets.Add(GetRandomLineChartDataset());
-
-        lineChartOptions = new LineChartOptions
-            {
-                Responsive = true,
-                Interaction = new Interaction { Mode = InteractionMode.Index }
-            };
+        chartData = new ChartData { Labels = GetDefaultChartLabels(6), Datasets = GetDefaultDataSets(3) };
+        lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -48,19 +36,20 @@
 
     private async Task RandomizeAsync()
     {
-        if (chartData is null || chartData.Datasets is null) return;
+        if (chartData is null || chartData.Datasets is null || !chartData.Datasets.Any()) return;
 
         var newDatasets = new List<IChartDataset>();
 
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is LineChartDataset lineChartDataset)
+            if (dataset is LineChartDataset lineChartDataset 
+                && lineChartDataset is not null 
+                && lineChartDataset.Data is not null)
             {
-                var data = lineChartDataset.Data;
-                var count = data.Count;
+                var count = lineChartDataset.Data.Count;
 
                 var newData = new List<double>();
-                for (var i = 0; i <= count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     newData.Add(random.Next(200));
                 }
@@ -80,8 +69,7 @@
         if (chartData is null || chartData.Datasets is null) return;
 
         var chartDataset = GetRandomLineChartDataset();
-        chartData.Datasets.Add(chartDataset);
-        await lineChart.AddDatasetAsync(chartDataset);
+        chartData = await lineChart.AddDatasetAsync(chartData, chartDataset, lineChartOptions);
     }
 
     private async Task AddDataAsync()
@@ -92,9 +80,13 @@
         var newData = new List<double>();
         for (var i = 0; i < count; i++)
         {
-            newData.Add(random.Next(200));
+            var randomData = random.Next(200);
+            newData.Add(randomData);
         }
-        await lineChart.AddDataAsync(newData);
+
+        // update the chartData
+
+        chartData = await lineChart.AddDataAsync(chartData, GetNextChartLabel(), newData);
     }
 
     private async Task ShowHorizontalLineChartAsync()
@@ -109,17 +101,30 @@
         await lineChart.UpdateAsync(chartData, lineChartOptions);
     }
 
+    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
+    {
+        var datasets = new List<IChartDataset>();
+
+        for (var index = 0; index < numberOfDatasets; index++)
+        {
+            datasets.Add(GetRandomLineChartDataset());
+        }
+
+        return datasets;
+    }
+
     private LineChartDataset GetRandomLineChartDataset()
     {
+        datasetsCount += 1;
+
         // random color
         var c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
         Console.WriteLine($"Line Chart: Color Name: {c.Name}, HEX: {c.ToHexString()}, RGB: {c.ToRgbString()}, IsNamedColor: {c.IsNamedColor}");
 
-        count += 1;
         return new LineChartDataset()
             {
-                Label = $"Line chart dataset {count}",
-                Data = new List<double> { random.Next(200), random.Next(200), random.Next(200), random.Next(200), random.Next(200), random.Next(200) },
+                Label = $"Team {datasetsCount}",
+                Data = GetRandomData(),
                 BackgroundColor = new List<string> { c.ToRgbString() },
                 BorderColor = new List<string> { c.ToRgbString() },
                 BorderWidth = new List<double> { 2 },
@@ -128,5 +133,33 @@
                 PointRadius = new List<int> { 0 }, // hide points
                 PointHoverRadius = new List<int> { 4 },
             };
+    }
+
+    private List<double> GetRandomData()
+    {
+        var data = new List<double>();
+        for (var index = 0; index < labelsCount; index++)
+        {
+            data.Add(random.Next(200));
+        }
+
+        return data;
+    }
+
+    private List<string> GetDefaultChartLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            labels.Add(GetNextChartLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextChartLabel()
+    {
+        labelsCount += 1;
+        return $"Day {labelsCount}";
     }
 }

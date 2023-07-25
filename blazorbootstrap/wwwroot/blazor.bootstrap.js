@@ -687,18 +687,20 @@ window.blazorChart.doughnut = {
 }
 
 window.blazorChart.line = {
-    addData: (elementId, data) => {
-        console.log(`addData called...`);
+    addData: (elementId, label, data) => {
         let chart = window.blazorChart.get(elementId);
-        if (chart) {
-            let count = chart.data.datasets.length;
-            if (count !== data.length) // validate the counts are matching
-                return;
+        if (chart && data) {
+            const chartData = chart.data;
+            if (chartData.datasets.length > 0 && chartData.datasets.length === data.length) {
 
-            for (let index = 0; index < count; index++) {
-                chart.data.datasets[index].data.push(data[index]);
+                chartData.labels.push(label);
+
+                for (let index = 0; index < chartData.datasets.length; ++index) {
+                    chartData.datasets[index].data.push(data[index]);
+                }
+
+                chart.update();
             }
-            chart.update();
         }
     },
     addDataset: (elementId, newDataset) => {
@@ -785,9 +787,9 @@ window.blazorChart.line = {
         if (chart) {
             data.datasets.forEach(newDataset => {
                 if (chart.data && chart.data.datasets && chart.data.datasets.length > 0) {
-                    let datasetFoundIndex = chart.data.datasets.findIndex(chartDataset => chartDataset.oid === newDataset.oid);
-                    if (datasetFoundIndex > -1) {
-                        chart.data.datasets[datasetFoundIndex].data = newDataset.data;
+                    let datasetIndex = chart.data.datasets.findIndex(chartDataset => chartDataset.oid === newDataset.oid);
+                    if (datasetIndex > -1) {
+                        chart.data.datasets[datasetIndex].data = newDataset.data;
                     }
                 }
                 else {
