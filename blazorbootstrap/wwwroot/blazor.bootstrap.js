@@ -687,17 +687,30 @@ window.blazorChart.doughnut = {
 }
 
 window.blazorChart.line = {
-    addData: (elementId, label, data) => {
+    addDatasetData: (elementId, dataLabel, datasetLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            const chartDatasets = chart.data.datasets;
+            if (chartDatasets.length > 0) {
+                let datasetIndex = chartDatasets.findIndex(dataset => dataset.label === datasetLabel);
+                if (datasetIndex > -1) {
+                    chartDatasets[datasetIndex].data.push(data);
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDatasetsData: (elementId, dataLabel, data) => {
         let chart = window.blazorChart.get(elementId);
         if (chart && data) {
             const chartData = chart.data;
             if (chartData.datasets.length > 0 && chartData.datasets.length === data.length) {
+                chartData.labels.push(dataLabel);
 
-                chartData.labels.push(label);
-
-                for (let index = 0; index < chartData.datasets.length; ++index) {
-                    chartData.datasets[index].data.push(data[index]);
-                }
+                data.forEach(chartDatasetData => {
+                    let datasetIndex = chartData.datasets.findIndex(dataset => dataset.label === chartDatasetData.datasetLabel);
+                    chartData.datasets[datasetIndex].data.push(chartDatasetData.data);
+                });
 
                 chart.update();
             }

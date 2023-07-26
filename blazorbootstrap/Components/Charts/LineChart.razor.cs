@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Reflection.Emit;
 
 namespace BlazorBootstrap;
 
@@ -19,7 +19,7 @@ public partial class LineChart : BaseChart
 
     #region Methods
 
-    public override async Task<ChartData> AddDataAsync(ChartData chartData, string label, List<double> data)
+    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, string datasetLabel, double data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
@@ -27,11 +27,44 @@ public partial class LineChart : BaseChart
         if (chartData.Datasets is null)
             throw new ArgumentNullException(nameof(chartData.Datasets));
 
-        if (label is null)
-            throw new ArgumentNullException(nameof(label));
+        if (datasetLabel is null)
+            throw new ArgumentNullException(nameof(datasetLabel));
 
-        if (string.IsNullOrWhiteSpace(label))
-            throw new Exception($"{nameof(label)} cannot be empty.");
+        if (string.IsNullOrWhiteSpace(datasetLabel))
+            throw new Exception($"{nameof(datasetLabel)} cannot be empty.");
+
+        if (dataLabel is null)
+            throw new ArgumentNullException(nameof(datasetLabel));
+
+        if (string.IsNullOrWhiteSpace(dataLabel))
+            throw new Exception($"{nameof(dataLabel)} cannot be empty.");
+
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is LineChartDataset lineChartDataset && lineChartDataset.Label == dataLabel)
+            {
+                lineChartDataset.Data?.Add(data);
+            }
+        }
+
+        await JS.InvokeVoidAsync("window.blazorChart.line.addDatasetData", ElementId, dataLabel, datasetLabel, data);
+
+        return chartData;
+    }
+
+    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, List<ChartDatasetData> data)
+    {
+        if (chartData is null)
+            throw new ArgumentNullException(nameof(chartData));
+
+        if (chartData.Datasets is null)
+            throw new ArgumentNullException(nameof(chartData.Datasets));
+
+        if (dataLabel is null)
+            throw new ArgumentNullException(nameof(dataLabel));
+
+        if (string.IsNullOrWhiteSpace(dataLabel))
+            throw new Exception($"{nameof(dataLabel)} cannot be empty.");
 
         if (data is null)
             throw new ArgumentNullException(nameof(data));
@@ -42,16 +75,19 @@ public partial class LineChart : BaseChart
         if (chartData.Datasets.Count != data.Count)
             throw new InvalidDataException("The chart dataset count and the new data points count do not match.");
 
-        for (int index = 0; index < chartData.Datasets.Count; index++)
+        foreach (var dataset in chartData.Datasets)
         {
-            if (chartData.Datasets[index] is LineChartDataset lineChartDataset)
+            if (dataset is LineChartDataset lineChartDataset)
             {
-                lineChartDataset.Data?.Add(data[index]);
-                chartData.Datasets[index] = lineChartDataset;
+                var chartDatasetData = data.FirstOrDefault(x => x.DatasetLabel == lineChartDataset.Label);
+                if (chartDatasetData is null)
+                    continue;
+
+                lineChartDataset.Data?.Add(chartDatasetData.Data);
             }
         }
 
-        await JS.InvokeVoidAsync("window.blazorChart.line.addData", ElementId, label, data);
+        await JS.InvokeVoidAsync("window.blazorChart.line.addDatasetsData", ElementId, dataLabel, data);
 
         return chartData;
     }
@@ -88,7 +124,7 @@ public partial class LineChart : BaseChart
             throw new ArgumentNullException(nameof(chartOptions));
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
-        var data = new { chartData.Labels, Datasets = datasets };
+        var data = new { Labels = chartData.Labels, XLabels = chartData.XLabels, YLabels = chartData.YLabels, Datasets = datasets };
         await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), data, (LineChartOptions)chartOptions);
     }
 
@@ -104,7 +140,7 @@ public partial class LineChart : BaseChart
             throw new ArgumentNullException(nameof(chartOptions));
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
-        var data = new { chartData.Labels, Datasets = datasets };
+        var data = new { Labels = chartData.Labels, XLabels = chartData.XLabels, YLabels = chartData.YLabels, Datasets = datasets };
         await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), data, (LineChartOptions)chartOptions);
     }
 

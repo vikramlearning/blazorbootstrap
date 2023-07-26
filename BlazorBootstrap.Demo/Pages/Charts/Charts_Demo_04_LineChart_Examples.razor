@@ -42,8 +42,8 @@
 
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is LineChartDataset lineChartDataset 
-                && lineChartDataset is not null 
+            if (dataset is LineChartDataset lineChartDataset
+                && lineChartDataset is not null
                 && lineChartDataset.Data is not null)
             {
                 var count = lineChartDataset.Data.Count;
@@ -74,19 +74,17 @@
 
     private async Task AddDataAsync()
     {
-        if (chartData is null || chartData.Datasets is null) return;
+        if (chartData is null || chartData.Datasets is null)
+            return;
 
-        var count = chartData.Datasets.Count;
-        var newData = new List<double>();
-        for (var i = 0; i < count; i++)
+        var data = new List<ChartDatasetData>();
+        foreach (var dataset in chartData.Datasets)
         {
-            var randomData = random.Next(200);
-            newData.Add(randomData);
+            if (dataset is LineChartDataset lineChartDataset)
+                data.Add(new ChartDatasetData(lineChartDataset.Label, random.Next(200)));
         }
 
-        // update the chartData
-
-        chartData = await lineChart.AddDataAsync(chartData, GetNextChartLabel(), newData);
+        chartData = await lineChart.AddDataAsync(chartData, GetNextDataLabel(), data);
     }
 
     private async Task ShowHorizontalLineChartAsync()
@@ -151,13 +149,13 @@
         var labels = new List<string>();
         for (var index = 0; index < numberOfLabels; index++)
         {
-            labels.Add(GetNextChartLabel());
+            labels.Add(GetNextDataLabel());
         }
 
         return labels;
     }
 
-    private string GetNextChartLabel()
+    private string GetNextDataLabel()
     {
         labelsCount += 1;
         return $"Day {labelsCount}";
