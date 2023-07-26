@@ -60,6 +60,9 @@ public partial class LineChart : BaseChart
         if (chartData.Datasets is null)
             throw new ArgumentNullException(nameof(chartData.Datasets));
 
+        if (chartData.Labels is null)
+            throw new ArgumentNullException(nameof(chartData.Labels));
+
         if (dataLabel is null)
             throw new ArgumentNullException(nameof(dataLabel));
 
@@ -74,6 +77,11 @@ public partial class LineChart : BaseChart
 
         if (chartData.Datasets.Count != data.Count)
             throw new InvalidDataException("The chart dataset count and the new data points count do not match.");
+
+        if (chartData.Labels.Contains(dataLabel))
+            throw new Exception($"{dataLabel} already exists.");
+
+        chartData.Labels.Add(dataLabel);
 
         foreach (var dataset in chartData.Datasets)
         {
@@ -124,7 +132,7 @@ public partial class LineChart : BaseChart
             throw new ArgumentNullException(nameof(chartOptions));
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
-        var data = new { Labels = chartData.Labels, XLabels = chartData.XLabels, YLabels = chartData.YLabels, Datasets = datasets };
+        var data = new { Labels = chartData.Labels, Datasets = datasets };
         await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), data, (LineChartOptions)chartOptions);
     }
 
@@ -140,7 +148,7 @@ public partial class LineChart : BaseChart
             throw new ArgumentNullException(nameof(chartOptions));
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
-        var data = new { Labels = chartData.Labels, XLabels = chartData.XLabels, YLabels = chartData.YLabels, Datasets = datasets };
+        var data = new { Labels = chartData.Labels, Datasets = datasets };
         await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), data, (LineChartOptions)chartOptions);
     }
 

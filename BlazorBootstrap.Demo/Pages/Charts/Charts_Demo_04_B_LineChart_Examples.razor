@@ -7,21 +7,19 @@
     private LineChart lineChart;
     private LineChartOptions lineChartOptions;
     private ChartData chartData;
-    private List<string> chartXLabels;
-    private List<string> chartYLabels;
+    private List<string> labels;
 
-    private List<double> indiaRuns = new() { 9, 20, 29, 33, 50, 66, 75, 86, 91, 105, 120, 126, 141, 150, 156, 164, 177, 180, 184, 195 };
-    private List<double> englandRuns = new() { 1, 1, 8, 19, 24, 26, 39, 47, 56, 66, 75, 88, 95, 100, 109, 114, 124, 129, 140, 142 };
+    private List<double> indiaRunsArray = new() { 9, 20, 29, 33, 50, 66, 75, 86, 91, 105, 120, 126, 141, 150, 156, 164, 177, 180, 184, 195 };
+    private List<double> englandRunsArray = new() { 1, 1, 8, 19, 24, 26, 39, 47, 56, 66, 75, 88, 95, 100, 109, 114, 124, 129, 140, 142 };
 
     private int indiaCurrentOver = 0;
     private int englandCurrentOver = 0;
 
     protected override void OnInitialized()
     {
-        chartXLabels = new List<string> { "111", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" };
-        chartYLabels = new List<string> { "10", "20", "30", "40", "50", "60", "70", "80", "90", "100", "110", "120", "130", "140", "150", "160", "170", "180", "190", "200" };
+        labels = new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" };
         lineChartOptions = GetLineChartOptions();
-        chartData = new ChartData { XLabels = chartXLabels, YLabels = chartYLabels, Datasets = GetDefaultDatasets() };
+        chartData = new ChartData { Labels = labels, Datasets = GetDefaultDatasets() };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -32,13 +30,19 @@
 
     private async Task UpdateIndiaNextOverRunsAsync()
     {
-        chartData = await lineChart.AddDataAsync(chartData, $"{indiaCurrentOver}", "India", indiaRuns[indiaCurrentOver]);
+        if (indiaCurrentOver > 0 && indiaCurrentOver > (indiaRunsArray.Count - 1))
+            return;
+
+        chartData = await lineChart.AddDataAsync(chartData, $"{indiaCurrentOver}", "India", indiaRunsArray[indiaCurrentOver]);
         indiaCurrentOver++;
     }
 
     private async Task UpdateEnglandNextOverRunsAsync()
     {
-        chartData = await lineChart.AddDataAsync(chartData, $"{indiaCurrentOver}", "England", englandRuns[englandCurrentOver]);
+        if (englandCurrentOver > 0 && englandCurrentOver > (englandRunsArray.Count - 1))
+            return;
+
+        chartData = await lineChart.AddDataAsync(chartData, $"{indiaCurrentOver}", "England", englandRunsArray[englandCurrentOver]);
         englandCurrentOver++;
     }
 
