@@ -666,7 +666,25 @@ window.blazorChart.bar = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) {
-            chart.data = data;
+            const chartData = chart.data;
+            let updatedDatasets = [];
+            data.datasets.forEach(newDataset => {
+                if (chartData.datasets.length > 0) {
+                    let chartDatasetIndex = chartData.datasets.findIndex(chartDataset => chartDataset.oid === newDataset.oid);
+                    if (chartDatasetIndex > -1) {
+                        chart.data.datasets[chartDatasetIndex].data = newDataset.data;
+                        updatedDatasets.push(chart.data.datasets[chartDatasetIndex]);
+                    }
+                    else {
+                        updatedDatasets.push(newDataset);
+                    }
+                }
+                else {
+                    updatedDatasets.push(newDataset);
+                }
+                chart.data.datasets = updatedDatasets;
+            });
+
             chart.options = options;
             chart.update();
         } else {

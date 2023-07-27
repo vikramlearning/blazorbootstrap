@@ -67,15 +67,27 @@
     private async Task AddDatasetAsync()
     {
         if (chartData is null || chartData.Datasets is null) return;
+
+        var chartDataset = GetRandomBarChartDataset();
+        chartData = await barChart.AddDatasetAsync(chartData, chartDataset, barChartOptions);
     }
 
     private async Task AddDataAsync()
     {
-        if (chartData is null || chartData.Datasets is null) 
-        return;
+        if (chartData is null || chartData.Datasets is null)
+            return;
 
-        chartData.Datasets.Add(GetRandomBarChartDataset());
-        await barChart.UpdateAsync(chartData, barChartOptions);
+        if (labelsCount >= 12)
+            return;
+
+        var data = new List<ChartDatasetData>();
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is BarChartDataset barChartDataset)
+                data.Add(new ChartDatasetData(barChartDataset.Label, random.Next(200)));
+        }
+
+        chartData = await barChart.AddDataAsync(chartData, GetNextDataLabel(), data);
     }
 
     private async Task ShowHorizontalBarChartAsync()
@@ -111,13 +123,13 @@
         Console.WriteLine($"Bar Chart: Color Name: {c.Name}, HEX: {c.ToHexString()}, RGB: {c.ToRgbString()}, IsNamedColor: {c.IsNamedColor}");
 
         return new BarChartDataset()
-        {
-            Label = $"Product {datasetsCount}",
-            Data = GetRandomData(),
-            BackgroundColor = new List<string> { c.ToRgbString() },
-            BorderColor = new List<string> { c.ToRgbString() },
-            BorderWidth = new List<double> { 0 },
-        };
+            {
+                Label = $"Product {datasetsCount}",
+                Data = GetRandomData(),
+                BackgroundColor = new List<string> { c.ToRgbString() },
+                BorderColor = new List<string> { c.ToRgbString() },
+                BorderWidth = new List<double> { 0 },
+            };
     }
 
     private List<double> GetRandomData()
@@ -145,6 +157,6 @@
     private string GetNextDataLabel()
     {
         labelsCount += 1;
-        return months[labelsCount];
+        return months[labelsCount - 1];
     }
 }

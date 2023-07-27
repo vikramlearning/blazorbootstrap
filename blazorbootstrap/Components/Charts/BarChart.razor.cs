@@ -39,7 +39,7 @@ public partial class BarChart : BaseChart
 
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is LineChartDataset lineChartDataset && lineChartDataset.Label == dataLabel)
+            if (dataset is BarChartDataset lineChartDataset && lineChartDataset.Label == dataLabel)
             {
                 lineChartDataset.Data?.Add(data);
             }
@@ -83,7 +83,7 @@ public partial class BarChart : BaseChart
 
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is LineChartDataset lineChartDataset)
+            if (dataset is BarChartDataset lineChartDataset)
             {
                 var chartDatasetData = data.FirstOrDefault(x => x.DatasetLabel == lineChartDataset.Label);
                 if (chartDatasetData is null)
@@ -109,15 +109,14 @@ public partial class BarChart : BaseChart
         if (chartDataset is null)
             throw new ArgumentNullException(nameof(chartDataset));
 
-        if (chartDataset is LineChartDataset)
+        if (chartDataset is BarChartDataset)
         {
             chartData.Datasets.Add(chartDataset);
-            await JS.InvokeVoidAsync("window.blazorChart.bar.addDataset", ElementId, (LineChartDataset)chartDataset);
+            await JS.InvokeVoidAsync("window.blazorChart.bar.addDataset", ElementId, (BarChartDataset)chartDataset);
         }
 
         return chartData;
     }
-
 
     public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions)
     {
