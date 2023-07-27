@@ -1,6 +1,4 @@
-﻿using System.Reflection.Emit;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class LineChart : BaseChart
 {

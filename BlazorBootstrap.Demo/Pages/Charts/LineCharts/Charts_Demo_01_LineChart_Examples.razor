@@ -21,7 +21,7 @@
 
     protected override void OnInitialized()
     {
-        chartData = new ChartData { Labels = GetDefaultChartLabels(6), Datasets = GetDefaultDataSets(3) };
+        chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
         lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
     }
 
@@ -144,7 +144,7 @@
         return data;
     }
 
-    private List<string> GetDefaultChartLabels(int numberOfLabels)
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
     {
         var labels = new List<string>();
         for (var index = 0; index < numberOfLabels; index++)
