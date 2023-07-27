@@ -103,10 +103,36 @@ public class Scales
 
 public class ChartAxes
 {
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public Title? Title { get; set; } = new Title();
     // Stacked
     public bool BeginAtZero { get; set; } = true;
+
+    /// <summary>
+    /// User defined maximum number for the scale, overrides maximum value from data.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public double? Max { get; set; }
+
+    /// <summary>
+    /// User defined minimum number for the scale, overrides minimum value from data.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public double? Min { get; set; }
+
+    /// <summary>
+    /// Adjustment used when calculating the maximum data value.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public double? SuggestedMax { get; set; }
+
+    /// <summary>
+    /// Adjustment used when calculating the minimum data value.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public double? SuggestedMin { get; set; }
+
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Title? Title { get; set; } = new Title();
 }
 
 /// <summary>

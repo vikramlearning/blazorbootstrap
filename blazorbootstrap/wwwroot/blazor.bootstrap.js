@@ -534,11 +534,6 @@ window.blazorChart = {
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
-        //console.log(elementId);
-        //console.log(type);
-        //console.log(data);
-        //console.log(options); // NOTE: this gives more details in the chrome dev tools
-
         const config = {
             type: type,
             data: data,
