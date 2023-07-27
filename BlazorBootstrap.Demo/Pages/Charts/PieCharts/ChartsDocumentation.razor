@@ -1,0 +1,20 @@
+﻿@page "/charts/pie-chart"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Charts</h1>
+<div class="lead mb-3">
+    Blazor Bootstrap charts are well-designed chart components on top of Chart.js to visualize data. It contains a rich UI gallery of charts that cater to all charting scenarios. Its high performance helps render large amounts of data quickly.
+</div>
+
+<SectionHeading Size="HeadingSize.H4" Text="Pie Chart" PageUrl="@pageUrl" HashTagName="pie-chart" />
+<Demo Type="typeof(Charts_Demo_01_PieChart_Examples)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/charts/pie-chart";
+    private string title = "Blazor Charts";
+    private string description = "Blazor Bootstrap charts are well-designed chart components on top of Chart.js to visualize data. It contains a rich UI gallery of charts that cater to all charting scenarios. Its high performance helps render large amounts of data quickly.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
+}

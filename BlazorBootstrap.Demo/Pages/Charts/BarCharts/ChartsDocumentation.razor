@@ -1,0 +1,20 @@
+﻿@page "/charts/bar-chart"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Bar Chart</h1>
+<div class="lead mb-3">
+    A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.
+</div>
+
+<SectionHeading Size="HeadingSize.H4" Text="Examples" PageUrl="@pageUrl" HashTagName="Examples" />
+<Demo Type="typeof(Charts_Demo_01_BarChart_Examples)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/charts/bar-chart";
+    private string title = "Blazor Bar Chart";
+    private string description = "A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
+}

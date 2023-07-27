@@ -1,0 +1,22 @@
+﻿@page "/charts/doughnut-chart"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Doughnut Chart</h1>
+<div class="lead mb-3">
+    A Blazor Bootstrap donut chart component is a circular chart that shows the proportional values of different categories. 
+    It is similar to a pie chart, but the center of the donut chart is hollow. 
+    This makes it easier to see the individual values of each category.
+</div>
+
+<SectionHeading Size="HeadingSize.H4" Text="Examples" PageUrl="@pageUrl" HashTagName="Examples" />
+<Demo Type="typeof(Charts_Demo_01_DoughnutChart_Examples)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/charts/doughnut-chart";
+    private string title = "Blazor Doughnut Charts";
+    private string description = "A Blazor donut chart component is a circular chart that shows the proportional values of different categories. It is similar to a pie chart, but the center of the donut chart is hollow. This makes it easier to see the individual values of each category.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
+}

@@ -1,4 +1,4 @@
-﻿<LineChart @ref="lineChart" />
+﻿<LineChart @ref="lineChart" Width="800" Class="mb-4" />
 
 <Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="Size.Small" @onclick="UpdateIndiaNextOverRunsAsync"> India Next Over </Button>
 <Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="Size.Small" @onclick="UpdateEnglandNextOverRunsAsync"> England Next Over </Button>
@@ -42,7 +42,7 @@
         if (englandCurrentOver > 0 && englandCurrentOver > (englandRunsArray.Count - 1))
             return;
 
-        chartData = await lineChart.AddDataAsync(chartData, $"{indiaCurrentOver + 1}", "England", englandRunsArray[englandCurrentOver]);
+        chartData = await lineChart.AddDataAsync(chartData, $"{englandCurrentOver + 1}", "England", englandRunsArray[englandCurrentOver]);
         englandCurrentOver++;
     }
 
