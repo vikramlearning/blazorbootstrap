@@ -6,10 +6,5 @@ public class DoughnutChartDataset : ChartDataset
     /// The label for the dataset which appears in the legend and tooltips.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string Label { get; set; }
-
-    public DoughnutChartDataset()
-    {
-        Type = "doughnut";
-    }
+    public string? Label { get; set; }
 }
