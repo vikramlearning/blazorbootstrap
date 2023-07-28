@@ -1,0 +1,25 @@
+﻿@using System.Reflection;
+@using System.ComponentModel.DataAnnotations;
+@typeparam TEnum
+
+<select @bind="Bind" class="form-control">
+    @foreach (TEnum value in Enum.GetValues(typeof(TEnum)))
+    {
+        var displayName = GetDisplayName(value);
+        <option value="@value">@displayName</option>
+    }
+</select>
+
+@code {
+    [Parameter] public TEnum Bind { get; set; }
+
+    private string GetDisplayName(TEnum value)
+    {
+        var displayNameAttribute = typeof(TEnum)
+            .GetMember(value.ToString())
+            .FirstOrDefault()
+            ?.GetCustomAttribute<DisplayAttribute>();
+
+        return displayNameAttribute?.GetName() ?? value.ToString();
+    }
+}
