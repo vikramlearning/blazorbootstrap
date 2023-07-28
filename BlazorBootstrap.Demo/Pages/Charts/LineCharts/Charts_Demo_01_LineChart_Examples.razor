@@ -14,10 +14,10 @@
     private LineChartOptions lineChartOptions = default!;
     private ChartData chartData = default!;
 
-    int datasetsCount = 0;
-    int labelsCount = 0;
+    private int datasetsCount = 0;
+    private int labelsCount = 0;
 
-    Random random = new Random();
+    private Random random = new();
 
     protected override void OnInitialized()
     {
@@ -99,6 +99,8 @@
         await lineChart.UpdateAsync(chartData, lineChartOptions);
     }
 
+    #region Data Preparation
+
     private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
     {
         var datasets = new List<IChartDataset>();
@@ -160,4 +162,6 @@
         labelsCount += 1;
         return $"Day {labelsCount}";
     }
+
+    #endregion Data Preparation
 }
