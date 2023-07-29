@@ -3,10 +3,10 @@
 public static class ColorBuilder
 {
     /// <summary>
-    /// Returns 6 #RRGGBB colors.
+    /// Returns 6 categorical #RRGGBB colors.
     /// <seealso cref="https://spectrum.adobe.com/page/color-for-data-visualization/"/>
     /// </summary>
-    public static string[] SixColors => new string[] {
+    public static string[] CategoricalSixColors => new string[] {
         "#0fb5ae",
         "#4046ca",
         "#f68511",
@@ -22,10 +22,10 @@ public static class ColorBuilder
     };
 
     /// <summary>
-    /// Returns 12 #RRGGBB colors.
+    /// Returns 12 categorical #RRGGBB colors.
     /// <seealso cref="https://spectrum.adobe.com/page/color-for-data-visualization/"/>
     /// </summary>
-    public static string[] TwelveColors => new string[] {
+    public static string[] CategoricalTwelveColors => new string[] {
         "#0fb5ae",
         "#4046ca",
         "#f68511",
@@ -35,8 +35,8 @@ public static class ColorBuilder
         "#147af3",
         "#7326d3",
         "#e8c600",
-        "#e8c600",
-        "#e8c600",
-        "#e8c600"
+        "#cb5d00",
+        "#008f5d",
+        "#bce931"
     };
 }

@@ -68,6 +68,9 @@
     {
         if (chartData is null || chartData.Datasets is null) return;
 
+        if (datasetsCount >= 12)
+            return;
+
         var chartDataset = GetRandomBarChartDataset();
         chartData = await barChart.AddDatasetAsync(chartData, chartDataset, barChartOptions);
     }
@@ -119,7 +122,7 @@
     private BarChartDataset GetRandomBarChartDataset()
     {
         // random color
-        var c = ColorBuilder.TwelveColors[datasetsCount].ToColor();
+        var c = ColorBuilder.CategoricalTwelveColors[datasetsCount].ToColor();
 
         datasetsCount += 1;
 
