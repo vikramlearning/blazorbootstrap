@@ -1,7 +1,4 @@
-﻿@using BlazorBootstrap.Extensions
-@using BlazorBootstrap.Utilities;
-
-<BarChart @ref="barChart" Width="800" Class="mb-4" />
+﻿<BarChart @ref="barChart" Width="800" Class="mb-4" />
 
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
@@ -83,11 +80,11 @@
         if (labelsCount >= 12)
             return;
 
-        var data = new List<ChartDatasetData>();
+        var data = new List<IChartDatasetData>();
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is BarChartDataset barChartDataset)
-                data.Add(new ChartDatasetData(barChartDataset.Label, random.Next(200)));
+                data.Add(new BarChartDatasetData(barChartDataset.Label, random.Next(200)));
         }
 
         chartData = await barChart.AddDataAsync(chartData, GetNextDataLabel(), data);

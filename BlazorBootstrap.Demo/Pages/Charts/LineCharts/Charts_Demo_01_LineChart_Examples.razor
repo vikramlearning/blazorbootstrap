@@ -77,11 +77,11 @@
         if (chartData is null || chartData.Datasets is null)
             return;
 
-        var data = new List<ChartDatasetData>();
+        var data = new List<IChartDatasetData>();
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is LineChartDataset lineChartDataset)
-                data.Add(new ChartDatasetData(lineChartDataset.Label, random.Next(200)));
+                data.Add(new LineChartDatasetData(lineChartDataset.Label, random.Next(200)));
         }
 
         chartData = await lineChart.AddDataAsync(chartData, GetNextDataLabel(), data);

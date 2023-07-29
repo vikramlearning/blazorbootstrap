@@ -17,7 +17,7 @@ public partial class PieChart : BaseChart
 
     #region Methods
 
-    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, string datasetLabel, double data)
+    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
@@ -25,32 +25,27 @@ public partial class PieChart : BaseChart
         if (chartData.Datasets is null)
             throw new ArgumentNullException(nameof(chartData.Datasets));
 
-        if (datasetLabel is null)
-            throw new ArgumentNullException(nameof(datasetLabel));
-
-        if (string.IsNullOrWhiteSpace(datasetLabel))
-            throw new Exception($"{nameof(datasetLabel)} cannot be empty.");
-
-        if (dataLabel is null)
-            throw new ArgumentNullException(nameof(datasetLabel));
-
-        if (string.IsNullOrWhiteSpace(dataLabel))
-            throw new Exception($"{nameof(dataLabel)} cannot be empty.");
+        if (data is null)
+            throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is PieChartDataset pieChartDataset && pieChartDataset.Label == dataLabel)
             {
-                pieChartDataset.Data?.Add(data);
+                if (data is PieChartDatasetData pieChartDatasetData)
+                {
+                    pieChartDataset.Data?.Add(pieChartDatasetData.Data);
+                    pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor);
+                }
             }
         }
 
-        await JS.InvokeVoidAsync("window.blazorChart.pie.addDatasetData", ElementId, dataLabel, datasetLabel, data);
+        await JS.InvokeVoidAsync("window.blazorChart.pie.addDatasetData", ElementId, dataLabel, data);
 
         return chartData;
     }
 
-    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, List<ChartDatasetData> data)
+    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, List<IChartDatasetData> data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
@@ -85,15 +80,17 @@ public partial class PieChart : BaseChart
         {
             if (dataset is PieChartDataset pieChartDataset)
             {
-                var chartDatasetData = data.FirstOrDefault(x => x.DatasetLabel == pieChartDataset.Label);
-                if (chartDatasetData is null)
-                    continue;
-
-                pieChartDataset.Data?.Add(chartDatasetData.Data);
+                var chartDatasetData = data.FirstOrDefault(x => x is PieChartDatasetData pieChartDatasetData && pieChartDatasetData.DatasetLabel == pieChartDataset.Label);
+                
+                if (chartDatasetData is PieChartDatasetData pieChartDatasetData)
+                {
+                    pieChartDataset.Data?.Add(pieChartDatasetData.Data);
+                    pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor);
+                }
             }
         }
 
-        await JS.InvokeVoidAsync("window.blazorChart.pie.addDatasetsData", ElementId, dataLabel, data);
+        await JS.InvokeVoidAsync("window.blazorChart.pie.addDatasetsData", ElementId, dataLabel, data?.Select(x => (PieChartDatasetData)x));
 
         return chartData;
     }

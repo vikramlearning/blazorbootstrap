@@ -33,7 +33,7 @@
         if (indiaCurrentOver > 0 && indiaCurrentOver > (indiaRunsArray.Count - 1))
             return;
 
-        chartData = await lineChart.AddDataAsync(chartData, $"{indiaCurrentOver + 1}", "India", indiaRunsArray[indiaCurrentOver]);
+        chartData = await lineChart.AddDataAsync(chartData, $"{indiaCurrentOver + 1}", new LineChartDatasetData("India", indiaRunsArray[indiaCurrentOver]));
         indiaCurrentOver++;
     }
 
@@ -42,7 +42,7 @@
         if (englandCurrentOver > 0 && englandCurrentOver > (englandRunsArray.Count - 1))
             return;
 
-        chartData = await lineChart.AddDataAsync(chartData, $"{englandCurrentOver + 1}", "England", englandRunsArray[englandCurrentOver]);
+        chartData = await lineChart.AddDataAsync(chartData, $"{englandCurrentOver + 1}", new LineChartDatasetData("England", englandRunsArray[englandCurrentOver]));
         englandCurrentOver++;
     }
 
