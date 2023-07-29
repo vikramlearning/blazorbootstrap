@@ -36,4 +36,11 @@ public static class ColorExtensions
     /// <param name="alpha">The alpha parameter is a number between 0.0 (fully transparent) and 1.0 (fully opaque).</param>
     /// <returns>RGBA(R, G, B, A) format string</returns>
     public static string ToRgbaString(this Color c, double alpha = 0.2) => $"RGBA({c.R}, {c.G}, {c.B}, {alpha})";
+
+    /// <summary>
+    /// Converts an Html color representation to a GDI+ <see cref='Color'/>.
+    /// </summary>
+    /// <param name="hex"></param>
+    /// <returns>Converts #RRGGBB string to <see cref='Color'/>.</returns>
+    public static Color ToColor(this string hex) => System.Drawing.ColorTranslator.FromHtml(hex);
 }

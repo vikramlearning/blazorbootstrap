@@ -59,14 +59,32 @@
     <p>Either remove or keep the <b>site.css</b> file but make sure you clear it out of any content when the <a href="/sidebar">Sidebar</a> component with full layout is used.</p>
 </div>
 
+<SectionHeading Size="HeadingSize.H2" Text="Visual studio project templates" PageUrl="@pageUrl" HashTagName="visual-studio-project-templates" />
+<div class="mb-3">
+    <p>Blazor Bootstrap Templates make it easy to create Blazor projects in a minute. Just install the templates with the NuGet package manager and you're good to go!</p>
+    <p class="text-bg-dark p-2 my-3 rounded-2">dotnet new install Blazor.Bootstrap.Templates::1.9.1</p>
+    <p>
+        Check the Visual Studio project templates GitHub repo <a href="https://github.com/vikramlearning/blazorbootstrap-project-templates">here</a>.
+    </p>
+    <p>
+        <div class="text-center">
+            <img src="https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png" class="rounded" alt="Blazor Bootstrap - Visual Studio project templates">
+        </div>
+    </p>
+</div>
+
+<Callout Heading="TIP" Type="CalloutType.Tip">
+    Upgrade the <b>Blazor.Bootstrap</b> NuGet package to the latest available version.
+</Callout>
+
 @code {
     private string pageUrl = "/getting-started/blazor-server";
     private string title = "Getting started with Blazor Bootstrap - Blazor Server Project Setup";
     private string description = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
     private string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
 
-    private string version;
-    [Inject] public IConfiguration Configuration { get; set; }
+    private string? version;
+    [Inject] public IConfiguration Configuration { get; set; } = default!;
 
     protected override void OnInitialized()
     {

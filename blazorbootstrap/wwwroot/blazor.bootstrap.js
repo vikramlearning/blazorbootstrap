@@ -534,11 +534,6 @@ window.blazorChart = {
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
-        //console.log(elementId);
-        //console.log(type);
-        //console.log(data);
-        //console.log(options); // NOTE: this gives more details in the chrome dev tools
-
         const config = {
             type: type,
             data: data,
@@ -587,6 +582,50 @@ window.blazorChart = {
 }
 
 window.blazorChart.bar = {
+    addDatasetData: (elementId, dataLabel, datasetLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            const chartData = chart.data;
+
+            if (!chartData.labels.includes(dataLabel))
+                chartData.labels.push(dataLabel);
+
+            const chartDatasets = chartData.datasets;
+
+            if (chartDatasets.length > 0) {
+                let datasetIndex = chartDatasets.findIndex(dataset => dataset.label === datasetLabel);
+                if (datasetIndex > -1) {
+                    chartDatasets[datasetIndex].data.push(data);
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDatasetsData: (elementId, dataLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart && data) {
+            const chartData = chart.data;
+
+            if (!chartData.labels.includes(dataLabel)) {
+                chartData.labels.push(dataLabel);
+
+                if (chartData.datasets.length > 0 && chartData.datasets.length === data.length) {
+                    data.forEach(chartDatasetData => {
+                        let datasetIndex = chartData.datasets.findIndex(dataset => dataset.label === chartDatasetData.datasetLabel);
+                        chartData.datasets[datasetIndex].data.push(chartDatasetData.data);
+                    });
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDataset: (elementId, newDataset) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.data.datasets.push(newDataset);
+            chart.update();
+        }
+    },
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
@@ -627,7 +666,25 @@ window.blazorChart.bar = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) {
-            chart.data = data;
+            const chartData = chart.data;
+            let updatedDatasets = [];
+            data.datasets.forEach(newDataset => {
+                if (chartData.datasets.length > 0) {
+                    let chartDatasetIndex = chartData.datasets.findIndex(chartDataset => chartDataset.oid === newDataset.oid);
+                    if (chartDatasetIndex > -1) {
+                        chart.data.datasets[chartDatasetIndex].data = newDataset.data;
+                        updatedDatasets.push(chart.data.datasets[chartDatasetIndex]);
+                    }
+                    else {
+                        updatedDatasets.push(newDataset);
+                    }
+                }
+                else {
+                    updatedDatasets.push(newDataset);
+                }
+                chart.data.datasets = updatedDatasets;
+            });
+
             chart.options = options;
             chart.update();
         } else {
@@ -637,6 +694,50 @@ window.blazorChart.bar = {
 }
 
 window.blazorChart.doughnut = {
+    addDatasetData: (elementId, dataLabel, datasetLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            const chartData = chart.data;
+
+            if (!chartData.labels.includes(dataLabel))
+                chartData.labels.push(dataLabel);
+
+            const chartDatasets = chartData.datasets;
+
+            if (chartDatasets.length > 0) {
+                let datasetIndex = chartDatasets.findIndex(dataset => dataset.label === datasetLabel);
+                if (datasetIndex > -1) {
+                    chartDatasets[datasetIndex].data.push(data);
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDatasetsData: (elementId, dataLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart && data) {
+            const chartData = chart.data;
+
+            if (!chartData.labels.includes(dataLabel)) {
+                chartData.labels.push(dataLabel);
+
+                if (chartData.datasets.length > 0 && chartData.datasets.length === data.length) {
+                    data.forEach(chartDatasetData => {
+                        let datasetIndex = chartData.datasets.findIndex(dataset => dataset.label === chartDatasetData.datasetLabel);
+                        chartData.datasets[datasetIndex].data.push(chartDatasetData.data);
+                    });
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDataset: (elementId, newDataset) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.data.datasets.push(newDataset);
+            chart.update();
+        }
+    },
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
@@ -677,7 +778,25 @@ window.blazorChart.doughnut = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) {
-            chart.data = data;
+            const chartData = chart.data;
+            let updatedDatasets = [];
+            data.datasets.forEach(newDataset => {
+                if (chartData.datasets.length > 0) {
+                    let chartDatasetIndex = chartData.datasets.findIndex(chartDataset => chartDataset.oid === newDataset.oid);
+                    if (chartDatasetIndex > -1) {
+                        chart.data.datasets[chartDatasetIndex].data = newDataset.data;
+                        updatedDatasets.push(chart.data.datasets[chartDatasetIndex]);
+                    }
+                    else {
+                        updatedDatasets.push(newDataset);
+                    }
+                }
+                else {
+                    updatedDatasets.push(newDataset);
+                }
+                chart.data.datasets = updatedDatasets;
+            });
+
             chart.options = options;
             chart.update();
         } else {
@@ -687,6 +806,50 @@ window.blazorChart.doughnut = {
 }
 
 window.blazorChart.line = {
+    addDatasetData: (elementId, dataLabel, datasetLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            const chartData = chart.data;
+
+            if (!chartData.labels.includes(dataLabel))
+                chartData.labels.push(dataLabel);
+
+            const chartDatasets = chartData.datasets;
+
+            if (chartDatasets.length > 0) {
+                let datasetIndex = chartDatasets.findIndex(dataset => dataset.label === datasetLabel);
+                if (datasetIndex > -1) {
+                    chartDatasets[datasetIndex].data.push(data);
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDatasetsData: (elementId, dataLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart && data) {
+            const chartData = chart.data;
+
+            if (!chartData.labels.includes(dataLabel)) {
+                chartData.labels.push(dataLabel);
+
+                if (chartData.datasets.length > 0 && chartData.datasets.length === data.length) {
+                    data.forEach(chartDatasetData => {
+                        let datasetIndex = chartData.datasets.findIndex(dataset => dataset.label === chartDatasetData.datasetLabel);
+                        chartData.datasets[datasetIndex].data.push(chartDatasetData.data);
+                    });
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDataset: (elementId, newDataset) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.data.datasets.push(newDataset);
+            chart.update();
+        }
+    },
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
@@ -747,7 +910,8 @@ window.blazorChart.line = {
     },
     initialize: (elementId, type, data, options) => {
         let chart = window.blazorChart.line.get(elementId);
-        if (chart) return;
+        if (chart)
+            return;
         else
             window.blazorChart.line.create(elementId, type, data, options);
     },
@@ -761,16 +925,79 @@ window.blazorChart.line = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart) {
-            chart.data = data;
+            const chartData = chart.data;
+            let updatedDatasets = [];
+            data.datasets.forEach(newDataset => {
+                if (chartData.datasets.length > 0) {
+                    let chartDatasetIndex = chartData.datasets.findIndex(chartDataset => chartDataset.oid === newDataset.oid);
+                    if (chartDatasetIndex > -1) {
+                        chart.data.datasets[chartDatasetIndex].data = newDataset.data;
+                        updatedDatasets.push(chart.data.datasets[chartDatasetIndex]);
+                    }
+                    else {
+                        updatedDatasets.push(newDataset);
+                    }
+                }
+                else {
+                    updatedDatasets.push(newDataset);
+                }
+                chart.data.datasets = updatedDatasets;
+            });
+
             chart.options = options;
             chart.update();
-        } else {
+        }
+        else {
             window.blazorChart.line.create(elementId, type, data, options);
         }
     },
 }
 
 window.blazorChart.pie = {
+    addDatasetData: (elementId, dataLabel, datasetLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            const chartData = chart.data;
+
+            if (!chartData.labels.includes(dataLabel))
+                chartData.labels.push(dataLabel);
+
+            const chartDatasets = chartData.datasets;
+
+            if (chartDatasets.length > 0) {
+                let datasetIndex = chartDatasets.findIndex(dataset => dataset.label === datasetLabel);
+                if (datasetIndex > -1) {
+                    chartDatasets[datasetIndex].data.push(data);
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDatasetsData: (elementId, dataLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart && data) {
+            const chartData = chart.data;
+
+            if (!chartData.labels.includes(dataLabel)) {
+                chartData.labels.push(dataLabel);
+
+                if (chartData.datasets.length > 0 && chartData.datasets.length === data.length) {
+                    data.forEach(chartDatasetData => {
+                        let datasetIndex = chartData.datasets.findIndex(dataset => dataset.label === chartDatasetData.datasetLabel);
+                        chartData.datasets[datasetIndex].data.push(chartDatasetData.data);
+                    });
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDataset: (elementId, newDataset) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.data.datasets.push(newDataset);
+            chart.update();
+        }
+    },
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
@@ -811,7 +1038,25 @@ window.blazorChart.pie = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.pie.get(elementId);
         if (chart) {
-            chart.data = data;
+            const chartData = chart.data;
+            let updatedDatasets = [];
+            data.datasets.forEach(newDataset => {
+                if (chartData.datasets.length > 0) {
+                    let chartDatasetIndex = chartData.datasets.findIndex(chartDataset => chartDataset.oid === newDataset.oid);
+                    if (chartDatasetIndex > -1) {
+                        chart.data.datasets[chartDatasetIndex].data = newDataset.data;
+                        updatedDatasets.push(chart.data.datasets[chartDatasetIndex]);
+                    }
+                    else {
+                        updatedDatasets.push(newDataset);
+                    }
+                }
+                else {
+                    updatedDatasets.push(newDataset);
+                }
+                chart.data.datasets = updatedDatasets;
+            });
+
             chart.options = options;
             chart.update();
         } else {

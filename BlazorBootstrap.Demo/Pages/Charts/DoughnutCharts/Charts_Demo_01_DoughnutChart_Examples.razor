@@ -1,0 +1,169 @@
+﻿@using BlazorBootstrap.Extensions
+@using Color = System.Drawing.Color
+
+<DoughnutChart @ref="doughnutChart" Width="600" Class="mb-4" />
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDataAsync()">Add Data</Button>
+
+@code {
+    private DoughnutChart doughnutChart = default!;
+    private DoughnutChartOptions doughnutChartOptions = default!;
+    private ChartData chartData = default!;
+    private List<string> backgroundColors = default!;
+
+    private int datasetsCount = 0;
+    private int dataLabelsCount = 0;
+
+    private Random random = new();
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData { Labels = GetDefaultDataLabels(5), Datasets = GetDefaultDataSets(1) };
+        doughnutChartOptions = new() { Responsive = true, };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await doughnutChart.InitializeAsync(chartData, doughnutChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task RandomizeAsync()
+    {
+        if (chartData is null || chartData.Datasets is null || !chartData.Datasets.Any()) return;
+
+        var newDatasets = new List<IChartDataset>();
+
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is DoughnutChartDataset doughnutChartDataset
+                && doughnutChartDataset is not null
+                && doughnutChartDataset.Data is not null)
+            {
+                var count = doughnutChartDataset.Data.Count;
+
+                var newData = new List<double>();
+                for (var i = 0; i < count; i++)
+                {
+                    newData.Add(random.Next(0, 100));
+                }
+
+                doughnutChartDataset.Data = newData;
+                newDatasets.Add(doughnutChartDataset);
+            }
+        }
+
+        chartData.Datasets = newDatasets;
+
+        await doughnutChart.UpdateAsync(chartData, doughnutChartOptions);
+    }
+
+    private async Task AddDatasetAsync()
+    {
+        if (chartData is null || chartData.Datasets is null) return;
+
+        var chartDataset = GetRandomDoughnutChartDataset();
+        chartData = await doughnutChart.AddDatasetAsync(chartData, chartDataset, doughnutChartOptions);
+    }
+
+    private async Task AddDataAsync()
+    {
+        if (chartData is null || chartData.Datasets is null)
+            return;
+
+        var data = new List<ChartDatasetData>();
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is DoughnutChartDataset doughnutChartDataset)
+                data.Add(new ChartDatasetData(doughnutChartDataset.Label, random.Next(0, 100)));
+        }
+
+        chartData = await doughnutChart.AddDataAsync(chartData, GetNextDataLabel(), data);
+    }
+
+    #region Data Preparation
+
+    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
+    {
+        var datasets = new List<IChartDataset>();
+
+        for (var index = 0; index < numberOfDatasets; index++)
+        {
+            datasets.Add(GetRandomDoughnutChartDataset());
+        }
+
+        return datasets;
+    }
+
+    private DoughnutChartDataset GetRandomDoughnutChartDataset()
+    {
+        datasetsCount += 1;
+        return new() { Label = $"Team {datasetsCount}", Data = GetRandomData(), BackgroundColor = GetRandomBackgroundColors() };
+    }
+
+    private List<double> GetRandomData()
+    {
+        var data = new List<double>();
+        for (var index = 0; index < dataLabelsCount; index++)
+        {
+            data.Add(random.Next(0, 100));
+        }
+
+        return data;
+    }
+
+    private List<string> GetRandomBackgroundColors()
+    {
+        // prepare background colors
+        PrepareBackgroundColors();
+
+        var colors = new List<string>();
+        for (var index = 0; index < dataLabelsCount; index++)
+        {
+            colors.Add(backgroundColors[index]);
+        }
+
+        return colors;
+    }
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel()
+    {
+        dataLabelsCount += 1;
+        return $"Product {dataLabelsCount}";
+    }
+
+    private void PrepareBackgroundColors()
+    {
+        backgroundColors ??= new List<string>();
+
+        if (dataLabelsCount == backgroundColors.Count)
+            return;
+
+        var backgroundColorsCount = dataLabelsCount - backgroundColors.Count;
+
+        for (int index = 0; index < backgroundColorsCount; index++)
+        {
+            backgroundColors.Add(GetRandomColor().ToRgbString());
+        }
+    }
+
+    private Color GetRandomColor() => Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+
+    #endregion  Data Preparation
+}

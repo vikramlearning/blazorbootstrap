@@ -1,0 +1,27 @@
+﻿@page "/charts/bar-chart"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Bar Chart</h1>
+<div class="lead mb-3">
+    A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.
+</div>
+
+<SectionHeading Size="HeadingSize.H4" Text="Example with static colors" PageUrl="@pageUrl" HashTagName="example-with-static-colors" />
+<div class="mb-3">In the below example, a categorical 12-color palette is used. Use <code>ColorBuilder.CategoricalTwelveColors</code> to get the 12 colors.</div>
+<Callout Heading="NOTE" Type="CalloutType.Danger">
+    In the below example, a maximum of 12 datasets are allowed.
+</Callout>
+<Demo Type="typeof(Charts_Demo_01_Static_Colors)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Example with dynamic colors" PageUrl="@pageUrl" HashTagName="example-with-dynamic-colors" />
+<Demo Type="typeof(Charts_Demo_02_Dynamic_Colors)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/charts/bar-chart";
+    private string title = "Blazor Bar Chart";
+    private string description = "A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
+}

@@ -1,0 +1,20 @@
+﻿@page "/charts/pie-chart"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Pie Chart</h1>
+<div class="lead mb-3">
+    A Blazor Bootstrap pie chart component is a circular chart that shows the proportional values of different categories.
+</div>
+
+<SectionHeading Size="HeadingSize.H4" Text="Examples" PageUrl="@pageUrl" HashTagName="Examples" />
+<Demo Type="typeof(Charts_Demo_01_PieChart_Examples)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/charts/pie-chart";
+    private string title = "Blazor Pie Chart";
+    private string description = "A Blazor Bootstrap pie chart component is a circular chart that shows the proportional values of different categories.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
+}
