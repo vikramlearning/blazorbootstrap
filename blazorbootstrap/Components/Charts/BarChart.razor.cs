@@ -17,7 +17,7 @@ public partial class BarChart : BaseChart
 
     #region Methods
 
-    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, string datasetLabel, double data)
+    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
@@ -25,32 +25,24 @@ public partial class BarChart : BaseChart
         if (chartData.Datasets is null)
             throw new ArgumentNullException(nameof(chartData.Datasets));
 
-        if (datasetLabel is null)
-            throw new ArgumentNullException(nameof(datasetLabel));
-
-        if (string.IsNullOrWhiteSpace(datasetLabel))
-            throw new Exception($"{nameof(datasetLabel)} cannot be empty.");
-
-        if (dataLabel is null)
-            throw new ArgumentNullException(nameof(datasetLabel));
-
-        if (string.IsNullOrWhiteSpace(dataLabel))
-            throw new Exception($"{nameof(dataLabel)} cannot be empty.");
+        if (data is null)
+            throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is BarChartDataset lineChartDataset && lineChartDataset.Label == dataLabel)
+            if (dataset is BarChartDataset barChartDataset && barChartDataset.Label == dataLabel)
             {
-                lineChartDataset.Data?.Add(data);
+                if (data is BarChartDatasetData barChartDatasetData)
+                    barChartDataset.Data?.Add(barChartDatasetData.Data);
             }
         }
 
-        await JS.InvokeVoidAsync("window.blazorChart.bar.addDatasetData", ElementId, dataLabel, datasetLabel, data);
+        await JS.InvokeVoidAsync("window.blazorChart.bar.addDatasetData", ElementId, dataLabel, data);
 
         return chartData;
     }
 
-    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, List<ChartDatasetData> data)
+    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, List<IChartDatasetData> data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
@@ -83,17 +75,16 @@ public partial class BarChart : BaseChart
 
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is BarChartDataset lineChartDataset)
+            if (dataset is BarChartDataset barChartDataset)
             {
-                var chartDatasetData = data.FirstOrDefault(x => x.DatasetLabel == lineChartDataset.Label);
-                if (chartDatasetData is null)
-                    continue;
+                var chartDatasetData = data.FirstOrDefault(x => x is BarChartDatasetData barChartDatasetData && barChartDatasetData.DatasetLabel == barChartDataset.Label);
 
-                lineChartDataset.Data?.Add(chartDatasetData.Data);
+                if (chartDatasetData is BarChartDatasetData barChartDatasetData)
+                    barChartDataset.Data?.Add(barChartDatasetData.Data);
             }
         }
 
-        await JS.InvokeVoidAsync("window.blazorChart.bar.addDatasetsData", ElementId, dataLabel, data);
+        await JS.InvokeVoidAsync("window.blazorChart.bar.addDatasetsData", ElementId, dataLabel, data?.Select(x => (BarChartDatasetData)x));
 
         return chartData;
     }

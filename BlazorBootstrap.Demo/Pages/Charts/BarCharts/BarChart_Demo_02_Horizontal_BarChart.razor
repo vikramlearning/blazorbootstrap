@@ -1,0 +1,48 @@
+﻿<BarChart @ref="barChart" Height="300" Class="mb-4" />
+
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var labels = new List<string> { "Chrome", "Firefox", "Safari", "Edge" };
+        var datasets = new List<IChartDataset>();
+
+        var dataset1 = new BarChartDataset()
+            {
+                Data = new List<double> { 55000, 15000, 18000, 21000 },
+                BackgroundColor = new List<string> { ColorBuilder.CategoricalTwelveColors[0] },
+                BorderColor = new List<string> { ColorBuilder.CategoricalTwelveColors[0] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset1);
+
+        chartData = new ChartData { 
+            Labels = labels, 
+            Datasets = datasets };
+
+        barChartOptions = new BarChartOptions();
+        barChartOptions.Responsive = true;
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.IndexAxis = "y";
+
+        barChartOptions.Scales.X.Title.Text = "Visitors";
+        barChartOptions.Scales.X.Title.Display = true;
+
+        barChartOptions.Scales.Y.Title.Text = "Browser";
+        barChartOptions.Scales.Y.Title.Display = true;
+
+        barChartOptions.Plugins.Legend.Display = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await barChart.InitializeAsync(chartData, barChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

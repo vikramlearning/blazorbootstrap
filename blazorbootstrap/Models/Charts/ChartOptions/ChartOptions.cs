@@ -8,6 +8,13 @@ public interface IChartOptions { }
 public class ChartOptions : IChartOptions
 {
     /// <summary>
+    /// Gets or sets the locale.
+    /// By default, the chart is using the default locale of the platform which is running on.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Locale { get; set; }
+
+    /// <summary>
     /// <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options"/>
     /// </summary>
     public bool Responsive { get; set; }
@@ -28,7 +35,6 @@ public class ChartLayout
 
 public class Interaction
 {
-
     private InteractionMode mode;
 
     /// <summary>
@@ -90,6 +96,8 @@ public class Plugins
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartTooltip? Tooltip { get; set; }
+
+    public Legend Legend { get; set; } = new Legend();
 }
 
 public class Scales
@@ -130,9 +138,15 @@ public class ChartAxes
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? SuggestedMin { get; set; }
 
-
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public Title? Title { get; set; } = new Title();
+
+    /// <summary>
+    /// Should the data be stacked. 
+    /// By default data is not stacked. 
+    /// If the stacked option of the value scale (y-axis on horizontal chart) is true, positive and negative values are stacked separately. 
+    /// </summary>
+    public bool Stacked { get; set; }
 }
 
 /// <summary>
@@ -309,4 +323,22 @@ public class ChartTooltip
     /// Position of the tooltip caret in the Y direction. top/center/bottom.
     /// </summary>
     public string? YAlign { get; set; }
+}
+
+public class Legend
+{
+    /// <summary>
+    /// Alignment of the legend. Default values is 'center'. Other possible values 'start' and 'end'.
+    /// </summary>
+    public string? Align { get; set; } = "center";
+
+    /// <summary>
+    /// Position of the legend. Default value is 'top'. Other possible value is 'bottom'.
+    /// </summary>
+    public string? Position { get; set; } = "top";
+
+    /// <summary>
+    /// Is the legend shown? Default value is 'true'.
+    /// </summary>
+    public bool Display { get; set; } = true;
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 
 namespace BlazorBootstrap.Demo.Hosted.Client.Shared;
 
@@ -54,7 +55,7 @@ public partial class MainLayout : LayoutComponentBase
             new (){ Id = "503", Text = "Breadcrumb", Href = "/breadcrumb", IconName = IconName.SegmentedNav, ParentId = "5" },
             new (){ Id = "504", Text = "Buttons", Href = "/buttons", IconName = IconName.ToggleOn, ParentId = "5" },
             new (){ Id = "505", Text = "Callout", Href = "/callout", IconName = IconName.StickyFill, ParentId = "5" },
-            new (){ Id = "506", Text = "Charts", Href = "/charts", IconName = IconName.BarChartLineFill, ParentId = "5" },
+            new (){ Id = "506", Text = "Charts", Href = "/charts", IconName = IconName.BarChartLineFill, ParentId = "5", Match = NavLinkMatch.All },
             new (){ Id = "507", Text = "Collapse", Href = "/collapse", IconName = IconName.ArrowsCollapse, ParentId = "5" },
             new (){ Id = "508", Text = "Confirm Dialog", Href = "/confirm-dialog", IconName = IconName.QuestionDiamondFill, ParentId = "5" },
             new (){ Id = "509", Text = "Grid", Href = "/grid", IconName = IconName.Grid, ParentId = "5" },
@@ -70,10 +71,10 @@ public partial class MainLayout : LayoutComponentBase
             new (){ Id = "519", Text = "Tooltips", Href = "/tooltips", IconName = IconName.ChatSquareDotsFill, ParentId = "5" },
 
             new (){ Id = "6", Text = "Data Visualization", IconName = IconName.BarChartFill, IconColor = IconColor.Warning },
-            new (){ Id = "600", Text = "Bar Chart", Href = "/charts", IconName = IconName.BarChartFill, ParentId = "6" },
-            new (){ Id = "601", Text = "Doughnut Chart", Href = "/charts", IconName = IconName.CircleFill, ParentId = "6" },
-            new (){ Id = "602", Text = "Line Chart", Href = "/charts", IconName = IconName.GraphUp, ParentId = "6" },
-            new (){ Id = "603", Text = "Pie Chart", Href = "/charts", IconName = IconName.PieChartFill, ParentId = "6" },
+            new (){ Id = "600", Text = "Bar Chart", Href = "/charts/bar-chart", IconName = IconName.BarChartFill, ParentId = "6", Match = NavLinkMatch.All },
+            new (){ Id = "601", Text = "Doughnut Chart", Href = "/charts/doughnut-chart", IconName = IconName.CircleFill, ParentId = "6", Match = NavLinkMatch.All },
+            new (){ Id = "602", Text = "Line Chart", Href = "/charts/line-chart", IconName = IconName.GraphUp, ParentId = "6", Match = NavLinkMatch.All },
+            new (){ Id = "603", Text = "Pie Chart", Href = "/charts/pie-chart", IconName = IconName.PieChartFill, ParentId = "6", Match = NavLinkMatch.All },
 
             new(){ Id = "7", Text = "Services", IconName = IconName.WrenchAdjustableCircleFill, IconColor = IconColor.Success },
             new (){ Id = "700", Text = "Modal Service", Href = "/modal-service", IconName = IconName.WindowStack, ParentId = "7" },
