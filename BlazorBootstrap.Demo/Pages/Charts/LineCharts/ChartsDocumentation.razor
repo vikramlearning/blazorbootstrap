@@ -6,7 +6,7 @@
 
 <h1>Blazor Line Chart</h1>
 <div class="lead mb-3">
-    A Blazor Bootstrap line chart component is a graphical representation of data that uses a series of connected points to show how the data changes over time. 
+    A Blazor Bootstrap line chart component is a graphical representation of data that uses a series of connected points to show how the data changes over time.
     It is a type of x-y chart, where the x-axis represents the independent variable, such as time, and the y-axis represents the dependent variable, such as the value.
 </div>
 
@@ -15,9 +15,19 @@
     In the following example, a categorical 12-color palette is used.
 </div>
 <Callout Heading="TIP" Type="CalloutType.Tip">
-    Use the predefined <code>ColorBuilder.CategoricalTwelveColors</code> for a 12-color palette, and <code>ColorBuilder.CategoricalSixColors</code> for a 6-color palette.
+    For data visualization, you can use the predefined palettes <code>ColorBuilder.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorBuilder.CategoricalSixColors</code> for a 6-color palette.
+    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
 </Callout>
 <Demo Type="typeof(Charts_Demo_01_LineChart_Examples)" Tabs="true" />
+<div class="my-3"></div>
+<Demo Type="typeof(Charts_Demo_03_LineChart_Examples)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Locale" PageUrl="@pageUrl" HashTagName="locale" />
+<div class="my-3">
+    By default, the chart is using the default locale of the platform on which it is running. 
+    In the following example, you will see the chart in the <b>German</b> locale (<b>de_DE</b>).
+</div>
+<Demo Type="typeof(Charts_Demo_04_LineChart_Locale_Examples)" Tabs="true" />
 <div class="my-3"></div>
 <Demo Type="typeof(Charts_Demo_02_LineChart_Examples)" Tabs="true" />
 

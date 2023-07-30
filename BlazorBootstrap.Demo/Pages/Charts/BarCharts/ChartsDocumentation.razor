@@ -14,13 +14,23 @@
     In the following example, a categorical 12-color palette is used. 
 </div>
 <Callout Heading="TIP" Type="CalloutType.Tip">
-    Use the predefined <code>ColorBuilder.CategoricalTwelveColors</code> for a 12-color palette, and <code>ColorBuilder.CategoricalSixColors</code> for a 6-color palette.
+    For data visualization, you can use the predefined palettes <code>ColorBuilder.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorBuilder.CategoricalSixColors</code> for a 6-color palette.
+    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
 </Callout>
-<Demo Type="typeof(Charts_Demo_01_BarChart_Examples)" Tabs="true" />
-<div class="mb-5"></div>
-<Demo Type="typeof(Charts_Demo_02_BarChart_Examples)" Tabs="true" />
-<div class="mb-5"></div>
-<Demo Type="typeof(Charts_Demo_03_BarChart_Examples)" Tabs="true" />
+<Demo Type="typeof(BarChart_Demo_01_Examples)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Horizontal bar chart" PageUrl="@pageUrl" HashTagName="horizontal-bar-chart" />
+<Demo Type="typeof(BarChart_Demo_02_Horizontal_BarChart)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Stacked bar chart" PageUrl="@pageUrl" HashTagName="stacked-bar-chart" />
+<Demo Type="typeof(BarChart_Demo_03_Stacked_BarChart)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Locale" PageUrl="@pageUrl" HashTagName="locale" />
+<div class="my-3">
+    By default, the chart is using the default locale of the platform on which it is running.
+    In the following example, you will see the chart in the <b>German</b> locale (<b>de_DE</b>).
+</div>
+<Demo Type="typeof(BarChart_Demo_04_Locale)" Tabs="true" />
 
 @code {
     private string pageUrl = "/charts/bar-chart";

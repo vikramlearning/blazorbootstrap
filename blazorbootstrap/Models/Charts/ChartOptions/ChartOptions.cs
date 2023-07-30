@@ -8,6 +8,13 @@ public interface IChartOptions { }
 public class ChartOptions : IChartOptions
 {
     /// <summary>
+    /// Gets or sets the locale.
+    /// By default, the chart is using the default locale of the platform which is running on.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Locale { get; set; }
+
+    /// <summary>
     /// <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options"/>
     /// </summary>
     public bool Responsive { get; set; }

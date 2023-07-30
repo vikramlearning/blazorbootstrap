@@ -42,11 +42,14 @@
             };
         datasets.Add(dataset3);
 
-        chartData = new ChartData { 
-            Labels = labels, 
-            Datasets = datasets };
+        chartData = new ChartData
+            {
+                Labels = labels,
+                Datasets = datasets
+            };
 
-        barChartOptions = new BarChartOptions();
+        barChartOptions = new();
+        barChartOptions.Locale = "de-DE";
         barChartOptions.Responsive = true;
         barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
         barChartOptions.IndexAxis = "y";

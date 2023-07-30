@@ -115,11 +115,9 @@
 
     private LineChartDataset GetRandomLineChartDataset()
     {
-        datasetsCount += 1;
+        var c = ColorBuilder.CategoricalTwelveColors[datasetsCount].ToColor();
 
-        // random color
-        var c = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
-        Console.WriteLine($"Line Chart: Color Name: {c.Name}, HEX: {c.ToHexString()}, RGB: {c.ToRgbString()}, IsNamedColor: {c.IsNamedColor}");
+        datasetsCount += 1;
 
         return new LineChartDataset()
             {
