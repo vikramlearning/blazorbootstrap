@@ -19,7 +19,11 @@
     {
         backgroundColors = ColorBuilder.CategoricalTwelveColors;
         chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(1) };
-        doughnutChartOptions = new() { Responsive = true, };
+
+        doughnutChartOptions = new();
+        doughnutChartOptions.Responsive = true;
+        doughnutChartOptions.Plugins.Title.Text = "2022 - Sales";
+        doughnutChartOptions.Plugins.Title.Display = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

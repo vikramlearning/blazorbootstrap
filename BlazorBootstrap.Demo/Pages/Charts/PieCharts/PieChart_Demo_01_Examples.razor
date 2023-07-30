@@ -19,7 +19,11 @@
     {
         backgroundColors = ColorBuilder.CategoricalTwelveColors;
         chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(1) };
-        pieChartOptions = new() { Responsive = true, };
+
+        pieChartOptions = new();
+        pieChartOptions.Responsive = true;
+        pieChartOptions.Plugins.Title.Text = "2022 - Sales";
+        pieChartOptions.Plugins.Title.Display = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
