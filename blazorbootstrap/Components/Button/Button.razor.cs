@@ -4,19 +4,19 @@ public partial class Button : BaseComponent
 {
     #region Members
 
-    private string buttonTypeString => Type.ToButtonTypeString();
+    private Size size = Size.None;
+
+    private bool active;
+
+    private bool block;
 
     private ButtonColor color = ButtonColor.None;
 
-    private Size size = Size.None;
+    private bool disabled;
+
+    private bool isFirstRenderComplete = false;
 
     private bool outline;
-
-    private bool disabled, previousDisabled;
-
-    private bool active, previousActive;
-
-    private bool block;
 
     private bool loading;
 
@@ -26,6 +26,10 @@ public partial class Button : BaseComponent
 
     private Position position;
 
+    private bool previousActive;
+
+    private bool previousDisabled;
+
     private ButtonType previousType;
 
     private Target previousTarget;
@@ -34,7 +38,9 @@ public partial class Button : BaseComponent
 
     private bool setButtonAttributesAgain = false;
 
-    private bool isFirstRenderComplete = false;
+    private TooltipColor tooltipColor = default!;
+
+    private string buttonTypeString => Type.ToButtonTypeString();
 
     #endregion
 
@@ -66,6 +72,7 @@ public partial class Button : BaseComponent
         previousTarget = Target;
         previousTabIndex = TabIndex;
         previousTooltipTitle = TooltipTitle;
+        tooltipColor = TooltipColor;
 
         SetAttributes();
 
@@ -119,34 +126,31 @@ public partial class Button : BaseComponent
                 setButtonAttributesAgain = true;
             }
 
+            if (previousTooltipTitle != TooltipTitle || tooltipColor != TooltipColor)
+            {
+                setButtonAttributesAgain = true;
+            }
+
             if (setButtonAttributesAgain)
             {
-                SetAttributes();
                 setButtonAttributesAgain = false;
+                SetAttributes();
             }
 
             // additional scenario
-            if (!Disabled && previousTooltipTitle != TooltipTitle)
+            // NOTE: do not change the below sequence
+            if (Disabled)
             {
-                previousTooltipTitle = TooltipTitle;
-
-                if (Attributes is not null && Attributes.TryGetValue("title", out _))
-                    Attributes["title"] = TooltipTitle;
-
+                await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
+            }
+            else if (previousTooltipTitle != TooltipTitle || tooltipColor != TooltipColor)
+            {
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
             }
-            else if (Disabled)
-            {
-                if (previousTooltipTitle != TooltipTitle)
-                    previousTooltipTitle = TooltipTitle;
 
-                if (Attributes is not null && Attributes.TryGetValue("title", out _))
-                {
-                    Attributes.Remove("title");
-                    await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
-                }
-            }
+            previousTooltipTitle = TooltipTitle;
+            tooltipColor = TooltipColor;
         }
     }
 
@@ -223,8 +227,8 @@ public partial class Button : BaseComponent
                 Attributes.Remove("tabindex");
         }
 
-        // has tooltip and enabled        
-        if (!string.IsNullOrWhiteSpace(TooltipTitle) && !Disabled)
+        // button enabled (and) tooltip text not empty
+        if (!Disabled && !string.IsNullOrWhiteSpace(TooltipTitle))
         {
             // Ref: https://getbootstrap.com/docs/5.2/components/buttons/#toggle-states
             // The below code creates an issue when the `button` or `a` element has a tooltip.
@@ -238,8 +242,13 @@ public partial class Button : BaseComponent
                 Attributes["title"] = TooltipTitle;
             else
                 Attributes.Add("title", TooltipTitle);
+
+            if (Attributes.TryGetValue("data-bs-custom-class", out _))
+                Attributes["data-bs-custom-class"] = BootstrapClassProvider.TooltipColor(TooltipColor);
+            else
+                Attributes.Add("data-bs-custom-class", BootstrapClassProvider.TooltipColor(TooltipColor));
         }
-        // no tooltip and disabled
+        // button disabled (or) tooltip text empty
         else
         {
             if (Attributes.TryGetValue("data-bs-toggle", out _))
@@ -250,6 +259,9 @@ public partial class Button : BaseComponent
 
             if (Attributes.TryGetValue("title", out _))
                 Attributes.Remove("title");
+
+            if (Attributes.TryGetValue("data-bs-custom-class", out _))
+                Attributes.Remove("data-bs-custom-class");
         }
     }
 
@@ -449,6 +461,11 @@ public partial class Button : BaseComponent
     /// Tooltip placement
     /// </summary>
     [Parameter] public TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
+
+    /// <summary>
+    /// Gets or sets the tooltip color.
+    /// </summary>
+    [Parameter] public TooltipColor TooltipColor { get; set; }
 
     /// <summary>
     /// Gets or sets the position.

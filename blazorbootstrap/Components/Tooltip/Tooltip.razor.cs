@@ -19,6 +19,7 @@ public partial class Tooltip : BaseComponent
     protected override async Task OnInitializedAsync()
     {
         title = Title;
+        color = Color;
         objRef ??= DotNetObjectReference.Create(this);
 
         await base.OnInitializedAsync();
