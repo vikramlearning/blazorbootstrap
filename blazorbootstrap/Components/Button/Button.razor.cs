@@ -280,6 +280,17 @@ public partial class Button : BaseComponent
         StateHasChanged();
     }
 
+    private async Task OnMouseOutAsync(MouseEventArgs args)
+    {
+        if (Disabled || string.IsNullOrWhiteSpace(TooltipTitle))
+            return;
+
+        Console.WriteLine($"OnMouseOutAsync: {ElementId}");
+
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
+    }
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
     {
