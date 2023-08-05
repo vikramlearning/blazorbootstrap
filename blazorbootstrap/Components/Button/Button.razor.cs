@@ -285,8 +285,6 @@ public partial class Button : BaseComponent
         if (Disabled || string.IsNullOrWhiteSpace(TooltipTitle))
             return;
 
-        Console.WriteLine($"OnMouseOutAsync: {ElementId}");
-
         await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
         await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
     }
