@@ -21,10 +21,20 @@
 <Demo Type="typeof(Tooltips_Demo_03_Icon_With_Click_Event)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Dynamically update the tooltip text" PageUrl="@pageUrl" HashTagName="dynamically-update-the-tooltip-text" />
-<Demo Type="typeof(Tooltips_Demo_04_Dynamically_update_tooltip_text)" />
+<Demo Type="typeof(Tooltips_Demo_04_Dynamically_Update_Tooltip_Text)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Tooltip with link" PageUrl="@pageUrl" HashTagName="tooltip-with-link" />
-<Demo Type="typeof(Tooltips_Demo_05_Tooltip_with_navigation_link)" />
+<Demo Type="typeof(Tooltips_Demo_05_Tooltip_With_Navigation_Link)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Custom tooltips" PageUrl="@pageUrl" HashTagName="custom-tooltips" />
+<div class="mb-3">
+    Blazor Bootstrap includes several predefined tooltip styles, each serving its own semantic purpose. 
+    The <b>Color</b> parameter can be used to customize the color of the tooltip.
+</div>
+<Demo Type="typeof(Tooltips_Demo_06_Colors)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Dynamically change the tooltip color" PageUrl="@pageUrl" HashTagName="dynamically-change-the-tooltip-color" />
+<Demo Type="typeof(Tooltips_Demo_07_Dynamically_Change_Color)" />
 
 @code {
     private string pageUrl = "/tooltips";
