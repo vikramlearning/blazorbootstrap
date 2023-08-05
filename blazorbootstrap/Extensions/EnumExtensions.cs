@@ -23,6 +23,7 @@ public static class EnumExtensions
 
         _ => ""
     };
+
     /// <summary>
     /// Get the background and text classes.
     /// </summary>

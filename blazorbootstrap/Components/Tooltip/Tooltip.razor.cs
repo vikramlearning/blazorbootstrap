@@ -4,15 +4,13 @@ public partial class Tooltip : BaseComponent
 {
     #region Members
 
-    private string title = default!;
-
-    private TooltipPlacement _placement = TooltipPlacement.Top;
-
-    private DotNetObjectReference<Tooltip> objRef = default!;
-
-    private string placement => Placement.ToTooltipPlacementName();
-
     private bool isFirstRenderComplete = false;
+    private DotNetObjectReference<Tooltip> objRef = default!;
+    private string title = default!;
+    private TooltipColor color = default!;
+
+    private string colorClass => BootstrapClassProvider.TooltipColor(Color);
+    private string placement => Placement.ToTooltipPlacementName();
 
     #endregion Members
 
@@ -21,6 +19,7 @@ public partial class Tooltip : BaseComponent
     protected override async Task OnInitializedAsync()
     {
         title = Title;
+        color = Color;
         objRef ??= DotNetObjectReference.Create(this);
 
         await base.OnInitializedAsync();
@@ -32,8 +31,11 @@ public partial class Tooltip : BaseComponent
     {
         if (isFirstRenderComplete)
         {
-            if (title != Title)
+            if (title != Title || color != Color)
             {
+                title = Title;
+                color = Color;
+
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
             }
@@ -81,15 +83,10 @@ public partial class Tooltip : BaseComponent
     /// Specifies the tooltip placement. Default is top right.
     /// </summary>
     [Parameter]
-    public TooltipPlacement Placement
-    {
-        get => _placement;
-        set
-        {
-            _placement = value;
-            DirtyClasses();
-        }
-    }
+    public TooltipPlacement Placement { get; set; } = TooltipPlacement.Top;
+
+    [Parameter]
+    public TooltipColor Color { get; set; }
 
     #endregion Properties
 }

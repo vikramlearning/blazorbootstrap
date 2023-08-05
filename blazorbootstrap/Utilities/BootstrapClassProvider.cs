@@ -285,7 +285,7 @@ public class BootstrapClassProvider
 
     public string Tooltip() => "b-tooltip";
 
-    public string TooltipPlacement(TooltipPlacement tooltipPlacement) => $"b-tooltip-{ToTooltipPlacement(tooltipPlacement)}";
+    public string TooltipPlacement(TooltipPlacement tooltipPlacement) => $"{Tooltip()}-{ToTooltipPlacement(tooltipPlacement)}";
 
     public string TooltipMultiline() => "b-tooltip-multiline";
 
@@ -294,6 +294,8 @@ public class BootstrapClassProvider
     public string TooltipFade() => "b-tooltip-fade";
 
     public string TooltipInline() => "b-tooltip-inline";
+
+    public string TooltipColor(TooltipColor color) => ToTooltipColor(color);
 
     #endregion
 
@@ -697,6 +699,19 @@ public class BootstrapClassProvider
         BlazorBootstrap.TabColor.Info => "bg-info text-dark",
         BlazorBootstrap.TabColor.Light => "bg-light text-dark",
         BlazorBootstrap.TabColor.Dark => "bg-dark text-white",
+        _ => null,
+    };
+
+    public string ToTooltipColor(TooltipColor color) => color switch
+    {
+        BlazorBootstrap.TooltipColor.Primary => "bb-tooltip-primary",
+        BlazorBootstrap.TooltipColor.Secondary => "bb-tooltip-tooltip-secondary",
+        BlazorBootstrap.TooltipColor.Success => "bb-tooltip-success",
+        BlazorBootstrap.TooltipColor.Danger => "bb-tooltip-danger",
+        BlazorBootstrap.TooltipColor.Warning => "bb-tooltip-warning",
+        BlazorBootstrap.TooltipColor.Info => "bb-tooltip-info",
+        BlazorBootstrap.TooltipColor.Light => "bb-tooltip-light",
+        BlazorBootstrap.TooltipColor.Dark => "bb-tooltip-dark",
         _ => null,
     };
 
