@@ -33,7 +33,7 @@
                             <th class="@column.Class">
                                 @if (column.Filterable)
                                 {
-                                    <GridColumnFilter PropertyTypeName="@column.GetPropertyTypeName()"
+                                    <GridColumnFilter TItem="TItem" PropertyTypeName="@column.GetPropertyTypeName()"
                                                       FilterOperator="@column.FilterOperator"
                                                       FilterValue="@column.FilterValue"
                                                       FilterWidth="@column.FilterTextboxWidth"

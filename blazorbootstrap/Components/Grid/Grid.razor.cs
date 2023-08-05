@@ -640,6 +640,20 @@ public partial class Grid<TItem> : BaseComponent
         builder.CloseElement(); // close: th
     });
 
+    [Parameter, EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
+
+    /// <summary>
+    /// This event is triggered when the user clicks on the row. 
+    /// Set AllowRowClick to true to enable row clicking.
+    /// </summary>
+    [Parameter] public EventCallback<GridRowEventArgs<TItem>> OnRowClick { get; set; }
+
+    /// <summary>
+    /// This event is triggered when the user double clicks on the row.
+    /// Set AllowRowClick to true to enable row double clicking.
+    /// </summary>
+    [Parameter] public EventCallback<GridRowEventArgs<TItem>> OnRowDoubleClick { get; set; }
+
     /// <summary>
     /// Gets or sets the page size of the grid.
     /// </summary>
@@ -677,18 +691,6 @@ public partial class Grid<TItem> : BaseComponent
     [Parameter] public bool Responsive { get; set; }
 
     /// <summary>
-    /// This event is triggered when the user clicks on the row. 
-    /// Set AllowRowClick to true to enable row clicking.
-    /// </summary>
-    [Parameter] public EventCallback<GridRowEventArgs<TItem>> OnRowClick { get; set; }
-
-    /// <summary>
-    /// This event is triggered when the user double clicks on the row.
-    /// Set AllowRowClick to true to enable row double clicking.
-    /// </summary>
-    [Parameter] public EventCallback<GridRowEventArgs<TItem>> OnRowDoubleClick { get; set; }
-
-    /// <summary>
     /// This event is fired when the item selection changes.
     /// </summary>
     [Parameter] public EventCallback<HashSet<TItem>> SelectedItemsChanged { get; set; }
@@ -704,7 +706,11 @@ public partial class Grid<TItem> : BaseComponent
     /// </summary>
     [Parameter] public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
 
-    [Parameter, EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
+    /// <summary>
+    /// Filters transalation is for grid filters to render.
+    /// The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed.
+    /// </summary>
+    [Parameter] public GridFiltersTranslationDelegate FiltersTranslationProvider { get; set; } = default!;
 
     #endregion Properties
 }

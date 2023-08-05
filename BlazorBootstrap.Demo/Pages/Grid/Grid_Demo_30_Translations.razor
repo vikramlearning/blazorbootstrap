@@ -1,7 +1,8 @@
 ﻿<Grid TItem="Employee1"
+      AllowPaging="true"
       Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
-      AllowPaging="true"
+      FiltersTranslationProvider="GridFiltersTranslationProvider"
       PageSize="10"
       PageSizeSelectorVisible="true"
       PageSizeSelectorItems="@(new int[] { 5,10,20 })"
@@ -30,6 +31,29 @@
 @code {
     private IEnumerable<Employee1> employees = default!;
 
+    private async Task<HashSet<FilterOperatorInfo>> GridFiltersTranslationProvider()
+    {
+        var filtersTranslation = new HashSet<FilterOperatorInfo>();
+
+        // number/date/boolean
+        filtersTranslation.Add(new("=", "Equals", FilterOperator.Equals));
+        filtersTranslation.Add(new("!=", "Not equals", FilterOperator.NotEquals));
+        // number/date
+        filtersTranslation.Add(new("<", "Less than", FilterOperator.LessThan));
+        filtersTranslation.Add(new("<=", "Less than or equals", FilterOperator.LessThanOrEquals));
+        filtersTranslation.Add(new(">", "Greater than", FilterOperator.GreaterThan));
+        filtersTranslation.Add(new(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals));
+        // string
+        filtersTranslation.Add(new("*a*", "Contains", FilterOperator.Contains));
+        filtersTranslation.Add(new("a**", "Starts with", FilterOperator.StartsWith));
+        filtersTranslation.Add(new("**a", "Ends with", FilterOperator.EndsWith));
+        filtersTranslation.Add(new("=", "Equals", FilterOperator.Equals));
+        // common
+        filtersTranslation.Add(new("x", "Clear", FilterOperator.Equals));
+
+        return await Task.FromResult(filtersTranslation);
+    }
+
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
         if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
@@ -56,4 +80,6 @@
             new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
         };
     }
+
+
 }

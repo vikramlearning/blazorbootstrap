@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class GridColumnFilter : BaseComponent
+public partial class GridColumnFilter<TItem> : BaseComponent
 {
     #region Members
 
@@ -119,6 +119,8 @@ public partial class GridColumnFilter : BaseComponent
     #endregion Methods
 
     #region Properties
+
+    [CascadingParameter] public Grid<TItem> Grid { get; set; } = default!;
 
     [Parameter] public EventCallback<FilterEventArgs> GridColumnFilterChanged { get; set; }
 
