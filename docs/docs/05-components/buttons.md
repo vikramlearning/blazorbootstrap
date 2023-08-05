@@ -31,6 +31,7 @@ Use Blazor Bootstrap button styles for actions in forms, dialogs, and more with 
 | To | string | Denotes the target route of the `ButtonType.Link` button. | | | 1.0.0 |
 | TooltipPlacement | `TooltipPlacement` | Tooltip placement | | `TooltipPlacement.Top` | 1.0.0 |
 | TooltipTitle | string | Displays informative text when users hover, focus, or tap an element. | | | 1.0.0 |
+| TooltipColor | `TooltipColor` | Gets or sets the tooltip color. | | `TooltipColor.None` | 1.10.0 |
 | Type | `ButtonType` | Defines the button type. | | `ButtonType.Button` | 1.0.0 |
 
 ## Methods
