@@ -1,4 +1,5 @@
 ﻿<Grid TItem="Employee1"
+      AllowFiltering="true"
       AllowPaging="true"
       Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
@@ -10,19 +11,19 @@
       ItemsPerPageText="Artikelen per pagina"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id">
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name">
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
         @context.Name
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation">
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
         @context.Designation
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ">
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
         @context.DOJ
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active">
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
         @context.IsActive
     </GridColumn>
 

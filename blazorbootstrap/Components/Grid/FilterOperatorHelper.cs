@@ -2,6 +2,27 @@
 
 public static class FilterOperatorHelper
 {
+    public static IEnumerable<FilterOperatorInfo> GetFilterOperators(string propertyTypeName, HashSet<FilterOperatorInfo> filtersTranslations)
+    {
+        if (filtersTranslations is null || !filtersTranslations.Any())
+            return GetFilterOperators(propertyTypeName);
+
+        var filters = new List<FilterOperatorInfo>();
+        var defaultFilters = GetFilterOperators(propertyTypeName);
+
+        foreach (var filter in defaultFilters)
+        {
+            var filterTranslation = filtersTranslations.FirstOrDefault(X => X.FilterOperator == filter.FilterOperator);
+
+            if (filterTranslation is null)
+                filters.Add(filter);
+            else
+                filters.Add(filter with { Symbol = filterTranslation.Symbol, Text = filterTranslation.Text });
+        }
+
+        return filters;
+    }
+
     public static IEnumerable<FilterOperatorInfo> GetFilterOperators(string propertyTypeName)
     {
         if (propertyTypeName is StringConstants.PropertyTypeNameInt16

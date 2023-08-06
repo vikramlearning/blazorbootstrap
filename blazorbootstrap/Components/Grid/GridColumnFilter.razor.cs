@@ -8,7 +8,7 @@ public partial class GridColumnFilter<TItem> : BaseComponent
 
     private string? filterValue;
 
-    private IEnumerable<FilterOperatorInfo> filterOperators => FilterOperatorHelper.GetFilterOperators(PropertyTypeName);
+    private IEnumerable<FilterOperatorInfo>? filterOperators;
 
     private string? selectedFilterSymbol;
 
@@ -20,6 +20,8 @@ public partial class GridColumnFilter<TItem> : BaseComponent
 
     protected override void OnInitialized()
     {
+        filterOperators = FilterOperatorHelper.GetFilterOperators(PropertyTypeName, Grid?.filtersTranslation);
+        Console.WriteLine($"filterOperators: {filterOperators.Count()}");
         filterOperator = FilterOperator;
         filterValue = FilterValue;
 

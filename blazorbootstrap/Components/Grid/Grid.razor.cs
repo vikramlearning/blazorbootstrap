@@ -25,6 +25,8 @@ public partial class Grid<TItem> : BaseComponent
 
     private string paginationItemsText => GetPaginationItemsText();
 
+    internal HashSet<FilterOperatorInfo>? filtersTranslation;
+
     private bool requestInProgress = false;
 
     private string responsiveCssClass => Responsive ? "table-responsive" : "";
@@ -49,13 +51,15 @@ public partial class Grid<TItem> : BaseComponent
 
     #region Methods
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         headerCheckboxId = IdGenerator.Generate;
 
         pageSize = PageSize;
 
-        base.OnInitialized();
+        await LoadGridFiltersTranslationAsync();
+
+        await base.OnInitializedAsync();
     }
 
     protected override Task OnParametersSetAsync()
@@ -505,6 +509,18 @@ public partial class Grid<TItem> : BaseComponent
             endRecord = totalCount ?? 0;
 
         return string.Format(PaginationItemsTextFormat, startRecord, endRecord, totalCount);
+    }
+
+    private async Task LoadGridFiltersTranslationAsync()
+    {
+        if (FiltersTranslationProvider is null)
+            return;
+
+        var filters = await FiltersTranslationProvider.Invoke();
+        if (filters is null || !filters.Any())
+            return;
+
+        filtersTranslation = filters;
     }
 
     #endregion Methods
