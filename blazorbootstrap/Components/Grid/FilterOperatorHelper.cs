@@ -2,7 +2,7 @@
 
 public static class FilterOperatorHelper
 {
-    public static IEnumerable<FilterOperatorInfo> GetFilterOperators(string propertyTypeName, HashSet<FilterOperatorInfo> filtersTranslations)
+    public static IEnumerable<FilterOperatorInfo> GetFilterOperators(string propertyTypeName, IEnumerable<FilterOperatorInfo> filtersTranslations)
     {
         if (filtersTranslations is null || !filtersTranslations.Any())
             return GetFilterOperators(propertyTypeName);

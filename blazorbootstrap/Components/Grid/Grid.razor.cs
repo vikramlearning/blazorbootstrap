@@ -507,7 +507,7 @@ public partial class Grid<TItem> : BaseComponent
         return string.Format(PaginationItemsTextFormat, startRecord, endRecord, totalCount);
     }
 
-    private async Task<HashSet<FilterOperatorInfo>?> GridFiltersTranslationProviderAsync()
+    private async Task<IEnumerable<FilterOperatorInfo>?> GridFiltersTranslationProviderAsync()
     {
         if (FiltersTranslationProvider is null)
             return null;

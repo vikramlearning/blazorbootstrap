@@ -1,9 +1,12 @@
 ﻿<Grid TItem="Employee1"
       AllowFiltering="true"
       AllowPaging="true"
-      Class="table table-hover table-bordered table-striped"
+      AllowSorting="true"
+      Class="table table-hover"
       DataProvider="EmployeesDataProvider"
+      FiltersRowCssClass="bg-dark text-white bg-opacity-25 border-bottom-0"
       FiltersTranslationProvider="GridFiltersTranslationProvider"
+      HeaderRowCssClass="bg-dark text-white border-bottom-0"
       PageSize="10"
       PageSizeSelectorVisible="true"
       PageSizeSelectorItems="@(new int[] { 5,10,20 })"
@@ -11,19 +14,19 @@
       ItemsPerPageText="Artikelen per pagina"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
         @context.Name
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
         @context.Designation
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
         @context.DOJ
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
         @context.IsActive
     </GridColumn>
 
@@ -32,9 +35,9 @@
 @code {
     private IEnumerable<Employee1> employees = default!;
 
-    private async Task<HashSet<FilterOperatorInfo>> GridFiltersTranslationProvider()
+    private async Task<IEnumerable<FilterOperatorInfo>> GridFiltersTranslationProvider()
     {
-        var filtersTranslation = new HashSet<FilterOperatorInfo>();
+        var filtersTranslation = new List<FilterOperatorInfo>();
 
         // number/date/boolean
         filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
