@@ -9,7 +9,7 @@
     Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
 </div>
 
-<SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
+@*<SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
 <div>For filtering, <code>AllowFiltering</code> and <code>PropertyName</code> parameters are required.</div>
 <div class="mb-3">Add <code>AllowFiltering="true"</code> parameter to Grid and <code>PropertyName</code> parameter to all the GridColumns.</div>
 <Demo Type="typeof(Grid_Demo_01_A_Client_Side_Filtering)" Tabs="true" />
@@ -33,7 +33,7 @@
 <Demo Type="typeof(Grid_Demo_03_Client_Side_Sorting)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Client side filtering, paging, and sorting" PageUrl="@pageUrl" HashTagName="client-side-filtering-paging-sorting" />
-<Demo Type="typeof(Grid_Demo_04_Client_Side_Filtering_Paging_And_Sorting)" Tabs="true" />
+<Demo Type="typeof(Grid_Demo_04_Client_Side_Filtering_Paging_And_Sorting)" Tabs="true" />*@
 
 <SectionHeading Size="HeadingSize.H2" Text="Set default filter" PageUrl="@pageUrl" HashTagName="set-default-filter" />
 <div class="mb-2">
@@ -43,7 +43,7 @@
 <div class="mb-3">The default sorting is enabled on the <b>Id</b> column in the below example.</div>
 <Demo Type="typeof(Grid_Demo_05_Set_Default_Filter)" Tabs="true" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Disable specific column filter" PageUrl="@pageUrl" HashTagName="disable-specific-column-filter" />
+@*<SectionHeading Size="HeadingSize.H2" Text="Disable specific column filter" PageUrl="@pageUrl" HashTagName="disable-specific-column-filter" />
 <div class="mb-3">
     <code>Filterable</code> parameter is required to disable the filter on a specific column. Add <code>Filterable="false"</code> parameter to GridColumn. The column filter is disabled on the <b>Id</b> column in the below example.
 </div>
@@ -178,9 +178,11 @@
 <Demo Type="typeof(Grid_Demo_29_Row_Double_Click)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Translations" PageUrl="@pageUrl" HashTagName="translations" />
-<div class="mb-3">In the example below, you will see translations related to pagination in Dutch.</div>
-<Demo Type="typeof(Grid_Demo_30_A_Translations)" Tabs="true" />
-<div class="mb-3">In the example below, you will see translations related to filters in Dutch.</div>
+<div class="mb-3">In the example below, you will see translations related to pagination in <b>Dutch.</div>
+<Demo Type="typeof(Grid_Demo_30_A_Translations)" Tabs="true" />*@
+
+<SectionHeading Size="HeadingSize.H2" Text="Filters translation" PageUrl="@pageUrl" HashTagName="filters-translation" />
+<div class="mb-3">In the example below, you will see translations related to filters in <b>Dutch</b>.</div>
 <Demo Type="typeof(Grid_Demo_30_B_Translations)" Tabs="true" />
 
 @code {

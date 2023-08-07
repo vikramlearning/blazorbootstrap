@@ -62,7 +62,7 @@ public static class FilterOperatorHelper
             new("<=", "Less than or equals", FilterOperator.LessThanOrEquals),
             new(">", "Greater than", FilterOperator.GreaterThan),
             new(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals),
-            new("x", "Clear", FilterOperator.Equals)
+            new("x", "Clear", FilterOperator.Clear)
         };
 
         return result;
@@ -82,7 +82,7 @@ public static class FilterOperatorHelper
             //result.Add(new("!=", "Not equals", FilterOperator.NotEquals));
             //result.Add(new("null", "Is null", FilterOperator.IsNull));
             //result.Add(new("!null", "Is not null", FilterOperator.IsNotNull));
-            new("x", "Clear", FilterOperator.Contains)
+            new("x", "Clear", FilterOperator.Clear)
         };
 
         return result;
@@ -98,7 +98,7 @@ public static class FilterOperatorHelper
             new("<=", "Less than or equals", FilterOperator.LessThanOrEquals),
             new(">", "Greater than", FilterOperator.GreaterThan),
             new(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals),
-            new("x", "Clear", FilterOperator.Equals)
+            new("x", "Clear", FilterOperator.Clear)
         };
 
         return result;
@@ -110,7 +110,7 @@ public static class FilterOperatorHelper
         {
             new("=", "Equals", FilterOperator.Equals),
             new("!=", "Not equals", FilterOperator.NotEquals),
-            new("x", "Clear", FilterOperator.Equals)
+            new("x", "Clear", FilterOperator.Clear)
         };
 
         return result;

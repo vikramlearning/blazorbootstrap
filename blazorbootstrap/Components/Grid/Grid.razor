@@ -33,11 +33,12 @@
                             <th class="@column.Class">
                                 @if (column.Filterable)
                                 {
-                                    <GridColumnFilter TItem="TItem" PropertyTypeName="@column.GetPropertyTypeName()"
+                                    <GridColumnFilter GridColumnFilterChanged="(async (args) => await column.OnFilterChangedAsync(args, column))"
                                                       FilterOperator="@column.FilterOperator"
                                                       FilterValue="@column.FilterValue"
                                                       FilterWidth="@column.FilterTextboxWidth"
-                                                      GridColumnFilterChanged="(async (args) => await column.OnFilterChangedAsync(args, column))" />
+                                                      FiltersTranslationProvider="GridFiltersTranslationProviderAsync"
+                                                      PropertyTypeName="@column.GetPropertyTypeName()" />
                                 }
                             </th>
                         }

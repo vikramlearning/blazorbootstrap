@@ -37,20 +37,20 @@
         var filtersTranslation = new HashSet<FilterOperatorInfo>();
 
         // number/date/boolean
-        filtersTranslation.Add(new("=", "Equals", FilterOperator.Equals));
-        filtersTranslation.Add(new("!=", "Not equals", FilterOperator.NotEquals));
+        filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
+        filtersTranslation.Add(new("!=", "Niet gelijk", FilterOperator.NotEquals));
         // number/date
-        filtersTranslation.Add(new("<", "Less than", FilterOperator.LessThan));
-        filtersTranslation.Add(new("<=", "Less than or equals", FilterOperator.LessThanOrEquals));
-        filtersTranslation.Add(new(">", "Greater than", FilterOperator.GreaterThan));
-        filtersTranslation.Add(new(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals));
+        filtersTranslation.Add(new("<", "Minder dan", FilterOperator.LessThan));
+        filtersTranslation.Add(new("<=", "Kleiner dan of gelijk aan", FilterOperator.LessThanOrEquals));
+        filtersTranslation.Add(new(">", "Groter dan", FilterOperator.GreaterThan));
+        filtersTranslation.Add(new(">=", "Groter dan of gelijk aan", FilterOperator.GreaterThanOrEquals));
         // string
-        filtersTranslation.Add(new("*a*", "Contains", FilterOperator.Contains));
-        filtersTranslation.Add(new("a**", "Starts with", FilterOperator.StartsWith));
-        filtersTranslation.Add(new("**a", "Ends with", FilterOperator.EndsWith));
-        filtersTranslation.Add(new("=", "Equals", FilterOperator.Equals));
+        filtersTranslation.Add(new("*a*", "Bevat", FilterOperator.Contains));
+        filtersTranslation.Add(new("a**", "Begint met", FilterOperator.StartsWith));
+        filtersTranslation.Add(new("**a", "Eindigt met", FilterOperator.EndsWith));
+        filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
         // common
-        filtersTranslation.Add(new("x", "Clear", FilterOperator.Equals));
+        filtersTranslation.Add(new("x", "Duidelijk", FilterOperator.Clear));
 
         return await Task.FromResult(filtersTranslation);
     }
@@ -81,6 +81,4 @@
             new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
         };
     }
-
-
 }
