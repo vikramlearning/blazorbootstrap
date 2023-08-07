@@ -1,7 +1,12 @@
 ﻿<Grid TItem="Employee1"
-      Class="table table-hover table-bordered table-striped"
-      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
       AllowPaging="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      FiltersRowCssClass="bg-dark text-white bg-opacity-25 border-bottom-0"
+      FiltersTranslationProvider="GridFiltersTranslationProvider"
+      HeaderRowCssClass="bg-dark text-white border-bottom-0"
       PageSize="10"
       PageSizeSelectorVisible="true"
       PageSizeSelectorItems="@(new int[] { 5,10,20 })"
@@ -9,19 +14,19 @@
       ItemsPerPageText="Artikelen per pagina"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id">
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name">
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
         @context.Name
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation">
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
         @context.Designation
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ">
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
         @context.DOJ
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active">
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
         @context.IsActive
     </GridColumn>
 
@@ -29,6 +34,29 @@
 
 @code {
     private IEnumerable<Employee1> employees = default!;
+
+    private async Task<IEnumerable<FilterOperatorInfo>> GridFiltersTranslationProvider()
+    {
+        var filtersTranslation = new List<FilterOperatorInfo>();
+
+        // number/date/boolean
+        filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
+        filtersTranslation.Add(new("!=", "Niet gelijk", FilterOperator.NotEquals));
+        // number/date
+        filtersTranslation.Add(new("<", "Minder dan", FilterOperator.LessThan));
+        filtersTranslation.Add(new("<=", "Kleiner dan of gelijk aan", FilterOperator.LessThanOrEquals));
+        filtersTranslation.Add(new(">", "Groter dan", FilterOperator.GreaterThan));
+        filtersTranslation.Add(new(">=", "Groter dan of gelijk aan", FilterOperator.GreaterThanOrEquals));
+        // string
+        filtersTranslation.Add(new("*a*", "Bevat", FilterOperator.Contains));
+        filtersTranslation.Add(new("a**", "Begint met", FilterOperator.StartsWith));
+        filtersTranslation.Add(new("**a", "Eindigt met", FilterOperator.EndsWith));
+        filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
+        // common
+        filtersTranslation.Add(new("x", "Duidelijk", FilterOperator.Clear));
+
+        return await Task.FromResult(filtersTranslation);
+    }
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {

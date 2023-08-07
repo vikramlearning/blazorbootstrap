@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Grid Component
 description: Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
-image: https://user-images.githubusercontent.com/2337067/239613340-3917f4fa-a252-4e5e-a3b5-27b83304cbc2.png
+image: https://i.imgur.com/kKNgo2I.png
 
 sidebar_label: Grid
 sidebar_position: 9
@@ -11,7 +11,7 @@ sidebar_position: 9
 
 Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
 
-<img src="https://user-images.githubusercontent.com/2337067/239613340-3917f4fa-a252-4e5e-a3b5-27b83304cbc2.png" alt="Blazor Bootstrap: Grid Component" />
+<img src="https://i.imgur.com/kKNgo2I.png" alt="Blazor Bootstrap: Grid Component" />
 
 ## Grid Parameters
 
@@ -30,6 +30,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | EmptyDataTemplate | RenderFragment | | ✔️ | Template to render when there are no rows to display. | 1.0.0 |
 | EmptyText | string | No records to display | | Shows text on no records. | 1.0.0 |
 | FiltersRowCssClass | string | | | Gets or sets the filters row css class. | 1.9.2 |
+| FiltersTranslationProvider | `GridFiltersTranslationDelegate` | | | Filters transalation is for grid filters to render. The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed. | 1.10.0 |
 | HeaderRowCssClass | string | | | Gets or sets the header row css class but not the thead tag class. | 1.9.2 |
 | ItemsPerPageText | string | `Items per page` | ✔️ | Gets or sets the ItemsPerPageText. | 1.9.5 |
 | PageSize | int | 10 | | Gets or sets the page size of the grid. | 1.0.0 |
@@ -2536,15 +2537,20 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 
 ### Translations
 
-In the example below, you will see translations related to pagination in **Dutch**.
+In the example below, you will see translations related to pagination and filters in **Dutch**.
 
-<img src="https://i.imgur.com/qH7G1ZT.png" alt="Blazor Bootstrap: Grid Component - Translations" />
+<img src="https://i.imgur.com/kKNgo2I.png" alt="Blazor Bootstrap: Grid Component - Translations" />
 
-```cshtml {8,9} showLineNumbers
+```cshtml {8,13-14} showLineNumbers
 <Grid TItem="Employee1"
-      Class="table table-hover table-bordered table-striped"
-      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
       AllowPaging="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      FiltersRowCssClass="bg-dark text-white bg-opacity-25 border-bottom-0"
+      FiltersTranslationProvider="GridFiltersTranslationProvider"
+      HeaderRowCssClass="bg-dark text-white border-bottom-0"
       PageSize="10"
       PageSizeSelectorVisible="true"
       PageSizeSelectorItems="@(new int[] { 5,10,20 })"
@@ -2552,28 +2558,51 @@ In the example below, you will see translations related to pagination in **Dutch
       ItemsPerPageText="Artikelen per pagina"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id">
+    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name">
+    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
         @context.Name
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation">
+    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
         @context.Designation
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ">
+    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
         @context.DOJ
     </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active">
+    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
         @context.IsActive
     </GridColumn>
 
 </Grid>
 ```
 
-```cs {} showLineNumbers
+```cs {4-25} showLineNumbers
 @code {
     private IEnumerable<Employee1> employees = default!;
+
+    private async Task<IEnumerable<FilterOperatorInfo>> GridFiltersTranslationProvider()
+    {
+        var filtersTranslation = new List<FilterOperatorInfo>();
+
+        // number/date/boolean
+        filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
+        filtersTranslation.Add(new("!=", "Niet gelijk", FilterOperator.NotEquals));
+        // number/date
+        filtersTranslation.Add(new("<", "Minder dan", FilterOperator.LessThan));
+        filtersTranslation.Add(new("<=", "Kleiner dan of gelijk aan", FilterOperator.LessThanOrEquals));
+        filtersTranslation.Add(new(">", "Groter dan", FilterOperator.GreaterThan));
+        filtersTranslation.Add(new(">=", "Groter dan of gelijk aan", FilterOperator.GreaterThanOrEquals));
+        // string
+        filtersTranslation.Add(new("*a*", "Bevat", FilterOperator.Contains));
+        filtersTranslation.Add(new("a**", "Begint met", FilterOperator.StartsWith));
+        filtersTranslation.Add(new("**a", "Eindigt met", FilterOperator.EndsWith));
+        filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
+        // common
+        filtersTranslation.Add(new("x", "Duidelijk", FilterOperator.Clear));
+
+        return await Task.FromResult(filtersTranslation);
+    }
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {

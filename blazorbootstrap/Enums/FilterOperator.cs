@@ -61,5 +61,9 @@ public enum FilterOperator
     /// <summary>
     /// Satisfied if the current value is not <see cref="string.Empty"/>.
     /// </summary>
-    IsNotEmpty
+    IsNotEmpty,
+    /// <summary>
+    /// Clear the current filter.
+    /// </summary>
+    Clear
 }
