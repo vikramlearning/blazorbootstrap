@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Grid Component
 description: Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
-image: https://user-images.githubusercontent.com/2337067/239613340-3917f4fa-a252-4e5e-a3b5-27b83304cbc2.png
+image: https://i.imgur.com/kKNgo2I.png
 
 sidebar_label: Grid
 sidebar_position: 9
@@ -11,7 +11,7 @@ sidebar_position: 9
 
 Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side paging & sorting.
 
-<img src="https://user-images.githubusercontent.com/2337067/239613340-3917f4fa-a252-4e5e-a3b5-27b83304cbc2.png" alt="Blazor Bootstrap: Grid Component" />
+<img src="https://i.imgur.com/kKNgo2I.png" alt="Blazor Bootstrap: Grid Component" />
 
 ## Grid Parameters
 
