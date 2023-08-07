@@ -49,13 +49,13 @@ public partial class Grid<TItem> : BaseComponent
 
     #region Methods
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         headerCheckboxId = IdGenerator.Generate;
 
         pageSize = PageSize;
 
-        await base.OnInitializedAsync();
+        base.OnInitialized();
     }
 
     protected override Task OnParametersSetAsync()
