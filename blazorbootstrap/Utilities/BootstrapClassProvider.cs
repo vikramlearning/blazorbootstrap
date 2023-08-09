@@ -114,6 +114,12 @@ public class BootstrapClassProvider
 
     #endregion
 
+    #region Dropdown
+
+    public string Dropdown() => "dropdown";
+
+    #endregion
+
     #region DisplayHeading
 
     public string DisplayHeadingSize(DisplayHeadingSize displayHeadingSize) => $"display-{ToDisplayHeadingSize(displayHeadingSize)}";
