@@ -44,6 +44,22 @@ public partial class DropdownToggleButton
         if (!Attributes.TryGetValue("aria-expanded", out _))
             Attributes.Add("aria-expanded", "false");
 
+        string? autoClose;
+
+        if (AutoClose && AutoCloseBehavior == DropdownAutoCloseBehavior.Inside)
+            autoClose = "inside";
+        else if (AutoClose && AutoCloseBehavior == DropdownAutoCloseBehavior.Outside)
+            autoClose = "outside";
+        else if (AutoClose && AutoCloseBehavior == DropdownAutoCloseBehavior.Both)
+            autoClose = "true";
+        else
+            autoClose = "false";
+
+        if (!Attributes.TryGetValue("data-bs-auto-close", out _))
+            Attributes.Add("data-bs-auto-close", autoClose);
+        else
+            Attributes["data-bs-auto-close"] = autoClose;
+
         base.OnInitialized();
     }
 
@@ -54,7 +70,19 @@ public partial class DropdownToggleButton
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
-    [CascadingParameter]
+    /// <summary>
+    /// Enables or disables the auto close.
+    /// </summary>
+    [CascadingParameter(Name = "AutoClose")]
+    public bool AutoClose { get; set; }
+
+    /// <summary>
+    /// Gets or sets the auto close behavior of the dropdown.
+    /// </summary>
+    [CascadingParameter(Name = "AutoCloseBehavior")]
+    public DropdownAutoCloseBehavior AutoCloseBehavior { get; set; }
+
+    [CascadingParameter(Name = "Split")]
     public bool Split
     {
         get => split;

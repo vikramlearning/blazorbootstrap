@@ -49,18 +49,7 @@ public partial class Dropdown
 
         base.OnInitialized();
 
-        object? autoClose;
-
-        if (AutoClose && AutoCloseBehavior == DropdownAutoCloseBehavior.Inside)
-            autoClose = "inside";
-        else if (AutoClose && AutoCloseBehavior == DropdownAutoCloseBehavior.Outside)
-            autoClose = "outside";
-        else if (AutoClose && AutoCloseBehavior == DropdownAutoCloseBehavior.Both)
-            autoClose = true;
-        else
-            autoClose = false;
-
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.dropdown.initialize", ElementId, autoClose, objRef); });
+        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.dropdown.initialize", ElementId, objRef); });
     }
 
     /// <inheritdoc />
@@ -114,7 +103,7 @@ public partial class Dropdown
     /// <summary>
     /// Enables or disables the auto close.
     /// </summary>
-    [Parameter] public bool AutoClose { get; set; }
+    [Parameter] public bool AutoClose { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the auto close behavior of the dropdown.

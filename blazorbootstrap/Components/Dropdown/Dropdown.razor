@@ -1,8 +1,12 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<CascadingValue IsFixed="true" Value="@Split">
-    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-        @ChildContent
-    </div>
+<CascadingValue IsFixed="true" Value="@Split" Name="Split">
+    <CascadingValue IsFixed="true" Value="@AutoClose" Name="AutoClose">
+        <CascadingValue IsFixed="true" Value="@AutoCloseBehavior" Name="AutoCloseBehavior">
+        <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+            @ChildContent
+        </div>
+        </CascadingValue>
+    </CascadingValue>
 </CascadingValue>

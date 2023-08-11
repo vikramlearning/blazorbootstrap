@@ -304,7 +304,7 @@ window.blazorBootstrap = {
         hide: (elementId) => {
             bootstrap?.Dropdown?.getOrCreateInstance(document.getElementById(elementId))?.hide();
         },
-        initialize: (elementId, autoClose, dotNetHelper) => {
+        initialize: (elementId, dotNetHelper) => {
             let dropdownEl = document.getElementById(elementId);
 
             dropdownEl.addEventListener('hide.bs.dropdown', function () {
@@ -320,8 +320,7 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsShownDropdown');
             });
 
-            let options = { autoClose: autoClose };
-            bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl, options);
+            bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl);
         },
         show: (elementId) => {
             bootstrap?.Dropdown?.getOrCreateInstance(document.getElementById(elementId))?.show();
