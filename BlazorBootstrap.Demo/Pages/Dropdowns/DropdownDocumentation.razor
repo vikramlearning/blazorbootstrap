@@ -33,12 +33,100 @@
 <SectionHeading Size="HeadingSize.H2" Text="Dropend" PageUrl="@pageUrl" HashTagName="dropend" />
 <Demo Type="typeof(Dropdown_Demo_05_C_Directions_Dropend)" Tabs="false" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Dropstart" PageUrl="@pageUrl" HashTagName="Dropstart" />
+<SectionHeading Size="HeadingSize.H2" Text="Dropstart" PageUrl="@pageUrl" HashTagName="dropstart" />
 <Demo Type="typeof(Dropdown_Demo_05_D_Directions_Dropstart)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Active" PageUrl="@pageUrl" HashTagName="active" />
+<Demo Type="typeof(Dropdown_Demo_06_Active)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disabled" PageUrl="@pageUrl" HashTagName="disabled" />
+<Demo Type="typeof(Dropdown_Demo_07_Disabled)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Menu position" PageUrl="@pageUrl" HashTagName="menu-position" />
+<Demo Type="typeof(Dropdown_Demo_08_Menu_Position)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Menu content" PageUrl="@pageUrl" HashTagName="menu-content" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Header" PageUrl="@pageUrl" HashTagName="header" />
+<Demo Type="typeof(Dropdown_Demo_09_Header)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Dividers" PageUrl="@pageUrl" HashTagName="dividers" />
+<Demo Type="typeof(Dropdown_Demo_10_Dividers)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Text" PageUrl="@pageUrl" HashTagName="text" />
+<Demo Type="typeof(Dropdown_Demo_11_Text)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Forms" PageUrl="@pageUrl" HashTagName="forms" />
+<Demo Type="typeof(Dropdown_Demo_12_Forms)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Auto close behavior" PageUrl="@pageUrl" HashTagName="auto-close-behavior" />
+<Demo Type="typeof(Dropdown_Demo_13_AutoClose)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Methods" PageUrl="@pageUrl" HashTagName="methods" />
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Method</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            <tr>
+                <th scope="row"><code>HideAsync</code></th>
+                <td> Hides the dropdown menu of a given navbar or tabbed navigation.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>ShowAsync</code></th>
+                <td>Shows the dropdown menu of a given navbar or tabbed navigation.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>ToggleAsync</code></th>
+                <td>Toggles the dropdown menu of a given navbar or tabbed navigation.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>UpdateAsync</code></th>
+                <td>Updates the position of an element’s dropdown.</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
+<div>
+    All dropdown events are fired at the toggling element and then bubbled up.
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Event type</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            <tr>
+                <th scope="row"><code>OnHiding</code></th>
+                <td>This event is fired immediately when the hide method has been called.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnHidden</code></th>
+                <td>This event is fired when an dropdown element has been hidden from the user (will wait for CSS transitions to complete).</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnShowing</code></th>
+                <td>This event fires immediately when the show instance method is called.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnShown</code></th>
+                <td>This event is fired when an dropdown element has been made visible to the user (will wait for CSS transitions to complete).</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
 @code {
     private string pageUrl = "/dropdown";
     private string title = "Blazor Dropdown Component";
     private string description = "Dropdowns are toggleable, contextual overlays for displaying lists of links and more. They are toggled by clicking, not by hovering; this is an intentional design decision'by bootstrap.";
-    private string imageUrl = "https://i.imgur.com/8A0emQe.png";
+    private string imageUrl = "https://i.imgur.com/8A0emQe.png"; // TODO: update
 }

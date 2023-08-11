@@ -135,8 +135,11 @@ public class BootstrapClassProvider
     public string Dropdown() => "dropdown";
     public string DropdownToggle() => $"{Dropdown()}-toggle";
     public string DropdownToggleSplit() => $"{DropdownToggle()}-split";
-    public string DropdownMenu() => $"dropdown-menu";
-    public string DropdownItem() => $"dropdown-item";
+    public string DropdownMenu() => $"{Dropdown()}-menu";
+    public string DropdownMenuPosition(DropdownMenuPosition position) => ToDropdownMenuPosition(position);
+    public string DropdownHeader() => $"{Dropdown()}-header";
+    public string DropdownItem() => $"{Dropdown()}-item";
+    public string DropdownDivider() => $"{Dropdown()}-divider";
 
     public string DropdownDirection(DropdownDirection direction) => ToDropdownDirection(direction);
 
@@ -458,6 +461,13 @@ public class BootstrapClassProvider
         BlazorBootstrap.DropdownDirection.Dropup => "dropup",
         BlazorBootstrap.DropdownDirection.DropupCentered => "dropup dropup-center",
         BlazorBootstrap.DropdownDirection.Dropstart => "dropstart",
+        _ => "",
+    };
+
+    public string ToDropdownMenuPosition(DropdownMenuPosition position) => position switch
+    {
+        BlazorBootstrap.DropdownMenuPosition.Start => "dropdown-menu-start",
+        BlazorBootstrap.DropdownMenuPosition.End => "dropdown-menu-end",
         _ => "",
     };
 

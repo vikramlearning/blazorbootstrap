@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DropdownMenu
+public partial class DropdownDivider
 {
     #region Events
 
@@ -15,8 +15,7 @@ public partial class DropdownMenu
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.DropdownMenu());
-        builder.Append(BootstrapClassProvider.DropdownMenuPosition(Position));
+        builder.Append(BootstrapClassProvider.DropdownDivider());
 
         base.BuildClasses(builder);
     }
@@ -31,12 +30,8 @@ public partial class DropdownMenu
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="ChildContent"/>.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
-
-    /// <summary>
-    /// Gets or sets the dropdown menu position.
-    /// </summary>
-    [Parameter] public DropdownMenuPosition Position { get; set; }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
 
     #endregion
 }

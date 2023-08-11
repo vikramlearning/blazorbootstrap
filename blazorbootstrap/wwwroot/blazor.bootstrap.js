@@ -297,6 +297,42 @@ window.blazorBootstrap = {
             document.getElementById(elementId).value = value;
         }
     },
+    dropdown: {
+        dispose: (elementId) => {
+            bootstrap?.Dropdown?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
+        },
+        hide: (elementId) => {
+            bootstrap?.Dropdown?.getOrCreateInstance(document.getElementById(elementId))?.hide();
+        },
+        initialize: (elementId, autoClose, dotNetHelper) => {
+            let dropdownEl = document.getElementById(elementId);
+
+            dropdownEl.addEventListener('hide.bs.dropdown', function () {
+                dotNetHelper.invokeMethodAsync('bsHideDropdown');
+            });
+            dropdownEl.addEventListener('hidden.bs.dropdown', function () {
+                dotNetHelper.invokeMethodAsync('bsHiddenDropdown');
+            });
+            dropdownEl.addEventListener('show.bs.dropdown', function () {
+                dotNetHelper.invokeMethodAsync('bsShowDropdown');
+            });
+            dropdownEl.addEventListener('shown.bs.dropdown', function () {
+                dotNetHelper.invokeMethodAsync('bsShownDropdown');
+            });
+
+            let options = { autoClose: autoClose };
+            bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl, options);
+        },
+        show: (elementId) => {
+            bootstrap?.Dropdown?.getOrCreateInstance(document.getElementById(elementId))?.show();
+        },
+        toggle: (elementId) => {
+            bootstrap?.Dropdown?.getOrCreateInstance(document.getElementById(elementId))?.toggle();
+        },
+        update: (elementId) => {
+            bootstrap?.Dropdown?.getOrCreateInstance(document.getElementById(elementId))?.update();
+        }
+    },
     grid: {
         setSelectAllCheckboxState: (elementId, state) => {
             let checkboxEl = document.getElementById(elementId);

@@ -8,9 +8,13 @@ public partial class DropdownItem
 
     #region Members
 
+    private bool active;
+
     private bool disabled;
 
     private bool isFirstRenderComplete = false;
+
+    private bool previousActive;
 
     private bool previousDisabled;
 
@@ -32,6 +36,8 @@ public partial class DropdownItem
     protected override void BuildClasses(ClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.DropdownItem());
+        builder.Append(BootstrapClassProvider.Active(), Active);
+        builder.Append(BootstrapClassProvider.Disabled(), Disabled);
 
         base.BuildClasses(builder);
     }
@@ -40,26 +46,14 @@ public partial class DropdownItem
     {
         Attributes ??= new Dictionary<string, object>();
 
+        previousActive = Active;
         previousDisabled = Disabled;
         previousTabIndex = TabIndex;
         previousTarget = Target;
         previousType = Type;
 
-        // 'a' tag
-        if (Type == ButtonType.Link)
-        {
-            if (!Attributes.TryGetValue("role", out _))
-                Attributes.Add("role", "button");
+        SetAttributes();
 
-            if (!Attributes.TryGetValue("href", out _))
-                Attributes.Add("href", To);
-
-            if (Target != Target.None)
-            {
-                if (!Attributes.TryGetValue("target", out _))
-                    Attributes.Add("target", Target.ToTargetString());
-            }
-        }
         base.OnInitialized();
     }
 
@@ -75,6 +69,13 @@ public partial class DropdownItem
     {
         if (isFirstRenderComplete)
         {
+
+            if (previousActive != Active)
+            {
+                previousActive = Active;
+                setButtonAttributesAgain = true;
+            }
+
             if (previousDisabled != Disabled)
             {
                 previousDisabled = Disabled;
@@ -110,6 +111,11 @@ public partial class DropdownItem
     private void SetAttributes()
     {
         Attributes ??= new Dictionary<string, object>();
+
+        if (Active && !Attributes.TryGetValue("aria-current", out _))
+            Attributes.Add("aria-current", "true");
+        else if (!Active && Attributes.TryGetValue("aria-current", out _))
+            Attributes.Remove("aria-current");
 
         // 'a' tag
         if (Type == ButtonType.Link)
@@ -182,6 +188,20 @@ public partial class DropdownItem
 
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
+
+    /// <summary>
+    /// When set to 'true', places the component in the active state with active styling.
+    /// </summary>
+    [Parameter]
+    public bool Active
+    {
+        get => active;
+        set
+        {
+            active = value;
+            DirtyClasses();
+        }
+    }
 
     /// <summary>
     /// When set to 'true', disables the component's functionality and places it in a disabled state.
