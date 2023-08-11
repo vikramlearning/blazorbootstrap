@@ -38,5 +38,10 @@ public partial class Dropdown
     /// </summary>
     [Parameter] public DropdownDirection Direction { get; set; } = DropdownDirection.Dropdown;
 
+    /// <summary>
+    /// Gets or sets the toggle button split behavior.
+    /// </summary>
+    [Parameter] public bool Split { get; set; }
+
     #endregion
 }

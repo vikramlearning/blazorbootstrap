@@ -10,7 +10,10 @@ public partial class DropdownToggleButton
 
     private ButtonColor color = ButtonColor.None;
 
+    private bool isSplitButton;
+
     private Size size = Size.None;
+    private bool split;
 
     #endregion
 
@@ -23,6 +26,7 @@ public partial class DropdownToggleButton
         builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None);
         builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
         builder.Append(BootstrapClassProvider.DropdownToggle());
+        builder.Append(BootstrapClassProvider.DropdownToggleSplit(), Split);
 
         base.BuildClasses(builder);
     }
@@ -50,11 +54,21 @@ public partial class DropdownToggleButton
     /// <inheritdoc/>
     protected override bool ShouldAutoGenerateId => true;
 
+    [CascadingParameter]
+    public bool Split
+    {
+        get => split;
+        set
+        {
+            split = value;
+            DirtyClasses();
+        }
+    }
+
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="ChildContent"/>.
     /// </summary>
-    [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the button color.

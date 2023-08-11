@@ -134,6 +134,7 @@ public class BootstrapClassProvider
 
     public string Dropdown() => "dropdown";
     public string DropdownToggle() => $"{Dropdown()}-toggle";
+    public string DropdownToggleSplit() => $"{DropdownToggle()}-split";
     public string DropdownMenu() => $"dropdown-menu";
     public string DropdownItem() => $"dropdown-item";
 
