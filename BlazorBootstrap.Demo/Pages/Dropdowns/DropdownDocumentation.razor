@@ -6,29 +6,25 @@
 
 <h1>Blazor Collapse</h1>
 <div class="lead mb-3">
-    Toggle the visibility of content across your project with the Blazor Bootstrap <code>Collapse</code> component.
+    Dropdowns are toggleable, contextual overlays for displaying lists of links and more. They are toggled by clicking, not by hovering; this is an intentional design decision'by bootstrap.
 </div>
 
-<SectionHeading Size="HeadingSize.H2" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
-<div class="mb-3">
-    The <code>Collapse</code> component is used to show and hide content. Use <code>ShowAsync</code>, <code>HideAsync</code>, and <code>ToggleAsync</code> methods to toggle the content.
-    Collapsing an element will animate the height from its current value to <code>0</code>.
-</div>
+<SectionHeading Size="HeadingSize.H2" Text="Single button" PageUrl="@pageUrl" HashTagName="single-button" />
+<Demo Type="typeof(Dropdown_Demo_01_Single_Button)" Tabs="false" />
 
-<Callout Type="CalloutType.Info">
-    The animation effect of this component is dependent on the <code>prefers-reduced-motion</code> media query. <br />
-    See the <a href="https://getbootstrap.com/docs/5.3/getting-started/accessibility/#reduced-motion" target="_blank">reduced motion section of our accessibility documentation</a>.
-</Callout>
+<SectionHeading Size="HeadingSize.H2" Text="Color" PageUrl="@pageUrl" HashTagName="color" />
+<Demo Type="typeof(Dropdown_Demo_02_Color)" Tabs="true" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<div class="mb-3">
-    Click the buttons below to show and hide the content.
-</div>
-<Demo Type="typeof(Dropdown_Demo_01_Examples)" Tabs="false" />
+<SectionHeading Size="HeadingSize.H2" Text="Split button" PageUrl="@pageUrl" HashTagName="split-button" />
+<Demo Type="typeof(Dropdown_Demo_03_Split_Button)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Sizing" PageUrl="@pageUrl" HashTagName="sizing" />
+<Demo Type="typeof(Dropdown_Demo_04_A_Sizing)" Tabs="false" />
+<Demo Type="typeof(Dropdown_Demo_04_B_Sizing)" Tabs="false" />
 
 @code {
     private string pageUrl = "/dropdown";
     private string title = "Blazor Dropdown Component";
-    private string description = "Dropdowns are toggleable, contextual overlays for displaying lists of links and more. Theyre toggled by clicking, not by hovering; this is an intentional design decision'by bootstrap.";
+    private string description = "Dropdowns are toggleable, contextual overlays for displaying lists of links and more. They are toggled by clicking, not by hovering; this is an intentional design decision'by bootstrap.";
     private string imageUrl = "https://i.imgur.com/8A0emQe.png";
 }

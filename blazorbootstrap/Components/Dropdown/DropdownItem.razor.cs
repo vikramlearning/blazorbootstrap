@@ -22,8 +22,6 @@ public partial class DropdownItem
 
     private bool setButtonAttributesAgain = false;
 
-    private Size size = Size.None;
-
     private string buttonTypeString => Type.ToButtonTypeString();
 
     #endregion
@@ -204,20 +202,6 @@ public partial class DropdownItem
     /// </summary>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
-
-    /// <summary>
-    /// Changes the size of a button.
-    /// </summary>
-    [Parameter]
-    public Size Size
-    {
-        get => size;
-        set
-        {
-            size = value;
-            DirtyClasses();
-        }
-    }
 
     /// <summary>
     /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
