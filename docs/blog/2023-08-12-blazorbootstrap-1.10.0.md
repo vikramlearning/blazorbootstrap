@@ -16,7 +16,7 @@ We are excited to release 1.10.0 with new Table and Card component. Charts, Grid
 
 ## What's New
 
-- `Table` Component
+- `Dropdown` Component
   - TODO: Update
 
 - `Card` Component
