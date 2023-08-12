@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Dropdown Component
 description: Dropdowns are toggleable, contextual overlays for displaying lists of links and more. They are toggled by clicking, not by hovering; this is an intentional design decision'by bootstrap.
-image: https://i.imgur.com/B5Hf85u.png
+image: https://i.imgur.com/aq54YVp.png
 
 sidebar_label: Dropdown
 sidebar_position: 9
@@ -12,7 +12,7 @@ sidebar_position: 9
 Dropdowns are toggleable, contextual overlays for displaying lists of links and more. 
 They are toggled by clicking, not by hovering; this is an intentional design decision'by bootstrap.
 
-<img src="https://i.imgur.com/B5Hf85u.png" alt="Blazor Bootstrap: Confirm Dialog component" />
+<img src="https://i.imgur.com/aq54YVp.png" alt="Blazor Bootstrap: Dropdown component" />
 
 ## Parameters
 
@@ -49,7 +49,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 ### Single button
 
-<img src="https://i.imgur.com/B5Hf85u.png" alt="Blazor Bootstrap: Dropdown Component - Single button" />
+<img src="https://i.imgur.com/aq54YVp.png" alt="Blazor Bootstrap: Dropdown Component - Single button" />
 
 ```cshtml {1} showLineNumbers
 <Dropdown>
@@ -62,11 +62,11 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 </Dropdown>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#examples)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#single-button)
 
 ### Color
 
-<img src="https://i.imgur.com/yNv7Wvw.png" alt="Blazor Bootstrap: Dropdown Component - Color" />
+<img src="https://i.imgur.com/2Y7SAWy.png" alt="Blazor Bootstrap: Dropdown Component - Color" />
 
 ```cshtml {1} showLineNumbers
 <div class="d-flex gap-2 mb-4">
@@ -121,13 +121,11 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 </div>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#dynamic-component-as-confirm-dialog)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#color)
 
 ### Split button
 
-Use `ConfirmDialogOptions` to change the text and color of the button.
-
-<img src="https://i.imgur.com/uH19DpG.png" alt="Blazor Bootstrap: Dropdown Component - Split button" />
+<img src="https://i.imgur.com/ImMId1X.png" alt="Blazor Bootstrap: Dropdown Component - Split button" />
 
 ```cshtml showLineNumbers
 <div class="d-flex gap-2 mb-4">
@@ -188,11 +186,11 @@ Use `ConfirmDialogOptions` to change the text and color of the button.
 </div>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#change-buttons-text-and-color)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#split-button)
 
 ### Sizing
 
-<img src="https://i.imgur.com/PMz3lbn.png" alt="Blazor Bootstrap: Dropdown Component - Sizing" />
+<img src="https://i.imgur.com/cgdjg0i.png" alt="Blazor Bootstrap: Dropdown Component - Sizing - Large" />
 
 ```cshtml showLineNumbers
 <div class="d-flex gap-2 mb-4">
@@ -216,6 +214,8 @@ Use `ConfirmDialogOptions` to change the text and color of the button.
 </div>
 ```
 
+<img src="https://i.imgur.com/hDVHL7n.png" alt="Blazor Bootstrap: Dropdown Component - Sizing - Small" />
+
 ```cshtml showLineNumbers
 <div class="d-flex gap-2 mb-4">
     <Dropdown>
@@ -238,7 +238,7 @@ Use `ConfirmDialogOptions` to change the text and color of the button.
 </div>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#optional-sizes)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#sizing)
 
 ### Directions
 
@@ -246,7 +246,7 @@ Use `ConfirmDialogOptions` to change the text and color of the button.
 
 To trigger **DropdownMenu** above elements, add the `Direction="DropdownDirection.Dropup"` to the **Dropdown** component.
 
-<img src="https://i.imgur.com/8P6UejF.png" alt="Blazor Bootstrap: Dropdown Component - Dropup" />
+<img src="https://i.imgur.com/mP0XLZX.png" alt="Blazor Bootstrap: Dropdown Component - Dropup" />
 
 ```cshtml showLineNumbers
 <div class="d-flex gap-2">
@@ -270,77 +270,126 @@ To trigger **DropdownMenu** above elements, add the `Direction="DropdownDirectio
 </div>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#scrolling-long-content)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#dropup)
 
 ### Dropup centered
 
 To center the DropdownMenu above the toggle, add the Direction="DropdownDirection.DropupCentered" to the Dropdown component.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/gz9pTPJ.png" alt="Blazor Bootstrap: Dropdown Component - Dropup centered" />
 
 ```cshtml showLineNumbers
+<div class="d-flex gap-2">
+    <Dropdown Direction="DropdownDirection.DropupCentered">
+        <DropdownToggleButton Color="ButtonColor.Secondary">Centered dropup</DropdownToggleButton>
+        <DropdownMenu>
+            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+</div>
 ```
 
-```cs showLineNumbers
-```
-
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#dropup-centered)
 
 ### Dropend
 
 To trigger DropdownMenu at the right of elements, add the Direction="DropdownDirection.Dropend" to the Dropdown component.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/yWy4lh3.png" alt="Blazor Bootstrap: Dropdown Component - Dropend" />
 
 ```cshtml showLineNumbers
+<div class="d-flex gap-2">
+    <Dropdown Direction="DropdownDirection.Dropend">
+        <DropdownToggleButton Color="ButtonColor.Secondary">Dropend</DropdownToggleButton>
+        <DropdownMenu>
+            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+    <Dropdown Direction="DropdownDirection.Dropend" Split="true">
+        <DropdownActionButton Color="ButtonColor.Secondary">Split dropend</DropdownActionButton>
+        <DropdownToggleButton Color="ButtonColor.Secondary" />
+        <DropdownMenu>
+            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+</div>
 ```
 
-```cs showLineNumbers
-```
-
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#dropend)
 
 ### Dropstart
 
 To trigger DropdownMenu at the left of elements, you can add the Direction="DropdownDirection.Dropstart" to the Dropdown component.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/A8ifVaS.png" alt="Blazor Bootstrap: Dropdown Component - Dropstart" />
 
 ```cshtml showLineNumbers
+<div class="d-flex gap-2">
+    <Dropdown Direction="DropdownDirection.Dropstart">
+        <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
+        <DropdownMenu>
+            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+    <Dropdown Direction="DropdownDirection.Dropstart" Split="true">
+        <DropdownToggleButton Color="ButtonColor.Secondary" />
+        <DropdownMenu>
+            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        </DropdownMenu>
+        <DropdownActionButton Color="ButtonColor.Secondary">Split dropstart</DropdownActionButton>
+    </Dropdown>
+</div>
 ```
 
-```cs showLineNumbers
-```
-
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#dropstart)
 
 ### Active
 
 To style DropdownItem as active, add the Active="true" parameter to the DropdownItem element in the DropdownMenu.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/y95OWSd.png" alt="Blazor Bootstrap: Dropdown Component - Active" />
 
 ```cshtml showLineNumbers
+<Dropdown>
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link" Active="true">Another action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
 ```
 
-```cs showLineNumbers
-```
-
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#active)
 
 ### Disabled
 
 To style DropdownItem as disabled, add the Disabled="true" parameter to the DropdownItem element in the DropdownMenu component.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/C3tUcRn.png" alt="Blazor Bootstrap: Dropdown Component - Disabled" />
 
 ```cshtml showLineNumbers
+<Dropdown>
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">Another action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
 ```
 
-```cs showLineNumbers
-```
-
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#disabled)
 
 ### Menu position
 
@@ -348,15 +397,20 @@ By default, a DropdownMenu is automatically positioned at 100% from the top and 
 
 To right-align a DropdownMenu, add the Position="DropdownMenuPosition.End" parameter to the DropdownMenu component. Directions are mirrored when using Bootstrap in RTL.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/dwmK0j3.png" alt="Blazor Bootstrap: Dropdown Component - Menu position" />
 
 ```cshtml showLineNumbers
+<Dropdown>
+    <DropdownToggleButton Color="ButtonColor.Secondary">Right-aligned menu example</DropdownToggleButton>
+    <DropdownMenu Position="DropdownMenuPosition.End">
+        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
 ```
 
-```cs showLineNumbers
-```
-
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#menu-position)
 
 ### Menu content
 
@@ -364,94 +418,292 @@ To right-align a DropdownMenu, add the Position="DropdownMenuPosition.End" param
 
 Add a header to label sections of actions in any dropdown menu.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/eDvOLvf.png" alt="Blazor Bootstrap: Dropdown Component - Header" />
 
 ```cshtml showLineNumbers
+<Dropdown>
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownHeader>Dropdown header</DropdownHeader>
+        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
 ```
 
-```cs showLineNumbers
-```
-
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#header)
 
 ### Dividers
 
 Separate groups of related menu items with a divider.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Dividers" />
 
 ```cshtml showLineNumbers
+<Dropdown>
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        <DropdownDivider>Dropdown header</DropdownDivider>
+        <DropdownItem To="#" Type="ButtonType.Link">Separated link</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
 ```
 
-```cs showLineNumbers
-```
-
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#dividers)
 
 ### Text
 
 Place any freeform text within a dropdown menu with text and use spacing utilities. Note that youll likely need additional sizing styles to constrain the menu width.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Text" />
 
 ```cshtml showLineNumbers
+<Dropdown>
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown</DropdownToggleButton>
+    <DropdownMenu Class="p-4 text-muted" Style="width: 320px;">
+        <p>Some example text that's free-flowing within the dropdown menu.</p>
+        <p class="mb-0">And this is more example text.</p>
+    </DropdownMenu>
+</Dropdown>
 ```
 
-```cs showLineNumbers
-```
-
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#text)
 
 ### Forms
 
 Put a form within a dropdown menu, or make it into a dropdown menu, and use margin or padding utilities to give it the negative space you require.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Forms" />
 
 ```cshtml showLineNumbers
+@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<Dropdown>
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown form</DropdownToggleButton>
+    <DropdownMenu Class="px-4 py-3" Style="width:480px;">
+        <EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label class="form-label">Item Price: <span class="text-danger">*</span></label>
+                <NumberInput TValue="decimal?" Value="invoice.Price" ValueExpression="() => invoice.Price" ValueChanged="(value) => PriceChanged(value)" Placeholder="Enter price" />
+                <ValidationMessage For="@(() => invoice.Price)" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Item Discount:</label>
+                <NumberInput TValue="decimal?" Value="invoice.Discount" ValueExpression="() => invoice.Discount" ValueChanged="(value) => DiscountChanged(value)" Placeholder="Enter discount" />
+                <ValidationMessage For="@(() => invoice.Discount)" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Total Amount: <span class="text-danger">*</span></label>
+                <NumberInput TValue="decimal?" @bind-Value="invoice.Total" Disabled="true" Placeholder="Enter total" />
+                <ValidationMessage For="@(() => invoice.Total)" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+                </div>
+            </div>
+        </EditForm>
+    </DropdownMenu>
+</Dropdown>
 ```
 
 ```cs showLineNumbers
+@code {
+    private Invoice invoice = new();
+    private EditContext editContext = default!;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(invoice);
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        CalculateToatl();
+        base.OnParametersSet();
+    }
+
+    private void PriceChanged(decimal? value)
+    {
+        invoice.Price = value;
+        CalculateToatl();
+    }
+
+    private void DiscountChanged(decimal? value)
+    {
+        invoice.Discount = value;
+        CalculateToatl();
+    }
+
+    private void CalculateToatl()
+    {
+        var price = invoice.Price.HasValue ? invoice.Price.Value : 0;
+        var discount = invoice.Discount.HasValue ? invoice.Discount.Value : 0;
+        invoice.Total = price - discount;
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        Console.WriteLine($"Price: {invoice.Price}");
+        Console.WriteLine($"Discount: {invoice.Discount}");
+        Console.WriteLine($"Total: {invoice.Total}");
+    }
+
+    private void ResetForm()
+    {
+        invoice = new();
+        editContext = new EditContext(invoice);
+    }
+
+    public class Invoice
+    {
+        [Required(ErrorMessage = "Price required.")]
+        [Range(60, 500, ErrorMessage = "Price should be between 60 and 500.")]
+        public decimal? Price { get; set; } = 232M;
+
+        [Range(0, 50, ErrorMessage = "Discount should be between 0 and 50.")]
+        public decimal? Discount { get; set; }
+
+        [Required(ErrorMessage = "Amount required.")]
+        [Range(10, 500, ErrorMessage = "Total should be between 60 and 500.")]
+        public decimal? Total { get; set; }
+    }
+}
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#forms)
 
 ### Auto close behavior
 
 By default, the DropdownMenu is closed when clicking either inside or outside the DropdownMenu. You can use the AutoClose and AutoCloseBehavior parameters to change this behavior of the Dropdown.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Auto close behavior" />
 
 ```cshtml showLineNumbers
+<Dropdown AutoClose="true">
+    <DropdownToggleButton Color="ButtonColor.Secondary">Default dropdown</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
+<Dropdown AutoClose="true" AutoCloseBehavior="DropdownAutoCloseBehavior.Outside">
+    <DropdownToggleButton Color="ButtonColor.Secondary">Clickable outside</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
+<Dropdown AutoClose="true" AutoCloseBehavior="DropdownAutoCloseBehavior.Inside">
+    <DropdownToggleButton Color="ButtonColor.Secondary">Clickable inside</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
+<Dropdown AutoClose="false">
+    <DropdownToggleButton Color="ButtonColor.Secondary">Manual close</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
 ```
 
-```cs showLineNumbers
-```
-
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#auto-close-behavior)
 
 ### Methods
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Methods" />
 
 ```cshtml showLineNumbers
+<Dropdown @ref="dropdown1">
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown button</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
+
+<Button Color="ButtonColor.Primary" @onclick="ShowAsync">Show</Button>
+<Button Color="ButtonColor.Primary" @onclick="HideAsync">Hide</Button>
+<Button Color="ButtonColor.Primary" @onclick="ToggleAsync">Toggle</Button>
 ```
 
 ```cs showLineNumbers
+@code{
+    private Dropdown dropdown1 = default!;
+
+    private async Task ShowAsync() => await dropdown1.ShowAsync();
+    private async Task HideAsync() => await dropdown1.HideAsync();
+    private async Task ToggleAsync() => await dropdown1.ToggleAsync();
+}
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#methods)
 
 ### Events
 
 All dropdown events are fired at the toggling element and then bubbled up.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - " />
+<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Events" />
 
 ```cshtml showLineNumbers
+<Dropdown OnHiding="OnDropdownHidingAsync"
+          OnHidden="OnDropdownHiddenAsync"
+          OnShowing="OnDropdownShowingAsync"
+          OnShown="OnDropdownShownAsync">
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown button</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
 ```
 
 ```cs showLineNumbers
+@code {
+    List<string> messages = new List<string>();
+
+    private void OnDropdownHidingAsync() => messages.Add(new("OnHiding"));
+
+    private void OnDropdownHiddenAsync() => messages.Add(new("OnHidden"));
+
+    private void OnDropdownShowingAsync() => messages.Add(new("OnShowing"));
+
+    private void OnDropdownShownAsync() => messages.Add(new("OnShown"));
+}
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#events)
