@@ -438,7 +438,7 @@ Add a header to label sections of actions in any dropdown menu.
 
 Separate groups of related menu items with a divider.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Dividers" />
+<img src="https://i.imgur.com/8zd9Rod.png" alt="Blazor Bootstrap: Dropdown Component - Dividers" />
 
 ```cshtml showLineNumbers
 <Dropdown>
@@ -459,7 +459,7 @@ Separate groups of related menu items with a divider.
 
 Place any freeform text within a dropdown menu with text and use spacing utilities. Note that youll likely need additional sizing styles to constrain the menu width.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Text" />
+<img src="https://i.imgur.com/2G0ozU0.png" alt="Blazor Bootstrap: Dropdown Component - Text" />
 
 ```cshtml showLineNumbers
 <Dropdown>
@@ -477,7 +477,7 @@ Place any freeform text within a dropdown menu with text and use spacing utiliti
 
 Put a form within a dropdown menu, or make it into a dropdown menu, and use margin or padding utilities to give it the negative space you require.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Forms" />
+<img src="https://i.imgur.com/q52EBle.png" alt="Blazor Bootstrap: Dropdown Component - Forms" />
 
 ```cshtml showLineNumbers
 @using System.ComponentModel.DataAnnotations
@@ -602,7 +602,7 @@ Put a form within a dropdown menu, or make it into a dropdown menu, and use marg
 
 By default, the DropdownMenu is closed when clicking either inside or outside the DropdownMenu. You can use the AutoClose and AutoCloseBehavior parameters to change this behavior of the Dropdown.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Auto close behavior" />
+<img src="https://i.imgur.com/vq2sgtO.png" alt="Blazor Bootstrap: Dropdown Component - Auto close behavior" />
 
 ```cshtml showLineNumbers
 <Dropdown AutoClose="true">
@@ -643,7 +643,7 @@ By default, the DropdownMenu is closed when clicking either inside or outside th
 
 ### Methods
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Methods" />
+<img src="https://i.imgur.com/gaJz8Ar.png" alt="Blazor Bootstrap: Dropdown Component - Methods" />
 
 ```cshtml showLineNumbers
 <Dropdown @ref="dropdown1">
@@ -676,7 +676,7 @@ By default, the DropdownMenu is closed when clicking either inside or outside th
 
 All dropdown events are fired at the toggling element and then bubbled up.
 
-<img src="https://i.imgur.com/MjueRsB.png" alt="Blazor Bootstrap: Dropdown Component - Events" />
+<img src="https://i.imgur.com/74NtN1y.png" alt="Blazor Bootstrap: Dropdown Component - Events" />
 
 ```cshtml showLineNumbers
 <Dropdown OnHiding="OnDropdownHidingAsync"
