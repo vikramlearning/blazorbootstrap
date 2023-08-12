@@ -1,0 +1,112 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<Dropdown>
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown form</DropdownToggleButton>
+    <DropdownMenu Class="px-4 py-3" Style="width:480px;">
+        <EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label class="form-label">Item Price: <span class="text-danger">*</span></label>
+                <NumberInput TValue="decimal?" Value="invoice.Price" ValueExpression="() => invoice.Price" ValueChanged="(value) => PriceChanged(value)" Placeholder="Enter price" />
+                <ValidationMessage For="@(() => invoice.Price)" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Item Discount:</label>
+                <NumberInput TValue="decimal?" Value="invoice.Discount" ValueExpression="() => invoice.Discount" ValueChanged="(value) => DiscountChanged(value)" Placeholder="Enter discount" />
+                <ValidationMessage For="@(() => invoice.Discount)" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Total Amount: <span class="text-danger">*</span></label>
+                <NumberInput TValue="decimal?" @bind-Value="invoice.Total" Disabled="true" Placeholder="Enter total" />
+                <ValidationMessage For="@(() => invoice.Total)" />
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 text-right">
+                    <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+                </div>
+            </div>
+        </EditForm>
+    </DropdownMenu>
+</Dropdown>
+
+@code {
+    private Invoice invoice = new();
+    private EditContext editContext = default!;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(invoice);
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        CalculateToatl();
+        base.OnParametersSet();
+    }
+
+    private void PriceChanged(decimal? value)
+    {
+        invoice.Price = value;
+        CalculateToatl();
+    }
+
+    private void DiscountChanged(decimal? value)
+    {
+        invoice.Discount = value;
+        CalculateToatl();
+    }
+
+    private void CalculateToatl()
+    {
+        var price = invoice.Price.HasValue ? invoice.Price.Value : 0;
+        var discount = invoice.Discount.HasValue ? invoice.Discount.Value : 0;
+        invoice.Total = price - discount;
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        Console.WriteLine($"Price: {invoice.Price}");
+        Console.WriteLine($"Discount: {invoice.Discount}");
+        Console.WriteLine($"Total: {invoice.Total}");
+    }
+
+    private void ResetForm()
+    {
+        invoice = new();
+        editContext = new EditContext(invoice);
+    }
+
+    public class Invoice
+    {
+        [Required(ErrorMessage = "Price required.")]
+        [Range(60, 500, ErrorMessage = "Price should be between 60 and 500.")]
+        public decimal? Price { get; set; } = 232M;
+
+        [Range(0, 50, ErrorMessage = "Discount should be between 0 and 50.")]
+        public decimal? Discount { get; set; }
+
+        [Required(ErrorMessage = "Amount required.")]
+        [Range(10, 500, ErrorMessage = "Total should be between 60 and 500.")]
+        public decimal? Total { get; set; }
+    }
+}
