@@ -49,7 +49,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 ### Single button
 
-<img src="https://i.imgur.com/aq54YVp.png" alt="Blazor Bootstrap: Dropdown Component - Single button" />
+<img src="https://i.imgur.com/HkqLwlx.png" alt="Blazor Bootstrap: Dropdown Component - Single button" />
 
 ```cshtml {1} showLineNumbers
 <Dropdown>
@@ -66,7 +66,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 ### Color
 
-<img src="https://i.imgur.com/2Y7SAWy.png" alt="Blazor Bootstrap: Dropdown Component - Color" />
+<img src="https://i.imgur.com/cuvBVJu.png" alt="Blazor Bootstrap: Dropdown Component - Color" />
 
 ```cshtml {1} showLineNumbers
 <div class="d-flex gap-2 mb-4">
@@ -125,7 +125,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 ### Split button
 
-<img src="https://i.imgur.com/ImMId1X.png" alt="Blazor Bootstrap: Dropdown Component - Split button" />
+<img src="https://i.imgur.com/beAr31J.png" alt="Blazor Bootstrap: Dropdown Component - Split button" />
 
 ```cshtml showLineNumbers
 <div class="d-flex gap-2 mb-4">
@@ -190,7 +190,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 ### Sizing
 
-<img src="https://i.imgur.com/cgdjg0i.png" alt="Blazor Bootstrap: Dropdown Component - Sizing - Large" />
+<img src="https://i.imgur.com/fwcMxKb.png" alt="Blazor Bootstrap: Dropdown Component - Sizing - Large" />
 
 ```cshtml showLineNumbers
 <div class="d-flex gap-2 mb-4">
@@ -214,7 +214,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 </div>
 ```
 
-<img src="https://i.imgur.com/hDVHL7n.png" alt="Blazor Bootstrap: Dropdown Component - Sizing - Small" />
+<img src="https://i.imgur.com/HOlA6Uw.png" alt="Blazor Bootstrap: Dropdown Component - Sizing - Small" />
 
 ```cshtml showLineNumbers
 <div class="d-flex gap-2 mb-4">
@@ -246,7 +246,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 To trigger **DropdownMenu** above elements, add the `Direction="DropdownDirection.Dropup"` to the **Dropdown** component.
 
-<img src="https://i.imgur.com/mP0XLZX.png" alt="Blazor Bootstrap: Dropdown Component - Dropup" />
+<img src="https://i.imgur.com/l90nW3S.png" alt="Blazor Bootstrap: Dropdown Component - Dropup" />
 
 ```cshtml showLineNumbers
 <div class="d-flex gap-2">
@@ -276,7 +276,7 @@ To trigger **DropdownMenu** above elements, add the `Direction="DropdownDirectio
 
 To center the DropdownMenu above the toggle, add the Direction="DropdownDirection.DropupCentered" to the Dropdown component.
 
-<img src="https://i.imgur.com/gz9pTPJ.png" alt="Blazor Bootstrap: Dropdown Component - Dropup centered" />
+<img src="https://i.imgur.com/kc462Yy.png" alt="Blazor Bootstrap: Dropdown Component - Dropup centered" />
 
 ```cshtml showLineNumbers
 <div class="d-flex gap-2">
@@ -297,7 +297,7 @@ To center the DropdownMenu above the toggle, add the Direction="DropdownDirectio
 
 To trigger DropdownMenu at the right of elements, add the Direction="DropdownDirection.Dropend" to the Dropdown component.
 
-<img src="https://i.imgur.com/yWy4lh3.png" alt="Blazor Bootstrap: Dropdown Component - Dropend" />
+<img src="https://i.imgur.com/nSZ6Kdv.png" alt="Blazor Bootstrap: Dropdown Component - Dropend" />
 
 ```cshtml showLineNumbers
 <div class="d-flex gap-2">
