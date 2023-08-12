@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Dropdown Component
 description: Dropdowns are toggleable, contextual overlays for displaying lists of links and more. They are toggled by clicking, not by hovering; this is an intentional design decision'by bootstrap.
-image: https://i.imgur.com/aq54YVp.png
+image: https://i.imgur.com/beAr31J.png
 
 sidebar_label: Dropdown
 sidebar_position: 9
@@ -12,7 +12,7 @@ sidebar_position: 9
 Dropdowns are toggleable, contextual overlays for displaying lists of links and more. 
 They are toggled by clicking, not by hovering; this is an intentional design decision'by bootstrap.
 
-<img src="https://i.imgur.com/aq54YVp.png" alt="Blazor Bootstrap: Dropdown component" />
+<img src="https://i.imgur.com/beAr31J.png" alt="Blazor Bootstrap: Dropdown component" />
 
 ## Parameters
 
