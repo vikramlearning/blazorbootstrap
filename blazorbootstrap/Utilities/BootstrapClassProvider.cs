@@ -86,13 +86,13 @@ public class BootstrapClassProvider
     #region Card
 
     public string Card() => "card";
-
-    public string CardHeader() => $"{Card()}-heading";
+    public string CardHeader() => $"{Card()}-header";
     public string CardBody() => $"{Card()}-body";
-    public string CardTitle() => $"{Card()}-heading";
+    public string CardFooter() => $"{Card()}-footer";
+    public string CardLink() => $"{Card()}-link";
     public string CardSubTitle() => $"{Card()}-subtitle";
     public string CardText() => $"{Card()}-text";
-    public string CardFooter() => $"{Card()}-footer";
+    public string CardTitle() => $"{Card()}-title";
 
     #endregion
 

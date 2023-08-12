@@ -4,7 +4,7 @@
 
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
-<h1>Blazor Collapse</h1>
+<h1>Blazor Card</h1>
 <div class="lead mb-3">
     BootstrapBootstrap's cards provide a flexible and extensible content container with multiple variants and options.
 </div>
@@ -19,6 +19,18 @@
     Click the buttons below to show and hide the content.
 </div>
 <Demo Type="typeof(Card_Demo_01_Examples)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Body" PageUrl="@pageUrl" HashTagName="body" />
+<Demo Type="typeof(Card_Demo_02_Content_Types_Body)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Titles, text, and links" PageUrl="@pageUrl" HashTagName="titles-text-and-links" />
+<Demo Type="typeof(Card_Demo_03_Content_Types_Titles_Text_And_Links)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Images" PageUrl="@pageUrl" HashTagName="images" />
+<Demo Type="typeof(Card_Demo_04_Content_Types_Images)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="List groups" PageUrl="@pageUrl" HashTagName="list-groups" />
+<Demo Type="typeof(Card_Demo_05_Content_Types_List_Groups)" Tabs="false" />
 
 @code {
     private string pageUrl = "/card";
