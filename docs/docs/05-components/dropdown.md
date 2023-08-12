@@ -14,36 +14,63 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 <img src="https://i.imgur.com/beAr31J.png" alt="Blazor Bootstrap: Dropdown component" />
 
-## Parameters
+## Dropdown Parameters
 
 | Name | Type | Descritpion | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Active | bool | When set to `true`, places the component in the active state with active styling. | | false | 1.0.0 |
-| Block | bool | Makes the button to span the full width of a parent. | | false | 1.0.0 |
-| ChildContent | RenderFragment | Specifies the content to be rendered inside this `Button`. | | | 1.0.0 |
-| Color | `ButtonColor` | Gets or sets the button color. | ✔️ | | 1.0.0 |
-| Disabled | bool | When set to `true`, disables the component's functionality and places it in a disabled state. | | false | 1.0.0 |
-| Loading | bool | Shows the loading spinner or a `LoadingTemplate`. | | false | 1.0.0 |
-| LoadingTemplate | RenderFragment | Gets or sets the component loading template. | | | 1.0.0 |
-| LoadingText | string | Gets or sets the loadgin text. | | `Loading...` | 1.0.0 |
-| Outline | bool | Makes the button to have the outlines. | | false | 1.0.0 |
-| Position | `Position` | Gets or sets the position. | | | 1.7.0 |
-| Size | `Size` | Changes the size of a button. | | | 1.0.0 |
-| TabIndex | int? | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | | 1.0.0 |
-| Target | `Target` | The target attribute specifies where to open the linked document for a `ButtonType.Link`. | | `Target.None` | 1.0.0 |
-| To | string | Denotes the target route of the `ButtonType.Link` button. | | | 1.0.0 |
-| TooltipPlacement | `TooltipPlacement` | Tooltip placement | | `TooltipPlacement.Top` | 1.0.0 |
-| TooltipTitle | string | Displays informative text when users hover, focus, or tap an element. | | | 1.0.0 |
-| TooltipColor | `TooltipColor` | Gets or sets the tooltip color. | | `TooltipColor.None` | 1.10.0 |
-| Type | `ButtonType` | Defines the button type. | | `ButtonType.Button` | 1.0.0 |
+| AutoClose | bool | Enables or disables the auto close. | | true | 1.10.0 |
+| AutoCloseBehavior | `DropdownAutoCloseBehavior` | Gets or sets the auto close behavior of the dropdown. | | `DropdownAutoCloseBehavior.Both` | 1.10.0 |
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this <see cref="ChildContent"/>. | | | 1.10.0 |
+| Direction | `DropdownDirection` | Gets or sets the dropdown direction. | | `DropdownDirection.Dropdown` | 1.10.0 |
+| Split | bool | Gets or sets the toggle button split behavior. | | false | 1.10.0 |
 
-## Methods
+## DropdownToggleButton Parameters
 
-| Name | Return Type | Description | Added Version |
-|:--|:--|:--|:--|
-| ShowAsync(string title, string message1, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. | 1.1.0 |
-| ShowAsync(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. | 1.1.0 |
-| ShowAsync<T\>(string title, Dictionary<string, object> parametres = null, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. T is component. | 1.1.0 |
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+
+## DropdownActionButton Parameters
+
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+
+## DropdownMenu Parameters
+
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+
+## DropdownHeader Parameters
+
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+
+## DropdownItem Parameters
+
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+
+## DropdownDivider Parameters
+
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+
+## Dropdown Methods
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| HideAsync | Hides the dropdown menu of a given navbar or tabbed navigation. | 1.10.0 |
+| ShowAsync | Shows the dropdown menu of a given navbar or tabbed navigation. | 1.10.0 |
+| ToggleAsync | Toggles the dropdown menu of a given navbar or tabbed navigation. | 1.10.0 |
+| UpdateAsync | Updates the position of an element’s dropdown. | 1.10.0 |
+
+## Dropdown Events
+
+| Event Type | Description | Added Version |
+|:--|:--|:--|
+| OnHiding | This event is fired immediately when the hide method has been called. | 1.10.0 |
+| OnHidden | This event is fired when an dropdown element has been hidden from the user (will wait for CSS transitions to complete). | 1.10.0 |
+| OnShowing | This event fires immediately when the show instance method is called. | 1.10.0 |
+| OnShown | This event is fired when an dropdown element has been made visible to the user (will wait for CSS transitions to complete). | 1.10.0 |
 
 ## Examples
 
