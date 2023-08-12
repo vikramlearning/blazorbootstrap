@@ -1,0 +1,30 @@
+﻿<Dropdown OnHiding="OnDropdownHidingAsync"
+          OnHidden="OnDropdownHiddenAsync"
+          OnShowing="OnDropdownShowingAsync"
+          OnShown="OnDropdownShownAsync">
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown button</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
+
+<div class="mt-3">
+    @foreach (var item in messages)
+    {
+        <p>Event: @item</p>
+    }
+</div>
+
+@code {
+    List<string> messages = new List<string>();
+
+    private void OnDropdownHidingAsync() => messages.Add(new("OnHiding"));
+
+    private void OnDropdownHiddenAsync() => messages.Add(new("OnHidden"));
+
+    private void OnDropdownShowingAsync() => messages.Add(new("OnShowing"));
+
+    private void OnDropdownShownAsync() => messages.Add(new("OnShown"));
+}
