@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class DropdownActionButton
 {

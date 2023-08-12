@@ -204,6 +204,12 @@ public partial class DropdownItem
     }
 
     /// <summary>
+    /// Specifies the content to be rendered inside this <see cref="ChildContent"/>.
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    /// <summary>
     /// When set to 'true', disables the component's functionality and places it in a disabled state.
     /// </summary>
     [Parameter]
@@ -216,12 +222,6 @@ public partial class DropdownItem
             DirtyClasses();
         }
     }
-
-    /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="ChildContent"/>.
-    /// </summary>
-    [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.

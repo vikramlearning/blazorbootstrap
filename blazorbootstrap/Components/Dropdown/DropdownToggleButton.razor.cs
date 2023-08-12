@@ -113,7 +113,7 @@ public partial class DropdownToggleButton
     }
 
     /// <summary>
-    /// Changes the size of a button.
+    /// Gets or sets the button size.
     /// </summary>
     [Parameter]
     public Size Size
