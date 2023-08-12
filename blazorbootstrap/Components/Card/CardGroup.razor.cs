@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Card
+public partial class CardGroup
 {
     #region Events
 
@@ -15,9 +15,7 @@ public partial class Card
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Card());
-        builder.Append(BootstrapClassProvider.ToTextAlignment(TextAlignment));
-        builder.Append(BootstrapClassProvider.ToCardColor(Color));
+        builder.Append(BootstrapClassProvider.CardGroup());
 
         base.BuildClasses(builder);
     }
@@ -33,16 +31,6 @@ public partial class Card
     /// Specifies the content to be rendered inside this <see cref="ChildContent"/>.
     /// </summary>
     [Parameter] public RenderFragment ChildContent { get; set; } = default!;
-
-    /// <summary>
-    /// Gets or sets the card color.
-    /// </summary>
-    [Parameter] public CardColor Color { get; set; }
-
-    /// <summary>
-    /// Gets or sets the text alignment of the card.
-    /// </summary>
-    [Parameter] public Alignment TextAlignment { get; set; }
 
     #endregion
 }
