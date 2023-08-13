@@ -136,14 +136,14 @@ public class BaseChart : BaseComponent
     #region Properties
 
     /// <summary>
-    /// Get or sets chart width.
-    /// </summary>
-    [Parameter] public int Width { get; set; }
-
-    /// <summary>
     /// Gets or sets chart height.
     /// </summary>
     [Parameter] public int Height { get; set; }
+
+    /// <summary>
+    /// Get or sets chart width.
+    /// </summary>
+    [Parameter] public int Width { get; set; }
 
     #endregion Properties
 }
