@@ -4,7 +4,7 @@ description: Provide contextual feedback messages for typical user actions with 
 image: https://i.imgur.com/wjCs7bZ.jpg
 
 sidebar_label: Alerts
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 # Blazor Alerts

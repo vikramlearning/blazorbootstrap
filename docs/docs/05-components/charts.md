@@ -4,7 +4,7 @@ description: Blazor Bootstrap charts are well-designed chart components on top o
 image: https://i.imgur.com/ATtFiUZ.png
 
 sidebar_label: Charts
-sidebar_position: 6
+sidebar_position: 8
 ---
 
 # Blazor Charts

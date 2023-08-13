@@ -4,7 +4,7 @@ description: Toggle the visibility of content across your project with the Blazo
 image: https://i.imgur.com/8A0emQe.png
 
 sidebar_label: Collapse
-sidebar_position: 7
+sidebar_position: 9
 ---
 
 # Blazor Collapse

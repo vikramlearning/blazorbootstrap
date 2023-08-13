@@ -4,7 +4,7 @@ description: Blazor Bootstrap breadcrumb component indicates the current page's 
 image: https://i.imgur.com/hO90HoC.jpg
 
 sidebar_label: Breadcrumb
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 # Blazor Breadcrumb
