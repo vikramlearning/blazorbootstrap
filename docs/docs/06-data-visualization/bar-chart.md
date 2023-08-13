@@ -1,43 +1,39 @@
 ﻿---
-title: Blazor Bar Chart Components
-description: Blazor Bootstrap charts are well-designed chart components on top of Chart.js to visualize data. It contains a rich UI gallery of charts that cater to all charting scenarios. Its high performance helps render large amounts of data quickly.
-image: https://i.imgur.com/ATtFiUZ.png
+title: Blazor Bar Chart
+description: A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.
+image: https://i.imgur.com/iJjl1Me.png
 
 sidebar_label: Bar Chart
 sidebar_position: 1
 ---
 
-# Blazor Charts
+A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. 
+It is sometimes used to show trend data and to compare multiple data sets side by side.
 
-Blazor Bootstrap charts are well-designed chart components on top of Chart.js to visualize data. It contains a rich UI gallery of charts that cater to all charting scenarios. Its high performance helps render large amounts of data quickly.
-
-## Blazor Bar Chart
-
-<img src="https://i.imgur.com/ATtFiUZ.png" alt="Blazor Chart Component - Blazor Bar Chart" />
-<br />
-<a href="https://demos.blazorbootstrap.com/charts#bar-chart">See blazor bar chart demo here.</a>
+<img src="https://i.imgur.com/iJjl1Me.png" alt="Blazor Chart Component - Blazor Bar Chart" />
 
 ## Parameters
 
-| Name | Type | Default | Required | Description |
-|:--|:--|:--|:--|:--|
-| Height | int | | | Gets or sets chart height. |
-| Width | int | | | Get or sets chart width. |
+| Name | Type | Description | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Height | int | Gets or sets chart height. | | | 1.0.0 |
+| Width | int | Gets or sets chart width. | | | 1.0.0 |
 
 ## Methods
 
-| Name | Descritpion |
-|:--|:--|
-| InitializeAsync(**ChartData** chartData, **IChartOptions** chartOptions) | Initialize Bar Chart. |
-| ResizeAsync(**int** width, **int** height) | Resize the chart. |
-| UpdateAsync(**ChartData** chartData, **IChartOptions** chartOptions) | Update Bar Chart. |
+| Name | Return type | Descritpion | Added Version |
+|:--|:--|:--|:--|
+| AddDataAsync | `ChartData` | Adds data to bar chart. | 1.10.0 |
+| AddDatasetAsync | `ChartData` | Adds dataset to bar chart. | 1.10.0 |
+| InitializeAsync | Task | Initialize Bar Chart. | 1.0.0 |
+| UpdateAsync | Task | Update Bar Chart. | 1.0.0 |
 
 ## ChartData Members
 
-| Property Name | Type | Default | Required | Description |
-|:--|:--|:--|:--|:--|
-| Labels | `List<string>` | null | ✔️ | Gets or sets the Labels. |
-| Datasets | `List<IChartDataset>` | null | ✔️ | Gets or sets the Datasets. |
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Labels | `List<string>` | null | ✔️ | Gets or sets the Labels. | 1.0.0 |
+| Datasets | `List<IChartDataset>` | null | ✔️ | Gets or sets the Datasets. | 1.0.0 |
 
 ## BarChartDataset Members
 
@@ -45,32 +41,455 @@ Blazor Bootstrap charts are well-designed chart components on top of Chart.js to
 **BarChartDataset** implements **IChartDataset**.
 :::
 
-| Property Name | Type | Default | Required | Description |
-|:--|:--|:--|:--|:--|
-| BackgroundColor | `List<string>` | null | | Get or sets the BackgroundColor. |
-| BarPercentage | double | 0.8 | | Percent (0-1) of the available width each bar should be within the category width. 1.0 will take the whole category width and put the bars right next to each other. |
-| BorderColor | `List<string>` | null | | Get or sets the BorderColor. |
-| BorderRadius | int | 0 | | Border radius. |
-| BorderWidth | `List<double>` | null | | Get or sets the BorderWidth. |
-| CategoryPercentage | double | 0.8 | | Percent (0-1) of the available width each category should be within the sample width. |
-| Clip | string | null | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0} |
-| Data | `List<double>` | null | | Get or sets the Data. |
-| Hidden | bool | false | | Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart. |
-| HoverBackgroundColor | `List<string>` | null | ✔️ | Get or sets the HoverBackgroundColor. |
-| HoverBorderColor | `List<string>` | null | ✔️ | Get or sets the HoverBorderColor. |
-| HoverBorderWidth | `List<double>` | null | ✔️ | Get or sets the HoverBorderWidth. |
-| Label | string | null | | The label for the dataset which appears in the legend and tooltips. |
-| Type | string | null | ✔️ | Get or sets the chart type. |
-| XAxisID | string | null | | The ID of the x axis to plot this dataset on. |
-| YAxisID | string | null | | The ID of the y axis to plot this dataset on. |
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| BackgroundColor | `List<string>` | null | | Get or sets the BackgroundColor. | 1.0.0 |
+| BarPercentage | double | 0.8 | | Percent (0-1) of the available width each bar should be within the category width. 1.0 will take the whole category width and put the bars right next to each other. | 1.0.0 |
+| BorderColor | `List<string>` | null | | Get or sets the BorderColor. | 1.0.0 |
+| BorderRadius | int | 0 | | Border radius. | 1.0.0 |
+| BorderWidth | `List<double>` | null | | Get or sets the BorderWidth. | 1.0.0 |
+| CategoryPercentage | double | 0.8 | | Percent (0-1) of the available width each category should be within the sample width. | 1.0.0 |
+| Clip | string | null | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0} | 1.0.0 |
+| Data | `List<double>` | null | | Get or sets the Data. | 1.0.0 |
+| Hidden | bool | false | | Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart. | 1.0.0 |
+| HoverBackgroundColor | `List<string>` | null | ✔️ | Get or sets the HoverBackgroundColor. | 1.0.0 |
+| HoverBorderColor | `List<string>` | null | ✔️ | Get or sets the HoverBorderColor. | 1.0.0 |
+| HoverBorderWidth | `List<double>` | null | ✔️ | Get or sets the HoverBorderWidth. | 1.0.0 |
+| Label | string | null | | The label for the dataset which appears in the legend and tooltips. | 1.0.0 |
+| Type | string | null | ✔️ | Get or sets the chart type. | 1.0.0 |
+| XAxisID | string | null | | The ID of the x axis to plot this dataset on. | 1.0.0 |
+| YAxisID | string | null | | The ID of the y axis to plot this dataset on. | 1.0.0 |
 
 ## BarChartOptions Members
 
-| Property Name | Type | Default | Required | Description |
-|:--|:--|:--|:--|:--|
-| IndexAxis | string | x | | The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts. |
-| Interaction | Interaction | | | Gets or sets the Interaction. |
-| Layout | ChartLayout | | | Gets or sets the ChartLayout. |
-| Plugins | Plugins | | | Gets or sets the Plugins. |
-| Responsive | bool | false | | Gets or sets the Responsive. |
-| Scales | Scales | | | Gets or sets the Scales. |
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| IndexAxis | string | x | | The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts. | 1.0.0 |
+| Interaction | `Interaction` | | | Gets or sets the Interaction. | 1.0.0 |
+| Layout | `ChartLayout` | | | Gets or sets the ChartLayout. | 1.0.0 |
+| Plugins | `Plugins` | | | Gets or sets the Plugins. | 1.0.0 |
+| Responsive | bool | false | | Gets or sets the Responsive. | 1.0.0 |
+| Scales | `Scales` | | | Gets or sets the Scales. | 1.0.0 |
+
+## Examples
+
+### How it works
+
+In the following example, a categorical 12-color palette is used.
+
+:::tip
+For data visualization, you can use the predefined palettes `ColorBuilder.CategoricalTwelveColors` for a 12-color palette and `ColorBuilder.CategoricalSixColors` for a 6-color palette. 
+These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
+:::
+
+<img src="https://i.imgur.com/uAWY4pV.png" alt="Blazor Bootstrap: Bar Chart Component - How it works" />
+
+```cshtml {} showLineNumbers
+<BarChart @ref="barChart" Width="800" Class="mb-4" />
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDataAsync()">Add Data</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowHorizontalBarChartAsync()">Horizontal Bar Chart</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowVerticalBarChartAsync()">Vertical Bar Chart</Button>
+```
+
+```cs {} showLineNumbers
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+
+    private int datasetsCount = 0;
+    private int labelsCount = 0;
+    private string[] months = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+    private Random random = new();
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
+        barChartOptions = new BarChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await barChart.InitializeAsync(chartData, barChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task RandomizeAsync()
+    {
+        if (chartData is null || chartData.Datasets is null || !chartData.Datasets.Any()) return;
+
+        var newDatasets = new List<IChartDataset>();
+
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is BarChartDataset barChartDataset
+                && barChartDataset is not null
+                && barChartDataset.Data is not null)
+            {
+                var count = barChartDataset.Data.Count;
+
+                var newData = new List<double>();
+                for (var i = 0; i < count; i++)
+                {
+                    newData.Add(random.Next(200));
+                }
+
+                barChartDataset.Data = newData;
+                newDatasets.Add(barChartDataset);
+            }
+        }
+
+        chartData.Datasets = newDatasets;
+
+        await barChart.UpdateAsync(chartData, barChartOptions);
+    }
+
+    private async Task AddDatasetAsync()
+    {
+        if (chartData is null || chartData.Datasets is null) return;
+
+        if (datasetsCount >= 12)
+            return;
+
+        var chartDataset = GetRandomBarChartDataset();
+        chartData = await barChart.AddDatasetAsync(chartData, chartDataset, barChartOptions);
+    }
+
+    private async Task AddDataAsync()
+    {
+        if (chartData is null || chartData.Datasets is null)
+            return;
+
+        if (labelsCount >= 12)
+            return;
+
+        var data = new List<IChartDatasetData>();
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is BarChartDataset barChartDataset)
+                data.Add(new BarChartDatasetData(barChartDataset.Label, random.Next(200)));
+        }
+
+        chartData = await barChart.AddDataAsync(chartData, GetNextDataLabel(), data);
+    }
+
+    private async Task ShowHorizontalBarChartAsync()
+    {
+        barChartOptions.IndexAxis = "y";
+        await barChart.UpdateAsync(chartData, barChartOptions);
+    }
+
+    private async Task ShowVerticalBarChartAsync()
+    {
+        barChartOptions.IndexAxis = "x";
+        await barChart.UpdateAsync(chartData, barChartOptions);
+    }
+
+    #region Data Preparation
+
+    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
+    {
+        var datasets = new List<IChartDataset>();
+
+        for (var index = 0; index < numberOfDatasets; index++)
+        {
+            datasets.Add(GetRandomBarChartDataset());
+        }
+
+        return datasets;
+    }
+
+    private BarChartDataset GetRandomBarChartDataset()
+    {
+        var c = ColorBuilder.CategoricalTwelveColors[datasetsCount].ToColor();
+
+        datasetsCount += 1;
+
+        return new BarChartDataset()
+            {
+                Label = $"Product {datasetsCount}",
+                Data = GetRandomData(),
+                BackgroundColor = new List<string> { c.ToRgbString() },
+                BorderColor = new List<string> { c.ToRgbString() },
+                BorderWidth = new List<double> { 0 },
+            };
+    }
+
+    private List<double> GetRandomData()
+    {
+        var data = new List<double>();
+        for (var index = 0; index < labelsCount; index++)
+        {
+            data.Add(random.Next(200));
+        }
+
+        return data;
+    }
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel()
+    {
+        labelsCount += 1;
+        return months[labelsCount - 1];
+    }
+
+    #endregion Data Preparation
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/charts/bar-chart#how-it-works)
+
+### Horizontal bar chart
+
+<img src="https://i.imgur.com/MIMC8wz.png" alt="Blazor Bootstrap: Bar Chart Component - Horizontal bar chart" />
+
+```cshtml {} showLineNumbers
+<BarChart @ref="barChart" Height="300" Class="mb-4" />
+```
+
+```cs {} showLineNumbers
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var labels = new List<string> { "Chrome", "Firefox", "Safari", "Edge" };
+        var datasets = new List<IChartDataset>();
+
+        var dataset1 = new BarChartDataset()
+            {
+                Data = new List<double> { 55000, 15000, 18000, 21000 },
+                BackgroundColor = new List<string> { ColorBuilder.CategoricalTwelveColors[0] },
+                BorderColor = new List<string> { ColorBuilder.CategoricalTwelveColors[0] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset1);
+
+        chartData = new ChartData { 
+            Labels = labels, 
+            Datasets = datasets };
+
+        barChartOptions = new BarChartOptions();
+        barChartOptions.Responsive = true;
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.IndexAxis = "y";
+
+        barChartOptions.Scales.X.Title.Text = "Visitors";
+        barChartOptions.Scales.X.Title.Display = true;
+
+        barChartOptions.Scales.Y.Title.Text = "Browser";
+        barChartOptions.Scales.Y.Title.Display = true;
+
+        barChartOptions.Plugins.Legend.Display = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await barChart.InitializeAsync(chartData, barChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/charts/bar-chart#horizontal-bar-chart)
+
+### Stacked bar chart
+
+<img src="https://i.imgur.com/jMIvDFZ.png" alt="Blazor Bootstrap: Bar Chart Component - Stacked bar chart" />
+
+```cshtml {} showLineNumbers
+<BarChart @ref="barChart" Height="300" Class="mb-4" />
+```
+
+```cs {} showLineNumbers
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var colors = ColorBuilder.CategoricalTwelveColors;
+
+        var labels = new List<string> { "Chrome", "Firefox", "Safari", "Edge" };
+        var datasets = new List<IChartDataset>();
+
+        var dataset1 = new BarChartDataset()
+            {
+                Label = "Windows",
+                Data = new List<double> { 28000, 8000, 2000, 17000 },
+                BackgroundColor = new List<string> { colors[0] },
+                BorderColor = new List<string> { colors[0] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset1);
+
+        var dataset2 = new BarChartDataset()
+            {
+                Label = "macOS",
+                Data = new List<double> { 8000, 10000, 14000, 8000 },
+                BackgroundColor = new List<string> { colors[1] },
+                BorderColor = new List<string> { colors[1] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset2);
+
+        var dataset3 = new BarChartDataset()
+            {
+                Label = "Other",
+                Data = new List<double> { 28000, 10000, 14000, 8000 },
+                BackgroundColor = new List<string> { colors[2] },
+                BorderColor = new List<string> { colors[2] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset3);
+
+        chartData = new ChartData
+            {
+                Labels = labels,
+                Datasets = datasets
+            };
+
+        barChartOptions = new();
+        barChartOptions.Responsive = true;
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.IndexAxis = "y";
+
+        barChartOptions.Scales.X.Title.Text = "Visitors";
+        barChartOptions.Scales.X.Title.Display = true;
+
+        barChartOptions.Scales.Y.Title.Text = "Browser";
+        barChartOptions.Scales.Y.Title.Display = true;
+
+        barChartOptions.Scales.X.Stacked = true;
+        barChartOptions.Scales.Y.Stacked = true;
+
+        barChartOptions.Plugins.Title.Text = "Operating system";
+        barChartOptions.Plugins.Title.Display = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await barChart.InitializeAsync(chartData, barChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/charts/bar-chart#stacked-bar-chart)
+
+### Locale
+
+By default, the chart is using the default locale of the platform on which it is running. 
+In the following example, you will see the chart in the **German** locale (**de_DE**).
+
+<img src="https://i.imgur.com/3qndkPO.png" alt="Blazor Bootstrap: Bar Chart Component - Locale" />
+
+```cshtml {} showLineNumbers
+<BarChart @ref="barChart" Height="300" Class="mb-4" />
+```
+
+```cs {} showLineNumbers
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var colors = ColorBuilder.CategoricalTwelveColors;
+
+        var labels = new List<string> { "Chrome", "Firefox", "Safari", "Edge" };
+        var datasets = new List<IChartDataset>();
+
+        var dataset1 = new BarChartDataset()
+            {
+                Label = "Windows",
+                Data = new List<double> { 28000, 8000, 2000, 17000 },
+                BackgroundColor = new List<string> { colors[0] },
+                BorderColor = new List<string> { colors[0] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset1);
+
+        var dataset2 = new BarChartDataset()
+            {
+                Label = "macOS",
+                Data = new List<double> { 8000, 10000, 14000, 8000 },
+                BackgroundColor = new List<string> { colors[1] },
+                BorderColor = new List<string> { colors[1] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset2);
+
+        var dataset3 = new BarChartDataset()
+            {
+                Label = "Other",
+                Data = new List<double> { 28000, 10000, 14000, 8000 },
+                BackgroundColor = new List<string> { colors[2] },
+                BorderColor = new List<string> { colors[2] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset3);
+
+        chartData = new ChartData
+            {
+                Labels = labels,
+                Datasets = datasets
+            };
+
+        barChartOptions = new();
+        barChartOptions.Locale = "de-DE";
+        barChartOptions.Responsive = true;
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.IndexAxis = "y";
+
+        barChartOptions.Scales.X.Title.Text = "Visitors";
+        barChartOptions.Scales.X.Title.Display = true;
+
+        barChartOptions.Scales.Y.Title.Text = "Browser";
+        barChartOptions.Scales.Y.Title.Display = true;
+
+        barChartOptions.Scales.X.Stacked = true;
+        barChartOptions.Scales.Y.Stacked = true;
+
+        barChartOptions.Plugins.Title.Text = "Operating system";
+        barChartOptions.Plugins.Title.Display = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await barChart.InitializeAsync(chartData, barChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/charts/bar-chart#locale)
