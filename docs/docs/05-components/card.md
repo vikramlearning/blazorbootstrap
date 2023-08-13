@@ -99,7 +99,7 @@ Below is an example of a basic card with mixed content and a fixed width. Cards 
 </Card>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#examples)
 
 ### Content types
 
@@ -119,7 +119,7 @@ The building block of a card is the CardBody. Use it whenever you need a padded 
 </Card>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#body)
 
 ### Titles, text, and links
 
@@ -137,7 +137,7 @@ The building block of a card is the CardBody. Use it whenever you need a padded 
 </Card>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#titles-text-and-links)
 
 ### Images
 
@@ -165,7 +165,7 @@ The building block of a card is the CardBody. Use it whenever you need a padded 
 </Card>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#images)
 
 ### List groups
 
@@ -183,7 +183,7 @@ Create lists of content in a card with a flush list group.
 </Card>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#list-groups)
 
 ### Kitchen sink
 
@@ -211,7 +211,7 @@ Shown below are image styles, blocks, text styles, and a list group—all wrappe
 </Card>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#kitchen-sink)
 
 ### Header and footer
 
@@ -232,7 +232,7 @@ Add an optional header and/or footer within a card.
 </Card>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#header-and-footer)
 
 ### Sizing
 
@@ -264,7 +264,7 @@ You can change this as needed with custom CSS, grid classes, grid Sass mixins, o
 </div>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#sizing)
 
 ### Text alignment
 
@@ -298,7 +298,7 @@ You can quickly change the text alignment of any card—in its entirety or speci
 </Card>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#text-alignment)
 
 ### Background and color
 
@@ -373,7 +373,7 @@ You can quickly change the text alignment of any card—in its entirety or speci
     </CardBody>
 </Card>
 ```
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#background-and-color)
 
 ### Card groups
 
@@ -411,7 +411,7 @@ Card groups start off stacked and use display: flex; to become attached with uni
 </CardGroup>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#card-groups)
 
 ### Card groups with footer
 
@@ -454,4 +454,4 @@ When using card groups with footers, their content will automatically line up.
 </CardGroup>
 ```
 
-[See the demo here.](https://demos.blazorbootstrap.com/card#)
+[See the demo here.](https://demos.blazorbootstrap.com/card#card-groups-with-footer)
