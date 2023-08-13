@@ -4,7 +4,7 @@ description: Blazor Bootstrap callout component provides content presentation in
 image: https://i.imgur.com/vmibzEu.png
 
 sidebar_label: Callout
-sidebar_position: 5
+sidebar_position: 6
 ---
 
 # Blazor Callout

@@ -86,13 +86,14 @@ public class BootstrapClassProvider
     #region Card
 
     public string Card() => "card";
-
-    public string CardHeader() => $"{Card()}-heading";
+    public string CardGroup() => $"{Card()}-group";
+    public string CardHeader() => $"{Card()}-header";
     public string CardBody() => $"{Card()}-body";
-    public string CardTitle() => $"{Card()}-heading";
+    public string CardFooter() => $"{Card()}-footer";
+    public string CardLink() => $"{Card()}-link";
     public string CardSubTitle() => $"{Card()}-subtitle";
     public string CardText() => $"{Card()}-text";
-    public string CardFooter() => $"{Card()}-footer";
+    public string CardTitle() => $"{Card()}-title";
 
     #endregion
 
@@ -414,6 +415,19 @@ public class BootstrapClassProvider
         _ => "",
     };
 
+    public string ToCardColor(CardColor color) => color switch
+    {
+        CardColor.Primary => "text-bg-primary",
+        CardColor.Secondary => "text-bg-secondary",
+        CardColor.Success => "text-bg-success",
+        CardColor.Danger => "text-bg-danger",
+        CardColor.Warning => "text-bg-warning",
+        CardColor.Info => "text-bg-info",
+        CardColor.Light => "text-bg-light",
+        CardColor.Dark => "text-bg-dark",
+        _ => "",
+    };
+
     public string ToColor(TextColor color) => color switch
     {
         BlazorBootstrap.TextColor.Primary => "primary",
@@ -663,6 +677,14 @@ public class BootstrapClassProvider
         BlazorBootstrap.TabColor.Light => "bg-light text-dark",
         BlazorBootstrap.TabColor.Dark => "bg-dark text-white",
         _ => null,
+    };
+
+    public string ToTextAlignment(Alignment alignment) => alignment switch
+    {
+        Alignment.Start or Alignment.None => "text-start",
+        Alignment.Center => "text-center",
+        Alignment.End => "text-end",
+        _ => ""
     };
 
     public string ToTextColor(TextColor color) => color switch

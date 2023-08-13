@@ -4,7 +4,7 @@ description: Dropdowns are toggleable, contextual overlays for displaying lists 
 image: https://i.imgur.com/beAr31J.png
 
 sidebar_label: Dropdown
-sidebar_position: 9
+sidebar_position: 11
 ---
 
 # Blazor Dropdown

@@ -4,7 +4,7 @@ description: The Blazor Bootstrap Badge component shows the small count and labe
 image: https://i.imgur.com/ux0sTs9.png
 
 sidebar_label: Badge
-sidebar_position: 2
+sidebar_position: 3
 ---
 
 # Blazor Badge

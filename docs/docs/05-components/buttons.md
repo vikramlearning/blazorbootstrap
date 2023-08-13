@@ -4,7 +4,7 @@ description: Use Blazor Bootstrap button styles for actions in forms, dialogs, a
 image: https://i.imgur.com/Ne7FJ5H.jpg
 
 sidebar_label: Buttons
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Blazor Buttons

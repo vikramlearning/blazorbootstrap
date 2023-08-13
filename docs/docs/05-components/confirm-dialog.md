@@ -4,7 +4,7 @@ description: Use Blazor Bootstrap confirm dialog component if you want the user 
 image: https://i.imgur.com/B5Hf85u.png
 
 sidebar_label: Confirm Dialog
-sidebar_position: 8
+sidebar_position: 10
 ---
 
 # Blazor Confirm Dialog

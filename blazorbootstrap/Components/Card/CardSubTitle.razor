@@ -1,6 +1,39 @@
 @namespace BlazorBootstrap
 @inherits BaseComponent
 
-<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-    @ChildContent
-</div>
+@if (Size == HeadingSize.H1)
+{
+    <h1 @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        @ChildContent
+    </h1>
+}
+else if (Size == HeadingSize.H2)
+{
+    <h2 @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        @ChildContent
+    </h2>
+}
+else if (Size == HeadingSize.H3)
+{
+    <h3 @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        @ChildContent
+    </h3>
+}
+else if (Size == HeadingSize.H4)
+{
+    <h4 @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        @ChildContent
+    </h4>
+}
+else if (Size == HeadingSize.H5)
+{
+    <h5 @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        @ChildContent
+    </h5>
+}
+else if (Size == HeadingSize.H6)
+{
+    <h6 @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+        @ChildContent
+    </h6>
+}
