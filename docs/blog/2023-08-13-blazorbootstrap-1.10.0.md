@@ -8,7 +8,7 @@ authors:
 tags: [v1.10.0, blazor, bootstrap, bootstrap5, blazorbootstrap, grid, blazorgrid]
 ---
 
-We are excited to release 1.10.0 with new Table and Card component. Charts, Grid, Button, Tooltip, and Switch component updates!!!
+We are excited to release 1.10.0 with new Card and Dropdown component. Charts, Grid, Button, Tooltip, and Switch component updates!!!
 
 ![image](https://i.imgur.com/qH7G1ZT.png "Blazor Bootstrap: Grid Component")
 
@@ -17,24 +17,40 @@ We are excited to release 1.10.0 with new Table and Card component. Charts, Grid
 ## What's New
 
 - `Dropdown` Component
-  - TODO: Update
+  - Single button
+  - Multiple colors
+  - Split button
+  - Sizing
+  - Directions (Dropup, Dropup centered, Dropend, and Dropstart)
+  - Active
+  - Disabled
+  - Menu content (Header, Dividers, Text, and Forms)
+  - Auto close behavior
 
 - `Card` Component
-  - TODO: Update
+  - Content types (Body, Titles, text, and links)
+  - Images
+  - List groups
+  - Header and footer
+  - Sizing
+  - Text alignment
+  - Background and color
+  - Card groups
+  - Card groups with footer
 
 ## What's changed
 
 - `Bar Chart` component
-  - TODO: Update
+  - New AddDataSetAsync and AddAsync methods
 
 - `Doughnut Chart` component
-  - TODO: Update
+  - New AddDataSetAsync and AddAsync methods
 
 - `Line Chart` component
-  - TODO: Update
+  - New AddDataSetAsync and AddAsync methods
 
 - `Pie Chart` component
-  - TODO: Update
+  - New AddDataSetAsync and AddAsync methods
 
 - `Grid` component
   - Grid: Filters translation support [#292](https://github.com/vikramlearning/blazorbootstrap/issues/292)
@@ -52,6 +68,10 @@ We are excited to release 1.10.0 with new Table and Card component. Charts, Grid
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
-- [Blazor Line Chart Component Documentation](https://getblazorbootstrap.com/docs/components/charts)
+- [Blazor Card Component Documentation](https://getblazorbootstrap.com/docs/components/card)
+- [Blazor Dropdown Component Documentation](https://getblazorbootstrap.com/docs/components/dropdown)
+- [Blazor Chart Components Documentation](https://getblazorbootstrap.com/docs/components/charts)
 - [Blazor Grid Component Documentation](https://getblazorbootstrap.com/docs/components/grid)
+- [Blazor Button Component Documentation](https://getblazorbootstrap.com/docs/forms/buttons)
+- [Blazor Tooltip Component Documentation](https://getblazorbootstrap.com/docs/forms/tooltips)
 - [Blazor Switch Component Documentation](https://getblazorbootstrap.com/docs/forms/switch)
