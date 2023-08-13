@@ -21,49 +21,65 @@ A card is a flexible and extensible content container. It includes options for h
 
 ### Card Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|:--|:--|:--|:--|:--|
-| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside this. |
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
+| Color | `CardColor` | Gets or sets the card color. | | `CardColor.None` | 1.10.0 |
+| TextAlignment | `Alignment` | Gets or sets the text alignment of the card. | | `Alignment.None` | 1.10.0 |
 
 ### CardBody Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|:--|:--|:--|:--|:--|
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 
 ### CardFooter Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|:--|:--|:--|:--|:--|
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 
 ### CardGroup Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|:--|:--|:--|:--|:--|
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 
 ### CardHeader Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|:--|:--|:--|:--|:--|
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 
 ### CardLink Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|:--|:--|:--|:--|:--|
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
+| Disabled | bool | When set to 'true', disables the component's functionality and places it in a disabled state. | | | 1.10.0 |
+| To | `string?` | Gets or sets the target route. | ✔️ | | 1.10.0 |
+| Target | `Target` | The target attribute specifies where to open the linked document. | | `Target.None` | 1.10.0 |
+| TabIndex | `int?` | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | | 1.10.0 |
 
 ### CardSubTitle Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|:--|:--|:--|:--|:--|
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
+| Size | `HeadingSize` | Gets or sets the heading size. | | `HeadingSize.H6` | 1.10.0 |
 
 ### CardText Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|:--|:--|:--|:--|:--|
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 
 ### CardTitle Parameters
 
-| Name | Type | Default | Required | Descritpion |
-|:--|:--|:--|:--|:--|
+| Name | Type | Descritpion | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
+| Size | `HeadingSize` | Gets or sets the heading size. | | `HeadingSize.H5` | 1.10.0 |
 
 ## Examples
 
