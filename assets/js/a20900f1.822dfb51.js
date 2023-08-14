@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkblazorbootstrap=self.webpackChunkblazorbootstrap||[]).push([[6618],{92067:a=>{a.exports=JSON.parse('{"label":"currency","permalink":"/blog/tags/currency","allTagsPath":"/blog/tags","count":1}')}}]);

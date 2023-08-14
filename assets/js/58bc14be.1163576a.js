@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblazorbootstrap=self.webpackChunkblazorbootstrap||[]).push([[53826],{48355:a=>{a.exports=JSON.parse('{"label":"confirmmodal","permalink":"/blog/tags/confirmmodal","allTagsPath":"/blog/tags","count":1}')}}]);

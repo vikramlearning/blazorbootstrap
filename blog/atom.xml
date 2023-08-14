@@ -2,11 +2,30 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://getblazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-07-16T00:00:00.000Z</updated>
+    <updated>2023-08-13T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://getblazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://getblazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.10.0]]></title>
+        <id>/2023/08/13/blazorbootstrap-1.10.0</id>
+        <link href="https://getblazorbootstrap.com/blog/2023/08/13/blazorbootstrap-1.10.0"/>
+        <updated>2023-08-13T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.10.0 with new Card and Dropdown component. Charts, Grid, Button, Tooltip, and Switch component updates!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.10.0 with new Card and Dropdown component. Charts, Grid, Button, Tooltip, and Switch component updates!!!</p><p><img loading="lazy" src="https://i.imgur.com/qH7G1ZT.png" alt="image" title="Blazor Bootstrap: Grid Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's New<a class="hash-link" href="#whats-new" title="Direct link to heading">​</a></h2><ul><li><p><code>Dropdown</code> Component</p><ul><li>Single button</li><li>Multiple colors</li><li>Split button</li><li>Sizing</li><li>Directions (Dropup, Dropup centered, Dropend, and Dropstart)</li><li>Active</li><li>Disabled</li><li>Menu content (Header, Dividers, Text, and Forms)</li><li>Auto close behavior</li></ul></li><li><p><code>Card</code> Component</p><ul><li>Content types (Body, Titles, text, and links)</li><li>Images</li><li>List groups</li><li>Header and footer</li><li>Sizing</li><li>Text alignment</li><li>Background and color</li><li>Card groups</li><li>Card groups with footer</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><p><code>Bar Chart</code> component</p><ul><li>New AddDataSetAsync and AddAsync methods</li></ul></li><li><p><code>Doughnut Chart</code> component</p><ul><li>New AddDataSetAsync and AddAsync methods</li></ul></li><li><p><code>Line Chart</code> component</p><ul><li>New AddDataSetAsync and AddAsync methods</li></ul></li><li><p><code>Pie Chart</code> component</p><ul><li>New AddDataSetAsync and AddAsync methods</li></ul></li><li><p><code>Grid</code> component</p><ul><li>Grid: Filters translation support <a href="https://github.com/vikramlearning/blazorbootstrap/issues/292" target="_blank" rel="noopener noreferrer">#292</a></li></ul></li><li><p><code>Button</code> component</p><ul><li>Tooltip color support added</li></ul></li><li><p><code>Tooltip</code> component</p><ul><li>Tooltip color support added</li><li>Tooltip on button problem <a href="https://github.com/vikramlearning/blazorbootstrap/issues/296" target="_blank" rel="noopener noreferrer">#296</a></li></ul></li><li><p><code>Switch</code> component</p><ul><li>Switch is invoking EditContext OnFieldChanged even the change was not from UI <a href="https://github.com/vikramlearning/blazorbootstrap/issues/297" target="_blank" rel="noopener noreferrer">#297</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/card" target="_blank" rel="noopener noreferrer">Blazor Card Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/dropdown" target="_blank" rel="noopener noreferrer">Blazor Dropdown Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/charts" target="_blank" rel="noopener noreferrer">Blazor Chart Components Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/components/grid" target="_blank" rel="noopener noreferrer">Blazor Grid Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/buttons" target="_blank" rel="noopener noreferrer">Blazor Button Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/tooltips" target="_blank" rel="noopener noreferrer">Blazor Tooltip Component Documentation</a></li><li><a href="https://getblazorbootstrap.com/docs/forms/switch" target="_blank" rel="noopener noreferrer">Blazor Switch Component Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.10.0" term="v1.10.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="grid" term="grid"/>
+        <category label="blazorgrid" term="blazorgrid"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.9.5]]></title>
         <id>/2023/07/16/blazorbootstrap-1.9.5</id>
