@@ -1,6 +1,6 @@
 ﻿# Open Source Credits
 
-We use alot of open source software at blazorbootstrap. We would like to send a big thank you to the following projects and conributors that help make open source great!
+We use alot of open source software at blazorbootstrap. We would like to send a big thank you to the following projects and contributors that help make open source great!
 
 ## Blazorise
 
