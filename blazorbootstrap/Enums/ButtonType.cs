@@ -23,5 +23,5 @@ public enum ButtonType
     /// <summary>
     /// The button will be rendered as a link but will appear as a regular button.
     /// </summary>
-    Link,
+    Link
 }

@@ -45,8 +45,8 @@ public partial class AutoComplete<TItem> : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.FormControl());
-        builder.Append(BootstrapClassProvider.ToAutoCompleteSize(Size));
+        builder.Append(ClassProvider.FormControl());
+        builder.Append(ClassProvider.ToAutoCompleteSize(Size));
 
         base.BuildClasses(builder);
     }

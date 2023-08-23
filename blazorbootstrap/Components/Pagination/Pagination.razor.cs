@@ -35,10 +35,10 @@ public partial class Pagination : BaseComponent
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Pagination());
-        builder.Append(BootstrapClassProvider.PaginationSize(Size), Size != PaginationSize.None);
-        builder.Append(BootstrapClassProvider.FlexAlignment(Alignment), Alignment != Alignment.None);
-        //builder.Append(BootstrapClassProvider.BackgroundColor(BackgroundColor), BackgroundColor != BackgroundColor.None);
+        builder.Append(ClassProvider.Pagination());
+        builder.Append(ClassProvider.PaginationSize(Size), Size != PaginationSize.None);
+        builder.Append(ClassProvider.FlexAlignment(Alignment), Alignment != Alignment.None);
+        //builder.Append(ClassProvider.BackgroundColor(BackgroundColor), BackgroundColor != BackgroundColor.None);
 
         base.BuildClasses(builder);
     }

@@ -23,5 +23,5 @@ public enum Alignment
     /// <summary>
     /// Aligns an element to the right.
     /// </summary>
-    End,
+    End
 }

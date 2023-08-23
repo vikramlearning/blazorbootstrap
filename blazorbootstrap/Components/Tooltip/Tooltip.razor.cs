@@ -9,7 +9,7 @@ public partial class Tooltip : BaseComponent
     private string title = default!;
     private TooltipColor color = default!;
 
-    private string colorClass => BootstrapClassProvider.TooltipColor(Color);
+    private string colorClass => ClassProvider.TooltipColor(Color);
     private string placement => Placement.ToTooltipPlacementName();
 
     #endregion Members

@@ -34,10 +34,10 @@ public partial class ConfirmDialog : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Modal());
-        builder.Append(BootstrapClassProvider.ConfirmationModal());
-        builder.Append(BootstrapClassProvider.ModalFade());
-        builder.Append(BootstrapClassProvider.Show(), showBackdrop);
+        builder.Append(ClassProvider.Modal());
+        builder.Append(ClassProvider.ConfirmationModal());
+        builder.Append(ClassProvider.ModalFade());
+        builder.Append(ClassProvider.Show(), showBackdrop);
 
         base.BuildClasses(builder);
     }
@@ -71,7 +71,7 @@ public partial class ConfirmDialog : BaseComponent
         verticallyCentered = confirmDialogOptions.IsVerticallyCentered ? "modal-dialog-centered" : "";
         noButtonColor = confirmDialogOptions.NoButtonColor.ToButtonClass();
         noButtonText = confirmDialogOptions.NoButtonText;
-        modalSize = BootstrapClassProvider.ToDialogSize(confirmDialogOptions.Size);
+        modalSize = ClassProvider.ToDialogSize(confirmDialogOptions.Size);
         yesButtonColor = confirmDialogOptions.YesButtonColor.ToButtonClass();
         yesButtonText = confirmDialogOptions.YesButtonText;
 

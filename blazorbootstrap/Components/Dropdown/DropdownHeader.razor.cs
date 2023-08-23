@@ -15,7 +15,7 @@ public partial class DropdownHeader
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.DropdownHeader());
+        builder.Append(ClassProvider.DropdownHeader());
 
         base.BuildClasses(builder);
     }

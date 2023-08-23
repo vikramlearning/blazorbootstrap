@@ -2,7 +2,7 @@
 
 public class BreadcrumbItem
 {
-    public string? Text { get; set; }
+    #region Properties, Indexers
 
     public string? Href { get; set; }
 
@@ -10,4 +10,8 @@ public class BreadcrumbItem
     /// Represents the current page.
     /// </summary>
     public bool IsCurrentPage { get; set; }
+
+    public string? Text { get; set; }
+
+    #endregion
 }

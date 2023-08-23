@@ -15,7 +15,7 @@ public partial class CardGroup
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.CardGroup());
+        builder.Append(ClassProvider.CardGroup());
 
         base.BuildClasses(builder);
     }

@@ -53,5 +53,5 @@ public enum ButtonColor
     /// <summary>
     /// Link color.
     /// </summary>
-    Link,
+    Link
 }

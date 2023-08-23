@@ -2,6 +2,8 @@
 
 public class BarChartOptions : ChartOptions
 {
+    #region Properties, Indexers
+
     //hover -> mode, intersect
     //maintainAspectRatio
     //plugins -> title -> display, text
@@ -12,13 +14,15 @@ public class BarChartOptions : ChartOptions
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string IndexAxis { get; set; } = "x";
 
-    public Interaction Interaction { get; set; } = new Interaction();
+    public Interaction Interaction { get; set; } = new();
 
-    public ChartLayout Layout { get; set; } = new ChartLayout();
+    public ChartLayout Layout { get; set; } = new();
 
-    public Plugins Plugins { get; set; } = new Plugins();
+    public Plugins Plugins { get; set; } = new();
 
-    public Scales Scales { get; set; } = new Scales();
+    public Scales Scales { get; set; } = new();
+
+    #endregion
 
     //tooltips -> mode, intersect
 }

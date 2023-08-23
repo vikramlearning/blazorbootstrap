@@ -21,7 +21,7 @@ public partial class PaginationLink : BaseComponent
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.PaginationLink());
+        builder.Append(ClassProvider.PaginationLink());
 
         base.BuildClasses(builder);
     }

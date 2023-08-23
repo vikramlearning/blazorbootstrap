@@ -42,12 +42,12 @@ public partial class Tabs : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Nav);
+        builder.Append(ClassProvider.Nav);
 
         if (NavStyle == NavStyle.Tabs)
-            builder.Append(BootstrapClassProvider.NavTabs);
+            builder.Append(ClassProvider.NavTabs);
         else
-            builder.Append(BootstrapClassProvider.NavPills);
+            builder.Append(ClassProvider.NavPills);
 
         base.BuildClasses(builder);
     }

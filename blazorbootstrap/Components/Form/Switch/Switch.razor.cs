@@ -17,7 +17,7 @@ public partial class Switch : BaseComponent
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
-    private string reverse => Reverse ? BootstrapClassProvider.ChecksReverse() : "";
+    private string reverse => Reverse ? ClassProvider.ChecksReverse() : "";
 
     private bool oldValue;
 

@@ -1,7 +1,7 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// Defines the header color of an <see cref="Modal"/> element.
+/// Defines the header color of an <see cref="Modal" /> element.
 /// </summary>
 public enum ModalType
 {

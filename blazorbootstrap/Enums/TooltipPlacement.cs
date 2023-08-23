@@ -28,5 +28,5 @@ public enum TooltipPlacement
     /// <summary>
     /// Right side.
     /// </summary>
-    Right,
+    Right
 }

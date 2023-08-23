@@ -12,9 +12,9 @@ public partial class Toasts : BaseComponent, IDisposable
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.ToastContainer());
-        builder.Append(BootstrapClassProvider.PositionFixed());
-        builder.Append(BootstrapClassProvider.ToToastsPlacement(Placement));
+        builder.Append(ClassProvider.ToastContainer());
+        builder.Append(ClassProvider.PositionFixed());
+        builder.Append(ClassProvider.ToToastsPlacement(Placement));
 
         base.BuildClasses(builder);
     }

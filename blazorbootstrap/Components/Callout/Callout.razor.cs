@@ -6,7 +6,7 @@ public partial class Callout : BaseComponent
 
     private CalloutType type = CalloutType.Default;
 
-    private string CalloutHeadingCSSClass => BootstrapClassProvider.CalloutHeading();
+    private string CalloutHeadingCSSClass => ClassProvider.CalloutHeading();
 
     private string heading => GetHeading();
 
@@ -18,8 +18,8 @@ public partial class Callout : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Callout());
-        builder.Append(BootstrapClassProvider.ToCalloutType(Type));
+        builder.Append(ClassProvider.Callout());
+        builder.Append(ClassProvider.ToCalloutType(Type));
 
         base.BuildClasses(builder);
     }

@@ -27,8 +27,8 @@ public partial class NumberInput<TValue> : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.FormControl());
-        builder.Append(BootstrapClassProvider.TextAlignment(TextAlignment), TextAlignment != Alignment.None);
+        builder.Append(ClassProvider.FormControl());
+        builder.Append(ClassProvider.TextAlignment(TextAlignment), TextAlignment != Alignment.None);
 
         base.BuildClasses(builder);
     }

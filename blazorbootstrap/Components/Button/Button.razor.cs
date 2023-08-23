@@ -49,15 +49,15 @@ public partial class Button : BaseComponent
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Button());
-        builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
-        builder.Append(BootstrapClassProvider.ButtonOutline(Color), Color != ButtonColor.None && Outline);
-        builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
-        builder.Append(BootstrapClassProvider.ButtonDisabled(), Disabled && Type == ButtonType.Link);
-        builder.Append(BootstrapClassProvider.ButtonActive(), Active);
-        builder.Append(BootstrapClassProvider.ButtonBlock(), Block);
-        builder.Append(BootstrapClassProvider.ButtonLoading(), Loading && LoadingTemplate != null);
-        builder.Append(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
+        builder.Append(ClassProvider.Button());
+        builder.Append(ClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
+        builder.Append(ClassProvider.ButtonOutline(Color), Color != ButtonColor.None && Outline);
+        builder.Append(ClassProvider.ButtonSize(Size), Size != Size.None);
+        builder.Append(ClassProvider.ButtonDisabled(), Disabled && Type == ButtonType.Link);
+        builder.Append(ClassProvider.ButtonActive(), Active);
+        builder.Append(ClassProvider.ButtonBlock(), Block);
+        builder.Append(ClassProvider.ButtonLoading(), Loading && LoadingTemplate != null);
+        builder.Append(ClassProvider.ToPosition(Position), Position != Position.None);
 
         base.BuildClasses(builder);
     }
@@ -244,9 +244,9 @@ public partial class Button : BaseComponent
                 Attributes.Add("title", TooltipTitle);
 
             if (Attributes.TryGetValue("data-bs-custom-class", out _))
-                Attributes["data-bs-custom-class"] = BootstrapClassProvider.TooltipColor(TooltipColor);
+                Attributes["data-bs-custom-class"] = ClassProvider.TooltipColor(TooltipColor);
             else
-                Attributes.Add("data-bs-custom-class", BootstrapClassProvider.TooltipColor(TooltipColor));
+                Attributes.Add("data-bs-custom-class", ClassProvider.TooltipColor(TooltipColor));
         }
         // button disabled (or) tooltip text empty
         else

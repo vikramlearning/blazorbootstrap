@@ -22,9 +22,9 @@ public partial class Offcanvas : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Offcanvas());
-        builder.Append(BootstrapClassProvider.Offcanvas(Placement));
-        builder.Append(BootstrapClassProvider.ToOffcanvasSize(Size));
+        builder.Append(ClassProvider.Offcanvas());
+        builder.Append(ClassProvider.Offcanvas(Placement));
+        builder.Append(ClassProvider.ToOffcanvasSize(Size));
 
         base.BuildClasses(builder);
     }

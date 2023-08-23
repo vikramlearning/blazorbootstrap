@@ -5,7 +5,7 @@
 /// </summary>
 public class ClassBuilder
 {
-    #region Members
+    #region Fields and Constants
 
     private const char Delimiter = ' ';
 
@@ -47,7 +47,7 @@ public class ClassBuilder
     }
 
     /// <summary>
-    /// Appends a copy of the specified string to this instance if <paramref name="condition"/> is true.
+    /// Appends a copy of the specified string to this instance if <paramref name="condition" /> is true.
     /// </summary>
     /// <param name="value">The string to append.</param>
     /// <param name="condition">Condition that must be true.</param>
@@ -70,7 +70,7 @@ public class ClassBuilder
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
     /// <summary>
     /// Gets the class-names.
@@ -81,7 +81,7 @@ public class ClassBuilder
         {
             if (dirty)
             {
-                builder = new();
+                builder = new StringBuilder();
 
                 buildClasses(this);
 

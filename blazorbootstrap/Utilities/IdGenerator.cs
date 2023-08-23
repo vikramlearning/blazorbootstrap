@@ -3,13 +3,16 @@
 namespace BlazorBootstrap.Utilities;
 
 /// <summary>
-/// Inspired by <see href="https://github.com/aspnet/KestrelHttpServer/blob/6fde01a825cffc09998d3f8a49464f7fbe40f9c4/src/Kestrel.Core/Internal/Infrastructure/CorrelationIdGenerator.cs"/>,
-/// this class generates an efficient ID which is the <c>base32</c> encoded version of a <see cref="long"/>
+/// Inspired by
+/// <see
+///     href="https://github.com/aspnet/KestrelHttpServer/blob/6fde01a825cffc09998d3f8a49464f7fbe40f9c4/src/Kestrel.Core/Internal/Infrastructure/CorrelationIdGenerator.cs" />
+/// ,
+/// this class generates an efficient ID which is the <c>base32</c> encoded version of a <see cref="long" />
 /// using the alphabet <c>1-9</c> and <c>A-V</c>.
 /// </summary>
 public sealed class IdGenerator : IIdGenerator
 {
-    #region Members
+    #region Fields and Constants
 
     private const int IdLength = 13;
 
@@ -22,7 +25,7 @@ public sealed class IdGenerator : IIdGenerator
     #region Methods
 
     /// <summary>
-    /// <seealso cref="https://stackoverflow.com/a/37271406"/>
+    ///     <seealso cref="https://stackoverflow.com/a/37271406" />
     /// </summary>
     /// <param name="buffer"></param>
     /// <param name="id"></param>
@@ -47,7 +50,7 @@ public sealed class IdGenerator : IIdGenerator
 
     #endregion
 
-    #region Properties
+    #region Interface Implementations
 
     /// <summary>
     /// Returns a random ID. e.g: <c>AR03U66PN4M6E</c>
@@ -57,6 +60,7 @@ public sealed class IdGenerator : IIdGenerator
         get
         {
             var id = Interlocked.Increment(ref LastId);
+
             return string.Create(IdLength, id, GenerateImplDelegate);
         }
     }

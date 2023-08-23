@@ -8,7 +8,7 @@ public partial class SidebarItem : BaseComponent
 
     #region Members
 
-    private string iconColorCssClass => BootstrapClassProvider.IconColor(IconColor);
+    private string iconColorCssClass => ClassProvider.IconColor(IconColor);
 
     private bool navitemGroupExpanded = false;
 

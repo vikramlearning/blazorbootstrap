@@ -1,10 +1,17 @@
 ﻿namespace BlazorBootstrap.States;
 
 /// <summary>
-/// Holds the information about the current state of the <see cref="Alert"/> component.
+/// Holds the information about the current state of the <see cref="Alert" /> component.
 /// </summary>
 public record AlertState
 {
+    #region Properties, Indexers
+
+    /// <summary>
+    /// Gets or sets the alert color.
+    /// </summary>
+    public AlertColor Color { get; init; }
+
     /// <summary>
     /// Enables the alert to be closed by placing the padding for close button.
     /// </summary>
@@ -15,8 +22,5 @@ public record AlertState
     /// </summary>
     public bool Visible { get; init; }
 
-    /// <summary>
-    /// Gets or sets the alert color.
-    /// </summary>
-    public AlertColor Color { get; init; }
+    #endregion
 }

@@ -12,9 +12,9 @@ public partial class SimpleToast : BaseComponent, IDisposable
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Toast());
-        builder.Append($"text-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}");
-        builder.Append($"bg-{BootstrapClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
+        builder.Append(ClassProvider.Toast());
+        builder.Append($"text-{ClassProvider.ToToastTextColor(ToastMessage.Type)}");
+        builder.Append($"bg-{ClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
 
         base.BuildClasses(builder);
     }
@@ -98,7 +98,7 @@ public partial class SimpleToast : BaseComponent, IDisposable
     /// </summary>
     [Parameter] public int Delay { get; set; } = 5000;
 
-    private string CloseButtonClass => $"btn-close-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}";
+    private string CloseButtonClass => $"btn-close-{ClassProvider.ToToastTextColor(ToastMessage.Type)}";
 
     #endregion Properties
 }

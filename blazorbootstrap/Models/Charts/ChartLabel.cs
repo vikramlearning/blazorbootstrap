@@ -1,5 +1,3 @@
 ﻿namespace BlazorBootstrap;
 
-public class ChartLabel
-{
-}
+public class ChartLabel { }

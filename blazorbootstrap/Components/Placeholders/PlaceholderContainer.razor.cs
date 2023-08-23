@@ -12,7 +12,7 @@ public partial class PlaceholderContainer : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.PlaceholderAnimation(Animation));
+        builder.Append(ClassProvider.PlaceholderAnimation(Animation));
 
         base.BuildClasses(builder);
     }

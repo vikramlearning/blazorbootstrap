@@ -42,7 +42,7 @@ public partial class DateInput<TValue> : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.FormControl());
+        builder.Append(ClassProvider.FormControl());
         base.BuildClasses(builder);
     }
 

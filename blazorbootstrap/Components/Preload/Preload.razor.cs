@@ -14,10 +14,10 @@ public partial class Preload : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Modal());
-        builder.Append(BootstrapClassProvider.PageLoadingModal());
-        builder.Append(BootstrapClassProvider.ModalFade());
-        builder.Append(BootstrapClassProvider.Show(), showBackdrop);
+        builder.Append(ClassProvider.Modal());
+        builder.Append(ClassProvider.PageLoadingModal());
+        builder.Append(ClassProvider.ModalFade());
+        builder.Append(ClassProvider.Show(), showBackdrop);
 
         base.BuildClasses(builder);
     }

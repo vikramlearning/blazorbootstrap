@@ -19,9 +19,9 @@ public partial class PaginationItem : BaseComponent
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.PaginationItem());
-        builder.Append(BootstrapClassProvider.PaginationItemActive(), Active);
-        builder.Append(BootstrapClassProvider.PaginationItemDisabled(), Disabled);
+        builder.Append(ClassProvider.PaginationItem());
+        builder.Append(ClassProvider.PaginationItemActive(), Active);
+        builder.Append(ClassProvider.PaginationItemDisabled(), Disabled);
 
         base.BuildClasses(builder);
     }

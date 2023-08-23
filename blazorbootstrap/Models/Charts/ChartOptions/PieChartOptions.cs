@@ -2,5 +2,9 @@
 
 public class PieChartOptions : ChartOptions
 {
-    public Plugins Plugins { get; set; } = new Plugins();
+    #region Properties, Indexers
+
+    public Plugins Plugins { get; set; } = new();
+
+    #endregion
 }

@@ -4,15 +4,16 @@ public interface IChartDataset { }
 
 public class ChartDataset : IChartDataset
 {
+    #region Constructors
+
     public ChartDataset()
     {
         Oid = Guid.NewGuid();
     }
 
-    /// <summary>
-    /// Get unique object id.
-    /// </summary>
-    public Guid Oid { get; private set; }
+    #endregion
+
+    #region Properties, Indexers
 
     /// <summary>
     /// Get or sets the BackgroundColor.
@@ -21,7 +22,7 @@ public class ChartDataset : IChartDataset
     public List<string>? BackgroundColor { get; set; }
 
     /// <summary>
-    ///  Get or sets the BorderColor.
+    /// Get or sets the BorderColor.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BorderColor { get; set; }
@@ -33,7 +34,8 @@ public class ChartDataset : IChartDataset
     public List<double>? BorderWidth { get; set; }
 
     /// <summary>
-    /// How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. 
+    /// How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside
+    /// chartArea. 0 = clip at chartArea.
     /// Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0}
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -68,8 +70,15 @@ public class ChartDataset : IChartDataset
     public List<double>? HoverBorderWidth { get; set; }
 
     /// <summary>
+    /// Get unique object id.
+    /// </summary>
+    public Guid Oid { get; private set; }
+
+    /// <summary>
     /// Gets or sets the chart type.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Type { get; protected set; }
+
+    #endregion
 }

@@ -37,8 +37,8 @@ public partial class Accordion
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Accordion());
-        builder.Append(BootstrapClassProvider.AccordionFlush(), Flush);
+        builder.Append(ClassProvider.Accordion());
+        builder.Append(ClassProvider.AccordionFlush(), Flush);
         base.BuildClasses(builder);
     }
 

@@ -4,6 +4,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class Config
 {
+    #region Methods
+
     /// <summary>
     /// Adds a bootstrap providers and component mappings.
     /// </summary>
@@ -11,7 +13,7 @@ public static class Config
     /// <returns>IServiceCollection</returns>
     public static IServiceCollection AddBlazorBootstrap(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<BootstrapClassProvider>();
+        serviceCollection.AddSingleton<ClassProvider>();
         serviceCollection.AddSingleton<BootstrapIconProvider>();
         serviceCollection.AddScoped<IIdGenerator, IdGenerator>();
 
@@ -27,16 +29,16 @@ public static class Config
 
     public static IServiceCollection AddBootstrapComponents(this IServiceCollection serviceCollection)
     {
-        foreach (var mapping in ComponentMap)
-        {
-            serviceCollection.AddTransient(mapping.Key, mapping.Value);
-        }
+        foreach (var mapping in ComponentMap) serviceCollection.AddTransient(mapping.Key, mapping.Value);
 
         return serviceCollection;
     }
 
-    public static IDictionary<Type, Type> ComponentMap => new Dictionary<Type, Type>
-    {
-        { typeof(Button), typeof(Button) }
-    };
+    #endregion
+
+    #region Properties, Indexers
+
+    public static IDictionary<Type, Type> ComponentMap => new Dictionary<Type, Type> { { typeof(Button), typeof(Button) } };
+
+    #endregion
 }

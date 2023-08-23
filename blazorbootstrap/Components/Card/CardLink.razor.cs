@@ -27,8 +27,8 @@ public partial class CardLink
     /// <inheritdoc/>
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.CardLink());
-        builder.Append(BootstrapClassProvider.Disabled(), Disabled);
+        builder.Append(ClassProvider.CardLink());
+        builder.Append(ClassProvider.Disabled(), Disabled);
 
         base.BuildClasses(builder);
     }

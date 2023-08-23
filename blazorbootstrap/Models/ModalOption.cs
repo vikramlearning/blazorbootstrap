@@ -2,6 +2,8 @@
 
 public class ModalOption
 {
+    #region Properties, Indexers
+
     /// <summary>
     /// Gets or sets the footer button color.
     /// </summary>
@@ -46,4 +48,6 @@ public class ModalOption
     /// Gets or sets the modal type. Default value is `ModalType.Light`.
     /// </summary>
     public ModalType Type { get; set; } = ModalType.Light;
+
+    #endregion
 }

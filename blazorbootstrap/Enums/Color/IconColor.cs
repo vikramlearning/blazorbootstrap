@@ -63,5 +63,5 @@ public enum IconColor
     /// <summary>
     /// Link color.
     /// </summary>
-    White,
+    White
 }

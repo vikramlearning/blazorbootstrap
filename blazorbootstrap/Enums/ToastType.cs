@@ -40,7 +40,7 @@ public enum ToastType
     /// <summary>
     /// Dark background color.
     /// </summary>
-    Dark,
+    Dark
 
     // TODO: Review
     // https://getbootstrap.com/docs/5.1/utilities/background/#background-gradient

@@ -2,6 +2,8 @@
 
 internal class StringConstants
 {
+    #region Fields and Constants
+
     public const string PropertyTypeNameInt16 = "Int16";
     public const string PropertyTypeNameInt32 = "Int32";
     public const string PropertyTypeNameInt64 = "Int64";
@@ -15,4 +17,6 @@ internal class StringConstants
     public const string PropertyTypeNameBoolean = "Boolean";
 
     public const string DataBootstrapToggle = "data-bs-toggle";
+
+    #endregion
 }

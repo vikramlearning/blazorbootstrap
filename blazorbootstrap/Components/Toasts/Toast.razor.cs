@@ -24,8 +24,8 @@ public partial class Toast : BaseComponent, IDisposable
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Toast());
-        builder.Append(BootstrapClassProvider.BackgroundColor(BackgroundColor.White));
+        builder.Append(ClassProvider.Toast());
+        builder.Append(ClassProvider.BackgroundColor(BackgroundColor.White));
 
         base.BuildClasses(builder);
     }
@@ -68,14 +68,14 @@ public partial class Toast : BaseComponent, IDisposable
 
     private string GetIconClass() => ToastMessage.Type switch
     {
-        ToastType.Primary => BootstrapClassProvider.TextColor(TextColor.Primary),
-        ToastType.Secondary => BootstrapClassProvider.TextColor(TextColor.Secondary),
-        ToastType.Success => BootstrapClassProvider.TextColor(TextColor.Success),
-        ToastType.Danger => BootstrapClassProvider.TextColor(TextColor.Danger),
-        ToastType.Warning => BootstrapClassProvider.TextColor(TextColor.Warning),
-        ToastType.Info => BootstrapClassProvider.TextColor(TextColor.Info),
-        ToastType.Light => BootstrapClassProvider.TextColor(TextColor.Light),
-        ToastType.Dark => BootstrapClassProvider.TextColor(TextColor.Dark),
+        ToastType.Primary => ClassProvider.TextColor(TextColor.Primary),
+        ToastType.Secondary => ClassProvider.TextColor(TextColor.Secondary),
+        ToastType.Success => ClassProvider.TextColor(TextColor.Success),
+        ToastType.Danger => ClassProvider.TextColor(TextColor.Danger),
+        ToastType.Warning => ClassProvider.TextColor(TextColor.Warning),
+        ToastType.Info => ClassProvider.TextColor(TextColor.Info),
+        ToastType.Light => ClassProvider.TextColor(TextColor.Light),
+        ToastType.Dark => ClassProvider.TextColor(TextColor.Dark),
         _ => "",
     };
 

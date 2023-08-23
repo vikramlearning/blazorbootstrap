@@ -23,5 +23,5 @@ public enum DividerType
     /// <summary>
     /// Horizontal line be separated by text.
     /// </summary>
-    TextContent,
+    TextContent
 }

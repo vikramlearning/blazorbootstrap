@@ -5,6 +5,8 @@
 /// </summary>
 public static class ObjectExtensions
 {
+    #region Methods
+
     /// <summary>
     /// Determines whether two objects of type T are equal.
     /// </summary>
@@ -12,8 +14,7 @@ public static class ObjectExtensions
     /// <param name="x">The first object to compare.</param>
     /// <param name="y">The second object to compare.</param>
     /// <returns>True if the specified objects are equal; otherwise, false.</returns>
-    public static bool IsEqual<T>(this T x, T y)
-    {
-        return EqualityComparer<T>.Default.Equals(x, y);
-    }
+    public static bool IsEqual<T>(this T x, T y) => EqualityComparer<T>.Default.Equals(x, y);
+
+    #endregion
 }

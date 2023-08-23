@@ -18,5 +18,5 @@ public enum Screenreader
     /// <summary>
     /// Show the element again when it’s focused.
     /// </summary>
-    OnlyFocusable,
+    OnlyFocusable
 }

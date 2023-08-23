@@ -17,13 +17,13 @@ public partial class Modal : BaseComponent
 
     private string verticallyCentered => IsVerticallyCentered ? "modal-dialog-centered" : "";
 
-    private string modalSize => BootstrapClassProvider.ToModalSize(Size);
+    private string modalSize => ClassProvider.ToModalSize(Size);
 
-    private string modalFullscreen => BootstrapClassProvider.ToModalFullscreen(Fullscreen);
+    private string modalFullscreen => ClassProvider.ToModalFullscreen(Fullscreen);
 
     private ModalType modalType = ModalType.Light;
 
-    private string headerCssClassInternal => BootstrapClassProvider.ModalHeader(modalType);
+    private string headerCssClassInternal => ClassProvider.ModalHeader(modalType);
 
     private IconColor closeIconColor;
 
@@ -43,8 +43,8 @@ public partial class Modal : BaseComponent
 
     protected override void BuildClasses(ClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Modal());
-        builder.Append(BootstrapClassProvider.ModalFade());
+        builder.Append(ClassProvider.Modal());
+        builder.Append(ClassProvider.ModalFade());
 
         base.BuildClasses(builder);
     }

@@ -1,16 +1,14 @@
-﻿using BlazorBootstrap.Base;
+﻿using BlazorBootstrap.Core;
 
 namespace BlazorBootstrap;
 
 public abstract class BaseComponent : BaseAfterRenderComponent
 {
-    #region Members
+    #region Fields and Constants
 
     private string customClass;
 
     private string customStyle;
-
-    // TODO: update this
 
     #endregion
 
@@ -18,25 +16,15 @@ public abstract class BaseComponent : BaseAfterRenderComponent
 
     public BaseComponent()
     {
-        ClassBuilder = new(BuildClasses);
-        StyleBuilder = new(BuildStyles);
+        ClassBuilder = new ClassBuilder(BuildClasses);
+        StyleBuilder = new StyleBuilder(BuildStyles);
     }
 
     #endregion
 
     #region Methods
 
-    protected override void OnInitialized()
-    {
-        if (ShouldAutoGenerateId && ElementId == null)
-        {
-            ElementId = IdGenerator.Generate;
-        }
-
-        base.OnInitialized();
-    }
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)
@@ -48,7 +36,7 @@ public abstract class BaseComponent : BaseAfterRenderComponent
         base.Dispose(disposing);
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override ValueTask DisposeAsync(bool disposing)
     {
         if (disposing)
@@ -59,6 +47,18 @@ public abstract class BaseComponent : BaseAfterRenderComponent
 
         return base.DisposeAsync(disposing);
     }
+
+    protected override void OnInitialized()
+    {
+        if (ShouldAutoGenerateId && ElementId == null) ElementId = IdGenerator.Generate;
+
+        base.OnInitialized();
+    }
+
+    /// <summary>
+    /// Clears the class-names and mark them to be regenerated.
+    /// </summary>
+    protected internal virtual void DirtyClasses() => ClassBuilder?.Dirty();
 
     /// <summary>
     /// Builds a list of classnames for this component.
@@ -83,70 +83,25 @@ public abstract class BaseComponent : BaseAfterRenderComponent
     }
 
     /// <summary>
-    /// Clears the class-names and mark them to be regenerated.
-    /// </summary>
-    internal protected virtual void DirtyClasses() => ClassBuilder?.Dirty();
-
-    /// <summary>
     /// Clears the styles-names and mark them to be regenerated.
     /// </summary>
     protected virtual void DirtyStyles() => StyleBuilder?.Dirty();
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
     /// <summary>
-    /// Gets or sets the reference to the rendered element.
+    /// Captures all the custom attribute that are not part of BlazorBootstrap component.
     /// </summary>
-    public ElementReference ElementRef { get; set; }
-
-    /// <summary>
-    /// Gets or sets the unique id of the element.
-    /// </summary>
-    /// <remarks>
-    /// Note that this ID is not defined for the component but instead for the underlined element that it represents.
-    /// eg: for the TextEdit the ID will be set on the input element.
-    /// </remarks>
-    [Parameter] public string ElementId { get; set; }
-
-    /// <summary>
-    /// If true, <see cref="ElementId"/> will be auto-generated on component initialize.
-    /// </summary>
-    /// <remarks>
-    /// Override this in components that need to have an id defined before calling JSInterop.
-    /// </remarks>
-    protected virtual bool ShouldAutoGenerateId => false;
-
-    /// <summary>
-    /// Gets the class builder.
-    /// </summary>
-    protected ClassBuilder? ClassBuilder { get; private set; }
-
-    /// <summary>
-    /// Gets the built class-names based on all the rules set by the component parameters.
-    /// </summary>
-    public string ClassNames => ClassBuilder.Class;
-
-    /// <summary>
-    /// Gets the style mapper.
-    /// </summary>
-    protected StyleBuilder? StyleBuilder { get; private set; }
-
-    /// <summary>
-    /// Gets the built styles based on all the rules set by the component parameters.
-    /// </summary>
-    public string StyleNames => StyleBuilder.Styles;
-
-    /// <summary>
-    /// Gets or set the javascript runner.
-    /// </summary>
-    [Inject] protected IIdGenerator IdGenerator { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> Attributes { get; set; }
 
     /// <summary>
     /// Gets or sets the classname provider.
     /// </summary>
-    [Inject] protected BootstrapClassProvider BootstrapClassProvider { get; set; }
+    [Inject]
+    protected ClassProvider ClassProvider { get; set; }
 
     /// <summary>
     /// Custom css classname.
@@ -164,6 +119,47 @@ public abstract class BaseComponent : BaseAfterRenderComponent
     }
 
     /// <summary>
+    /// Gets the class builder.
+    /// </summary>
+    protected ClassBuilder? ClassBuilder { get; private set; }
+
+    /// <summary>
+    /// Gets the built class-names based on all the rules set by the component parameters.
+    /// </summary>
+    public string ClassNames => ClassBuilder.Class;
+
+    /// <summary>
+    /// Gets or sets the unique id of the element.
+    /// </summary>
+    /// <remarks>
+    /// Note that this ID is not defined for the component but instead for the underlined element that it represents.
+    /// eg: for the TextEdit the ID will be set on the input element.
+    /// </remarks>
+    [Parameter]
+    public string ElementId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the reference to the rendered element.
+    /// </summary>
+    public ElementReference ElementRef { get; set; }
+
+    /// <summary>
+    /// Gets or set the javascript runner.
+    /// </summary>
+    [Inject]
+    protected IIdGenerator IdGenerator { get; set; }
+
+    [Inject] protected IJSRuntime JS { get; set; }
+
+    /// <summary>
+    /// If true, <see cref="ElementId" /> will be auto-generated on component initialize.
+    /// </summary>
+    /// <remarks>
+    /// Override this in components that need to have an id defined before calling JSInterop.
+    /// </remarks>
+    protected virtual bool ShouldAutoGenerateId => false;
+
+    /// <summary>
     /// Custom html style.
     /// </summary>
     [Parameter]
@@ -179,12 +175,16 @@ public abstract class BaseComponent : BaseAfterRenderComponent
     }
 
     /// <summary>
-    /// Captures all the custom attribute that are not part of BlazorBootstrap component.
+    /// Gets the style mapper.
     /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object> Attributes { get; set; }
+    protected StyleBuilder? StyleBuilder { get; private set; }
 
-    [Inject] protected IJSRuntime JS { get; set; }
+    /// <summary>
+    /// Gets the built styles based on all the rules set by the component parameters.
+    /// </summary>
+    public string StyleNames => StyleBuilder.Styles;
 
     #endregion
+
+    // TODO: update this
 }

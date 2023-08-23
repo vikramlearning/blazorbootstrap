@@ -2,7 +2,13 @@
 
 public class ModalService
 {
+    #region Events
+
     internal event Func<ModalOption, Task> OnShow = default!;
+
+    #endregion
+
+    #region Methods
 
     public Task ShowAsync(ModalOption modalOption)
     {
@@ -10,4 +16,6 @@ public class ModalService
 
         return Task.CompletedTask;
     }
+
+    #endregion
 }

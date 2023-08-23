@@ -5,7 +5,7 @@
 /// </summary>
 public class StyleBuilder
 {
-    #region Members
+    #region Fields and Constants
 
     private const char Delimiter = ';';
 
@@ -13,9 +13,9 @@ public class StyleBuilder
 
     private StringBuilder builder = new();
 
-    private string styles;
-
     private bool dirty = true;
+
+    private string styles;
 
     #endregion
 
@@ -45,7 +45,7 @@ public class StyleBuilder
     }
 
     /// <summary>
-    /// Appends a copy of the specified string to this instance if <paramref name="condition"/> is true.
+    /// Appends a copy of the specified string to this instance if <paramref name="condition" /> is true.
     /// </summary>
     /// <param name="value">The string to append.</param>
     /// <param name="condition">Condition that must be true.</param>
@@ -62,7 +62,7 @@ public class StyleBuilder
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
     /// <summary>
     /// Get the styles.
@@ -73,7 +73,7 @@ public class StyleBuilder
         {
             if (dirty)
             {
-                builder = new();
+                builder = new StringBuilder();
 
                 buildStyles(this);
 

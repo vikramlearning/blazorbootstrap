@@ -18,5 +18,5 @@ public enum PaginationSize
     /// <summary>
     /// Makes an element large.
     /// </summary>
-    Large,
+    Large
 }

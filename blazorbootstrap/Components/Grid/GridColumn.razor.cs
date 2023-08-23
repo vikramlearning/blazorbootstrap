@@ -221,7 +221,7 @@ public partial class GridColumn<TItem>
 
             if (HeaderTextAlignment != Alignment.None)
             {
-                builder.AddAttribute(104, "class", BootstrapClassProvider.TextAlignment(HeaderTextAlignment));
+                builder.AddAttribute(104, "class", ClassProvider.TextAlignment(HeaderTextAlignment));
             }
 
             builder.OpenElement(105, "span");
@@ -265,11 +265,11 @@ public partial class GridColumn<TItem>
 
         // text alignment
         if (TextAlignment != Alignment.None)
-            classList.Add(BootstrapClassProvider.TextAlignment(TextAlignment));
+            classList.Add(ClassProvider.TextAlignment(TextAlignment));
 
         // text nowrap
         if (TextNoWrap)
-            classList.Add(BootstrapClassProvider.TextNoWrap());
+            classList.Add(ClassProvider.TextNoWrap());
 
         // custom column class
         var columnClass = ColumnClass?.Invoke(rowData) ?? "";

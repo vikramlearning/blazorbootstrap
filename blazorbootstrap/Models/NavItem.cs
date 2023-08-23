@@ -2,6 +2,8 @@
 
 public class NavItem
 {
+    #region Properties, Indexers
+
     internal IEnumerable<NavItem>? ChildItems { get; set; }
 
     /// <summary>
@@ -55,4 +57,6 @@ public class NavItem
     /// Gets or sets the navigation link text.
     /// </summary>
     public string? Text { get; set; }
+
+    #endregion
 }
