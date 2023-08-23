@@ -2,18 +2,10 @@
 
 public partial class DropdownDivider
 {
-    #region Events
-
-    #endregion
-
-    #region Members
-
-    #endregion
-
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(ClassProvider.DropdownDivider());
 
@@ -22,9 +14,9 @@ public partial class DropdownDivider
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     #endregion

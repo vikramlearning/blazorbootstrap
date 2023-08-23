@@ -2,11 +2,16 @@
 
 public partial class Breadcrumb : BaseComponent
 {
-    #region Members
-
-    #endregion Members
-
     #region Methods
+
+    protected override ValueTask DisposeAsync(bool disposing)
+    {
+        if (disposing)
+            if (BreadcrumbService is not null)
+                BreadcrumbService.OnNotify -= OnNotify;
+
+        return base.DisposeAsync(disposing);
+    }
 
     protected override void OnInitialized()
     {
@@ -21,29 +26,18 @@ public partial class Breadcrumb : BaseComponent
         if (items is null)
             return;
 
-        Items ??= new();
+        Items ??= new List<BreadcrumbItem>();
 
         Items = items;
 
         StateHasChanged();
     }
 
-    protected override ValueTask DisposeAsync(bool disposing)
-    {
-        if (disposing)
-        {
-            if (BreadcrumbService is not null)
-                BreadcrumbService.OnNotify -= OnNotify;
-        }
+    #endregion
 
-        return base.DisposeAsync(disposing);
-    }
+    #region Properties, Indexers
 
-    #endregion Methods
-
-    #region Properties
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     [Inject] private BreadcrumbService BreadcrumbService { get; set; } = default!;
@@ -51,7 +45,8 @@ public partial class Breadcrumb : BaseComponent
     /// <summary>
     /// List of all the items.
     /// </summary>
-    [Parameter] public List<BreadcrumbItem> Items { get; set; } = default!;
+    [Parameter]
+    public List<BreadcrumbItem> Items { get; set; } = default!;
 
-    #endregion Properties
+    #endregion
 }

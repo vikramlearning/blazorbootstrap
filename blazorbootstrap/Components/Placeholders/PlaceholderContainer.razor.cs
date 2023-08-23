@@ -2,7 +2,7 @@
 
 public partial class PlaceholderContainer : BaseComponent
 {
-    #region Members
+    #region Fields and Constants
 
     private PlaceholderAnimation animation = PlaceholderAnimation.Glow;
 
@@ -10,7 +10,7 @@ public partial class PlaceholderContainer : BaseComponent
 
     #region Methods
 
-    protected override void BuildClasses(ClassBuilder builder)
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(ClassProvider.PlaceholderAnimation(Animation));
 
@@ -19,15 +19,16 @@ public partial class PlaceholderContainer : BaseComponent
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
     /// <summary>
-    /// Gets or sets the placeholder animation. Default is <see cref="PlaceholderAnimation.Glow"/>.
+    /// Gets or sets the placeholder animation. Default is <see cref="PlaceholderAnimation.Glow" />.
     /// </summary>
     [Parameter]
     public PlaceholderAnimation Animation
     {
-        get => animation; set
+        get => animation;
+        set
         {
             animation = value;
             DirtyClasses();
@@ -37,8 +38,8 @@ public partial class PlaceholderContainer : BaseComponent
     /// <summary>
     /// Specifies the content to be rendered inside this.
     /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
     #endregion
 }
-

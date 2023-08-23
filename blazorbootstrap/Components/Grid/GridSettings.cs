@@ -2,6 +2,13 @@
 
 public class GridSettings
 {
+    #region Properties, Indexers
+
+    /// <summary>
+    /// Current filters.
+    /// </summary>
+    public IEnumerable<FilterItem>? Filters { get; set; }
+
     /// <summary>
     /// Page number.
     /// </summary>
@@ -12,8 +19,5 @@ public class GridSettings
     /// </summary>
     public int PageSize { get; set; }
 
-    /// <summary>
-    /// Current filters.
-    /// </summary>
-    public IEnumerable<FilterItem>? Filters { get; set; }
+    #endregion
 }

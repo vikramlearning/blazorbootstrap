@@ -2,7 +2,7 @@
 
 public partial class Alert
 {
-    #region Members
+    #region Fields and Constants
 
     private AlertColor color = AlertColor.None;
 
@@ -12,8 +12,8 @@ public partial class Alert
 
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(ClassProvider.Alert());
         builder.Append(ClassProvider.AlertColor(Color), Color != AlertColor.None);
@@ -21,19 +21,6 @@ public partial class Alert
 
         base.BuildClasses(builder);
     }
-
-    protected override async Task OnInitializedAsync()
-    {
-        objRef ??= DotNetObjectReference.Create(this);
-        await base.OnInitializedAsync();
-
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", ElementId, objRef); });
-    }
-
-    /// <summary>
-    /// Closes an alert by removing it from the DOM.
-    /// </summary>
-    public async Task CloseAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.alert.close", ElementId);
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
@@ -47,15 +34,37 @@ public partial class Alert
         await base.DisposeAsync(disposing);
     }
 
-    [JSInvokable] public async Task bsCloseAlert() => await OnClose.InvokeAsync();
-    [JSInvokable] public async Task bsClosedAlert() => await OnClosed.InvokeAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        objRef ??= DotNetObjectReference.Create(this);
+        await base.OnInitializedAsync();
+
+        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", ElementId, objRef); });
+    }
+
+    [JSInvokable]
+    public async Task bsCloseAlert() => await OnClose.InvokeAsync();
+
+    [JSInvokable]
+    public async Task bsClosedAlert() => await OnClosed.InvokeAsync();
+
+    /// <summary>
+    /// Closes an alert by removing it from the DOM.
+    /// </summary>
+    public async Task CloseAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.alert.close", ElementId);
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
+
+    /// <summary>
+    /// Specifies the content to be rendered inside this <see cref="Alert" />.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the alert color.
@@ -74,22 +83,20 @@ public partial class Alert
     /// <summary>
     /// Enables the alert to be closed by placing the padding for close button.
     /// </summary>
-    [Parameter] public bool Dismissable { get; set; }
+    [Parameter]
+    public bool Dismissable { get; set; }
 
     /// <summary>
     /// Fires immediately when the close instance method is called.
     /// </summary>
-    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter]
+    public EventCallback OnClose { get; set; }
 
     /// <summary>
     /// Fired when the alert has been closed and CSS transitions have completed.
     /// </summary>
-    [Parameter] public EventCallback OnClosed { get; set; }
-
-    /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="Alert"/>.
-    /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public EventCallback OnClosed { get; set; }
 
     #endregion
 

@@ -2,17 +2,17 @@
 
 public partial class Preload : BaseComponent
 {
-    #region Members
-
-    private string? spinnerColor;
+    #region Fields and Constants
 
     private bool showBackdrop;
 
-    #endregion Members
+    private string? spinnerColor;
+
+    #endregion
 
     #region Methods
 
-    protected override void BuildClasses(ClassBuilder builder)
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(ClassProvider.Modal());
         builder.Append(ClassProvider.PageLoadingModal());
@@ -22,40 +22,12 @@ public partial class Preload : BaseComponent
         base.BuildClasses(builder);
     }
 
-    protected override void BuildStyles(StyleBuilder builder)
+    protected override void BuildStyles(CssStyleBuilder builder)
     {
         builder.Append("display:block", showBackdrop);
         builder.Append("display:none", !showBackdrop);
 
         base.BuildStyles(builder);
-    }
-
-    protected override void OnInitialized()
-    {
-        PageLoadingService.OnShow += OnShow;
-        PageLoadingService.OnHide += OnHide;
-    }
-
-    private void OnShow(SpinnerColor spinnerColor)
-    {
-        this.spinnerColor = spinnerColor.ToSpinnerColor();
-
-        showBackdrop = true;
-
-        DirtyClasses();
-        DirtyStyles();
-
-        StateHasChanged();
-    }
-
-    private void OnHide()
-    {
-        showBackdrop = false;
-
-        DirtyClasses();
-        DirtyStyles();
-
-        StateHasChanged();
     }
 
     /// <inheritdoc />
@@ -70,22 +42,52 @@ public partial class Preload : BaseComponent
         await base.DisposeAsync(disposing);
     }
 
-    #endregion Methods
+    protected override void OnInitialized()
+    {
+        PageLoadingService.OnShow += OnShow;
+        PageLoadingService.OnHide += OnHide;
+    }
 
-    #region Properties
+    private void OnHide()
+    {
+        showBackdrop = false;
 
-    /// <inheritdoc/>
+        DirtyClasses();
+        DirtyStyles();
+
+        StateHasChanged();
+    }
+
+    private void OnShow(SpinnerColor spinnerColor)
+    {
+        this.spinnerColor = spinnerColor.ToSpinnerColor();
+
+        showBackdrop = true;
+
+        DirtyClasses();
+        DirtyStyles();
+
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region Properties, Indexers
+
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
-
-    /// <summary>
-    /// Gets or sets the <see cref="PageLoadingService" /> instance.
-    /// </summary>
-    [Inject] private PreloadService PageLoadingService { get; set; } = default!;
 
     /// <summary>
     /// Specifies the content to be rendered inside this.
     /// </summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
-    #endregion Properties
+    /// <summary>
+    /// Gets or sets the <see cref="PageLoadingService" /> instance.
+    /// </summary>
+    [Inject]
+    private PreloadService PageLoadingService { get; set; } = default!;
+
+    #endregion
 }

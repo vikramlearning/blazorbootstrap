@@ -2,19 +2,17 @@
 
 public partial class GridColumnFilter : BaseComponent
 {
-    #region Members
+    #region Fields and Constants
 
     private FilterOperator filterOperator;
 
-    private string? filterValue;
-
     private IEnumerable<FilterOperatorInfo>? filterOperators;
+
+    private string? filterValue;
 
     private string? selectedFilterSymbol;
 
-    private string filterStyle => FilterWidth > 0 ? $"width:{FilterWidth}px;" : "";
-
-    #endregion Members
+    #endregion
 
     #region Methods
 
@@ -33,32 +31,35 @@ public partial class GridColumnFilter : BaseComponent
         SetSelectedFilterSymbol();
     }
 
-    private async Task OnFilterOperatorChangedAsync(FilterOperatorInfo filterOperatorInfo)
+    internal void SetDefaultFilter()
     {
-        if (filterOperatorInfo.FilterOperator == FilterOperator.Clear)
+        if (PropertyTypeName is StringConstants.PropertyTypeNameInt16
+                                or StringConstants.PropertyTypeNameInt32
+                                or StringConstants.PropertyTypeNameInt64
+                                or StringConstants.PropertyTypeNameSingle // float
+                                or StringConstants.PropertyTypeNameDecimal
+                                or StringConstants.PropertyTypeNameDouble)
         {
-            SetDefaultFilter();
-
-            if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
-                filterValue = null;
-            else
-                filterValue = string.Empty;
+            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
+                filterOperator = FilterOperator.Equals;
         }
-        else
-            filterOperator = filterOperatorInfo.FilterOperator;
-
-        SetSelectedFilterSymbol();
-
-        if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
-    }
-
-    private async Task OnFilterValueChangedAsync(ChangeEventArgs args)
-    {
-        filterValue = args?.Value?.ToString();
-
-        if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
+        else if (PropertyTypeName is StringConstants.PropertyTypeNameString
+                                     or StringConstants.PropertyTypeNameChar)
+        {
+            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
+                filterOperator = FilterOperator.Contains;
+        }
+        else if (PropertyTypeName is StringConstants.PropertyTypeNameDateOnly
+                                     or StringConstants.PropertyTypeNameDateTime)
+        {
+            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
+                filterOperator = FilterOperator.Equals;
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
+                filterOperator = FilterOperator.Equals;
+        }
     }
 
     private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync(string propertyTypeName)
@@ -74,82 +75,84 @@ public partial class GridColumnFilter : BaseComponent
         return FilterOperatorHelper.GetFilterOperators(PropertyTypeName, filters);
     }
 
-    internal void SetDefaultFilter()
+    private async Task OnFilterOperatorChangedAsync(FilterOperatorInfo filterOperatorInfo)
     {
-        if (PropertyTypeName is StringConstants.PropertyTypeNameInt16
-            or StringConstants.PropertyTypeNameInt32
-            or StringConstants.PropertyTypeNameInt64
-            or StringConstants.PropertyTypeNameSingle // float
-            or StringConstants.PropertyTypeNameDecimal
-            or StringConstants.PropertyTypeNameDouble)
+        if (filterOperatorInfo.FilterOperator == FilterOperator.Clear)
         {
-            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
-                filterOperator = FilterOperator.Equals;
+            SetDefaultFilter();
+
+            if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
+                filterValue = null;
+            else
+                filterValue = string.Empty;
         }
-        else if (PropertyTypeName is StringConstants.PropertyTypeNameString
-            or StringConstants.PropertyTypeNameChar)
+        else
         {
-            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
-                filterOperator = FilterOperator.Contains;
+            filterOperator = filterOperatorInfo.FilterOperator;
         }
-        else if (PropertyTypeName is StringConstants.PropertyTypeNameDateOnly
-            or StringConstants.PropertyTypeNameDateTime)
-        {
-            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
-                filterOperator = FilterOperator.Equals;
-        }
-        else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
-        {
-            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
-                filterOperator = FilterOperator.Equals;
-        }
+
+        SetSelectedFilterSymbol();
+
+        if (GridColumnFilterChanged.HasDelegate)
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
+    }
+
+    private async Task OnFilterValueChangedAsync(ChangeEventArgs args)
+    {
+        filterValue = args?.Value?.ToString();
+
+        if (GridColumnFilterChanged.HasDelegate)
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
     }
 
     private void SetSelectedFilterSymbol()
     {
         if (PropertyTypeName is StringConstants.PropertyTypeNameInt16
-            or StringConstants.PropertyTypeNameInt32
-            or StringConstants.PropertyTypeNameInt64
-            or StringConstants.PropertyTypeNameSingle // float
-            or StringConstants.PropertyTypeNameDecimal
-            or StringConstants.PropertyTypeNameDouble)
-        {
+                                or StringConstants.PropertyTypeNameInt32
+                                or StringConstants.PropertyTypeNameInt64
+                                or StringConstants.PropertyTypeNameSingle // float
+                                or StringConstants.PropertyTypeNameDecimal
+                                or StringConstants.PropertyTypeNameDouble)
             selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
-        }
         else if (PropertyTypeName is StringConstants.PropertyTypeNameString
-            or StringConstants.PropertyTypeNameChar)
-        {
+                                     or StringConstants.PropertyTypeNameChar)
             selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
-        }
         else if (PropertyTypeName is StringConstants.PropertyTypeNameDateOnly
-            or StringConstants.PropertyTypeNameDateTime)
-        {
+                                     or StringConstants.PropertyTypeNameDateTime)
             selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
-        }
-        else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
-        {
-            selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
-        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
     }
 
-    #endregion Methods
+    #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
     /// <summary>
     /// Gets or sets filter operator.
     /// </summary>
-    [Parameter] public FilterOperator FilterOperator { get; set; }
+    [Parameter]
+    public FilterOperator FilterOperator { get; set; }
+
+    /// <summary>
+    /// Filters transalation is for grid filters to render.
+    /// The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed.
+    /// </summary>
+    [Parameter]
+    public GridFiltersTranslationDelegate FiltersTranslationProvider { get; set; } = default!;
+
+    private string filterStyle => FilterWidth > 0 ? $"width:{FilterWidth}px;" : "";
 
     /// <summary>
     /// Gets or sets filter value.
     /// </summary>
-    [Parameter] public string? FilterValue { get; set; }
+    [Parameter]
+    public string? FilterValue { get; set; }
 
     /// <summary>
     /// Gets or sets the filter textbox width.
     /// </summary>
-    [Parameter] public int FilterWidth { get; set; }
+    [Parameter]
+    public int FilterWidth { get; set; }
 
     //[CascadingParameter] public Grid<TItem> Grid { get; set; } = default!;
 
@@ -158,13 +161,8 @@ public partial class GridColumnFilter : BaseComponent
     /// <summary>
     /// Gets or sets the filter property name.
     /// </summary>
-    [Parameter] public string? PropertyTypeName { get; set; }
+    [Parameter]
+    public string? PropertyTypeName { get; set; }
 
-    /// <summary>
-    /// Filters transalation is for grid filters to render.
-    /// The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed.
-    /// </summary>
-    [Parameter] public GridFiltersTranslationDelegate FiltersTranslationProvider { get; set; } = default!;
-
-    #endregion Properties
+    #endregion
 }

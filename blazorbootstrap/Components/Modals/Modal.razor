@@ -28,7 +28,7 @@
                 @if (childComponent is not null)
                 {
                     <div class="modal-body @BodyCssClass">
-                        <DynamicComponent Type="@childComponent" Parameters="@parameters" />
+                        <DynamicComponent Type="@childComponent" Parameters="@parameters"/>
                     </div>
                 }
                 else if (!string.IsNullOrWhiteSpace(Message))

@@ -2,11 +2,7 @@
 
 public partial class CardLink
 {
-    #region Events
-
-    #endregion
-
-    #region Members
+    #region Fields and Constants
 
     private bool disabled;
 
@@ -14,9 +10,9 @@ public partial class CardLink
 
     private bool previousDisabled;
 
-    private Target previousTarget;
-
     private int? previousTabIndex;
+
+    private Target previousTarget;
 
     private bool setButtonAttributesAgain = false;
 
@@ -24,13 +20,21 @@ public partial class CardLink
 
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(ClassProvider.CardLink());
         builder.Append(ClassProvider.Disabled(), Disabled);
 
         base.BuildClasses(builder);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            isFirstRenderComplete = true;
+
+        base.OnAfterRender(firstRender);
     }
 
     protected override void OnInitialized()
@@ -42,14 +46,6 @@ public partial class CardLink
         SetAttributes();
 
         base.OnInitialized();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-            isFirstRenderComplete = true;
-
-        base.OnAfterRender(firstRender);
     }
 
     protected override void OnParametersSet()
@@ -90,10 +86,8 @@ public partial class CardLink
             Attributes.Add("href", To);
 
         if (Target != Target.None)
-        {
             if (!Attributes.TryGetValue("target", out _))
                 Attributes.Add("target", Target.ToTargetString());
-        }
 
         if (Disabled)
         {
@@ -121,15 +115,16 @@ public partial class CardLink
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="ChildContent"/>.
+    /// Specifies the content to be rendered inside this <see cref="ChildContent" />.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// When set to 'true', disables the component's functionality and places it in a disabled state.
@@ -146,19 +141,22 @@ public partial class CardLink
     }
 
     /// <summary>
-    /// Gets or sets the target route.
-    /// </summary>
-    [Parameter] public string? To { get; set; }
-
-    /// <summary>
-    /// The target attribute specifies where to open the linked document for a <see cref="CardLink"/>.
-    /// </summary>
-    [Parameter] public Target Target { get; set; } = Target.None;
-
-    /// <summary>
     /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
     /// </summary>
-    [Parameter] public int? TabIndex { get; set; }
+    [Parameter]
+    public int? TabIndex { get; set; }
+
+    /// <summary>
+    /// The target attribute specifies where to open the linked document for a <see cref="CardLink" />.
+    /// </summary>
+    [Parameter]
+    public Target Target { get; set; } = Target.None;
+
+    /// <summary>
+    /// Gets or sets the target route.
+    /// </summary>
+    [Parameter]
+    public string? To { get; set; }
 
     #endregion
 }

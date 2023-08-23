@@ -9,11 +9,7 @@ public partial class LineChart : BaseChart
         chartType = ChartType.Line;
     }
 
-    #endregion Constructors
-
-    #region Members
-
-    #endregion Members
+    #endregion
 
     #region Methods
 
@@ -29,13 +25,9 @@ public partial class LineChart : BaseChart
             throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
-        {
             if (dataset is LineChartDataset lineChartDataset && lineChartDataset.Label == dataLabel)
-            {
                 if (data is LineChartDatasetData lineChartDatasetData)
                     lineChartDataset.Data?.Add(lineChartDatasetData.Data);
-            }
-        }
 
         await JS.InvokeVoidAsync("window.blazorChart.line.addDatasetData", ElementId, dataLabel, data);
 
@@ -74,15 +66,13 @@ public partial class LineChart : BaseChart
         chartData.Labels.Add(dataLabel);
 
         foreach (var dataset in chartData.Datasets)
-        {
             if (dataset is LineChartDataset lineChartDataset)
             {
                 var chartDatasetData = data.FirstOrDefault(x => x is LineChartDatasetData lineChartDatasetData && lineChartDatasetData.DatasetLabel == lineChartDataset.Label);
-                
+
                 if (chartDatasetData is LineChartDatasetData lineChartDatasetData)
                     lineChartDataset.Data?.Add(lineChartDatasetData.Data);
             }
-        }
 
         await JS.InvokeVoidAsync("window.blazorChart.line.addDatasetsData", ElementId, dataLabel, data?.Select(x => (LineChartDatasetData)x));
 
@@ -121,7 +111,7 @@ public partial class LineChart : BaseChart
             throw new ArgumentNullException(nameof(chartOptions));
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
-        var data = new { Labels = chartData.Labels, Datasets = datasets };
+        var data = new { chartData.Labels, Datasets = datasets };
         await JS.InvokeVoidAsync("window.blazorChart.line.initialize", ElementId, GetChartType(), data, (LineChartOptions)chartOptions);
     }
 
@@ -137,16 +127,16 @@ public partial class LineChart : BaseChart
             throw new ArgumentNullException(nameof(chartOptions));
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
-        var data = new { Labels = chartData.Labels, Datasets = datasets };
+        var data = new { chartData.Labels, Datasets = datasets };
         await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), data, (LineChartOptions)chartOptions);
     }
 
-    #endregion Methods
+    #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
-    #endregion Properties
+    #endregion
 }

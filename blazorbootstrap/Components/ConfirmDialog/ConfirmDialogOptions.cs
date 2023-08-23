@@ -2,6 +2,8 @@
 
 public class ConfirmDialogOptions
 {
+    #region Properties, Indexers
+
     /// <summary>
     /// Additional CSS class for the dialog (div.modal-dialog element).
     /// </summary>
@@ -28,7 +30,7 @@ public class ConfirmDialogOptions
     public bool IsVerticallyCentered { get; set; }
 
     /// <summary>
-    /// Gets or sets the 'No' button color. <see cref="ButtonColor"/>
+    /// Gets or sets the 'No' button color. <see cref="ButtonColor" />
     /// </summary>
     public ButtonColor NoButtonColor { get; set; } = ButtonColor.Secondary;
 
@@ -38,12 +40,12 @@ public class ConfirmDialogOptions
     public string NoButtonText { get; set; } = "No";
 
     /// <summary>
-    /// Size of the modal. Default is <see cref="ModalSize.Regular"/>.
+    /// Size of the modal. Default is <see cref="ModalSize.Regular" />.
     /// </summary>
     public DialogSize Size { get; set; }
 
     /// <summary>
-    /// Gets or sets the 'Yes' button color. <see cref="ButtonColor"/>
+    /// Gets or sets the 'Yes' button color. <see cref="ButtonColor" />
     /// </summary>
     public ButtonColor YesButtonColor { get; set; } = ButtonColor.Primary;
 
@@ -51,4 +53,6 @@ public class ConfirmDialogOptions
     /// Gets or sets the 'Yes' button text.
     /// </summary>
     public string YesButtonText { get; set; } = "Yes";
+
+    #endregion
 }

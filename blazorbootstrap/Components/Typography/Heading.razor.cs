@@ -2,7 +2,7 @@
 
 public partial class Heading
 {
-    #region Members
+    #region Fields and Constants
 
     private HeadingSize headingSize = HeadingSize.H3;
 
@@ -10,8 +10,8 @@ public partial class Heading
 
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(ClassProvider.HeadingSize(headingSize));
 
@@ -20,26 +20,7 @@ public partial class Heading
 
     #endregion
 
-    #region Properties
-
-    /// <summary>
-    /// Gets the heading tag name.
-    /// </summary>
-    protected string TagName => $"h{SizeNumber}";
-
-    /// <summary>
-    /// Gets the heading size number.
-    /// </summary>
-    protected string SizeNumber => Size switch
-    {
-        HeadingSize.H1 => "1",
-        HeadingSize.H2 => "2",
-        HeadingSize.H3 => "3",
-        HeadingSize.H4 => "4",
-        HeadingSize.H5 => "5",
-        HeadingSize.H6 => "6",
-        _ => "3",
-    };
+    #region Properties, Indexers
 
     /// <summary>
     /// Gets or sets the heading size.
@@ -54,6 +35,16 @@ public partial class Heading
             DirtyClasses();
         }
     }
+
+    /// <summary>
+    /// Gets the heading size number.
+    /// </summary>
+    protected string SizeNumber => Size switch { HeadingSize.H1 => "1", HeadingSize.H2 => "2", HeadingSize.H3 => "3", HeadingSize.H4 => "4", HeadingSize.H5 => "5", HeadingSize.H6 => "6", _ => "3" };
+
+    /// <summary>
+    /// Gets the heading tag name.
+    /// </summary>
+    protected string TagName => $"h{SizeNumber}";
 
     #endregion
 }

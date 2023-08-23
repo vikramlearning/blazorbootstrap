@@ -2,11 +2,7 @@
 
 public partial class Badge
 {
-    #region Events
-
-    #endregion
-
-    #region Members
+    #region Fields and Constants
 
     private RenderFragment? childContent;
 
@@ -22,8 +18,8 @@ public partial class Badge
 
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(ClassProvider.Badge());
         builder.Append(ClassProvider.BadgeColor(Color), Color != BadgeColor.None);
@@ -37,13 +33,13 @@ public partial class Badge
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="Badge"/>.
+    /// Specifies the content to be rendered inside this <see cref="Badge" />.
     /// </summary>
     [Parameter]
     public RenderFragment ChildContent
@@ -59,7 +55,8 @@ public partial class Badge
     /// <summary>
     /// Gets or sets the badge color.
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter]
+    [EditorRequired]
     public BadgeColor Color
     {
         get => color;

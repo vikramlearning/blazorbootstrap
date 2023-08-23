@@ -2,9 +2,7 @@
 
 public partial class Button : BaseComponent
 {
-    #region Members
-
-    private Size size = Size.None;
+    #region Fields and Constants
 
     private bool active;
 
@@ -16,13 +14,11 @@ public partial class Button : BaseComponent
 
     private bool isFirstRenderComplete = false;
 
-    private bool outline;
-
     private bool loading;
 
     private string loadingText = default!;
 
-    private string previousTooltipTitle = default!;
+    private bool outline;
 
     private Position position;
 
@@ -30,24 +26,26 @@ public partial class Button : BaseComponent
 
     private bool previousDisabled;
 
-    private ButtonType previousType;
+    private int? previousTabIndex;
 
     private Target previousTarget;
 
-    private int? previousTabIndex;
+    private string previousTooltipTitle = default!;
+
+    private ButtonType previousType;
 
     private bool setButtonAttributesAgain = false;
 
-    private TooltipColor tooltipColor = default!;
+    private Size size = Size.None;
 
-    private string buttonTypeString => Type.ToButtonTypeString();
+    private TooltipColor tooltipColor = default!;
 
     #endregion
 
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(ClassProvider.Button());
         builder.Append(ClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
@@ -60,6 +58,23 @@ public partial class Button : BaseComponent
         builder.Append(ClassProvider.ToPosition(Position), Position != Position.None);
 
         base.BuildClasses(builder);
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsync(bool disposing)
+    {
+        if (disposing)
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef); });
+
+        await base.DisposeAsync(disposing);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            isFirstRenderComplete = true;
+
+        base.OnAfterRender(firstRender);
     }
 
     protected override void OnInitialized()
@@ -78,18 +93,7 @@ public partial class Button : BaseComponent
 
         base.OnInitialized();
 
-        if (!string.IsNullOrWhiteSpace(TooltipTitle))
-        {
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef); });
-        }
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-            isFirstRenderComplete = true;
-
-        base.OnAfterRender(firstRender);
+        if (!string.IsNullOrWhiteSpace(TooltipTitle)) ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef); });
     }
 
     protected override async Task OnParametersSetAsync()
@@ -126,10 +130,7 @@ public partial class Button : BaseComponent
                 setButtonAttributesAgain = true;
             }
 
-            if (previousTooltipTitle != TooltipTitle || tooltipColor != TooltipColor)
-            {
-                setButtonAttributesAgain = true;
-            }
+            if (previousTooltipTitle != TooltipTitle || tooltipColor != TooltipColor) setButtonAttributesAgain = true;
 
             if (setButtonAttributesAgain)
             {
@@ -154,6 +155,43 @@ public partial class Button : BaseComponent
         }
     }
 
+    /// <summary>
+    /// Hides the loading state and enables the button.
+    /// </summary>
+    public void HideLoading()
+    {
+        Loading = false;
+        Disabled = false;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Shows the loading state and disables the button.
+    /// </summary>
+    /// <param name="text"></param>
+    public void ShowLoading(string text = "")
+    {
+        loadingText = text;
+        Loading = true;
+        Disabled = true;
+        StateHasChanged();
+    }
+
+    protected virtual RenderFragment ProvideDefaultLoadingTemplate() =>
+        builder =>
+        {
+            builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {loadingText}");
+        };
+
+    private async Task OnMouseOutAsync(MouseEventArgs args)
+    {
+        if (Disabled || string.IsNullOrWhiteSpace(TooltipTitle))
+            return;
+
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
+    }
+
     private void SetAttributes()
     {
         Attributes ??= new Dictionary<string, object>();
@@ -173,10 +211,8 @@ public partial class Button : BaseComponent
                 Attributes.Add("href", To);
 
             if (Target != Target.None)
-            {
                 if (!Attributes.TryGetValue("target", out _))
                     Attributes.Add("target", Target.ToTargetString());
-            }
 
             if (Disabled)
             {
@@ -265,118 +301,12 @@ public partial class Button : BaseComponent
         }
     }
 
-    protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder =>
-    {
-        builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {loadingText}");
-    };
-
-    /// <summary>
-    /// Shows the loading state and disables the button.
-    /// </summary>
-    /// <param name="text"></param>
-    public void ShowLoading(string text = "")
-    {
-        loadingText = text;
-        Loading = true;
-        Disabled = true;
-        StateHasChanged();
-    }
-
-    /// <summary>
-    /// Hides the loading state and enables the button.
-    /// </summary>
-    public void HideLoading()
-    {
-        Loading = false;
-        Disabled = false;
-        StateHasChanged();
-    }
-
-    private async Task OnMouseOutAsync(MouseEventArgs args)
-    {
-        if (Disabled || string.IsNullOrWhiteSpace(TooltipTitle))
-            return;
-
-        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
-        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
-    }
-
-    /// <inheritdoc />
-    protected override async ValueTask DisposeAsync(bool disposing)
-    {
-        if (disposing)
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef); });
-
-        await base.DisposeAsync(disposing);
-    }
-
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
-
-    /// <summary>
-    /// Defines the button type.
-    /// </summary>
-    [Parameter] public ButtonType Type { get; set; } = ButtonType.Button;
-
-    /// <summary>
-    /// Gets or sets the button color.
-    /// </summary>
-    [Parameter]
-    public ButtonColor Color
-    {
-        get => color;
-        set
-        {
-            color = value;
-            DirtyClasses();
-        }
-    }
-
-    /// <summary>
-    /// Changes the size of a button.
-    /// </summary>
-    [Parameter]
-    public Size Size
-    {
-        get => size;
-        set
-        {
-            size = value;
-            DirtyClasses();
-        }
-    }
-
-    /// <summary>
-    /// Makes the button to have the outlines.
-    /// </summary>
-    [Parameter]
-    public bool Outline
-    {
-        get => outline;
-        set
-        {
-            outline = value;
-            DirtyClasses();
-        }
-    }
-
-    /// <summary>
-    /// When set to 'true', disables the component's functionality and places it in a disabled state.
-    /// </summary>
-    [Parameter]
-    public bool Disabled
-    {
-        get => disabled;
-        set
-        {
-            disabled = value;
-            DirtyClasses();
-        }
-    }
 
     /// <summary>
     /// When set to 'true', places the component in the active state with active styling.
@@ -406,8 +336,44 @@ public partial class Button : BaseComponent
         }
     }
 
+    private string buttonTypeString => Type.ToButtonTypeString();
+
     /// <summary>
-    /// Shows the loading spinner or a <see cref="LoadingTemplate"/>.
+    /// Specifies the content to be rendered inside this <see cref="Button" />.
+    /// </summary>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the button color.
+    /// </summary>
+    [Parameter]
+    public ButtonColor Color
+    {
+        get => color;
+        set
+        {
+            color = value;
+            DirtyClasses();
+        }
+    }
+
+    /// <summary>
+    /// When set to 'true', disables the component's functionality and places it in a disabled state.
+    /// </summary>
+    [Parameter]
+    public bool Disabled
+    {
+        get => disabled;
+        set
+        {
+            disabled = value;
+            DirtyClasses();
+        }
+    }
+
+    /// <summary>
+    /// Shows the loading spinner or a <see cref="LoadingTemplate" />.
     /// </summary>
     [Parameter]
     public bool Loading
@@ -421,55 +387,35 @@ public partial class Button : BaseComponent
     }
 
     /// <summary>
-    /// Gets or sets the loadgin text.
-    /// <see cref="LoadingTemplate"/> takes precedence.
-    /// </summary>
-    [Parameter] public string LoadingText { get; set; } = "Loading...";
-
-    /// <summary>
     /// Gets or sets the component loading template.
     /// </summary>
-    [Parameter] public RenderFragment LoadingTemplate { get; set; } = default!;
+    [Parameter]
+    public RenderFragment LoadingTemplate { get; set; } = default!;
 
     /// <summary>
-    /// Denotes the target route of the <see cref="ButtonType.Link"/> button.
-    /// </summary>
-    [Parameter] public string? To { get; set; }
-
-    /// <summary>
-    /// The target attribute specifies where to open the linked document for a <see cref="ButtonType.Link"/>.
-    /// </summary>
-    [Parameter] public Target Target { get; set; } = Target.None;
-
-    /// <summary>
-    /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
-    /// </summary>
-    [Parameter] public int? TabIndex { get; set; }
-
-    /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="Button"/>.
-    /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
-
-    /// <summary>
-    /// Displays informative text when users hover, focus, or tap an element.
+    /// Gets or sets the loadgin text.
+    /// <see cref="LoadingTemplate" /> takes precedence.
     /// </summary>
     [Parameter]
-    public string TooltipTitle { get; set; } = default!;
+    public string LoadingText { get; set; } = "Loading...";
 
     /// <summary>
-    /// Tooltip placement
+    /// Makes the button to have the outlines.
     /// </summary>
-    [Parameter] public TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
-
-    /// <summary>
-    /// Gets or sets the tooltip color.
-    /// </summary>
-    [Parameter] public TooltipColor TooltipColor { get; set; }
+    [Parameter]
+    public bool Outline
+    {
+        get => outline;
+        set
+        {
+            outline = value;
+            DirtyClasses();
+        }
+    }
 
     /// <summary>
     /// Gets or sets the position.
-    /// Use <see cref="Position"/> to modify a <see cref="Badge"/> and position it in the corner of a link or button.
+    /// Use <see cref="Position" /> to modify a <see cref="Badge" /> and position it in the corner of a link or button.
     /// </summary>
     [Parameter]
     public Position Position
@@ -481,6 +427,62 @@ public partial class Button : BaseComponent
             DirtyClasses();
         }
     }
+
+    /// <summary>
+    /// Changes the size of a button.
+    /// </summary>
+    [Parameter]
+    public Size Size
+    {
+        get => size;
+        set
+        {
+            size = value;
+            DirtyClasses();
+        }
+    }
+
+    /// <summary>
+    /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
+    /// </summary>
+    [Parameter]
+    public int? TabIndex { get; set; }
+
+    /// <summary>
+    /// The target attribute specifies where to open the linked document for a <see cref="ButtonType.Link" />.
+    /// </summary>
+    [Parameter]
+    public Target Target { get; set; } = Target.None;
+
+    /// <summary>
+    /// Denotes the target route of the <see cref="ButtonType.Link" /> button.
+    /// </summary>
+    [Parameter]
+    public string? To { get; set; }
+
+    /// <summary>
+    /// Gets or sets the tooltip color.
+    /// </summary>
+    [Parameter]
+    public TooltipColor TooltipColor { get; set; }
+
+    /// <summary>
+    /// Tooltip placement
+    /// </summary>
+    [Parameter]
+    public TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
+
+    /// <summary>
+    /// Displays informative text when users hover, focus, or tap an element.
+    /// </summary>
+    [Parameter]
+    public string TooltipTitle { get; set; } = default!;
+
+    /// <summary>
+    /// Defines the button type.
+    /// </summary>
+    [Parameter]
+    public ButtonType Type { get; set; } = ButtonType.Button;
 
     #endregion
 

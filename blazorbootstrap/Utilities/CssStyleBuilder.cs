@@ -1,15 +1,21 @@
 ﻿namespace BlazorBootstrap.Utilities;
 
 /// <summary>
-/// Helper class for easier building of html styles with additional conditions and rules.
+/// A helper class for building CSS styles.
 /// </summary>
-public class StyleBuilder
+/// <remarks>
+/// This class can be used to append strings, lists of strings, and conditions to a CSS style.
+/// </remarks>
+public class CssStyleBuilder
 {
     #region Fields and Constants
 
+    /// <summary>
+    /// The delimiter used to separate the styles.
+    /// </summary>
     private const char Delimiter = ';';
 
-    private readonly Action<StyleBuilder> buildStyles;
+    private readonly Action<CssStyleBuilder> buildStyles;
 
     private StringBuilder builder = new();
 
@@ -22,10 +28,10 @@ public class StyleBuilder
     #region Constructors
 
     /// <summary>
-    /// Default style builder constructor that accepts build action.
+    /// Creates a new CSS style builder.
     /// </summary>
-    /// <param name="buildStyles">Action responsible for building the styles.</param>
-    public StyleBuilder(Action<StyleBuilder> buildStyles)
+    /// <param name="buildStyles">The action to be called to build the styles.</param>
+    public CssStyleBuilder(Action<CssStyleBuilder> buildStyles)
     {
         this.buildStyles = buildStyles;
     }
@@ -35,28 +41,28 @@ public class StyleBuilder
     #region Methods
 
     /// <summary>
-    /// Appends a copy of the specified string to this instance.
+    /// Appends a string to the style.
     /// </summary>
     /// <param name="value">The string to append.</param>
     public void Append(string value)
     {
-        if (value != null)
+        if (!string.IsNullOrWhiteSpace(value))
             builder.Append(value).Append(Delimiter);
     }
 
     /// <summary>
-    /// Appends a copy of the specified string to this instance if <paramref name="condition" /> is true.
+    /// Appends a string to the style if the specified condition is true.
     /// </summary>
     /// <param name="value">The string to append.</param>
-    /// <param name="condition">Condition that must be true.</param>
+    /// <param name="condition">The condition to check.</param>
     public void Append(string value, bool condition)
     {
-        if (condition)
+        if (condition && !string.IsNullOrWhiteSpace(value))
             builder.Append(value).Append(Delimiter);
     }
 
     /// <summary>
-    /// Marks the builder as dirty to rebuild the values.
+    /// Marks the builder as dirty, so that the styles will be rebuilt the next time they are requested.
     /// </summary>
     public void Dirty() => dirty = true;
 
@@ -65,8 +71,11 @@ public class StyleBuilder
     #region Properties, Indexers
 
     /// <summary>
-    /// Get the styles.
+    /// Gets the styles.
     /// </summary>
+    /// <remarks>
+    /// The styles are lazily built, so the first time this property is accessed, the `buildStyles` action will be called.
+    /// </remarks>
     public string Styles
     {
         get

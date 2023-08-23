@@ -9,11 +9,7 @@ public partial class BarChart : BaseChart
         chartType = ChartType.Bar;
     }
 
-    #endregion Constructors
-
-    #region Members
-
-    #endregion Members
+    #endregion
 
     #region Methods
 
@@ -29,13 +25,9 @@ public partial class BarChart : BaseChart
             throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
-        {
             if (dataset is BarChartDataset barChartDataset && barChartDataset.Label == dataLabel)
-            {
                 if (data is BarChartDatasetData barChartDatasetData)
                     barChartDataset.Data?.Add(barChartDatasetData.Data);
-            }
-        }
 
         await JS.InvokeVoidAsync("window.blazorChart.bar.addDatasetData", ElementId, dataLabel, data);
 
@@ -74,7 +66,6 @@ public partial class BarChart : BaseChart
         chartData.Labels.Add(dataLabel);
 
         foreach (var dataset in chartData.Datasets)
-        {
             if (dataset is BarChartDataset barChartDataset)
             {
                 var chartDatasetData = data.FirstOrDefault(x => x is BarChartDatasetData barChartDatasetData && barChartDatasetData.DatasetLabel == barChartDataset.Label);
@@ -82,7 +73,6 @@ public partial class BarChart : BaseChart
                 if (chartDatasetData is BarChartDatasetData barChartDatasetData)
                     barChartDataset.Data?.Add(barChartDatasetData.Data);
             }
-        }
 
         await JS.InvokeVoidAsync("window.blazorChart.bar.addDatasetsData", ElementId, dataLabel, data?.Select(x => (BarChartDatasetData)x));
 
@@ -129,12 +119,12 @@ public partial class BarChart : BaseChart
         }
     }
 
-    #endregion Methods
+    #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
-    #endregion Properties
+    #endregion
 }

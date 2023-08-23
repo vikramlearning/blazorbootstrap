@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<CascadingValue Value="@this" IsFixed="true">
+<CascadingValue Value="@(this)" IsFixed="true">
     <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
         <div class="d-flex">
             <div class="toast-body">

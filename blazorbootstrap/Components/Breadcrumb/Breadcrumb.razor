@@ -1,23 +1,25 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<CascadingValue Value="@this" IsFixed="true">
-     @if(Items!= null && Items.Any())
-     {
+<CascadingValue Value="@(this)" IsFixed="true">
+    @if (Items != null && Items.Any())
+    {
         <nav @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" aria-label="breadcrumb">
-          <ol class="breadcrumb">
-              @foreach(var item in Items)
-              {
-                  @if(!item.IsCurrentPage)
-                  {
-                    <li class="breadcrumb-item"><a href="@item.Href">@item.Text</a></li>
-                  }
-                  else
-                  {
-                    <li class="breadcrumb-item active" aria-current="page">@item.Text</li>
-                  }
-              }
-          </ol>
+            <ol class="breadcrumb">
+                @foreach (var item in Items)
+                {
+                    @if (!item.IsCurrentPage)
+                    {
+                        <li class="breadcrumb-item">
+                            <a href="@item.Href">@item.Text</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="breadcrumb-item active" aria-current="page">@item.Text</li>
+                    }
+                }
+            </ol>
         </nav>
-     }
+    }
 </CascadingValue>

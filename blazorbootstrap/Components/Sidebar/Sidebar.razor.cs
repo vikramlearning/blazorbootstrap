@@ -2,27 +2,21 @@
 
 public partial class Sidebar : BaseComponent
 {
-    #region Events
-
-    #endregion Events
-
-    #region Members
-
-    private bool collapseSidebar = false;
+    #region Fields and Constants
 
     private bool collapseNavMenu = true;
 
-    private IEnumerable<NavItem>? items = null;
+    private bool collapseSidebar = false;
 
-    private string? navMenuCssClass => GetNavMenuCssClass();
+    private IEnumerable<NavItem>? items = null;
 
     private bool requestInProgress = false;
 
-    #endregion Members
+    #endregion
 
     #region Methods
 
-    protected override void BuildClasses(ClassBuilder builder)
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append("bb-sidebar");
         builder.Append("collapsed", collapseSidebar);
@@ -31,19 +25,19 @@ public partial class Sidebar : BaseComponent
         base.BuildClasses(builder);
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        Attributes ??= new Dictionary<string, object>();
-
-        await base.OnInitializedAsync();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
             await RefreshDataAsync(firstRender);
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Attributes ??= new Dictionary<string, object>();
+
+        await base.OnInitializedAsync();
     }
 
     /// <summary>
@@ -69,6 +63,16 @@ public partial class Sidebar : BaseComponent
         await InvokeAsync(StateHasChanged);
     }
 
+    /// <summary>
+    /// Toggles sidebar.
+    /// </summary>
+    public void ToggleSidebar()
+    {
+        collapseSidebar = !collapseSidebar;
+        DirtyClasses();
+        StateHasChanged();
+    }
+
     private string GetNavMenuCssClass()
     {
         var sb = new StringBuilder();
@@ -86,53 +90,53 @@ public partial class Sidebar : BaseComponent
 
     private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
 
-    /// <summary>
-    /// Toggles sidebar.
-    /// </summary>
-    public void ToggleSidebar()
-    {
-        collapseSidebar = !collapseSidebar;
-        DirtyClasses();
-        StateHasChanged();
-    }
+    #endregion
 
-    #endregion Methods
+    #region Properties, Indexers
 
-    #region Properties
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
     /// Gets or sets the badge text.
     /// </summary>
-    [Parameter] public string? BadgeText { get; set; }
+    [Parameter]
+    public string? BadgeText { get; set; }
 
     /// <summary>
     /// Gets or sets the custom icon name.
     /// </summary>
-    [Parameter] public string? CustomIconName { get; set; }
+    [Parameter]
+    public string? CustomIconName { get; set; }
 
     /// <summary>
-    /// DataProvider is for items to render. 
+    /// DataProvider is for items to render.
     /// The provider should always return an instance of 'SidebarDataProviderResult', and 'null' is not allowed.
     /// </summary>
-    [Parameter, EditorRequired] public SidebarDataProviderDelegate? DataProvider { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public SidebarDataProviderDelegate? DataProvider { get; set; }
 
     /// <summary>
     /// Gets or sets the IconName.
     /// </summary>
-    [Parameter] public IconName IconName { get; set; }
+    [Parameter]
+    public IconName IconName { get; set; }
 
     /// <summary>
     /// Gets or sets the logo.
     /// </summary>
-    [Parameter] public string? ImageSrc { get; set; }
+    [Parameter]
+    public string? ImageSrc { get; set; }
+
+    private string? navMenuCssClass => GetNavMenuCssClass();
 
     /// <summary>
     /// Gets or sets the title.
     /// </summary>
-    [Parameter, EditorRequired] public string? Title { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string? Title { get; set; }
 
-    #endregion Properties
+    #endregion
 }

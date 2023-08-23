@@ -4,13 +4,13 @@
 <div class="form-check form-switch @ClassNames @reverse" style="@StyleNames">
     <input @ref="@ElementRef"
            @attributes="@Attributes"
-           type="checkbox" 
+           type="checkbox"
            id="@ElementId"
            class="form-check-input"
            disabled="@Disabled"
            checked="@Value"
            @onchange="OnChange"
-           role="switch" />
+           role="switch"/>
 
     @if (!string.IsNullOrWhiteSpace(Label))
     {

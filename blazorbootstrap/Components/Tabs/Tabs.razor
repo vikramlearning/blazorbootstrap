@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BaseComponent
 
-<CascadingValue Value="@this" IsFixed="true">
+<CascadingValue Value="@(this)" IsFixed="true">
     @ChildContent
 </CascadingValue>
 
@@ -12,7 +12,7 @@
             @foreach (var t in tabs)
             {
                 var tabElementId = t.ElementId;
-                <button class="nav-link @(t.Disabled ? "disabled": "")" id="@t.ElementId" data-bs-target="#nav-@t.ElementId" type="button" role="tab" aria-selected="false" @onclick="async () => await OnTabClickAsync(tabElementId)">
+                <button class="nav-link @(t.Disabled ? "disabled" : "")" id="@t.ElementId" data-bs-target="#nav-@t.ElementId" type="button" role="tab" aria-selected="false" @onclick="async () => await OnTabClickAsync(tabElementId)">
                     @if (t.TitleTemplate != null)
                     {
                         @t.TitleTemplate
@@ -32,9 +32,9 @@
     <div class="tab-content">
         @foreach (var t in tabs)
         {
-            <div class="tab-pane @(EnableFadeEffect ? "fade": "")" id="nav-@t.ElementId" role="tabpanel" aria-labelledby="@t.ElementId">
+            <div class="tab-pane @(EnableFadeEffect ? "fade" : "")" id="nav-@t.ElementId" role="tabpanel" aria-labelledby="@t.ElementId">
                 @t.Content
             </div>
         }
     </div>
-} 
+}

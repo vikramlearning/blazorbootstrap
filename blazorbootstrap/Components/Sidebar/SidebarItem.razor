@@ -8,14 +8,14 @@
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                     </span>
                 </Tooltip>
             }
@@ -23,13 +23,13 @@
             @if (navitemGroupExpanded)
             {
                 <span class="nav-link-arrow float-end expanded-only">
-                    <Icon Name="IconName.ChevronDown" />
+                    <Icon Name="IconName.ChevronDown"/>
                 </span>
             }
             else
             {
                 <span class="nav-link-arrow float-end expanded-only">
-                    <Icon Name="IconName.ChevronRight" />
+                    <Icon Name="IconName.ChevronRight"/>
                 </span>
             }
         </NavLink>
@@ -40,14 +40,14 @@
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                     </span>
                 </Tooltip>
             }
@@ -65,7 +65,7 @@
                          Href="@childItem.Href"
                          Text="@childItem.Text"
                          Target="@childItem.Target"
-                         Match="@childItem.Match" />
+                         Match="@childItem.Match"/>
         }
     }
 </div>
