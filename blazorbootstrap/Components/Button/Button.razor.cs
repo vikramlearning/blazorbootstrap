@@ -180,7 +180,7 @@ public partial class Button : BlazorBootstrapComponentBase
     protected virtual RenderFragment ProvideDefaultLoadingTemplate() =>
         builder =>
         {
-            builder.MarkupContent($"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {loadingText}");
+            builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {loadingText}");
         };
 
     private async Task OnMouseOutAsync(MouseEventArgs args)

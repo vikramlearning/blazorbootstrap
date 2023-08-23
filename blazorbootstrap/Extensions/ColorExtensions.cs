@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace BlazorBootstrap.Extensions;
+﻿namespace BlazorBootstrap.Extensions;
 
 public static class ColorExtensions
 {
