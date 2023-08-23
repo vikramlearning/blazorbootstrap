@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DateInput<TValue> : BaseComponent
+public partial class DateInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

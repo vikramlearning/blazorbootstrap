@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class PaginationItem : BaseComponent
+public partial class PaginationItem : BlazorBootstrapComponentBase
 {
     #region Methods
 

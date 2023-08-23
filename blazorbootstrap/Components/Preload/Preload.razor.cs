@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Preload : BaseComponent
+public partial class Preload : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

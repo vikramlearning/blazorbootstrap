@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Pagination : BaseComponent
+public partial class Pagination : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

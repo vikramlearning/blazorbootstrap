@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Modal : BaseComponent
+public partial class Modal : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

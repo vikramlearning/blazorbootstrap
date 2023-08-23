@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Sidebar : BaseComponent
+public partial class Sidebar : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

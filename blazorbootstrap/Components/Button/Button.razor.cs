@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Button : BaseComponent
+public partial class Button : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

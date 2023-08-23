@@ -8,7 +8,7 @@
 /// generating an ID for the component, building the class names and styles, and handling
 /// custom attributes.
 /// </remarks>
-public abstract class BaseComponent : ComponentBase, IDisposable, IAsyncDisposable
+public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 {
     #region Fields and Constants
 
@@ -32,9 +32,9 @@ public abstract class BaseComponent : ComponentBase, IDisposable, IAsyncDisposab
     #region Constructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BaseComponent" /> class.
+    /// Initializes a new instance of the <see cref="BlazorBootstrapComponentBase" /> class.
     /// </summary>
-    public BaseComponent()
+    public BlazorBootstrapComponentBase()
     {
         ClassBuilder = new CssClassBuilder(BuildClasses);
         StyleBuilder = new CssStyleBuilder(BuildStyles);

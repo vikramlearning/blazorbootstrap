@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class LineChart : BaseChart
+public partial class LineChart : BlazorBootstrapChart
 {
     #region Constructors
 

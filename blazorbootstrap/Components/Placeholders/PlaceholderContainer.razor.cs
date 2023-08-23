@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class PlaceholderContainer : BaseComponent
+public partial class PlaceholderContainer : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Toasts : BaseComponent, IDisposable
+public partial class Toasts : BlazorBootstrapComponentBase, IDisposable
 {
     #region Fields and Constants
 

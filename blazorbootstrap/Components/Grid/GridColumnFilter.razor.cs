@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class GridColumnFilter : BaseComponent
+public partial class GridColumnFilter : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Tooltip : BaseComponent
+public partial class Tooltip : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

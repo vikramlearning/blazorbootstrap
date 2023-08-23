@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class SidebarItemGroup : BaseComponent
+public partial class SidebarItemGroup : BlazorBootstrapComponentBase
 {
     #region Methods
 

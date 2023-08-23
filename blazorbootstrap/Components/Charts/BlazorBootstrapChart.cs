@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public class BaseChart : BaseComponent
+public class BlazorBootstrapChart : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

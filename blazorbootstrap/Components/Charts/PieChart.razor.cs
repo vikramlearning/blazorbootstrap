@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class PieChart : BaseChart
+public partial class PieChart : BlazorBootstrapChart
 {
     #region Constructors
 

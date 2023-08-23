@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Offcanvas : BaseComponent
+public partial class Offcanvas : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Tab : BaseComponent
+public partial class Tab : BlazorBootstrapComponentBase
 {
     #region Methods
 

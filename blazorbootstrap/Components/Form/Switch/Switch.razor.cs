@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Switch : BaseComponent
+public partial class Switch : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

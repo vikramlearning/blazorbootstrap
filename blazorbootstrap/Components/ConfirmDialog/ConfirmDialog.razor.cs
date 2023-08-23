@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class ConfirmDialog : BaseComponent
+public partial class ConfirmDialog : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

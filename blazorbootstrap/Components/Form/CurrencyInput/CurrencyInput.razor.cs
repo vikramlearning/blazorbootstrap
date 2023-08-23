@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class CurrencyInput<TValue> : BaseComponent
+public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

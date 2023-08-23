@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Icon : BaseComponent
+public partial class Icon : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

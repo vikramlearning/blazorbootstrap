@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Breadcrumb : BaseComponent
+public partial class Breadcrumb : BlazorBootstrapComponentBase
 {
     #region Methods
 

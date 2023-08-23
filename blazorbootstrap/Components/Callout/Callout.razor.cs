@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Callout : BaseComponent
+public partial class Callout : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

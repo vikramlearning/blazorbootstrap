@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Tabs : BaseComponent
+public partial class Tabs : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

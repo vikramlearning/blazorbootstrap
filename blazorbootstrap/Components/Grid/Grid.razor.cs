@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Grid<TItem> : BaseComponent
+public partial class Grid<TItem> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 

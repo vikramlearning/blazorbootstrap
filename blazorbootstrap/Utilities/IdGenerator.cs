@@ -38,17 +38,21 @@ public sealed class IdGenerator : IIdGenerator
     /// <param name="id"></param>
     private static void GenerateImpl(Span<char> buffer, long id)
     {
-        var Encode32Chars = "ABCDEFGHIJKLMNOPQRSTUV0123456789";
+        var encode32Chars = "ABCDEFGHIJKLMNOPQRSTUV0123456789";
         // Accessing the last item in the beginning elides range checks for all the subsequent items.
-        var index = 12;
-
-        do
-        {
-            buffer[index] = Encode32Chars[(int)id & 31];
-            id >>= 5;
-            index--;
-        }
-        while (id > 0 && index >= 0);
+        buffer[12] = encode32Chars[(int)id & 31];
+        buffer[0] = encode32Chars[(int)(id >> 60) & 31];
+        buffer[1] = encode32Chars[(int)(id >> 55) & 31];
+        buffer[2] = encode32Chars[(int)(id >> 50) & 31];
+        buffer[3] = encode32Chars[(int)(id >> 45) & 31];
+        buffer[4] = encode32Chars[(int)(id >> 40) & 31];
+        buffer[5] = encode32Chars[(int)(id >> 35) & 31];
+        buffer[6] = encode32Chars[(int)(id >> 30) & 31];
+        buffer[7] = encode32Chars[(int)(id >> 25) & 31];
+        buffer[8] = encode32Chars[(int)(id >> 20) & 31];
+        buffer[9] = encode32Chars[(int)(id >> 15) & 31];
+        buffer[10] = encode32Chars[(int)(id >> 10) & 31];
+        buffer[11] = encode32Chars[(int)(id >> 5) & 31];
     }
 
     #endregion

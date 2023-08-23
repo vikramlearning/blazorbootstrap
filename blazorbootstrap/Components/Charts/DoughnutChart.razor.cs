@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DoughnutChart : BaseChart
+public partial class DoughnutChart : BlazorBootstrapChart
 {
     #region Constructors
 
