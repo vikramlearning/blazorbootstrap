@@ -94,15 +94,49 @@ public partial class Toast : BlazorBootstrapComponentBase, IDisposable
     /// </summary>
     public async Task ShowAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.show", ElementId, AutoHide, Delay, objRef);
 
-    private string GetIconClass() => ToastMessage.Type switch { ToastType.Primary => BootstrapClassProvider.TextColor(TextColor.Primary), ToastType.Secondary => BootstrapClassProvider.TextColor(TextColor.Secondary), ToastType.Success => BootstrapClassProvider.TextColor(TextColor.Success), ToastType.Danger => BootstrapClassProvider.TextColor(TextColor.Danger), ToastType.Warning => BootstrapClassProvider.TextColor(TextColor.Warning), ToastType.Info => BootstrapClassProvider.TextColor(TextColor.Info), ToastType.Light => BootstrapClassProvider.TextColor(TextColor.Light), ToastType.Dark => BootstrapClassProvider.TextColor(TextColor.Dark), _ => "" };
+    private string GetIconClass() =>
+        ToastMessage.Type switch
+        {
+            ToastType.Primary => BootstrapClassProvider.TextColor(TextColor.Primary),
+            ToastType.Secondary => BootstrapClassProvider.TextColor(TextColor.Secondary),
+            ToastType.Success => BootstrapClassProvider.TextColor(TextColor.Success),
+            ToastType.Danger => BootstrapClassProvider.TextColor(TextColor.Danger),
+            ToastType.Warning => BootstrapClassProvider.TextColor(TextColor.Warning),
+            ToastType.Info => BootstrapClassProvider.TextColor(TextColor.Info),
+            ToastType.Light => BootstrapClassProvider.TextColor(TextColor.Light),
+            ToastType.Dark => BootstrapClassProvider.TextColor(TextColor.Dark),
+            _ => ""
+        };
 
-    private ProgressColor GetProgressColor() => ToastMessage.Type switch { ToastType.Primary => ProgressColor.Primary, ToastType.Secondary => ProgressColor.Secondary, ToastType.Success => ProgressColor.Success, ToastType.Danger => ProgressColor.Danger, ToastType.Warning => ProgressColor.Warning, ToastType.Info => ProgressColor.Info, ToastType.Dark => ProgressColor.Dark, _ => ProgressColor.Primary };
+    private ProgressColor GetProgressColor() =>
+        ToastMessage.Type switch
+        {
+            ToastType.Primary => ProgressColor.Primary,
+            ToastType.Secondary => ProgressColor.Secondary,
+            ToastType.Success => ProgressColor.Success,
+            ToastType.Danger => ProgressColor.Danger,
+            ToastType.Warning => ProgressColor.Warning,
+            ToastType.Info => ProgressColor.Info,
+            ToastType.Dark => ProgressColor.Dark,
+            _ => ProgressColor.Primary
+        };
 
     private IconName GetToastIconName() =>
         string.IsNullOrWhiteSpace(ToastMessage.CustomIconName)
         && ToastMessage.IconName != IconName.None
             ? ToastMessage.IconName
-            : ToastMessage.Type switch { ToastType.Primary => IconName.LightbulbFill, ToastType.Secondary => IconName.ExclamationTriangleFill, ToastType.Success => IconName.CheckCircleFill, ToastType.Danger => IconName.Fire, ToastType.Warning => IconName.ExclamationTriangleFill, ToastType.Info => IconName.InfoCircleFill, ToastType.Light => IconName.ExclamationTriangleFill, ToastType.Dark => IconName.ExclamationTriangleFill, _ => IconName.BellFill };
+            : ToastMessage.Type switch
+              {
+                  ToastType.Primary => IconName.LightbulbFill,
+                  ToastType.Secondary => IconName.ExclamationTriangleFill,
+                  ToastType.Success => IconName.CheckCircleFill,
+                  ToastType.Danger => IconName.Fire,
+                  ToastType.Warning => IconName.ExclamationTriangleFill,
+                  ToastType.Info => IconName.InfoCircleFill,
+                  ToastType.Light => IconName.ExclamationTriangleFill,
+                  ToastType.Dark => IconName.ExclamationTriangleFill,
+                  _ => IconName.BellFill
+              };
 
     #endregion
 

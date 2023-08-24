@@ -20,10 +20,27 @@ public partial class Callout : BlazorBootstrapComponentBase
 
     private string GetHeading() =>
         string.IsNullOrWhiteSpace(Heading)
-            ? type switch { CalloutType.Default => "NOTE", CalloutType.Info => "INFO", CalloutType.Warning => "WARNING", CalloutType.Danger => "DANGER", CalloutType.Tip => "TIP", _ => "" }
+            ? type switch
+              {
+                  CalloutType.Default => "NOTE",
+                  CalloutType.Info => "INFO",
+                  CalloutType.Warning => "WARNING",
+                  CalloutType.Danger => "DANGER",
+                  CalloutType.Tip => "TIP",
+                  _ => ""
+              }
             : Heading;
 
-    private IconName GetIconName() => type switch { CalloutType.Default => IconName.InfoCircleFill, CalloutType.Info => IconName.InfoCircleFill, CalloutType.Warning => IconName.ExclamationTriangleFill, CalloutType.Danger => IconName.Fire, CalloutType.Tip => IconName.Lightbulb, _ => IconName.InfoCircleFill };
+    private IconName GetIconName() =>
+        type switch
+        {
+            CalloutType.Default => IconName.InfoCircleFill,
+            CalloutType.Info => IconName.InfoCircleFill,
+            CalloutType.Warning => IconName.ExclamationTriangleFill,
+            CalloutType.Danger => IconName.Fire,
+            CalloutType.Tip => IconName.Lightbulb,
+            _ => IconName.InfoCircleFill
+        };
 
     #endregion
 

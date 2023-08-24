@@ -39,7 +39,17 @@ public partial class Heading
     /// <summary>
     /// Gets the heading size number.
     /// </summary>
-    protected string SizeNumber => Size switch { HeadingSize.H1 => "1", HeadingSize.H2 => "2", HeadingSize.H3 => "3", HeadingSize.H4 => "4", HeadingSize.H5 => "5", HeadingSize.H6 => "6", _ => "3" };
+    protected string SizeNumber =>
+        Size switch
+        {
+            HeadingSize.H1 => "1",
+            HeadingSize.H2 => "2",
+            HeadingSize.H3 => "3",
+            HeadingSize.H4 => "4",
+            HeadingSize.H5 => "5",
+            HeadingSize.H6 => "6",
+            _ => "3"
+        };
 
     /// <summary>
     /// Gets the heading tag name.

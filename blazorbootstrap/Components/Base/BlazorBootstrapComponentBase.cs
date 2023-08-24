@@ -189,6 +189,12 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     public Dictionary<string, object> Attributes { get; set; }
 
     /// <summary>
+    /// Gets or sets the classname provider.
+    /// </summary>
+    [Inject]
+    protected BootstrapClassProvider BootstrapClassProvider { get; set; }
+
+    /// <summary>
     /// Optional CSS class names. If given, these will be included in the class attribute of the component.
     /// </summary>
     [Parameter]
@@ -212,12 +218,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// Gets the built class-names based on all the rules set by the component parameters.
     /// </summary>
     public string? ClassNames => ClassBuilder!.ClassNames;
-
-    /// <summary>
-    /// Gets or sets the classname provider.
-    /// </summary>
-    [Inject]
-    protected BootstrapClassProvider BootstrapClassProvider { get; set; }
 
     /// <summary>
     /// Indicates if the component is already fully disposed.

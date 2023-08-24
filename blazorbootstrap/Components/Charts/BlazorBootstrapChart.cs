@@ -78,7 +78,15 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase
     protected string GetChartType() =>
         chartType switch
         {
-            ChartType.Bar => "bar", ChartType.Bubble => "bubble", ChartType.Doughnut => "doughnut", ChartType.Line => "line", ChartType.Pie => "pie", ChartType.PolarArea => "polarArea", ChartType.Radar => "radar", ChartType.Scatter => "scatter", _ => "line" // default
+            ChartType.Bar => "bar",
+            ChartType.Bubble => "bubble",
+            ChartType.Doughnut => "doughnut",
+            ChartType.Line => "line",
+            ChartType.Pie => "pie",
+            ChartType.PolarArea => "polarArea",
+            ChartType.Radar => "radar",
+            ChartType.Scatter => "scatter",
+            _ => "line" // default
         };
 
     private string GetChartContainerSizeAsStyle()

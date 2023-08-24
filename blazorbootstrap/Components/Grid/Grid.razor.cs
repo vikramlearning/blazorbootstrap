@@ -286,7 +286,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private string GetPaginationItemsText()
     {
-        var startRecord = ((gridCurrentState.PageIndex - 1) * pageSize) + 1;
+        var startRecord = (gridCurrentState.PageIndex - 1) * pageSize + 1;
         var endRecord = gridCurrentState.PageIndex * pageSize;
 
         if (endRecord > totalCount)

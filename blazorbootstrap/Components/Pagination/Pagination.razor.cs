@@ -47,12 +47,12 @@ public partial class Pagination : BlazorBootstrapComponentBase
             return 1;
 
         if (q > 0 && r == 0)
-            return ((q - 1) * DisplayPages) + 1;
+            return (q - 1) * DisplayPages + 1;
 
         if (q > 1 && r < DisplayPages)
-            return (q * DisplayPages) + 1;
+            return q * DisplayPages + 1;
 
-        return (ActivePageNumber / DisplayPages * DisplayPages) + 1;
+        return ActivePageNumber / DisplayPages * DisplayPages + 1;
     }
 
     private int GetPageToExclusive() => TotalPages == 0 ? 1 : Math.Min(TotalPages, pageFromInclusive + DisplayPages - 1);
