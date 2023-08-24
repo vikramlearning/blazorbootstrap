@@ -14,7 +14,7 @@ public class CssClassBuilder
 
     private List<string> classList = new();
 
-    private string classNames;
+    private string? classNames;
 
     private bool dirty = true;
 
@@ -82,17 +82,17 @@ public class CssClassBuilder
     /// The class names are lazily built, so the first time this property is accessed, the `buildClasses` action will be
     /// called.
     /// </remarks>
-    public string ClassNames
+    public string? ClassNames
     {
         get
         {
             if (dirty)
             {
-                classList = new();
+                classList = new List<string>();
 
                 buildClasses(this);
 
-                classNames = string.Join(" ", classList);
+                classNames = classList.Any() ? string.Join(" ", classList) : null;
 
                 dirty = false;
             }

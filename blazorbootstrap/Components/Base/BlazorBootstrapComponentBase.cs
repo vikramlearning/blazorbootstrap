@@ -211,7 +211,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// Gets the built class-names based on all the rules set by the component parameters.
     /// </summary>
-    public string? ClassNames => ClassBuilder.ClassNames;
+    public string? ClassNames => ClassBuilder!.ClassNames;
 
     /// <summary>
     /// Gets or sets the classname provider.
@@ -279,7 +279,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// Gets the built styles based on all the rules set by the component parameters.
     /// </summary>
-    public string? StyleNames => StyleBuilder.Styles;
+    public string? StyleNames => StyleBuilder!.Styles;
 
     #endregion
 }

@@ -12,18 +12,18 @@ public class CssStyleBuilder
 
     private readonly Action<CssStyleBuilder> buildStyles;
 
-    private List<string> builder = new();
-
     private bool dirty = true;
 
-    private string styles;
+    private List<string> styleList = new();
+
+    private string? styles;
 
     #endregion
 
     #region Constructors
 
     /// <summary>
-    /// Creates a new CSS style builder.
+    /// Creates a new CSS style styleList.
     /// </summary>
     /// <param name="buildStyles">The action to be called to build the styles.</param>
     public CssStyleBuilder(Action<CssStyleBuilder> buildStyles)
@@ -42,7 +42,7 @@ public class CssStyleBuilder
     public void Append(string value)
     {
         if (!string.IsNullOrWhiteSpace(value))
-            builder.Add(value);
+            styleList.Add(value);
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public class CssStyleBuilder
     public void Append(string value, bool condition)
     {
         if (condition && !string.IsNullOrWhiteSpace(value))
-            builder.Add(value);
+            styleList.Add(value);
     }
 
     /// <summary>
@@ -63,11 +63,11 @@ public class CssStyleBuilder
     public void Append(IEnumerable<string> values)
     {
         if (values is not null && values.Any())
-            builder.AddRange(values);
+            styleList.AddRange(values);
     }
 
     /// <summary>
-    /// Marks the builder as dirty, so that the styles will be rebuilt the next time they are requested.
+    /// Marks the styleList as dirty, so that the styles will be rebuilt the next time they are requested.
     /// </summary>
     public void Dirty() => dirty = true;
 
@@ -81,17 +81,17 @@ public class CssStyleBuilder
     /// <remarks>
     /// The styles are lazily built, so the first time this property is accessed, the `buildStyles` action will be called.
     /// </remarks>
-    public string Styles
+    public string? Styles
     {
         get
         {
             if (dirty)
             {
-                builder = new();
+                styleList = new List<string>();
 
                 buildStyles(this);
 
-                styles = string.Join(";", builder);
+                styles = styleList.Any() ? string.Join(";", styleList) : null;
 
                 dirty = false;
             }
