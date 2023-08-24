@@ -14,10 +14,10 @@ public partial class Preload : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Modal());
-        builder.Append(ClassProvider.PageLoadingModal());
-        builder.Append(ClassProvider.ModalFade());
-        builder.Append(ClassProvider.Show(), showBackdrop);
+        builder.Append(BootstrapClassProvider.Modal());
+        builder.Append(BootstrapClassProvider.PageLoadingModal());
+        builder.Append(BootstrapClassProvider.ModalFade());
+        builder.Append(BootstrapClassProvider.Show(), showBackdrop);
 
         base.BuildClasses(builder);
     }

@@ -7,7 +7,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.PaginationLink());
+        builder.Append(BootstrapClassProvider.PaginationLink());
 
         base.BuildClasses(builder);
     }

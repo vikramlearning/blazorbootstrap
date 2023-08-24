@@ -15,7 +15,7 @@ public partial class Tab : BlazorBootstrapComponentBase
 
     protected override void OnInitialized()
     {
-        ElementId = IdGenerator.Generate; // This is required
+        ElementId = IdGenerator.GetNextId(); // This is required
         Parent.AddTab(this);
     }
 

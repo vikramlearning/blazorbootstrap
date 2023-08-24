@@ -100,7 +100,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     [Parameter] public IconColor IconColor { get; set; }
 
-    private string iconColorCssClass => ClassProvider.IconColor(IconColor);
+    private string iconColorCssClass => BootstrapClassProvider.IconColor(IconColor);
 
     [Parameter] public IconName IconName { get; set; }
 

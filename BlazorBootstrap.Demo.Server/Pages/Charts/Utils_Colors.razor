@@ -1,37 +1,34 @@
-﻿@using BlazorBootstrap.Extensions
-@using Color = System.Drawing.Color
-
-<table class="table table-hover table-bordered table-striped">
+﻿<table class="table table-hover table-bordered table-striped">
     <thead>
-        <tr>
-            <th>#</th>
-            <th>Color</th>
-            <th>Color Name</th>
-            <th>Hexa</th>
-            <th>Rgb</th>
-        </tr>
+    <tr>
+        <th>#</th>
+        <th>Color</th>
+        <th>Color Name</th>
+        <th>Hexa</th>
+        <th>Rgb</th>
+    </tr>
     </thead>
     <tbody>
-        @{
-            int i = 1;
-            foreach (var color in chartColors)
-            {
-                <tr>
-                    <td>@i</td>
-                    <td style="background-color:@color.Hex"></td>
-                    <td>@color.Name</td>
-                    <td>@color.Hex</td>
-                    <td>@color.Rgb</td>
-                </tr>
+    @{
+        var i = 1;
+        foreach (var color in chartColors)
+        {
+            <tr>
+                <td>@i</td>
+                <td style="background-color:@color.Hex"></td>
+                <td>@color.Name</td>
+                <td>@color.Hex</td>
+                <td>@color.Rgb</td>
+            </tr>
 
-                i++;
-            }
+            i++;
         }
+    }
     </tbody>
 </table>
 
 @code {
-    List<ChartColor> chartColors = new List<ChartColor>();
+    readonly List<ChartColor> chartColors = new();
 
     protected override void OnInitialized()
     {
@@ -181,7 +178,7 @@
 
     public class ChartColor
     {
-        public ChartColor(System.Drawing.Color color)
+        public ChartColor(Color color)
         {
             Name = color.Name;
             Hex = color.ToHexString();
@@ -196,4 +193,5 @@
         public string Rgb { get; set; }
         public string Rgba { get; set; }
     }
+
 }

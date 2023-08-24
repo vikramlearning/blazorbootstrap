@@ -34,10 +34,10 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Modal());
-        builder.Append(ClassProvider.ConfirmationModal());
-        builder.Append(ClassProvider.ModalFade());
-        builder.Append(ClassProvider.Show(), showBackdrop);
+        builder.Append(BootstrapClassProvider.Modal());
+        builder.Append(BootstrapClassProvider.ConfirmationModal());
+        builder.Append(BootstrapClassProvider.ModalFade());
+        builder.Append(BootstrapClassProvider.Show(), showBackdrop);
 
         base.BuildClasses(builder);
     }
@@ -128,7 +128,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
         verticallyCentered = confirmDialogOptions.IsVerticallyCentered ? "modal-dialog-centered" : "";
         noButtonColor = confirmDialogOptions.NoButtonColor.ToButtonClass();
         noButtonText = confirmDialogOptions.NoButtonText;
-        modalSize = ClassProvider.ToDialogSize(confirmDialogOptions.Size);
+        modalSize = BootstrapClassProvider.ToDialogSize(confirmDialogOptions.Size);
         yesButtonColor = confirmDialogOptions.YesButtonColor.ToButtonClass();
         yesButtonText = confirmDialogOptions.YesButtonText;
 

@@ -7,9 +7,9 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.PaginationItem());
-        builder.Append(ClassProvider.PaginationItemActive(), Active);
-        builder.Append(ClassProvider.PaginationItemDisabled(), Disabled);
+        builder.Append(BootstrapClassProvider.PaginationItem());
+        builder.Append(BootstrapClassProvider.PaginationItemActive(), Active);
+        builder.Append(BootstrapClassProvider.PaginationItemDisabled(), Disabled);
 
         base.BuildClasses(builder);
     }

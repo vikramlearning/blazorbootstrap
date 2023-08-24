@@ -18,12 +18,12 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Nav);
+        builder.Append(BootstrapClassProvider.Nav);
 
         if (NavStyle == NavStyle.Tabs)
-            builder.Append(ClassProvider.NavTabs);
+            builder.Append(BootstrapClassProvider.NavTabs);
         else
-            builder.Append(ClassProvider.NavPills);
+            builder.Append(BootstrapClassProvider.NavPills);
 
         base.BuildClasses(builder);
     }

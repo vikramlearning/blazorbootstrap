@@ -60,7 +60,17 @@ public class Interaction
 
     #region Methods
 
-    private void SetMode(InteractionMode interactionMode) => ChartInteractionMode = interactionMode switch { InteractionMode.Dataset => "dataset", InteractionMode.Index => "index", InteractionMode.Nearest => "nearest", InteractionMode.Point => "point", InteractionMode.X => "x", InteractionMode.Y => "y", _ => "" };
+    private void SetMode(InteractionMode interactionMode) =>
+        ChartInteractionMode = interactionMode switch
+                               {
+                                   InteractionMode.Dataset => "dataset",
+                                   InteractionMode.Index => "index",
+                                   InteractionMode.Nearest => "nearest",
+                                   InteractionMode.Point => "point",
+                                   InteractionMode.X => "x",
+                                   InteractionMode.Y => "y",
+                                   _ => ""
+                               };
 
     #endregion
 

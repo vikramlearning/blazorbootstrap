@@ -18,8 +18,8 @@ public partial class Toast : BlazorBootstrapComponentBase, IDisposable
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Toast());
-        builder.Append(ClassProvider.BackgroundColor(BackgroundColor.White));
+        builder.Append(BootstrapClassProvider.Toast());
+        builder.Append(BootstrapClassProvider.BackgroundColor(BackgroundColor.White));
 
         base.BuildClasses(builder);
     }
@@ -94,7 +94,7 @@ public partial class Toast : BlazorBootstrapComponentBase, IDisposable
     /// </summary>
     public async Task ShowAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.show", ElementId, AutoHide, Delay, objRef);
 
-    private string GetIconClass() => ToastMessage.Type switch { ToastType.Primary => ClassProvider.TextColor(TextColor.Primary), ToastType.Secondary => ClassProvider.TextColor(TextColor.Secondary), ToastType.Success => ClassProvider.TextColor(TextColor.Success), ToastType.Danger => ClassProvider.TextColor(TextColor.Danger), ToastType.Warning => ClassProvider.TextColor(TextColor.Warning), ToastType.Info => ClassProvider.TextColor(TextColor.Info), ToastType.Light => ClassProvider.TextColor(TextColor.Light), ToastType.Dark => ClassProvider.TextColor(TextColor.Dark), _ => "" };
+    private string GetIconClass() => ToastMessage.Type switch { ToastType.Primary => BootstrapClassProvider.TextColor(TextColor.Primary), ToastType.Secondary => BootstrapClassProvider.TextColor(TextColor.Secondary), ToastType.Success => BootstrapClassProvider.TextColor(TextColor.Success), ToastType.Danger => BootstrapClassProvider.TextColor(TextColor.Danger), ToastType.Warning => BootstrapClassProvider.TextColor(TextColor.Warning), ToastType.Info => BootstrapClassProvider.TextColor(TextColor.Info), ToastType.Light => BootstrapClassProvider.TextColor(TextColor.Light), ToastType.Dark => BootstrapClassProvider.TextColor(TextColor.Dark), _ => "" };
 
     private ProgressColor GetProgressColor() => ToastMessage.Type switch { ToastType.Primary => ProgressColor.Primary, ToastType.Secondary => ProgressColor.Secondary, ToastType.Success => ProgressColor.Success, ToastType.Danger => ProgressColor.Danger, ToastType.Warning => ProgressColor.Warning, ToastType.Info => ProgressColor.Info, ToastType.Dark => ProgressColor.Dark, _ => ProgressColor.Primary };
 

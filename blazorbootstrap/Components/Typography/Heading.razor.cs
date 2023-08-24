@@ -13,7 +13,7 @@ public partial class Heading
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.HeadingSize(headingSize));
+        builder.Append(BootstrapClassProvider.HeadingSize(headingSize));
 
         base.BuildClasses(builder);
     }

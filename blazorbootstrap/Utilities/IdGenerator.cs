@@ -1,24 +1,25 @@
-﻿namespace BlazorBootstrap.Utilities;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
 /// An interface implemented by Id generators.
 /// </summary>
 public interface IIdGenerator
 {
-    #region Properties, Indexers
+    #region Methods
 
     /// <summary>
     /// Gets the newly generated and globally unique value.
-    /// This value is guaranteed to be unique across all calls to the <see cref="Generate" /> property.
+    /// This value is guaranteed to be unique across all calls to the <see cref="GetNextId" /> property.
     /// </summary>
-    string Generate { get; }
+    string GetNextId();
 
     #endregion
 }
 
 /// <summary>
 /// Generates efficient base32-encoded ID.
-/// <see href="https://github.com/aspnet/KestrelHttpServer/blob/6fde01a825cffc09998d3f8a49464f7fbe40f9c4/src/Kestrel.Core/Internal/Infrastructure/CorrelationIdGenerator.cs" />
+/// <see
+///     href="https://github.com/aspnet/KestrelHttpServer/blob/6fde01a825cffc09998d3f8a49464f7fbe40f9c4/src/Kestrel.Core/Internal/Infrastructure/CorrelationIdGenerator.cs" />
 /// </summary>
 public sealed class IdGenerator : IIdGenerator
 {
@@ -44,6 +45,17 @@ public sealed class IdGenerator : IIdGenerator
     #region Methods
 
     /// <summary>
+    /// Generates a base32-encoded ID.
+    /// The ID is a 13-character string in base32 format. Example: <c>AR03U66PN4M6E</c>
+    /// </summary>
+    public string GetNextId()
+    {
+        var id = Interlocked.Increment(ref LastId);
+
+        return string.Create(IdLength, id, GenerateImplDelegate);
+    }
+
+    /// <summary>
     /// Generates a base32-encoded ID using a specific algorithm.
     /// <seealso cref="https://stackoverflow.com/a/37271406" />
     /// </summary>
@@ -66,24 +78,6 @@ public sealed class IdGenerator : IIdGenerator
         buffer[9] = encode32Chars[(int)(id >> 15) & 31];
         buffer[10] = encode32Chars[(int)(id >> 10) & 31];
         buffer[11] = encode32Chars[(int)(id >> 5) & 31];
-    }
-
-    #endregion
-
-    #region Interface Implementations
-
-    /// <summary>
-    /// Generates a base32-encoded ID.
-    /// The ID is a 13-character string in base32 format. Example: <c>AR03U66PN4M6E</c>
-    /// </summary>
-    public string Generate
-    {
-        get
-        {
-            var id = Interlocked.Increment(ref LastId);
-
-            return string.Create(IdLength, id, GenerateImplDelegate);
-        }
     }
 
     #endregion

@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Utilities;
+﻿namespace BlazorBootstrap;
 
 public class BootstrapIconProvider
 {

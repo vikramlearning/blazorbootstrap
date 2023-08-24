@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Extensions;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
 /// Various extension methods for <see cref="Type" />.

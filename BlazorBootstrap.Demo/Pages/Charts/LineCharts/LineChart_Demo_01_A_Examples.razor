@@ -1,7 +1,4 @@
-﻿@using BlazorBootstrap.Extensions
-@using Color = System.Drawing.Color
-
-<LineChart @ref="lineChart" Width="800" Class="mb-4" />
+﻿<LineChart @ref="lineChart" Width="800" Class="mb-4"/>
 
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
@@ -14,8 +11,8 @@
     private LineChartOptions lineChartOptions = default!;
     private ChartData chartData = default!;
 
-    private int datasetsCount = 0;
-    private int labelsCount = 0;
+    private int datasetsCount;
+    private int labelsCount;
 
     private Random random = new();
 
@@ -119,18 +116,18 @@
 
         datasetsCount += 1;
 
-        return new LineChartDataset()
-            {
-                Label = $"Team {datasetsCount}",
-                Data = GetRandomData(),
-                BackgroundColor = new List<string> { c.ToRgbString() },
-                BorderColor = new List<string> { c.ToRgbString() },
-                BorderWidth = new List<double> { 2 },
-                HoverBorderWidth = new List<double> { 4 },
-                PointBackgroundColor = new List<string> { c.ToRgbString() },
-                PointRadius = new List<int> { 0 }, // hide points
-                PointHoverRadius = new List<int> { 4 },
-            };
+        return new LineChartDataset
+               {
+                   Label = $"Team {datasetsCount}",
+                   Data = GetRandomData(),
+                   BackgroundColor = new List<string> { c.ToRgbString() },
+                   BorderColor = new List<string> { c.ToRgbString() },
+                   BorderWidth = new List<double> { 2 },
+                   HoverBorderWidth = new List<double> { 4 },
+                   PointBackgroundColor = new List<string> { c.ToRgbString() },
+                   PointRadius = new List<int> { 0 }, // hide points
+                   PointHoverRadius = new List<int> { 4 }
+               };
     }
 
     private List<double> GetRandomData()
@@ -162,4 +159,5 @@
     }
 
     #endregion Data Preparation
+
 }

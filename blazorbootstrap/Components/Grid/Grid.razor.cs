@@ -56,7 +56,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     protected override void OnInitialized()
     {
-        headerCheckboxId = IdGenerator.Generate;
+        headerCheckboxId = IdGenerator.GetNextId();
 
         pageSize = PageSize;
 
@@ -426,7 +426,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (currentLength < itemsCount)
             for (var i = currentLength; i < itemsCount; i++)
-                checkboxIds[i] = IdGenerator.Generate;
+                checkboxIds[i] = IdGenerator.GetNextId();
     }
 
     /// <summary>

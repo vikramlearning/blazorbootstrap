@@ -22,7 +22,7 @@ public partial class GridColumn<TItem>
 
     protected override async Task OnInitializedAsync()
     {
-        ElementId = IdGenerator.Generate; // Required
+        ElementId = IdGenerator.GetNextId(); // Required
 
         filterOperator = FilterOperator;
         filterValue = FilterValue;
@@ -135,11 +135,11 @@ public partial class GridColumn<TItem>
 
                                         // text alignment
                                         if (TextAlignment != Alignment.None)
-                                            classList.Add(ClassProvider.TextAlignment(TextAlignment));
+                                            classList.Add(BootstrapClassProvider.TextAlignment(TextAlignment));
 
                                         // text nowrap
                                         if (TextNoWrap)
-                                            classList.Add(ClassProvider.TextNoWrap());
+                                            classList.Add(BootstrapClassProvider.TextNoWrap());
 
                                         // custom column class
                                         var columnClass = ColumnClass?.Invoke(rowData) ?? "";
@@ -214,7 +214,7 @@ public partial class GridColumn<TItem>
                                        builder.AddAttribute(103, "onclick", async () => await OnSortClickAsync());
                                    }
 
-                                   if (HeaderTextAlignment != Alignment.None) builder.AddAttribute(104, "class", ClassProvider.TextAlignment(HeaderTextAlignment));
+                                   if (HeaderTextAlignment != Alignment.None) builder.AddAttribute(104, "class", BootstrapClassProvider.TextAlignment(HeaderTextAlignment));
 
                                    builder.OpenElement(105, "span");
                                    builder.AddAttribute(106, "class", "me-2");

@@ -1,4 +1,4 @@
-﻿<LineChart @ref="lineChart" Width="800" Class="mb-4" />
+﻿<LineChart @ref="lineChart" Width="800" Class="mb-4"/>
 
 <Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="Size.Small" @onclick="UpdateIndiaNextOverRunsAsync"> India Next Over </Button>
 <Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="Size.Small" @onclick="UpdateEnglandNextOverRunsAsync"> England Next Over </Button>
@@ -12,8 +12,8 @@
     private List<double> indiaRunsArray = new() { 9, 20, 29, 33, 50, 66, 75, 86, 91, 105, 120, 126, 141, 150, 156, 164, 177, 180, 184, 195 };
     private List<double> englandRunsArray = new() { 1, 1, 8, 19, 24, 26, 39, 47, 56, 66, 75, 88, 95, 100, 109, 114, 124, 129, 140, 142 };
 
-    private int indiaCurrentOver = 0;
-    private int englandCurrentOver = 0;
+    private int indiaCurrentOver;
+    private int englandCurrentOver;
 
     protected override void OnInitialized()
     {
@@ -30,7 +30,7 @@
 
     private async Task UpdateIndiaNextOverRunsAsync()
     {
-        if (indiaCurrentOver > 0 && indiaCurrentOver > (indiaRunsArray.Count - 1))
+        if (indiaCurrentOver > 0 && indiaCurrentOver > indiaRunsArray.Count - 1)
             return;
 
         chartData = await lineChart.AddDataAsync(chartData, $"{indiaCurrentOver + 1}", new LineChartDatasetData("India", indiaRunsArray[indiaCurrentOver]));
@@ -39,7 +39,7 @@
 
     private async Task UpdateEnglandNextOverRunsAsync()
     {
-        if (englandCurrentOver > 0 && englandCurrentOver > (englandRunsArray.Count - 1))
+        if (englandCurrentOver > 0 && englandCurrentOver > englandRunsArray.Count - 1)
             return;
 
         chartData = await lineChart.AddDataAsync(chartData, $"{englandCurrentOver + 1}", new LineChartDatasetData("England", englandRunsArray[englandCurrentOver]));
@@ -48,33 +48,33 @@
 
     private List<IChartDataset> GetDefaultDatasets()
     {
-        var datasets = new List<IChartDataset>()
+        var datasets = new List<IChartDataset>
                        {
-                           new LineChartDataset()
+                           new LineChartDataset
                            {
                                Label = "India",
                                Data = new List<double>(),
-                               BackgroundColor = new List<string>{ "rgb(88, 80, 141)" },
-                               BorderColor = new List<string>{ "rgb(88, 80, 141)" },
-                               BorderWidth = new List<double>{2},
-                               HoverBorderWidth = new List<double>{4},
-                               PointBackgroundColor = new List<string>{ "rgb(88, 80, 141)" },
-                               PointBorderColor = new List<string>{ "rgb(88, 80, 141)" },
-                               PointRadius = new List<int>{0}, // hide points
-                               PointHoverRadius = new List<int>{4},
+                               BackgroundColor = new List<string> { "rgb(88, 80, 141)" },
+                               BorderColor = new List<string> { "rgb(88, 80, 141)" },
+                               BorderWidth = new List<double> { 2 },
+                               HoverBorderWidth = new List<double> { 4 },
+                               PointBackgroundColor = new List<string> { "rgb(88, 80, 141)" },
+                               PointBorderColor = new List<string> { "rgb(88, 80, 141)" },
+                               PointRadius = new List<int> { 0 }, // hide points
+                               PointHoverRadius = new List<int> { 4 }
                            },
-                           new LineChartDataset()
+                           new LineChartDataset
                            {
                                Label = "England",
                                Data = new List<double>(),
-                               BackgroundColor = new List<string>{ "rgb(255, 166, 0)" },
-                               BorderColor = new List<string>{ "rgb(255, 166, 0)" },
-                               BorderWidth = new List<double>{2},
-                               HoverBorderWidth = new List<double>{4},
-                               PointBackgroundColor = new List<string>{ "rgb(255, 166, 0)" },
-                               PointBorderColor = new List<string>{ "rgb(255, 166, 0)" },
-                               PointRadius = new List<int>{0}, // hide points
-                               PointHoverRadius = new List<int>{4},
+                               BackgroundColor = new List<string> { "rgb(255, 166, 0)" },
+                               BorderColor = new List<string> { "rgb(255, 166, 0)" },
+                               BorderWidth = new List<double> { 2 },
+                               HoverBorderWidth = new List<double> { 4 },
+                               PointBackgroundColor = new List<string> { "rgb(255, 166, 0)" },
+                               PointBorderColor = new List<string> { "rgb(255, 166, 0)" },
+                               PointRadius = new List<int> { 0 }, // hide points
+                               PointHoverRadius = new List<int> { 4 }
                            }
                        };
 
@@ -102,4 +102,5 @@
 
         return options;
     }
+
 }

@@ -65,7 +65,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// </summary>
     protected override void OnInitialized()
     {
-        if (ShouldAutoGenerateId && ElementId == null) ElementId = IdGenerator.Generate;
+        if (ShouldAutoGenerateId && ElementId == null) ElementId = IdGenerator.GetNextId();
 
         base.OnInitialized();
     }
@@ -219,7 +219,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// Gets or sets the classname provider.
     /// </summary>
     [Inject]
-    protected ClassProvider ClassProvider { get; set; }
+    protected BootstrapClassProvider BootstrapClassProvider { get; set; }
 
     /// <summary>
     /// Indicates if the component is already fully disposed.

@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Extensions;
+﻿namespace BlazorBootstrap;
 
 public static class ColorExtensions
 {

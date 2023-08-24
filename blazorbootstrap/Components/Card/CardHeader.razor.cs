@@ -7,7 +7,7 @@ public partial class CardHeader
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.CardHeader());
+        builder.Append(BootstrapClassProvider.CardHeader());
 
         base.BuildClasses(builder);
     }

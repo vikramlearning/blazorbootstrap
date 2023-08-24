@@ -34,8 +34,8 @@ public partial class Modal : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Modal());
-        builder.Append(ClassProvider.ModalFade());
+        builder.Append(BootstrapClassProvider.Modal());
+        builder.Append(BootstrapClassProvider.ModalFade());
 
         base.BuildClasses(builder);
     }
@@ -224,7 +224,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     [Parameter]
     public string HeaderCssClass { get; set; } = default!;
 
-    private string headerCssClassInternal => ClassProvider.ModalHeader(modalType);
+    private string headerCssClassInternal => BootstrapClassProvider.ModalHeader(modalType);
 
     /// <summary>
     /// Header template.
@@ -256,11 +256,11 @@ public partial class Modal : BlazorBootstrapComponentBase
     [Parameter]
     public string Message { get; set; } = default!;
 
-    private string modalFullscreen => ClassProvider.ToModalFullscreen(Fullscreen);
+    private string modalFullscreen => BootstrapClassProvider.ToModalFullscreen(Fullscreen);
 
     [Inject] private ModalService ModalService { get; set; } = default!;
 
-    private string modalSize => ClassProvider.ToModalSize(Size);
+    private string modalSize => BootstrapClassProvider.ToModalSize(Size);
 
     /// <summary>
     /// Gets or sets the modal type.

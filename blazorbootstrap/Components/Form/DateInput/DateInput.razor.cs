@@ -29,7 +29,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.FormControl());
+        builder.Append(BootstrapClassProvider.FormControl());
         base.BuildClasses(builder);
     }
 

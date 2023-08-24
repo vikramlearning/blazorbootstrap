@@ -73,7 +73,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
 
     [Parameter] public TooltipColor Color { get; set; }
 
-    private string colorClass => ClassProvider.TooltipColor(Color);
+    private string colorClass => BootstrapClassProvider.TooltipColor(Color);
     private string placement => Placement.ToTooltipPlacementName();
 
     /// <summary>

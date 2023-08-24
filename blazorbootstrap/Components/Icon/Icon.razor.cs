@@ -23,7 +23,7 @@ public partial class Icon : BlazorBootstrapComponentBase
         builder.Append(BootstrapIconProvider.Icon(Name), string.IsNullOrWhiteSpace(CustomIconName));
         builder.Append(customName, !string.IsNullOrWhiteSpace(CustomIconName));
         builder.Append(BootstrapIconProvider.IconSize(Size), Size != IconSize.None);
-        builder.Append(ClassProvider.IconColor(color), Color != IconColor.None);
+        builder.Append(BootstrapClassProvider.IconColor(color), Color != IconColor.None);
 
         base.BuildClasses(builder);
     }

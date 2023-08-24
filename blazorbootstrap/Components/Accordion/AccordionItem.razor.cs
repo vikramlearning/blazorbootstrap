@@ -15,14 +15,14 @@ public partial class AccordionItem
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.AccordionItem());
+        builder.Append(BootstrapClassProvider.AccordionItem());
 
         base.BuildClasses(builder);
     }
 
     protected override void OnInitialized()
     {
-        ElementId = IdGenerator.Generate; // This is required
+        ElementId = IdGenerator.GetNextId(); // This is required
         Parent.Add(this);
     }
 

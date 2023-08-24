@@ -15,9 +15,9 @@ public partial class Alert
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Alert());
-        builder.Append(ClassProvider.AlertColor(Color), Color != AlertColor.None);
-        builder.Append(ClassProvider.AlertDismisable(), Dismissable);
+        builder.Append(BootstrapClassProvider.Alert());
+        builder.Append(BootstrapClassProvider.AlertColor(Color), Color != AlertColor.None);
+        builder.Append(BootstrapClassProvider.AlertDismisable(), Dismissable);
 
         base.BuildClasses(builder);
     }

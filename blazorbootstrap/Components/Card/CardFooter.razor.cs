@@ -7,7 +7,7 @@ public partial class CardFooter
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.CardFooter());
+        builder.Append(BootstrapClassProvider.CardFooter());
 
         base.BuildClasses(builder);
     }

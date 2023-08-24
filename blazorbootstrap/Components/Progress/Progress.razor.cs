@@ -12,7 +12,7 @@ public partial class Progress
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Progress());
+        builder.Append(BootstrapClassProvider.Progress());
         base.BuildClasses(builder);
     }
 

@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Utilities;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
 /// A helper class for building CSS styles.

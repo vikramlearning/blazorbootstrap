@@ -25,8 +25,8 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.FormControl());
-        builder.Append(ClassProvider.ToAutoCompleteSize(Size));
+        builder.Append(BootstrapClassProvider.FormControl());
+        builder.Append(BootstrapClassProvider.ToAutoCompleteSize(Size));
 
         base.BuildClasses(builder);
     }

@@ -12,8 +12,8 @@ public partial class Callout : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Callout());
-        builder.Append(ClassProvider.ToCalloutType(Type));
+        builder.Append(BootstrapClassProvider.Callout());
+        builder.Append(BootstrapClassProvider.ToCalloutType(Type));
 
         base.BuildClasses(builder);
     }
@@ -32,7 +32,7 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
-    private string CalloutHeadingCSSClass => ClassProvider.CalloutHeading();
+    private string CalloutHeadingCSSClass => BootstrapClassProvider.CalloutHeading();
 
     /// <summary>
     /// Specifies the content to be rendered inside this.

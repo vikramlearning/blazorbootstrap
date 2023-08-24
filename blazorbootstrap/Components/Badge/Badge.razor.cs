@@ -21,11 +21,11 @@ public partial class Badge
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Badge());
-        builder.Append(ClassProvider.BadgeColor(Color), Color != BadgeColor.None);
-        builder.Append(ClassProvider.ToBadgeIndicator(IndicatorType), IndicatorType != BadgeIndicatorType.None);
-        builder.Append(ClassProvider.ToPosition(Position), Position != Position.None);
-        builder.Append(ClassProvider.ToBadgePlacement(Placement), Placement != BadgePlacement.None);
+        builder.Append(BootstrapClassProvider.Badge());
+        builder.Append(BootstrapClassProvider.BadgeColor(Color), Color != BadgeColor.None);
+        builder.Append(BootstrapClassProvider.ToBadgeIndicator(IndicatorType), IndicatorType != BadgeIndicatorType.None);
+        builder.Append(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
+        builder.Append(BootstrapClassProvider.ToBadgePlacement(Placement), Placement != BadgePlacement.None);
         builder.Append("p-2", childContent is null);
 
         base.BuildClasses(builder);

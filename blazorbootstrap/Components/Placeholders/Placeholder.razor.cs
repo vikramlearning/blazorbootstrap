@@ -16,10 +16,10 @@ public partial class Placeholder : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Placeholder());
-        builder.Append(ClassProvider.PlaceholderWidth(Width));
-        builder.Append(ClassProvider.PlaceholderColor(Color), Color != PlaceholderColor.None);
-        builder.Append(ClassProvider.PlaceholderSize(Size), Size != PlaceholderSize.None);
+        builder.Append(BootstrapClassProvider.Placeholder());
+        builder.Append(BootstrapClassProvider.PlaceholderWidth(Width));
+        builder.Append(BootstrapClassProvider.PlaceholderColor(Color), Color != PlaceholderColor.None);
+        builder.Append(BootstrapClassProvider.PlaceholderSize(Size), Size != PlaceholderSize.None);
 
         base.BuildClasses(builder);
     }

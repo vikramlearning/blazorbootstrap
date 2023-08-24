@@ -7,8 +7,8 @@ public partial class DropdownMenu
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.DropdownMenu());
-        builder.Append(ClassProvider.DropdownMenuPosition(Position));
+        builder.Append(BootstrapClassProvider.DropdownMenu());
+        builder.Append(BootstrapClassProvider.DropdownMenuPosition(Position));
 
         base.BuildClasses(builder);
     }

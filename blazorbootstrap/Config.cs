@@ -13,7 +13,7 @@ public static class Config
     /// <returns>IServiceCollection</returns>
     public static IServiceCollection AddBlazorBootstrap(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<ClassProvider>();
+        serviceCollection.AddSingleton<BootstrapClassProvider>();
         serviceCollection.AddSingleton<BootstrapIconProvider>();
         serviceCollection.AddScoped<IIdGenerator, IdGenerator>();
 

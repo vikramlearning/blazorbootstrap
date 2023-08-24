@@ -12,9 +12,9 @@ public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(ClassProvider.Toast());
-        builder.Append($"text-{ClassProvider.ToToastTextColor(ToastMessage.Type)}");
-        builder.Append($"bg-{ClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
+        builder.Append(BootstrapClassProvider.Toast());
+        builder.Append($"text-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}");
+        builder.Append($"bg-{BootstrapClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
 
         base.BuildClasses(builder);
     }
@@ -74,7 +74,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
     [Parameter]
     public bool AutoHide { get; set; } = true;
 
-    private string CloseButtonClass => $"btn-close-{ClassProvider.ToToastTextColor(ToastMessage.Type)}";
+    private string CloseButtonClass => $"btn-close-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}";
 
     /// <summary>
     /// Delay hiding the toast (ms).
