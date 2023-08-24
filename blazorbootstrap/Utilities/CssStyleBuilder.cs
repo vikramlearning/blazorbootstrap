@@ -10,14 +10,9 @@ public class CssStyleBuilder
 {
     #region Fields and Constants
 
-    /// <summary>
-    /// The delimiter used to separate the styles.
-    /// </summary>
-    private const char Delimiter = ';';
-
     private readonly Action<CssStyleBuilder> buildStyles;
 
-    private StringBuilder builder = new();
+    private List<string> builder = new();
 
     private bool dirty = true;
 
@@ -47,7 +42,7 @@ public class CssStyleBuilder
     public void Append(string value)
     {
         if (!string.IsNullOrWhiteSpace(value))
-            builder.Append(value).Append(Delimiter);
+            builder.Add(value);
     }
 
     /// <summary>
@@ -58,7 +53,17 @@ public class CssStyleBuilder
     public void Append(string value, bool condition)
     {
         if (condition && !string.IsNullOrWhiteSpace(value))
-            builder.Append(value).Append(Delimiter);
+            builder.Add(value);
+    }
+
+    /// <summary>
+    /// Appends a list of strings to the styles.
+    /// </summary>
+    /// <param name="values">The list of strings to append.</param>
+    public void Append(IEnumerable<string> values)
+    {
+        if (values is not null && values.Any())
+            builder.AddRange(values);
     }
 
     /// <summary>
@@ -82,11 +87,11 @@ public class CssStyleBuilder
         {
             if (dirty)
             {
-                builder = new StringBuilder();
+                builder = new();
 
                 buildStyles(this);
 
-                styles = builder.ToString().TrimEnd(' ', Delimiter)?.EmptyToNull();
+                styles = string.Join(";", builder);
 
                 dirty = false;
             }

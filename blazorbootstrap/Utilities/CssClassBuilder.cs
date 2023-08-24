@@ -10,14 +10,9 @@ public class CssClassBuilder
 {
     #region Fields and Constants
 
-    /// <summary>
-    /// The delimiter used to separate the class names.
-    /// </summary>
-    private const char Delimiter = ' ';
-
     private readonly Action<CssClassBuilder> buildClasses;
 
-    private StringBuilder builder = new();
+    private List<string> classList = new();
 
     private string classNames;
 
@@ -28,7 +23,7 @@ public class CssClassBuilder
     #region Constructors
 
     /// <summary>
-    /// Creates a new CSS class builder.
+    /// Creates a new CSS class classList.
     /// </summary>
     /// <param name="buildClasses">The action to be called to build the class names.</param>
     public CssClassBuilder(Action<CssClassBuilder> buildClasses)
@@ -47,7 +42,7 @@ public class CssClassBuilder
     public void Append(string value)
     {
         if (!string.IsNullOrWhiteSpace(value))
-            builder.Append(value).Append(Delimiter);
+            classList.Add(value);
     }
 
     /// <summary>
@@ -58,17 +53,21 @@ public class CssClassBuilder
     public void Append(string value, bool condition)
     {
         if (condition && !string.IsNullOrWhiteSpace(value))
-            builder.Append(value).Append(Delimiter);
+            classList.Add(value);
     }
 
     /// <summary>
     /// Appends a list of strings to the class name.
     /// </summary>
     /// <param name="values">The list of strings to append.</param>
-    public void Append(IEnumerable<string> values) => builder.Append(string.Join(Delimiter, values)).Append(Delimiter);
+    public void Append(IEnumerable<string> values)
+    {
+        if (values is not null && values.Any())
+            classList.AddRange(values);
+    }
 
     /// <summary>
-    /// Marks the builder as dirty, so that the class names will be rebuilt the next time they are requested.
+    /// Marks the classList as dirty, so that the class names will be rebuilt the next time they are requested.
     /// </summary>
     public void Dirty() => dirty = true;
 
@@ -83,17 +82,17 @@ public class CssClassBuilder
     /// The class names are lazily built, so the first time this property is accessed, the `buildClasses` action will be
     /// called.
     /// </remarks>
-    public string Class
+    public string ClassNames
     {
         get
         {
             if (dirty)
             {
-                builder = new StringBuilder();
+                classList = new();
 
                 buildClasses(this);
 
-                classNames = builder.ToString().TrimEnd()?.EmptyToNull();
+                classNames = string.Join(" ", classList);
 
                 dirty = false;
             }

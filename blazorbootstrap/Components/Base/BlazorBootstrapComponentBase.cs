@@ -94,8 +94,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     {
         if (Class != null)
             builder.Append(Class);
-
-        // TODO: update this
     }
 
     /// <summary>
@@ -213,7 +211,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// Gets the built class-names based on all the rules set by the component parameters.
     /// </summary>
-    public string? ClassNames => ClassBuilder.Class;
+    public string? ClassNames => ClassBuilder.ClassNames;
 
     /// <summary>
     /// Gets or sets the classname provider.
