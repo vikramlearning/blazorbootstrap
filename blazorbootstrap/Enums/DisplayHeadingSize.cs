@@ -23,5 +23,5 @@ public enum DisplayHeadingSize
     /// <summary>
     /// Represents the h4 size element.
     /// </summary>
-    H4,
+    H4
 }

@@ -1,7 +1,7 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// Defines the animation of an <see cref="PlaceholderContainer"/> element.
+/// Defines the animation of an <see cref="PlaceholderContainer" /> element.
 /// </summary>
 public enum PlaceholderAnimation
 {

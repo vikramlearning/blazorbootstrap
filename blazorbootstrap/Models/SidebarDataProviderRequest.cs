@@ -2,6 +2,8 @@
 
 public class SidebarDataProviderRequest
 {
+    #region Methods
+
     public SidebarDataProviderResult ApplyTo(IEnumerable<NavItem> data)
     {
         if (data is null)
@@ -31,4 +33,6 @@ public class SidebarDataProviderRequest
 
         return new SidebarDataProviderResult { Data = result };
     }
+
+    #endregion
 }

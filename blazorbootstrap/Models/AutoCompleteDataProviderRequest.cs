@@ -2,20 +2,17 @@
 
 public class AutoCompleteDataProviderRequest<TItem>
 {
-    public FilterItem Filter { get; init; }
-
-    public CancellationToken CancellationToken { get; init; } = default(CancellationToken);
+    #region Methods
 
     public AutoCompleteDataProviderResult<TItem> ApplyTo(IEnumerable<TItem> data)
     {
         if (data == null)
             return new AutoCompleteDataProviderResult<TItem> { Data = null, TotalCount = null };
 
-        IEnumerable<TItem> resultData = data;
+        var resultData = data;
 
         // apply filter
         if (Filter != null)
-        {
             try
             {
                 var parameterExpression = Expression.Parameter(typeof(TItem)); // second param optional
@@ -27,14 +24,18 @@ public class AutoCompleteDataProviderRequest<TItem>
             {
                 Console.WriteLine(ex.Message);
             }
-        }
 
         var totalCount = resultData.Count();
 
-        return new AutoCompleteDataProviderResult<TItem>
-        {
-            Data = resultData.ToList(),
-            TotalCount = totalCount
-        };
+        return new AutoCompleteDataProviderResult<TItem> { Data = resultData.ToList(), TotalCount = totalCount };
     }
+
+    #endregion
+
+    #region Properties, Indexers
+
+    public CancellationToken CancellationToken { get; init; } = default;
+    public FilterItem Filter { get; init; }
+
+    #endregion
 }

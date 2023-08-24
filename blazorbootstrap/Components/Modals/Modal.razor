@@ -1,5 +1,5 @@
 ﻿@namespace BlazorBootstrap
-@inherits BaseComponent
+@inherits BlazorBootstrapComponentBase
 
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" tabindex="@TabIndex">
     <div class="modal-dialog @scrollable @verticallyCentered @modalSize @modalFullscreen @DialogCssClass">
@@ -28,7 +28,7 @@
                 @if (childComponent is not null)
                 {
                     <div class="modal-body @BodyCssClass">
-                        <DynamicComponent Type="@childComponent" Parameters="@parameters" />
+                        <DynamicComponent Type="@childComponent" Parameters="@parameters"/>
                     </div>
                 }
                 else if (!string.IsNullOrWhiteSpace(Message))

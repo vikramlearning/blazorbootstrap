@@ -1,15 +1,19 @@
 ﻿@namespace BlazorBootstrap
-@inherits BaseComponent
+@inherits BlazorBootstrapComponentBase
 
 <div class="d-flex">
     <button type="button" class="btn btn-light me-1 d-flex dropdown-toggle bb-grid-filter" data-bs-toggle="dropdown" aria-expanded="false">
-        @if (string.IsNullOrWhiteSpace(this.filterValue))
+        @if (string.IsNullOrWhiteSpace(filterValue))
         {
-            <span class="me-2"><Icon Name="IconName.Funnel" /></span>
+            <span class="me-2">
+                <Icon Name="IconName.Funnel"/>
+            </span>
         }
         else
         {
-            <span class="me-2"><Icon Name="IconName.FunnelFill" /></span>
+            <span class="me-2">
+                <Icon Name="IconName.FunnelFill"/>
+            </span>
         }
         <span>@selectedFilterSymbol</span>
     </button>
@@ -19,7 +23,7 @@
             foreach (var item in filterOperators)
             {
                 <li class="mx-1 rounded-3">
-                    <div class="dropdown-item p-1" role="button" @onclick="(async () => await OnFilterOperatorChangedAsync(item))">
+                    <div class="dropdown-item p-1" role="button" @onclick="async () => await OnFilterOperatorChangedAsync(item)">
                         <span class="filter-symbol">@item.Symbol</span> <span>@item.Text</span>
                     </div>
                 </li>
@@ -28,28 +32,28 @@
     </ul>
 
     @if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
-        || PropertyTypeName == StringConstants.PropertyTypeNameInt32
-        || PropertyTypeName == StringConstants.PropertyTypeNameInt64
-        || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
-        || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
-        || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
+         || PropertyTypeName == StringConstants.PropertyTypeNameInt32
+         || PropertyTypeName == StringConstants.PropertyTypeNameInt64
+         || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
+         || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
+         || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
     {
-        <input class="form-control" style="@filterStyle" type="number" value="@filterValue" @oninput="@(async (args) => await OnFilterValueChangedAsync(args))">
+        <input class="form-control" style="@filterStyle" type="number" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))">
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly)
     {
-        <input class="form-control" style="@filterStyle" type="date" value="@filterValue" @oninput="@(async (args) => await OnFilterValueChangedAsync(args))" />
+        <input class="form-control" style="@filterStyle" type="date" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))"/>
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
     {
-        <input class="form-control" style="@filterStyle" type="datetime-local" value="@filterValue" @oninput="@(async (args) => await OnFilterValueChangedAsync(args))" />
+        <input class="form-control" style="@filterStyle" type="datetime-local" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))"/>
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
     {
-        <input class="form-check-input" type="checkbox" value="@filterValue" @onchange="@(async (args) => await OnFilterValueChangedAsync(args))" />
+        <input class="form-check-input" type="checkbox" value="@filterValue" @onchange="@(async args => await OnFilterValueChangedAsync(args))"/>
     }
     else // string
     {
-        <input class="form-control" style="@filterStyle" type="text" value="@filterValue" @oninput="@(async (args) => await OnFilterValueChangedAsync(args))" />
+        <input class="form-control" style="@filterStyle" type="text" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))"/>
     }
 </div>

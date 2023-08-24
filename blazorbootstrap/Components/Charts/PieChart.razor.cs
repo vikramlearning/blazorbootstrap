@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class PieChart : BaseChart
+public partial class PieChart : BlazorBootstrapChart
 {
     #region Constructors
 
@@ -9,11 +9,7 @@ public partial class PieChart : BaseChart
         chartType = ChartType.Pie;
     }
 
-    #endregion Constructors
-
-    #region Members
-
-    #endregion Members
+    #endregion
 
     #region Methods
 
@@ -29,16 +25,12 @@ public partial class PieChart : BaseChart
             throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
-        {
             if (dataset is PieChartDataset pieChartDataset && pieChartDataset.Label == dataLabel)
-            {
                 if (data is PieChartDatasetData pieChartDatasetData)
                 {
                     pieChartDataset.Data?.Add(pieChartDatasetData.Data);
                     pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor);
                 }
-            }
-        }
 
         await JS.InvokeVoidAsync("window.blazorChart.pie.addDatasetData", ElementId, dataLabel, data);
 
@@ -77,18 +69,16 @@ public partial class PieChart : BaseChart
         chartData.Labels.Add(dataLabel);
 
         foreach (var dataset in chartData.Datasets)
-        {
             if (dataset is PieChartDataset pieChartDataset)
             {
                 var chartDatasetData = data.FirstOrDefault(x => x is PieChartDatasetData pieChartDatasetData && pieChartDatasetData.DatasetLabel == pieChartDataset.Label);
-                
+
                 if (chartDatasetData is PieChartDatasetData pieChartDatasetData)
                 {
                     pieChartDataset.Data?.Add(pieChartDatasetData.Data);
                     pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor);
                 }
             }
-        }
 
         await JS.InvokeVoidAsync("window.blazorChart.pie.addDatasetsData", ElementId, dataLabel, data?.Select(x => (PieChartDatasetData)x));
 
@@ -135,12 +125,12 @@ public partial class PieChart : BaseChart
         }
     }
 
-    #endregion Methods
+    #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
-    #endregion Properties
+    #endregion
 }

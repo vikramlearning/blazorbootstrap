@@ -1,23 +1,23 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Icon : BaseComponent
+public partial class Icon : BlazorBootstrapComponentBase
 {
-    #region Members
+    #region Fields and Constants
 
-    private IconName name;
+    private IconColor color = IconColor.None;
 
     private string customName = default!;
 
-    private IconSize size = IconSize.None;
+    private IconName name;
 
-    private IconColor color = IconColor.None;
+    private IconSize size = IconSize.None;
 
     #endregion
 
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapIconProvider.Icon(), string.IsNullOrWhiteSpace(CustomIconName));
         builder.Append(BootstrapIconProvider.Icon(Name), string.IsNullOrWhiteSpace(CustomIconName));
@@ -30,12 +30,13 @@ public partial class Icon : BaseComponent
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
     /// <summary>
     /// An icon provider that is responsible to give the icon a class-name.
     /// </summary>
-    [Inject] protected BootstrapIconProvider BootstrapIconProvider { get; set; } = default!;
+    [Inject]
+    protected BootstrapIconProvider BootstrapIconProvider { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the icon color.
@@ -52,7 +53,7 @@ public partial class Icon : BaseComponent
     }
 
     /// <summary>
-    /// Icon name that can be either a string or <see cref="IconName"/>.
+    /// Icon name that can be either a string or <see cref="IconName" />.
     /// </summary>
     [Parameter]
     public string CustomIconName
@@ -66,7 +67,7 @@ public partial class Icon : BaseComponent
     }
 
     /// <summary>
-    /// Icon name that can be either a string or <see cref="IconName"/>.
+    /// Icon name that can be either a string or <see cref="IconName" />.
     /// </summary>
     [Parameter]
     public IconName Name

@@ -33,5 +33,5 @@ public enum HeadingSize
     /// <summary>
     /// Represents the h6 size element.
     /// </summary>
-    H6,
+    H6
 }

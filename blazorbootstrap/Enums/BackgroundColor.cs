@@ -63,7 +63,7 @@ public enum BackgroundColor
     /// <summary>
     /// Transparent color.
     /// </summary>
-    Transparent,
+    Transparent
 
     // TODO:Review
     // https://getbootstrap.com/docs/5.1/utilities/background/#background-gradient

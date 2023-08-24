@@ -1,7 +1,7 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// Defines the size of an <see cref="Placeholder"/> element.
+/// Defines the size of an <see cref="Placeholder" /> element.
 /// </summary>
 public enum PlaceholderSize
 {

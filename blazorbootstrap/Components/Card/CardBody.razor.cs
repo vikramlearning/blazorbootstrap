@@ -2,18 +2,10 @@
 
 public partial class CardBody
 {
-    #region Events
-
-    #endregion
-
-    #region Members
-
-    #endregion
-
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.CardBody());
 
@@ -22,13 +14,13 @@ public partial class CardBody
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="ChildContent"/>.
+    /// Specifies the content to be rendered inside this <see cref="ChildContent" />.
     /// </summary>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;

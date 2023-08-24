@@ -63,5 +63,5 @@ public enum TextColor
     /// <summary>
     /// Link color.
     /// </summary>
-    White,
+    White
 }

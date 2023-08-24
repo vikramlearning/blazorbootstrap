@@ -13,5 +13,5 @@ public enum PlaceholderWidth
     Col9,
     Col10,
     Col11,
-    Col12,
+    Col12
 }

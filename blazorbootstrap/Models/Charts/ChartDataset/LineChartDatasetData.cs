@@ -2,7 +2,9 @@
 
 public record LineChartDatasetData : ChartDatasetData
 {
-    public LineChartDatasetData(string? datasetLabel, double data) : base(datasetLabel, data)
-    {
-    }
+    #region Constructors
+
+    public LineChartDatasetData(string? datasetLabel, double data) : base(datasetLabel, data) { }
+
+    #endregion
 }

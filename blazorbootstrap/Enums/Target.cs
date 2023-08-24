@@ -6,7 +6,7 @@
 public enum Target
 {
     /// <summary>
-    /// No target will be applied. Usually this is the same as <see cref="Target.Self"/>.
+    /// No target will be applied. Usually this is the same as <see cref="Target.Self" />.
     /// </summary>
     None,
 
@@ -28,5 +28,5 @@ public enum Target
     /// <summary>
     /// Opens the linked document in the full body of the window.
     /// </summary>
-    Top,
+    Top
 }

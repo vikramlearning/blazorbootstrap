@@ -48,6 +48,5 @@ public enum TabColor
     /// <summary>
     /// Dark color.
     /// </summary>
-    Dark,
+    Dark
 }
-

@@ -1,10 +1,12 @@
-﻿namespace BlazorBootstrap.Extensions;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// Various extension methods for <see cref="Type"/>.
+/// Various extension methods for <see cref="Type" />.
 /// </summary>
 public static class TypeExtensions
 {
+    #region Methods
+
     /// <summary>
     /// Get property type name.
     /// </summary>
@@ -23,27 +25,39 @@ public static class TypeExtensions
 
         if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt16, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameInt16;
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt32, StringComparison.InvariantCulture))
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt32, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameInt32;
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt64, StringComparison.InvariantCulture))
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt64, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameInt64;
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameChar, StringComparison.InvariantCulture))
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameChar, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameChar;
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameString, StringComparison.InvariantCulture))
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameString, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameString;
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameSingle, StringComparison.InvariantCulture)) // float
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameSingle, StringComparison.InvariantCulture)) // float
             return StringConstants.PropertyTypeNameSingle;
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDecimal, StringComparison.InvariantCulture))
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDecimal, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameDecimal;
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDouble, StringComparison.InvariantCulture))
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDouble, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameDouble;
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDateOnly, StringComparison.InvariantCulture))
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDateOnly, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameDateOnly;
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDateTime, StringComparison.InvariantCulture))
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDateTime, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameDateTime;
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameBoolean, StringComparison.InvariantCulture))
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameBoolean, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameBoolean;
 
         return string.Empty;
     }
+
+    #endregion
 }

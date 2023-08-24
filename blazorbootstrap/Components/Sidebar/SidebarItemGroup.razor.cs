@@ -1,35 +1,26 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class SidebarItemGroup : BaseComponent
+public partial class SidebarItemGroup : BlazorBootstrapComponentBase
 {
-    #region Events
-
-    #endregion Events
-
-    #region Members
-
-    #endregion Members
-
     #region Methods
 
-    protected override void BuildClasses(ClassBuilder builder)
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append("flex-column");
 
         base.BuildClasses(builder);
     }
 
-    #endregion Methods
+    #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 
     [Parameter] public IEnumerable<NavItem>? NavItems { get; set; }
 
-    #endregion Properties
+    #endregion
 }
-

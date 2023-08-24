@@ -1,23 +1,10 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Switch : BaseComponent
+public partial class Switch : BlazorBootstrapComponentBase
 {
-    #region Events
-
-    /// <summary>
-    /// This event is fired when the switch selection changes.
-    /// </summary>
-    [Parameter] public EventCallback<bool> ValueChanged { get; set; } = default!;
-
-    #endregion
-
-    #region Members
+    #region Fields and Constants
 
     private FieldIdentifier fieldIdentifier;
-
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
-
-    private string reverse => Reverse ? BootstrapClassProvider.ChecksReverse() : "";
 
     private bool oldValue;
 
@@ -76,9 +63,9 @@ public partial class Switch : BaseComponent
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
@@ -89,20 +76,33 @@ public partial class Switch : BaseComponent
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
+    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
-    [Parameter] public string Label { get; set; } = default!;
+    [Parameter]
+    public string Label { get; set; } = default!;
+
+    private string reverse => Reverse ? BootstrapClassProvider.ChecksReverse() : "";
 
     /// <summary>
     /// Determines whether to put the switch on the opposite side.
     /// </summary>
-    [Parameter] public bool Reverse { get; set; }
+    [Parameter]
+    public bool Reverse { get; set; }
 
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
-    [Parameter] public bool Value { get; set; }
+    [Parameter]
+    public bool Value { get; set; }
+
+    /// <summary>
+    /// This event is fired when the switch selection changes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<bool> ValueChanged { get; set; } = default!;
 
     [Parameter] public Expression<Func<bool>> ValueExpression { get; set; } = default!;
 

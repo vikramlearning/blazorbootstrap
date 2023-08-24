@@ -33,5 +33,5 @@ public enum Size
     /// <summary>
     /// Makes an element extra large.
     /// </summary>
-    ExtraLarge,
+    ExtraLarge
 }

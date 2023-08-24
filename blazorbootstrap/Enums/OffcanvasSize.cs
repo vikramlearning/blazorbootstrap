@@ -1,7 +1,7 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// Defines the size of an <see cref="Offcanvas"/> element.
+/// Defines the size of an <see cref="Offcanvas" /> element.
 /// </summary>
 public enum OffcanvasSize
 {

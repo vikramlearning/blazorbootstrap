@@ -1,54 +1,47 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class AutoComplete<TItem> : BaseComponent
+public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 {
-    #region Events
+    #region Fields and Constants
 
-    /// <summary>
-    /// This event fires immediately when the autocomplete selection changes by the user.
-    /// </summary>
-    [Parameter] public EventCallback<TItem> OnChanged { get; set; }
-
-    /// <summary>
-    /// This is event fires on every user keystroke that changes the textbox value.
-    /// </summary>
-    [Parameter] public EventCallback<string> ValueChanged { get; set; }
-
-    #endregion Events
-
-    #region Members
-
-    private DotNetObjectReference<AutoComplete<TItem>> objRef = default!;
+    private CancellationTokenSource cancellationTokenSource = default!;
+    private Button closeButton = default!;
 
     private FieldIdentifier fieldIdentifier;
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     private bool inputHasValue;
     private bool isDropdownShown;
     private IEnumerable<TItem>? items = null;
-    private int totalCount;
-    private TItem? selectedItem;
-    private int selectedIndex = -1;
-    private Button closeButton = default!;
     private ElementReference list; // ul element reference
 
-    /// <summary>
-    /// Gets selected item.
-    /// </summary>
-    public TItem SelectedItem => selectedItem = default!;
+    private DotNetObjectReference<AutoComplete<TItem>> objRef = default!;
+    private int selectedIndex = -1;
+    private TItem? selectedItem;
+    private int totalCount;
 
-    private CancellationTokenSource cancellationTokenSource = default!;
-
-    #endregion Members
+    #endregion
 
     #region Methods
 
-    protected override void BuildClasses(ClassBuilder builder)
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.FormControl());
         builder.Append(BootstrapClassProvider.ToAutoCompleteSize(Size));
 
         base.BuildClasses(builder);
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsync(bool disposing)
+    {
+        if (disposing)
+        {
+            cancellationTokenSource?.Dispose();
+            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementRef); }); // NOTE: Always pass ElementRef
+            objRef?.Dispose();
+        }
+
+        await base.DisposeAsync(disposing);
     }
 
     protected override async Task OnInitializedAsync()
@@ -66,40 +59,13 @@ public partial class AutoComplete<TItem> : BaseComponent
         ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", ElementRef, objRef); });
     }
 
-    /// <summary>
-    /// Shows autocomplete dropdown.
-    /// </summary>
-    private async Task ShowAsync()
-    {
-        isDropdownShown = true;
-        if (Attributes is not null && !Attributes.TryGetValue(StringConstants.DataBootstrapToggle, out _))
-            Attributes.Add(StringConstants.DataBootstrapToggle, "dropdown");
-
-        await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.show", ElementRef);
-    }
-
-    /// <summary>
-    /// Hides autocomplete dropdown.
-    /// </summary>
-    private async Task HideAsync()
-    {
-        isDropdownShown = false;
-        if (Attributes is not null && Attributes.TryGetValue(StringConstants.DataBootstrapToggle, out _))
-            Attributes.Remove(StringConstants.DataBootstrapToggle);
-
-        await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", ElementRef);
-    }
-
-    [JSInvokable] public void bsShowAutocomplete() { }
-    [JSInvokable] public void bsShownAutocomplete() { }
-    [JSInvokable] public void bsHideAutocomplete() { }
-
     [JSInvokable]
     public void bsHiddenAutocomplete()
     {
         if (isDropdownShown)
         {
             isDropdownShown = false;
+
             if (Attributes is not null && Attributes.TryGetValue(StringConstants.DataBootstrapToggle, out _))
                 Attributes.Remove(StringConstants.DataBootstrapToggle);
 
@@ -107,78 +73,35 @@ public partial class AutoComplete<TItem> : BaseComponent
         }
     }
 
-    private async Task OnInputChangedAsync(ChangeEventArgs args)
-    {
-        selectedIndex = -1;
-        Value = args.Value.ToString();
+    [JSInvokable]
+    public void bsHideAutocomplete() { }
 
-        SetInputHasValue();
+    [JSInvokable]
+    public void bsShowAutocomplete() { }
 
-        if (inputHasValue)
-        {
-            await ShowAsync();
-        }
-        else
-        {
-            await HideAsync();
-        }
+    [JSInvokable]
+    public void bsShownAutocomplete() { }
 
-        closeButton?.ShowLoading();
+    /// <summary>
+    /// Disables autocomplete.
+    /// </summary>
+    public void Disable() => Disabled = true;
 
-        if (cancellationTokenSource is not null
-            && !cancellationTokenSource.IsCancellationRequested)
-        {
-            cancellationTokenSource.Cancel();
-            cancellationTokenSource.Dispose();
-        }
+    /// <summary>
+    /// Enables autocomplete.
+    /// </summary>
+    public void Enable() => Disabled = false;
 
-        cancellationTokenSource = new CancellationTokenSource();
+    /// <summary>
+    /// Refresh the autocomplete data.
+    /// </summary>
+    /// <returns>Task</returns>
+    public async Task RefreshDataAsync() => await FilterDataAsync();
 
-        var token = cancellationTokenSource.Token;
-        await Task.Delay(300, token); // 300ms timeout for the debouncing
-        await FilterDataAsync(token);
-
-        closeButton?.HideLoading();
-    }
-
-    private async Task OnKeyDownAsync(KeyboardEventArgs args)
-    {
-        var key = args.Code is not null ? args.Code : args.Key;
-
-        if (key is "ArrowDown" or "ArrowUp" or "Home" or "End")
-        {
-            selectedIndex = await JS.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key, selectedIndex);
-        }
-        else if (key == "Enter")
-        {
-            if (selectedIndex >= 0 && selectedIndex <= items.Count() - 1)
-            {
-                await OnItemSelectedAsync(items.ElementAt(selectedIndex));
-            }
-        }
-        else
-        {
-            // TODO: check anything needs to be handled here
-        }
-    }
-
-    private async Task OnItemSelectedAsync(TItem item)
-    {
-        selectedItem = item;
-        selectedIndex = -1;
-        items = Enumerable.Empty<TItem>();
-        Value = GetPropertyValue(item);
-        await ValueChanged.InvokeAsync(Value);
-
-        await HideAsync();
-
-        SetInputHasValue();
-
-        EditContext?.NotifyFieldChanged(fieldIdentifier);
-
-        if (OnChanged.HasDelegate)
-            await OnChanged.InvokeAsync(item);
-    }
+    /// <summary>
+    /// Resets the autocomplete selection.
+    /// </summary>
+    public async Task ResetAsync() => await ClearInputTextAsync();
 
     /// <summary>
     /// Clears the input test value.
@@ -203,48 +126,19 @@ public partial class AutoComplete<TItem> : BaseComponent
         await ElementRef.FocusAsync();
     }
 
-    /// <summary>
-    /// Checks whether the input has value.
-    /// </summary>
-    private void SetInputHasValue() => inputHasValue = Value is not null && Value.Length > 0;
-
-    private string? GetPropertyValue(TItem item)
-    {
-        if (string.IsNullOrWhiteSpace(PropertyName))
-            return string.Empty;
-
-        var propertyInfo = typeof(TItem).GetProperty(PropertyName);
-        return propertyInfo?.GetValue(item)?.ToString();
-    }
-
-    /// <summary>
-    /// Get equivalent filter operator.
-    /// </summary>
-    /// <returns>FilterOperator</returns>
-    private FilterOperator GetFilterOperator() => StringFilterOperator switch
-    {
-        BlazorBootstrap.StringFilterOperator.Equals => FilterOperator.Equals,
-        BlazorBootstrap.StringFilterOperator.Contains => FilterOperator.Contains,
-        BlazorBootstrap.StringFilterOperator.StartsWith => FilterOperator.StartsWith,
-        BlazorBootstrap.StringFilterOperator.EndsWith => FilterOperator.EndsWith,
-        _ => FilterOperator.Contains,
-    };
-
     private async Task FilterDataAsync(CancellationToken cancellationToken = default)
     {
         var searchKey = Value;
+
         if (string.IsNullOrWhiteSpace(searchKey))
             return;
 
-        var request = new AutoCompleteDataProviderRequest<TItem>
-        {
-            Filter = new FilterItem(PropertyName, searchKey, GetFilterOperator(), StringComparison),
-            CancellationToken = cancellationToken
-        };
+        var request = new AutoCompleteDataProviderRequest<TItem> { Filter = new FilterItem(PropertyName, searchKey, GetFilterOperator(), StringComparison), CancellationToken = cancellationToken };
 
         if (DataProvider != null)
         {
             var result = await DataProvider.Invoke(request);
+
             if (result is not null)
             {
                 items = result.Data;
@@ -259,53 +153,134 @@ public partial class AutoComplete<TItem> : BaseComponent
     }
 
     /// <summary>
-    /// Disables autocomplete.
+    /// Get equivalent filter operator.
     /// </summary>
-    public void Disable() => Disabled = true;
-
-    /// <summary>
-    /// Enables autocomplete.
-    /// </summary>
-    public void Enable() => Disabled = false;
-
-    /// <summary>
-    /// Refresh the autocomplete data.
-    /// </summary>
-    /// <returns>Task</returns>
-    public async Task RefreshDataAsync() => await FilterDataAsync();
-
-    /// <summary>
-    /// Resets the autocomplete selection.
-    /// </summary>
-    public async Task ResetAsync() => await ClearInputTextAsync();
-
-    /// <inheritdoc />
-    protected override async ValueTask DisposeAsync(bool disposing)
-    {
-        if (disposing)
+    /// <returns>FilterOperator</returns>
+    private FilterOperator GetFilterOperator() =>
+        StringFilterOperator switch
         {
-            cancellationTokenSource?.Dispose();
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementRef); }); // NOTE: Always pass ElementRef
-            objRef?.Dispose();
-        }
+            StringFilterOperator.Equals => FilterOperator.Equals,
+            StringFilterOperator.Contains => FilterOperator.Contains,
+            StringFilterOperator.StartsWith => FilterOperator.StartsWith,
+            StringFilterOperator.EndsWith => FilterOperator.EndsWith,
+            _ => FilterOperator.Contains
+        };
 
-        await base.DisposeAsync(disposing);
+    private string? GetPropertyValue(TItem item)
+    {
+        if (string.IsNullOrWhiteSpace(PropertyName))
+            return string.Empty;
+
+        var propertyInfo = typeof(TItem).GetProperty(PropertyName);
+
+        return propertyInfo?.GetValue(item)?.ToString();
     }
 
-    #endregion Methods
+    /// <summary>
+    /// Hides autocomplete dropdown.
+    /// </summary>
+    private async Task HideAsync()
+    {
+        isDropdownShown = false;
 
-    #region Properties
+        if (Attributes is not null && Attributes.TryGetValue(StringConstants.DataBootstrapToggle, out _))
+            Attributes.Remove(StringConstants.DataBootstrapToggle);
 
-    /// <inheritdoc/>
-    protected override bool ShouldAutoGenerateId => true;
+        await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", ElementRef);
+    }
 
-    [CascadingParameter] private EditContext EditContext { get; set; } = default!;
+    private async Task OnInputChangedAsync(ChangeEventArgs args)
+    {
+        selectedIndex = -1;
+        Value = args.Value.ToString();
+
+        SetInputHasValue();
+
+        if (inputHasValue)
+            await ShowAsync();
+        else
+            await HideAsync();
+
+        closeButton?.ShowLoading();
+
+        if (cancellationTokenSource is not null
+            && !cancellationTokenSource.IsCancellationRequested)
+        {
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+        }
+
+        cancellationTokenSource = new CancellationTokenSource();
+
+        var token = cancellationTokenSource.Token;
+        await Task.Delay(300, token); // 300ms timeout for the debouncing
+        await FilterDataAsync(token);
+
+        closeButton?.HideLoading();
+    }
+
+    private async Task OnItemSelectedAsync(TItem item)
+    {
+        selectedItem = item;
+        selectedIndex = -1;
+        items = Enumerable.Empty<TItem>();
+        Value = GetPropertyValue(item);
+        await ValueChanged.InvokeAsync(Value);
+
+        await HideAsync();
+
+        SetInputHasValue();
+
+        EditContext?.NotifyFieldChanged(fieldIdentifier);
+
+        if (OnChanged.HasDelegate)
+            await OnChanged.InvokeAsync(item);
+    }
+
+    private async Task OnKeyDownAsync(KeyboardEventArgs args)
+    {
+        var key = args.Code is not null ? args.Code : args.Key;
+
+        if (key is "ArrowDown" or "ArrowUp" or "Home" or "End")
+            selectedIndex = await JS.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key, selectedIndex);
+        else if (key == "Enter")
+            if (selectedIndex >= 0 && selectedIndex <= items.Count() - 1)
+                await OnItemSelectedAsync(items.ElementAt(selectedIndex));
+        // TODO: check anything needs to be handled here
+    }
 
     /// <summary>
-    /// DataProvider is for items to render. 
+    /// Checks whether the input has value.
+    /// </summary>
+    private void SetInputHasValue() => inputHasValue = Value is not null && Value.Length > 0;
+
+    /// <summary>
+    /// Shows autocomplete dropdown.
+    /// </summary>
+    private async Task ShowAsync()
+    {
+        isDropdownShown = true;
+
+        if (Attributes is not null && !Attributes.TryGetValue(StringConstants.DataBootstrapToggle, out _))
+            Attributes.Add(StringConstants.DataBootstrapToggle, "dropdown");
+
+        await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.show", ElementRef);
+    }
+
+    #endregion
+
+    #region Properties, Indexers
+
+    /// <inheritdoc />
+    protected override bool ShouldAutoGenerateId => true;
+
+    /// <summary>
+    /// DataProvider is for items to render.
     /// The provider should always return an instance of 'AutoCompleteDataProviderResult', and 'null' is not allowed.
     /// </summary>
-    [Parameter, EditorRequired] public AutoCompleteDataProviderDelegate<TItem> DataProvider { get; set; } = null!;
+    [Parameter]
+    [EditorRequired]
+    public AutoCompleteDataProviderDelegate<TItem> DataProvider { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the disabled.
@@ -313,34 +288,60 @@ public partial class AutoComplete<TItem> : BaseComponent
     [Parameter]
     public bool Disabled { get; set; }
 
+    [CascadingParameter] private EditContext EditContext { get; set; } = default!;
+    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+
+    /// <summary>
+    /// This event fires immediately when the autocomplete selection changes by the user.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TItem> OnChanged { get; set; }
+
     /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
-    [Parameter] public string? Placeholder { get; set; }
+    [Parameter]
+    public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets the property name.
     /// </summary>
-    [Parameter, EditorRequired] public string PropertyName { get; set; } = null!;
+    [Parameter]
+    [EditorRequired]
+    public string PropertyName { get; set; } = null!;
+
+    /// <summary>
+    /// Gets selected item.
+    /// </summary>
+    public TItem SelectedItem => selectedItem = default!;
 
     /// <summary>
     /// Gets or sets the autocomplete size.
     /// </summary>
-    [Parameter] public AutoCompleteSize Size { get; set; }
+    [Parameter]
+    public AutoCompleteSize Size { get; set; }
 
     /// <summary>
     /// Gets or sets the StringComparison.
     /// </summary>
-    [Parameter] public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
+    [Parameter]
+    public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
 
     /// <summary>
     /// Gets or sets the string filter operator.
     /// </summary>
-    [Parameter] public StringFilterOperator StringFilterOperator { get; set; } = StringFilterOperator.Contains;
+    [Parameter]
+    public StringFilterOperator StringFilterOperator { get; set; } = StringFilterOperator.Contains;
 
     [Parameter] public string Value { get; set; } = default!;
 
+    /// <summary>
+    /// This is event fires on every user keystroke that changes the textbox value.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
     [Parameter] public Expression<Func<string?>> ValueExpression { get; set; } = default!;
 
-    #endregion Properties
+    #endregion
 }

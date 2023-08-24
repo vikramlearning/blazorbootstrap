@@ -9,5 +9,5 @@ public enum ChartType
     PolarArea,
     Radar,
     Scatter,
-    Bubble,
+    Bubble
 }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
+﻿using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.JSInterop;
 
 namespace BlazorBootstrap.Demo;
@@ -80,7 +79,7 @@ public class Demo : ComponentBase
             builder.CloseElement(); // end: pre
             builder.CloseElement();
         }
-        else // Tabs = false
+        else // Tabs = true
         {
             builder.OpenComponent<Tabs>(300);
             builder.AddAttribute(301, "EnableFadeEffect", true);
@@ -159,7 +158,7 @@ public class Demo : ComponentBase
 
     #region Properties
 
-    [Inject] protected IJSRuntime JS { get; set; } = null!;
+    [Inject] protected IJSRuntime JS { get; set; } = default!;
 
     [Parameter] public string LanguageCssClass { get; set; } = "language-cshtml";
 

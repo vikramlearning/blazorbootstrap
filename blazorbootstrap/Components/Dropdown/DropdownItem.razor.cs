@@ -2,11 +2,7 @@
 
 public partial class DropdownItem
 {
-    #region Events
-
-    #endregion
-
-    #region Members
+    #region Fields and Constants
 
     private bool active;
 
@@ -20,26 +16,32 @@ public partial class DropdownItem
 
     private int? previousTabIndex;
 
-    private ButtonType previousType;
-
     private Target previousTarget;
 
-    private bool setButtonAttributesAgain = false;
+    private ButtonType previousType;
 
-    private string buttonTypeString => Type.ToButtonTypeString();
+    private bool setButtonAttributesAgain = false;
 
     #endregion
 
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.DropdownItem());
         builder.Append(BootstrapClassProvider.Active(), Active);
         builder.Append(BootstrapClassProvider.Disabled(), Disabled);
 
         base.BuildClasses(builder);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            isFirstRenderComplete = true;
+
+        base.OnAfterRender(firstRender);
     }
 
     protected override void OnInitialized()
@@ -57,19 +59,10 @@ public partial class DropdownItem
         base.OnInitialized();
     }
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-            isFirstRenderComplete = true;
-
-        base.OnAfterRender(firstRender);
-    }
-
     protected override async Task OnParametersSetAsync()
     {
         if (isFirstRenderComplete)
         {
-
             if (previousActive != Active)
             {
                 previousActive = Active;
@@ -127,10 +120,8 @@ public partial class DropdownItem
                 Attributes.Add("href", To);
 
             if (Target != Target.None)
-            {
                 if (!Attributes.TryGetValue("target", out _))
                     Attributes.Add("target", Target.ToTargetString());
-            }
 
             if (Disabled)
             {
@@ -184,9 +175,9 @@ public partial class DropdownItem
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
@@ -203,8 +194,10 @@ public partial class DropdownItem
         }
     }
 
+    private string buttonTypeString => Type.ToButtonTypeString();
+
     /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="ChildContent"/>.
+    /// Specifies the content to be rendered inside this <see cref="ChildContent" />.
     /// </summary>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
@@ -226,22 +219,26 @@ public partial class DropdownItem
     /// <summary>
     /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
     /// </summary>
-    [Parameter] public int? TabIndex { get; set; }
+    [Parameter]
+    public int? TabIndex { get; set; }
 
     /// <summary>
-    /// The target attribute specifies where to open the linked document for a <see cref="ButtonType.Link"/>.
+    /// The target attribute specifies where to open the linked document for a <see cref="ButtonType.Link" />.
     /// </summary>
-    [Parameter] public Target Target { get; set; } = Target.None;
+    [Parameter]
+    public Target Target { get; set; } = Target.None;
 
     /// <summary>
-    /// Denotes the target route of the <see cref="ButtonType.Link"/> button.
+    /// Denotes the target route of the <see cref="ButtonType.Link" /> button.
     /// </summary>
-    [Parameter] public string? To { get; set; }
+    [Parameter]
+    public string? To { get; set; }
 
     /// <summary>
     /// Defines the button type.
     /// </summary>
-    [Parameter] public ButtonType Type { get; set; } = ButtonType.Button;
+    [Parameter]
+    public ButtonType Type { get; set; } = ButtonType.Button;
 
     #endregion
 }

@@ -2,18 +2,10 @@
 
 public partial class Card
 {
-    #region Events
-
-    #endregion
-
-    #region Members
-
-    #endregion
-
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Card());
         builder.Append(BootstrapClassProvider.ToTextAlignment(TextAlignment));
@@ -24,25 +16,28 @@ public partial class Card
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="ChildContent"/>.
+    /// Specifies the content to be rendered inside this <see cref="ChildContent" />.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the card color.
     /// </summary>
-    [Parameter] public CardColor Color { get; set; }
+    [Parameter]
+    public CardColor Color { get; set; }
 
     /// <summary>
     /// Gets or sets the text alignment of the card.
     /// </summary>
-    [Parameter] public Alignment TextAlignment { get; set; }
+    [Parameter]
+    public Alignment TextAlignment { get; set; }
 
     #endregion
 }

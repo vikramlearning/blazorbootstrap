@@ -2,7 +2,7 @@
 
 public partial class ProgressBar
 {
-    #region Members
+    #region Fields and Constants
 
     private ProgressColor color = ProgressColor.None;
     private ProgressType type = ProgressType.Default;
@@ -13,7 +13,7 @@ public partial class ProgressBar
 
     #region Methods
 
-    protected override void BuildClasses(ClassBuilder builder)
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.ProgressBar());
         builder.Append(BootstrapClassProvider.ProgressBarStriped(), type is ProgressType.Striped or ProgressType.StripedAndAnimated);
@@ -22,7 +22,7 @@ public partial class ProgressBar
         base.BuildClasses(builder);
     }
 
-    protected override void BuildStyles(StyleBuilder builder)
+    protected override void BuildStyles(CssStyleBuilder builder)
     {
         // FIX: Toast progressbar not showing: https://github.com/vikramlearning/blazorbootstrap/issues/155
         builder.Append($"width:{width.ToString(CultureInfo.InvariantCulture)}%", width is >= 0 and <= 100);
@@ -37,7 +37,8 @@ public partial class ProgressBar
     {
         if (width is < 0 or > 100)
             return;
-        else if (Width - width < 0)
+
+        if (Width - width < 0)
             Width = 0;
         else
             Width -= width;
@@ -57,7 +58,8 @@ public partial class ProgressBar
     {
         if (width is < 0 or > 100)
             return;
-        else if (Width + width > 100)
+
+        if (Width + width > 100)
             Width = 100;
         else
             Width += width;
@@ -89,9 +91,9 @@ public partial class ProgressBar
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>

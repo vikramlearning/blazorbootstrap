@@ -1,16 +1,16 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class SimpleToast : BaseComponent, IDisposable
+public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
 {
-    #region Members
+    #region Fields and Constants
 
     private DotNetObjectReference<SimpleToast>? objRef;
 
-    #endregion Members
+    #endregion
 
     #region Methods
 
-    protected override void BuildClasses(ClassBuilder builder)
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Toast());
         builder.Append($"text-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}");
@@ -18,24 +18,6 @@ public partial class SimpleToast : BaseComponent, IDisposable
 
         base.BuildClasses(builder);
     }
-
-    protected override async Task OnInitializedAsync()
-    {
-        objRef ??= DotNetObjectReference.Create(this);
-        await base.OnInitializedAsync();
-
-        ExecuteAfterRender(async () => { await ShowAsync(); });
-    }
-
-    /// <summary>
-    /// Reveals an element’s toast.
-    /// </summary>
-    public async Task ShowAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.show", ElementId, AutoHide, Delay, objRef);
-
-    /// <summary>
-    /// Hides an element’s toast.
-    /// </summary>
-    public async Task HideAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", ElementId);
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
@@ -49,56 +31,88 @@ public partial class SimpleToast : BaseComponent, IDisposable
         await base.DisposeAsync(disposing);
     }
 
-    [JSInvokable] public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
-    [JSInvokable] public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
-    [JSInvokable] public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
-    [JSInvokable] public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    protected override async Task OnInitializedAsync()
+    {
+        objRef ??= DotNetObjectReference.Create(this);
+        await base.OnInitializedAsync();
 
-    #endregion Methods
+        ExecuteAfterRender(async () => { await ShowAsync(); });
+    }
 
-    #region Properties
+    [JSInvokable]
+    public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
 
-    /// <inheritdoc/>
+    [JSInvokable]
+    public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+
+    [JSInvokable]
+    public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+
+    [JSInvokable]
+    public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+
+    /// <summary>
+    /// Hides an element’s toast.
+    /// </summary>
+    public async Task HideAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", ElementId);
+
+    /// <summary>
+    /// Reveals an element’s toast.
+    /// </summary>
+    public async Task ShowAsync() => await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.show", ElementId, AutoHide, Delay, objRef);
+
+    #endregion
+
+    #region Properties, Indexers
+
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
-
-    [Parameter] public ToastMessage? ToastMessage { get; set; }
-
-    /// <summary>
-    /// This event fires immediately when the show instance method is called.
-    /// </summary>
-    [Parameter] public EventCallback<ToastEventArgs> Showing { get; set; }
-
-    /// <summary>
-    /// This event is fired when the toast has been made visible to the user.
-    /// </summary>
-    [Parameter] public EventCallback<ToastEventArgs> Shown { get; set; }
-
-    /// <summary>
-    /// This event is fired immediately when the hide instance method has been called.
-    /// </summary>
-    [Parameter] public EventCallback<ToastEventArgs> Hiding { get; set; }
-
-    /// <summary>
-    /// This event is fired when the toast has finished being hidden from the user.
-    /// </summary>
-    [Parameter] public EventCallback<ToastEventArgs> Hidden { get; set; }
 
     /// <summary>
     /// Auto hide the toast. Default is false.
     /// </summary>
-    [Parameter] public bool AutoHide { get; set; } = true;
+    [Parameter]
+    public bool AutoHide { get; set; } = true;
 
-    /// <summary>
-    /// Show the close button.
-    /// </summary>
-    [Parameter] public bool ShowCloseButton { get; set; } = true;
+    private string CloseButtonClass => $"btn-close-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}";
 
     /// <summary>
     /// Delay hiding the toast (ms).
     /// </summary>
-    [Parameter] public int Delay { get; set; } = 5000;
+    [Parameter]
+    public int Delay { get; set; } = 5000;
 
-    private string CloseButtonClass => $"btn-close-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}";
+    /// <summary>
+    /// This event is fired when the toast has finished being hidden from the user.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ToastEventArgs> Hidden { get; set; }
 
-    #endregion Properties
+    /// <summary>
+    /// This event is fired immediately when the hide instance method has been called.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ToastEventArgs> Hiding { get; set; }
+
+    /// <summary>
+    /// Show the close button.
+    /// </summary>
+    [Parameter]
+    public bool ShowCloseButton { get; set; } = true;
+
+    /// <summary>
+    /// This event fires immediately when the show instance method is called.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ToastEventArgs> Showing { get; set; }
+
+    /// <summary>
+    /// This event is fired when the toast has been made visible to the user.
+    /// </summary>
+    [Parameter]
+    public EventCallback<ToastEventArgs> Shown { get; set; }
+
+    [Parameter] public ToastMessage? ToastMessage { get; set; }
+
+    #endregion
 }

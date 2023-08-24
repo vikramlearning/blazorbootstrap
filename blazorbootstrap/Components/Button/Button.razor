@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
-@inherits BaseComponent
+@inherits BlazorBootstrapComponentBase
 
-@if (this.Type == ButtonType.Link)
+@if (Type == ButtonType.Link)
 {
     <a type="@buttonTypeString"
        @ref="@ElementRef"

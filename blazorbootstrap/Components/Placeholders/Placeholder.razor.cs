@@ -1,20 +1,20 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Placeholder : BaseComponent
+public partial class Placeholder : BlazorBootstrapComponentBase
 {
-    #region Members
-
-    private PlaceholderWidth width = PlaceholderWidth.Col1;
+    #region Fields and Constants
 
     private PlaceholderColor color = PlaceholderColor.None;
 
     private PlaceholderSize size = PlaceholderSize.None;
 
+    private PlaceholderWidth width = PlaceholderWidth.Col1;
+
     #endregion
 
     #region Methods
 
-    protected override void BuildClasses(ClassBuilder builder)
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Placeholder());
         builder.Append(BootstrapClassProvider.PlaceholderWidth(Width));
@@ -26,28 +26,16 @@ public partial class Placeholder : BaseComponent
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
     /// <summary>
-    /// Gets or sets the placeholder width. Default is <see cref="PlaceholderWidth.Col1"/>.
-    /// </summary>
-    [Parameter]
-    public PlaceholderWidth Width
-    {
-        get => width; set
-        {
-            width = value;
-            DirtyClasses();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the placeholder color. Default is <see cref="PlaceholderColor.None"/>.
+    /// Gets or sets the placeholder color. Default is <see cref="PlaceholderColor.None" />.
     /// </summary>
     [Parameter]
     public PlaceholderColor Color
     {
-        get => color; set
+        get => color;
+        set
         {
             color = value;
             DirtyClasses();
@@ -55,14 +43,29 @@ public partial class Placeholder : BaseComponent
     }
 
     /// <summary>
-    /// Gets or sets the placeholder size. Default is <see cref="PlaceholderSize.None"/>.
+    /// Gets or sets the placeholder size. Default is <see cref="PlaceholderSize.None" />.
     /// </summary>
     [Parameter]
     public PlaceholderSize Size
     {
-        get => size; set
+        get => size;
+        set
         {
             size = value;
+            DirtyClasses();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the placeholder width. Default is <see cref="PlaceholderWidth.Col1" />.
+    /// </summary>
+    [Parameter]
+    public PlaceholderWidth Width
+    {
+        get => width;
+        set
+        {
+            width = value;
             DirtyClasses();
         }
     }

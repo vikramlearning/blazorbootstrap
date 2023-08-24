@@ -2,11 +2,7 @@
 
 public partial class DropdownToggleButton
 {
-    #region Events
-
-    #endregion
-
-    #region Members
+    #region Fields and Constants
 
     private ButtonColor color = ButtonColor.None;
 
@@ -19,8 +15,8 @@ public partial class DropdownToggleButton
 
     #region Methods
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Button());
         builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None);
@@ -65,9 +61,9 @@ public partial class DropdownToggleButton
 
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
@@ -82,21 +78,11 @@ public partial class DropdownToggleButton
     [CascadingParameter(Name = "AutoCloseBehavior")]
     public DropdownAutoCloseBehavior AutoCloseBehavior { get; set; }
 
-    [CascadingParameter(Name = "Split")]
-    public bool Split
-    {
-        get => split;
-        set
-        {
-            split = value;
-            DirtyClasses();
-        }
-    }
-
     /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="ChildContent"/>.
+    /// Specifies the content to be rendered inside this <see cref="ChildContent" />.
     /// </summary>
-    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the button color.
@@ -126,10 +112,22 @@ public partial class DropdownToggleButton
         }
     }
 
+    [CascadingParameter(Name = "Split")]
+    public bool Split
+    {
+        get => split;
+        set
+        {
+            split = value;
+            DirtyClasses();
+        }
+    }
+
     /// <summary>
     /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
     /// </summary>
-    [Parameter] public int? TabIndex { get; set; }
+    [Parameter]
+    public int? TabIndex { get; set; }
 
     #endregion
 }

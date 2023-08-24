@@ -1,5 +1,5 @@
 ﻿@namespace BlazorBootstrap
-@inherits BaseComponent
+@inherits BlazorBootstrapComponentBase
 
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
     <div class="toast-header">
@@ -15,6 +15,6 @@
         @ToastMessage.Message
     </div>
     <Progress Height="3">
-        <ProgressBar @ref="toastProgressBar" Color="@progressColor" Width="toastProgressBarWidth" />
+        <ProgressBar @ref="toastProgressBar" Color="@progressColor" Width="toastProgressBarWidth"/>
     </Progress>
 </div>

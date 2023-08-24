@@ -1,12 +1,18 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class PaginationItem : BaseComponent
+public partial class PaginationItem : BlazorBootstrapComponentBase
 {
-    #region Members
-
-    #endregion
-
     #region Methods
+
+    /// <inheritdoc />
+    protected override void BuildClasses(CssClassBuilder builder)
+    {
+        builder.Append(BootstrapClassProvider.PaginationItem());
+        builder.Append(BootstrapClassProvider.PaginationItemActive(), Active);
+        builder.Append(BootstrapClassProvider.PaginationItemDisabled(), Disabled);
+
+        base.BuildClasses(builder);
+    }
 
     protected override void OnParametersSet()
     {
@@ -16,24 +22,9 @@ public partial class PaginationItem : BaseComponent
         base.OnParametersSet();
     }
 
-    /// <inheritdoc/>
-    protected override void BuildClasses(ClassBuilder builder)
-    {
-        builder.Append(BootstrapClassProvider.PaginationItem());
-        builder.Append(BootstrapClassProvider.PaginationItemActive(), Active);
-        builder.Append(BootstrapClassProvider.PaginationItemDisabled(), Disabled);
-
-        base.BuildClasses(builder);
-    }
-
     #endregion
 
-    #region Properties
-
-    /// <summary>
-    /// Gets the reference to the pagination item state object.
-    /// </summary>
-    protected PaginationItemState State { get; private set; } = new();
+    #region Properties, Indexers
 
     /// <summary>
     /// Indicate the currently active page.
@@ -53,6 +44,8 @@ public partial class PaginationItem : BaseComponent
         }
     }
 
+    [Parameter] public string? AriaLabel { get; set; }
+
     /// <summary>
     /// Used for links that appear un-clickable.
     /// </summary>
@@ -71,14 +64,16 @@ public partial class PaginationItem : BaseComponent
         }
     }
 
-    [Parameter] public string? Text { get; set; }
+    [Parameter] public IconName LinkIcon { get; set; }
 
     [Parameter] public string? LinkText { get; set; }
 
-    [Parameter] public IconName LinkIcon { get; set; }
+    /// <summary>
+    /// Gets the reference to the pagination item state object.
+    /// </summary>
+    protected PaginationItemState State { get; private set; } = new();
 
-    [Parameter] public string? AriaLabel { get; set; }
+    [Parameter] public string? Text { get; set; }
 
     #endregion
 }
-

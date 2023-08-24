@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DoughnutChart : BaseChart
+public partial class DoughnutChart : BlazorBootstrapChart
 {
     #region Constructors
 
@@ -9,11 +9,7 @@ public partial class DoughnutChart : BaseChart
         chartType = ChartType.Doughnut;
     }
 
-    #endregion Constructors
-
-    #region Members
-
-    #endregion Members
+    #endregion
 
     #region Methods
 
@@ -29,16 +25,12 @@ public partial class DoughnutChart : BaseChart
             throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
-        {
             if (dataset is DoughnutChartDataset doughnutChartDataset && doughnutChartDataset.Label == dataLabel)
-            {
                 if (data is DoughnutChartDatasetData doughnutChartDatasetData)
                 {
                     doughnutChartDataset.Data?.Add(doughnutChartDatasetData.Data);
                     doughnutChartDataset.BackgroundColor?.Add(doughnutChartDatasetData.BackgroundColor);
                 }
-            }
-        }
 
         await JS.InvokeVoidAsync("window.blazorChart.doughnut.addDatasetData", ElementId, dataLabel, data);
 
@@ -77,7 +69,6 @@ public partial class DoughnutChart : BaseChart
         chartData.Labels.Add(dataLabel);
 
         foreach (var dataset in chartData.Datasets)
-        {
             if (dataset is DoughnutChartDataset doughnutChartDataset)
             {
                 var chartDatasetData = data.FirstOrDefault(x => x is DoughnutChartDatasetData doughnutChartDatasetData && doughnutChartDatasetData.DatasetLabel == doughnutChartDataset.Label);
@@ -88,7 +79,6 @@ public partial class DoughnutChart : BaseChart
                     doughnutChartDataset.BackgroundColor?.Add(doughnutChartDatasetData.BackgroundColor);
                 }
             }
-        }
 
         await JS.InvokeVoidAsync("window.blazorChart.doughnut.addDatasetsData", ElementId, dataLabel, data?.Select(x => (DoughnutChartDatasetData)x));
 
@@ -135,12 +125,12 @@ public partial class DoughnutChart : BaseChart
         }
     }
 
-    #endregion Methods
+    #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
-    #endregion Properties
+    #endregion
 }
