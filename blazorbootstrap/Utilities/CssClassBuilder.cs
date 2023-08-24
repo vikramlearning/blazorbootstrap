@@ -10,12 +10,24 @@ public class CssClassBuilder
 {
     #region Fields and Constants
 
+    /// <summary>
+    /// The action to be called to build the class names.
+    /// </summary>
     private readonly Action<CssClassBuilder> buildClasses;
 
+    /// <summary>
+    /// The list of class names.
+    /// </summary>
     private List<string> classList = new();
 
+    /// <summary>
+    /// The class names, as a string.
+    /// </summary>
     private string? classNames;
 
+    /// <summary>
+    /// Whether the class names are dirty and need to be rebuilt.
+    /// </summary>
     private bool dirty = true;
 
     #endregion
@@ -23,7 +35,7 @@ public class CssClassBuilder
     #region Constructors
 
     /// <summary>
-    /// Creates a new CSS class classList.
+    /// Creates a new CSS class builder.
     /// </summary>
     /// <param name="buildClasses">The action to be called to build the class names.</param>
     public CssClassBuilder(Action<CssClassBuilder> buildClasses)

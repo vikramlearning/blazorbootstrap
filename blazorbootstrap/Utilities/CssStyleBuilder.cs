@@ -10,12 +10,24 @@ public class CssStyleBuilder
 {
     #region Fields and Constants
 
+    /// <summary>
+    /// The action to be called to build the styles.
+    /// </summary>
     private readonly Action<CssStyleBuilder> buildStyles;
 
+    /// <summary>
+    /// Whether the styles are dirty and need to be rebuilt.
+    /// </summary>
     private bool dirty = true;
 
+    /// <summary>
+    /// The list of styles.
+    /// </summary>
     private List<string> styleList = new();
 
+    /// <summary>
+    /// The styles, as a string.
+    /// </summary>
     private string? styles;
 
     #endregion
@@ -23,7 +35,7 @@ public class CssStyleBuilder
     #region Constructors
 
     /// <summary>
-    /// Creates a new CSS style styleList.
+    /// Creates a new CSS style builder.
     /// </summary>
     /// <param name="buildStyles">The action to be called to build the styles.</param>
     public CssStyleBuilder(Action<CssStyleBuilder> buildStyles)
