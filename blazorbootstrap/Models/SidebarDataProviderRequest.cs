@@ -10,6 +10,7 @@ public class SidebarDataProviderRequest
             return new SidebarDataProviderResult { Data = Enumerable.Empty<NavItem>() };
 
         var result = new List<NavItem>();
+
         var parentNavItems = data.Where(x => string.IsNullOrWhiteSpace(x.ParentId))?.OrderBy(x => x.Sequence);
 
         if (parentNavItems is null || !parentNavItems.Any())
@@ -19,20 +20,38 @@ public class SidebarDataProviderRequest
 
         foreach (var navItem in parentNavItems)
         {
-            if (string.IsNullOrWhiteSpace(navItem.Id))
-                continue;
-
-            var childNavItems = data.Where(x => x.ParentId == navItem.Id)?.OrderBy(x => x.Sequence);
-
-            if (childNavItems is not null && childNavItems.Any())
-            {
-                navItem.HasChilds = true;
-                navItem.ChildItems = childNavItems;
-            }
+            BuildSubMenu(navItem, data);
         }
 
         return new SidebarDataProviderResult { Data = result };
     }
+
+    protected virtual void BuildSubMenu(NavItem item, IEnumerable<NavItem> data)
+    {
+        if (string.IsNullOrWhiteSpace(item.Id))
+            return;
+
+        var childNavItems = data.Where(x => x.ParentId == item.Id)?.OrderBy(x => x.Sequence);
+
+        if (childNavItems is not null && childNavItems.Any())
+        {
+            item.HasChilds = true;
+            item.ChildItems = childNavItems;
+
+            // ChildItems can contain another child item. 
+            foreach (var subItem in item.ChildItems)
+            {
+                var childSubNavItems = data.Where(x => x.ParentId == subItem.Id)?.OrderBy(x => x.Sequence);
+
+                if (childSubNavItems is not null && childSubNavItems.Any())
+                {
+                    BuildSubMenu(subItem, data);
+                }
+            }
+            
+        }
+    }
+
 
     #endregion
 }
