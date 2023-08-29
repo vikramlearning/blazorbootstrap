@@ -33,6 +33,11 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
             }
     }
 
+    private void AutoHideTest()
+    {
+        Console.WriteLine($"AutoHideTest called...");
+    }
+
     private bool EqualsHrefExactlyOrIfTrailingSlashAdded(string currentUriAbsolute, string hrefAbsolute)
     {
         if (string.Equals(currentUriAbsolute, hrefAbsolute, StringComparison.OrdinalIgnoreCase)) return true;

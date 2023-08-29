@@ -88,7 +88,11 @@ public partial class Sidebar : BlazorBootstrapComponentBase
         return sb.ToString();
     }
 
-    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+        Console.WriteLine($"ToggleNavMenu: collapseNavMenu={collapseNavMenu}");
+    }
 
     #endregion
 
