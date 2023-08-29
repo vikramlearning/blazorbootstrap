@@ -4,10 +4,25 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://getblazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Sun, 13 Aug 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 29 Aug 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.10.1]]></title>
+            <link>https://getblazorbootstrap.com/blog/2023/08/29/blazorbootstrap-1.10.1</link>
+            <guid>/2023/08/29/blazorbootstrap-1.10.1</guid>
+            <pubDate>Tue, 29 Aug 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.10.1 with base component improvements and chart updates!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.10.1 with base component improvements and chart updates!!!</p><p><img loading="lazy" src="https://i.imgur.com/jMIvDFZ.png" alt="image" title="Blazor Bootstrap: BarChart Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a class="hash-link" href="#whats-changed" title="Direct link to heading">​</a></h2><ul><li><p>We have made improvements to the base components</p></li><li><p><code>Bar Chart</code> component</p><ul><li>UpdateAsync method</li></ul></li><li><p><code>Doughnut Chart</code> component</p><ul><li>UpdateAsync method</li></ul></li><li><p><code>Line Chart</code> component</p><ul><li>UpdateAsync method</li></ul></li><li><p><code>Pie Chart</code> component</p><ul><li>UpdateAsync method</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a class="hash-link" href="#links" title="Direct link to heading">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/charts" target="_blank" rel="noopener noreferrer">Blazor Chart Components Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.10.1</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>grid</category>
+            <category>blazorgrid</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.10.0]]></title>
             <link>https://getblazorbootstrap.com/blog/2023/08/13/blazorbootstrap-1.10.0</link>
