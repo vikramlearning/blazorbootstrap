@@ -34,6 +34,15 @@
             new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
             new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
             new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+
+            new NavItem { Id = "13", IconName = IconName.ToggleOn, Text = "Level 1"},
+            new NavItem { Id = "14", IconName = IconName.ToggleOff, Text = "Level 2", ParentId="13"},
+            new NavItem { Id = "15", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="14"},
+
+            new NavItem { Id = "16", IconName = IconName.Airplane, Text = "Level 1"},
+            new NavItem { Id = "17", IconName = IconName.Alarm, Text = "Level 2", ParentId="16"},
+            new NavItem { Id = "18", IconName = IconName.App, Text = "Level 3", ParentId="17"},
+            new NavItem { Id = "19", Href = "/switch", IconName = IconName.ToggleOn, Text = "Level 4", ParentId="18"}
         };
 
         return navItems;
