@@ -190,12 +190,20 @@ window.blazorBootstrap = {
         }
     },
     confirmDialog: {
-        show: () => {
+        show: (elementId) => {
+            let confirmDialogEl = document.getElementById(elementId);
+            if (confirmDialogEl)
+                confirmDialogEl.classList.add('show');
+
             let bodyEl = document.getElementsByTagName('body');
             if (bodyEl.length > 0)
                 bodyEl[0].style['overflow'] = 'hidden';
         },
-        hide: () => {
+        hide: (elementId) => {
+            let confirmDialogEl = document.getElementById(elementId);
+            if (confirmDialogEl)
+                confirmDialogEl.classList.remove('show');
+
             let bodyEl = document.getElementsByTagName('body');
             if (bodyEl.length > 0)
                 bodyEl[0].style['overflow'] = 'auto';

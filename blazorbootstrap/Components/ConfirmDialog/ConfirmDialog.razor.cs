@@ -37,7 +37,6 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
         builder.Append(BootstrapClassProvider.Modal());
         builder.Append(BootstrapClassProvider.ConfirmationModal());
         builder.Append(BootstrapClassProvider.ModalFade());
-        builder.Append(BootstrapClassProvider.Show(), showBackdrop);
 
         base.BuildClasses(builder);
     }
@@ -90,7 +89,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
         DirtyClasses();
         DirtyStyles();
 
-        Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide"));
+        Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", ElementId));
 
         StateHasChanged();
     }
@@ -138,7 +137,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
         DirtyClasses();
         DirtyStyles();
 
-        Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show"));
+        Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", ElementId));
 
         StateHasChanged();
 
