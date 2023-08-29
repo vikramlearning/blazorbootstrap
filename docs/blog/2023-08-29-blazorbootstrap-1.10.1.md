@@ -1,11 +1,11 @@
 ---
-title: Blazor Bootstrap v1.10.0
+title: Blazor Bootstrap v1.10.1
 authors:
   name: Vikram Reddy
   title: Creator
   url: https://github.com/gvreddy04
   image_url: https://avatars.githubusercontent.com/u/2337067
-tags: [v1.10.0, blazor, bootstrap, bootstrap5, blazorbootstrap, grid, blazorgrid]
+tags: [v1.10.1, blazor, bootstrap, bootstrap5, blazorbootstrap, grid, blazorgrid]
 ---
 
 We are excited to release 1.10.1 with base component improvements and chart updates!!!
