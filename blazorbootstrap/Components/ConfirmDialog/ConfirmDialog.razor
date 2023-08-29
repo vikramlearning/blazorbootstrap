@@ -1,9 +1,9 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-@if (isVisible)
-{
-    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@Attributes">
+<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@Attributes">
+    @if (isVisible)
+    {
         <div class="modal-dialog @scrollable @verticallyCentered @modalSize @dialogCssClass">
             <div class="modal-content">
                 @if (!string.IsNullOrWhiteSpace(title))
@@ -19,7 +19,7 @@
                 <div class="modal-body">
                     @if (childComponent is not null)
                     {
-                        <DynamicComponent Type="@childComponent" Parameters="@parameters"/>
+                        <DynamicComponent Type="@childComponent" Parameters="@parameters" />
                     }
                     else
                     {
@@ -47,9 +47,10 @@
                 </div>
             </div>
         </div>
-    </div>
-    @if (showBackdrop)
-    {
-        <div class="modal-backdrop modal-backdrop-confirmation fade show"></div>
     }
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop modal-backdrop-confirmation fade show"></div>
 }

@@ -193,7 +193,7 @@ window.blazorBootstrap = {
         show: (elementId) => {
             let confirmDialogEl = document.getElementById(elementId);
             if (confirmDialogEl)
-                confirmDialogEl.classList.add('show');
+                setTimeout(() => confirmDialogEl.classList.add('show'), 90); // added delay for server
 
             let bodyEl = document.getElementsByTagName('body');
             if (bodyEl.length > 0)
