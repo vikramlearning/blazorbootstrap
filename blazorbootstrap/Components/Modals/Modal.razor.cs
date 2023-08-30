@@ -67,7 +67,13 @@ public partial class Modal : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public async Task bsHiddenModal() => await OnHidden.InvokeAsync();
+    public async Task bsHiddenModal()
+    {
+        await OnHidden.InvokeAsync();
+
+        if (ModalService is not null && IsServiceModal)
+            ModalService.OnClose();
+    }
 
     [JSInvokable]
     public async Task bsHideModal() => await OnHiding.InvokeAsync();
