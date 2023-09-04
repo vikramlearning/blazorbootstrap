@@ -200,7 +200,12 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
         var oldValue = Value;
         var newValue = e.Value; // object
 
-        await SetValueAsync(oldValue, newValue);
+        // When pressing 0 first the component falls back to default value
+        // We can avoid this by checking for an empty string first
+        if (e.Value is string tmp && tmp != string.Empty)
+        {
+            await SetValueAsync(oldValue, newValue);
+        }
 
         this.oldValue = Value;
     }
