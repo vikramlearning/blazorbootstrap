@@ -10,7 +10,7 @@
        style="@StyleNames"
        @attributes="@Attributes">
 
-        @if (Loading && LoadingTemplate != null)
+        @if (Loading && LoadingTemplate is not null)
         {
             @LoadingTemplate
         }
@@ -31,7 +31,7 @@ else
             @attributes="@Attributes"
             disabled="@disabled">
 
-        @if (Loading && LoadingTemplate != null)
+        @if (Loading && LoadingTemplate is not null)
         {
             @LoadingTemplate
         }
