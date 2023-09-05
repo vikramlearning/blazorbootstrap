@@ -64,7 +64,7 @@ public partial class Button : BlazorBootstrapComponentBase
     protected override async ValueTask DisposeAsync(bool disposing)
     {
         if (disposing)
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef); });
+            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
 
         await base.DisposeAsync(disposing);
     }
@@ -178,15 +178,6 @@ public partial class Button : BlazorBootstrapComponentBase
     }
 
     protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder => { builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {loadingText}"); };
-
-    private async Task OnMouseOutAsync(MouseEventArgs args)
-    {
-        if (Disabled || string.IsNullOrWhiteSpace(TooltipTitle))
-            return;
-
-        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
-        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
-    }
 
     private void SetAttributes()
     {
