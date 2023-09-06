@@ -8,7 +8,7 @@ public partial class Tab : BlazorBootstrapComponentBase
     protected override async ValueTask DisposeAsync(bool disposing)
     {
         if (disposing)
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", ElementId); });
+            await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", ElementId);
 
         await base.DisposeAsync(disposing);
     }

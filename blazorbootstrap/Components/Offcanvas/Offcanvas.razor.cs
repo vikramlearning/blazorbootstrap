@@ -34,7 +34,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.dispose", ElementId); });
+            await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.dispose", ElementId);
             objRef?.Dispose();
         }
 
