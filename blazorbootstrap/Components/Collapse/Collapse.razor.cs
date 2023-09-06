@@ -26,7 +26,7 @@ public partial class Collapse
     {
         if (disposing)
         {
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.dispose", ElementId); });
+            await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.dispose", ElementId);
             objRef?.Dispose();
         }
 

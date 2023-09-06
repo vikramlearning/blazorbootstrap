@@ -24,7 +24,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
     {
         if (disposing)
         {
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", ElementId); });
+            await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", ElementId);
             objRef?.Dispose();
         }
 

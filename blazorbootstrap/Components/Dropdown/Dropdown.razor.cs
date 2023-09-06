@@ -24,7 +24,7 @@ public partial class Dropdown
     {
         if (disposing)
         {
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.dropdown.dispose", ElementId); });
+            await JS.InvokeVoidAsync("window.blazorBootstrap.dropdown.dispose", ElementId);
             objRef?.Dispose();
         }
 

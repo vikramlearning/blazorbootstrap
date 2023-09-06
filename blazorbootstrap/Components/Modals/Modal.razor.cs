@@ -45,7 +45,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId); });
+            await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId);
             objRef?.Dispose();
 
             if (ModalService is not null && IsServiceModal)
@@ -67,7 +67,13 @@ public partial class Modal : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public async Task bsHiddenModal() => await OnHidden.InvokeAsync();
+    public async Task bsHiddenModal()
+    {
+        await OnHidden.InvokeAsync();
+
+        if (ModalService is not null && IsServiceModal)
+            ModalService.OnClose();
+    }
 
     [JSInvokable]
     public async Task bsHideModal() => await OnHiding.InvokeAsync();
