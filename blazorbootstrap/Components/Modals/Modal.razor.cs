@@ -45,7 +45,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId); });
+            await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId);
             objRef?.Dispose();
 
             if (ModalService is not null && IsServiceModal)

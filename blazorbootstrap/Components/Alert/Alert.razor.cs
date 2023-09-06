@@ -27,7 +27,7 @@ public partial class Alert
     {
         if (disposing)
         {
-            ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.alert.dispose", ElementId); });
+            await JS.InvokeVoidAsync("window.blazorBootstrap.alert.dispose", ElementId);
             objRef?.Dispose();
         }
 
