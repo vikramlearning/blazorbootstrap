@@ -96,8 +96,6 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     {
         if (isMobile && !collapseNavMenu)
             collapseNavMenu = true;
-
-        Console.WriteLine("Sidebar: AutoHideTest called...");
     }
 
     private string GetNavMenuCssClass()
