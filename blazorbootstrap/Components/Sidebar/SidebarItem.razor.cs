@@ -33,9 +33,9 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
             }
     }
 
-    private void AutoHideTest()
+    private void AutoHideNavMenu()
     {
-        Console.WriteLine($"AutoHideTest called...");
+        Parent.HideNavMenuOnMobile();
     }
 
     private bool EqualsHrefExactlyOrIfTrailingSlashAdded(string currentUriAbsolute, string hrefAbsolute)
@@ -116,6 +116,8 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     public NavLinkMatch Match { get; set; }
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+    [CascadingParameter] public Sidebar Parent { get; set; } = default!;
 
     [Parameter] public Target Target { get; set; }
 
