@@ -8,7 +8,11 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
     private bool collapseSidebar = false;
 
+    private bool isMobile = false;
+
     private IEnumerable<NavItem>? items = null;
+
+    private DotNetObjectReference<Sidebar> objRef = default!;
 
     private bool requestInProgress = false;
 
@@ -28,7 +32,11 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
+        {
+            var width = await JS.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
+            await bsWindowResize(width);
             await RefreshDataAsync(firstRender);
+        }
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -36,8 +44,19 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     protected override async Task OnInitializedAsync()
     {
         Attributes ??= new Dictionary<string, object>();
-
+        objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
+
+        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", ElementId, objRef); });
+    }
+
+    [JSInvokable]
+    public async Task bsWindowResize(int width)
+    {
+        if (width < 641) // mobile
+            isMobile = true;
+        else
+            isMobile = false;
     }
 
     /// <summary>
@@ -73,19 +92,25 @@ public partial class Sidebar : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
+    internal void HideNavMenuOnMobile()
+    {
+        if (isMobile && !collapseNavMenu)
+            collapseNavMenu = true;
+    }
+
     private string GetNavMenuCssClass()
     {
-        var sb = new StringBuilder();
+        var classList = new HashSet<string>();
 
         if (collapseNavMenu)
-            sb.Append(" collapse");
+            classList.Add("collapse");
 
-        sb.Append(" bb-sidebar-content nav-scrollable bb-scrollbar");
+        classList.Add("bb-sidebar-content nav-scrollable bb-scrollbar");
 
         if (collapseSidebar)
-            sb.Append(" bb-scrollbar-hidden");
+            classList.Add("bb-scrollbar-hidden");
 
-        return sb.ToString();
+        return string.Join(" ", classList);
     }
 
     private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;

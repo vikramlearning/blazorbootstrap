@@ -477,6 +477,14 @@ window.blazorBootstrap = {
             bootstrap?.Offcanvas?.getOrCreateInstance(document.getElementById(elementId))?.dispose();
         }
     },
+    sidebar: {
+        initialize: (elementId, dotNetHelper) => {
+            window.addEventListener("resize", () => {
+                dotNetHelper.invokeMethodAsync('bsWindowResize', window.innerWidth);
+            });
+        },
+        windowSize: () => window.innerWidth
+    },
     tabs: {
         initialize: (elementId, dotNetHelper) => {
             let navTabsEl = document.getElementById(elementId);
