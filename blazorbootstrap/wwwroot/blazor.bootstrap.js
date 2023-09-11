@@ -581,6 +581,9 @@ window.blazorBootstrap = {
     },
 }
 
+// Register the plugin to all charts:
+Chart.register(ChartDataLabels);
+
 window.blazorChart = {
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
@@ -680,6 +683,18 @@ window.blazorChart.bar = {
     },
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
+
+        options.plugins = {
+            datalabels: {
+                color: 'white',
+                font: {
+                    weight: 'bold'
+                },
+                formatter: Math.round
+            }
+        };
+
+        console.log(data);
 
         const config = {
             type: type,

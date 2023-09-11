@@ -46,6 +46,9 @@ public class ChartDataset : IChartDataset
     /// </summary>
     public List<double>? Data { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Datalabels Datalabels { get; set; } = new ();
+
     /// <summary>
     /// Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart.
     /// </summary>
@@ -81,4 +84,10 @@ public class ChartDataset : IChartDataset
     public string? Type { get; protected set; }
 
     #endregion
+}
+
+public class Datalabels
+{
+    public string? Anchor { get; set; } = "center";
+    public string? Align { get; set; } = "center";
 }
