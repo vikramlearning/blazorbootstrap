@@ -26,6 +26,9 @@ public class BarChartDataset : ChartDataset
     /// </summary>
     public double CategoryPercentage { get; set; } = 0.8;
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public BarChartDatasetDataLabels Datalabels { get; set; } = new();
+
     /// <summary>
     /// The label for the dataset which appears in the legend and tooltips.
     /// </summary>
@@ -49,6 +52,16 @@ public class BarChartDataset : ChartDataset
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? YAxisID { get; set; }
+
+    #endregion
+}
+
+public class BarChartDatasetDataLabels
+{
+    #region Properties, Indexers
+
+    public string? Align { get; set; } = "center";
+    public string? Anchor { get; set; } = "center";
 
     #endregion
 }
