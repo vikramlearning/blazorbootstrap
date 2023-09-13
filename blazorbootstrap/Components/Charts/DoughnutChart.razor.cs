@@ -105,7 +105,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         return chartData;
     }
 
-    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions)
+    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
@@ -115,7 +115,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         }
     }
 
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
+    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
     {
         if (chartData is not null && chartData.Datasets is not null)
         {

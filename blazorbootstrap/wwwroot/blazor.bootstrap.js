@@ -581,13 +581,8 @@ window.blazorBootstrap = {
     },
 }
 
-// register `ChartDataLabels` plugin here
-if (ChartDataLabels) {
-    Chart.register(ChartDataLabels);
-}
-
 window.blazorChart = {
-    create: (elementId, type, data, options) => {
+    create: (elementId, type, data, options, plugins) => {
         let chartEl = document.getElementById(elementId);
 
         const config = {
@@ -612,11 +607,11 @@ window.blazorChart = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options) => {
+    initialize: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.create(elementId, type, data, options);
+            window.blazorChart.create(elementId, type, data, options, plugins);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.get(elementId);
@@ -625,14 +620,14 @@ window.blazorChart = {
             chart.canvas.parentNode.style.width = `${height}px`;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.get(elementId);
         if (chart) {
             chart.data = data;
             chart.options = options;
             chart.update();
         } else {
-            window.blazorChart.create(elementId, type, data, options);
+            window.blazorChart.create(elementId, type, data, options, plugins);
         }
     },
 }
@@ -683,26 +678,25 @@ window.blazorChart.bar = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options) => {
+    create: (elementId, type, data, options, plugins) => {
         let chartEl = document.getElementById(elementId);
 
-        //options.plugins = {
-        //    datalabels: {
-        //        color: 'white',
-        //        font: {
-        //            weight: 'bold'
-        //        },
-        //        formatter: Math.round
-        //    }
-        //};
+        let _plugins = [];
+
+        if (plugins && plugins.length > 0) {
+
+            // register `ChartDataLabels` plugin
+            if (plugins.includes('ChartDataLabels')){
+                _plugins.push(ChartDataLabels);
+            }
+        }
 
         const config = {
             type: type,
             data: data,
-            options: options
+            options: options,
+            plugins: _plugins
         };
-
-        console.log(config);
 
         const chart = new Chart(
             chartEl,
@@ -719,11 +713,11 @@ window.blazorChart.bar = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options) => {
+    initialize: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.bar.create(elementId, type, data, options);
+            window.blazorChart.bar.create(elementId, type, data, options, plugins);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.bar.get(elementId);
@@ -732,7 +726,7 @@ window.blazorChart.bar = {
             chart.canvas.parentNode.style.width = `${height}px`;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) {
             chart.data = data;
@@ -740,7 +734,7 @@ window.blazorChart.bar = {
             chart.update();
         }
         else {
-            window.blazorChart.bar.create(elementId, type, data, options);
+            window.blazorChart.bar.create(elementId, type, data, options, plugins);
         }
     },
 }
