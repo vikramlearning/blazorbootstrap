@@ -585,11 +585,21 @@ window.blazorChart = {
     create: (elementId, type, data, options, plugins) => {
         let chartEl = document.getElementById(elementId);
 
+        let _plugins = [];
+
+        if (plugins && plugins.length > 0) {
+
+            // register `ChartDataLabels` plugin
+            if (plugins.includes('ChartDataLabels')) {
+                _plugins.push(ChartDataLabels);
+            }
+        }
+
         const config = {
             type: type,
             data: data,
             options: options,
-            //plugins: [ChartDataLabels]
+            plugins: _plugins
         };
 
         const chart = new Chart(
@@ -786,13 +796,24 @@ window.blazorChart.doughnut = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options) => {
+    create: (elementId, type, data, options, plugins) => {
         let chartEl = document.getElementById(elementId);
+
+        let _plugins = [];
+
+        if (plugins && plugins.length > 0) {
+
+            // register `ChartDataLabels` plugin
+            if (plugins.includes('ChartDataLabels')) {
+                _plugins.push(ChartDataLabels);
+            }
+        }
 
         const config = {
             type: type,
             data: data,
-            options: options
+            options: options,
+            plugins: _plugins
         };
 
         const chart = new Chart(
@@ -810,11 +831,11 @@ window.blazorChart.doughnut = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options) => {
+    initialize: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.doughnut.create(elementId, type, data, options);
+            window.blazorChart.doughnut.create(elementId, type, data, options, plugins);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.doughnut.get(elementId);
@@ -823,7 +844,7 @@ window.blazorChart.doughnut = {
             chart.canvas.parentNode.style.width = `${height}px`;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) {
             chart.data = data;
@@ -831,7 +852,7 @@ window.blazorChart.doughnut = {
             chart.update();
         }
         else {
-            window.blazorChart.doughnut.create(elementId, type, data, options);
+            window.blazorChart.doughnut.create(elementId, type, data, options, plugins);
         }
     },
 }
@@ -882,13 +903,24 @@ window.blazorChart.line = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options) => {
+    create: (elementId, type, data, options, plugins) => {
         let chartEl = document.getElementById(elementId);
+
+        let _plugins = [];
+
+        if (plugins && plugins.length > 0) {
+
+            // register `ChartDataLabels` plugin
+            if (plugins.includes('ChartDataLabels')) {
+                _plugins.push(ChartDataLabels);
+            }
+        }
 
         const config = {
             type: type,
             data: data,
             options: options,
+            plugins: _plugins
         };
 
         if (type === 'line') {
@@ -940,12 +972,12 @@ window.blazorChart.line = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options) => {
+    initialize: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart)
             return;
         else
-            window.blazorChart.line.create(elementId, type, data, options);
+            window.blazorChart.line.create(elementId, type, data, options, plugins);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.line.get(elementId);
@@ -954,7 +986,7 @@ window.blazorChart.line = {
             chart.canvas.parentNode.style.width = `${height}px`;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart) {
             chart.data = data;
@@ -962,7 +994,7 @@ window.blazorChart.line = {
             chart.update();
         }
         else {
-            window.blazorChart.line.create(elementId, type, data, options);
+            window.blazorChart.line.create(elementId, type, data, options, plugins);
         }
     },
 }
@@ -1014,7 +1046,7 @@ window.blazorChart.pie = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options) => {
+    create: (elementId, type, data, options, plugins) => {
         let chartEl = document.getElementById(elementId);
 
         const config = {
@@ -1038,11 +1070,11 @@ window.blazorChart.pie = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options) => {
+    initialize: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.pie.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.pie.create(elementId, type, data, options);
+            window.blazorChart.pie.create(elementId, type, data, options, plugins);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.pie.get(elementId);
@@ -1059,7 +1091,7 @@ window.blazorChart.pie = {
             chart.update();
         }
         else {
-            window.blazorChart.pie.create(elementId, type, data, options);
+            window.blazorChart.pie.create(elementId, type, data, options, plugins);
         }
     },
 }
