@@ -1,4 +1,5 @@
 ﻿@page "/charts/line-chart"
+@using BlazorBootstrap.Demo.Pages.Charts.BarCharts
 
 <PageTitle>@title</PageTitle>
 
@@ -30,7 +31,10 @@
 <Demo Type="typeof(LineChart_Demo_02_Locale)" Tabs="true"/>
 
 <SectionHeading Size="HeadingSize.H4" Text="Add data dynamically for a specific dataset" PageUrl="@pageUrl" HashTagName="add-data-dynamically-for-a-specific-dataset"/>
-<Demo Type="typeof(LineChart_Demo_03_Dynamically_add_data)" Tabs="true"/>
+<Demo Type="typeof(LineChart_Demo_03_Dynamically_add_data)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Data labels" PageUrl="@pageUrl" HashTagName="data-labels" />
+<Demo Type="typeof(LineChart_Demo_04_Datalabels)" Tabs="true" />
 
 @code {
     private readonly string pageUrl = "/charts/line-chart";

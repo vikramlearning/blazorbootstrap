@@ -913,6 +913,11 @@ window.blazorChart.line = {
             // register `ChartDataLabels` plugin
             if (plugins.includes('ChartDataLabels')) {
                 _plugins.push(ChartDataLabels);
+
+                // set datalabel background color
+                options.plugins.datalabels.backgroundColor = function (context) {
+                    return context.dataset.backgroundColor;
+                };
             }
         }
 
@@ -922,6 +927,8 @@ window.blazorChart.line = {
             options: options,
             plugins: _plugins
         };
+
+        console.log(config);
 
         if (type === 'line') {
             // tooltipLine block
@@ -954,7 +961,7 @@ window.blazorChart.line = {
                 },
             };
 
-            config.plugins = [tooltipLine];
+            config.plugins.push(tooltipLine);
         }
 
         const chart = new Chart(

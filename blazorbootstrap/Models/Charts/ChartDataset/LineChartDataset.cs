@@ -15,6 +15,9 @@ public class LineChartDataset : ChartDataset
     /// </summary>
     public double BorderDashOffset { get; set; }
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public LineChartDatasetDataLabels Datalabels { get; set; } = new();
+
     /// <summary>
     /// Both line and radar charts support a fill option on the dataset object
     /// which can be used to create area between two datasets or a dataset and
@@ -143,6 +146,25 @@ public class LineChartDataset : ChartDataset
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? YAxisID { get; set; }
+
+    #endregion
+}
+
+public class LineChartDatasetDataLabels
+{
+    #region Properties, Indexers
+
+    /// <summary>
+    /// Gets or sets the data label alignment.
+    /// Possible values: start, center, and end.
+    /// </summary>
+    public string? Align { get; set; } = "start";
+
+    /// <summary>
+    /// Gets or sets the data label anchor.
+    /// Possible values: start, center, and end.
+    /// </summary>
+    public string? Anchor { get; set; } = "start";
 
     #endregion
 }
