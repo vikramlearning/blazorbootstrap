@@ -18,7 +18,7 @@ public class BarChartOptions : ChartOptions
 
     public ChartLayout Layout { get; set; } = new();
 
-    public Plugins Plugins { get; set; } = new();
+    public BarChartPlugins Plugins { get; set; } = new();
 
     public Scales Scales { get; set; } = new();
 

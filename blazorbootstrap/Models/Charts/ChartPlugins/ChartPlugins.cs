@@ -1,21 +1,21 @@
 ﻿namespace BlazorBootstrap;
 
-public class Plugins
+public class ChartPlugins
 {
     #region Properties, Indexers
 
-    public Legend Legend { get; set; } = new();
+    public ChartPluginsLegend Legend { get; set; } = new();
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
-    public PluginsTitle? Title { get; set; } = new();
+    public ChartPluginsTitle? Title { get; set; } = new();
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
-    public PluginsTooltip? Tooltip { get; set; }
+    public ChartPluginsTooltip? Tooltip { get; set; }
 
     #endregion
 }
 
-public class Legend
+public class ChartPluginsLegend
 {
     #region Properties, Indexers
 
@@ -41,7 +41,7 @@ public class Legend
 /// The chart title defines text to draw at the top of the chart.
 /// <see cref="https://www.chartjs.org/docs/latest/configuration/title.html" />
 /// </summary>
-public class PluginsTitle
+public class ChartPluginsTitle
 {
     #region Properties, Indexers
 
@@ -69,7 +69,8 @@ public class PluginsTitle
     //padding
     //position
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Text { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    public string? Text { get; set; }
 
     #endregion
 }
@@ -78,7 +79,7 @@ public class PluginsTitle
 /// Tooltip for bubble, doughnut, pie, polar area, and scatter charts
 /// <see cref="https://www.chartjs.org/docs/latest/configuration/tooltip.html" />
 /// </summary>
-public class PluginsTooltip
+public class ChartPluginsTooltip
 {
     #region Properties, Indexers
 
@@ -97,7 +98,8 @@ public class PluginsTooltip
     /// </summary>
     public string BodyColor { get; set; } = "#fff";
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartFont? BodyFont { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    public ChartPluginsTooltipFont? BodyFont { get; set; }
 
     /// <summary>
     /// Spacing to add to top and bottom of each tooltip item.
@@ -134,7 +136,7 @@ public class PluginsTooltip
     /// </summary>
     public string FooterColor { get; set; } = "#fff";
 
-    public ChartFont FooterFont { get; set; } = new();
+    public ChartPluginsTooltipFont FooterFont { get; set; } = new();
 
     /// <summary>
     /// Margin to add before drawing the footer.
@@ -156,7 +158,7 @@ public class PluginsTooltip
     /// </summary>
     public string TitleColor { get; set; } = "#fff";
 
-    public ChartFont TitleFont { get; set; } = new();
+    public ChartPluginsTooltipFont TitleFont { get; set; } = new();
 
     /// <summary>
     /// Margin to add on bottom of title section.
@@ -177,6 +179,48 @@ public class PluginsTooltip
     /// Position of the tooltip caret in the Y direction. top/center/bottom.
     /// </summary>
     public string? YAlign { get; set; }
+
+    #endregion
+}
+
+/// <summary>
+///     <see cref="https://www.chartjs.org/docs/latest/general/fonts.html" />
+/// </summary>
+public class ChartPluginsTooltipFont
+{
+    #region Properties, Indexers
+
+    /// <summary>
+    /// Default font family for all text, follows CSS font-family options.
+    /// 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Family { get; set; }
+
+    /// <summary>
+    /// Height of an individual line of text
+    /// <see cref="https://developer.mozilla.org/en-US/docs/Web/CSS/line-height" />
+    /// </summary>
+    public double LineHeight { get; set; } = 1.2;
+
+    /// <summary>
+    /// Default font size (in px) for text. Does not apply to radialLinear scale point labels.
+    /// </summary>
+    public int Size { get; set; } = 12;
+
+    /// <summary>
+    /// Default font style. Does not apply to tooltip title or footer. Does not apply to chart title.
+    /// Follows CSS font-style options (i.e. normal, italic, oblique, initial, inherit).
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Style { get; set; }
+
+    /// <summary>
+    /// Default font weight (boldness).
+    /// <see cref="https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight" />
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Weight { get; set; } = "bold";
 
     #endregion
 }

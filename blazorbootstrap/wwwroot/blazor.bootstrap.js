@@ -686,15 +686,15 @@ window.blazorChart.bar = {
     create: (elementId, type, data, options) => {
         let chartEl = document.getElementById(elementId);
 
-        options.plugins = {
-            datalabels: {
-                color: 'white',
-                font: {
-                    weight: 'bold'
-                },
-                formatter: Math.round
-            }
-        };
+        //options.plugins = {
+        //    datalabels: {
+        //        color: 'white',
+        //        font: {
+        //            weight: 'bold'
+        //        },
+        //        formatter: Math.round
+        //    }
+        //};
 
         const config = {
             type: type,
