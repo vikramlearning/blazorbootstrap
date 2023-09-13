@@ -581,8 +581,10 @@ window.blazorBootstrap = {
     },
 }
 
-// Register the plugin to all charts:
-Chart.register(ChartDataLabels);
+// register `ChartDataLabels` plugin here
+if (ChartDataLabels) {
+    Chart.register(ChartDataLabels);
+}
 
 window.blazorChart = {
     create: (elementId, type, data, options) => {
@@ -694,13 +696,13 @@ window.blazorChart.bar = {
             }
         };
 
-        console.log(data);
-
         const config = {
             type: type,
             data: data,
             options: options
         };
+
+        console.log(config);
 
         const chart = new Chart(
             chartEl,
