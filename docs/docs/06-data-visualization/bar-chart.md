@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Bar Chart
 description: A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.
-image: https://i.imgur.com/iJjl1Me.png
+image: https://i.imgur.com/IX3bajc.png
 
 sidebar_label: Bar Chart
 sidebar_position: 1
@@ -10,7 +10,7 @@ sidebar_position: 1
 A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. 
 It is sometimes used to show trend data and to compare multiple data sets side by side.
 
-<img src="https://i.imgur.com/iJjl1Me.png" alt="Blazor Chart Component - Blazor Bar Chart" />
+<img src="https://i.imgur.com/IX3bajc.png" alt="Blazor Chart Component - Blazor Bar Chart" />
 
 ## Parameters
 
@@ -32,8 +32,8 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 
 | Property Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Labels | `List<string>` | null | ✔️ | Gets or sets the Labels. | 1.0.0 |
 | Datasets | `List<IChartDataset>` | null | ✔️ | Gets or sets the Datasets. | 1.0.0 |
+| Labels | `List<string>` | null | ✔️ | Gets or sets the Labels. | 1.0.0 |
 
 ## BarChartDataset Members
 
@@ -50,6 +50,7 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 | BorderWidth | `List<double>` | null | | Get or sets the BorderWidth. | 1.0.0 |
 | CategoryPercentage | double | 0.8 | | Percent (0-1) of the available width each category should be within the sample width. | 1.0.0 |
 | Clip | string | null | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0} | 1.0.0 |
+| Datalabels | `BarChartDatasetDataLabels` | | | Get or sets the data labels | | 1.10.2 |
 | Data | `List<double>` | null | | Get or sets the Data. | 1.0.0 |
 | Hidden | bool | false | | Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart. | 1.0.0 |
 | HoverBackgroundColor | `List<string>` | null | ✔️ | Get or sets the HoverBackgroundColor. | 1.0.0 |
@@ -60,18 +61,34 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 | XAxisID | string | null | | The ID of the x axis to plot this dataset on. | 1.0.0 |
 | YAxisID | string | null | | The ID of the y axis to plot this dataset on. | 1.0.0 |
 
+## BarChartDatasetDataLabels Members
+
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Align | `string?` | `center` | | Gets or sets the align. | 1.10.2 |
+| Anchor | `string?` | `center` | | Gets or sets the anchor. | 1.10.2 |
+
 ## BarChartOptions Members
+
+:::info
+**BarChartOptions** implements **ChartOptions**.
+:::
 
 | Property Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | IndexAxis | string | x | | The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts. | 1.0.0 |
 | Interaction | `Interaction` | | | Gets or sets the Interaction. | 1.0.0 |
 | Layout | `ChartLayout` | | | Gets or sets the ChartLayout. | 1.0.0 |
-| Plugins | `Plugins` | | | Gets or sets the Plugins. | 1.0.0 |
+| Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 1.10.0 |
+| Plugins | `BarChartPlugins` | | | Gets or sets the Plugins. | 1.10.2 |
 | Responsive | bool | false | | Gets or sets the Responsive. | 1.0.0 |
 | Scales | `Scales` | | | Gets or sets the Scales. | 1.0.0 |
 
 ## Examples
+
+### Prerequisites
+
+Refer to the [getting started guide](/docs/getting-started/blazor-webassembly) for setting up charts.
 
 ### How it works
 
@@ -493,3 +510,92 @@ In the following example, you will see the chart in the **German** locale (**de_
 ```
 
 [See the demo here.](https://demos.blazorbootstrap.com/charts/bar-chart#locale)
+
+### Data labels
+
+<img src="https://i.imgur.com/em6943w.png" alt="Blazor Bootstrap: Bar Chart Component - Data labels" />
+
+```cshtml {} showLineNumbers
+<BarChart @ref="barChart" Height="300" Class="mb-4" />
+```
+
+```cs {72} showLineNumbers
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var colors = ColorBuilder.CategoricalTwelveColors;
+
+        var labels = new List<string> { "Chrome", "Firefox", "Safari", "Edge" };
+        var datasets = new List<IChartDataset>();
+
+        var dataset1 = new BarChartDataset()
+            {
+                Label = "Windows",
+                Data = new List<double> { 28000, 8000, 2000, 17000 },
+                BackgroundColor = new List<string> { colors[0] },
+                BorderColor = new List<string> { colors[0] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset1);
+
+        var dataset2 = new BarChartDataset()
+            {
+                Label = "macOS",
+                Data = new List<double> { 8000, 10000, 14000, 8000 },
+                BackgroundColor = new List<string> { colors[1] },
+                BorderColor = new List<string> { colors[1] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset2);
+
+        var dataset3 = new BarChartDataset()
+            {
+                Label = "Other",
+                Data = new List<double> { 28000, 10000, 14000, 8000 },
+                BackgroundColor = new List<string> { colors[2] },
+                BorderColor = new List<string> { colors[2] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset3);
+
+        chartData = new ChartData
+            {
+                Labels = labels,
+                Datasets = datasets
+            };
+
+        barChartOptions = new();
+        barChartOptions.Responsive = true;
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.IndexAxis = "y";
+
+        barChartOptions.Scales.X.Title.Text = "Visitors";
+        barChartOptions.Scales.X.Title.Display = true;
+
+        barChartOptions.Scales.Y.Title.Text = "Browser";
+        barChartOptions.Scales.Y.Title.Display = true;
+
+        barChartOptions.Scales.X.Stacked = true;
+        barChartOptions.Scales.Y.Stacked = true;
+
+        barChartOptions.Plugins.Title.Text = "Operating system";
+        barChartOptions.Plugins.Title.Display = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // pass the plugin name to enable the data labels
+            await barChart.InitializeAsync(chartData: chartData, chartOptions: barChartOptions, plugins: new string[] { "ChartDataLabels" });
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/charts/bar-chart#data-labels)

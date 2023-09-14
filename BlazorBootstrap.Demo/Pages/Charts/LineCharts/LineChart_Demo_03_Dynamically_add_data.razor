@@ -25,7 +25,7 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await lineChart.UpdateAsync(chartData, lineChartOptions);
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
     }
 
     private async Task UpdateIndiaNextOverRunsAsync()
