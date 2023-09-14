@@ -111,7 +111,7 @@ public partial class PieChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PieChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JS.InvokeVoidAsync("window.blazorChart.pie.initialize", ElementId, GetChartType(), data, (PieChartOptions)chartOptions);
+            await JS.InvokeVoidAsync("window.blazorChart.pie.initialize", ElementId, GetChartType(), data, (PieChartOptions)chartOptions, plugins);
         }
     }
 

@@ -4,7 +4,7 @@ public class PieChartOptions : ChartOptions
 {
     #region Properties, Indexers
 
-    public ChartPlugins Plugins { get; set; } = new();
+    public PieChartPlugins Plugins { get; set; } = new();
 
     #endregion
 }

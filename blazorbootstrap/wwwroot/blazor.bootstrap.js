@@ -631,7 +631,7 @@ window.blazorChart = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.get(elementId);
         if (chart) {
-            if (chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
+            if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
                 // set datalabel background color
                 options.plugins.datalabels.backgroundColor = function (context) {
                     return context.dataset.backgroundColor;
@@ -743,7 +743,7 @@ window.blazorChart.bar = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) {
-            if (chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
+            if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
                 // set datalabel background color
                 options.plugins.datalabels.backgroundColor = function (context) {
                     return context.dataset.backgroundColor;
@@ -861,7 +861,7 @@ window.blazorChart.doughnut = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) {
-            if (chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
+            if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
                 // set datalabel background color
                 options.plugins.datalabels.backgroundColor = function (context) {
                     return context.dataset.backgroundColor;
@@ -1013,7 +1013,7 @@ window.blazorChart.line = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart) {
-            if (chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
+            if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
                 // set datalabel background color
                 options.plugins.datalabels.backgroundColor = function (context) {
                     return context.dataset.backgroundColor;
@@ -1092,10 +1092,12 @@ window.blazorChart.pie = {
                 };
             }
         }
+
         const config = {
             type: type,
             data: data,
-            options: options
+            options: options,
+            plugins: _plugins
         };
 
         const chart = new Chart(
@@ -1129,7 +1131,7 @@ window.blazorChart.pie = {
     update: (elementId, type, data, options) => {
         let chart = window.blazorChart.pie.get(elementId);
         if (chart) {
-            if (chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
+            if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
                 // set datalabel background color
                 options.plugins.datalabels.backgroundColor = function (context) {
                     return context.dataset.backgroundColor;
