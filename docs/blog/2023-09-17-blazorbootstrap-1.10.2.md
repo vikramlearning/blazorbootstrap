@@ -28,8 +28,11 @@ We are excited to release 1.10.2 with base component improvements and chart upda
 - `Sidebar` component
   - Sidebar should close automatically on mobile [#274](https://github.com/vikramlearning/blazorbootstrap/issues/274)
 
-- We have made improvements to all the charts to support data labels
+- We have made improvements to all the charts to support data labels [#317](https://github.com/vikramlearning/blazorbootstrap/issues/317)
   - `Bar Chart`, `Doughnut Chart`,  `Line Chart`, and `Pie Chart`
+
+- `AutoComplete` component
+  - Autocomplete shows "No Records Found" Before Search is finished [#352](https://github.com/vikramlearning/blazorbootstrap/issues/352)
 
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)

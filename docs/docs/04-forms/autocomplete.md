@@ -16,6 +16,8 @@ Blazor Bootstrap autocomplete component is a textbox that offers the users sugge
 |:--|:--|:--|:--|:--|:--|
 | DataProvider | delegate | null | ✔️ | DataProvider is for items to render. The provider should always return an instance of `AutoCompleteDataProviderResult`, and null is not allowed. | 0.4.0 |
 | Disabled | bool | false | | Is AutoComplete disabled. | 0.4.0 |
+| EmptyText | string | `No records found.` | ✔️ | Gets or sets the empty text. | 1.10.2 |
+| LoadingText | string | `Loading...` | ✔️ | Gets or sets the empty text. | 1.10.2 |
 | Placeholder | string | null | | AutoComplete placeholder. | 0.4.0 |
 | PropertyName | string | null | ✔️ | AutoComplete data text property name. | 0.4.0 |
 | Size | enum | `AutoCompleteSize.Default` | | Use `AutoCompleteSize.Default` or `AutoCompleteSize.Large` or `AutoCompleteSize.Small` | 0.4.0 |
