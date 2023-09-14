@@ -49,6 +49,7 @@ A Blazor Bootstrap line chart component is a graphical representation of data th
 | BorderWidth | `List<double>` | null | | Get or sets the BorderWidth. | 1.0.0 |
 | Clip | string | null | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0} | 1.0.0 |
 | Data | `List<double>` | null | | Get or sets the Data. | 1.0.0 |
+| Datalabels | `LineChartDatasetDataLabels` | | | Get or sets the data labels | | 1.10.2 |
 | Fill | bool | false | | Both line and radar charts support a fill option on the dataset object which can be used to create area between two datasets or a dataset and a boundary, i.e. the scale origin, start or end. | 1.0.0 |
 | Hidden | bool | false | | Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart. | 1.0.0 |
 | HoverBackgroundColor | `List<string>` | null | ✔️ | Get or sets the HoverBackgroundColor. | 1.0.0 |
@@ -75,14 +76,26 @@ A Blazor Bootstrap line chart component is a graphical representation of data th
 | XAxisID | string | null | | The ID of the x axis to plot this dataset on. | 1.0.0 |
 | YAxisID | string | null | | The ID of the y axis to plot this dataset on. | 1.0.0 |
 
+## LineChartDatasetDataLabels Members
+
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Align | `string?` | `start` | | Gets or sets the align. | 1.10.2 |
+| Anchor | `string?` | `start` | | Gets or sets the anchor. | 1.10.2 |
+
 ## LineChartOptions Members
+
+:::info
+**LineChartOptions** implements **ChartOptions**.
+:::
 
 | Property Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | IndexAxis | string | x | | The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts. | 1.0.0 |
 | Interaction | Interaction | | | Gets or sets the Interaction. | 1.0.0 |
 | Layout | ChartLayout | | | Gets or sets the ChartLayout. | 1.0.0 |
-| Plugins | Plugins | | | Gets or sets the Plugins. | 1.0.0 |
+| Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 1.10.0 |
+| Plugins | `LineChartPlugins` | | | Gets or sets the Plugins. | 1.10.2 |
 | Responsive | bool | false | | Gets or sets the Responsive. | 1.0.0 |
 | Scales | Scales | | | Gets or sets the Scales. | 1.0.0 |
 

@@ -47,16 +47,30 @@ A Blazor Bootstrap pie chart component is a circular chart that shows the propor
 | BorderWidth | `List<double>` | null | | Get or sets the BorderWidth. | 1.0.0 |
 | Clip | string | null | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0} | 1.0.0 |
 | Data | `List<double>` | null | | Get or sets the Data. | 1.0.0 |
+| Datalabels | `PieChartDatasetDataLabels` | | | Get or sets the data labels | | 1.10.2 |
 | Hidden | bool | false | | Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart. | 1.0.0 |
 | HoverBackgroundColor | `List<string>` | null | ✔️ | Get or sets the HoverBackgroundColor. | 1.0.0 |
 | HoverBorderColor | `List<string>` | null | ✔️ | Get or sets the HoverBorderColor. | 1.0.0 |
 | HoverBorderWidth | `List<double>` | null | ✔️ | Get or sets the HoverBorderWidth. | 1.0.0 |
 | Type | string | null | ✔️ | Get or sets the chart type. | 1.0.0 |
 
-## PieChartOptions Members
+## PieChartDatasetDataLabels Members
 
 | Property Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
+| Anchor | `string?` | `center` | | Gets or sets the anchor. | 1.10.2 |
+| BorderWidth | `double?` | `2` | | Gets or sets the border width. | 1.10.2 |
+
+## PieChartOptions Members
+
+:::info
+**PieChartOptions** implements **ChartOptions**.
+:::
+
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 1.10.0 |
+| Plugins | `PieChartPlugins` | | | Gets or sets the Plugins. | 1.10.2 |
 | Responsive | bool | false | | Gets or sets the Responsive. | 1.0.0 |
 
 ## Examples
