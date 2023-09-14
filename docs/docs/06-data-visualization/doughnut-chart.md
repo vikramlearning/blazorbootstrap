@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Doughnut Chart
 description: A Blazor Bootstrap donut chart component is a circular chart that shows the proportional values of different categories. It is similar to a pie chart, but the center of the donut chart is hollow. This makes it easier to see the individual values of each category.
-image: https://i.imgur.com/Q1bBWPQ.png
+image: https://i.imgur.com/xEPhAsW.png
 
 sidebar_label: Doughnut Chart
 sidebar_position: 2
@@ -10,7 +10,7 @@ sidebar_position: 2
 A Blazor Bootstrap donut chart component is a circular chart that shows the proportional values of different categories. 
 It is similar to a pie chart, but the center of the donut chart is hollow. This makes it easier to see the individual values of each category.
 
-<img src="https://i.imgur.com/Q1bBWPQ.png" alt="Blazor Chart Component - Blazor Doughnut Chart" />
+<img src="https://i.imgur.com/xEPhAsW.png" alt="Blazor Chart Component - Blazor Doughnut Chart" />
 
 ## Parameters
 
@@ -61,6 +61,10 @@ It is similar to a pie chart, but the center of the donut chart is hollow. This 
 | Responsive | bool | false | | Gets or sets the Responsive. | 1.0.0 |
 
 ## Examples
+
+### Prerequisites
+
+Refer to the [getting started guide](/docs/getting-started/blazor-webassembly) for setting up charts.
 
 ### How it works
 
@@ -242,7 +246,7 @@ These palettes offer a range of distinct and visually appealing colors that can 
 By default, the chart is using the default locale of the platform on which it is running. 
 In the following example, you will see the chart in the **German** locale (**de_DE**).
 
-<img src="https://i.imgur.com/3qndkPO.png" alt="Blazor Bootstrap: Bar Chart Component - Locale" />
+<img src="https://i.imgur.com/3qndkPO.png" alt="Blazor Bootstrap: Doughnut Chart Component - Locale" />
 
 ```cshtml {} showLineNumbers
 @using BlazorBootstrap.Extensions
@@ -339,3 +343,174 @@ In the following example, you will see the chart in the **German** locale (**de_
 ```
 
 [See the demo here.](https://demos.blazorbootstrap.com/charts/doughnut-chart#locale)
+
+### Data labels
+
+<img src="https://i.imgur.com/xEPhAsW.png" alt="Blazor Bootstrap: Doughnut Chart Component - Data labels" />
+
+```cshtml {} showLineNumbers
+<DoughnutChart @ref="doughnutChart" Width="500" Class="mb-5" />
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDataAsync()">Add Data</Button>
+
+```
+
+```cs {28,97,99,101} showLineNumbers
+@code {
+    private DoughnutChart doughnutChart = default!;
+    private DoughnutChartOptions doughnutChartOptions = default!;
+    private ChartData chartData = default!;
+    private string[]? backgroundColors;
+
+    private int datasetsCount = 0;
+    private int dataLabelsCount = 0;
+
+    private Random random = new();
+
+    protected override void OnInitialized()
+    {
+        backgroundColors = ColorBuilder.CategoricalTwelveColors;
+        chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(3) };
+
+        doughnutChartOptions = new();
+        doughnutChartOptions.Responsive = true;
+        doughnutChartOptions.Plugins.Title.Text = "2022 - Sales";
+        doughnutChartOptions.Plugins.Title.Display = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // pass the plugin name to enable the data labels
+            await doughnutChart.InitializeAsync(chartData: chartData, chartOptions: doughnutChartOptions, plugins: new string[] { "ChartDataLabels" });
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task RandomizeAsync()
+    {
+        if (chartData is null || chartData.Datasets is null || !chartData.Datasets.Any()) return;
+
+        var newDatasets = new List<IChartDataset>();
+
+        var datasetIndex = 0;
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is DoughnutChartDataset doughnutChartDataset
+                && doughnutChartDataset is not null
+                && doughnutChartDataset.Data is not null)
+            {
+                var count = doughnutChartDataset.Data.Count;
+
+                var newData = new List<double>();
+                for (var i = 0; i < count; i++)
+                {
+                    newData.Add(random.Next(0, 100));
+                }
+
+                doughnutChartDataset.Data = newData;
+                newDatasets.Add(doughnutChartDataset);
+            }
+        }
+
+        chartData.Datasets = newDatasets;
+
+        await doughnutChart.UpdateAsync(chartData: chartData, chartOptions: doughnutChartOptions);
+    }
+
+    private async Task AddDataAsync()
+    {
+        if (dataLabelsCount >= 12)
+            return;
+
+        if (chartData is null || chartData.Datasets is null)
+            return;
+
+        var data = new List<IChartDatasetData>();
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is DoughnutChartDataset doughnutChartDataset)
+            {
+                data.Add(new DoughnutChartDatasetData(doughnutChartDataset.Label, random.Next(0, 100), backgroundColors![dataLabelsCount]));
+            }
+        }
+
+        chartData = await doughnutChart.AddDataAsync(chartData, GetNextDataLabel(), data);
+
+        dataLabelsCount += 1;
+    }
+
+    #region Data Preparation
+
+    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
+    {
+        var datasets = new List<IChartDataset>();
+
+        for (var index = 0; index < numberOfDatasets; index++)
+        {
+            var dataset = GetRandomDoughnutChartDataset();
+
+            if (index == 0)
+                dataset.Datalabels.Anchor = "end";
+            else if (index == numberOfDatasets - 1)
+                dataset.Datalabels.Anchor = "start";
+            else
+                dataset.Datalabels.Anchor = "center";
+
+            datasets.Add(dataset);
+        }
+
+        return datasets;
+    }
+
+    private DoughnutChartDataset GetRandomDoughnutChartDataset()
+    {
+        datasetsCount += 1;
+        return new() { Label = $"Team {datasetsCount}", Data = GetRandomData(), BackgroundColor = GetRandomBackgroundColors() };
+    }
+
+    private List<double> GetRandomData()
+    {
+        var data = new List<double>();
+        for (var index = 0; index < dataLabelsCount; index++)
+        {
+            data.Add(random.Next(0, 100));
+        }
+
+        return data;
+    }
+
+    private List<string> GetRandomBackgroundColors()
+    {
+        var colors = new List<string>();
+        for (var index = 0; index < dataLabelsCount; index++)
+        {
+            colors.Add(backgroundColors![index]);
+        }
+
+        return colors;
+    }
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            labels.Add(GetNextDataLabel());
+            dataLabelsCount += 1;
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel() => $"Product {dataLabelsCount + 1}";
+
+    private string GetNextDataBackgrounfColor() => backgroundColors![dataLabelsCount];
+
+    #endregion  Data Preparation
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/charts/doughnut-chart#data-labels)

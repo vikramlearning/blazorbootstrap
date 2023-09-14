@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Line Chart
 description: A Blazor Bootstrap line chart component is a graphical representation of data that uses a series of connected points to show how the data changes over time. It is a type of x-y chart, where the x-axis represents the independent variable, such as time, and the y-axis represents the dependent variable, such as the value.
-image: https://i.imgur.com/MMWdiyi.png
+image: https://i.imgur.com/8b7jH0D.png
 
 sidebar_label: Line Chart
 sidebar_position: 3
@@ -9,7 +9,7 @@ sidebar_position: 3
 
 A Blazor Bootstrap line chart component is a graphical representation of data that uses a series of connected points to show how the data changes over time. It is a type of x-y chart, where the x-axis represents the independent variable, such as time, and the y-axis represents the dependent variable, such as the value.
 
-<img src="https://i.imgur.com/MMWdiyi.png" alt="Blazor Chart Component - Blazor Line Chart" />
+<img src="https://i.imgur.com/8b7jH0D.png" alt="Blazor Chart Component - Blazor Line Chart" />
 
 ## Parameters
 
@@ -87,6 +87,10 @@ A Blazor Bootstrap line chart component is a graphical representation of data th
 | Scales | Scales | | | Gets or sets the Scales. | 1.0.0 |
 
 ## Examples
+
+### Prerequisites
+
+Refer to the [getting started guide](/docs/getting-started/blazor-webassembly) for setting up charts.
 
 ### How it works
 
@@ -367,3 +371,113 @@ These palettes offer a range of distinct and visually appealing colors that can 
 ```
 
 [See the demo here.](https://demos.blazorbootstrap.com/charts/line-chart#how-it-works)
+
+### Data labels
+
+<img src="https://i.imgur.com/8b7jH0D.png" alt="Blazor Bootstrap: Line Chart Component - Data labels" />
+
+```cshtml {} showLineNumbers
+<LineChart @ref="lineChart" Width="800" Class="mb-4" />
+```
+
+```cs {26,43,60,84,92} showLineNumbers
+@code {
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var colors = ColorBuilder.CategoricalTwelveColors;
+
+        var labels = new List<string> { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+        var datasets = new List<IChartDataset>();
+
+        var dataset1 = new LineChartDataset
+            {
+                Label = "Windows",
+                Data = new List<double> { 7265791, 5899643, 6317759, 6315641, 5338211, 8496306, 7568556, 8538933, 8274297, 8657298, 7548388, 7764845 },
+                BackgroundColor = new List<string> { colors[0] },
+                BorderColor = new List<string> { colors[0] },
+                BorderWidth = new List<double> { 2 },
+                HoverBorderWidth = new List<double> { 4 },
+                PointBackgroundColor = new List<string> { colors[0] },
+                PointRadius = new List<int> { 3 }, // show points
+                PointHoverRadius = new List<int> { 4 },
+
+                // datalabels
+                Datalabels = new() { Align = "end", Anchor = "end" }
+            };
+        datasets.Add(dataset1);
+
+        var dataset2 = new LineChartDataset
+            {
+                Label = "macOS",
+                Data = new List<double> { 1809499, 1816642, 2122410, 1809499, 1850793, 1846743, 1954797, 2391313, 1983430, 2469918, 2633303, 2821149 },
+                BackgroundColor = new List<string> { colors[1] },
+                BorderColor = new List<string> { colors[1] },
+                BorderWidth = new List<double> { 2 },
+                HoverBorderWidth = new List<double> { 4 },
+                PointBackgroundColor = new List<string> { colors[1] },
+                PointRadius = new List<int> { 3 }, // show points
+                PointHoverRadius = new List<int> { 4 },
+
+                // datalabels
+                Datalabels = new() { Align = "end", Anchor = "end" }
+            };
+        datasets.Add(dataset2);
+
+        var dataset3 = new LineChartDataset
+            {
+                Label = "Other",
+                Data = new List<double> { 1081241, 1100363, 1118136, 1073255, 1120315, 1395736, 1488788, 1489466, 1489947, 1414739, 1735811, 1820171 },
+                BackgroundColor = new List<string> { colors[2] },
+                BorderColor = new List<string> { colors[2] },
+                BorderWidth = new List<double> { 2 },
+                HoverBorderWidth = new List<double> { 4 },
+                PointBackgroundColor = new List<string> { colors[2] },
+                PointRadius = new List<int> { 3 }, // show points
+                PointHoverRadius = new List<int> { 4 },
+
+                // datalabels
+                Datalabels = new() { Align = "start", Anchor = "start" }
+            };
+        datasets.Add(dataset3);
+
+        chartData = new ChartData
+            {
+                Labels = labels,
+                Datasets = datasets
+            };
+
+        lineChartOptions = new();
+        lineChartOptions.Responsive = true;
+        lineChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index };
+
+        lineChartOptions.Scales.X.Title.Text = "2019";
+        lineChartOptions.Scales.X.Title.Display = true;
+
+        lineChartOptions.Scales.Y.Title.Text = "Visitors";
+        lineChartOptions.Scales.Y.Title.Display = true;
+
+        lineChartOptions.Plugins.Title.Text = "Operating system";
+        lineChartOptions.Plugins.Title.Display = true;
+
+        // datalabels
+        lineChartOptions.Plugins.Datalabels.Color = "white";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // pass the plugin name to enable the data labels
+            await lineChart.InitializeAsync(chartData: chartData, chartOptions: lineChartOptions, plugins: new string[] { "ChartDataLabels" });
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/charts/line-chart#data-labels)

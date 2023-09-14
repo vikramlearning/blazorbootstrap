@@ -1,7 +1,7 @@
 ﻿---
 title: Blazor Bar Chart
 description: A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.
-image: https://i.imgur.com/iJjl1Me.png
+image: https://i.imgur.com/IX3bajc.png
 
 sidebar_label: Bar Chart
 sidebar_position: 1
@@ -10,7 +10,7 @@ sidebar_position: 1
 A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. 
 It is sometimes used to show trend data and to compare multiple data sets side by side.
 
-<img src="https://i.imgur.com/iJjl1Me.png" alt="Blazor Chart Component - Blazor Bar Chart" />
+<img src="https://i.imgur.com/IX3bajc.png" alt="Blazor Chart Component - Blazor Bar Chart" />
 
 ## Parameters
 
@@ -72,6 +72,10 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 | Scales | `Scales` | | | Gets or sets the Scales. | 1.0.0 |
 
 ## Examples
+
+### Prerequisites
+
+Refer to the [getting started guide](/docs/getting-started/blazor-webassembly) for setting up charts.
 
 ### How it works
 
@@ -493,3 +497,92 @@ In the following example, you will see the chart in the **German** locale (**de_
 ```
 
 [See the demo here.](https://demos.blazorbootstrap.com/charts/bar-chart#locale)
+
+### Data labels
+
+<img src="https://i.imgur.com/em6943w.png" alt="Blazor Bootstrap: Bar Chart Component - Data labels" />
+
+```cshtml {} showLineNumbers
+<BarChart @ref="barChart" Height="300" Class="mb-4" />
+```
+
+```cs {72} showLineNumbers
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var colors = ColorBuilder.CategoricalTwelveColors;
+
+        var labels = new List<string> { "Chrome", "Firefox", "Safari", "Edge" };
+        var datasets = new List<IChartDataset>();
+
+        var dataset1 = new BarChartDataset()
+            {
+                Label = "Windows",
+                Data = new List<double> { 28000, 8000, 2000, 17000 },
+                BackgroundColor = new List<string> { colors[0] },
+                BorderColor = new List<string> { colors[0] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset1);
+
+        var dataset2 = new BarChartDataset()
+            {
+                Label = "macOS",
+                Data = new List<double> { 8000, 10000, 14000, 8000 },
+                BackgroundColor = new List<string> { colors[1] },
+                BorderColor = new List<string> { colors[1] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset2);
+
+        var dataset3 = new BarChartDataset()
+            {
+                Label = "Other",
+                Data = new List<double> { 28000, 10000, 14000, 8000 },
+                BackgroundColor = new List<string> { colors[2] },
+                BorderColor = new List<string> { colors[2] },
+                BorderWidth = new List<double> { 0 },
+            };
+        datasets.Add(dataset3);
+
+        chartData = new ChartData
+            {
+                Labels = labels,
+                Datasets = datasets
+            };
+
+        barChartOptions = new();
+        barChartOptions.Responsive = true;
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.IndexAxis = "y";
+
+        barChartOptions.Scales.X.Title.Text = "Visitors";
+        barChartOptions.Scales.X.Title.Display = true;
+
+        barChartOptions.Scales.Y.Title.Text = "Browser";
+        barChartOptions.Scales.Y.Title.Display = true;
+
+        barChartOptions.Scales.X.Stacked = true;
+        barChartOptions.Scales.Y.Stacked = true;
+
+        barChartOptions.Plugins.Title.Text = "Operating system";
+        barChartOptions.Plugins.Title.Display = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // pass the plugin name to enable the data labels
+            await barChart.InitializeAsync(chartData: chartData, chartOptions: barChartOptions, plugins: new string[] { "ChartDataLabels" });
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/charts/bar-chart#data-labels)
