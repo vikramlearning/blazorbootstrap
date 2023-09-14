@@ -7,8 +7,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await RenderManhattanAsync();
-        await RenderWormAsync();
+        if (firstRender)
+        {
+            await RenderManhattanAsync();
+            await RenderWormAsync();
+        }
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -55,7 +58,7 @@
         options.Scales.Y.Title.Text = "Runs";
         options.Scales.Y.Title.Display = true;
 
-        await barChart.UpdateAsync(data, options);
+        await barChart.InitializeAsync(data, options);
     }
 
     private async Task RenderWormAsync()
@@ -89,7 +92,7 @@
                         PointBackgroundColor = new List<string>{ "rgb(255, 166, 0)" },
                         PointBorderColor = new List<string>{ "rgb(255, 166, 0)" },
                         PointRadius = new List<int>{0}, // hide points
-                        PointHoverRadius = new List<int>{4},                        
+                        PointHoverRadius = new List<int>{4},
                     }
                 }
             };
@@ -110,6 +113,6 @@
         options.Scales.Y.Title.Text = "Runs";
         options.Scales.Y.Title.Display = true;
 
-        await lineChart.UpdateAsync(data, options);
+        await lineChart.InitializeAsync(data, options);
     }
 }

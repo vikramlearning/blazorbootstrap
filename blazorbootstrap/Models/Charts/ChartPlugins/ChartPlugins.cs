@@ -6,10 +6,10 @@ public class ChartPlugins
 
     public ChartPluginsLegend Legend { get; set; } = new();
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTitle? Title { get; set; } = new();
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTooltip? Tooltip { get; set; }
 
     #endregion
@@ -69,7 +69,7 @@ public class ChartPluginsTitle
     //padding
     //position
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Text { get; set; }
 
     #endregion
@@ -98,7 +98,7 @@ public class ChartPluginsTooltip
     /// </summary>
     public string BodyColor { get; set; } = "#fff";
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTooltipFont? BodyFont { get; set; }
 
     /// <summary>

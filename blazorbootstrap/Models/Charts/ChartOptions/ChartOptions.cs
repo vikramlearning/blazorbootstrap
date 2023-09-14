@@ -164,7 +164,7 @@ public class ChartAxes
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? SuggestedMin { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartAxesTitle? Title { get; set; } = new();
 
     #endregion
