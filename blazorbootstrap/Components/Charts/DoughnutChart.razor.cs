@@ -111,7 +111,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JS.InvokeVoidAsync("window.blazorChart.doughnut.initialize", ElementId, GetChartType(), data, (DoughnutChartOptions)chartOptions);
+            await JS.InvokeVoidAsync("window.blazorChart.doughnut.initialize", ElementId, GetChartType(), data, (DoughnutChartOptions)chartOptions, plugins);
         }
     }
 
@@ -121,7 +121,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JS.InvokeVoidAsync("window.blazorChart.doughnut.update", ElementId, GetChartType(), data, (DoughnutChartOptions)chartOptions);
+            await JS.InvokeVoidAsync("window.blazorChart.doughnut.update", ElementId, GetChartType(), data, (DoughnutChartOptions)chartOptions, plugins);
         }
     }
 

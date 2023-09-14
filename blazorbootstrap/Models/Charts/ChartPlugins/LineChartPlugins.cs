@@ -10,7 +10,7 @@ public class LineChartDataLabels
     public double BorderRadius { get; set; } = 4;
     public string? Color { get; set; } = "white";
     public LineChartDataLabelsFont Font { get; set; } = new();
-    public double padding { get; set; } = 6;
+    public double Padding { get; set; } = 6;
 }
 
 public class LineChartDataLabelsFont

@@ -584,11 +584,9 @@ window.blazorBootstrap = {
 window.blazorChart = {
     create: (elementId, type, data, options, plugins) => {
         let chartEl = document.getElementById(elementId);
-
         let _plugins = [];
 
         if (plugins && plugins.length > 0) {
-
             // register `ChartDataLabels` plugin
             if (plugins.includes('ChartDataLabels')) {
                 _plugins.push(ChartDataLabels);
@@ -633,6 +631,13 @@ window.blazorChart = {
     update: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.get(elementId);
         if (chart) {
+            if (plugins.includes('ChartDataLabels')) {
+                // set datalabel background color
+                options.plugins.datalabels.backgroundColor = function (context) {
+                    return context.dataset.backgroundColor;
+                };
+            }
+
             chart.data = data;
             chart.options = options;
             chart.update();
@@ -690,11 +695,9 @@ window.blazorChart.bar = {
     },
     create: (elementId, type, data, options, plugins) => {
         let chartEl = document.getElementById(elementId);
-
         let _plugins = [];
 
         if (plugins && plugins.length > 0) {
-
             // register `ChartDataLabels` plugin
             if (plugins.includes('ChartDataLabels')){
                 _plugins.push(ChartDataLabels);
@@ -739,6 +742,13 @@ window.blazorChart.bar = {
     update: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) {
+            if (plugins.includes('ChartDataLabels')) {
+                // set datalabel background color
+                options.plugins.datalabels.backgroundColor = function (context) {
+                    return context.dataset.backgroundColor;
+                };
+            }
+
             chart.data = data;
             chart.options = options;
             chart.update();
@@ -798,14 +808,17 @@ window.blazorChart.doughnut = {
     },
     create: (elementId, type, data, options, plugins) => {
         let chartEl = document.getElementById(elementId);
-
         let _plugins = [];
 
         if (plugins && plugins.length > 0) {
-
             // register `ChartDataLabels` plugin
             if (plugins.includes('ChartDataLabels')) {
                 _plugins.push(ChartDataLabels);
+
+                // set datalabel background color
+                options.plugins.datalabels.backgroundColor = function (context) {
+                    return context.dataset.backgroundColor;
+                };
             }
         }
 
@@ -847,6 +860,13 @@ window.blazorChart.doughnut = {
     update: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) {
+            if (chart.config.plugins.includes('ChartDataLabels')) {
+                // set datalabel background color
+                options.plugins.datalabels.backgroundColor = function (context) {
+                    return context.dataset.backgroundColor;
+                };
+            }
+
             chart.data = data;
             chart.options = options;
             chart.update();
@@ -905,11 +925,9 @@ window.blazorChart.line = {
     },
     create: (elementId, type, data, options, plugins) => {
         let chartEl = document.getElementById(elementId);
-
         let _plugins = [];
 
         if (plugins && plugins.length > 0) {
-
             // register `ChartDataLabels` plugin
             if (plugins.includes('ChartDataLabels')) {
                 _plugins.push(ChartDataLabels);
@@ -927,8 +945,6 @@ window.blazorChart.line = {
             options: options,
             plugins: _plugins
         };
-
-        console.log(config);
 
         if (type === 'line') {
             // tooltipLine block
@@ -996,6 +1012,13 @@ window.blazorChart.line = {
     update: (elementId, type, data, options, plugins) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart) {
+            if (plugins.includes('ChartDataLabels')) {
+                // set datalabel background color
+                options.plugins.datalabels.backgroundColor = function (context) {
+                    return context.dataset.backgroundColor;
+                };
+            }
+
             chart.data = data;
             chart.options = options;
             chart.update();
