@@ -115,7 +115,7 @@ public partial class PieChart : BlazorBootstrapChart
         }
     }
 
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
         if (chartData is not null && chartData.Datasets is not null)
         {

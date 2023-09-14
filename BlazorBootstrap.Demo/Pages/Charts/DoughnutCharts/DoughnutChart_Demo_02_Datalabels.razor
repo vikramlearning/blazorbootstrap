@@ -17,7 +17,7 @@
     protected override void OnInitialized()
     {
         backgroundColors = ColorBuilder.CategoricalTwelveColors;
-        chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(1) };
+        chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(3) };
 
         doughnutChartOptions = new();
         doughnutChartOptions.Responsive = true;
@@ -57,21 +57,13 @@
                 }
 
                 doughnutChartDataset.Data = newData;
-
-                if (datasetIndex == 0)
-                    doughnutChartDataset.Datalabels.Anchor = "start";
-                else if (datasetIndex == 1)
-                    doughnutChartDataset.Datalabels.Anchor = "center";
-                else if (datasetIndex == 2)
-                    doughnutChartDataset.Datalabels.Anchor = "end";
-
                 newDatasets.Add(doughnutChartDataset);
             }
         }
 
         chartData.Datasets = newDatasets;
-        
-        await doughnutChart.UpdateAsync(chartData: chartData, chartOptions: doughnutChartOptions, plugins: new string[] { "ChartDataLabels" });
+
+        await doughnutChart.UpdateAsync(chartData: chartData, chartOptions: doughnutChartOptions);
     }
 
     private async Task AddDataAsync()
@@ -104,9 +96,16 @@
 
         for (var index = 0; index < numberOfDatasets; index++)
         {
-            datasets.Add(GetRandomDoughnutChartDataset());
-            datasets.Add(GetRandomDoughnutChartDataset());
-            datasets.Add(GetRandomDoughnutChartDataset());
+            var dataset = GetRandomDoughnutChartDataset();
+
+            if (index == 0)
+                dataset.Datalabels.Anchor = "end";
+            else if (index == numberOfDatasets - 1)
+                dataset.Datalabels.Anchor = "start";
+            else
+                dataset.Datalabels.Anchor = "center";
+
+            datasets.Add(dataset);
         }
 
         return datasets;

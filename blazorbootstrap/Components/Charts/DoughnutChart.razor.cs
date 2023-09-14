@@ -115,13 +115,13 @@ public partial class DoughnutChart : BlazorBootstrapChart
         }
     }
 
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
             var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JS.InvokeVoidAsync("window.blazorChart.doughnut.update", ElementId, GetChartType(), data, (DoughnutChartOptions)chartOptions, plugins);
+            await JS.InvokeVoidAsync("window.blazorChart.doughnut.update", ElementId, GetChartType(), data, (DoughnutChartOptions)chartOptions);
         }
     }
 

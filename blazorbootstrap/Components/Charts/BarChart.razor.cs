@@ -109,13 +109,13 @@ public partial class BarChart : BlazorBootstrapChart
         }
     }
 
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
             var datasets = chartData.Datasets.OfType<BarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JS.InvokeVoidAsync("window.blazorChart.bar.update", ElementId, GetChartType(), data, (BarChartOptions)chartOptions, plugins);
+            await JS.InvokeVoidAsync("window.blazorChart.bar.update", ElementId, GetChartType(), data, (BarChartOptions)chartOptions);
         }
     }
 

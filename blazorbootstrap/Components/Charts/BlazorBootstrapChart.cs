@@ -62,18 +62,18 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase
     /// <param name="chartData"></param>
     /// <param name="chartOptions"></param>
     /// <param name="plugins"></param>
-    public virtual async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public virtual async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
         {
             var _data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JS.InvokeVoidAsync("window.blazorChart.bar.update", ElementId, GetChartType(), _data, (BarChartOptions)chartOptions, plugins);
+                await JS.InvokeVoidAsync("window.blazorChart.bar.update", ElementId, GetChartType(), _data, (BarChartOptions)chartOptions);
             else if (chartType == ChartType.Line)
-                await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), _data, (LineChartOptions)chartOptions, plugins);
+                await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), _data, (LineChartOptions)chartOptions);
             else
-                await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, chartOptions, plugins);
+                await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, chartOptions);
         }
     }
 
