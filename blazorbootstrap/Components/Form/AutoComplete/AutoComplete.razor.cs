@@ -15,6 +15,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     private ElementReference list; // ul element reference
 
     private DotNetObjectReference<AutoComplete<TItem>> objRef = default!;
+    private bool searchInProgress;
     private int selectedIndex = -1;
     private TItem? selectedItem;
     private int totalCount;
@@ -191,6 +192,8 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     private async Task OnInputChangedAsync(ChangeEventArgs args)
     {
+        searchInProgress = true;
+
         selectedIndex = -1;
         Value = args.Value.ToString();
 
@@ -213,10 +216,12 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         cancellationTokenSource = new CancellationTokenSource();
 
         var token = cancellationTokenSource.Token;
-        await Task.Delay(300, token); // 300ms timeout for the debouncing
+        await Task.Delay(300, token); // 300ms timeout for the debouncing 
         await FilterDataAsync(token);
 
         closeButton?.HideLoading();
+
+        searchInProgress = false;
     }
 
     private async Task OnItemSelectedAsync(TItem item)
@@ -289,7 +294,20 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the empty text.
+    /// </summary>
+    [Parameter]
+    public string EmptyText { get; set; } = "No records found.";
+
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+
+    /// <summary>
+    /// Gets or sets the loading text.
+    /// </summary>
+    [Parameter]
+    public string LoadingText { get; set; } = "Loading...";
 
     /// <summary>
     /// This event fires immediately when the autocomplete selection changes by the user.

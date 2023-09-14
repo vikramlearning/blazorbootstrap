@@ -37,9 +37,13 @@
                     <li class="dropdown-item" @onclick="async () => await OnItemSelectedAsync(item)">@GetPropertyValue(item)</li>
                 }
             }
+            else if (searchInProgress)
+            {
+                <li class="dropdown-item">@LoadingText</li>
+            }
             else
             {
-                <li class="dropdown-item">No records found.</li>
+                <li class="dropdown-item">@EmptyText</li>
             }
         </ul>
     </div>
