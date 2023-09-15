@@ -7,12 +7,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+    <Compile Remove="Pages\GettingStarted\maui-blazor\Snippet_03_Starter_Template_Register_services_Program.cs" />
     <Compile Remove="Pages\GettingStarted\server\Snippet_03_Starter_Template_Register_services_Program.cs" />
     <Compile Remove="Pages\GettingStarted\webassembly\Snippet_03_Starter_Template_Register_services_Program.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Pages\GettingStarted\server\Snippet_03_Starter_Template_Register_services_Program.cs" />
+    <Content Include="Pages\GettingStarted\maui-blazor\Snippet_03_Starter_Template_Register_services_Program.cs" />
+    <Content Include="Pages\GettingStarted\server\Snippet_03_Starter_Template_Register_services_Program.cs" />
     <Content Include="Pages\GettingStarted\webassembly\Snippet_03_Starter_Template_Register_services_Program.cs" />
 	</ItemGroup>
 

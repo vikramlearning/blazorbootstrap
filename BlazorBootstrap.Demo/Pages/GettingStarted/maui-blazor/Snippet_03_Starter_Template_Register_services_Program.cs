@@ -1,0 +1,1 @@
+﻿builder.Services.AddBlazorBootstrap(); // Add this line
