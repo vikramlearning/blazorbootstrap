@@ -32,6 +32,7 @@ public partial class MainLayout : LayoutComponentBase
             new (){ Id = "1", Text = "Getting Started", IconName = IconName.HouseDoorFill },
             new (){ Id = "100", Text = "Blazor WebAssembly", Href = "/getting-started/blazor-webassembly", IconName = IconName.BrowserChrome, ParentId = "1" },
             new (){ Id = "101", Text = "Blazor Server", Href = "/getting-started/blazor-server", IconName = IconName.Server, ParentId = "1" },
+            new (){ Id = "102", Text = "MAUI Blazor", Href = "/getting-started/maui-blazor", IconName = IconName.PhoneFill, ParentId = "1" },
 
             new (){ Id = "2", Text = "Layout", IconName = IconName.LayoutTextWindowReverse, IconColor = IconColor.Success },
             new (){ Id = "200", Text = "Blazor WebAssembly", Href = "/layout-setup/blazor-webassembly", IconName = IconName.BrowserEdge, ParentId = "2" },
