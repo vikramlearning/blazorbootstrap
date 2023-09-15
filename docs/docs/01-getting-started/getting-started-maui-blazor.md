@@ -1,11 +1,11 @@
 ---
-id: blazor-webassembly
-sidebar_label: Blazor WebAssembly
-sidebar_position: 1
-title: Blazor WebAssembly
+id: maui-blazor
+sidebar_label: MAUI Blazor
+sidebar_position: 3
+title: MAUI Blazor
 ---
 
-# Getting started - Blazor WebAssembly
+# Getting started - MAUI Blazor App
 
 Get started with the Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
 
@@ -27,19 +27,9 @@ Add the following references to the `head` section in the **wwwroot/index.html**
 <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
 ```
 
-:::note
-If you use the **Blazor WebAssembly App Empty*** template (without demonstration code and Bootstrap), add the following references to the `head` section in the **wwwroot/index.html**. 
-There is a known GitHub issue [Blazor empty template doesn't load scoped CSS](https://github.com/dotnet/aspnetcore/issues/43975).
-:::
-
-```html showLineNumbers
-<link href="_content/Blazor.Bootstrap/Blazor.Bootstrap.bundle.scp.css" rel="stylesheet" />
-```
-
 ## Add script references
 
-Add the following references to the `body` section in the **wwwroot/index.html** after the **_framework/blazor.webassembly.js** reference.
-
+Add the following references to the `body` section in the **wwwroot/index.html** after the **_framework/blazor.webview.js** reference.
 
 ``` js showLineNumbers
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
@@ -53,7 +43,7 @@ Add the following references to the `body` section in the **wwwroot/index.html**
 
 ## Register services
 
-Add Blazor Bootstrap service in the **Program.cs**
+Add Blazor Bootstrap service in the **MauiProgram.cs**
 
 ```cs showLineNumbers
 using BlazorBootstrap; // Add this line
