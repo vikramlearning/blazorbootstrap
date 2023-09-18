@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-
-namespace BlazorBootstrap.Demo;
+﻿namespace BlazorBootstrap.Demo.RCL;
 public partial class SectionHeading : ComponentBase
 {
     #region Members

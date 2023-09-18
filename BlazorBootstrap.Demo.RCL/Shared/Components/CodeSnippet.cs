@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.JSInterop;
-
-namespace BlazorBootstrap.Demo;
+﻿namespace BlazorBootstrap.Demo.RCL;
 
 public class CodeSnippet : ComponentBase
 {

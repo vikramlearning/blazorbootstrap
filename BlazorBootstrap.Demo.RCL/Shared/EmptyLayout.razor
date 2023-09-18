@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@namespace BlazorBootstrap.Demo.RCL
+
+@inherits LayoutComponentBase
 
 <header class="navbar navbar-expand-lg navbar-dark bd-navbar sticky-top">
     <nav class="container-xxl bd-gutter flex-wrap flex-lg-nowrap" aria-label="Main navigation">
@@ -115,14 +117,14 @@
 
     protected override void OnInitialized()
     {
-        version = $"v{Configuration.GetValue<string>("version")}"; // example: v0.6.1
-        docsUrl = $"{Configuration.GetValue<string>("urls:docs")}";
-        blogUrl = $"{Configuration.GetValue<string>("urls:blog")}";
-        githubUrl = $"{Configuration.GetValue<string>("urls:github")}";
-        twitterUrl = $"{Configuration.GetValue<string>("urls:twitter")}";
-        githubIssuesUrl = $"{Configuration.GetValue<string>("urls:github_issues")}";
-        githubDiscussionsUrl = $"{Configuration.GetValue<string>("urls:github_discussions")}";
-        stackoverflowUrl = $"{Configuration.GetValue<string>("urls:stackoverflow")}";
+        version = $"v{Configuration["version"]}"; // example: v0.6.1
+        docsUrl = $"{Configuration["urls:docs"]}";
+        blogUrl = $"{Configuration["urls:blog"]}";
+        githubUrl = $"{Configuration["urls:github"]}";
+        twitterUrl = $"{Configuration["urls:twitter"]}";
+        githubIssuesUrl = $"{Configuration["urls:github_issues"]}";
+        githubDiscussionsUrl = $"{Configuration["urls:github_discussions"]}";
+        stackoverflowUrl = $"{Configuration["urls:stackoverflow"]}";
 
         base.OnInitialized();
     }

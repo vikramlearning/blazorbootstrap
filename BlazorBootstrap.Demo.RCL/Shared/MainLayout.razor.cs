@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Demo.Shared;
+﻿namespace BlazorBootstrap.Demo.RCL;
 
 public partial class MainLayout : LayoutComponentBase
 {
@@ -10,7 +10,7 @@ public partial class MainLayout : LayoutComponentBase
 
     protected override void OnInitialized()
     {
-        version = $"v{Configuration.GetValue<string>("version")}"; // example: v0.6.1
+        version = $"v{Configuration["version"]}"; // example: v0.6.1
         base.OnInitialized();
     }
 

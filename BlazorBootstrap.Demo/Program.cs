@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using BlazorBootstrap.Demo.RCL;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
-builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<BlazorBootstrap.Demo.App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-// Inject services
+// Register services
 builder.Services.AddBlazorBootstrap();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.RegisterDemoService();
 
 await builder.Build().RunAsync();

@@ -1,6 +1,4 @@
-﻿@using BlazorBootstrap.Demo.Models;
-
-@foreach (var department in departments)
+﻿@foreach (var department in departments)
 {
     <p>@department.Name Employees:</p>
     <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" Data="department.Employees">
