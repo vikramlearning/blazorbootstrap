@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Demo;
+﻿namespace BlazorBootstrap.Demo.RCL.Services;
 
 public class EmployeeService : IEmployeeService
 {

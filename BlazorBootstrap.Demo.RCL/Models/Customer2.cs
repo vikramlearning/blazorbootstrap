@@ -1,6 +1,4 @@
-﻿namespace BlazorBootstrap.Demo;
-
-public record Customer(int CustomerId, string CustomerName);
+﻿namespace BlazorBootstrap.Demo.RCL.Models;
 
 public record Customer2
 (

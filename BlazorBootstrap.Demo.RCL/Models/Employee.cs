@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Demo;
+﻿namespace BlazorBootstrap.Demo.RCL.Models;
 
 public class Employee
 {
