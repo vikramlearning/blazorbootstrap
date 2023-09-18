@@ -2,7 +2,7 @@
 
 public static class RegisterServices
 {
-    public static IServiceCollection RegisterDemoService(this IServiceCollection services)
+    public static IServiceCollection RegisterDemoServices(this IServiceCollection services)
     {
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<ICustomerService, CustomerService>();

@@ -10,6 +10,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 // Register services
 builder.Services.AddBlazorBootstrap();
-builder.Services.RegisterDemoService();
+builder.Services.RegisterDemoServices();
 
 await builder.Build().RunAsync();
