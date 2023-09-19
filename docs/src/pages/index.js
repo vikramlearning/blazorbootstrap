@@ -5,6 +5,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import styles from './index.module.css';
 import HomepageFeatures from '../components/HomepageFeatures';
+import  { Redirect } from 'react-router-dom';
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
@@ -28,14 +29,15 @@ function HomepageHeader() {
 
 export default function Home() {
     const { siteConfig } = useDocusaurusContext();
-    return (
-        <Layout
-            title={`Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework`}
-            description="Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.">
-            <HomepageHeader />
-            <main>
-                <HomepageFeatures />
-            </main>
-        </Layout>
-    );
+    // return (
+    //     <Layout
+    //         title={`Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework`}
+    //         description="Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.">
+    //         <HomepageHeader />
+    //         <main>
+    //             <HomepageFeatures />
+    //         </main>
+    //     </Layout>
+    // );
+    return <Redirect to='/getting-started/blazor-webassembly' />;
 }
