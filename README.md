@@ -53,7 +53,7 @@ Get started any way you want
 - Buttons
 - Callout
 - Card
-- Charts
+- Charts: Bar chart, Doughnut chart, Line chart, and Pie chart
 - Collapse
 - Confirm Dialog
 - Currency Input
