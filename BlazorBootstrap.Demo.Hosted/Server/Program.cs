@@ -1,12 +1,9 @@
-using BlazorBootstrap.Demo.Hosted.Client;
-
 var builder = WebApplication.CreateBuilder(args);
 {
     // DI
     builder.Services.AddHttpClient();
     builder.Services.AddBlazorBootstrap();
-    builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-    builder.Services.AddScoped<ICustomerService, CustomerService>();
+    builder.Services.AddDemoServices();
 
     builder.Services.AddControllersWithViews();
     builder.Services.AddRazorPages();

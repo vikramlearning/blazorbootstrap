@@ -1,7 +1,3 @@
-﻿global using BlazorBootstrap.Demo;
-global using Microsoft.AspNetCore.Components;
-global using Microsoft.AspNetCore.Components.Routing;
-global using System.Drawing;
-global using System.Linq.Expressions;
-global using System.Net.Http.Json;
-
+﻿global using BlazorBootstrap.Demo.RCL;
+global using Microsoft.AspNetCore.Components.Web;
+global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

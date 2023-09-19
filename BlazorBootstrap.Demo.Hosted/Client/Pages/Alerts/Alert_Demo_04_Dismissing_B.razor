@@ -1,8 +1,0 @@
-﻿<Alert @ref="warningAlert" Color="AlertColor.Warning">
-    <strong>Holy guacamole!</strong> You should check in on some of those fields below. <Button Color="ButtonColor.Primary" @onclick="CloseAlert">Close</Button>
-</Alert>
-
-@code {
-    Alert warningAlert;
-    private async Task CloseAlert() => await warningAlert?.CloseAsync();
-}

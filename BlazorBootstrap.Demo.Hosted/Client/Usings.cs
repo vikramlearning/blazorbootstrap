@@ -1,5 +1,2 @@
-﻿global using BlazorBootstrap.Demo.Hosted.Client;
-global using BlazorBootstrap.Demo.Hosted.Client.Shared;
-global using System.Drawing;
-global using System.Linq.Expressions;
-global using System.Net.Http.Json;
+﻿global using BlazorBootstrap.Demo.RCL;
+global using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
