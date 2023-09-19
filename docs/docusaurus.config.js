@@ -118,7 +118,7 @@ const config = {
                 indexPages: true,
                 indexBlog: false,
                 docsDir: 'docs',
-                docsRouteBasePath: '/docs'
+                docsRouteBasePath: '/'
             }
         ]
     ],
