@@ -77,7 +77,7 @@ A Blazor Bootstrap pie chart component is a circular chart that shows the propor
 
 ### Prerequisites
 
-Refer to the [getting started guide](/docs/getting-started/blazor-webassembly) for setting up charts.
+Refer to the [getting started guide](/getting-started/blazor-webassembly) for setting up charts.
 
 ### How it works
 

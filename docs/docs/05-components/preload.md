@@ -82,7 +82,7 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 
 ## Change spinner color
 
-Change the default spinner color by passing the `SpinnerColor` enum to the `Show(...)` method. In the below example, we are using a [global preload service](/docs/components/preload#global-preload-service-for-the-application), as shown in the above section.
+Change the default spinner color by passing the `SpinnerColor` enum to the `Show(...)` method. In the below example, we are using a [global preload service](/components/preload#global-preload-service-for-the-application), as shown in the above section.
 
 <img src="https://i.imgur.com/5PVt5bX.png" alt="Blazor Bootstrap: Blazor Preload Component - Change spinner color" />
 
