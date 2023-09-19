@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       prod_release:
-        description: 'Do you want to release to PROD'
+        description: 'Do you want to release to production?'
         required: true
         default: false
         type: boolean
