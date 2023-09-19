@@ -37,7 +37,7 @@ We will add **Bubble Chart**, **Polar Area Chart**, **Radar Chart**, **Scatter C
 <br />
 <a href="https://demos.blazorbootstrap.com/charts#bar-chart">See blazor bar chart demo here.</a>
 <br />
-<a href="/docs/data-visualization/bar-chart">See blazor bar chart full documentation here.</a>
+<a href="/data-visualization/bar-chart">See blazor bar chart full documentation here.</a>
 
 ## Doughnut Chart
 
@@ -45,7 +45,7 @@ We will add **Bubble Chart**, **Polar Area Chart**, **Radar Chart**, **Scatter C
 <br />
 <a href="https://demos.blazorbootstrap.com/charts#doughnut-chart">See blazor doughnut chart demo here.</a>
 <br />
-<a href="/docs/data-visualization/doughnut-chart">See blazor doughnut chart full documentation here.</a>
+<a href="/data-visualization/doughnut-chart">See blazor doughnut chart full documentation here.</a>
 
 ## Line Chart
 
@@ -53,7 +53,7 @@ We will add **Bubble Chart**, **Polar Area Chart**, **Radar Chart**, **Scatter C
 <br />
 <a href="https://demos.blazorbootstrap.com/charts#line-chart">See blazor line chart demo here.</a>
 <br />
-<a href="/docs/data-visualization/line-chart">See blazor line chart full documentation here.</a>
+<a href="/data-visualization/line-chart">See blazor line chart full documentation here.</a>
 
 ## Pie Chart
 
@@ -61,4 +61,4 @@ We will add **Bubble Chart**, **Polar Area Chart**, **Radar Chart**, **Scatter C
 <br />
 <a href="https://demos.blazorbootstrap.com/charts#pie-chart">See blazor pie chart demo here.</a>
 <br />
-<a href="/docs/data-visualization/pie-chart">See blazor pie chart full documentation here.</a>
+<a href="/data-visualization/pie-chart">See blazor pie chart full documentation here.</a>
