@@ -1,0 +1,22 @@
+﻿@namespace BlazorBootstrap.Demo.RCL
+
+@inherits LayoutComponentBase
+
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
+             Title="Blazor Bootstrap"
+             BadgeText="@version"
+             DataProvider="SidebarDataProvider" />
+
+    <main class="bb-scrollbar">
+        <div class="content my-4 my-md-4 px-4">
+            @Body
+        </div>
+    </main>
+</div>
+
+<Modal IsServiceModal="true" />
+<Preload />
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />

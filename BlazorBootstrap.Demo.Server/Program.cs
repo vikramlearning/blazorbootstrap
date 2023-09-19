@@ -1,12 +1,13 @@
-using BlazorBootstrap.Demo.Server;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddHttpClient();
+if (builder.Environment.IsDevelopment())
+    builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5021/") });
+else
+    builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://demos.blazorbootstrap.com/") });
+
 builder.Services.AddBlazorBootstrap();
-builder.Services.AddScoped<IEmployeeService, EmployeeService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddDemoServices();
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
