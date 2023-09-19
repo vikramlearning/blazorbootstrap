@@ -5,8 +5,6 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap", "blazorbootstrap\BlazorBootstrap.csproj", "{23D9E8D8-8F90-457A-96B5-4BDA599D37AE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.Demo.WebAssembly", "BlazorBootstrap.Demo.WebAssembly\BlazorBootstrap.Demo.WebAssembly.csproj", "{710E0A10-0567-495D-AA48-A99293D2EA62}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{74FC2FB9-8E21-439A-8646-DF30A02041A1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demos", "demos", "{7DABA756-9F2F-48A6-B8D3-B104262D11B1}"
@@ -18,6 +16,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.Demo.Server", "BlazorBootstrap.Demo.Server\BlazorBootstrap.Demo.Server.csproj", "{7103F2DB-2A6E-4164-B531-34D6CCC72458}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.Demo.RCL", "BlazorBootstrap.Demo.RCL\BlazorBootstrap.Demo.RCL.csproj", "{190E07ED-8888-4F3B-8484-46BF6FC4C982}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.Demo.WebAssembly", "BlazorBootstrap.Demo.WebAssembly\BlazorBootstrap.Demo.WebAssembly.csproj", "{710E0A10-0567-495D-AA48-A99293D2EA62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
