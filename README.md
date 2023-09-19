@@ -1,6 +1,6 @@
 ﻿<p align="center">
   <a href="https://getblazorbootstrap.com/">
-    <img src="https://getblazorbootstrap.com/img/logo/logo-color.svg" alt="Blazor Bootstrap logo" width="200" height="200">
+    <img src="https://github.com/vikramlearning/blazorbootstrap/blob/master/BlazorBootstrap.Demo.WebAssembly/wwwroot/images/logo/logo-color.svg" alt="Blazor Bootstrap logo" width="200" height="200">
   </a>
 </p>
 
