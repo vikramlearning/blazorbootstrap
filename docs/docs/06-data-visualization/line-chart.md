@@ -103,7 +103,7 @@ A Blazor Bootstrap line chart component is a graphical representation of data th
 
 ### Prerequisites
 
-Refer to the [getting started guide](/docs/getting-started/blazor-webassembly) for setting up charts.
+Refer to the [getting started guide](/getting-started/blazor-webassembly) for setting up charts.
 
 ### How it works
 

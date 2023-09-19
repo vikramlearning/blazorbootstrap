@@ -79,7 +79,7 @@ It is similar to a pie chart, but the center of the donut chart is hollow. This 
 
 ### Prerequisites
 
-Refer to the [getting started guide](/docs/getting-started/blazor-webassembly) for setting up charts.
+Refer to the [getting started guide](/getting-started/blazor-webassembly) for setting up charts.
 
 ### How it works
 

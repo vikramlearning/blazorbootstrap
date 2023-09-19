@@ -13,8 +13,8 @@ Get started with the Enterprise-class Blazor Bootstrap Component library built o
 
 Assuming you followed the getting started docs for the initial setup.
 
-1. **Blazor WebAssembly Project:** Follow the [getting started](/docs/getting-started/blazor-webassembly) steps for the initial setup.
-1. **Blazor Server Project:** Follow the [getting started](/docs/getting-started/blazor-server) steps for the initial setup.
+1. **Blazor WebAssembly Project:** Follow the [getting started](/getting-started/blazor-webassembly) steps for the initial setup.
+1. **Blazor Server Project:** Follow the [getting started](/getting-started/blazor-server) steps for the initial setup.
 
 ## Steps
 

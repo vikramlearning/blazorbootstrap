@@ -88,7 +88,7 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 
 ### Prerequisites
 
-Refer to the [getting started guide](/docs/getting-started/blazor-webassembly) for setting up charts.
+Refer to the [getting started guide](/getting-started/blazor-webassembly) for setting up charts.
 
 ### How it works
 

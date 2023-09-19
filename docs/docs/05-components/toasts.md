@@ -19,7 +19,7 @@ Blazor Toasts are lightweight notifications designed to mimic the push notificat
 **Things to know when using the blazor toasts component:**
 
 - Toasts will not hide automatically if you do not specify `AutoHide="true"`.
-- Use [global toasts service](/docs/components/toasts#global-toasts-service-for-the-application) for the application instead of page level toasts.
+- Use [global toasts service](/components/toasts#global-toasts-service-for-the-application) for the application instead of page level toasts.
 
 ## Toasts Parameters
 
