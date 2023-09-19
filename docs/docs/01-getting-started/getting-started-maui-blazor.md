@@ -33,7 +33,10 @@ Add the following references to the `body` section in the **wwwroot/index.html**
 
 ``` js showLineNumbers
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- Add chart.js reference if Chart components are used in the application. -->
+<!-- Add chart.js reference if chart components are used in your application. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Add chartjs-plugin-datalabels.min.js reference if chart components with data label feature is used in your application. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
 ```
 
@@ -46,10 +49,6 @@ Add the following references to the `body` section in the **wwwroot/index.html**
 Add Blazor Bootstrap service in the **MauiProgram.cs**
 
 ```cs showLineNumbers
-using BlazorBootstrap; // Add this line
-
-...
-         
 builder.Services.AddBlazorBootstrap(); // Add this line
 ```
 
