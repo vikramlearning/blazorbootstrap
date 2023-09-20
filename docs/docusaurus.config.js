@@ -31,10 +31,14 @@ const config = {
                 theme: {
                     customCss: require.resolve('./src/css/custom.css'),
                 },
-                googleAnalytics: {
-                    trackingID: 'UA-214301343-1',
-                    // Optional fields.
-                    anonymizeIP: true, // Should IPs be anonymized?
+                // googleAnalytics: {
+                //     trackingID: 'UA-214301343-1',
+                //     // Optional fields.
+                //     anonymizeIP: true, // Should IPs be anonymized?
+                // },
+                gtag: {
+                    trackingID: 'G-60QGZHW8TG',
+                    anonymizeIP: true,
                 },
             }),
         ],
@@ -99,11 +103,6 @@ const config = {
                 darkTheme: darkCodeTheme,
                 additionalLanguages: ['csharp', 'cshtml'],
             },
-            //googleAnalytics: {
-            //    trackingID: 'UA-214301343-1',
-            //    // Optional fields.
-            //    anonymizeIP: true, // Should IPs be anonymized?
-            //},
         }),
     customFields: {
         version: '0.0.4',
