@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkblazorbootstrap=self.webpackChunkblazorbootstrap||[]).push([[64195],{59335:(t,e,a)=>{a.r(e),a.d(e,{default:()=>o});var r=a(67294),n=(a(44730),a(39960),a(52263));r.Fragment,r.Fragment,r.Fragment;var s=a(76775);function o(){const{siteConfig:t}=(0,n.Z)();return r.createElement(s.l_,{to:"/getting-started/blazor-webassembly"})}}}]);
