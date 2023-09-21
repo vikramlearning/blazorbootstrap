@@ -5,7 +5,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
     title: 'Blazor Bootstrap',
     tagline: 'High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.',
-    url: 'https://getblazorbootstrap.com',
+    url: 'https://docs.blazorbootstrap.com',
     baseUrl: '/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
@@ -118,6 +118,169 @@ const config = {
                 indexBlog: false,
                 docsDir: 'docs',
                 docsRouteBasePath: '/docs'
+            }
+        ],
+        [
+            '@docusaurus/plugin-client-redirects',
+            {
+                redirects: [
+                    {
+                        from: '/docs/getting-started/blazor-webassembly',
+                        to: '/getting-started/blazor-webassembly',
+                    },
+                    {
+                        from: '/docs/getting-started/blazor-server',
+                        to: '/getting-started/blazor-server',
+                    },
+                    {
+                        from: '/docs/getting-started/maui-blazor',
+                        to: '/getting-started/maui-blazor',
+                    },
+                    {
+                        from: '/docs/layout/blazor-webassembly',
+                        to: '/layout/blazor-webassembly',
+                    },
+                    {
+                        from: '/docs/layout/blazor-server',
+                        to: '/layout/blazor-server',
+                    },
+                    {
+                        from: '/docs/content/icons',
+                        to: '/content/icons',
+                    },
+                    {
+                        from: '/docs/forms/autocomplete',
+                        to: '/forms/autocomplete',
+                    },
+                    {
+                        from: '/docs/forms/currency-input',
+                        to: '/forms/currency-input',
+                    },
+                    {
+                        from: '/docs/forms/date-input',
+                        to: '/forms/date-input',
+                    },
+                    {
+                        from: '/docs/forms/number-input',
+                        to: '/forms/number-input',
+                    },
+                    {
+                        from: '/docs/forms/switch',
+                        to: '/forms/switch',
+                    },
+                    {
+                        from: '/docs/forms/time-input',
+                        to: '/forms/time-input',
+                    },
+                    {
+                        from: '/docs/components/accordion',
+                        to: '/components/accordion',
+                    },
+                    {
+                        from: '/docs/components/alerts',
+                        to: '/components/alerts',
+                    },
+                    {
+                        from: '/docs/components/badge',
+                        to: '/components/badge',
+                    },
+                    {
+                        from: '/docs/components/breadcrumb',
+                        to: '/components/breadcrumb',
+                    },
+                    {
+                        from: '/docs/components/buttons',
+                        to: '/components/buttons',
+                    },
+                    {
+                        from: '/docs/components/callout',
+                        to: '/components/callout',
+                    },
+                    {
+                        from: '/docs/components/card',
+                        to: '/components/card',
+                    },
+                    {
+                        from: '/docs/components/charts',
+                        to: '/components/charts',
+                    },
+                    {
+                        from: '/docs/components/collapse',
+                        to: '/components/collapse',
+                    },
+                    {
+                        from: '/docs/components/confirm-dialog',
+                        to: '/components/confirm-dialog',
+                    },
+                    {
+                        from: '/docs/components/dropdown',
+                        to: '/components/dropdown',
+                    },
+                    {
+                        from: '/docs/components/grid',
+                        to: '/components/grid',
+                    },
+                    {
+                        from: '/docs/components/modal',
+                        to: '/components/modal',
+                    },
+                    {
+                        from: '/docs/components/offcanvas',
+                        to: '/components/offcanvas',
+                    },
+                    {
+                        from: '/docs/components/pagination',
+                        to: '/components/pagination',
+                    },
+                    {
+                        from: '/docs/components/placeholders',
+                        to: '/components/placeholders',
+                    },
+                    {
+                        from: '/docs/components/preload',
+                        to: '/components/preload',
+                    },
+                    {
+                        from: '/docs/components/progress',
+                        to: '/components/progress',
+                    },
+                    {
+                        from: '/docs/components/sidebar',
+                        to: '/components/sidebar',
+                    },
+                    {
+                        from: '/docs/components/tabs',
+                        to: '/components/tabs',
+                    },
+                    {
+                        from: '/docs/components/toasts',
+                        to: '/components/toasts',
+                    },
+                    {
+                        from: '/docs/components/tooltips',
+                        to: '/components/tooltips',
+                    },
+                    {
+                        from: '/docs/data-visualization/bar-chart',
+                        to: '/data-visualization/bar-chart',
+                    },
+                    {
+                        from: '/docs/data-visualization/doughnut-chart',
+                        to: '/data-visualization/doughnut-chart',
+                    },
+                    {
+                        from: '/docs/data-visualization/line-chart',
+                        to: '/data-visualization/line-chart',
+                    },
+                    {
+                        from: '/docs/data-visualization/pie-chart',
+                        to: '/data-visualization/pie-chart',
+                    },
+                    {
+                        from: '/docs/services/modal',
+                        to: '/services/modal',
+                    },
+                ]
             }
         ]
     ],
