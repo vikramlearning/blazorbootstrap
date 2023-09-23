@@ -60,9 +60,15 @@ public partial class DropdownActionButton
     }
 
     /// <summary>
-    /// Changes the size of a button.
+    /// Gets or sets the disabled.
     /// </summary>
-    [Parameter]
+    [CascadingParameter(Name = "Disabled")]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the size of the <see cref="DropdownActionButton" />.
+    /// </summary>
+    [CascadingParameter(Name = "Size")]
     public Size Size
     {
         get => size;

@@ -1,12 +1,16 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<CascadingValue IsFixed="true" Value="@Split" Name="Split">
-    <CascadingValue IsFixed="true" Value="@AutoClose" Name="AutoClose">
-        <CascadingValue IsFixed="true" Value="@AutoCloseBehavior" Name="AutoCloseBehavior">
-            <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-                @ChildContent
-            </div>
+<CascadingValue IsFixed="true" Value="@AutoClose" Name="AutoClose">
+    <CascadingValue IsFixed="true" Value="@AutoCloseBehavior" Name="AutoCloseBehavior">
+        <CascadingValue IsFixed="true" Value="@Disabled" Name="Disabled">
+            <CascadingValue IsFixed="true" Value="@Size" Name="Size">
+                <CascadingValue IsFixed="true" Value="@Split" Name="Split">
+                    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+                        @ChildContent
+                    </div>
+                </CascadingValue>
+            </CascadingValue>
         </CascadingValue>
     </CascadingValue>
 </CascadingValue>

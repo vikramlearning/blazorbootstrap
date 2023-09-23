@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Drawing;
+
+namespace BlazorBootstrap;
 
 public partial class Dropdown
 {
@@ -102,10 +104,16 @@ public partial class Dropdown
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the dropdown direction.
+    /// Gets or sets the direction of the dropdown menu.
     /// </summary>
     [Parameter]
     public DropdownDirection Direction { get; set; } = DropdownDirection.Dropdown;
+
+    /// <summary>
+    /// Gets or sets whether the dropdown menu is disabled.
+    /// </summary>
+    [Parameter]
+    public bool Disabled { get; set; }
 
     /// <summary>
     /// This event is fired when an dropdown element has been hidden from the user (will wait for CSS transitions to complete).
@@ -131,6 +139,12 @@ public partial class Dropdown
     /// </summary>
     [Parameter]
     public EventCallback OnShown { get; set; }
+
+    /// <summary>
+    /// Gets or sets the size of the <see cref="Dropdown" />.
+    /// </summary>
+    [Parameter]
+    public Size Size { get; set; }
 
     /// <summary>
     /// Gets or sets the toggle button split behavior.

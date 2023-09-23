@@ -1,6 +1,11 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<button @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+<button @ref="@ElementRef"
+        @attributes="@Attributes"
+        class="@ClassNames"
+        id="@ElementId"
+        disabled="@Disabled"
+        style="@StyleNames">
     @ChildContent
 </button>

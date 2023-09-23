@@ -21,7 +21,9 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 | AutoClose | bool | Enables or disables the auto close. | | true | 1.10.0 |
 | AutoCloseBehavior | `DropdownAutoCloseBehavior` | Gets or sets the auto close behavior of the dropdown. | | `DropdownAutoCloseBehavior.Both` | 1.10.0 |
 | ChildContent | RenderFragment | Specifies the content to be rendered inside the Dropdown. | | | 1.10.0 |
-| Direction | `DropdownDirection` | Gets or sets the dropdown direction. | | `DropdownDirection.Dropdown` | 1.10.0 |
+| Direction | `DropdownDirection` | Gets or sets the direction of the dropdown menu. | | `DropdownDirection.Dropdown` | 1.10.0 |
+| Disabled | bool | Gets or sets whether the dropdown menu is disabled. | | false | 1.10.3 |
+| Size | `Size` | Gets or sets the size of the dropdown. | | `Size.None` | 1.10.3 |
 | Split | bool | Gets or sets the toggle button split behavior. | | false | 1.10.0 |
 
 ## DropdownToggleButton Parameters
@@ -30,7 +32,6 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside the DropdownToggleButton. | | | 1.10.0 |
 | Color | `ButtonColor` | Gets or sets the button color. | | | 1.10.0 |
-| Size | `Size` | Gets or sets the button size. | | | 1.10.0 |
 | TabIndex | `int?` | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | | 1.10.0 |
 
 ## DropdownActionButton Parameters
@@ -39,7 +40,6 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside the DropdownActionButton. | | | 1.10.0 |
 | Color | `ButtonColor` | Gets or sets the button color. | | | 1.10.0 |
-| Size | `Size` | Gets or sets the button size. | | | 1.10.0 |
 | TabIndex | `int?` | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | | 1.10.0 |
 
 ## DropdownMenu Parameters
@@ -108,7 +108,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 <img src="https://i.imgur.com/cuvBVJu.png" alt="Blazor Bootstrap: Dropdown Component - Color" />
 
-```cshtml {} showLineNumbers
+```cshtml {3,11,19,27,35,43} showLineNumbers
 <div class="d-flex gap-2 mb-4">
     <Dropdown>
         <DropdownToggleButton Color="ButtonColor.Primary">Primary</DropdownToggleButton>
@@ -167,7 +167,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 <img src="https://i.imgur.com/beAr31J.png" alt="Blazor Bootstrap: Dropdown Component - Split button" />
 
-```cshtml {} showLineNumbers
+```cshtml {3-4,12-13,21-22,30-31,39-40,48-49} showLineNumbers
 <div class="d-flex gap-2 mb-4">
     <Dropdown Split="true">
         <DropdownActionButton Color="ButtonColor.Primary">Primary</DropdownActionButton>
@@ -232,19 +232,19 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 <img src="https://i.imgur.com/fwcMxKb.png" alt="Blazor Bootstrap: Dropdown Component - Sizing - Large" />
 
-```cshtml {} showLineNumbers
+```cshtml {2,10} showLineNumbers
 <div class="d-flex gap-2 mb-4">
-    <Dropdown>
-        <DropdownToggleButton Color="ButtonColor.Secondary" Size="Size.Large">Large button</DropdownToggleButton>
+    <Dropdown Size="Size.Large">
+        <DropdownToggleButton Color="ButtonColor.Secondary">Large button</DropdownToggleButton>
         <DropdownMenu>
             <DropdownItem Size="Size.Large" To="#" Type="ButtonType.Link">Action</DropdownItem>
             <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
             <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Split="true">
-        <DropdownActionButton Color="ButtonColor.Secondary" Size="Size.Large">Large split button</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Secondary" Size="Size.Large" />
+    <Dropdown Size="Size.Large" Split="true">
+        <DropdownActionButton Color="ButtonColor.Secondary">Large split button</DropdownActionButton>
+        <DropdownToggleButton Color="ButtonColor.Secondary" />
         <DropdownMenu>
             <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
             <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
@@ -256,19 +256,19 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 <img src="https://i.imgur.com/HOlA6Uw.png" alt="Blazor Bootstrap: Dropdown Component - Sizing - Small" />
 
-```cshtml {} showLineNumbers
+```cshtml {2,10} showLineNumbers
 <div class="d-flex gap-2 mb-4">
-    <Dropdown>
-        <DropdownToggleButton Color="ButtonColor.Secondary" Size="Size.Small">Small button</DropdownToggleButton>
+    <Dropdown Size="Size.Small">
+        <DropdownToggleButton Color="ButtonColor.Secondary">Small button</DropdownToggleButton>
         <DropdownMenu>
             <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
             <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
             <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Split="true">
-        <DropdownActionButton Color="ButtonColor.Secondary" Size="Size.Small">Small split button</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Secondary" Size="Size.Small" />
+    <Dropdown Size="Size.Small" Split="true">
+        <DropdownActionButton Color="ButtonColor.Secondary">Small split button</DropdownActionButton>
+        <DropdownToggleButton Color="ButtonColor.Secondary" />
         <DropdownMenu>
             <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
             <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
@@ -288,7 +288,7 @@ To trigger **DropdownMenu** above elements, add the `Direction="DropdownDirectio
 
 <img src="https://i.imgur.com/l90nW3S.png" alt="Blazor Bootstrap: Dropdown Component - Dropup" />
 
-```cshtml {} showLineNumbers
+```cshtml {2,10} showLineNumbers
 <div class="d-flex gap-2">
     <Dropdown Direction="DropdownDirection.Dropup">
         <DropdownToggleButton Color="ButtonColor.Secondary">Dropup button with text</DropdownToggleButton>
@@ -318,7 +318,7 @@ To center the DropdownMenu above the toggle, add the Direction="DropdownDirectio
 
 <img src="https://i.imgur.com/kc462Yy.png" alt="Blazor Bootstrap: Dropdown Component - Dropup centered" />
 
-```cshtml {} showLineNumbers
+```cshtml {2} showLineNumbers
 <div class="d-flex gap-2">
     <Dropdown Direction="DropdownDirection.DropupCentered">
         <DropdownToggleButton Color="ButtonColor.Secondary">Centered dropup</DropdownToggleButton>
@@ -339,7 +339,7 @@ To trigger DropdownMenu at the right of elements, add the Direction="DropdownDir
 
 <img src="https://i.imgur.com/nSZ6Kdv.png" alt="Blazor Bootstrap: Dropdown Component - Dropend" />
 
-```cshtml {} showLineNumbers
+```cshtml {2,10} showLineNumbers
 <div class="d-flex gap-2">
     <Dropdown Direction="DropdownDirection.Dropend">
         <DropdownToggleButton Color="ButtonColor.Secondary">Dropend</DropdownToggleButton>
@@ -369,7 +369,7 @@ To trigger DropdownMenu at the left of elements, you can add the Direction="Drop
 
 <img src="https://i.imgur.com/A8ifVaS.png" alt="Blazor Bootstrap: Dropdown Component - Dropstart" />
 
-```cshtml {} showLineNumbers
+```cshtml {2,10} showLineNumbers
 <div class="d-flex gap-2">
     <Dropdown Direction="DropdownDirection.Dropstart">
         <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
@@ -399,7 +399,7 @@ To style DropdownItem as active, add the Active="true" parameter to the Dropdown
 
 <img src="https://i.imgur.com/y95OWSd.png" alt="Blazor Bootstrap: Dropdown Component - Active" />
 
-```cshtml {} showLineNumbers
+```cshtml {5} showLineNumbers
 <Dropdown>
     <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
     <DropdownMenu>
@@ -414,11 +414,37 @@ To style DropdownItem as active, add the Active="true" parameter to the Dropdown
 
 ### Disabled
 
-To style DropdownItem as disabled, add the Disabled="true" parameter to the DropdownItem element in the DropdownMenu component.
+To disable the dropdown, set the <b>Disabled</b> parameter to <b>true</b> on the <b>Dropdown</b> component.
 
-<img src="https://i.imgur.com/C3tUcRn.png" alt="Blazor Bootstrap: Dropdown Component - Disabled" />
+<img src="https://i.imgur.com/jMrshBs.png" alt="Blazor Bootstrap: Dropdown Component - Disabled" />
 
-```cshtml {} showLineNumbers
+```cshtml {1} showLineNumbers
+<Dropdown Disabled="@isDropdownDisabled">
+    <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
+
+<div class="mt-3">
+    <Button Color="ButtonColor.Primary" Size="Size.Small" @onclick="EnableDropdown">Enable</Button>
+    <Button Color="ButtonColor.Danger" Size="Size.Small" @onclick="DisableDropdown">Disable</Button>
+</div>
+@code
+{
+    private bool isDropdownDisabled = true;
+    private void EnableDropdown() => isDropdownDisabled = false;
+    private void DisableDropdown() => isDropdownDisabled = true;
+}
+```
+
+To style a dropdown item as disabled, set the <b>Disabled</b> parameter to <b>true</b> on the <b>DropdownItem</b> element in the <b>DropdownMenu</b> component.
+
+<img src="https://i.imgur.com/C3tUcRn.png" alt="Blazor Bootstrap: Dropdown Component - Disabled (Dropdown Item)" />
+
+```cshtml {5} showLineNumbers
 <Dropdown>
     <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
     <DropdownMenu>
@@ -439,7 +465,7 @@ To right-align a DropdownMenu, add the Position="DropdownMenuPosition.End" param
 
 <img src="https://i.imgur.com/dwmK0j3.png" alt="Blazor Bootstrap: Dropdown Component - Menu position" />
 
-```cshtml {} showLineNumbers
+```cshtml {3} showLineNumbers
 <Dropdown>
     <DropdownToggleButton Color="ButtonColor.Secondary">Right-aligned menu example</DropdownToggleButton>
     <DropdownMenu Position="DropdownMenuPosition.End">
@@ -460,7 +486,7 @@ Add a header to label sections of actions in any dropdown menu.
 
 <img src="https://i.imgur.com/eDvOLvf.png" alt="Blazor Bootstrap: Dropdown Component - Header" />
 
-```cshtml {} showLineNumbers
+```cshtml {4} showLineNumbers
 <Dropdown>
     <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown</DropdownToggleButton>
     <DropdownMenu>
@@ -480,7 +506,7 @@ Separate groups of related menu items with a divider.
 
 <img src="https://i.imgur.com/8zd9Rod.png" alt="Blazor Bootstrap: Dropdown Component - Dividers" />
 
-```cshtml {} showLineNumbers
+```cshtml {7} showLineNumbers
 <Dropdown>
     <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown</DropdownToggleButton>
     <DropdownMenu>
@@ -501,7 +527,7 @@ Place any freeform text within a dropdown menu with text and use spacing utiliti
 
 <img src="https://i.imgur.com/2G0ozU0.png" alt="Blazor Bootstrap: Dropdown Component - Text" />
 
-```cshtml {} showLineNumbers
+```cshtml {3-6} showLineNumbers
 <Dropdown>
     <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown</DropdownToggleButton>
     <DropdownMenu Class="p-4 text-muted" Style="width: 320px;">
@@ -519,7 +545,7 @@ Put a form within a dropdown menu, or make it into a dropdown menu, and use marg
 
 <img src="https://i.imgur.com/q52EBle.png" alt="Blazor Bootstrap: Dropdown Component - Forms" />
 
-```cshtml {} showLineNumbers
+```cshtml {4-14,20-47} showLineNumbers
 @using System.ComponentModel.DataAnnotations
 
 <style>
@@ -644,7 +670,7 @@ By default, the DropdownMenu is closed when clicking either inside or outside th
 
 <img src="https://i.imgur.com/vq2sgtO.png" alt="Blazor Bootstrap: Dropdown Component - Auto close behavior" />
 
-```cshtml {} showLineNumbers
+```cshtml {1,9,17,25} showLineNumbers
 <Dropdown AutoClose="true">
     <DropdownToggleButton Color="ButtonColor.Secondary">Default dropdown</DropdownToggleButton>
     <DropdownMenu>
@@ -685,7 +711,7 @@ By default, the DropdownMenu is closed when clicking either inside or outside th
 
 <img src="https://i.imgur.com/gaJz8Ar.png" alt="Blazor Bootstrap: Dropdown Component - Methods" />
 
-```cshtml {} showLineNumbers
+```cshtml {10-12} showLineNumbers
 <Dropdown @ref="dropdown1">
     <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown button</DropdownToggleButton>
     <DropdownMenu>
@@ -700,7 +726,7 @@ By default, the DropdownMenu is closed when clicking either inside or outside th
 <Button Color="ButtonColor.Primary" @onclick="ToggleAsync">Toggle</Button>
 ```
 
-```cs {} showLineNumbers
+```cs {4-6} showLineNumbers
 @code{
     private Dropdown dropdown1 = default!;
 
@@ -718,7 +744,7 @@ All dropdown events are fired at the toggling element and then bubbled up.
 
 <img src="https://i.imgur.com/74NtN1y.png" alt="Blazor Bootstrap: Dropdown Component - Events" />
 
-```cshtml {} showLineNumbers
+```cshtml {1-4} showLineNumbers
 <Dropdown OnHiding="OnDropdownHidingAsync"
           OnHidden="OnDropdownHiddenAsync"
           OnShowing="OnDropdownShowingAsync"
@@ -732,16 +758,13 @@ All dropdown events are fired at the toggling element and then bubbled up.
 </Dropdown>
 ```
 
-```cs {} showLineNumbers
+```cs {4-7} showLineNumbers
 @code {
     List<string> messages = new List<string>();
 
     private void OnDropdownHidingAsync() => messages.Add(new("OnHiding"));
-
     private void OnDropdownHiddenAsync() => messages.Add(new("OnHidden"));
-
     private void OnDropdownShowingAsync() => messages.Add(new("OnShowing"));
-
     private void OnDropdownShownAsync() => messages.Add(new("OnShown"));
 }
 ```
