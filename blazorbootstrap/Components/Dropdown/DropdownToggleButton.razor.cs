@@ -99,9 +99,15 @@ public partial class DropdownToggleButton
     }
 
     /// <summary>
-    /// Gets or sets the button size.
+    /// Gets or sets the disabled.
     /// </summary>
-    [Parameter]
+    [CascadingParameter(Name = "Disabled")]
+    public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets the size of the <see cref="DropdownToggleButton" />.
+    /// </summary>
+    [CascadingParameter(Name = "Size")]
     public Size Size
     {
         get => size;
