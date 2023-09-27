@@ -57,6 +57,11 @@ public class NavItem
     /// Gets or sets the navigation link text.
     /// </summary>
     public string? Text { get; set; }
+    
+    /// <summary>
+    /// Gets or sets an additional css class for the item
+    /// </summary>
+    public string? Class { get; set; }
 
     #endregion
 }
