@@ -624,8 +624,8 @@ window.blazorChart = {
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.get(elementId);
         if (chart) {
-            chart.canvas.parentNode.style.height = height;
-            chart.canvas.parentNode.style.width = width;
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
         }
     },
     update: (elementId, type, data, options) => {
@@ -736,8 +736,8 @@ window.blazorChart.bar = {
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) {
-            chart.canvas.parentNode.style.height = height;
-            chart.canvas.parentNode.style.width = width;
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
         }
     },
     update: (elementId, type, data, options) => {
@@ -854,8 +854,8 @@ window.blazorChart.doughnut = {
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) {
-            chart.canvas.parentNode.style.height = height;
-            chart.canvas.parentNode.style.width = width;
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
         }
     },
     update: (elementId, type, data, options) => {
@@ -1006,8 +1006,8 @@ window.blazorChart.line = {
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart) {
-            chart.canvas.parentNode.style.height = height;
-            chart.canvas.parentNode.style.width = width;
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
         }
     },
     update: (elementId, type, data, options) => {
@@ -1124,8 +1124,8 @@ window.blazorChart.pie = {
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.pie.get(elementId);
         if (chart) {
-            chart.canvas.parentNode.style.height = height;
-            chart.canvas.parentNode.style.width = width;
+            chart.canvas.parentNode.style.height = `${width}px`;
+            chart.canvas.parentNode.style.width = `${height}px`;
         }
     },
     update: (elementId, type, data, options) => {

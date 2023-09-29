@@ -1,15 +1,7 @@
 ﻿namespace BlazorBootstrap;
 
-public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, IAsyncDisposable
+public class BlazorBootstrapChart : BlazorBootstrapComponentBase
 {
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BlazorBootstrapComponentBase" /> class.
-    /// </summary>
-    public BlazorBootstrapChart()
-    {
-        ContainerStyleBuilder = new CssStyleBuilder(BuildContainerStyles);
-    }
-
     #region Fields and Constants
 
     internal ChartType chartType;
@@ -62,7 +54,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    public async Task ResizeAsync(string width, string height) => await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, width, height);
+    public async Task ResizeAsync(int width, int height) => await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, width, height);
 
     /// <summary>
     /// Update chart.
@@ -99,6 +91,19 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             _ => "line" // default
         };
 
+    private string GetChartContainerSizeAsStyle()
+    {
+        var style = "";
+
+        if (Width > 0)
+            style += $"width:{Width}px;";
+
+        if (Height > 0)
+            style += $"height:{Height}px;";
+
+        return style;
+    }
+
     private object GetChartDataObject(ChartData chartData)
     {
         var datasets = new List<object>();
@@ -121,107 +126,23 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
         return data;
     }
 
-    protected virtual void BuildContainerStyles(CssStyleBuilder builder)
-    {
-        if (!string.IsNullOrWhiteSpace(Width) || !string.IsNullOrWhiteSpace(Height))
-            builder.Append("position:relative");
-
-        if (!string.IsNullOrWhiteSpace(Width))
-            builder.Append($"width:{Width}");
-
-        if (!string.IsNullOrWhiteSpace(Height))
-            builder.Append($"height:{Height}");
-    }
-
-    /// <inheritdoc />
-    public new virtual void Dispose() => Dispose(true);
-
-    /// <inheritdoc />
-    public new virtual async ValueTask DisposeAsync()
-    {
-        await DisposeAsync(true);
-        Dispose(false);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected new void Dispose(bool disposing)
-    {
-        if (!Disposed)
-        {
-            if (disposing)
-            {
-                ContainerStyleBuilder = null;
-            }
-
-            Disposed = true;
-        }
-        base.Dispose(disposing);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected new ValueTask DisposeAsync(bool disposing)
-    {
-        try
-        {
-            if (!AsyncDisposed)
-            {
-                if (disposing)
-                {
-                    ContainerStyleBuilder = null;
-                }
-
-                AsyncDisposed = true;
-            }
-
-            return base.DisposeAsync(disposing);
-        }
-        catch (Exception exc)
-        {
-            return new ValueTask(Task.FromException(exc));
-        }
-    }
-
-    /// <summary>
-    /// Gets the style mapper.
-    /// </summary>
-    protected CssStyleBuilder? ContainerStyleBuilder { get; private set; }
-
-    /// <summary>
-    /// Gets the built styles based on all the rules set by the component parameters.
-    /// </summary>
-    public string? ContainerStyles => ContainerStyleBuilder!.Styles;
-
     #endregion
 
     #region Properties, Indexers
 
-    /// <summary>
-    /// Indicates if the component is already fully disposed (asynchronously).
-    /// </summary>
-    protected new bool AsyncDisposed { get; private set; }
+    internal string chartContainerStyle => GetChartContainerSizeAsStyle();
 
     /// <summary>
-    /// Indicates if the component is already fully disposed.
-    /// </summary>
-    protected new bool Disposed { get; private set; }
-
-    /// <summary>
-    /// Gets or sets chart container height.
+    /// Gets or sets chart height.
     /// </summary>
     [Parameter]
-    public string? Height { get; set; }
+    public int Height { get; set; }
 
     /// <summary>
-    /// Get or sets chart container width.
+    /// Get or sets chart width.
     /// </summary>
     [Parameter]
-    public string? Width { get; set; }
+    public int Width { get; set; }
 
     #endregion
 }
