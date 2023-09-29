@@ -21,6 +21,11 @@ public class ChartOptions : IChartOptions
     /// </summary>
     public bool Responsive { get; set; }
 
+    /// <summary>
+    ///     <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />
+    /// </summary>
+    public bool MaintainAspectRatio { get; set; }
+
     #endregion
 }
 
