@@ -18,7 +18,7 @@ Blazor Bootstrap icon component will display an icon from any icon font.
 
 - Include the icon fonts stylesheet in your website `<head>` or `@import` in CSS from CDN.
 ```
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
 ```
 
 ## Parameters
@@ -31,7 +31,7 @@ Blazor Bootstrap icon component will display an icon from any icon font.
 | Size | `IconSize` | Gets or sets the icon size. | | `IconSize.None` | 1.0.0 |
 
 :::caution NOTE
-Either `Name` or `CustomIconName` parameter is mandatory.
+Either `Name` or `CustomIconName` parameter is mandatory. For **Font Awesome** setup, please follow the **Font Awesome** website.
 :::
 
 ## Examples
@@ -59,6 +59,21 @@ Either `Name` or `CustomIconName` parameter is mandatory.
 <Icon Name="IconName.Alarm" Size="IconSize.x5" />
 ```
 [See icons with different size demo here.](https://demos.blazorbootstrap.com/icons#sizes)
+
+### Font awesome icons
+
+In the following example, we used **Font Awesome 6.4.2** free version icons. For Font Awesome setup, please follow the Font Awesome website.
+
+<img src="https://i.imgur.com/aUuJE34.png" alt="Blazor Bootstrap: Icon Component - Font awesome icons" />
+
+```cshtml {} showLineNumbers
+<Icon CustomIconName="fa-solid fa-hands-clapping" Size="IconSize.x1" />
+<Icon CustomIconName="fa-solid fa-hands-clapping" Size="IconSize.x2" />
+<Icon CustomIconName="fa-solid fa-hands-clapping" Size="IconSize.x3" />
+<Icon CustomIconName="fa-solid fa-hands-clapping" Size="IconSize.x4" />
+<Icon CustomIconName="fa-solid fa-hands-clapping" Size="IconSize.x5" />
+<Icon CustomIconName="fa-solid fa-hands-clapping" Size="IconSize.x6" />
+```
 
 ### Colors
 
@@ -129,6 +144,31 @@ Inline text <Icon Name="IconName.Alarm" />
 <Button Color="ButtonColor.Secondary"><Icon Name="IconName.Alarm" /></Button>
 ```
 [See button with icon only demo here.](https://demos.blazorbootstrap.com/icons#button-with-icon-only)
+
+### Button with font awesome icon
+
+In the following example, we used **Font Awesome 6.4.2** free version icons. For Font Awesome setup, please follow the Font Awesome website.
+
+<img src="https://i.imgur.com/GWppafv.png" alt="Blazor Bootstrap: Icon Component - Button with font awesome icon" />
+
+```cshtml {} showLineNumbers
+<Button Color="ButtonColor.Secondary" TooltipTitle="Compare code">
+    <Icon CustomIconName="fa-solid fa-code-compare"/>
+</Button>
+<Button Color="ButtonColor.Secondary" TooltipTitle="Create pull request">
+    <Icon CustomIconName="fa-solid fa-code-pull-request" />
+</Button>
+```
+
+### Icon with tooltip
+
+<img src="https://i.imgur.com/OwfxRXn.png" alt="Blazor Bootstrap: Icon Component - Icon with tooltip" />
+
+```cshtml {} showLineNumbers
+<Tooltip Title="Info Tooltip" role="button">
+    <Icon Name="IconName.InfoCircleFill"></Icon>
+</Tooltip>
+```
 
 ### Bootstrap Icons
 
