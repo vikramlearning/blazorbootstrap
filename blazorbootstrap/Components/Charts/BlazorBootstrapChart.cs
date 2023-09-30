@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using BlazorBootstrap.Extensions;
+
+namespace BlazorBootstrap;
 
 public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, IAsyncDisposable
 {
@@ -125,12 +127,23 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     {
         if (!string.IsNullOrWhiteSpace(Width) || !string.IsNullOrWhiteSpace(Height))
             builder.Append("position:relative");
+        //
+        //  The first version of Width and Height were ints set in markup and assumed to be in "px".
+        //  In markup int string etc all look the same so they still compile.
+        //  So now we have to assume if there isn't a unit of measure the dev wants the original "px".
+        //
 
         if (!string.IsNullOrWhiteSpace(Width))
-            builder.Append($"width:{Width}");
+        {
+            string value = Width.IsNumeric() ? $"{Width}px" : Width;
+            builder.Append($"width:{value}");
+        }
 
         if (!string.IsNullOrWhiteSpace(Height))
-            builder.Append($"height:{Height}");
+        {
+            string value = Height.IsNumeric() ? $"{Height}px" : Height;
+            builder.Append($"height:{value}");
+        }
     }
 
     /// <inheritdoc />
@@ -155,8 +168,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             {
                 ContainerStyleBuilder = null;
             }
-
-            Disposed = true;
         }
         base.Dispose(disposing);
     }
@@ -175,10 +186,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
                 {
                     ContainerStyleBuilder = null;
                 }
-
-                AsyncDisposed = true;
             }
-
             return base.DisposeAsync(disposing);
         }
         catch (Exception exc)
@@ -200,16 +208,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     #endregion
 
     #region Properties, Indexers
-
-    /// <summary>
-    /// Indicates if the component is already fully disposed (asynchronously).
-    /// </summary>
-    protected new bool AsyncDisposed { get; private set; }
-
-    /// <summary>
-    /// Indicates if the component is already fully disposed.
-    /// </summary>
-    protected new bool Disposed { get; private set; }
 
     /// <summary>
     /// Gets or sets chart container height.
