@@ -177,7 +177,7 @@ public partial class Button : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
-    protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder => { builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> {loadingText}"); };
+    protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder => { builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-{BootstrapClassProvider.ToSize(Size == Size.None ? Size.Medium : Size)}\" role=\"status\" aria-hidden=\"true\"></span> {loadingText}"); };
 
     private void SetAttributes()
     {
