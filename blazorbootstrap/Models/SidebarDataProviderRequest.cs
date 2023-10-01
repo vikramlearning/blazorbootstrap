@@ -26,7 +26,7 @@ public class SidebarDataProviderRequest
 
             if (childNavItems is not null && childNavItems.Any())
             {
-                navItem.HasChilds = true;
+                navItem.HasChildItems = true;
                 navItem.ChildItems = childNavItems;
             }
         }

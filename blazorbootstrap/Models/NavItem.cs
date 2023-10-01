@@ -4,17 +4,28 @@ public class NavItem
 {
     #region Properties, Indexers
 
+    /// <summary>
+    /// Gets or sets the collection of child navigation items.
+    /// </summary>
     internal IEnumerable<NavItem>? ChildItems { get; set; }
 
     /// <summary>
-    /// Gets or sets the custom icon name.
+    /// Gets or sets an additional CSS class.
+    /// </summary>
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Gets or sets the name of the custom icon to display.
     /// </summary>
     public string? CustomIconName { get; set; }
 
-    internal bool HasChilds { get; set; }
+    /// <summary>
+    /// Gets or sets a Boolean value indicating whether the navigation item has child items.
+    /// </summary>
+    internal bool HasChildItems { get; set; }
 
     /// <summary>
-    /// Gets or sets the href.
+    /// Gets or sets the HyperText Reference (href).
     /// </summary>
     public string? Href { get; set; }
 
@@ -57,11 +68,6 @@ public class NavItem
     /// Gets or sets the navigation link text.
     /// </summary>
     public string? Text { get; set; }
-    
-    /// <summary>
-    /// Gets or sets an additional css class for the item
-    /// </summary>
-    public string? Class { get; set; }
 
     #endregion
 }
