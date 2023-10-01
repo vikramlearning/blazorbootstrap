@@ -35,16 +35,17 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 
 | Name | Type | Default | Required | Descritpion | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| CustomIconName | string | | | Gets or sets the custom icon name. | 1.4.0 |
-| Href | string | | ✔️ | Gets or sets the href. | 1.4.0 |
+| Class | `string?` | null | | Gets or sets an additional CSS class. | 1.10.3 |
+| CustomIconName | `string?` | null | | Gets or sets the custom icon name. | 1.4.0 |
+| Href | `string?` | | ✔️ | Gets or sets the href. | 1.4.0 |
 | IconColor | `IconColor` | `IconColor.None` | | Gets or sets the icon color. | 1.4.0 |
 | IconName | `IconName` | `IconName.None` | | Gets or sets the icon name. | 1.4.0 |
-| Id | string | | | Gets or sets the Id. | 1.4.0 |
+| Id | `string?` | null | | Gets or sets the Id. | 1.4.0 |
 | Match | `NavLinkMatch` | `NavLinkMatch.Prefix` | | Gets or sets the URL matching behavior. | 1.4.0 |
-| ParentId | string | | | Gets or sets the parent Id. | 1.4.0 |
+| ParentId | `string?` | null | | Gets or sets the parent Id. | 1.4.0 |
 | Sequence | int | | | Gets or sets the sequence. | 1.4.0 |
 | Target | `Target` | `Target.None` | | Gets or sets the target. | 1.4.0 |
-| Text | string | | ✔️ | Gets or sets the navigation link text. | 1.4.0 |
+| Text | `string?` | | ✔️ | Gets or sets the navigation link text. | 1.4.0 |
 
 ## Examples
 
@@ -639,3 +640,56 @@ Developers can customize the sidebar color by changing the CSS variables, as men
 ```
 
 [See demo here.](https://demos.blazorbootstrap.com/sidebar#customize-sidebar)
+
+### Apply custom CSS class to NavItem
+
+Set the Class property of a NavItem to apply a custom CSS class.
+
+<img src="https://i.imgur.com/3Xq3aaE.png" alt="Blazor Sidebar - Apply custom CSS class to NavItem" />
+
+```cshtml {} showLineNumbers
+<Sidebar @ref="sidebar"
+         IconName="IconName.BootstrapFill"
+         Title="Blazor Bootstrap"
+         DataProvider="SidebarDataProvider" />
+```
+
+```cshtml {} showLineNumbers
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content" },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components" },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4", Class="px-3"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4", Class="px-3"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId="4", Class="px-3"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms" },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+}
+```
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#apply-custom-css-class-to-navitem)

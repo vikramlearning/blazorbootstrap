@@ -17,10 +17,13 @@ We are excited to release 1.10.3 with enhancements to dropdown, icons, and other
 ## What's changed
 
 - `Dropdown` component
-  - Add feature to disable Dropdown [#373](https://github.com/vikramlearning/blazorbootstrap/issues/352)
+  - Add feature to disable Dropdown [#373](https://github.com/vikramlearning/blazorbootstrap/issues/373)
 
 - `Icon` component
   - Sizing for icons in buttons is strange [#346](https://github.com/vikramlearning/blazorbootstrap/issues/346)
+
+- `Sidebar` component
+  - Sidebar: Add option to space items [#276](https://github.com/vikramlearning/blazorbootstrap/issues/276)
 
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
