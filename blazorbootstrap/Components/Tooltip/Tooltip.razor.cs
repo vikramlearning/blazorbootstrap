@@ -19,7 +19,13 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
+            try {
+                await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
+            }
+            catch (JSDisconnectedException)
+            {
+                // ignored
+            }
             objRef?.Dispose();
         }
 
