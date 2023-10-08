@@ -47,7 +47,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.TableSticky(), EnableStickyHeader);
+        builder.Append(BootstrapClassProvider.TableSticky(), AllowFixedHeader);
 
         base.BuildClasses(builder);
     }
@@ -121,7 +121,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     {
         var styleAttributes = new HashSet<string>();
 
-        if (EnableStickyHeader)
+        if (AllowFixedHeader)
         {
             styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit}");
         }
@@ -547,6 +547,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public bool AllowFiltering { get; set; }
 
     /// <summary>
+    /// Gets or sets the grid fixed header.
+    /// </summary>
+    [Parameter]
+    public bool AllowFixedHeader { get; set; }
+
+    /// <summary>
     /// Gets or sets the grid paging.
     /// </summary>
     [Parameter]
@@ -611,9 +617,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public string EmptyText { get; set; } = "No records to display";
-
-    [Parameter]
-    public bool EnableStickyHeader { get; set; }
 
     /// <summary>
     /// Gets or sets the filters row css class.

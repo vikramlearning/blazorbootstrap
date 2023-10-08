@@ -1,8 +1,16 @@
-﻿<Grid @ref="grid"
+﻿<style>
+    :root {
+        --bb-table-sticky-background-color: rgba(var(--bs-dark-rgb),var(--bs-bg-opacity)) !important;
+    }
+</style>
+
+<Grid @ref="grid"
       TItem="Employee4"
+      AllowFiltering="true"
+      AllowFixedHeader="true"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
-      EnableStickyHeader="true"
+      HeaderRowCssClass="bg-dark text-white border-bottom-0"
       Height="350"
       Responsive="true"
       Unit="Unit.px">
