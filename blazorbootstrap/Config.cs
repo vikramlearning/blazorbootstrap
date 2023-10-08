@@ -22,23 +22,8 @@ public static class Config
         serviceCollection.AddScoped<PreloadService>();
         serviceCollection.AddScoped<ToastService>();
 
-        serviceCollection.AddBootstrapComponents();
-
         return serviceCollection;
     }
-
-    public static IServiceCollection AddBootstrapComponents(this IServiceCollection serviceCollection)
-    {
-        foreach (var mapping in ComponentMap) serviceCollection.AddTransient(mapping.Key, mapping.Value);
-
-        return serviceCollection;
-    }
-
-    #endregion
-
-    #region Properties, Indexers
-
-    public static IDictionary<Type, Type> ComponentMap => new Dictionary<Type, Type> { { typeof(Button), typeof(Button) } };
 
     #endregion
 }

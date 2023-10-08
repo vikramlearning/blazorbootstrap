@@ -45,7 +45,16 @@ public partial class Modal : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId);
+            try
+            {
+                if (Rendered)
+                    await JS.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", ElementId);
+            }
+            catch (JSDisconnectedException)
+            {
+                // do nothing
+            }
+
             objRef?.Dispose();
 
             if (ModalService is not null && IsServiceModal)
