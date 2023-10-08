@@ -163,6 +163,26 @@ public class BootstrapClassProvider
 
     public string Show() => "show";
 
+    public string Table() => "table";
+    public string TableActive() => "table-active";
+    public string TableBordered() => "table-bordered";
+    public string TableBorderless() => "table-borderless";
+    public string TableDanger() => "table-danger";
+    public string TableDark() => "table-dark";
+    public string TableGroupDivider() => "table-group-divider";
+    public string TableHover() => "table-hover";
+    public string TableInfo() => "table-info";
+    public string TableLight() => "table-light";
+    public string TablePrimary() => "table-primary";
+    public string TableResponsive() => "table-responsive";
+    public string TableSecondary() => "table-secondary";
+    public string TableSticky() => "bb-table-sticky";
+    public string TableStriped() => "table-striped";
+    public string TableSmall() => "table-sm";
+    public string TableStripedColumns() => "table-striped-columns";
+    public string TableSuccess() => "table-success";
+    public string TableWarning() => "table-warning";
+
     public string TextAlignment(Alignment alignment) => $"text-{ToAlignment(alignment)}";
 
     public string TextAndBackgroundColor(BackgroundColor backgroundColor) => $"text-bg-{ToBackgroundColor(backgroundColor)}";

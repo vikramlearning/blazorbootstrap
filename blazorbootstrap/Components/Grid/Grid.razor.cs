@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Globalization;
+
+namespace BlazorBootstrap;
 
 public partial class Grid<TItem> : BlazorBootstrapComponentBase
 {
@@ -42,6 +44,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     #endregion
 
     #region Methods
+
+    protected override void BuildClasses(CssClassBuilder builder)
+    {
+        builder.Append(BootstrapClassProvider.TableSticky(), EnableStickyHeader);
+
+        base.BuildClasses(builder);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -108,6 +117,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
               .Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
               ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison));
 
+    private string GetGridParentStyle()
+    {
+        var styleAttributes = new HashSet<string>();
+
+        if (EnableStickyHeader)
+        {
+            styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit}");
+        }
+
+        return string.Join(":", styleAttributes);
+    }
+
     /// <summary>
     /// Refresh the grid data.
     /// </summary>
@@ -150,13 +171,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await LoadGridSettingsAsync();
 
         var request = new GridDataProviderRequest<TItem>
-                      {
-                          PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
-                          PageSize = AllowPaging ? pageSize : 0,
-                          Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting() : null,
-                          Filters = AllowFiltering ? GetFilters() : null,
-                          CancellationToken = cancellationToken
-                      };
+        {
+            PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
+            PageSize = AllowPaging ? pageSize : 0,
+            Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting() : null,
+            Filters = AllowFiltering ? GetFilters() : null,
+            CancellationToken = cancellationToken
+        };
 
         GridDataProviderResult<TItem> result = default!;
 
@@ -591,6 +612,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public string EmptyText { get; set; } = "No records to display";
 
+    [Parameter]
+    public bool EnableStickyHeader { get; set; }
+
     /// <summary>
     /// Gets or sets the filters row css class.
     /// </summary>
@@ -603,6 +627,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public GridFiltersTranslationDelegate FiltersTranslationProvider { get; set; } = default!;
+
+    private string gridParentStyle => GetGridParentStyle();
 
     /// <summary>
     /// This event is fired when the grid state is changed.
@@ -657,7 +683,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                                         builder.CloseElement(); // close: th
                                     };
 
-    [Parameter] [EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
+    [Parameter]
+    public float Height { get; set; } = 320;
+
+    [Parameter][EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.
@@ -740,6 +769,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the units.
+    /// </summary>
+    [Parameter]
+    public Unit Unit { get; set; } = Unit.px;
 
     private int totalPages => GetTotalPagesCount();
 
