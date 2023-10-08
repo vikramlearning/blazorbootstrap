@@ -63,8 +63,15 @@ public partial class Button : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
     {
-        if (disposing && !string.IsNullOrWhiteSpace(TooltipTitle))
-            await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
+        if (disposing && !string.IsNullOrWhiteSpace(TooltipTitle) && Rendered)
+            try
+            {
+                await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
+            }
+            catch (JSDisconnectedException)
+            {
+                // do nothing
+            }
 
         await base.DisposeAsync(disposing);
     }
