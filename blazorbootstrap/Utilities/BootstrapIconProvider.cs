@@ -31,10 +31,12 @@ public class BootstrapIconProvider
     {
         return iconSize switch
                {
+                   BlazorBootstrap.IconSize.x1 => "fs-1",
                    BlazorBootstrap.IconSize.x2 => "fs-2",
                    BlazorBootstrap.IconSize.x3 => "fs-3",
                    BlazorBootstrap.IconSize.x4 => "fs-4",
                    BlazorBootstrap.IconSize.x5 => "fs-5",
+                   BlazorBootstrap.IconSize.x6 => "fs-6",
                    _ => null
                };
     }

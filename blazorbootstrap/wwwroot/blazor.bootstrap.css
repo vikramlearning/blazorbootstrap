@@ -44,6 +44,9 @@
     --bb-tooltip-dark: var(--bs-dark);
     --bb-tooltip-color-white: var(--bs-white);
     --bb-tooltip-color-dark: var(--bs-black);
+    /* border */
+    --bs-border-radius-xs: 0.125rem;
+    --bs-border-radius-md: 0.375rem;
 }
 
 /* preload */
@@ -382,4 +385,75 @@ main {
 .bb-tooltip-dark {
     --bs-tooltip-bg: var(--bb-tooltip-dark);
     --bs-tooltip-color: var(--bb-tooltip-color-white);
+}
+
+/* button */
+.btn-xs {
+    --bs-btn-padding-y: 0.125rem;
+    --bs-btn-padding-x: 0.25rem;
+    --bs-btn-font-size: 0.75rem;
+    --bs-btn-border-radius: var(--bs-border-radius-sm);
+}
+
+.btn-sm {
+    --bs-btn-padding-y: 0.25rem;
+    --bs-btn-padding-x: 0.5rem;
+    --bs-btn-font-size: 0.875rem;
+    --bs-btn-border-radius: var(--bs-border-radius-sm);
+}
+
+.btn-md {
+    --bs-btn-padding-y: 0.375rem;
+    --bs-btn-padding-x: 0.75rem;
+    --bs-btn-font-size: 1rem;
+    --bs-btn-border-radius: var(--bs-border-radius-md);
+}
+
+.btn-lg {
+    --bs-btn-padding-y: 0.5rem;
+    --bs-btn-padding-x: 1rem;
+    --bs-btn-font-size: 1.25rem;
+    --bs-btn-border-radius: var(--bs-border-radius-lg);
+}
+.btn-xl {
+    --bs-btn-padding-y: 0.625rem;
+    --bs-btn-padding-x: 1.25rem;
+    --bs-btn-font-size: 1.5rem;
+    --bs-btn-border-radius: var(--bs-border-radius-lg);
+}
+
+/* button > spinner */
+.spinner-border-xs {
+    --bs-spinner-width: 0.5rem;
+    --bs-spinner-height: 0.5rem;
+    --bs-spinner-border-width: 0.125em;
+    --bs-spinner-vertical-align: 0;
+}
+
+.spinner-border-sm {
+    --bs-spinner-width: 0.75rem;
+    --bs-spinner-height: 0.75rem;
+    --bs-spinner-border-width: 0.15em;
+    --bs-spinner-vertical-align: 0;
+}
+
+.spinner-border-md {
+    --bs-spinner-width: 1rem;
+    --bs-spinner-height: 1rem;
+    --bs-spinner-border-width: 0.175em;
+    --bs-spinner-vertical-align: -0.125em;
+}
+
+.spinner-border-lg {
+    --bs-spinner-width: 1.25rem;
+    --bs-spinner-height: 1.25rem;
+    --bs-spinner-border-width: 0.2em;
+    --bs-spinner-vertical-align: -0.125em;
+}
+
+.spinner-border-xl {
+    --bs-spinner-width: 1.5rem;
+    --bs-spinner-height: 1.5rem;
+    --bs-spinner-border-width: 0.225em;
+    --bs-spinner-vertical-align: -0.125em;
 }
