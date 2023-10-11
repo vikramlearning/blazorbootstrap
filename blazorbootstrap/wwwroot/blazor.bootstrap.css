@@ -226,20 +226,31 @@ table button.dropdown-toggle.bb-grid-filter::after {
     margin-bottom: 0rem;
 }
 
-    .bb-table-sticky > thead > tr > th,
-    .bb-table-sticky > thead > tr > td {
-        background-color: var(--bb-table-sticky-background-color);
-        top: -0.5px;
-        position: sticky;
-        border-style: solid;
-        border-width: 1px 1px !important;
-        border-color: var(--bs-table-border-color);
-        box-shadow: inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+
+    .bb-table-sticky > thead > tr {
+        border-top-width: 0 !important;
+        border-bottom-width: 0 !important;
     }
 
-    .bb-table-sticky > thead > tr:nth-child(2) > th,
-    .bb-table-sticky > thead > tr:nth-child(2) > td {
-        top: 37px;
+        .bb-table-sticky > thead > tr > th,
+        .bb-table-sticky > thead > tr > td {
+            background-color: var(--bb-table-sticky-background-color);
+            top: -0.5px;
+            position: sticky;
+            border-style: solid;
+            border-color: var(--bs-table-border-color);
+            box-shadow: inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+        }
+
+        /* below CSS is applicable, if filters are enabled. */
+        .bb-table-sticky > thead > tr:nth-child(2) > th,
+        .bb-table-sticky > thead > tr:nth-child(2) > td {
+            top: 37px;
+        }
+
+    .bb-table-sticky > tbody > tr:nth-child(1),
+    .bb-table-sticky > tbody > tr:nth-child(1) {
+        border-top-width: 0 !important;
     }
 
 /* scrollbar */
