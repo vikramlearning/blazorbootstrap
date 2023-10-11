@@ -47,7 +47,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.TableSticky(), AllowFixedHeader);
+        builder.Append(BootstrapClassProvider.TableSticky(), FixedHeader);
 
         base.BuildClasses(builder);
     }
@@ -121,7 +121,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     {
         var styleAttributes = new HashSet<string>();
 
-        if (AllowFixedHeader)
+        if (FixedHeader)
         {
             styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit}");
         }
@@ -547,12 +547,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public bool AllowFiltering { get; set; }
 
     /// <summary>
-    /// Gets or sets the grid fixed header.
-    /// </summary>
-    [Parameter]
-    public bool AllowFixedHeader { get; set; }
-
-    /// <summary>
     /// Gets or sets the grid paging.
     /// </summary>
     [Parameter]
@@ -630,6 +624,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public GridFiltersTranslationDelegate FiltersTranslationProvider { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the grid fixed header.
+    /// </summary>
+    [Parameter]
+    public bool FixedHeader { get; set; }
 
     private string gridParentStyle => GetGridParentStyle();
 

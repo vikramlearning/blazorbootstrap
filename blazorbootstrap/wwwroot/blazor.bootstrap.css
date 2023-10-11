@@ -219,7 +219,7 @@ table button.dropdown-toggle.bb-grid-filter::after {
     padding: .375rem;
 }
 
-/* grid - sticky header */
+/* grid - fixed header */
 .bb-table-sticky {
     border-collapse: collapse;
     border-spacing: 0;
