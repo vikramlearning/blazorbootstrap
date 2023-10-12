@@ -140,7 +140,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     [Parameter]
     public GridFiltersTranslationDelegate FiltersTranslationProvider { get; set; } = default!;
 
-    private string filterStyle => FilterWidth > 0 ? $"width:{FilterWidth}px;" : "";
+    private string filterStyle => FilterWidth > 0 ? $"width:{FilterWidth.ToString(CultureInfo.InvariantCulture)}{Unit};" : "";
 
     /// <summary>
     /// Gets or sets filter value.
@@ -163,6 +163,12 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public string? PropertyTypeName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the units.
+    /// </summary>
+    [CascadingParameter(Name = "Unit")]
+    public Unit Unit { get; set; }
 
     #endregion
 }

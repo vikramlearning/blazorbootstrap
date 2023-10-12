@@ -774,6 +774,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
 
     /// <summary>
+    /// Gets or sets the thead css class.
+    /// </summary>
+    [Parameter]
+    public string THeadCssClass { get; set; } = default!;
+
+    /// <summary>
     /// Gets or sets the units.
     /// </summary>
     [Parameter]

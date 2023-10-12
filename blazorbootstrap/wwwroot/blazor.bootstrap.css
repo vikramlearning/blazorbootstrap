@@ -242,10 +242,15 @@ table button.dropdown-toggle.bb-grid-filter::after {
             box-shadow: inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
         }
 
+        .bb-table-sticky > thead > tr:nth-child(2) > th,
+        .bb-table-sticky > thead > tr:nth-child(2) > td {
+            box-shadow: inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+        }
+
         /* below CSS is applicable, if filters are enabled. */
         .bb-table-sticky > thead > tr:nth-child(2) > th,
         .bb-table-sticky > thead > tr:nth-child(2) > td {
-            top: 37px;
+            top: 40px;
         }
 
     .bb-table-sticky > tbody > tr:nth-child(1),

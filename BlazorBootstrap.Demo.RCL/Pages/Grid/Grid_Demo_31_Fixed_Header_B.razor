@@ -1,16 +1,9 @@
-﻿<style>
-    :root {
-        --bb-table-sticky-background-color: rgba(var(--bs-dark-rgb),var(--bs-bg-opacity)) !important;
-    }
-</style>
-
-<Grid @ref="grid"
+﻿<Grid @ref="grid"
       TItem="Employee4"
       AllowFiltering="true"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
       FixedHeader="true"
-      HeaderRowCssClass="bg-dark text-white border-bottom-0"
       Height="350"
       Responsive="true"
       Unit="Unit.px">
@@ -24,8 +17,29 @@
     <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
         @context.Designation
     </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
     <GridColumn TItem="Employee4" HeaderText="DOJ" PropertyName="DOJ">
         @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
     </GridColumn>
     <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
         @context.IsActive
