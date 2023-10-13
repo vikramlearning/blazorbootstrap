@@ -13,7 +13,7 @@ Use Blazor Bootstrap button styles for actions in forms, dialogs, and more with 
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | Active | bool | When set to `true`, places the component in the active state with active styling. | | false | 1.0.0 |
 | Block | bool | Makes the button to span the full width of a parent. | | false | 1.0.0 |

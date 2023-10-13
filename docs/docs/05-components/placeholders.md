@@ -13,14 +13,14 @@ Use Blazor Bootstrap loading placeholders for your components or pages to indica
 
 ## PlaceholderContainer Parameters
 
-| Name | Type | Descritpion | Required | Default |
+| Name | Type | Description | Required | Default |
 |--|--|--|--|--|
 | Animation | `PlaceholderAnimation` |  Gets or sets the placeholder animation. | | `PlaceholderAnimation.Glow` |
 | ChildContent | `RenderFragment` | Specifies the content to be rendered inside this. | | |
 
 ## Placeholder Parameters
 
-| Name | Type | Descritpion | Required | Default |
+| Name | Type | Description | Required | Default |
 |--|--|--|--|--|
 | Width | `PlaceholderWidth` | Gets or sets the placeholder width. | | PlaceholderWidth.Col1 |
 | Color | `PlaceholderColor` | Gets or sets the placeholder color. | | PlaceholderColor.None |

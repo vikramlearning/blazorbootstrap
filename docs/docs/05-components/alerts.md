@@ -13,7 +13,7 @@ Provide contextual feedback messages for typical user actions with the handful o
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default |
+| Name | Type | Description | Required | Default |
 |--|--|--|--|--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside the alert. | | |
 | Color | `AlertColor` | Gets or sets the alert color. | | `AlertColor.None` |

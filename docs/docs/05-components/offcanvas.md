@@ -13,7 +13,7 @@ Build hidden sidebars into your project for navigation, shopping carts, and more
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |--|--|--|--|--|--|
 | BodyCssClass | string | Additional body CSS class. | | | 1.0.0 |
 | BodyTemplate | RenderFragment | Body content. | ✔️ | | 1.0.0 |

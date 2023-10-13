@@ -15,7 +15,7 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 
 ## Parameters
 
-| Name | Type | Default | Required | Descritpion | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | BadgeText | string | | | Gets or sets the badge text. | 1.4.0 |
 | CustomIconName | string | | | Gets or sets the custom icon name. | 1.4.0 |
@@ -33,7 +33,7 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 
 ## NavItem Properties
 
-| Name | Type | Default | Required | Descritpion | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | Class | `string?` | null | | Gets or sets an additional CSS class. | 1.10.3 |
 | CustomIconName | `string?` | null | | Gets or sets the custom icon name. | 1.4.0 |

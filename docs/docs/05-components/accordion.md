@@ -15,7 +15,7 @@ Build vertically collapsing accordions in combination with our Collapse componen
 
 ## Accordion Parameters
 
-| Name | Type | Default | Required | Descritpion | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | null | ✔️ | Specifies the content to be rendered inside this <see cref="Collapse"/>.| 1.7.0 |
 | Flush | bool | false | | Removes borders and rounded corners to render accordions edge-to-edge with their parent container. | 1.7.0 |
@@ -41,7 +41,7 @@ Build vertically collapsing accordions in combination with our Collapse componen
 
 ## AccordionItem Parameters
 
-| Name | Type | Default | Required | Descritpion | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | Content | RenderFragment | null | ✔️ | Specifies the content to be rendered inside the `AccordionItem`. | 1.7.0 |
 | IsActive | bool | false | | Gets or sets the active `AccordionItem`. | 1.7.0 |

@@ -21,7 +21,7 @@ A card is a flexible and extensible content container. It includes options for h
 
 ### Card Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 | Color | `CardColor` | Gets or sets the card color. | | `CardColor.None` | 1.10.0 |
@@ -29,31 +29,31 @@ A card is a flexible and extensible content container. It includes options for h
 
 ### CardBody Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 
 ### CardFooter Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 
 ### CardGroup Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 
 ### CardHeader Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 
 ### CardLink Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 | Disabled | bool | When set to 'true', disables the component's functionality and places it in a disabled state. | | | 1.10.0 |
@@ -63,20 +63,20 @@ A card is a flexible and extensible content container. It includes options for h
 
 ### CardSubTitle Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 | Size | `HeadingSize` | Gets or sets the heading size. | | `HeadingSize.H6` | 1.10.0 |
 
 ### CardText Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 
 ### CardTitle Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
 | Size | `HeadingSize` | Gets or sets the heading size. | | `HeadingSize.H5` | 1.10.0 |

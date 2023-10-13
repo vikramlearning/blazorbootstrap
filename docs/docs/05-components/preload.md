@@ -22,7 +22,7 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 
 ## Parameters
 
-| Name | Type | Default | Descritpion | Required |  Version Added |
+| Name | Type | Default | Description | Required |  Version Added |
 |--|--|--|--|--|--|
 | ChildContent | RenderFragment | null | Specifies the content to be rendered inside this. | | 1.1.0 |
 

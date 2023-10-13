@@ -23,7 +23,7 @@ Blazor Toasts are lightweight notifications designed to mimic the push notificat
 
 ## Toasts Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | AutoHide | bool | Auto hide the toast. | | `false` | 1.0.0 |
 | Delay | int | Delay hiding the toast (milli seconds). | | 5000 | 1.0.0 |

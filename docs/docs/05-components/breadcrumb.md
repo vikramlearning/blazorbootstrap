@@ -13,7 +13,7 @@ Blazor Bootstrap breadcrumb component indicates the current page's location with
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default |
+| Name | Type | Description | Required | Default |
 |--|--|--|--|--|
 | Items | `List<BreadcrumbItem>` | List of all the items. | ✔️ | |
 
