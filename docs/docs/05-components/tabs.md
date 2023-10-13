@@ -13,7 +13,7 @@ Documentation and examples for how to use Blazor Bootstrap tabs components.
 
 ## Tabs Parameters
 
-| Name | Type | Descritpion | Required | Default |
+| Name | Type | Description | Required | Default |
 |:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | |
 | EnableFadeEffect | bool | Gets or sets the tabs fade effect. | | false |
@@ -30,7 +30,7 @@ Documentation and examples for how to use Blazor Bootstrap tabs components.
 
 ## Tab Parameters
 
-| Name | Type | Descritpion | Required | Default |
+| Name | Type | Description | Required | Default |
 |:--|:--|:--|:--|:--|
 | Title | string | Gets or sets the tab title. | | |
 | TitleTemplate | RenderFragment | Gets or sets the tab title template. | | |

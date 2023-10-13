@@ -13,7 +13,7 @@ Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version | 
+| Name | Type | Description | Required | Default | Added Version | 
 |--|--|--|--|--|--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | | 1.0.0 |
 | Color | `TooltipColor` | Gets or sets the tooltip color. | | `TooltipColor.None` | 1.10.0 |

@@ -23,7 +23,7 @@ Blazor Bootstrap icon component will display an icon from any icon font.
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | Color | `IconColor` | Gets or sets the icon color. | | `IconColor.None` | 1.9.0 |
 | CustomIconName | string | Specify custom icons of your own, like `fontawesome`. Example: `fas fa-alarm-clock` | ✔️ | | 1.0.0 |

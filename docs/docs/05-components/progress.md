@@ -15,14 +15,14 @@ Documentation and examples for using the Blazor Bootstrap progress component fea
 
 ## Progress Parameters
 
-| Name | Type | Default | Required | Descritpion |
+| Name | Type | Default | Required | Description |
 |:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside this. |
 | Height | double | 16 | | Gets or sets the height of the Progress. Height is measured in pixels, and the default height is 16 pixels. |
 
 ## ProgressBar Parameters
 
-| Name | Type | Default | Required | Descritpion |
+| Name | Type | Default | Required | Description |
 |:--|:--|:--|:--|:--|
 | Color| `ProgressColor` | | | Gets or sets the progress color. |
 | Label | string | | | Gets or sets the progress bar label. |

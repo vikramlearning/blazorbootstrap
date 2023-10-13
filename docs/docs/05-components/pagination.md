@@ -13,7 +13,7 @@ Use Blazor Bootstrap pagination component to indicate a series of related conten
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default |
+| Name | Type | Description | Required | Default |
 |--|--|--|--|--|
 | ActivePageNumber | int | Active page number. Starts with 1. | | 1 |
 | Alignment | `Alignment` | Gets or sets the pagination alignment. | | `Alignment.None` |

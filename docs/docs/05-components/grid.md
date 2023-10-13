@@ -15,7 +15,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 
 ## Grid Parameters
 
-| Name | Type | Default | Required | Descritpion | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | AllowFiltering | bool | false | | Gets or sets the grid filtering. | 1.0.0 |
 | AllowPaging | bool | false | | Gets or sets the grid paging. | 1.0.0 |
@@ -48,7 +48,7 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 
 ## Grid Callback Events
 
-| Name | Type | Descritpion | Added Version |
+| Name | Type | Description | Added Version |
 |:--|:--|:--|:--|
 | GridSettingsChanged | `EventCallback<GridSettings>` | This event is fired when the grid state is changed. | 1.0.0 |
 | OnRowClick | `EventCallback<GridRowEventArgs<TItem>>` | This event is triggered when the user clicks on the row. Set AllowRowClick to true to enable row clicking. | 1.9.5 |
@@ -64,7 +64,7 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 
 ## GridColumn Parameters
 
-| Name | Type | Default | Required | Descritpion | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid column. | 1.0.0 |
 | ColumnClass | Func<TItem, string>? | | | Gets or sets the column class. | 1.6.0 |

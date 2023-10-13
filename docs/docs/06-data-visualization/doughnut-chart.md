@@ -21,7 +21,7 @@ It is similar to a pie chart, but the center of the donut chart is hollow. This 
 
 ## Methods
 
-| Name | Return type | Descritpion | Added Version |
+| Name | Return type | Description | Added Version |
 |:--|:--|:--|:--|
 | AddDataAsync | `ChartData` | Adds data to bar chart. | 1.10.0 |
 | AddDatasetAsync | `ChartData` | Adds dataset to bar chart. | 1.10.0 |

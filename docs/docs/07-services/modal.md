@@ -17,7 +17,7 @@ Use Blazor Bootstrap modal service to show quick dialogs to your site for lightb
 
 ## Methods
 
-| Name | Return Type | Descritpion | Added Version |
+| Name | Return Type | Description | Added Version |
 |:--|:--|
 | ShowAsync(**ModalOption** modalOption) | Task | Show the modal. | 1.9.0 |
 
