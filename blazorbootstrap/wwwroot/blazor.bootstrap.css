@@ -258,6 +258,10 @@ table button.dropdown-toggle.bb-grid-filter::after {
         border-top-width: 0 !important;
     }
 
+    .bb-table-sticky > thead > tr > th > div > ul.dropdown-menu.show {
+        top: 6px !important;
+    }
+
 /* scrollbar */
 .v-scroll-auto {
     overflow-y: auto !important;
