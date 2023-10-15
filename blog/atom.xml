@@ -2,11 +2,33 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://docs.blazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Blog</title>
-    <updated>2023-09-15T00:00:00.000Z</updated>
+    <updated>2023-10-15T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://docs.blazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Blog</subtitle>
     <icon>https://docs.blazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v1.10.3]]></title>
+        <id>https://docs.blazorbootstrap.com/blog/2023/10/15/blazorbootstrap-1.10.3</id>
+        <link href="https://docs.blazorbootstrap.com/blog/2023/10/15/blazorbootstrap-1.10.3"/>
+        <updated>2023-10-15T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 1.10.3 with enhancements to grid, dropdown, icons, and others!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 1.10.3 with enhancements to grid, dropdown, icons, and others!!!</p><p><img loading="lazy" src="https://i.imgur.com/QRgyrZK.png" alt="image" title="Blazor Bootstrap: Gird Component - Fixed header" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>Grid</code> component</p><ul><li>Grid: Fixed Header Support <a href="https://github.com/vikramlearning/blazorbootstrap/issues/53" target="_blank" rel="noopener noreferrer">#53</a></li></ul></li><li><p><code>Dropdown</code> component</p><ul><li>Add feature to disable Dropdown <a href="https://github.com/vikramlearning/blazorbootstrap/issues/373" target="_blank" rel="noopener noreferrer">#373</a></li></ul></li><li><p><code>Icon</code> component</p><ul><li>Sizing for icons in buttons is strange <a href="https://github.com/vikramlearning/blazorbootstrap/issues/346" target="_blank" rel="noopener noreferrer">#346</a></li></ul></li><li><p><code>Sidebar</code> component</p><ul><li>Sidebar: Add option to space items <a href="https://github.com/vikramlearning/blazorbootstrap/issues/276" target="_blank" rel="noopener noreferrer">#276</a></li></ul></li><li><p>Docs updates</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://docs.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Documentation</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v1.10.3" term="v1.10.3"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="dropdown" term="dropdown"/>
+        <category label="blazordropdown" term="blazordropdown"/>
+        <category label="icon" term="icon"/>
+        <category label="blazoricon" term="blazoricon"/>
+        <category label="docs" term="docs"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.10.2]]></title>
         <id>https://docs.blazorbootstrap.com/blog/2023/09/15/blazorbootstrap-1.10.2</id>

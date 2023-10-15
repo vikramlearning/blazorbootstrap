@@ -4,10 +4,28 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://docs.blazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Fri, 15 Sep 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 15 Oct 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.10.3]]></title>
+            <link>https://docs.blazorbootstrap.com/blog/2023/10/15/blazorbootstrap-1.10.3</link>
+            <guid>https://docs.blazorbootstrap.com/blog/2023/10/15/blazorbootstrap-1.10.3</guid>
+            <pubDate>Sun, 15 Oct 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.10.3 with enhancements to grid, dropdown, icons, and others!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.10.3 with enhancements to grid, dropdown, icons, and others!!!</p><p><img loading="lazy" src="https://i.imgur.com/QRgyrZK.png" alt="image" title="Blazor Bootstrap: Gird Component - Fixed header" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>Grid</code> component</p><ul><li>Grid: Fixed Header Support <a href="https://github.com/vikramlearning/blazorbootstrap/issues/53" target="_blank" rel="noopener noreferrer">#53</a></li></ul></li><li><p><code>Dropdown</code> component</p><ul><li>Add feature to disable Dropdown <a href="https://github.com/vikramlearning/blazorbootstrap/issues/373" target="_blank" rel="noopener noreferrer">#373</a></li></ul></li><li><p><code>Icon</code> component</p><ul><li>Sizing for icons in buttons is strange <a href="https://github.com/vikramlearning/blazorbootstrap/issues/346" target="_blank" rel="noopener noreferrer">#346</a></li></ul></li><li><p><code>Sidebar</code> component</p><ul><li>Sidebar: Add option to space items <a href="https://github.com/vikramlearning/blazorbootstrap/issues/276" target="_blank" rel="noopener noreferrer">#276</a></li></ul></li><li><p>Docs updates</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://docs.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.10.3</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>dropdown</category>
+            <category>blazordropdown</category>
+            <category>icon</category>
+            <category>blazoricon</category>
+            <category>docs</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.10.2]]></title>
             <link>https://docs.blazorbootstrap.com/blog/2023/09/15/blazorbootstrap-1.10.2</link>
