@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Grid<TItem> : BlazorBootstrapComponentBase
 {

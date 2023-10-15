@@ -3,9 +3,7 @@
 @typeparam TItem
 
 <CascadingValue Value="@(this)" IsFixed="true">
-    <CascadingValue IsFixed="true" Value="@Unit" Name="Unit">
-        @ChildContent
-    </CascadingValue>
+    @ChildContent
 </CascadingValue>
 
 @if (columns.Any())
@@ -35,12 +33,14 @@
                             <th class="@column.Class">
                                 @if (column.Filterable)
                                 {
-                                    <GridColumnFilter GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
-                                                      FilterOperator="@column.FilterOperator"
+                                    <GridColumnFilter FilterOperator="@column.FilterOperator"
                                                       FilterValue="@column.FilterValue"
                                                       FilterWidth="@column.FilterTextboxWidth"
                                                       FiltersTranslationProvider="GridFiltersTranslationProviderAsync"
-                                                      PropertyTypeName="@column.GetPropertyTypeName()" />
+                                                      FixedHeader="@FixedHeader"
+                                                      GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
+                                                      PropertyTypeName="@column.GetPropertyTypeName()"
+                                                      Unit="@Unit" />
                                 }
                             </th>
                         }

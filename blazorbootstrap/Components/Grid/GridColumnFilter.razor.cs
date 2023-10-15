@@ -154,7 +154,11 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     [Parameter]
     public int FilterWidth { get; set; }
 
-    //[CascadingParameter] public Grid<TItem> Grid { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets the grid fixed header.
+    /// </summary>
+    [Parameter]
+    public bool FixedHeader { get; set; }
 
     [Parameter] public EventCallback<FilterEventArgs> GridColumnFilterChanged { get; set; }
 
@@ -167,7 +171,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the units.
     /// </summary>
-    [CascadingParameter(Name = "Unit")]
+    [Parameter]
     public Unit Unit { get; set; }
 
     #endregion
