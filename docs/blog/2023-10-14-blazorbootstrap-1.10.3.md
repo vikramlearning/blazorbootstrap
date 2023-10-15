@@ -19,6 +19,9 @@ We are excited to release 1.10.3 with enhancements to dropdown, icons, and other
 - `Dropdown` component
   - Add feature to disable Dropdown [#373](https://github.com/vikramlearning/blazorbootstrap/issues/373)
 
+- `Grid` component
+  - 
+
 - `Icon` component
   - Sizing for icons in buttons is strange [#346](https://github.com/vikramlearning/blazorbootstrap/issues/346)
 

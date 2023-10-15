@@ -31,7 +31,9 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | EmptyText | string | No records to display | | Shows text on no records. | 1.0.0 |
 | FiltersRowCssClass | string | | | Gets or sets the filters row css class. | 1.9.2 |
 | FiltersTranslationProvider | `GridFiltersTranslationDelegate` | | | Filters transalation is for grid filters to render. The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed. | 1.10.0 |
+| FixedHeader | bool | false | | Gets or sets the grid fixed header. | 1.10.3 |
 | HeaderRowCssClass | string | | | Gets or sets the header row css class but not the thead tag class. | 1.9.2 |
+| Height | float | 320 pixels | | Gets or sets the grid height. | 1.10.3 |
 | ItemsPerPageText | string | `Items per page` | ✔️ | Gets or sets the ItemsPerPageText. | 1.9.5 |
 | PageSize | int | 10 | | Gets or sets the page size of the grid. | 1.0.0 |
 | PageSizeSelectorItems | int[] | new int[] { 10, 20, 50 } | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
@@ -41,6 +43,8 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | Responsive | bool | false | | Gets or sets a value indicating whether Grid is responsive. | 1.0.0 |
 | SelectionMode | `GridSelectionMode` | | | Gets or sets the grid selection mode. | 1.8.0 |
 | SettingsProvider | `GridSettingsProviderDelegate` | | | Settings are for the grid to render. The provider should always return an instance of 'GridSettings', and 'null' is not allowed. | 1.0.0 |
+| THeadCssClass | `string?` | null | | Gets or sets the thead css class. | 1.10.3 | 
+| Unit | `Unit` | `Unit.px` | | Gets or sets the units. | 1.10.3 |
 
 :::note IMPORTANT
 Grid requires either `Data` or `DataProvider` parameter, but not both.
@@ -2634,3 +2638,100 @@ In the example below, you will see translations related to pagination and filter
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/grid#translations)
+
+### Fixed header
+
+To set the fixed header, set the **FixedHeader** parameter to **true**. The minimum height of the grid is **320 pixels**. You can change the units to em, pt, px, or etc. by setting the **Unit** parameter.
+
+<img src="https://i.imgur.com/KRsQK6I.png" alt="Blazor Bootstrap: Grid Component - Fixed header" />
+
+<img src="https://i.imgur.com/QRgyrZK.png" alt="Blazor Bootstrap: Grid Component - Fixed header with filters" />
+
+```cshtml {5,6,8} showLineNumbers
+<Grid @ref="grid"
+      TItem="Employee4"
+      Class="table table-hover table-bordered"
+      DataProvider="EmployeesDataProvider"
+      FixedHeader="true"
+      Height="350"
+      Responsive="true"
+      Unit="Unit.px">
+
+    <GridColumn TItem="Employee4" HeaderText="Id" PropertyName="Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Employee Name" PropertyName="Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+        @context.Designation
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="DOJ" PropertyName="DOJ">
+        @context.DOJ
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+        @context.IsActive
+    </GridColumn>
+
+</Grid>
+```
+
+```cs {} showLineNumbers
+@code {
+    BlazorBootstrap.Grid<Employee4> grid = default!;
+    private IEnumerable<Employee4> employees = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task<GridDataProviderResult<Employee4>> EmployeesDataProvider(GridDataProviderRequest<Employee4> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee4> GetEmployees()
+    {
+        return new List<Employee4>
+        {
+            new Employee4 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee4 { Id = null, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee4 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee4 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee4 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee4 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee4 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee4 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee4 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = null, IsActive = true },
+            new Employee4 { Id = 110, Name = "Vijay", Designation = null, DOJ = new DateOnly(1990, 7, 1), IsActive = true },
+        };
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#fixed-header)

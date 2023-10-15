@@ -684,6 +684,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                                         builder.CloseElement(); // close: th
                                     };
 
+    /// <summary>
+    /// Gets or sets the grid height.
+    /// </summary>
     [Parameter]
     public float Height { get; set; } = 320;
 
@@ -775,7 +778,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the thead css class.
     /// </summary>
     [Parameter]
-    public string THeadCssClass { get; set; } = default!;
+    public string? THeadCssClass { get; set; }
 
     /// <summary>
     /// Gets or sets the units.
