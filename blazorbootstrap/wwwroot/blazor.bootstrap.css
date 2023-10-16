@@ -49,6 +49,7 @@
     --bs-border-radius-md: 0.375rem;
     /* table */
     --bb-table-sticky-background-color: #fff;
+    --bb-table-freeze-column-background-color: #fff;
 }
 
 /* preload */
@@ -225,7 +226,6 @@ table button.dropdown-toggle.bb-grid-filter::after {
     border-spacing: 0;
     margin-bottom: 0rem;
 }
-
 
     .bb-table-sticky > thead > tr {
         border-top-width: 0 !important;

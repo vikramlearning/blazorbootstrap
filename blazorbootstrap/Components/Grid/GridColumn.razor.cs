@@ -150,7 +150,23 @@ public partial class GridColumn<TItem>
                                         if (classList.Any())
                                             builder.AddAttribute(101, "class", string.Join(" ", classList));
 
-                                        builder.AddContent(102, ChildContent, rowData);
+                                        if (Freeze)
+                                        {
+                                            var styleList = new List<string>();
+                                            styleList.Add($"position:sticky");
+                                            if (FreezeDirection == FreezeDirection.Left)
+                                            {
+                                                styleList.Add($"left:{Width.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                            }
+                                            else
+                                            {
+                                                styleList.Add($"right:{Width.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                            }
+                                            styleList.Add($"background-color:var(--bb-table-freeze-column-background-color)");
+                                            builder.AddAttribute(102, "style", string.Join(";", styleList));
+                                        }
+
+                                        builder.AddContent(103, ChildContent, rowData);
                                         builder.CloseElement();
                                     };
 
@@ -190,6 +206,15 @@ public partial class GridColumn<TItem>
     /// </summary>
     [Parameter]
     public string FilterValue { get; set; } = default!;
+
+    [Parameter]
+    public bool Freeze { get; set; }
+
+    [Parameter]
+    public FreezeDirection FreezeDirection { get; set; }
+
+    [Parameter]
+    public float Width { get; set; }
 
     /// <summary>
     /// Specifies the content to be rendered inside the grid column header.
@@ -243,6 +268,14 @@ public partial class GridColumn<TItem>
                                    // If headercontent is used, filters and sorting wont be added.
                                    builder.AddContent(111, HeaderContent);
                                }
+
+                               //if (FreezeColumn)
+                               //{
+                               //    var styleList = new List<string>();
+                               //    styleList.Add($"position:sticky");
+                               //    styleList.Add($"left:{FreezeColumnAt.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                               //    builder.AddAttribute(112, "style", string.Join(";", styleList));
+                               //}
 
                                builder.CloseElement(); // close: th
                            };
