@@ -8,13 +8,16 @@ authors:
 tags: [v1.10.3, blazor, bootstrap, bootstrap5, blazorbootstrap, dropdown, blazordropdown, icon, blazoricon, docs]
 ---
 
-We are excited to release 1.10.3 with enhancements to dropdown, icons, and others!!!
+We are excited to release 1.10.3 with enhancements to grid, dropdown, icons, and others!!!
 
-![image](https://i.imgur.com/HkqLwlx.png "Blazor Bootstrap: Dropdown Component")
+![image](https://i.imgur.com/QRgyrZK.png "Blazor Bootstrap: Gird Component - Fixed header")
 
 <!--truncate-->
 
 ## What's changed
+
+- `Grid` component
+  - Grid: Fixed Header Support [#53](https://github.com/vikramlearning/blazorbootstrap/issues/53)
 
 - `Dropdown` component
   - Add feature to disable Dropdown [#373](https://github.com/vikramlearning/blazorbootstrap/issues/373)
@@ -25,7 +28,9 @@ We are excited to release 1.10.3 with enhancements to dropdown, icons, and other
 - `Sidebar` component
   - Sidebar: Add option to space items [#276](https://github.com/vikramlearning/blazorbootstrap/issues/276)
 
+- Docs updates
+
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
-- [Blazor Chart Components Documentation](https://getblazorbootstrap.com/docs/components/charts)
+- [Documentation](https://docs.blazorbootstrap.com/)

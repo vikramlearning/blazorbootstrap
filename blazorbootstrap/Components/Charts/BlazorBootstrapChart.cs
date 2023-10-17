@@ -67,7 +67,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     public async Task ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px)
     {
         var widthWithUnit = string.Concat("width:", width.ToString(CultureInfo.InvariantCulture), widthUnit.ToCssString());
-        var heightWithUnit =string.Concat("height:", height.ToString(CultureInfo.InvariantCulture), heightUnit.ToCssString());
+        var heightWithUnit = string.Concat("height:", height.ToString(CultureInfo.InvariantCulture), heightUnit.ToCssString());
         await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, widthWithUnit, heightWithUnit);
     }
 
@@ -204,7 +204,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// Gets the built styles based on all the rules set by the component parameters.
     /// </summary>
     public string? ContainerStyles => ContainerStyleBuilder!.Styles;
-    
+
     #endregion
 
     #region Properties, Indexers
@@ -212,6 +212,10 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// <summary>
     /// Gets or sets chart container height.
     /// </summary>
+    /// <remarks>
+    /// The default unit of measure is <see cref="Unit.Px"/>.
+    /// To change the unit of measure see <see cref="HeightUnit"/>.
+    /// </remarks>
     [Parameter]
     public int? Height { get; set; }
 
@@ -224,6 +228,10 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// <summary>
     /// Get or sets chart container width.
     /// </summary>
+    /// <remarks>
+    /// The default unit of measure is <see cref="Unit.Px"/>.
+    /// To change the unit of measure see <see cref="WidthUnit"/>.
+    /// </remarks>
     [Parameter]
     public int? Width { get; set; }
 

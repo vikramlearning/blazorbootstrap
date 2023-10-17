@@ -13,7 +13,7 @@ Blazor Bootstrap callout component provides content presentation in a visually d
 
 ## Parameters
 
-| Name | Type | Default | Required | Descritpion |
+| Name | Type | Default | Required | Description |
 |:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside this. |
 | Heading | string | | | Gets or sets the callout heading. |

@@ -265,7 +265,8 @@ public partial class GridColumn<TItem>
     [Parameter]
     public bool IsDefaultSortColumn { get; set; } = false;
 
-    [CascadingParameter] public Grid<TItem> Parent { get; set; } = default!;
+    [CascadingParameter]
+    public Grid<TItem> Parent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the property name.

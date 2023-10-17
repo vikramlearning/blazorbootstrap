@@ -13,7 +13,7 @@ Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes,
 
 ## Parameters
 
-| Name | Type | Descritpion | Required | Default | Added Version |
+| Name | Type | Description | Required | Default | Added Version |
 |--|--|--|--|--|--|
 | BodyCssClass | string | Additional body CSS class. | | | 1.0.0 |
 | BodyTemplate | RenderFragment | Body template. | ✔️ | | 1.0.0 |

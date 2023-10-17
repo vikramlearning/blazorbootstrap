@@ -8,108 +8,110 @@
 
 @if (columns.Any())
 {
-    <div class="@responsiveCssClass">
+    <div class="@responsiveCssClass" style="@gridParentStyle">
         <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-            <thead>
-            <tr class="@HeaderRowCssClass">
-                @if (AllowSelection)
-                {
-                    @HeaderSelectionTemplate
-                }
-                @foreach (var column in columns)
-                {
-                    @column.HeaderTemplate
-                }
-            </tr>
-            @if (AllowFiltering)
-            {
-                <tr class="@FiltersRowCssClass">
+            <thead class="@THeadCssClass">
+                <tr class="@(FixedHeader ? BootstrapClassProvider.TextNoWrap() : "") @HeaderRowCssClass">
                     @if (AllowSelection)
                     {
-                        <th></th>
+                        @HeaderSelectionTemplate
                     }
                     @foreach (var column in columns)
                     {
-                        <th class="@column.Class">
-                            @if (column.Filterable)
-                            {
-                                <GridColumnFilter GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
-                                                  FilterOperator="@column.FilterOperator"
-                                                  FilterValue="@column.FilterValue"
-                                                  FilterWidth="@column.FilterTextboxWidth"
-                                                  FiltersTranslationProvider="GridFiltersTranslationProviderAsync"
-                                                  PropertyTypeName="@column.GetPropertyTypeName()"/>
-                            }
-                        </th>
+                        @column.HeaderTemplate
                     }
                 </tr>
-            }
-            </thead>
-            <tbody>
-            @if (requestInProgress) // || totalCount == null
-            {
-                // show placeholders
-                @for (var i = 0; i < 5; i++)
+                @if (AllowFiltering)
                 {
-                    <tr>
-                        @for (var j = 0; j < columns.Count; j++)
+                    <tr class="@FiltersRowCssClass">
+                        @if (AllowSelection)
                         {
-                            <td class="placeholder-glow">
-                                <span class="placeholder col-12"></span>
-                            </td>
+                            <th></th>
+                        }
+                        @foreach (var column in columns)
+                        {
+                            <th class="@column.Class">
+                                @if (column.Filterable)
+                                {
+                                    <GridColumnFilter FilterOperator="@column.FilterOperator"
+                                                      FilterValue="@column.FilterValue"
+                                                      FilterWidth="@column.FilterTextboxWidth"
+                                                      FiltersTranslationProvider="GridFiltersTranslationProviderAsync"
+                                                      FixedHeader="@FixedHeader"
+                                                      GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
+                                                      PropertyTypeName="@column.GetPropertyTypeName()"
+                                                      Unit="@Unit" />
+                                }
+                            </th>
                         }
                     </tr>
                 }
-            }
-            else if (totalCount == 0)
-            {
-                // show empty
-                <tr>
-                    @{
-                        var columnCount = AllowSelection ? columns.Count + 1 : columns.Count;
-                    }
-                    <td colspan="@columnCount">
-                        @if (EmptyDataTemplate == null)
-                        {
-                            <div class="text-center text-secondary my-5">
-                                <div class="fs-3">
-                                    <Icon Name="IconName.Inbox"/>
-                                </div>
-                                <div>@EmptyText</div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="my-3">
-                                @EmptyDataTemplate
-                            </div>
-                        }
-                    </td>
-                </tr>
-            }
-            else if (totalCount > 0)
-            {
-                if (items != null)
+            </thead>
+            <tbody>
+                @if (requestInProgress) // || totalCount == null
                 {
-                    var rowIndex = 0;
-                    foreach (var item in items)
+                    // show placeholders
+                    @for (var i = 0; i < 5; i++)
                     {
-                        var rowClass = RowClass?.Invoke(item) ?? "";
-                        <tr @key="item?.GetHashCode()" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
-                            @if (AllowSelection)
+                        <tr>
+                            @for (var j = 0; j < columns.Count; j++)
                             {
-                                @ChildSelectionTemplate(rowIndex, item)
-                            }
-
-                            @foreach (var column in columns)
-                            {
-                                @column.CellTemplate(item)
+                                <td class="placeholder-glow">
+                                    <span class="placeholder col-12"></span>
+                                </td>
                             }
                         </tr>
-                        rowIndex++;
                     }
                 }
-            }
+                else if (totalCount == 0)
+                {
+                    // show empty
+                    <tr>
+                        @{
+                            var columnCount = AllowSelection ? columns.Count + 1 : columns.Count;
+                        }
+                        <td colspan="@columnCount">
+                            @if (EmptyDataTemplate == null)
+                            {
+                                <div class="text-center text-secondary my-5">
+                                    <div class="fs-3">
+                                        <Icon Name="IconName.Inbox" />
+                                    </div>
+                                    <div>@EmptyText</div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="my-3">
+                                    @EmptyDataTemplate
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+                else if (totalCount > 0)
+                {
+                    if (items != null)
+                    {
+                        var rowIndex = 0;
+                        foreach (var item in items)
+                        {
+                            var rowClass = RowClass?.Invoke(item) ?? "";
+                            <tr @key="item?.GetHashCode()" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
+                                @if (AllowSelection)
+                                {
+                                    @ChildSelectionTemplate(rowIndex, item)
+                                }
+
+                                @foreach (var column in columns)
+                                {
+                                    @column.CellTemplate(item)
+                                }
+                            </tr>
+                            rowIndex++;
+                        }
+                    }
+                }
             </tbody>
         </table>
     </div>
@@ -124,7 +126,7 @@
                         PreviousLinkIcon="IconName.ChevronLeft"
                         NextLinkIcon="IconName.ChevronRight"
                         LastLinkIcon="IconName.ChevronDoubleRight"
-                        Alignment="Alignment.Start"/>
+                        Alignment="Alignment.Start" />
 
             @if (PageSizeSelectorVisible && PageSizeSelectorItems is not null && PageSizeSelectorItems.Any())
             {

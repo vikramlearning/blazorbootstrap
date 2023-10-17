@@ -12,7 +12,7 @@ sidebar_position: 1
 Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
 
 ## Parameters
-| Name | Type | Default | Required | Descritpion | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | DataProvider | delegate | null | ✔️ | DataProvider is for items to render. The provider should always return an instance of `AutoCompleteDataProviderResult`, and null is not allowed. | 0.4.0 |
 | Disabled | bool | false | | Is AutoComplete disabled. | 0.4.0 |

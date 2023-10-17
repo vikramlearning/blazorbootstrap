@@ -20,7 +20,7 @@ A Blazor Bootstrap line chart component is a graphical representation of data th
 
 ## Methods
 
-| Name | Return type | Descritpion | Added Version |
+| Name | Return type | Description | Added Version |
 |:--|:--|:--|:--|
 | AddDataAsync | `ChartData` | Adds data to bar chart. | 1.10.0 |
 | AddDatasetAsync | `ChartData` | Adds dataset to bar chart. | 1.10.0 |
