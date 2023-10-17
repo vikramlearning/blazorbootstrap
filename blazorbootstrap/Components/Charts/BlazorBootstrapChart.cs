@@ -1,6 +1,4 @@
-﻿using BlazorBootstrap.Extensions;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, IAsyncDisposable
 {
@@ -64,7 +62,14 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    public async Task ResizeAsync(string width, string height) => await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, width, height);
+    /// <param name="widthUnit"></param>
+    /// <param name="heightUnit"></param>
+    public async Task ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px)
+    {
+        var widthWithUnit = string.Concat("width:", width.ToString(CultureInfo.InvariantCulture), widthUnit.ToCssString());
+        var heightWithUnit =string.Concat("height:", height.ToString(CultureInfo.InvariantCulture), heightUnit.ToCssString());
+        await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, widthWithUnit, heightWithUnit);
+    }
 
     /// <summary>
     /// Update chart.
@@ -125,24 +130,19 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     protected virtual void BuildContainerStyles(CssStyleBuilder builder)
     {
-        if (!string.IsNullOrWhiteSpace(Width) || !string.IsNullOrWhiteSpace(Height))
-            builder.Append("position:relative");
-        //
-        //  The first version of Width and Height were ints set in markup and assumed to be in "px".
-        //  In markup int string etc all look the same so they still compile.
-        //  So now we have to assume if there isn't a unit of measure the dev wants the original "px".
-        //
-
-        if (!string.IsNullOrWhiteSpace(Width))
+        if (Width.HasValue || Height.HasValue)
         {
-            string value = Width.IsNumeric() ? $"{Width}px" : Width;
-            builder.Append($"width:{value}");
+            builder.Append("position:relative");
         }
 
-        if (!string.IsNullOrWhiteSpace(Height))
+        if (Width.HasValue)
         {
-            string value = Height.IsNumeric() ? $"{Height}px" : Height;
-            builder.Append($"height:{value}");
+            builder.Append(string.Concat("width:", Width.Value.ToString(CultureInfo.InvariantCulture), WidthUnit.ToCssString()));
+        }
+
+        if (Height.HasValue)
+        {
+            builder.Append(string.Concat("height:", Height.Value.ToString(CultureInfo.InvariantCulture), HeightUnit.ToCssString()));
         }
     }
 
@@ -204,7 +204,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// Gets the built styles based on all the rules set by the component parameters.
     /// </summary>
     public string? ContainerStyles => ContainerStyleBuilder!.Styles;
-
+    
     #endregion
 
     #region Properties, Indexers
@@ -213,13 +213,25 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// Gets or sets chart container height.
     /// </summary>
     [Parameter]
-    public string? Height { get; set; }
+    public int? Height { get; set; }
+
+    /// <summary>
+    /// Gets or sets chart container height unit of measure.
+    /// </summary>
+    [Parameter]
+    public Unit HeightUnit { get; set; } = Unit.Px;
 
     /// <summary>
     /// Get or sets chart container width.
     /// </summary>
     [Parameter]
-    public string? Width { get; set; }
+    public int? Width { get; set; }
+
+    /// <summary>
+    /// Gets or sets chart container width unit of measure.
+    /// </summary>
+    [Parameter]
+    public Unit WidthUnit { get; set; } = Unit.Px;
 
     #endregion
 }

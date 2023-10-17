@@ -43,6 +43,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
+   protected override void BuildClasses(CssClassBuilder builder)
+    {
+        builder.Append(BootstrapClassProvider.TableSticky(), FixedHeader);
+
+        base.BuildClasses(builder);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -107,6 +114,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             : columns
               .Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
               ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison));
+
+    private string GetGridParentStyle()
+    {
+        var styleAttributes = new HashSet<string>();
+
+        if (FixedHeader)
+        {
+            styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
+        }
+
+        return string.Join(";", styleAttributes);
+    }
 
     /// <summary>
     /// Refresh the grid data.
@@ -605,6 +624,14 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public GridFiltersTranslationDelegate FiltersTranslationProvider { get; set; } = default!;
 
     /// <summary>
+    /// Gets or sets the grid fixed header.
+    /// </summary>
+    [Parameter]
+    public bool FixedHeader { get; set; }
+
+    private string gridParentStyle => GetGridParentStyle();
+
+    /// <summary>
     /// This event is fired when the grid state is changed.
     /// </summary>
     [Parameter]
@@ -656,6 +683,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
                                         builder.CloseElement(); // close: th
                                     };
+
+   /// <summary>
+    /// Gets or sets the grid height.
+    /// </summary>
+    [Parameter]
+    public float Height { get; set; } = 320;
 
     [Parameter] [EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
 
@@ -740,6 +773,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the thead css class.
+    /// </summary>
+    [Parameter]
+    public string? THeadCssClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets the units.
+    /// </summary>
+    [Parameter]
+    public Unit Unit { get; set; } = Unit.Px;
 
     private int totalPages => GetTotalPagesCount();
 
