@@ -1,0 +1,45 @@
+﻿<Sidebar @ref="sidebar"
+         IconName="IconName.BootstrapFill"
+         Title="Blazor Bootstrap"
+         Items="GetNavItems()" />
+
+@code {
+    Sidebar sidebar = default!;
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        yield return new NavItem
+        {
+            Href = "/getting-started",
+            IconName = IconName.HouseDoorFill,
+            Text = "Getting Started"
+        };
+
+
+        yield return new NavItem
+        {
+            IconName = IconName.WindowPlus,
+            Text = "Forms",
+            IconColor = IconColor.Danger,
+            ChildItems = new List<NavItem>
+            {
+                new NavItem 
+                { 
+                    IconName = IconName.InputCursorText, 
+                    Text = "Second level",
+                    ChildItems = new List<NavItem>
+                    {
+                        new NavItem
+                        {
+                            Href = "/getting-started",
+                            IconName = IconName.HouseDoorFill,
+                            Text = "Third level item"
+                        }
+                    }
+                },     
+            }
+        };
+
+       
+    }
+}
