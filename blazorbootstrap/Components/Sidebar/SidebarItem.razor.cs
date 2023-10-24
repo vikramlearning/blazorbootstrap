@@ -96,6 +96,10 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     private string iconColorCssClass => BootstrapClassProvider.IconColor(Item.IconColor);
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="NavItem"/> which should be displayed.
+    /// </summary>
     [Parameter, EditorRequired]
     public NavItem Item { get; set; } = new();
 

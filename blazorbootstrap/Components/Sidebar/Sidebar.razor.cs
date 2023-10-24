@@ -111,8 +111,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     public string? CustomIconName { get; set; }
 
     /// <summary>
-    /// DataProvider is for items to render.
-    /// The provider should always return an instance of 'SidebarDataProviderResult', and 'null' is not allowed.
+    /// Gets or sets the collection of <see cref="NavItem" /> which should be displayed by the sidebar.
     /// </summary>
     [Parameter, EditorRequired]
     public IEnumerable<NavItem> Items { get; set; } = Enumerable.Empty<NavItem>();
