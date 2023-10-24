@@ -27,8 +27,8 @@
 
     private IEnumerable<NavItem> GetNavItems()
     {
-        yield return new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All };
-        yield return new NavItem { Id = "2", Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter" };
-        yield return new NavItem { Id = "3", Href = "/fetchdata", IconName = IconName.Table, Text = "Fetch Data" };
+        yield return new NavItem { Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All };
+        yield return new NavItem { Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter" };
+        yield return new NavItem { Href = "/fetchdata", IconName = IconName.Table, Text = "Fetch Data" };
     }
 }

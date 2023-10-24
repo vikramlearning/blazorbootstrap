@@ -27,7 +27,6 @@
     {
         yield return new NavItem
         {
-            Id = "1",
             Href = "/getting-started",
             IconName = IconName.HouseDoorFill,
             Text = "Getting Started"
@@ -35,42 +34,40 @@
 
         yield return new NavItem
         {
-            Id = "2",
             IconName = IconName.LayoutSidebarInset,
             Text = "Content",
             IconColor = IconColor.Primary,
             ChildItems = new List<NavItem>
             {
-                new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId = "2" },
+                new NavItem { Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons" },
             }
         };
 
         yield return new NavItem
         {
-            Id = "4",
             IconName = IconName.ExclamationTriangleFill,
             Text = "Components",
             IconColor = IconColor.Success,
             ChildItems = new List<NavItem>
             {
-                new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId = "4" },
-                new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId = "4" },
-                new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId = "4" },
+                new NavItem { Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts" },
+                new NavItem { Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb" },
+                new NavItem { Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar" },
             }
         };
 
         yield return new NavItem
         {
-            Id = "8",
+ 
             IconName = IconName.WindowPlus,
             Text = "Forms",
             IconColor = IconColor.Danger,
             ChildItems = new List<NavItem>
             {
-                new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId = "8" },
-                new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId = "8" },
-                new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId = "8" },
-                new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId = "8" },
+                new NavItem { Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete" },
+                new NavItem { Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input" },
+                new NavItem { Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input" },
+                new NavItem { Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch" },
             }
         };
     }

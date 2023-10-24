@@ -36,19 +36,9 @@ public class NavItem
     public IconName IconName { get; set; }
 
     /// <summary>
-    /// Gets or sets the Id.
-    /// </summary>
-    public string? Id { get; set; }
-
-    /// <summary>
     /// Gets or sets the URL matching behavior.
     /// </summary>
     public NavLinkMatch Match { get; set; }
-
-    /// <summary>
-    /// Gets or sets the parent Id.
-    /// </summary>
-    public string? ParentId { get; set; }
 
     /// <summary>
     /// Gets or sets the sequence.
