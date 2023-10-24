@@ -24,7 +24,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
         if (!Item.ChildItems.Any())
             return;
 
-        foreach (var childItem in Item.ChildItems)
+        foreach (NavItem childItem in Item.ChildItems)
             if (ShouldExpand(NavigationManager.Uri, childItem.Href))
             {
                 navitemGroupExpanded = true;
@@ -75,7 +75,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
                   );
     }
 
-    private bool ShouldExpand(string currentUriAbsolute, string href)
+    private bool ShouldExpand(string currentUriAbsolute, string? href)
     {
         var hrefAbsolute = href == null ? null : NavigationManager.ToAbsoluteUri(href).AbsoluteUri;
 
