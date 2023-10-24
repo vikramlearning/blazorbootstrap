@@ -6,7 +6,8 @@
     {
         foreach (var item in NavItems)
         {
-            <SidebarItem Item="item" />
+            <SidebarItem Item="item"
+                         Class="@item.Class" />
         }
     }
 </nav>

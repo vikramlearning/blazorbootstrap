@@ -8,7 +8,7 @@
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Class="@iconColorCssClass" Name="@Item.IconName" CustomIconName="@Item.CustomIconName" aria-hidden="true"/>
+                    <Icon Class="@iconColorCssClass" Name="@Item.IconName" CustomIconName="@Item.CustomIconName" aria-hidden="true" />
                 </span>
             }
             else
@@ -23,13 +23,13 @@
             @if (navitemGroupExpanded)
             {
                 <span class="nav-link-arrow float-end expanded-only">
-                    <Icon Name="IconName.ChevronDown"/>
+                    <Icon Name="IconName.ChevronDown" />
                 </span>
             }
             else
             {
                 <span class="nav-link-arrow float-end expanded-only">
-                    <Icon Name="IconName.ChevronRight"/>
+                    <Icon Name="IconName.ChevronRight" />
                 </span>
             }
         </NavLink>
@@ -59,7 +59,8 @@
     {
         @foreach (var childItem in Item.ChildItems)
         {
-            <SidebarItem Item="childItem" />
+            <SidebarItem Item="childItem"
+                         Class="@childItem.Class" />
         }
     }
 </div>
