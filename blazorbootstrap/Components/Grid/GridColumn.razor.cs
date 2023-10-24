@@ -156,11 +156,11 @@ public partial class GridColumn<TItem>
                                             styleList.Add($"position:sticky");
                                             if (FreezeDirection == FreezeDirection.Left)
                                             {
-                                                styleList.Add($"left:{Width.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                                styleList.Add($"left:{FreezeLeft.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
                                             }
                                             else
                                             {
-                                                styleList.Add($"right:{Width.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                                styleList.Add($"right:{FreezeRight.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
                                             }
                                             styleList.Add($"background-color:var(--bb-table-freeze-column-background-color)");
                                             builder.AddAttribute(102, "style", string.Join(";", styleList));
@@ -213,8 +213,17 @@ public partial class GridColumn<TItem>
     [Parameter]
     public FreezeDirection FreezeDirection { get; set; }
 
+    /// <summary>
+    /// Gets or sets the horizontal position of a column. It has no effect on non-positioned columns.
+    /// </summary>
     [Parameter]
-    public float Width { get; set; }
+    public double FreezeLeft { get; set; }
+
+    /// <summary>
+    /// Gets or sets the horizontal position of a column. It has no effect on non-positioned columns.
+    /// </summary>
+    [Parameter]
+    public double FreezeRight { get; set; }
 
     /// <summary>
     /// Specifies the content to be rendered inside the grid column header.
@@ -231,6 +240,32 @@ public partial class GridColumn<TItem>
                                // th > span "title", span > i "icon"
                                builder.OpenElement(101, "th");
 
+                               var classList = new List<string>();
+
+                               if (HeaderContent is null && HeaderTextAlignment != Alignment.None)
+                                   classList.Add(BootstrapClassProvider.TextAlignment(HeaderTextAlignment));
+
+                               if (Freeze)
+                               {
+                                   var styleList = new List<string>();
+                                   styleList.Add($"position:sticky");
+                                   if (FreezeDirection == FreezeDirection.Left)
+                                   {
+                                       styleList.Add($"left:{FreezeLeft.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                   }
+                                   else
+                                   {
+                                       styleList.Add($"right:{FreezeRight.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                   }
+                                   styleList.Add($"background-color:var(--bb-table-freeze-column-background-color)");
+                                   builder.AddAttribute(112, "style", string.Join(";", styleList));
+
+                                   classList.Add("freeze-column");
+                                   //classList.Add("table-active");
+                               }
+
+                               builder.AddAttribute(113, "class", string.Join(" ", classList));
+
                                if (HeaderContent is null)
                                {
                                    if (CanSort())
@@ -239,17 +274,15 @@ public partial class GridColumn<TItem>
                                        builder.AddAttribute(103, "onclick", async () => await OnSortClickAsync());
                                    }
 
-                                   if (HeaderTextAlignment != Alignment.None) builder.AddAttribute(104, "class", BootstrapClassProvider.TextAlignment(HeaderTextAlignment));
-
-                                   builder.OpenElement(105, "span");
+                                   builder.OpenElement(105, "span"); // open: span
                                    builder.AddAttribute(106, "class", "me-2");
                                    builder.AddContent(107, HeaderText);
                                    builder.CloseElement(); // close: span
 
                                    if (CanSort())
                                    {
-                                       builder.OpenElement(108, "span");
-                                       builder.OpenElement(109, "i");
+                                       builder.OpenElement(108, "span"); // open: span
+                                       builder.OpenElement(109, "i"); // open: i
 
                                        var sortIcon = "bi bi-arrow-down-up"; // default icon
 
@@ -268,14 +301,6 @@ public partial class GridColumn<TItem>
                                    // If headercontent is used, filters and sorting wont be added.
                                    builder.AddContent(111, HeaderContent);
                                }
-
-                               //if (FreezeColumn)
-                               //{
-                               //    var styleList = new List<string>();
-                               //    styleList.Add($"position:sticky");
-                               //    styleList.Add($"left:{FreezeColumnAt.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
-                               //    builder.AddAttribute(112, "style", string.Join(";", styleList));
-                               //}
 
                                builder.CloseElement(); // close: th
                            };

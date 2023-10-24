@@ -30,7 +30,25 @@
                         }
                         @foreach (var column in columns)
                         {
-                            <th class="@column.Class">
+                            var columnClassList = new HashSet<string>();
+                            var columnStyleList = new List<string>();
+
+                            columnClassList.Add(column.Class);
+                            if (column.Freeze)
+                            {
+                                columnClassList.Add("freeze-column");
+
+                                columnStyleList.Add($"position:sticky");
+
+                                if (column.FreezeDirection == FreezeDirection.Left)
+                                    columnStyleList.Add($"left:{column.FreezeLeft.ToString(CultureInfo.InvariantCulture)}{Unit}");
+                                else
+                                    columnStyleList.Add($"right:{column.FreezeRight.ToString(CultureInfo.InvariantCulture)}{Unit}");
+
+                                columnStyleList.Add($"background-color:var(--bb-table-freeze-column-background-color)");
+                            }
+
+                            <th class="@string.Join(" ", columnClassList)" style="@string.Join(";", columnStyleList)">
                                 @if (column.Filterable)
                                 {
                                     <GridColumnFilter FilterOperator="@column.FilterOperator"

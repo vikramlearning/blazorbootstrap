@@ -242,10 +242,26 @@ table button.dropdown-toggle.bb-grid-filter::after {
             box-shadow: inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
         }
 
+            .bb-table-sticky > thead > tr > th.freeze-column,
+            .bb-table-sticky > thead > tr > td.freeze-column {
+                /*border-style: solid;
+                border-color: var(--bs-table-border-color);
+                box-shadow: inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color), inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color);*/
+                z-index: 5;
+            }
+
         .bb-table-sticky > thead > tr:nth-child(2) > th,
         .bb-table-sticky > thead > tr:nth-child(2) > td {
             box-shadow: inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
         }
+
+            .bb-table-sticky > thead > tr:nth-child(2) > th.freeze-column,
+            .bb-table-sticky > thead > tr:nth-child(2) > td.freeze-column {
+                /*border-style: solid;
+                border-color: var(--bs-table-border-color);
+                box-shadow: inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color);*/
+                z-index: 5;
+            }
 
         /* below CSS is applicable, if filters are enabled. */
         .bb-table-sticky > thead > tr:nth-child(2) > th,
