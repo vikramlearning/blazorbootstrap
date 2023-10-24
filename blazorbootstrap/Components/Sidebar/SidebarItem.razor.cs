@@ -13,7 +13,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append("nav-item");
-        builder.Append("nav-item-group", HasChilds);
+        builder.Append("nav-item-group", Item.ChildItems.Any());
         builder.Append("active", navitemGroupExpanded);
 
         base.BuildClasses(builder);
@@ -21,10 +21,10 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     protected override void OnParametersSet()
     {
-        if (!HasChilds || ChildItems is null || !ChildItems.Any())
+        if (!Item.ChildItems.Any())
             return;
 
-        foreach (var childItem in ChildItems)
+        foreach (var childItem in Item.ChildItems)
             if (ShouldExpand(NavigationManager.Uri, childItem.Href))
             {
                 navitemGroupExpanded = true;
@@ -93,21 +93,12 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
-    [Parameter] public IEnumerable<NavItem>? ChildItems { get; set; }
+    private string iconColorCssClass => BootstrapClassProvider.IconColor(Item.IconColor);
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
+    [Parameter, EditorRequired]
+    public NavItem Item { get; set; } = new();
 
-    [Parameter] public string? CustomIconName { get; set; }
-
-    [Parameter] public bool HasChilds { get; set; }
-
-    [Parameter] public string? Href { get; set; }
-
-    [Parameter] public IconColor IconColor { get; set; }
-
-    private string iconColorCssClass => BootstrapClassProvider.IconColor(IconColor);
-
-    [Parameter] public IconName IconName { get; set; }
 
     /// <summary>
     /// Gets or sets a value representing the URL matching behavior.
@@ -119,11 +110,9 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     [CascadingParameter] public Sidebar Parent { get; set; } = default!;
 
-    [Parameter] public Target Target { get; set; }
+    private string targetString => Item.Target.ToTargetString();
 
-    private string targetString => Target.ToTargetString();
-
-    [Parameter] public string? Text { get; set; }
+   
 
     #endregion
 }

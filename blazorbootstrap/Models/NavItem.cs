@@ -7,7 +7,7 @@ public class NavItem
     /// <summary>
     /// Gets or sets the collection of child navigation items.
     /// </summary>
-    internal IEnumerable<NavItem>? ChildItems { get; set; }
+    public IEnumerable<NavItem> ChildItems { get; set; } = Enumerable.Empty<NavItem>(); 
 
     /// <summary>
     /// Gets or sets an additional CSS class.
@@ -19,10 +19,6 @@ public class NavItem
     /// </summary>
     public string? CustomIconName { get; set; }
 
-    /// <summary>
-    /// Gets or sets a Boolean value indicating whether the navigation item has child items.
-    /// </summary>
-    internal bool HasChildItems { get; set; }
 
     /// <summary>
     /// Gets or sets the HyperText Reference (href).

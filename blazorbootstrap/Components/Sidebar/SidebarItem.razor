@@ -2,24 +2,24 @@
 @inherits BlazorBootstrapComponentBase
 
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-    @if (HasChilds)
+    @if (Item.ChildItems.Any())
     {
         <NavLink class="nav-link" role="button" @onclick="ToggleNavItemGroup">
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                    <Icon Class="@iconColorCssClass" Name="@Item.IconName" CustomIconName="@Item.CustomIconName" aria-hidden="true"/>
                 </span>
             }
             else
             {
-                <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
+                <Tooltip Title="@Item.Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                        <Icon Class="@iconColorCssClass" Name="@Item.IconName" CustomIconName="@Item.CustomIconName" aria-hidden="true" />
                     </span>
                 </Tooltip>
             }
-            <span class="nav-link-text fw-semibold expanded-only">@Text</span>
+            <span class="nav-link-text fw-semibold expanded-only">@Item.Text</span>
             @if (navitemGroupExpanded)
             {
                 <span class="nav-link-arrow float-end expanded-only">
@@ -36,37 +36,30 @@
     }
     else
     {
-        <NavLink class="nav-link" href="@Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
+        <NavLink class="nav-link" href="@Item.Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                    <Icon Class="@iconColorCssClass" Name="@Item.IconName" CustomIconName="@Item.CustomIconName" aria-hidden="true" />
                 </span>
             }
             else
             {
-                <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
+                <Tooltip Title="@Item.Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                        <Icon Class="@iconColorCssClass" Name="@Item.IconName" CustomIconName="@Item.CustomIconName" aria-hidden="true" />
                     </span>
                 </Tooltip>
             }
-            <span class="nav-link-text expanded-only">@Text</span>
+            <span class="nav-link-text expanded-only">@Item.Text</span>
         </NavLink>
     }
 
-    @if (navitemGroupExpanded && HasChilds && ChildItems is not null && ChildItems.Any())
+    @if (navitemGroupExpanded && Item.ChildItems.Any())
     {
-        @foreach (var childItem in ChildItems)
+        @foreach (var childItem in Item.ChildItems)
         {
-            <SidebarItem IconName="@childItem.IconName"
-                         CustomIconName="@childItem.CustomIconName"
-                         IconColor="@childItem.IconColor"
-                         Href="@childItem.Href"
-                         Text="@childItem.Text"
-                         Target="@childItem.Target"
-                         Match="@childItem.Match"
-                         Class="@childItem.Class" />
+            <SidebarItem Item="childItem" />
         }
     }
 </div>

@@ -5,7 +5,7 @@
     <Sidebar @ref="sidebar"
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
-             DataProvider="SidebarDataProvider" />
+             Items="GetNavItems()" />
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-end">
@@ -23,25 +23,12 @@
 
 @code {
     private Sidebar sidebar = default!;
-    private IEnumerable<NavItem> navItems = default!;
 
-    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
-    {
-        if (navItems is null)
-            navItems = GetNavItems();
-
-        return await Task.FromResult(request.ApplyTo(navItems));
-    }
 
     private IEnumerable<NavItem> GetNavItems()
     {
-        navItems = new List<NavItem>
-        {
-            new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All},
-            new NavItem { Id = "2", Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter"},
-            new NavItem { Id = "3", Href = "/fetchdata", IconName = IconName.Table, Text = "Fetch Data"},
-        };
-
-        return navItems;
+        yield return new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All };
+        yield return new NavItem { Id = "2", Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter" };
+        yield return new NavItem { Id = "3", Href = "/fetchdata", IconName = IconName.Table, Text = "Fetch Data" };
     }
 }
