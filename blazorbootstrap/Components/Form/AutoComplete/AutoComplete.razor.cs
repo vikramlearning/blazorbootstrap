@@ -216,7 +216,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         cancellationTokenSource = new CancellationTokenSource();
 
         var token = cancellationTokenSource.Token;
-        await Task.Delay(300, token); // 300ms timeout for the debouncing 
+        
         await FilterDataAsync(token);
 
         closeButton?.HideLoading();
