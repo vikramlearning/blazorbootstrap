@@ -282,6 +282,32 @@ table button.dropdown-toggle.bb-grid-filter::after {
         z-index: 4;
     }
 
+    .bb-table-sticky > thead > tr > td:first-child.freeze-column-active,
+    .bb-table-sticky > thead > tr > td:last-child.freeze-column-active,
+    .bb-table-sticky > thead > tr > th:first-child.freeze-column-active,
+    .bb-table-sticky > thead > tr > th:last-child.freeze-column-active {
+        box-shadow: inset 1px 0 0 var(--bs-table-border-color);
+    }
+
+    .bb-table-sticky > thead > tr > td.freeze-column-active,
+    .bb-table-sticky > thead > tr > th.freeze-column-active {
+        box-shadow: inset 1px 0 0 var(--bs-table-border-color);
+    }
+
+    .bb-table-sticky > thead > tr > td.freeze-column-active,
+    .bb-table-sticky > thead > tr > th.freeze-column-active {
+        box-shadow: inset 1px 0 0 var(--bs-table-border-color);
+    }
+
+    .bb-table-sticky > tbody > tr > td:first-child.freeze-column-active,
+    .bb-table-sticky > tbody > tr > td:last-child.freeze-column-active {
+        box-shadow: inset 1px 0 0 var(--bs-table-border-color);
+    }
+
+    .bb-table-sticky > tbody > tr > td.freeze-column-active {
+        box-shadow: inset 1px 0 0 var(--bs-table-border-color);
+    }
+
 /* scrollbar */
 .v-scroll-auto {
     overflow-y: auto !important;
