@@ -244,9 +244,8 @@ table button.dropdown-toggle.bb-grid-filter::after {
 
             .bb-table-sticky > thead > tr > th.freeze-column,
             .bb-table-sticky > thead > tr > td.freeze-column {
-                /*border-style: solid;
-                border-color: var(--bs-table-border-color);
-                box-shadow: inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color), inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color);*/
+                position: sticky;
+                background-color: var(--bb-table-freeze-column-background-color);
                 z-index: 5;
             }
 
@@ -257,9 +256,8 @@ table button.dropdown-toggle.bb-grid-filter::after {
 
             .bb-table-sticky > thead > tr:nth-child(2) > th.freeze-column,
             .bb-table-sticky > thead > tr:nth-child(2) > td.freeze-column {
-                /*border-style: solid;
-                border-color: var(--bs-table-border-color);
-                box-shadow: inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color);*/
+                position: sticky;
+                background-color: var(--bb-table-freeze-column-background-color);
                 z-index: 5;
             }
 
@@ -276,6 +274,12 @@ table button.dropdown-toggle.bb-grid-filter::after {
 
     .bb-table-sticky > thead > tr > th > div > ul.dropdown-menu.show {
         top: 6px !important;
+    }
+
+    .bb-table-sticky > tbody > tr > td.freeze-column {
+        position: sticky;
+        background-color: var(--bb-table-freeze-column-background-color);
+        z-index: 4;
     }
 
 /* scrollbar */

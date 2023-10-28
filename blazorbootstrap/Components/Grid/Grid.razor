@@ -36,16 +36,12 @@
                             columnClassList.Add(column.Class);
                             if (column.Freeze)
                             {
-                                columnClassList.Add("freeze-column");
-
-                                columnStyleList.Add($"position:sticky");
-
                                 if (column.FreezeDirection == FreezeDirection.Left)
                                     columnStyleList.Add($"left:{column.FreezeLeft.ToString(CultureInfo.InvariantCulture)}{Unit}");
                                 else
                                     columnStyleList.Add($"right:{column.FreezeRight.ToString(CultureInfo.InvariantCulture)}{Unit}");
 
-                                columnStyleList.Add($"background-color:var(--bb-table-freeze-column-background-color)");
+                                columnClassList.Add("freeze-column");
                             }
 
                             <th class="@string.Join(" ", columnClassList)" style="@string.Join(";", columnStyleList)">
@@ -66,7 +62,7 @@
                 }
             </thead>
             <tbody>
-                @if (requestInProgress) // || totalCount == null
+                @if (requestInProgress) //|| totalCount == null
                 {
                     // show placeholders
                     @for (var i = 0; i < 5; i++)
