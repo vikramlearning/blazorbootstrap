@@ -149,16 +149,20 @@ public partial class GridColumn<TItem>
 
                                         if (Freeze)
                                         {
+                                            classList.Add("freeze-column");
+
                                             var styleList = new List<string>();
 
                                             if (FreezeDirection == FreezeDirection.Left)
                                                 styleList.Add($"left:{FreezeLeft.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
                                             else
+                                            {
                                                 styleList.Add($"right:{FreezeRight.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
 
-                                            builder.AddAttribute(101, "style", string.Join(";", styleList));
+                                                classList.Add("freeze-column-right");
+                                            }
 
-                                            classList.Add("freeze-column");
+                                            builder.AddAttribute(101, "style", string.Join(";", styleList));
                                         }
 
                                         if (classList.Any())
@@ -245,16 +249,20 @@ public partial class GridColumn<TItem>
 
                                if (Freeze)
                                {
+                                   classList.Add("freeze-column");
+
                                    var styleList = new List<string>();
 
                                    if (FreezeDirection == FreezeDirection.Left)
                                        styleList.Add($"left:{FreezeLeft.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
                                    else
+                                   {
                                        styleList.Add($"right:{FreezeRight.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
 
-                                   builder.AddAttribute(102, "style", string.Join(";", styleList));
+                                       classList.Add("freeze-column-right");
+                                   }
 
-                                   classList.Add("freeze-column");
+                                   builder.AddAttribute(102, "style", string.Join(";", styleList));
                                }
 
                                builder.AddAttribute(103, "class", string.Join(" ", classList));

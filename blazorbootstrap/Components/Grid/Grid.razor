@@ -36,12 +36,15 @@
                             columnClassList.Add(column.Class);
                             if (column.Freeze)
                             {
+                                columnClassList.Add("freeze-column");
+
                                 if (column.FreezeDirection == FreezeDirection.Left)
                                     columnStyleList.Add($"left:{column.FreezeLeft.ToString(CultureInfo.InvariantCulture)}{Unit}");
                                 else
+                                {
                                     columnStyleList.Add($"right:{column.FreezeRight.ToString(CultureInfo.InvariantCulture)}{Unit}");
-
-                                columnClassList.Add("freeze-column");
+                                    columnClassList.Add("freeze-column-right");
+                                }
                             }
 
                             <th class="@string.Join(" ", columnClassList)" style="@string.Join(";", columnStyleList)">
