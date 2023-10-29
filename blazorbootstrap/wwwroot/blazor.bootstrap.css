@@ -241,21 +241,9 @@ table button.dropdown-toggle.bb-grid-filter::after {
             box-shadow: inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
         }
 
-            .bb-table-sticky > thead > tr > th.freeze-column {
-                position: sticky;
-                background-color: var(--bb-table-freeze-column-background-color);
-                z-index: 5;
-            }
-
         .bb-table-sticky > thead > tr:nth-child(2) > th {
             box-shadow: inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
         }
-
-            .bb-table-sticky > thead > tr:nth-child(2) > th.freeze-column {
-                position: sticky;
-                background-color: var(--bb-table-freeze-column-background-color);
-                z-index: 5;
-            }
 
         /* below CSS is applicable, if filters are enabled. */
         .bb-table-sticky > thead > tr:nth-child(2) > th {
@@ -270,66 +258,77 @@ table button.dropdown-toggle.bb-grid-filter::after {
         top: 6px !important;
     }
 
-    .bb-table-sticky > tbody > tr > td.freeze-column {
-        position: sticky;
-        background-color: var(--bb-table-freeze-column-background-color);
-        z-index: 4;
-    }
+/* freeze columns */
+table > thead > tr > th.freeze-column {
+    position: sticky;
+    background-color: var(--bb-table-freeze-column-background-color);
+    z-index: 5;
+}
 
-    /* freeze column right */
-    .bb-table-sticky > thead > tr > th:is(.freeze-column-right) {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
-    }
-    .bb-table-sticky > thead > tr:nth-child(2) > th:is(.freeze-column-right) {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
-    }
-    .bb-table-sticky > tbody > tr > td:is(.freeze-column-right) {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color);
-    }
+table > thead > tr:nth-child(2) > th.freeze-column {
+    position: sticky;
+    background-color: var(--bb-table-freeze-column-background-color);
+    z-index: 5;
+}
 
-    /* below CSS is applicable, if scrollLeft > 0 */
-    /* thead: first-row -> first th */
-    .bb-table-sticky > thead > tr > th:not(.freeze-column-right):first-child.freeze-column-active {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
-    }
-    /* thead: second-row -> first th */
-    .bb-table-sticky > thead > tr:nth-child(2) > th:not(.freeze-column-right):first-child.freeze-column-active {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
-    }
-    /* thead: first-row -> all th's */
-    .bb-table-sticky > thead > tr > th:not(.freeze-column-right).freeze-column-active {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
-    }
-    /* thead: second-row -> all th's */
-    .bb-table-sticky > thead > tr:nth-child(2) > th:not(.freeze-column-right).freeze-column-active {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
-    }
-    /* thead: first-row -> all th's, right freeze columns only */
-    .bb-table-sticky > thead > tr > th:is(.freeze-column-right).freeze-column-active {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
-    }
-    /* thead: second-row -> all th's, right freeze columns only */
-    .bb-table-sticky > thead > tr:nth-child(2) > th:is(.freeze-column-right).freeze-column-active {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
-    }
+table > tbody > tr > td.freeze-column {
+    position: sticky;
+    background-color: var(--bb-table-freeze-column-background-color);
+    z-index: 4;
+}
 
-    /* tbody: every row -> first td, except right freeze columns */
-    .bb-table-sticky > tbody > tr > td:not(.freeze-column-right):first-child.freeze-column-active {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color);
-    }
-    /* tbody: every row -> all td's, except right freeze columns */
-    .bb-table-sticky > tbody > tr > td:not(.freeze-column-right).freeze-column-active {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color);
-    }
+/* freeze column right */
+table > thead > tr > th:is(.freeze-column-right) {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+}
 
-    /* tbody: every row -> all td's, right freeze columns only */
-    .bb-table-sticky > tbody > tr > td:is(.freeze-column-right).freeze-column-active {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color);
-    }
-    /* tbody: every row -> last td, right freeze columns only */
-    .bb-table-sticky > tbody > tr > td:is(.freeze-column-right):last-child.freeze-column-active {
-        box-shadow: inset 1px 0 0 var(--bs-table-border-color);
-    }
+table > thead > tr:nth-child(2) > th:is(.freeze-column-right) {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+}
+
+table > tbody > tr > td:is(.freeze-column-right) {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color);
+}
+
+/* below CSS is applicable, if scrollLeft > 0 */
+/* thead: first-row -> first th */
+table > thead > tr > th:not(.freeze-column-right):first-child.freeze-column-active {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+}
+/* thead: second-row -> first th */
+table > thead > tr:nth-child(2) > th:not(.freeze-column-right):first-child.freeze-column-active {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+}
+/* thead: first-row -> all th's */
+table > thead > tr > th:not(.freeze-column-right).freeze-column-active {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+}
+/* thead: second-row -> all th's */
+table > thead > tr:nth-child(2) > th:not(.freeze-column-right).freeze-column-active {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+}
+/* thead: first-row -> all th's, right freeze columns only */
+table > thead > tr > th:is(.freeze-column-right).freeze-column-active {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+}
+/* thead: second-row -> all th's, right freeze columns only */
+table > thead > tr:nth-child(2) > th:is(.freeze-column-right).freeze-column-active {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+}
+
+/* tbody: every row -> first td, except right freeze columns */
+table > tbody > tr > td:not(.freeze-column-right):first-child.freeze-column-active {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color);
+}
+/* tbody: every row -> all td's, except right freeze columns */
+table > tbody > tr > td:not(.freeze-column-right).freeze-column-active {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color);
+}
+
+/* tbody: every row -> all td's, right freeze columns only */
+table > tbody > tr > td:is(.freeze-column-right).freeze-column-active {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color);
+}
 
 /* scrollbar */
 .v-scroll-auto {
