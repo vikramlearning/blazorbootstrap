@@ -242,12 +242,12 @@ In the following parent component example, the `ShowDTMessage` method assigns a 
 
 ### Static backdrop
 
-When `UseStaticBackdrop` is set to `true`, the modal will not close when clicking outside it. Click the button below to try it.
+When `UseStaticBackdrop` is set to `true`, the modal will not close when clicking outside it. `CloseOnEscape` should also be set to `false` to ignore the effect of pressing the Esc key and mimic the original behaviour of Bootstrap modal. Click the button below to try it.
 
 <img src="https://i.imgur.com/NeSfMIn.jpg" alt="Blazor Modal Component - Static backdrop" />
 
 ```cshtml {1} showLineNumbers
-<Modal @ref="modal" title="Modal title" UseStaticBackdrop="true">
+<Modal @ref="modal" title="Modal title" UseStaticBackdrop="true" CloseOnEscape="false">
     <BodyTemplate>
         I will not close if you click outside me. Don't even try to press escape key.
     </BodyTemplate>
