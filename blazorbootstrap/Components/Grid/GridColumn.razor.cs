@@ -154,10 +154,10 @@ public partial class GridColumn<TItem>
                                             var styleList = new List<string>();
 
                                             if (FreezeDirection == FreezeDirection.Left)
-                                                styleList.Add($"left:{FreezeLeft.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                                styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
                                             else
                                             {
-                                                styleList.Add($"right:{FreezeRight.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                                styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
 
                                                 classList.Add("freeze-column-right");
                                             }
@@ -209,23 +209,29 @@ public partial class GridColumn<TItem>
     [Parameter]
     public string FilterValue { get; set; } = default!;
 
+    /// <summary>
+    /// Indicates whether the column is frozen.
+    /// </summary>
     [Parameter]
     public bool Freeze { get; set; }
 
+    /// <summary>
+    /// Gets or sets the freeze direction of the column.
+    /// </summary>
     [Parameter]
     public FreezeDirection FreezeDirection { get; set; }
 
     /// <summary>
-    /// Gets or sets the horizontal position of a column. It has no effect on non-positioned columns.
+    /// Gets or sets the horizontal position of the column from left. It has no effect on non-positioned columns.
     /// </summary>
     [Parameter]
-    public double FreezeLeft { get; set; }
+    public double FreezeLeftPosition { get; set; }
 
     /// <summary>
-    /// Gets or sets the horizontal position of a column. It has no effect on non-positioned columns.
+    /// Gets or sets the horizontal position of the column from right. It has no effect on non-positioned columns.
     /// </summary>
     [Parameter]
-    public double FreezeRight { get; set; }
+    public double FreezeRightPosition { get; set; }
 
     /// <summary>
     /// Specifies the content to be rendered inside the grid column header.
@@ -254,10 +260,10 @@ public partial class GridColumn<TItem>
                                    var styleList = new List<string>();
 
                                    if (FreezeDirection == FreezeDirection.Left)
-                                       styleList.Add($"left:{FreezeLeft.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                       styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
                                    else
                                    {
-                                       styleList.Add($"right:{FreezeRight.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                       styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
 
                                        classList.Add("freeze-column-right");
                                    }

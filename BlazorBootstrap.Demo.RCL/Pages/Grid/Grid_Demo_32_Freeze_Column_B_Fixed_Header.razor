@@ -7,10 +7,10 @@
       Responsive="true"
       Unit="Unit.px">
 
-    <GridColumn TItem="Customer2" Freeze="true" FreezeLeft="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
         @context.CustomerId
     </GridColumn>
-    <GridColumn TItem="Customer2" Freeze="true" FreezeLeft="55.98" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="55.98" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
         @context.CustomerName
     </GridColumn>
     <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
@@ -25,7 +25,7 @@
     <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
         @context.PostalZip
     </GridColumn>
-    <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRight="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+    <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
         @context.Country
     </GridColumn>
 

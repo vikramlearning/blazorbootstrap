@@ -76,6 +76,10 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 | FilterOperator | enum | Assigned based on the property type. | | Gets or sets the filter operator. | 1.0.0 |
 | FilterTextboxWidth | int | | | Gets or sets the filter textbox width in pixels. | 1.0.0 |
 | FilterValue | string | | | Gets or sets the filter value. | 1.0.0 |
+| Freeze | bool | false | | Indicates whether the column is frozen. | 1.10.4 |
+| FreezeDirection | `FreezeDirection` | `FreezeDirection.Left` | | Gets or sets the freeze direction of the column. | 1.10.4 |
+| FreezeLeftPosition | double | 0 | | Gets or sets the horizontal position of the column from left. It has no effect on non-positioned columns. | 1.10.4 | 
+| FreezeRightPosition | double | 0 | | Gets or sets the horizontal position of the column from right. It has no effect on non-positioned columns. | 1.10.4 |
 | HeaderContent | RenderFragment | | | Specifies the content to be rendered inside the grid column header. | 1.7.3 |
 | HeaderText | string | | ✔️ | Gets or sets the table column header. | 1.0.0 |
 | HeaderTextAlignment | enum | `Alignment.Start` | | Gets or sets the header text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
@@ -2732,6 +2736,27 @@ To set the fixed header, set the **FixedHeader** parameter to **true**. The mini
         };
     }
 }
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#fixed-header)
+
+### Freeze columns
+
+```cshtml {} showLineNumbers
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#fixed-header)
+
+### Freeze columns with fixed header
+
+```cshtml {} showLineNumbers
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#fixed-header)
+
+### Freeze columns with fixed header and filters
+
+```cshtml {} showLineNumbers
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/grid#fixed-header)
