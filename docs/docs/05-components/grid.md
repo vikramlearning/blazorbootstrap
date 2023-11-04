@@ -2742,7 +2742,7 @@ To set the fixed header, set the **FixedHeader** parameter to **true**. The mini
 
 <img src="https://i.imgur.com/QRgyrZK.png" alt="Blazor Bootstrap: Grid Component - Fixed header with filters" />
 
-```cshtml {} showLineNumbers
+```cshtml {4,7,9} showLineNumbers
 <Grid TItem="Customer2"
 Class="table table-hover table-bordered"
       DataProvider="CustomersDataProvider"
@@ -2805,7 +2805,7 @@ Class="table table-hover table-bordered"
 
 <img src="https://i.imgur.com/1vRu0LU.png" alt="Blazor Bootstrap: Grid Component - Freeze columns" />
 
-```cshtml {} showLineNumbers
+```cshtml {7,9,12,27} showLineNumbers
 <Grid TItem="Customer2"
       Class="table table-hover table-bordered text-nowrap"
       DataProvider="CustomersDataProvider"
@@ -2866,7 +2866,7 @@ Class="table table-hover table-bordered"
 
 <img src="https://i.imgur.com/qIVCEKH.png" alt="Blazor Bootstrap: Grid Component - Freeze columns with fixed header" />
 
-```cshtml {} showLineNumbers
+```cshtml {6,8,10,13,28} showLineNumbers
 <Grid TItem="Customer2"
       Class="table table-hover table-bordered text-nowrap"
       DataProvider="CustomersDataProvider"
@@ -2928,7 +2928,7 @@ Class="table table-hover table-bordered"
 
 <img src="https://i.imgur.com/GzXuQep.png" alt="Blazor Bootstrap: Grid Component - Freeze columns with fixed header and filters" />
 
-```cshtml {} showLineNumbers
+```cshtml {4,7,9,11,14,26,29} showLineNumbers
 <Grid TItem="Customer2"
       Class="table table-hover table-bordered text-nowrap"
       DataProvider="CustomersDataProvider"
