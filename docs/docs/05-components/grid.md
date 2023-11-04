@@ -2649,8 +2649,6 @@ To set the fixed header, set the **FixedHeader** parameter to **true**. The mini
 
 <img src="https://i.imgur.com/KRsQK6I.png" alt="Blazor Bootstrap: Grid Component - Fixed header" />
 
-<img src="https://i.imgur.com/QRgyrZK.png" alt="Blazor Bootstrap: Grid Component - Fixed header with filters" />
-
 ```cshtml {5,6,8} showLineNumbers
 <Grid @ref="grid"
       TItem="Employee4"
@@ -2740,23 +2738,251 @@ To set the fixed header, set the **FixedHeader** parameter to **true**. The mini
 
 [See demo here](https://demos.blazorbootstrap.com/grid#fixed-header)
 
-### Freeze columns
+### Fixed header with filters
+
+<img src="https://i.imgur.com/QRgyrZK.png" alt="Blazor Bootstrap: Grid Component - Fixed header with filters" />
 
 ```cshtml {} showLineNumbers
+<Grid TItem="Customer2"
+Class="table table-hover table-bordered"
+      DataProvider="CustomersDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      AllowSorting="true"
+      FixedHeader="true"
+      Responsive="true"
+      Unit="Unit.px">
+
+    <GridColumn TItem="Customer2" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+        @context.CustomerId
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+        @context.CustomerName
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
+        @context.Phone
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
+        @context.Email
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
+        @context.Address
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
+        @context.PostalZip
+    </GridColumn>
+    <GridColumn TItem="Customer2" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+        @context.Country
+    </GridColumn>
+
+</Grid>
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/grid#fixed-header)
+```cs {} showLineNumbers
+@code {
+    [Inject] public ICustomerService _customerService { get; set; } = default!;
+
+    private async Task<GridDataProviderResult<Customer2>> CustomersDataProvider(GridDataProviderRequest<Customer2> request)
+    {
+        string sortString = "";
+        SortDirection sortDirection = SortDirection.None;
+
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault().SortString;
+            sortDirection = request.Sorting.FirstOrDefault().SortDirection;
+        }
+        var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
+        return await Task.FromResult(new GridDataProviderResult<Customer2> { Data = result.Item1, TotalCount = result.Item2 });
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#fixed-header-with-filters)
+
+### Freeze columns
+
+<img src="https://i.imgur.com/1vRu0LU.png" alt="Blazor Bootstrap: Grid Component - Freeze columns" />
+
+```cshtml {} showLineNumbers
+<Grid TItem="Customer2"
+      Class="table table-hover table-bordered text-nowrap"
+      DataProvider="CustomersDataProvider"
+      AllowPaging="true"
+      AllowSorting="true"
+      Responsive="true"
+      Unit="Unit.px">
+
+    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+        @context.CustomerId
+    </GridColumn>
+    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="55.98" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+        @context.CustomerName
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
+        @context.Phone
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
+        @context.Email
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
+        @context.Address
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
+        @context.PostalZip
+    </GridColumn>
+    <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+        @context.Country
+    </GridColumn>
+
+</Grid>
+```
+
+```cs {} showLineNumbers
+@code {
+    [Inject] public ICustomerService _customerService { get; set; } = default!;
+
+    private async Task<GridDataProviderResult<Customer2>> CustomersDataProvider(GridDataProviderRequest<Customer2> request)
+    {
+        string sortString = "";
+        SortDirection sortDirection = SortDirection.None;
+
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault().SortString;
+            sortDirection = request.Sorting.FirstOrDefault().SortDirection;
+        }
+        var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
+        return await Task.FromResult(new GridDataProviderResult<Customer2> { Data = result.Item1, TotalCount = result.Item2 });
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#freeze-columns)
 
 ### Freeze columns with fixed header
 
+<img src="https://i.imgur.com/qIVCEKH.png" alt="Blazor Bootstrap: Grid Component - Freeze columns with fixed header" />
+
 ```cshtml {} showLineNumbers
+<Grid TItem="Customer2"
+      Class="table table-hover table-bordered text-nowrap"
+      DataProvider="CustomersDataProvider"
+      AllowPaging="true"
+      AllowSorting="true"
+      FixedHeader="true"
+      Responsive="true"
+      Unit="Unit.px">
+
+    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+        @context.CustomerId
+    </GridColumn>
+    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="55.98" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+        @context.CustomerName
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
+        @context.Phone
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
+        @context.Email
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
+        @context.Address
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
+        @context.PostalZip
+    </GridColumn>
+    <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+        @context.Country
+    </GridColumn>
+
+</Grid>
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/grid#fixed-header)
+```cs {} showLineNumbers
+@code {
+    [Inject] public ICustomerService _customerService { get; set; } = default!;
+
+    private async Task<GridDataProviderResult<Customer2>> CustomersDataProvider(GridDataProviderRequest<Customer2> request)
+    {
+        string sortString = "";
+        SortDirection sortDirection = SortDirection.None;
+
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault().SortString;
+            sortDirection = request.Sorting.FirstOrDefault().SortDirection;
+        }
+        var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
+        return await Task.FromResult(new GridDataProviderResult<Customer2> { Data = result.Item1, TotalCount = result.Item2 });
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#freeze-columns-with-fixed-header)
 
 ### Freeze columns with fixed header and filters
 
+<img src="https://i.imgur.com/GzXuQep.png" alt="Blazor Bootstrap: Grid Component - Freeze columns with fixed header and filters" />
+
 ```cshtml {} showLineNumbers
+<Grid TItem="Customer2"
+      Class="table table-hover table-bordered text-nowrap"
+      DataProvider="CustomersDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      AllowSorting="true"
+      FixedHeader="true"
+      Responsive="true"
+      Unit="Unit.px">
+
+    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+        @context.CustomerId
+    </GridColumn>
+    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="131.95" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+        @context.CustomerName
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
+        @context.Phone
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
+        @context.Email
+    </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
+        @context.Address
+    </GridColumn>
+    <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="171" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
+        @context.PostalZip
+    </GridColumn>
+    <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+        @context.Country
+    </GridColumn>
+
+</Grid>
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/grid#fixed-header)
+```cs {} showLineNumbers
+@code {
+    [Inject] public ICustomerService _customerService { get; set; } = default!;
+
+    private async Task<GridDataProviderResult<Customer2>> CustomersDataProvider(GridDataProviderRequest<Customer2> request)
+    {
+        string sortString = "";
+        SortDirection sortDirection = SortDirection.None;
+
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault().SortString;
+            sortDirection = request.Sorting.FirstOrDefault().SortDirection;
+        }
+        var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
+        return await Task.FromResult(new GridDataProviderResult<Customer2> { Data = result.Item1, TotalCount = result.Item2 });
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#freeze-columns-with-fixed-header-and-filters)
