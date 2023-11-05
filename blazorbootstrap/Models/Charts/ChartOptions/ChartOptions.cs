@@ -17,14 +17,16 @@ public class ChartOptions : IChartOptions
     public string? Locale { get; set; }
 
     /// <summary>
-    ///     <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />
-    /// </summary>
-    public bool Responsive { get; set; }
-
-    /// <summary>
-    ///     <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />
+    /// Gets or sets the MaintainAspectRatio of the chart.
+    /// <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />
     /// </summary>
     public bool MaintainAspectRatio { get; set; } = true;
+
+    /// <summary>
+    /// Gets or set the responsive.
+    /// <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />
+    /// </summary>
+    public bool Responsive { get; set; }
 
     #endregion
 }
@@ -169,7 +171,7 @@ public class ChartAxes
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? SuggestedMin { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public ChartAxesTitle? Title { get; set; } = new();
 
     #endregion

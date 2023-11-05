@@ -4,8 +4,14 @@ public class ChartPlugins
 {
     #region Properties, Indexers
 
+    /// <summary>
+    /// The chart legend displays data about the datasets that are appearing on the chart.
+    /// </summary>
     public ChartPluginsLegend Legend { get; set; } = new();
 
+    /// <summary>
+    /// The chart title defines text to draw at the top of the chart.
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTitle? Title { get; set; } = new();
 
@@ -69,7 +75,7 @@ public class ChartPluginsTitle
     //padding
     //position
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public string? Text { get; set; }
 
     #endregion
@@ -98,7 +104,7 @@ public class ChartPluginsTooltip
     /// </summary>
     public string BodyColor { get; set; } = "#fff";
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public ChartPluginsTooltipFont? BodyFont { get; set; }
 
     /// <summary>

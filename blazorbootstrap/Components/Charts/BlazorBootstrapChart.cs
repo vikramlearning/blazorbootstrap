@@ -2,6 +2,14 @@
 
 public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, IAsyncDisposable
 {
+    #region Fields and Constants
+
+    internal ChartType chartType;
+
+    #endregion
+
+    #region Constructors
+
     /// <summary>
     /// Initializes a new instance of the <see cref="BlazorBootstrapComponentBase" /> class.
     /// </summary>
@@ -9,10 +17,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     {
         ContainerStyleBuilder = new CssStyleBuilder(BuildContainerStyles);
     }
-
-    #region Fields and Constants
-
-    internal ChartType chartType;
 
     #endregion
 
@@ -29,6 +33,16 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     public virtual async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, List<IChartDatasetData> data) => await Task.FromResult(chartData);
 
     public virtual async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) => await Task.FromResult(chartData);
+
+    /// <inheritdoc />
+    public new virtual void Dispose() => Dispose(true);
+
+    /// <inheritdoc />
+    public new virtual async ValueTask DisposeAsync()
+    {
+        await DisposeAsync(true);
+        Dispose(false);
+    }
 
     //public async Task Clear() { }
 
@@ -66,8 +80,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// <param name="heightUnit"></param>
     public async Task ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px)
     {
-        var widthWithUnit = string.Concat("width:", width.ToString(CultureInfo.InvariantCulture), widthUnit.ToCssString());
-        var heightWithUnit = string.Concat("height:", height.ToString(CultureInfo.InvariantCulture), heightUnit.ToCssString());
+        var widthWithUnit = $"width:{width.ToString(CultureInfo.InvariantCulture)}{widthUnit.ToCssString()}";
+        var heightWithUnit = $"height:{height.ToString(CultureInfo.InvariantCulture)}{heightUnit.ToCssString()}";
         await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, widthWithUnit, heightWithUnit);
     }
 
@@ -76,7 +90,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// </summary>
     /// <param name="chartData"></param>
     /// <param name="chartOptions"></param>
-    /// <param name="plugins"></param>
     public virtual async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
@@ -89,6 +102,46 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
                 await JS.InvokeVoidAsync("window.blazorChart.line.update", ElementId, GetChartType(), _data, (LineChartOptions)chartOptions);
             else
                 await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, chartOptions);
+        }
+    }
+
+    protected virtual void BuildContainerStyles(CssStyleBuilder builder)
+    {
+        builder.Append("position:relative", Width.HasValue || Height.HasValue);
+        builder.Append($"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}", Width.HasValue);
+        builder.Append($"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}", Height.HasValue);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    /// <param name="disposing"></param>
+    protected new void Dispose(bool disposing)
+    {
+        if (!Disposed)
+            if (disposing)
+                ContainerStyleBuilder = null;
+
+        base.Dispose(disposing);
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    /// <param name="disposing"></param>
+    protected new ValueTask DisposeAsync(bool disposing)
+    {
+        try
+        {
+            if (!AsyncDisposed)
+                if (disposing)
+                    ContainerStyleBuilder = null;
+
+            return base.DisposeAsync(disposing);
+        }
+        catch (Exception ex)
+        {
+            return new ValueTask(Task.FromException(ex));
         }
     }
 
@@ -128,72 +181,9 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
         return data;
     }
 
-    protected virtual void BuildContainerStyles(CssStyleBuilder builder)
-    {
-        if (Width.HasValue || Height.HasValue)
-        {
-            builder.Append("position:relative");
-        }
+    #endregion
 
-        if (Width.HasValue)
-        {
-            builder.Append(string.Concat("width:", Width.Value.ToString(CultureInfo.InvariantCulture), WidthUnit.ToCssString()));
-        }
-
-        if (Height.HasValue)
-        {
-            builder.Append(string.Concat("height:", Height.Value.ToString(CultureInfo.InvariantCulture), HeightUnit.ToCssString()));
-        }
-    }
-
-    /// <inheritdoc />
-    public new virtual void Dispose() => Dispose(true);
-
-    /// <inheritdoc />
-    public new virtual async ValueTask DisposeAsync()
-    {
-        await DisposeAsync(true);
-        Dispose(false);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected new void Dispose(bool disposing)
-    {
-        if (!Disposed)
-        {
-            if (disposing)
-            {
-                ContainerStyleBuilder = null;
-            }
-        }
-        base.Dispose(disposing);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected new ValueTask DisposeAsync(bool disposing)
-    {
-        try
-        {
-            if (!AsyncDisposed)
-            {
-                if (disposing)
-                {
-                    ContainerStyleBuilder = null;
-                }
-            }
-            return base.DisposeAsync(disposing);
-        }
-        catch (Exception exc)
-        {
-            return new ValueTask(Task.FromException(exc));
-        }
-    }
+    #region Properties, Indexers
 
     /// <summary>
     /// Gets the style mapper.
@@ -205,16 +195,12 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// </summary>
     public string? ContainerStyles => ContainerStyleBuilder!.Styles;
 
-    #endregion
-
-    #region Properties, Indexers
-
     /// <summary>
     /// Gets or sets chart container height.
     /// </summary>
     /// <remarks>
-    /// The default unit of measure is <see cref="Unit.Px"/>.
-    /// To change the unit of measure see <see cref="HeightUnit"/>.
+    /// The default unit of measure is <see cref="Unit.Px" />.
+    /// To change the unit of measure see <see cref="HeightUnit" />.
     /// </remarks>
     [Parameter]
     public int? Height { get; set; }
@@ -229,8 +215,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// Get or sets chart container width.
     /// </summary>
     /// <remarks>
-    /// The default unit of measure is <see cref="Unit.Px"/>.
-    /// To change the unit of measure see <see cref="WidthUnit"/>.
+    /// The default unit of measure is <see cref="Unit.Px" />.
+    /// To change the unit of measure see <see cref="WidthUnit" />.
     /// </remarks>
     [Parameter]
     public int? Width { get; set; }
