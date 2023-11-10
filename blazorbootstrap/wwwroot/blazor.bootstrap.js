@@ -341,6 +341,39 @@ window.blazorBootstrap = {
         }
     },
     grid: {
+        checkOrUnCheckAll: (cssSelector, isChecked) => {
+            let chkEls = document.querySelectorAll(cssSelector);
+            if (chkEls.length === 0)
+                return;
+
+            chkEls.forEach((ele, index) => {
+                ele.checked = isChecked;
+            });
+        },
+        scroll: (elementId) => {
+            let tableEl = document.getElementById(elementId);
+            if (tableEl === null)
+                return;
+
+            if (tableEl.parentElement.scrollLeft === 0) {
+                let colEls = tableEl.querySelectorAll('.freeze-column');
+                if (colEls.length === 0)
+                    return;
+
+                colEls.forEach((e, i) => {
+                    e.classList.remove('freeze-column-active');
+                });
+            }
+            else if (tableEl.parentElement.scrollLeft > 0) {
+                let colEls = tableEl.querySelectorAll('.freeze-column');
+                if (colEls.length === 0)
+                    return;
+
+                colEls.forEach((e, i) => {
+                    e.classList.add('freeze-column-active');
+                });
+            }
+        },
         setSelectAllCheckboxState: (elementId, state) => {
             let checkboxEl = document.getElementById(elementId);
             if (checkboxEl) {
@@ -358,15 +391,6 @@ window.blazorBootstrap = {
                 }
             }
         },
-        checkOrUnCheckAll: (cssSelector, isChecked) => {
-            let chkEls = document.querySelectorAll(cssSelector);
-            if (chkEls.length === 0)
-                return;
-
-            chkEls.forEach((ele, index) => {
-                ele.checked = isChecked;
-            });
-        }
     },
     modal: {
         initialize: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {

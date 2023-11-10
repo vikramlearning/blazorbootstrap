@@ -50,6 +50,7 @@ A card is a flexible and extensible content container. It includes options for h
 | Name | Type | Description | Required | Default | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | ✔️ | | 1.10.0 |
+| Color | `CardColor` | Gets or sets the card color. | | `CardColor.None` | 1.10.4 |
 
 ### CardLink Parameters
 

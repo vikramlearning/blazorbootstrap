@@ -437,6 +437,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await SelectedItemsChanged.InvokeAsync(selectedItems);
     }
 
+    private async Task OnScroll(EventArgs e)
+    {
+        await JS.InvokeVoidAsync("window.blazorBootstrap.grid.scroll", ElementId);
+    }
+
     private void PrepareCheckboxIds()
     {
         checkboxIds ??= new Dictionary<int, string>();

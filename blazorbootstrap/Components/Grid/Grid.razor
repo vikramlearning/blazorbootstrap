@@ -8,7 +8,7 @@
 
 @if (columns.Any())
 {
-    <div class="@responsiveCssClass" style="@gridParentStyle">
+    <div class="@responsiveCssClass" style="@gridParentStyle" onscroll="@OnScroll">
         <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
             <thead class="@THeadCssClass">
                 <tr class="@(FixedHeader ? BootstrapClassProvider.TextNoWrap() : "") @HeaderRowCssClass">
@@ -30,7 +30,24 @@
                         }
                         @foreach (var column in columns)
                         {
-                            <th class="@column.Class">
+                            var columnClassList = new HashSet<string>();
+                            var columnStyleList = new List<string>();
+
+                            columnClassList.Add(column.Class);
+                            if (column.Freeze)
+                            {
+                                columnClassList.Add("freeze-column");
+
+                                if (column.FreezeDirection == FreezeDirection.Left)
+                                    columnStyleList.Add($"left:{column.FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Unit}");
+                                else
+                                {
+                                    columnStyleList.Add($"right:{column.FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Unit}");
+                                    columnClassList.Add("freeze-column-right");
+                                }
+                            }
+
+                            <th class="@string.Join(" ", columnClassList)" style="@string.Join(";", columnStyleList)">
                                 @if (column.Filterable)
                                 {
                                     <GridColumnFilter FilterOperator="@column.FilterOperator"
@@ -48,7 +65,7 @@
                 }
             </thead>
             <tbody>
-                @if (requestInProgress) // || totalCount == null
+                @if (requestInProgress) //|| totalCount == null
                 {
                     // show placeholders
                     @for (var i = 0; i < 5; i++)
