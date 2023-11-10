@@ -1,12 +1,12 @@
 ﻿<Grid TItem="Customer2"
-Class="table table-hover table-bordered table-striped"
+Class="table table-hover table-bordered"
       DataProvider="CustomersDataProvider"
       AllowFiltering="true"
       AllowPaging="true"
       AllowSorting="true"
       FixedHeader="true"
       Responsive="true"
-      Unit="Unit.Pt">
+      Unit="Unit.Px">
 
     <GridColumn TItem="Customer2" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
         @context.CustomerId
@@ -26,7 +26,7 @@ Class="table table-hover table-bordered table-striped"
     <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
         @context.PostalZip
     </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+    <GridColumn TItem="Customer2" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
         @context.Country
     </GridColumn>
 
