@@ -69,15 +69,15 @@ public class Interaction
 
     private void SetMode(InteractionMode interactionMode) =>
         ChartInteractionMode = interactionMode switch
-                               {
-                                   InteractionMode.Dataset => "dataset",
-                                   InteractionMode.Index => "index",
-                                   InteractionMode.Nearest => "nearest",
-                                   InteractionMode.Point => "point",
-                                   InteractionMode.X => "x",
-                                   InteractionMode.Y => "y",
-                                   _ => ""
-                               };
+        {
+            InteractionMode.Dataset => "dataset",
+            InteractionMode.Index => "index",
+            InteractionMode.Nearest => "nearest",
+            InteractionMode.Point => "point",
+            InteractionMode.X => "x",
+            InteractionMode.Y => "y",
+            _ => ""
+        };
 
     #endregion
 
@@ -171,7 +171,7 @@ public class ChartAxes
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? SuggestedMin { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartAxesTitle? Title { get; set; } = new();
 
     #endregion

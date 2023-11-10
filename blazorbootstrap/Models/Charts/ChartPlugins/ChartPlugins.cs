@@ -75,7 +75,7 @@ public class ChartPluginsTitle
     //padding
     //position
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Text { get; set; }
 
     #endregion
@@ -104,7 +104,7 @@ public class ChartPluginsTooltip
     /// </summary>
     public string BodyColor { get; set; } = "#fff";
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTooltipFont? BodyFont { get; set; }
 
     /// <summary>

@@ -108,8 +108,12 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     protected virtual void BuildContainerStyles(CssStyleBuilder builder)
     {
         builder.Append("position:relative", Width.HasValue || Height.HasValue);
-        builder.Append($"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}", Width.HasValue);
-        builder.Append($"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}", Height.HasValue);
+        
+        if (Width.HasValue)
+            builder.Append($"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}", Width.HasValue);
+        
+        if (Height.HasValue)
+            builder.Append($"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}", Height.HasValue);
     }
 
     /// <summary>
