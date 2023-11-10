@@ -43,7 +43,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+   protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.TableSticky(), FixedHeader);
 
@@ -121,10 +121,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (FixedHeader)
         {
-            styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit}");
+            styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
         }
 
-        return string.Join(":", styleAttributes);
+        return string.Join(";", styleAttributes);
     }
 
     /// <summary>
@@ -169,13 +169,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await LoadGridSettingsAsync();
 
         var request = new GridDataProviderRequest<TItem>
-        {
-            PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
-            PageSize = AllowPaging ? pageSize : 0,
-            Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting() : null,
-            Filters = AllowFiltering ? GetFilters() : null,
-            CancellationToken = cancellationToken
-        };
+                      {
+                          PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
+                          PageSize = AllowPaging ? pageSize : 0,
+                          Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting() : null,
+                          Filters = AllowFiltering ? GetFilters() : null,
+                          CancellationToken = cancellationToken
+                      };
 
         GridDataProviderResult<TItem> result = default!;
 
@@ -689,13 +689,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                                         builder.CloseElement(); // close: th
                                     };
 
-    /// <summary>
+   /// <summary>
     /// Gets or sets the grid height.
     /// </summary>
     [Parameter]
     public float Height { get; set; } = 320;
 
-    [Parameter][EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
+    [Parameter] [EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.
@@ -789,7 +789,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the units.
     /// </summary>
     [Parameter]
-    public Unit Unit { get; set; } = Unit.px;
+    public Unit Unit { get; set; } = Unit.Px;
 
     private int totalPages => GetTotalPagesCount();
 

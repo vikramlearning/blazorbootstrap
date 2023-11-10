@@ -156,9 +156,9 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 
             return default;
         }
-        catch (Exception exc)
+        catch (Exception ex)
         {
-            return new ValueTask(Task.FromException(exc));
+            return new ValueTask(Task.FromException(ex));
         }
     }
 
