@@ -1,0 +1,14 @@
+﻿<Button Color="ButtonColor.Dark" @onclick="async () => await ShowSpinnerAsync(SpinnerColor.Light)">Show Spinner with custom loading text</Button>
+
+@code {
+    [Inject] protected PreloadService PreloadService { get; set; }
+
+    private async Task ShowSpinnerAsync(SpinnerColor spinnerColor)
+    {
+        PreloadService.Show(spinnerColor, "Loading data...");
+
+        await Task.Delay(3000); // call the service/api
+
+        PreloadService.Hide();
+    }
+}

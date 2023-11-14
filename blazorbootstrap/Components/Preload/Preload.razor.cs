@@ -4,6 +4,8 @@ public partial class Preload : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
+    private string? loadingText;
+
     private bool showBackdrop;
 
     private string? spinnerColor;
@@ -58,11 +60,13 @@ public partial class Preload : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
-    private void OnShow(SpinnerColor spinnerColor)
+    private void OnShow(SpinnerColor spinnerColor, string? loadingText)
     {
         this.spinnerColor = spinnerColor.ToSpinnerColor();
+        
+        this.showBackdrop = true;
 
-        showBackdrop = true;
+        this.loadingText = loadingText;
 
         DirtyClasses();
         DirtyStyles();
@@ -88,6 +92,12 @@ public partial class Preload : BlazorBootstrapComponentBase
     /// </summary>
     [Inject]
     private PreloadService PageLoadingService { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the loading text.
+    /// </summary>
+    [Parameter]
+    public string? LoadingText { get; set; }
 
     #endregion
 }
