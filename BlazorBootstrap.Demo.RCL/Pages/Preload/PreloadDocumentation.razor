@@ -16,15 +16,16 @@
         <li>Call <code>preloadService.Hide()</code> after you get the response from the API.</li>
     </ul>
 </div>
-@*<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<div class="mb-3">In the below example, when the page loads <code>PreloadService.Show()</code> is called to show the spinner.</div>
-<Demo Type="typeof(Preload_Demo_01_Examples)" ShowCodeOnly="true" />*@
 
 <SectionHeading Size="HeadingSize.H2" Text="Global preload service for the application" PageUrl="@pageUrl" HashTagName="global-preload-service-for-the-application" />
 <div class="mb-3">1. Add the <code>Preload</code> component in <code>MainLayout.razor</code> page as shown below.</div>
-<Demo Type="typeof(Preload_Demo_04_Global_Preload_For_Application_01)" ShowCodeOnly="true" />
+<Demo Type="typeof(Preload_Demo_01_Global_Preload_For_Application_A)" ShowCodeOnly="true" />
 <div class="mb-3">2. Inject <code>PreloadService</code>, then call the <code>Show()</code> and <code>Hide()</code> methods before and after the Service/API, respectively, as shown below.</div>
-<Demo Type="typeof(Preload_Demo_04_Global_Preload_For_Application_02)" ShowCodeOnly="true" />
+<Demo Type="typeof(Preload_Demo_01_Global_Preload_For_Application_B)" ShowCodeOnly="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Change loading text" PageUrl="@pageUrl" HashTagName="change-loading-text" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Preload_Demo_02_Loading_Text)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Change spinner color" PageUrl="@pageUrl" HashTagName="change-spinner-color" />
 <div class="mb-3">
@@ -33,15 +34,11 @@
 </div>
 <Demo Type="typeof(Preload_Demo_03_Change_Spinner_Color)" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Loading text" PageUrl="@pageUrl" HashTagName="loading-text" />
-<div class="mb-3"></div>
-<Demo Type="typeof(Preload_Demo_02_Loading_Text)" />
-
 @code {
     private string pageUrl = "/preload";
     private string title = "Blazor Preload Component";
     private string description = "Indicate the loading state of a page with Blazor Bootstrap preload component.";
-    private string imageUrl = "https://i.imgur.com/3pvzbXY.png";
+    private string imageUrl = "https://i.imgur.com/2cPuqFa.png";
 
     [Inject] PreloadService PreloadService { get; set; }
 
