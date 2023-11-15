@@ -1,7 +1,7 @@
 ---
 title: Blazor Preload Component
 description: Indicate the loading state of a page with Blazor Bootstrap preload component.
-image: https://i.imgur.com/UV6zPTQ.png
+image: https://i.imgur.com/2cPuqFa.png
 
 sidebar_label: Preload
 sidebar_position: 17
@@ -18,13 +18,14 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 - Call `PreloadService.Show()` before you make any call to the API.
 - Call `PreloadService.Hide()` after you get the response from the API.
 
-<img src="https://i.imgur.com/UV6zPTQ.png" alt="Blazor Bootstrap: Blazor Preload Component - Default" />
+<img src="https://i.imgur.com/2cPuqFa.png" alt="Blazor Bootstrap: Blazor Preload Component - Default" />
 
 ## Parameters
 
 | Name | Type | Default | Description | Required |  Version Added |
 |--|--|--|--|--|--|
 | ChildContent | RenderFragment | null | Specifies the content to be rendered inside this. | | 1.1.0 |
+| LoadingText | string? | null | Gets or sets the loading text. | | 1.10.4 |
 
 ## Preload Service
 
@@ -32,7 +33,8 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 
 | Name | Return Type | Description | Added Version |
 |--|--|--|--|
-| Show(SpinnerColor spinnerColor = SpinnerColor.Light)| void | Shows the preload. | 1.1.0 |
+| Show(SpinnerColor spinnerColor = SpinnerColor.Light) | void | Shows the preload. | 1.1.0 |
+| Show(SpinnerColor spinnerColor = SpinnerColor.Light, string? loadingText = null) | void | Shows the preload. | 1.10.4 |
 | Hide() | void | Hides the preload. | 1.1.0 |
 
 ## Global preload service for the application
@@ -48,10 +50,10 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 
 .
 .
-<Preload />
+<Preload LoadingText="Loading..." />
 ```
 
-2. Inject `PreloadService`, then call the `Show()` and `Hide()` methods before and after the Service/API, respectively, as shown below.
+2. Inject `PreloadService`, then call the `Show()` and `Hide()` methods before and after the Service/API call, respectively, as shown below.
 
 ```cs {} showLineNumbers
 @code {
@@ -79,6 +81,37 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 ```
 
 [See Preload demo here.](https://demos.blazorbootstrap.com/preload#global-preload-service-for-the-application)
+
+## Change loading text
+
+<img src="https://i.imgur.com/nzNRyp7.png" alt="Blazor Bootstrap: Blazor Preload Component - Change loading text" />
+
+```cshtml {} showLineNUmbers
+<Button Color="ButtonColor.Primary" @onclick="ShowLoadingDataAsync">Show Loading data...</Button>
+<Button Color="ButtonColor.Dark" @onclick="ShowSavingDataAsync">Show Saving data...</Button>
+```
+
+```cs {} showLineNumbers
+@code {
+    [Inject] protected PreloadService PreloadService { get; set; }
+
+    private async Task ShowLoadingDataAsync()
+    {
+        PreloadService.Show(SpinnerColor.Light, "Loading data...");
+        await Task.Delay(3000); // call the service/api
+        PreloadService.Hide();
+    }
+
+    private async Task ShowSavingDataAsync()
+    {
+        PreloadService.Show(SpinnerColor.Light, "Saving data...");
+        await Task.Delay(3000); // call the service/api
+        PreloadService.Hide();
+    }
+}
+```
+
+[See Preload demo here.](https://demos.blazorbootstrap.com/preload#change-loading-text)
 
 ## Change spinner color
 

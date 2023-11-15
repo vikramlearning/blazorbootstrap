@@ -15,6 +15,14 @@
                         <div class="spinner-border" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
+                        @if (!string.IsNullOrWhiteSpace(loadingText))
+                        {
+                            <div>@loadingText</div>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(LoadingText))
+                        {
+                            <div>@LoadingText</div>
+                        }
                     </div>
                 }
             </div>

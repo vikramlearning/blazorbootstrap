@@ -1,0 +1,20 @@
+﻿<Button Color="ButtonColor.Primary" @onclick="ShowLoadingDataAsync">Show Loading data...</Button>
+<Button Color="ButtonColor.Dark" @onclick="ShowSavingDataAsync">Show Saving data...</Button>
+
+@code {
+    [Inject] protected PreloadService PreloadService { get; set; }
+
+    private async Task ShowLoadingDataAsync()
+    {
+        PreloadService.Show(SpinnerColor.Light, "Loading data...");
+        await Task.Delay(3000); // call the service/api
+        PreloadService.Hide();
+    }
+
+    private async Task ShowSavingDataAsync()
+    {
+        PreloadService.Show(SpinnerColor.Light, "Saving data...");
+        await Task.Delay(3000); // call the service/api
+        PreloadService.Hide();
+    }
+}
