@@ -39,10 +39,10 @@
                                 columnClassList.Add("freeze-column");
 
                                 if (column.FreezeDirection == FreezeDirection.Left)
-                                    columnStyleList.Add($"left:{column.FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Unit}");
+                                    columnStyleList.Add($"left:{column.FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
                                 else
                                 {
-                                    columnStyleList.Add($"right:{column.FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Unit}");
+                                    columnStyleList.Add($"right:{column.FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
                                     columnClassList.Add("freeze-column-right");
                                 }
                             }

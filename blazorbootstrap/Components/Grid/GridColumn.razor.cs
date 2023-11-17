@@ -154,10 +154,10 @@ public partial class GridColumn<TItem>
                                             var styleList = new List<string>();
 
                                             if (FreezeDirection == FreezeDirection.Left)
-                                                styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                                styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
                                             else
                                             {
-                                                styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                                styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
 
                                                 classList.Add("freeze-column-right");
                                             }
@@ -260,10 +260,10 @@ public partial class GridColumn<TItem>
                                    var styleList = new List<string>();
 
                                    if (FreezeDirection == FreezeDirection.Left)
-                                       styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                       styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
                                    else
                                    {
-                                       styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit}");
+                                       styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
 
                                        classList.Add("freeze-column-right");
                                    }
