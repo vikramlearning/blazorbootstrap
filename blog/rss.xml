@@ -4,10 +4,29 @@
         <title>Blazor Bootstrap Blog</title>
         <link>https://docs.blazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Blog</description>
-        <lastBuildDate>Sun, 15 Oct 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 18 Nov 2023 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.10.4]]></title>
+            <link>https://docs.blazorbootstrap.com/blog/2023/11/18/blazorbootstrap-1.10.4</link>
+            <guid>https://docs.blazorbootstrap.com/blog/2023/11/18/blazorbootstrap-1.10.4</guid>
+            <pubDate>Sat, 18 Nov 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.10.4 with enhancements to grid, preload, modal, and switch!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.10.4 with enhancements to grid, preload, modal, and switch!!!</p><p><img loading="lazy" src="https://i.imgur.com/GzXuQep.png" alt="image" title="Blazor Bootstrap: Gird Component - Freeze columns with fixed header and filters" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>Grid</code> component</p><ul><li>Grid: Freeze Columns Support <a href="https://github.com/vikramlearning/blazorbootstrap/issues/246" target="_blank" rel="noopener noreferrer">#246</a></li></ul></li><li><p><code>Preload</code> component</p><ul><li>Preload: Add text to preload component <a href="https://github.com/vikramlearning/blazorbootstrap/issues/414" target="_blank" rel="noopener noreferrer">#414</a></li></ul></li><li><p><code>Switch</code> component</p><ul><li>Switch: Double click on switch selects the label <a href="https://github.com/vikramlearning/blazorbootstrap/issues/401" target="_blank" rel="noopener noreferrer">#401</a></li></ul></li><li><p><code>Charts</code> component</p><ul><li>Chart size updates <a href="https://github.com/vikramlearning/blazorbootstrap/pull/384" target="_blank" rel="noopener noreferrer">#384</a></li></ul></li><li><p><code>Modal</code> component</p><ul><li>Pressing Esc still closes the modal even with UseStaticBackdrop="true" <a href="https://github.com/vikramlearning/blazorbootstrap/issues/416" target="_blank" rel="noopener noreferrer">#416</a></li></ul></li><li><p>Docs updates</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://docs.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.10.4</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>grid</category>
+            <category>preload</category>
+            <category>switch</category>
+            <category>charts</category>
+            <category>modal</category>
+            <category>docs</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.10.3]]></title>
             <link>https://docs.blazorbootstrap.com/blog/2023/10/15/blazorbootstrap-1.10.3</link>
