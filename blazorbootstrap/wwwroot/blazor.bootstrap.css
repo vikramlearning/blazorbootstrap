@@ -234,7 +234,7 @@ table button.dropdown-toggle.bb-grid-filter::after {
 
         .bb-table-sticky > thead > tr > th {
             background-color: var(--bb-table-sticky-background-color);
-            top: -0.5px;
+            top: 0px;
             position: sticky;
             border-style: solid;
             border-color: var(--bs-table-border-color);
@@ -263,6 +263,8 @@ table > thead > tr > th.freeze-column {
     position: sticky;
     background-color: var(--bb-table-freeze-column-background-color);
     z-index: 5;
+    border-left-width: 0px !important;
+    border-right-width: 0px !important;
 }
 
 table > thead > tr:nth-child(2) > th.freeze-column {
@@ -271,10 +273,58 @@ table > thead > tr:nth-child(2) > th.freeze-column {
     z-index: 5;
 }
 
+/* freeze column left */
+/* th: row-1 */
+table > thead > tr > th:not(.freeze-column-right):first-child.freeze-column {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), 
+        inset 0 1px 0 var(--bs-table-border-color), 
+        inset 0 -1px 0 var(--bs-table-border-color);
+}
+
+table > thead > tr > th:not(.freeze-column-right).freeze-column {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), 
+        inset -1px 0 0 var(--bs-table-border-color), 
+        inset 0 1px 0 var(--bs-table-border-color), 
+        inset 0 -1px 0 var(--bs-table-border-color);
+}
+
+table > thead > tr > th:not(.freeze-column-right):last-child.freeze-column {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), 
+        inset 0 -1px 0 var(--bs-table-border-color), 
+        inset -1px 0 0 var(--bs-table-border-color);
+}
+
+/* th: row-2 */
+table > thead > tr:nth-child(2) > th:not(.freeze-column-right):first-child.freeze-column {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+}
+
+table > thead > tr:nth-child(2) > th:not(.freeze-column-right).freeze-column {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+}
+
+table > thead > tr:nth-child(2) > th:not(.freeze-column-right):last-child.freeze-column {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color);
+}
+
 table > tbody > tr > td.freeze-column {
     position: sticky;
     background-color: var(--bb-table-freeze-column-background-color);
     z-index: 4;
+    border-left-width: 0px !important;
+    border-right-width: 0px !important;
+}
+
+table > tbody > tr > td:not(.freeze-column-right):first-child.freeze-column {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color);
+}
+
+table > tbody > tr > td:not(.freeze-column-right).freeze-column {
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color);
+}
+
+table > tbody > tr > td:not(.freeze-column-right):last-child.freeze-column {
+    box-shadow: inset 0 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color), inset 0 0 0 var(--bs-table-border-color);
 }
 
 /* freeze column right */
