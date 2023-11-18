@@ -392,6 +392,36 @@ window.blazorBootstrap = {
             }
         },
     },
+    scriptLoader: {
+        load: (elementId, async, scriptId, source, type) => {
+            let scriptLoaderEl = document.getElementById(elementId);
+
+            if (source.length == 0) {
+                console.error(`Invalid src url.`);
+                return;
+            }
+
+            var scriptEl = document.createElement('script');
+
+            scriptEl.async = async;
+
+            if (scriptId != null)
+                scriptEl.id = scriptId;
+
+            if (source != null)
+                scriptEl.src = source;
+
+            if (type != null)
+                scriptEl.type = type;
+
+            scriptEl.onerror = function () {
+                console.error(`An error occurred while loading the script: ${source}`);
+            }
+
+            if (scriptLoaderEl)
+                scriptLoaderEl.appendChild(scriptEl);
+        }
+    },
     modal: {
         initialize: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {
             let modalEl = document.getElementById(elementId);
