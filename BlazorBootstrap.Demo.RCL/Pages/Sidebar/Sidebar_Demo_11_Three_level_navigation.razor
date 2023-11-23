@@ -1,31 +1,43 @@
-﻿<Sidebar @ref="sidebar"
-         IconName="IconName.BootstrapFill"
-         Title="Blazor Bootstrap"
-         Items="GetNavItems()" />
+﻿<div class="bb-page">
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Blazor Bootstrap"
+             Items="GetNavItems()" />
 
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-between">
+            <Icon Name="IconName.List" role="button" @onclick="ToogleSidebar" />
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">Page content goes here</div>
+        </article>
+    </main>
+</div>
 @code {
     Sidebar sidebar = default!;
 
     private IEnumerable<NavItem> GetNavItems()
     {
         yield return new NavItem
-        {
-            Href = "/getting-started",
-            IconName = IconName.HouseDoorFill,
-            Text = "Getting Started"
-        };
+            {
+                Href = "/getting-started",
+                IconName = IconName.HouseDoorFill,
+                Text = "Getting Started"
+            };
 
 
         yield return new NavItem
-        {
-            IconName = IconName.WindowPlus,
-            Text = "Forms",
-            IconColor = IconColor.Danger,
-            ChildItems = new List<NavItem>
             {
-                new NavItem 
-                { 
-                    IconName = IconName.InputCursorText, 
+                IconName = IconName.WindowPlus,
+                Text = "Forms",
+                IconColor = IconColor.Danger,
+                ChildItems = new List<NavItem>
+            {
+                new NavItem
+                {
+                    IconName = IconName.InputCursorText,
                     Text = "Second level",
                     ChildItems = new List<NavItem>
                     {
@@ -36,10 +48,13 @@
                             Text = "Third level item"
                         }
                     }
-                },     
+                },
             }
-        };
+            };
 
-       
+
     }
+
+    private void ToogleSidebar() => sidebar.ToggleSidebar();
+
 }
