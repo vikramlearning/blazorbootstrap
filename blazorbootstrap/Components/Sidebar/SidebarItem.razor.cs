@@ -110,6 +110,9 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     [Parameter]
     public bool IsSubItem { get; set; }
 
+    /// <summary>
+    /// Gets or sets the current level of this <see cref="NavItem"/>
+    /// </summary>
     [Parameter] 
     public int SubLevel { get; set; }
 
