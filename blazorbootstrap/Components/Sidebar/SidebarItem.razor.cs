@@ -14,6 +14,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     {
         builder.Append("nav-item");
         builder.Append("nav-item-group", Item.ChildItems.Any());
+        builder.Append("nav-sub-item", IsSubItem);
         builder.Append("active", navitemGroupExpanded);
 
         base.BuildClasses(builder);
@@ -103,6 +104,14 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     [Parameter, EditorRequired]
     public NavItem Item { get; set; } = new();
 
+    /// <summary>
+    /// If set to true then this nav item is marked as nav-sub-item
+    /// </summary>
+    [Parameter]
+    public bool IsSubItem { get; set; }
+
+    [Parameter] 
+    public int SubLevel { get; set; }
 
     /// <summary>
     /// Gets or sets a value representing the URL matching behavior.

@@ -7,6 +7,11 @@
         <NavLink class="nav-link" role="button" @onclick="ToggleNavItemGroup">
             @if (!CollapseSidebar)
             {
+                @for (int i = 0; i < SubLevel; i++)
+                {
+                    <span class="indent"></span>
+                }
+
                 <span class="nav-link-icon me-3">
                     <Icon Class="@iconColorCssClass" Name="@Item.IconName" CustomIconName="@Item.CustomIconName" aria-hidden="true" />
                 </span>
@@ -39,6 +44,10 @@
         <NavLink class="nav-link" href="@Item.Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
             @if (!CollapseSidebar)
             {
+                @for (int i = 0; i < SubLevel; i++)
+                {
+                    <span class="indent"></span>
+                }
                 <span class="nav-link-icon me-3">
                     <Icon Class="@iconColorCssClass" Name="@Item.IconName" CustomIconName="@Item.CustomIconName" aria-hidden="true" />
                 </span>
@@ -60,6 +69,8 @@
         @foreach (var childItem in Item.ChildItems)
         {
             <SidebarItem Item="childItem"
+                         IsSubItem="true"
+                         SubLevel="@(SubLevel + 1)"
                          Class="@childItem.Class" />
         }
     }

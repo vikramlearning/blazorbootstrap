@@ -28,7 +28,6 @@
         font-weight: 600;
     }
 
-/* MDN REFERENCE: https://developer.mozilla.org/en-US/docs/Web/CSS/:has#browser_compatibility */
-.bb-sidebar nav .nav-item.nav-item-group:has(.nav-link.active) {
-    background-color: var(--bb-sidebar-nav-item-group-background-color);
+.bb-sidebar nav .nav-item .indent {
+    padding-left: var(--bb-sidebar-nav-sub-level-padding-left);
 }

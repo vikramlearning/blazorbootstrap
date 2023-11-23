@@ -33,6 +33,7 @@
     --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
     --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
     --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
+    --bb-sidebar-nav-sub-level-padding-left: 1em;
     /* custom tooltip */
     --bb-tooltip-primary: var(--bs-primary);
     --bb-tooltip-secondary: var(--bs-secondary);
