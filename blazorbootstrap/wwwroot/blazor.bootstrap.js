@@ -401,7 +401,7 @@ window.blazorBootstrap = {
                 return;
             }
 
-            var scriptEl = document.createElement('script');
+            let scriptEl = document.createElement('script');
 
             scriptEl.async = async;
 
