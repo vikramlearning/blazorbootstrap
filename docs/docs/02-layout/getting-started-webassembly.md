@@ -5,9 +5,12 @@ sidebar_position: 1
 title: Blazor WebAssembly
 ---
 
+import CarbonAd from '/carbon-ad.mdx'
+
 # Layout Setup - Blazor WebAssembly
 
 Get started with the Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
+<CarbonAd />
 
 ## Prerequisites
 
