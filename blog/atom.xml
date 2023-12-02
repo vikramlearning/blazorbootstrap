@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://docs.blazorbootstrap.com/blog</id>
-    <title>Blazor Bootstrap Blog</title>
+    <title>Blazor Bootstrap Docs Blog</title>
     <updated>2023-11-18T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://docs.blazorbootstrap.com/blog"/>
-    <subtitle>Blazor Bootstrap Blog</subtitle>
+    <subtitle>Blazor Bootstrap Docs Blog</subtitle>
     <icon>https://docs.blazorbootstrap.com/img/logo/logo-color.svg</icon>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v1.10.4]]></title>
