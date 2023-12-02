@@ -3,7 +3,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'Blazor Bootstrap',
+    title: 'Blazor Bootstrap Docs',
     tagline: 'High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.',
     url: 'https://docs.blazorbootstrap.com',
     baseUrl: '/',
