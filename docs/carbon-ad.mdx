@@ -1,4 +1,7 @@
+import BrowserOnly from '@docusaurus/BrowserOnly';
 import {RenderAd} from './src/js/carbon-ad.js'
 
 <div id="divCarbonAd"></div>
-<RenderAd />
+<BrowserOnly fallback={null}>
+    {() => <RenderAd />}
+</BrowserOnly>

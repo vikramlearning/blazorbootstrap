@@ -41,7 +41,3 @@ export default function Home() {
     // );
     return <Redirect to='/getting-started/blazor-webassembly' />;
 }
-
-(function(){
-    console.log(`test`);
-});
