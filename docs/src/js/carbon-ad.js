@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 export function RenderAd() {
     let scriptLoaderEl = document.getElementById(`divCarbonAd`);
     if (scriptLoaderEl) {
+        scriptLoaderEl.replaceChildren();
         setTimeout(() => {
             let scriptEl = document.getElementById(`_carbonads_js`);
             if (scriptEl) {
@@ -12,12 +13,11 @@ export function RenderAd() {
             scriptEl = document.createElement('script');
             scriptEl.async = true;
             scriptEl.id = `_carbonads_js`;
-            scriptEl.src = `//cdn.carbonads.com/carbon.js?serve=CWYICKJI&placement=docsblazorbootstrapcom`;
+            scriptEl.src = `//cdn.carbonads.com/carbon.js?serve=CWYICKJI&placement=docsblazorbootstrapcom&ms=${(new Date()).getUTCMilliseconds()}`;
             scriptEl.type = `text/javascript`;
             scriptEl.onerror = function () {
                 console.error(`An error occurred while loading the script: ${source}`);
             }
-            scriptLoaderEl.replaceChildren();
             if (scriptEl) {
                 scriptLoaderEl.appendChild(scriptEl);
             }
