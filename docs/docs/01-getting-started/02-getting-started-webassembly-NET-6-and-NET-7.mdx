@@ -1,8 +1,8 @@
 ---
-id: blazor-webassembly
-sidebar_label: Blazor WebAssembly
-sidebar_position: 1
-title: Blazor WebAssembly
+id: blazor-webassembly-net-6-and-net-7
+sidebar_label: Blazor WebAssembly (.NET 6 & 7)
+sidebar_position: 2
+title: Blazor WebAssembly (.NET 6 & 7)
 ---
 
 import CarbonAd from '/carbon-ad.mdx'
@@ -23,7 +23,7 @@ Install-Package Blazor.Bootstrap -Version 1.10.4
 
 ## Add CSS references
 
-Add the following references to the `head` section in the **wwwroot/index.html**.
+After the `<base href="/" />` tag in the `head` section of the `wwwroot/index.html` file, add the following references:
 
 ```html showLineNumbers
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
@@ -42,8 +42,7 @@ There is a known GitHub issue [Blazor empty template doesn't load scoped CSS](ht
 
 ## Add script references
 
-Add the following references to the `body` section in the **wwwroot/index.html** after the **_framework/blazor.webassembly.js** reference.
-
+Insert the following references into the `body` section of the `wwwroot/index.html` file, immediately after the `_framework/blazor.webassembly.js` reference:
 
 ``` js showLineNumbers
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
@@ -55,7 +54,7 @@ Add the following references to the `body` section in the **wwwroot/index.html**
 ```
 
 :::tip
-**chart.js** reference is optional. Add when the **Chart** components are used in the application.
+The **chart.js** reference is optional. Include it only when the **Chart** components are used in the application.
 :::
 
 ## Register services
@@ -74,28 +73,27 @@ Register tag helpers in **_Imports.razor**
 
 ## Remove default references
 
-In the **wwwroot/index.html** file, the default blazor template includes demonstration code, icons, and Bootstrap. 
-These files are no longer needed.
+The default Blazor template in the **wwwroot/index.html** file includes demonstration code, icons, and Bootstrap. These files are no longer necessary.
 
 ``` html showLineNumbers
 <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
 <link href="css/app.css" rel="stylesheet" />
 ```
 
-Delete the default **bootstrap** and **open-iconic** folders from the **wwwroot** folder.
+Remove the default **bootstrap** and **open-iconic** folders from the **wwwroot** directory.
 
-1. wwwroot/css/bootstrap
-1. wwwroot/css/open-iconic
+1. Delete the `wwwroot/css/bootstrap` folder.
+1. Delete the `wwwroot/css/open-iconic` folder (**Note:** If this folder is not present in the .NET 8 project, disregard this step).
 
-Either remove or keep the **app.css** file but make sure you clear it out of any content when the [Sidebar](/components/sidebar#full-layout-with-sidebar) component with full layout is used.
+When using the [Sidebar](/components/sidebar#full-layout-with-sidebar) component with full layout, if you encounter any conflicts, please refer to any of the starter templates for updating the **app.css** file.
 
 ## Starter templates
 
-### .NET 6
+### .NET 8
 
-1. [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
+1. [Blazor Bootstrap - Blazor WebAssembly Standalone App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET8.BlazorWebAssemblyStandaloneApp)
 
-   <img src="https://i.imgur.com/aRV3rJm.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
+   <img src="https://i.imgur.com/2SuR7oA.png" alt="Blazor Bootstrap - Blazor WebAssembly Standalone App" />
 
 ### .NET 7
 
@@ -106,3 +104,9 @@ Either remove or keep the **app.css** file but make sure you clear it out of any
 1. [Blazor Bootstrap - Blazor Empty WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyAppEmpty)
 
    <img src="https://i.imgur.com/CBEoZ6P.png" alt="Blazor Bootstrap - Blazor Empty WebAssembly App" />
+
+### .NET 6
+
+1. [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
+
+   <img src="https://i.imgur.com/aRV3rJm.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
