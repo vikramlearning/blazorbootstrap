@@ -20,9 +20,9 @@
         @if (inputHasValue)
         {
             <Button @ref="closeButton"
-                    Class="border-0"
-                    Style="margin-left: -42px; z-index: 100; border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;"
-                    disabled="@Disabled"
+                    Class="border-0 position-absolute end-0"
+                    Style="@DeleteButtonStyle"
+                    Disabled="@Disabled"
                     @onclick="ClearInputTextAsync">
 
                 <Icon Name="IconName.XLg"></Icon>

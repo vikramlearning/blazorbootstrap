@@ -304,6 +304,17 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
+    /// Gets all Style attributes for the autocomplete delete button.
+    /// </summary>
+    private string DeleteButtonStyle => Size switch
+    {
+        AutoCompleteSize.Small => "z-index: 100; top: -2px;",
+        AutoCompleteSize.Default => "z-index: 100; top: 2px;",
+        AutoCompleteSize.Large => "z-index: 100; top: 7px;",
+        _ => "z-index: 100;",
+    };
+
+    /// <summary>
     /// Gets or sets the loading text.
     /// </summary>
     [Parameter]
