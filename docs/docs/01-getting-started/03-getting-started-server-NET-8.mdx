@@ -23,7 +23,7 @@ Install-Package Blazor.Bootstrap -Version 1.10.4
 
 ## Add CSS references
 
-Add the following references to the `head` section in the **Components/App.razor**.
+After the `<base href="/" />` tag in the **head** section of the **Components/App.razor**.
 
 ```html showLineNumbers
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
@@ -33,7 +33,7 @@ Add the following references to the `head` section in the **Components/App.razor
 
 ## Add script references
 
-Add the following references to the `body` section in the **Components/App.razor** after the **_framework/blazor.web.js** reference.
+Insert the following references into the **body** section of the **Components/App.razor** file, immediately after the **_framework/blazor.web.js** reference:
 
 ``` js showLineNumbers
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
@@ -166,4 +166,61 @@ app.Run();
 @using NET8.BlazorWebAppRenderModeServer
 @using NET8.BlazorWebAppRenderModeServer.Components
 @using BlazorBootstrap;
+```
+
+### MainLayout.razor
+
+```razor {} showLineNumbers
+@inherits LayoutComponentBase
+
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Blazor Bootstrap"
+             DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-end">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">@Body</div>
+        </article>
+    </main>
+
+</div>
+
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+                   {
+                       new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All},
+                       new NavItem { Id = "2", Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter"},
+                       new NavItem { Id = "3", Href = "/weather", IconName = IconName.Table, Text = "Fetch Data"},
+                   };
+
+        return navItems;
+    }
+}
+
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
 ```
