@@ -130,7 +130,7 @@ const config = {
                     },
                     {
                         from: '/getting-started/blazor-server',
-                        to: '/getting-started/blazor-server-net-8',
+                        to: '/getting-started/blazor-webapp-server-global-net-8',
                     },
                     {
                         from: '/docs/getting-started/maui-blazor',
