@@ -169,4 +169,4 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ## Copyright and license
 
-Code and documentation copyright 2023 [Blazor Bootstrap](https://getblazorbootstrap.com/) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/master/LICENSE.txt).
+Code and documentation copyright 2023 [Blazor Bootstrap](https://docs.blazorbootstrap.com/) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/master/LICENSE.txt).
