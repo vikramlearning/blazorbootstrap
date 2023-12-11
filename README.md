@@ -9,7 +9,7 @@
 <p align="center">
   Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
   <br>
-  <a href="https://getblazorbootstrap.com/docs/getting-started/blazor-webassembly"><strong>Explore Blazor Bootstrap docs »</strong></a>
+  <a href="https://getblazorbootstrap.com/docs/getting-started/blazor-webassembly"><strong>Getting Started »</strong></a>
   <br>
 </p>
 
@@ -26,7 +26,8 @@
 
 ## Table of contents
 
-- [Quick start](#quick-start)
+- [Install](#install)
+- [Install Blazor Bootstrap templates](#install-blazor-bootstrap-templates)
 - [Components](#blazor-bootstrap-components)
 - [Documentation](#documentation)
 - [Creators](#creators)
@@ -41,8 +42,6 @@ Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap 
 Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with **.NET CLI**: `dotnet new install Blazor.Bootstrap.Templates::1.10.0`
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
-
-## Getting Started
 
 - Read the [Getting started page](https://getblazorbootstrap.com/docs/getting-started/blazor-webassembly) for information on the framework installation, contents, examples, and more.
 
