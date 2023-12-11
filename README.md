@@ -7,7 +7,7 @@
 <h3 align="center">Blazor Bootstrap Component Library</h3>
 
 <p align="center">
-  Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
+  An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.
   <br>
   <a href="https://getblazorbootstrap.com/docs/getting-started/blazor-webassembly"><strong>Getting Started »</strong></a>
   <br>
@@ -81,7 +81,7 @@ More components coming...
 
 ## Documentation
 
-Blazor Bootstrap's documentation, included in this repo in the root directory, is built with [Docusaurus](https://docusaurus.io/) and publicly hosted on GitHub Pages at <https://getblazorbootstrap.com/>. The docs may also be run locally.
+Blazor Bootstrap's documentation, which is included in this repository's root directory, is built with [Docusaurus](https://docusaurus.io/) and publicly hosted on GitHub Pages at <https://docs.blazorbootstrap.com/>. The docs may also be run locally.
 
 ## Screenshots
 
