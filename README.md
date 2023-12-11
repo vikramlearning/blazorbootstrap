@@ -7,9 +7,9 @@
 <h3 align="center">Blazor Bootstrap Component Library</h3>
 
 <p align="center">
-  Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
+  An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.
   <br>
-  <a href="https://getblazorbootstrap.com/docs/getting-started/blazor-webassembly"><strong>Explore Blazor Bootstrap docs »</strong></a>
+  <a href="https://getblazorbootstrap.com/docs/getting-started/blazor-webassembly"><strong>Getting Started »</strong></a>
   <br>
 </p>
 
@@ -18,26 +18,28 @@
 [![NuGet](https://img.shields.io/nuget/vpre/blazor.bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 [![NuGet](https://img.shields.io/nuget/dt/blazor.bootstrap.svg)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 
-## Online demos
+## Docs & Demos
 
+- [Docs Website](https://docs.blazorbootstrap.com/)
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
 
 ## Table of contents
 
-- [Quick start](#quick-start)
+- [Install](#install)
+- [Install Blazor Bootstrap templates](#install-blazor-bootstrap-templates)
 - [Components](#blazor-bootstrap-components)
 - [Documentation](#documentation)
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
 
-## Quick start
+## Install
 
-Get started any way you want
+Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.10.4`
 
-- Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.10.4`
-- Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with **.NET CLI**: `dotnet new install Blazor.Bootstrap.Templates::1.10.0`
+## Install Blazor Bootstrap templates
+
+Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with **.NET CLI**: `dotnet new install Blazor.Bootstrap.Templates::1.10.0`
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
 
@@ -79,7 +81,7 @@ More components coming...
 
 ## Documentation
 
-Blazor Bootstrap's documentation, included in this repo in the root directory, is built with [Docusaurus](https://docusaurus.io/) and publicly hosted on GitHub Pages at <https://getblazorbootstrap.com/>. The docs may also be run locally.
+Blazor Bootstrap's documentation, which is included in this repository's root directory, is built with [Docusaurus](https://docusaurus.io/) and publicly hosted on GitHub Pages at <https://docs.blazorbootstrap.com/>. The docs may also be run locally.
 
 ## Screenshots
 
