@@ -1,27 +1,29 @@
 ---
-id: blazor-server-net-8
-sidebar_label: Blazor Server (.NET 8)
+id: blazor-webapp-auto-global-net-8
+sidebar_label: Blazor WebApp Auto (.NET 8)
 sidebar_position: 3
-title: Blazor Server (.NET 8)
+title: Blazor WebApp Auto (.NET 8)
 ---
 
 import CarbonAd from '/carbon-ad.mdx'
 
-# Getting started - Blazor Server (.NET 8) - Interactive render mode Server - Global location
+# Getting started - Blazor WebApp (.NET 8) - Interactive render mode Auto - Global location
 
 Get started with the Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
 
 <CarbonAd />
 
-## Install Nuget Package
+## Server Project
 
-Looking to quickly add **Blazor Bootstrap** to your project? Use NuGet package manager.
+### Install Nuget Package
+
+Use NuGet package manager.
 
 ```shell
 Install-Package Blazor.Bootstrap -Version 1.10.4
 ```
 
-## Add CSS references
+### Add CSS references
 
 After the `<base href="/" />` tag in the **head** section of the **Components/App.razor**.
 
@@ -31,7 +33,7 @@ After the `<base href="/" />` tag in the **head** section of the **Components/Ap
 <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
 ```
 
-## Add script references
+### Add script references
 
 Insert the following references into the **body** section of the **Components/App.razor** file, immediately after the **_framework/blazor.web.js** reference:
 
@@ -48,7 +50,7 @@ Insert the following references into the **body** section of the **Components/Ap
 **chart.js** reference is optional. Add when the **Chart** components are used in the application.
 :::
 
-## Register services
+### Register services
 
 Add Blazor Bootstrap service in the **Program.cs**
 
@@ -62,7 +64,7 @@ Register tag helpers in **Components/_Imports.razor**
 @using BlazorBootstrap;
 ```
 
-## Remove default references
+### Remove default references
 
 In the **Components/App.razor** file, the default blazor template includes demonstration code, icons, and Bootstrap. 
 These files are no longer needed.
@@ -75,19 +77,43 @@ Delete the default **bootstrap** folder from the **wwwroot/css** folder.
 
 1. wwwroot/css/bootstrap
 
+## Client Project
+
+### Install Nuget Package
+
+Use NuGet package manager.
+
+```shell
+Install-Package Blazor.Bootstrap -Version 1.10.4
+```
+
+### Register services
+
+Add Blazor Bootstrap service in the **Program.cs**
+
+```cs
+builder.Services.AddBlazorBootstrap(); // Add this line
+```
+
+Register tag helpers in **_Imports.razor**
+
+```razor
+@using BlazorBootstrap;
+```
+
 ## Starter templates
 
 ### .NET 8
 
-1. [Blazor Bootstrap - Blazor Web App - Interactive Render Mode Server - Global](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET8.BlazorWebAppRenderModeServer)
+1. [Blazor Bootstrap - Blazor Web App - Interactive Render Mode Auto - Interactive Location Global](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/Net8.BlazorAutoGlobal)
 
-   <img src="https://i.imgur.com/uGMjcWk.png" alt="Blazor Bootstrap - Blazor Web App - Interactive Render Mode Server - Global" />
+   <img src="https://i.imgur.com/m2lUTME.png" alt="Blazor Bootstrap - Blazor Web App - Interactive Render Mode Auto - Interactive Location Global" />
 
-## Sample Code
+## Sample Code - Server
 
 ### App.razor
 
-```html {8-10,14,18,20-25} showLineNumbers
+```html {8-10,20-25} showLineNumbers
 <!DOCTYPE html>
 <html lang="en">
 
@@ -99,13 +125,13 @@ Delete the default **bootstrap** folder from the **wwwroot/css** folder.
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="app.css" />
-    <link rel="stylesheet" href="NET8.BlazorWebAppRenderModeServer.styles.css" />
+    <link rel="stylesheet" href="Net8.BlazorAutoGlobal.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <HeadOutlet @rendermode="@InteractiveServer" />
+    <HeadOutlet @rendermode="@InteractiveAuto" />
 </head>
 
 <body>
-    <Routes @rendermode="@InteractiveServer" />
+    <Routes @rendermode="@InteractiveAuto" />
     <script src="_framework/blazor.web.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <!-- Add chart.js reference if chart components are used in your application. -->
@@ -120,8 +146,9 @@ Delete the default **bootstrap** folder from the **wwwroot/css** folder.
 
 ### Program.cs
 
-```cs {5} showLineNumbers
-using NET8.BlazorWebAppRenderModeServer.Components;
+```cs {6} showLineNumbers
+using Net8.BlazorAutoGlobal.Client.Pages;
+using Net8.BlazorAutoGlobal.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -129,12 +156,17 @@ builder.Services.AddBlazorBootstrap(); // Add this line
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-       .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseWebAssemblyDebugging();
+}
+else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -147,14 +179,16 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(Counter).Assembly);
 
 app.Run();
 ```
 
 ### _Imports.razor
 
-```razor {11} showLineNumbers
+```razor {12} showLineNumbers
 @using System.Net.Http
 @using System.Net.Http.Json
 @using Microsoft.AspNetCore.Components.Forms
@@ -163,8 +197,38 @@ app.Run();
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.JSInterop
-@using NET8.BlazorWebAppRenderModeServer
-@using NET8.BlazorWebAppRenderModeServer.Components
+@using Net8.BlazorAutoGlobal
+@using Net8.BlazorAutoGlobal.Client
+@using Net8.BlazorAutoGlobal.Components
+@using BlazorBootstrap;
+```
+
+## Sample Code - Client
+
+### Program.cs
+
+```cs {5} showLineNumbers
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+builder.Services.AddBlazorBootstrap(); // Add this line
+
+await builder.Build().RunAsync();
+```
+
+### _Imports.razor
+
+```razor {10} showLineNumbers
+@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using Net8.BlazorAutoGlobal.Client
 @using BlazorBootstrap;
 ```
 
@@ -216,7 +280,6 @@ app.Run();
         return navItems;
     }
 }
-
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
