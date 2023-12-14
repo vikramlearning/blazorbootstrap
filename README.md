@@ -47,40 +47,40 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 
 ## Blazor Bootstrap Components
 
-| Component Name | Docs Link | Demos Link |
+| Component Name | Docs | Demos |
 |:--|:--|:--|
-| Accordion | [Docs](/) | [Demos](/) |
-| Alerts | [Docs](/) | [Demos](/) |
-| AutoComplete | [Docs](/) | [Demos](/) |
-| Badge | [Docs](/) | [Demos](/) |
-| Breadcrumb | [Docs](/) | [Demos](/) |
-| Buttons | [Docs](/) | [Demos](/) |
-| Callout | [Docs](/) | [Demos](/) |
-| Card | [Docs](/) | [Demos](/) |
-| Charts: Bar chart | [Docs](/) | [Demos](/) |
-| Charts: Doughnut chart | [Docs](/) | [Demos](/) |
-| Charts: Line chart | [Docs](/) | [Demos](/) |
-| Charts: Pie chart | [Docs](/) | [Demos](/) |
-| Collapse | [Docs](/) | [Demos](/) |
-| Confirm Dialog | [Docs](/) | [Demos](/) |
-| Currency Input | [Docs](/) | [Demos](/) |
-| Date Input | [Docs](/) | [Demos](/) |
-| Dropdown | [Docs](/) | [Demos](/) |
-| Grid | [Docs](/) | [Demos](/) |
-| Icons | [Docs](/) | [Demos](/) |
-| Modals | [Docs](/) | [Demos](/) |
-| Number Input | [Docs](/) | [Demos](/) |
-| Offcanvas | [Docs](/) | [Demos](/) |
-| Pagination | [Docs](/) | [Demos](/) |
-| Placeholders | [Docs](/) | [Demos](/) |
-| Preload | [Docs](/) | [Demos](/) |
-| Progress | [Docs](/) | [Demos](/) |
-| Sidebar | [Docs](/) | [Demos](/) |
-| Switch | [Docs](/) | [Demos](/) |
-| Tabs | [Docs](/) | [Demos](/) |
-| Time Input | [Docs](/) | [Demos](/) |
-| Toasts | [Docs](/) | [Demos](/) |
-| Tooltips | [Docs](/) | [Demos](/) |
+| Accordion | [Docs](https://docs.blazorbootstrap.com/components/accordion) | [Demos](https://demos.blazorbootstrap.com/accordion) |
+| Alerts | [Docs](https://docs.blazorbootstrap.com/components/alerts) | [Demos](https://demos.blazorbootstrap.com/alerts) |
+| AutoComplete | [Docs](https://docs.blazorbootstrap.com/forms/autocomplete) | [Demos](https://demos.blazorbootstrap.com/autocomplete) |
+| Badge | [Docs](https://docs.blazorbootstrap.com/components/badge) | [Demos](https://demos.blazorbootstrap.com/badge) |
+| Breadcrumb | [Docs](https://docs.blazorbootstrap.com/components/breadcrumb) | [Demos](https://demos.blazorbootstrap.com/breadcrumb) |
+| Buttons | [Docs](https://docs.blazorbootstrap.com/components/buttons) | [Demos](https://demos.blazorbootstrap.com/buttons) |
+| Callout | [Docs](https://docs.blazorbootstrap.com/components/callout) | [Demos](https://demos.blazorbootstrap.com/callout) |
+| Card | [Docs](https://docs.blazorbootstrap.com/components/card) | [Demos](https://demos.blazorbootstrap.com/card) |
+| Charts: Bar chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/bar-chart) | [Demos](https://demos.blazorbootstrap.com/charts/bar-chart) |
+| Charts: Doughnut chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/doughnut-chart) | [Demos](https://demos.blazorbootstrap.com/charts/doughnut-chart) |
+| Charts: Line chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/line-chart) | [Demos](https://demos.blazorbootstrap.com/charts/line-chart) |
+| Charts: Pie chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/pie-chart) | [Demos](https://demos.blazorbootstrap.com/charts/pie-chart) |
+| Collapse | [Docs](https://docs.blazorbootstrap.com/components/collapse) | [Demos](https://demos.blazorbootstrap.com/collapse) |
+| Confirm Dialog | [Docs](https://docs.blazorbootstrap.com/components/confirm-dialog) | [Demos](https://demos.blazorbootstrap.com/confirm-dialog) |
+| Currency Input | [Docs](https://docs.blazorbootstrap.com/forms/currency-input) | [Demos](https://demos.blazorbootstrap.com/form/currency-input) |
+| Date Input | [Docs](https://docs.blazorbootstrap.com/forms/date-input) | [Demos](https://demos.blazorbootstrap.com/form/date-input) |
+| Dropdown | [Docs](https://docs.blazorbootstrap.com/components/dropdown) | [Demos](https://demos.blazorbootstrap.com/dropdown) |
+| Grid | [Docs](https://docs.blazorbootstrap.com/components/grid) | [Demos](https://demos.blazorbootstrap.com/grid) |
+| Icons | [Docs](https://docs.blazorbootstrap.com/content/icons) | [Demos](https://demos.blazorbootstrap.com/icons) |
+| Modals | [Docs](https://docs.blazorbootstrap.com/components/modal) | [Demos](https://demos.blazorbootstrap.com/modals) |
+| Number Input | [Docs](https://docs.blazorbootstrap.com/forms/number-input) | [Demos](https://demos.blazorbootstrap.com/form/number-input) |
+| Offcanvas | [Docs](https://docs.blazorbootstrap.com/components/offcanvas) | [Demos](https://demos.blazorbootstrap.com/offcanvas) |
+| Pagination | [Docs](https://docs.blazorbootstrap.com/components/pagination) | [Demos](https://demos.blazorbootstrap.com/pagination) |
+| Placeholders | [Docs](https://docs.blazorbootstrap.com/components/placeholders) | [Demos](https://demos.blazorbootstrap.com/placeholders) |
+| Preload | [Docs](https://docs.blazorbootstrap.com/components/preload) | [Demos](https://demos.blazorbootstrap.com/preload) |
+| Progress | [Docs](https://docs.blazorbootstrap.com/components/progress) | [Demos](https://demos.blazorbootstrap.com/progress) |
+| Sidebar | [Docs](https://docs.blazorbootstrap.com/components/sidebar) | [Demos](https://demos.blazorbootstrap.com/sidebar) |
+| Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/form/switch) |
+| Tabs | [Docs](https://docs.blazorbootstrap.com/components/tabs) | [Demos](https://demos.blazorbootstrap.com/tabs) |
+| Time Input | [Docs](https://docs.blazorbootstrap.com/forms/time-input) | [Demos](https://demos.blazorbootstrap.com/form/time-input) |
+| Toasts | [Docs](https://docs.blazorbootstrap.com/components/toasts) | [Demos](https://demos.blazorbootstrap.com/toasts) |
+| Tooltips | [Docs](https://docs.blazorbootstrap.com/components/tooltips) | [Demos](https://demos.blazorbootstrap.com/tooltips) |
 
 More components coming...
 
