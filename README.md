@@ -47,35 +47,40 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 
 ## Blazor Bootstrap Components
 
-- Accordion
-- Alerts
-- AutoComplete
-- Badge
-- Breadcrumb
-- Buttons
-- Callout
-- Card
-- Charts: Bar chart, Doughnut chart, Line chart, and Pie chart
-- Collapse
-- Confirm Dialog
-- Currency Input
-- Date Input
-- Dropdown
-- Grid
-- Icons
-- Modals
-- Number Input
-- Offcanvas
-- Pagination
-- Placeholders
-- Preload
-- Progress
-- Sidebar
-- Switch
-- Tabs
-- Time Input
-- Toasts
-- Tooltips
+| Component Name | Docs Link | Demos Link |
+|:--|:--|:--|
+| Accordion | [Docs](/) | [Demos](/) |
+| Alerts | [Docs](/) | [Demos](/) |
+| AutoComplete | [Docs](/) | [Demos](/) |
+| Badge | [Docs](/) | [Demos](/) |
+| Breadcrumb | [Docs](/) | [Demos](/) |
+| Buttons | [Docs](/) | [Demos](/) |
+| Callout | [Docs](/) | [Demos](/) |
+| Card | [Docs](/) | [Demos](/) |
+| Charts: Bar chart | [Docs](/) | [Demos](/) |
+| Charts: Doughnut chart | [Docs](/) | [Demos](/) |
+| Charts: Line chart | [Docs](/) | [Demos](/) |
+| Charts: Pie chart | [Docs](/) | [Demos](/) |
+| Collapse | [Docs](/) | [Demos](/) |
+| Confirm Dialog | [Docs](/) | [Demos](/) |
+| Currency Input | [Docs](/) | [Demos](/) |
+| Date Input | [Docs](/) | [Demos](/) |
+| Dropdown | [Docs](/) | [Demos](/) |
+| Grid | [Docs](/) | [Demos](/) |
+| Icons | [Docs](/) | [Demos](/) |
+| Modals | [Docs](/) | [Demos](/) |
+| Number Input | [Docs](/) | [Demos](/) |
+| Offcanvas | [Docs](/) | [Demos](/) |
+| Pagination | [Docs](/) | [Demos](/) |
+| Placeholders | [Docs](/) | [Demos](/) |
+| Preload | [Docs](/) | [Demos](/) |
+| Progress | [Docs](/) | [Demos](/) |
+| Sidebar | [Docs](/) | [Demos](/) |
+| Switch | [Docs](/) | [Demos](/) |
+| Tabs | [Docs](/) | [Demos](/) |
+| Time Input | [Docs](/) | [Demos](/) |
+| Toasts | [Docs](/) | [Demos](/) |
+| Tooltips | [Docs](/) | [Demos](/) |
 
 More components coming...
 
