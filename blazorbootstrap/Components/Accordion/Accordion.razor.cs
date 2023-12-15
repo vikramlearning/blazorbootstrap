@@ -74,6 +74,54 @@ public partial class Accordion
             await accordionItem.ShowAsync();
     }
 
+    /// <summary>
+    /// Hide the <see cref="AccordionItem" /> by index.
+    /// </summary>
+    /// <param name="index"></param>
+    public async Task HideAccordionItemByIndexAsync(int index)
+    {
+        if (index < 0 || index >= items.Count) throw new IndexOutOfRangeException();
+
+        var accordionItem = items[index];
+
+        if (accordionItem is not null)
+            await accordionItem.HideAsync();
+    }
+
+    /// <summary>
+    /// Hide the <see cref="AccordionItem" /> by name.
+    /// </summary>
+    /// <param name="accordionItemName">AccordionItem Name</param>
+    public async Task HideAccordionItemByNameAsync(string accordionItemName)
+    {
+        var accordionItem = items.FirstOrDefault(x => x.Name == accordionItemName);
+
+        if (accordionItem is not null)
+            await accordionItem.HideAsync();
+    }
+
+    /// <summary>
+    /// Hide the first <see cref="AccordionItem" />.
+    /// </summary>
+    public async Task HideFirstAccordionItemAsync()
+    {
+        var accordionItem = items.FirstOrDefault();
+
+        if (accordionItem is not null)
+            await accordionItem.HideAsync();
+    }
+
+    /// <summary>
+    /// Hide the last <see cref="AccordionItem" />.
+    /// </summary>
+    public async Task HideLastAccordionItemAsync()
+    {
+        var accordionItem = items.LastOrDefault();
+
+        if (accordionItem is not null)
+            await accordionItem.HideAsync();
+    }
+
     internal void Add(AccordionItem accordionItem)
     {
         if (accordionItem != null) items?.Add(accordionItem);
