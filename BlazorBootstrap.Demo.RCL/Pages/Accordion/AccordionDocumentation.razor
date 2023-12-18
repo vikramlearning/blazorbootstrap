@@ -53,10 +53,18 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Activate individual accordion items" PageUrl="@pageUrl" HashTagName="activate-individual-accordion-items" />
 <div class="mb-3">
-    You can activate individual accordion items in several ways.
-    Use predefined methods <code>ShowFirstAccordionItemAsync</code>, <code>ShowLastAccordionItemAsync</code>, <code>ShowAccordionItemByNameAsync</code>, and <code>ShowAccordionItemByIndexAsync</code>, as shown below.
+    You can activate and deactivate individual accordion items in several ways.
+    To activate, use predefined methods <code>ShowFirstAccordionItemAsync</code>, <code>ShowLastAccordionItemAsync</code>, <code>ShowAccordionItemByNameAsync</code>, and <code>ShowAccordionItemByIndexAsync</code>, as shown below.
+    To deactivate, use <code>HideFirstAccordionItemAsync</code>, <code>HideLastAccordionItemAsync</code>, <code>HideAccordionItemByNameAsync</code>, and <code>HideAccordionItemByIndexAsync</code>.
 </div>
 <Demo Type="typeof(Accordion_Demo_06_Activate_Individual_AccordionItems)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Activate all accordion items" PageUrl="@pageUrl" HashTagName="activate-all-accordion-items" />
+<div class="mb-3">
+    When the <code>AlwaysOpen</code> parameter is set to <code>true</code>, you can show all accordion items at the same time with <code>ShowAllAccordionItemsAsync</code>.
+    The <code>HideAllAccordionItemsAsync</code> method will deactivate all accordion items, independent of the value of <code>AlwaysOpen</code>.
+</div>
+<Demo Type="typeof(Accordion_Demo_07_Activate_All_AccordionItems)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
 <div class="mb-3">
@@ -91,7 +99,7 @@
         If no accordion item is active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
     </Callout>
 </div>
-<Demo Type="typeof(Accordion_Demo_07_Events)" Tabs="true" />
+<Demo Type="typeof(Accordion_Demo_08_Events)" Tabs="true" />
 
 @code {
     private string pageUrl = "/accordion";
