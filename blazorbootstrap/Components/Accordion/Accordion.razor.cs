@@ -27,6 +27,19 @@ public partial class Accordion
     }
 
     /// <summary>
+    /// Show every <see cref="AccordionItem" /> if AlwaysOpen.
+    /// </summary>
+    public async Task ShowAllAccordionItemsAsync()
+    {
+        if (AlwaysOpen) {
+            foreach (var accordionItem in items) {
+                if (accordionItem is not null)
+                    await accordionItem.ShowAsync();
+            }
+        }
+    }
+
+    /// <summary>
     /// Show the <see cref="AccordionItem" /> by index.
     /// </summary>
     /// <param name="index"></param>
@@ -72,6 +85,17 @@ public partial class Accordion
 
         if (accordionItem is not null)
             await accordionItem.ShowAsync();
+    }
+
+    /// <summary>
+    /// Hide every <see cref="AccordionItem" />.
+    /// </summary>
+    public async Task HideAllAccordionItemsAsync()
+    {
+        foreach (var accordionItem in items) {
+            if (accordionItem is not null)
+                await accordionItem.HideAsync();
+        }
     }
 
     /// <summary>
