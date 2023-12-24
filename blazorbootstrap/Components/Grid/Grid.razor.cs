@@ -573,6 +573,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public bool AllowSorting { get; set; }
 
     /// <summary>
+    /// Automatically hides the paging controls when the grid item count is less than or equal to the <see cref="PageSize" /> and this property is set to `true`.
+    /// </summary>
+    [Parameter]
+    public bool AutoHidePaging { get; set; }
+
+    /// <summary>
     /// Specifies the content to be rendered inside the grid.
     /// </summary>
     [Parameter]

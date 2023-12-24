@@ -133,7 +133,7 @@
         </table>
     </div>
 
-    @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0)
+    @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0 && (!AutoHidePaging || (AutoHidePaging && totalCount.Value > pageSize)))
     {
         <div class="d-flex justify-content-between align-middle mt-2">
             <Pagination ActivePageNumber="@gridCurrentState.PageIndex"
