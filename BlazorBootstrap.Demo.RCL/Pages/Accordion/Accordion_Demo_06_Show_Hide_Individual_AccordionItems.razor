@@ -31,12 +31,24 @@
     </AccordionItem>
 </Accordion>
 
+<h4>Show</h4>
+
 <Button Color="ButtonColor.Primary" @onclick="ShowFirstAccordionItemAsync">First Accordion Item</Button>
 <Button Color="ButtonColor.Primary" @onclick="ShowSecondAccordionItemAsync">Second Accordion Item</Button>
 <Button Color="ButtonColor.Primary" @onclick="ShowThirdAccordionItemAsync">Third Accordion Item</Button>
 <Button Color="ButtonColor.Primary" @onclick="ShowProductsAccordionItemAsync">Products Accordion Item</Button>
 <Button Color="ButtonColor.Primary" @onclick="ShowFaqsAccordionItemAsync">FAQs Accordion Item</Button>
 <Button Color="ButtonColor.Primary" @onclick="ShowLastAccordionItemAsync">Last Accordion Item</Button>
+
+<h4 class="mt-2">Hide</h4>
+
+<Button Color="ButtonColor.Primary" @onclick="HideFirstAccordionItemAsync">First Accordion Item</Button>
+<Button Color="ButtonColor.Primary" @onclick="HideSecondAccordionItemAsync">Second Accordion Item</Button>
+<Button Color="ButtonColor.Primary" @onclick="HideThirdAccordionItemAsync">Third Accordion Item</Button>
+<Button Color="ButtonColor.Primary" @onclick="HideProductsAccordionItemAsync">Products Accordion Item</Button>
+<Button Color="ButtonColor.Primary" @onclick="HideFaqsAccordionItemAsync">FAQs Accordion Item</Button>
+<Button Color="ButtonColor.Primary" @onclick="HideLastAccordionItemAsync">Last Accordion Item</Button>
+
 @code {
     private Accordion accordion1 = default!;
 
@@ -46,4 +58,10 @@
     private async Task ShowProductsAccordionItemAsync() => await accordion1.ShowAccordionItemByNameAsync("Products");
     private async Task ShowFaqsAccordionItemAsync() => await accordion1.ShowAccordionItemByNameAsync("FAQ");
     private async Task ShowLastAccordionItemAsync() => await accordion1.ShowLastAccordionItemAsync();
+    private async Task HideFirstAccordionItemAsync() => await accordion1.HideFirstAccordionItemAsync();
+    private async Task HideSecondAccordionItemAsync() => await accordion1.HideAccordionItemByIndexAsync(1);
+    private async Task HideThirdAccordionItemAsync() => await accordion1.HideAccordionItemByIndexAsync(2);
+    private async Task HideProductsAccordionItemAsync() => await accordion1.HideAccordionItemByNameAsync("Products");
+    private async Task HideFaqsAccordionItemAsync() => await accordion1.HideAccordionItemByNameAsync("FAQ");
+    private async Task HideLastAccordionItemAsync() => await accordion1.HideLastAccordionItemAsync();
 }
