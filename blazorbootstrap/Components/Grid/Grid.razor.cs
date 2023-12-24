@@ -398,9 +398,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         await RefreshDataAsync(false);
     }
 
-    private async Task OnPageSizeChangedAsync(ChangeEventArgs args)
+    private async Task OnPageSizeChangedAsync(int newPageSize)
     {
-        int.TryParse(args?.Value?.ToString(), out var newPageSize);
         pageSize = PageSize = newPageSize;
         await ResetPageNumberAsync();
         await SaveGridSettingsAsync();
