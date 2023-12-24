@@ -51,20 +51,22 @@
 </div>
 <Demo Type="typeof(Accordion_Demo_05_Always_Open)" Tabs="true" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Activate individual accordion items" PageUrl="@pageUrl" HashTagName="activate-individual-accordion-items" />
+<SectionHeading Size="HeadingSize.H2" Text="Show / hide individual accordion items" PageUrl="@pageUrl" HashTagName="show-hide-individual-accordion-items" />
 <div class="mb-3">
-    You can activate and deactivate individual accordion items in several ways.
-    To activate, use predefined methods <code>ShowFirstAccordionItemAsync</code>, <code>ShowLastAccordionItemAsync</code>, <code>ShowAccordionItemByNameAsync</code>, and <code>ShowAccordionItemByIndexAsync</code>, as shown below.
-    To deactivate, use <code>HideFirstAccordionItemAsync</code>, <code>HideLastAccordionItemAsync</code>, <code>HideAccordionItemByNameAsync</code>, and <code>HideAccordionItemByIndexAsync</code>.
+    You can show and hide individual accordion items in several ways.
+    <ul>
+        <li>To show an accordion item, use predefined methods <code>ShowFirstAccordionItemAsync</code>, <code>ShowLastAccordionItemAsync</code>, <code>ShowAccordionItemByNameAsync</code>, and <code>ShowAccordionItemByIndexAsync</code>.</li>
+        <li>To hide an accordion item, use predefined methods <code>HideFirstAccordionItemAsync</code>, <code>HideLastAccordionItemAsync</code>, <code>HideAccordionItemByNameAsync</code>, and <code>HideAccordionItemByIndexAsync</code>.</li>
+    </ul>
 </div>
-<Demo Type="typeof(Accordion_Demo_06_Activate_Individual_AccordionItems)" Tabs="true" />
+<Demo Type="typeof(Accordion_Demo_06_Show_Hide_Individual_AccordionItems)" Tabs="true" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Activate all accordion items" PageUrl="@pageUrl" HashTagName="activate-all-accordion-items" />
+<SectionHeading Size="HeadingSize.H2" Text="Show / hide all accordion items" PageUrl="@pageUrl" HashTagName="show-hide-all-accordion-items" />
 <div class="mb-3">
-    When the <code>AlwaysOpen</code> parameter is set to <code>true</code>, you can show all accordion items at the same time with <code>ShowAllAccordionItemsAsync</code>.
-    The <code>HideAllAccordionItemsAsync</code> method will deactivate all accordion items, independent of the value of <code>AlwaysOpen</code>.
+    When the <code>AlwaysOpen</code> parameter is set to <code>true</code>, you can show all accordion items simultaneously using the <code>ShowAllAccordionItemsAsync</code> method.
+        The <code>HideAllAccordionItemsAsync</code> method will hide all accordion items, regardless of the value of <code>AlwaysOpen</code>.
 </div>
-<Demo Type="typeof(Accordion_Demo_07_Activate_All_AccordionItems)" Tabs="true" />
+<Demo Type="typeof(Accordion_Demo_07_Show_Hide_All_AccordionItems)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
 <div class="mb-3">
