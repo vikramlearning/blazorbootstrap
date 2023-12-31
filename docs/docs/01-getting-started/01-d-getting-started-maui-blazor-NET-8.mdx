@@ -1,13 +1,13 @@
 ---
 id: maui-blazor-net-8
-sidebar_label: MAUI Blazor (.NET 8)
+sidebar_label: MAUI Blazor Hybrid App (.NET 8)
 sidebar_position: 4
-title: MAUI Blazor (.NET 8)
+title: MAUI Blazor Hybrid App (.NET 8)
 ---
 
 import CarbonAd from '/carbon-ad.mdx'
 
-# Getting started - MAUI Blazor (.NET 8)
+# Getting started - MAUI Blazor Hybrid App (.NET 8)
 
 Get started with the Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
 
@@ -23,7 +23,7 @@ Install-Package Blazor.Bootstrap -Version 1.10.4
 
 ## Add CSS references
 
-Add the following references to the `head` section in the **wwwroot/index.html**.
+After the <base href="/" /> tag in the **head** section in the **wwwroot/index.html** file, add the following references:
 
 ```html showLineNumbers
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
@@ -33,7 +33,7 @@ Add the following references to the `head` section in the **wwwroot/index.html**
 
 ## Add script references
 
-Add the following references to the `body` section in the **wwwroot/index.html** after the **_framework/blazor.webview.js** reference.
+Insert the following references into the **body** section of the **wwwroot/index.html** file, immediately after the **_framework/blazor.webview.js** reference:
 
 ``` js showLineNumbers
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
@@ -53,7 +53,7 @@ Add the following references to the `body` section in the **wwwroot/index.html**
 Add Blazor Bootstrap service in the **MauiProgram.cs**
 
 ```cs showLineNumbers
-builder.Services.AddBlazorBootstrap(); // Add this line
+builder.Services.AddBlazorBootstrap();
 ```
 
 Register tag helpers in **_Imports.razor**
@@ -64,45 +64,22 @@ Register tag helpers in **_Imports.razor**
 
 ## Remove default references
 
-In the **wwwroot/index.html** file, the default blazor template includes demonstration code, icons, and Bootstrap. 
-These files are no longer needed.
+The default Blazor template includes demonstration code, icons, and Bootstrap. To remove these components, follow these steps:
 
-``` html showLineNumbers
-<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-<link href="css/app.css" rel="stylesheet" />
-```
+1. Delete the **bootstrap** folder from the **wwwroot** directory:
 
-Delete the default **bootstrap** and **open-iconic** folders from the **wwwroot** folder.
+   - Delete the **wwwroot/css/bootstrap** folder.
 
-1. wwwroot/css/bootstrap
-1. wwwroot/css/open-iconic
+1. Remove the following line from **wwwroot/index.html** file:
 
-Either remove or keep the **app.css** file but make sure you clear it out of any content when the [Sidebar](/components/sidebar#full-layout-with-sidebar) component with full layout is used.
+   ``` html showLineNumbers
+   <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+   ```
 
-## Starter templates
+## Starter template
 
-### .NET 6
-
-1. [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
-
-   <img src="https://i.imgur.com/aRV3rJm.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
-
-### .NET 7
-
-1. [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyApp)
-
-   <img src="https://i.imgur.com/4P8u0HR.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
-
-1. [Blazor Bootstrap - Blazor Empty WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyAppEmpty)
-
-   <img src="https://i.imgur.com/CBEoZ6P.png" alt="Blazor Bootstrap - Blazor Empty WebAssembly App" />
+TODO
 
 ## Sample Code
 
-### index.html
-
-### Program.cs
-
-### _Imports.razor
-
-### MainLayout.razor
+TODO
