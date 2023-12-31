@@ -29,7 +29,16 @@ public partial class Toast : BlazorBootstrapComponentBase, IDisposable
     {
         if (disposing)
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", ElementId);
+            try
+            {
+                if (Rendered)
+                    await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", ElementId);
+            }
+            catch (JSDisconnectedException)
+            {
+                // do nothing
+            }
+            
             objRef?.Dispose();
         }
 

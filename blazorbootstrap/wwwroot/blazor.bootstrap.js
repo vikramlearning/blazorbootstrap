@@ -649,13 +649,13 @@ window.blazorBootstrap = {
             });
             toastEl.addEventListener('hide.bs.toast', function () {
                 let _this = this;
-                if (_this == null || document.getElementById(_this.id) == null)
+                if (_this == null || document.getElementById(_this.id) == null) // when a user is redirected to a different page, the HTML element becomes unavailable.
                     return;
                 dotNetHelper.invokeMethodAsync('bsHideToast');
             });
             toastEl.addEventListener('hidden.bs.toast', function () {
                 let _this = this;
-                if (_this == null || document.getElementById(_this.id) == null)
+                if (_this == null || document.getElementById(_this.id) == null) // when a user is redirected to a different page, the HTML element becomes unavailable.
                     return;
                 dotNetHelper.invokeMethodAsync('bsHiddenToast');
             });
