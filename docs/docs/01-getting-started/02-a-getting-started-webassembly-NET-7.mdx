@@ -62,7 +62,7 @@ The **chart.js** reference is optional. Include it only when the **Chart** compo
 Add Blazor Bootstrap service in the **Program.cs**
 
 ```cs showLineNumbers
-builder.Services.AddBlazorBootstrap(); // Add this line
+builder.Services.AddBlazorBootstrap();
 ```
 
 Register tag helpers in **_Imports.razor**
@@ -73,40 +73,163 @@ Register tag helpers in **_Imports.razor**
 
 ## Remove default references
 
-The default Blazor template in the **wwwroot/index.html** file includes demonstration code, icons, and Bootstrap. These files are no longer necessary.
+The default Blazor template includes demonstration code, icons, and Bootstrap. To remove these components, follow these steps:
 
-``` html showLineNumbers
-<link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-<link href="css/app.css" rel="stylesheet" />
-```
+1. Delete the **bootstrap** and **open-iconic** folders from the **wwwroot** directory:
 
-Remove the default **bootstrap** and **open-iconic** folders from the **wwwroot** directory.
+   - Delete the **wwwroot/css/bootstrap** folder.
+   - Delete the **wwwroot/css/open-iconic** folder.
 
-1. Delete the `wwwroot/css/bootstrap` folder.
-1. Delete the `wwwroot/css/open-iconic` folder (**Note:** If this folder is not present in the .NET 8 project, disregard this step).
+1. Remove the following line from **wwwroot/index.html** file:
+
+   ``` html showLineNumbers
+   <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+   ```
+
+1. Remove the following line from **wwwroot/css/app.css** file:
+
+   ```css {} showLineNumbers
+   @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+   ```
 
 When using the [Sidebar](/components/sidebar#full-layout-with-sidebar) component with full layout, if you encounter any conflicts, please refer to any of the starter templates for updating the **app.css** file.
 
-## Starter templates
+## Starter template
 
-### .NET 8
+[GitHub Repo: Blazor Bootstrap - Blazor WebAssembly App (.NET 7)](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyApp)
 
-1. [Blazor Bootstrap - Blazor WebAssembly Standalone App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET8.BlazorWebAssemblyStandaloneApp)
+<img src="https://i.imgur.com/4P8u0HR.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
 
-   <img src="https://i.imgur.com/2SuR7oA.png" alt="Blazor Bootstrap - Blazor WebAssembly Standalone App" />
+## Sample Code
 
-### .NET 7
+### index.html
 
-1. [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyApp)
+```html {9-11,33-35} showLineNumbers
+<!DOCTYPE html>
+<html lang="en">
 
-   <img src="https://i.imgur.com/4P8u0HR.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>NET7.BlazorWebAssemblyApp</title>
+    <base href="/" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="NET7.BlazorWebAssemblyApp.styles.css" rel="stylesheet" />
+</head>
 
-1. [Blazor Bootstrap - Blazor Empty WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyAppEmpty)
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text"></div>
+    </div>
 
-   <img src="https://i.imgur.com/CBEoZ6P.png" alt="Blazor Bootstrap - Blazor Empty WebAssembly App" />
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
 
-### .NET 6
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- Add chart.js reference if Chart components are used in the application. -->
+    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+</body>
 
-1. [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
+</html>
+```
 
-   <img src="https://i.imgur.com/aRV3rJm.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
+### Program.cs
+
+```cs {10} showLineNumbers
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using NET7.BlazorWebAssemblyApp;
+
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddBlazorBootstrap();
+
+await builder.Build().RunAsync();
+```
+
+### _Imports.razor
+
+```razor {11} showLineNumbers
+@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.JSInterop
+@using NET7.BlazorWebAssemblyApp
+@using NET7.BlazorWebAssemblyApp.Shared
+@using BlazorBootstrap;
+```
+
+### MainLayout.razor
+
+```razor {} showLineNumbers
+@inherits LayoutComponentBase
+
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Blazor Bootstrap"
+             DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-end">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">
+                @Body
+            </div>
+        </article>
+    </main>
+
+</div>
+
+<Modal IsServiceModal="true" />
+<Preload />
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+
+@code {
+    private Sidebar sidebar = default!;
+    private IEnumerable<NavItem> navItems = default!;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All},
+            new NavItem { Id = "2", Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter"},
+            new NavItem { Id = "3", Href = "/fetchdata", IconName = IconName.Table, Text = "Fetch Data"},
+        };
+
+        return navItems;
+    }
+}
+```

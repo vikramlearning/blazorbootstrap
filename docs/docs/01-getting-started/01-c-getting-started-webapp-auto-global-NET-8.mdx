@@ -55,7 +55,7 @@ Insert the following references into the **body** section of the **Components/Ap
 Add Blazor Bootstrap service in the **Program.cs**
 
 ```cs
-builder.Services.AddBlazorBootstrap(); // Add this line
+builder.Services.AddBlazorBootstrap();
 ```
 
 Register tag helpers in **Components/_Imports.razor**
@@ -92,7 +92,7 @@ Install-Package Blazor.Bootstrap -Version 1.10.4
 Add Blazor Bootstrap service in the **Program.cs**
 
 ```cs
-builder.Services.AddBlazorBootstrap(); // Add this line
+builder.Services.AddBlazorBootstrap();
 ```
 
 Register tag helpers in **_Imports.razor**
@@ -101,13 +101,11 @@ Register tag helpers in **_Imports.razor**
 @using BlazorBootstrap;
 ```
 
-## Starter templates
+## Starter template
 
-### .NET 8
+[GitHub Repo: Blazor Bootstrap - Blazor Web App - Interactive Render Mode Auto - Interactive Location Global (.NET 8)](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/Net8.BlazorAutoGlobal)
 
-1. [Blazor Bootstrap - Blazor Web App - Interactive Render Mode Auto - Interactive Location Global](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/Net8.BlazorAutoGlobal)
-
-   <img src="https://i.imgur.com/m2lUTME.png" alt="Blazor Bootstrap - Blazor Web App - Interactive Render Mode Auto - Interactive Location Global" />
+<img src="https://i.imgur.com/m2lUTME.png" alt="Blazor Bootstrap - Blazor Web App - Interactive Render Mode Auto - Interactive Location Global" />
 
 ## Sample Code - Server
 
@@ -212,7 +210,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-builder.Services.AddBlazorBootstrap(); // Add this line
+builder.Services.AddBlazorBootstrap();
 
 await builder.Build().RunAsync();
 ```

@@ -53,7 +53,7 @@ The **chart.js** reference is optional. Include it only when the **Chart** compo
 Add Blazor Bootstrap service in the **Program.cs**
 
 ```cs showLineNumbers
-builder.Services.AddBlazorBootstrap(); // Add this line
+builder.Services.AddBlazorBootstrap();
 ```
 
 Register tag helpers in **_Imports.razor**
@@ -68,7 +68,6 @@ The default Blazor template in the **wwwroot/index.html** file includes demonstr
 
 ``` html showLineNumbers
 <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-<link href="css/app.css" rel="stylesheet" />
 ```
 
 Remove the default **bootstrap** folder from the **wwwroot** directory.
@@ -78,11 +77,9 @@ Remove the default **bootstrap** folder from the **wwwroot** directory.
 
 When using the [Sidebar](/components/sidebar#full-layout-with-sidebar) component with full layout, if you encounter any conflicts, please refer to any of the starter templates for updating the **app.css** file.
 
-## Starter templates
+## Starter template
 
-### .NET 8
-
-1. [Blazor Bootstrap - Blazor WebAssembly Standalone App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET8.BlazorWebAssemblyStandaloneApp)
+[GitHub Repo: Blazor Bootstrap - Blazor WebAssembly Standalone App (.NET 8)](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET8.BlazorWebAssemblyStandaloneApp)
 
    <img src="https://i.imgur.com/2SuR7oA.png" alt="Blazor Bootstrap - Blazor WebAssembly Standalone App" />
 
@@ -146,7 +143,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-builder.Services.AddBlazorBootstrap(); // Add this line
+builder.Services.AddBlazorBootstrap();
 
 await builder.Build().RunAsync();
 ```
