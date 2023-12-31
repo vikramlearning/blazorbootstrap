@@ -64,20 +64,21 @@ Register tag helpers in **Components/_Imports.razor**
 
 ## Remove default references
 
-In the **Components/App.razor** file, the default blazor template includes demonstration code, icons, and Bootstrap. 
-These files are no longer needed.
+The default Blazor template includes demonstration code and Bootstrap. To remove these components, follow these steps:
 
-``` html
-<link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
-```
+1. Delete the **bootstrap** folder from the **wwwroot** directory:
 
-Delete the default **bootstrap** folder from the **wwwroot/css** folder.
+   - Delete the **wwwroot/css/bootstrap** folder.
 
-1. wwwroot/css/bootstrap
+1. Remove the following line from **Components/App.razor** file:
+
+   ``` html showLineNumbers
+   <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+   ```
 
 ## Starter template
 
-[GitHub Repo: Blazor Bootstrap - Blazor Web App - Interactive Render Mode Server - Global (.NET 8)](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET8.BlazorWebAppRenderModeServer)
+[GitHub Repo: Blazor Bootstrap - Blazor Web App - Interactive Render Mode Server - Global (.NET 8)](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET8.BlazorWebAppRenderModeServerGlobal)
 
 <img src="https://i.imgur.com/uGMjcWk.png" alt="Blazor Bootstrap - Blazor Web App - Interactive Render Mode Server - Global" />
 
@@ -123,7 +124,7 @@ using NET8.BlazorWebAppRenderModeServer.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddBlazorBootstrap(); // Add this line
+builder.Services.AddBlazorBootstrap();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
