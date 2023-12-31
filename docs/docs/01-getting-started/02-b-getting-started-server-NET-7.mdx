@@ -23,7 +23,7 @@ Install-Package Blazor.Bootstrap -Version 1.10.4
 
 ## Add CSS references
 
-After the `<base href="~/" />` tag in the **head** section in the **Pages/_Host.cshtml**.
+After the `<base href="~/" />` tag in the **head** section in the **Pages/_Host.cshtml** file, add the following references:
 
 ```html showLineNumbers
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
@@ -32,7 +32,7 @@ After the `<base href="~/" />` tag in the **head** section in the **Pages/_Host.
 ```
 
 :::note
-If you use the **Blazor Server App Empty*** template (without demonstration code and Bootstrap), add the following references to the `head` section in the **Pages/_Host.cshtml**. 
+If you use the **Blazor Server App Empty** template (without demonstration code and Bootstrap), add the following references to the `head` section in the **Pages/_Host.cshtml**. 
 There is a known GitHub issue [Blazor empty template doesn't load scoped CSS](https://github.com/dotnet/aspnetcore/issues/43975).
 :::
 
@@ -86,7 +86,7 @@ The default Blazor template includes demonstration code, icons, and Bootstrap. T
    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
    ```
 
-1. Remove the following line from **wwwroot/css/app.css** file:
+1. Remove the following line from **wwwroot/css/site.css** file:
 
    ```css {} showLineNumbers
    @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
