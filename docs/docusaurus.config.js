@@ -134,7 +134,11 @@ const config = {
                     },
                     {
                         from: '/docs/getting-started/maui-blazor',
-                        to: '/getting-started/maui-blazor',
+                        to: '/getting-started/maui-blazor-net-8',
+                    },
+                    {
+                        from: '/getting-started/maui-blazor',
+                        to: '/getting-started/maui-blazor-net-8',
                     },
                     {
                         from: '/docs/layout/blazor-webassembly',
