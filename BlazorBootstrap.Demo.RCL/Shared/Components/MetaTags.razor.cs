@@ -8,7 +8,7 @@ public partial class MetaTags : ComponentBase
 
     private string title => $"{Title} | {siteName}";
 
-    private string url => $"https://demos.getblazorbootstrap.com{PageUrl}";
+    private string url => $"https://demos.blazorbootstrap.com{PageUrl}";
 
     #endregion
 
