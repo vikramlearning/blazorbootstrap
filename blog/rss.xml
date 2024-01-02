@@ -4,10 +4,29 @@
         <title>Blazor Bootstrap Docs Blog</title>
         <link>https://docs.blazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Docs Blog</description>
-        <lastBuildDate>Sat, 18 Nov 2023 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 01 Jan 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.10.5]]></title>
+            <link>https://docs.blazorbootstrap.com/blog/2024/01/01/blazorbootstrap-1.10.5</link>
+            <guid>https://docs.blazorbootstrap.com/blog/2024/01/01/blazorbootstrap-1.10.5</guid>
+            <pubDate>Mon, 01 Jan 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.10.5 with enhancements to accordion, grid, modal, toast, and charts!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.10.5 with enhancements to accordion, grid, modal, toast, and charts!!!</p><p><img loading="lazy" src="https://i.imgur.com/GzXuQep.png" alt="image" title="Blazor Bootstrap: Gird Component - Freeze columns with fixed header and filters" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>Accordion</code> component</p><ul><li>Accordion: Add hide methods to Accordion <a href="https://github.com/vikramlearning/blazorbootstrap/pull/473" target="_blank" rel="noopener noreferrer">#473</a></li><li>Accordion: Add Accordion show/hide all methods <a href="https://github.com/vikramlearning/blazorbootstrap/pull/476" target="_blank" rel="noopener noreferrer">476</a></li></ul></li><li><p><code>Chart</code> component</p><ul><li>Charts: How to change legend position in chat <a href="https://github.com/vikramlearning/blazorbootstrap/pull/484" target="_blank" rel="noopener noreferrer">#484</a></li></ul></li><li><p><code>Grid</code> component</p><ul><li>Grid: Docs update <a href="https://github.com/vikramlearning/blazorbootstrap/pull/478" target="_blank" rel="noopener noreferrer">#478</a></li><li>Grid: PageSizeSelector dropdown is default to smallest value <a href="https://github.com/vikramlearning/blazorbootstrap/pull/482" target="_blank" rel="noopener noreferrer">#482</a></li><li>Grid: Auto hide paginations on few elements <a href="https://github.com/vikramlearning/blazorbootstrap/pull/483" target="_blank" rel="noopener noreferrer">#483</a></li></ul></li><li><p><code>Modal</code> component</p><ul><li>Modal: Throws Error on Navigating Away in .NET 8 <a href="https://github.com/vikramlearning/blazorbootstrap/pull/468" target="_blank" rel="noopener noreferrer">#468</a></li></ul></li><li><p><code>Toast</code> component</p><ul><li>Toast: Dispose issue <a href="https://github.com/vikramlearning/blazorbootstrap/pull/488" target="_blank" rel="noopener noreferrer">#488</a></li></ul></li><li><p>Docs updates</p><ul><li>Docs: Fixed typo <a href="https://github.com/vikramlearning/blazorbootstrap/pull/438" target="_blank" rel="noopener noreferrer">#438</a></li><li>Docs: Getting Started Docs - .NET 8 - Web Assembly &amp; Web App - Server - Global <a href="https://github.com/vikramlearning/blazorbootstrap/pull/458" target="_blank" rel="noopener noreferrer">#458</a></li><li>Docs: Getting Started Docs update <a href="https://github.com/vikramlearning/blazorbootstrap/pull/462" target="_blank" rel="noopener noreferrer">#462</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://docs.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.10.5</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>accordion</category>
+            <category>charts</category>
+            <category>grid</category>
+            <category>modal</category>
+            <category>toast</category>
+            <category>docs</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.10.4]]></title>
             <link>https://docs.blazorbootstrap.com/blog/2023/11/18/blazorbootstrap-1.10.4</link>

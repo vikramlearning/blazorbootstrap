@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblazorbootstrap=self.webpackChunkblazorbootstrap||[]).push([[71882],{10990:o=>{o.exports=JSON.parse('{"permalink":"/blog/tags/grid","page":1,"postsPerPage":10,"totalPages":2,"totalCount":17,"nextPage":"/blog/tags/grid/page/2","blogDescription":"Blog","blogTitle":"Blog"}')}}]);
