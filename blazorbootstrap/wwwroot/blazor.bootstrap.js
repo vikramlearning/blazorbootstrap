@@ -550,6 +550,17 @@ window.blazorBootstrap = {
                 bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl)?.dispose();
         }
     },
+    rangeInput: {
+        initialize: (elementId, dotNetHelper) => {
+            let rangeEl = document.getElementById(elementId);
+            if (rangeEl == null)
+                return;
+
+            rangeEl.addEventListener("input", (event) => {
+                dotNetHelper.invokeMethodAsync('bsOnInput', event.target.value);
+            });
+        }
+    },
     scriptLoader: {
         load: (elementId, async, scriptId, source, type) => {
             let scriptLoaderEl = document.getElementById(elementId);

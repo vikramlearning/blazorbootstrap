@@ -5,10 +5,12 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     #region Fields and Constants
 
     private FieldIdentifier fieldIdentifier;
-    // default values
+
     private sbyte min = 0;
     private sbyte max = 100;
     private sbyte step = 1;
+
+    private DotNetObjectReference<RangeInput<TValue>> objRef = default!;
 
     #endregion
 
@@ -24,6 +26,8 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
+            await JS.InvokeVoidAsync("window.blazorBootstrap.rangeInput.initialize", ElementId, objRef);
+
             var currentValue = Value; // object
 
             if (currentValue is null || !TryParseValue(currentValue, out var value))
@@ -43,6 +47,8 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        objRef ??= DotNetObjectReference.Create(this);
+
         if (!(typeof(TValue) == typeof(sbyte)
               || typeof(TValue) == typeof(sbyte?)
               || typeof(TValue) == typeof(short)
@@ -66,6 +72,8 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
         Attributes ??= new Dictionary<string, object>();
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+
+        SetDefaultValues();
 
         await base.OnInitializedAsync();
     }
@@ -217,11 +225,22 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
         return false;
     }
 
+    [JSInvokable]
+    public async Task bsOnInput(object? newValue)
+    {
+        Console.WriteLine($"Input newValue: {newValue}");
+        SetValue(newValue.ToString());
+        await HandleChangeAsync();
+    }
+
     private async Task OnChange(ChangeEventArgs e)
     {
-        var oldValue = Value;
-        var newValue = e.Value; // object
+        SetValue(e.Value);
+        await HandleChangeAsync();
+    }
 
+    private void SetValue(object? newValue)
+    {
         if (newValue is null || !TryParseValue(newValue, out var value))
             Value = default;
         else if (Min is not null && IsLeftGreaterThanRight(Min, value)) // value < min
@@ -230,9 +249,11 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             Value = Max;
         else
             Value = value;
+    }
 
+    private async Task HandleChangeAsync()
+    {
         await ValueChanged.InvokeAsync(Value);
-
         EditContext?.NotifyFieldChanged(fieldIdentifier);
     }
 
@@ -243,6 +264,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             // sbyte? / sbyte
             if (typeof(TValue) == typeof(sbyte?) || typeof(TValue) == typeof(sbyte))
             {
+                Console.WriteLine($"1 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(sbyte));
 
                 return true;
@@ -251,6 +273,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(short?) || typeof(TValue) == typeof(short))
             {
+                Console.WriteLine($"2 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(short));
 
                 return true;
@@ -259,6 +282,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(int?) || typeof(TValue) == typeof(int))
             {
+                Console.WriteLine($"3 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(int));
 
                 return true;
@@ -267,6 +291,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(long?) || typeof(TValue) == typeof(long))
             {
+                Console.WriteLine($"4 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(long));
 
                 return true;
@@ -275,6 +300,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(float?) || typeof(TValue) == typeof(float))
             {
+                Console.WriteLine($"5 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(float));
 
                 return true;
@@ -283,6 +309,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(double?) || typeof(TValue) == typeof(double))
             {
+                Console.WriteLine($"6 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(double));
 
                 return true;
@@ -291,6 +318,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(decimal?) || typeof(TValue) == typeof(decimal))
             {
+                Console.WriteLine($"7 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(decimal));
 
                 return true;
@@ -306,6 +334,25 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             newValue = default!;
 
             return false;
+        }
+    }
+
+    private void SetDefaultValues()
+    {
+        // sbyte? / sbyte
+        if (typeof(TValue) == typeof(sbyte?)
+            || typeof(TValue) == typeof(short?)
+            || typeof(TValue) == typeof(int?)
+            || typeof(TValue) == typeof(long?)
+            || typeof(TValue) == typeof(float?)
+            || typeof(TValue) == typeof(double?)
+            || typeof(TValue) == typeof(decimal?))
+        {
+            if (Min is null)
+                Min = TryParseValue(min, out TValue _min) ? _min : _min;
+
+            if (Max is null)
+                Min = TryParseValue(min, out TValue _max) ? _max : _max;
         }
     }
 
