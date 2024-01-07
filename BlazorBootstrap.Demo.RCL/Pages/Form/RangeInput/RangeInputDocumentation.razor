@@ -1,0 +1,36 @@
+@page "/range-input"
+@page "/form/range-input"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Range Input</h1>
+<div class="lead mb-3">
+    Blazor Bootstrap <code>RangeInput</code> component is built around HTML input of <code>type="number"</code> that prevents the user input based on the parameters set.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<div class="mb-3"></div>
+<Demo Type="typeof(RangeInput_Demo_01_Basic_Usage)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disabled" PageUrl="@pageUrl" HashTagName="disabled" />
+<div class="mb-3"></div>
+<Demo Type="typeof(RangeInput_Demo_02_Disabled)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Min and max" PageUrl="@pageUrl" HashTagName="min-and-max" />
+<div class="mb-3"></div>
+<Demo Type="typeof(RangeInput_Demo_03_Min_and_Max)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Steps" PageUrl="@pageUrl" HashTagName="steps" />
+<div class="mb-3"></div>
+<Demo Type="typeof(RangeInput_Demo_04_Steps)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/form/range-input";
+    private string title = "Blazor RangeInput Component";
+    private string description = "Blazor Bootstrap RangeInput component is built around HTML input of type=\"range\" that prevents the user input based on the parameters set."; // TODO: update
+    private string imageUrl = "https://i.imgur.com/iUNBkki.png"; // TODO: update
+}

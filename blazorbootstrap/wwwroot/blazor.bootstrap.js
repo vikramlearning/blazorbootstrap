@@ -425,36 +425,6 @@ window.blazorBootstrap = {
             }
         },
     },
-    scriptLoader: {
-        load: (elementId, async, scriptId, source, type) => {
-            let scriptLoaderEl = document.getElementById(elementId);
-
-            if (source.length == 0) {
-                console.error(`Invalid src url.`);
-                return;
-            }
-
-            let scriptEl = document.createElement('script');
-
-            scriptEl.async = async;
-
-            if (scriptId != null)
-                scriptEl.id = scriptId;
-
-            if (source != null)
-                scriptEl.src = source;
-
-            if (type != null)
-                scriptEl.type = type;
-
-            scriptEl.onerror = function () {
-                console.error(`An error occurred while loading the script: ${source}`);
-            }
-
-            if (scriptLoaderEl != null)
-                scriptLoaderEl.appendChild(scriptEl);
-        }
-    },
     modal: {
         initialize: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {
             let modalEl = document.getElementById(elementId);
@@ -578,6 +548,36 @@ window.blazorBootstrap = {
             let offcanvasEl = document.getElementById(elementId);
             if (offcanvasEl != null)
                 bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl)?.dispose();
+        }
+    },
+    scriptLoader: {
+        load: (elementId, async, scriptId, source, type) => {
+            let scriptLoaderEl = document.getElementById(elementId);
+
+            if (source.length == 0) {
+                console.error(`Invalid src url.`);
+                return;
+            }
+
+            let scriptEl = document.createElement('script');
+
+            scriptEl.async = async;
+
+            if (scriptId != null)
+                scriptEl.id = scriptId;
+
+            if (source != null)
+                scriptEl.src = source;
+
+            if (type != null)
+                scriptEl.type = type;
+
+            scriptEl.onerror = function () {
+                console.error(`An error occurred while loading the script: ${source}`);
+            }
+
+            if (scriptLoaderEl != null)
+                scriptLoaderEl.appendChild(scriptEl);
         }
     },
     sidebar: {

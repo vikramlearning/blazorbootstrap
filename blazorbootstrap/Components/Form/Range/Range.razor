@@ -1,0 +1,16 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TValue
+
+<input @ref="@ElementRef"
+       @attributes="@Attributes"
+       type="range"
+       class="@ClassNames @fieldCssClasses"
+       id="@ElementId"
+       min="@Min"
+       max="@Max"
+       step="@Step"
+       value="@Value"
+       style="@StyleNames"
+       disabled="@Disabled"
+       @onchange="OnChange" />
