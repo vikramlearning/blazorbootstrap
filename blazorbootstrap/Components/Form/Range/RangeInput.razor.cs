@@ -9,6 +9,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     private sbyte min = 0;
     private sbyte max = 100;
     private sbyte step = 1;
+    private bool showTickMarks => TickMarks?.Any() ?? false;
 
     private DotNetObjectReference<RangeInput<TValue>> objRef = default!;
 
@@ -228,7 +229,6 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     [JSInvokable]
     public async Task bsOnInput(object? newValue)
     {
-        Console.WriteLine($"Input newValue: {newValue}");
         SetValue(newValue.ToString());
         await HandleChangeAsync();
     }
@@ -264,63 +264,43 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             // sbyte? / sbyte
             if (typeof(TValue) == typeof(sbyte?) || typeof(TValue) == typeof(sbyte))
             {
-                Console.WriteLine($"1 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(sbyte));
-
                 return true;
             }
             // short? / short
-
             if (typeof(TValue) == typeof(short?) || typeof(TValue) == typeof(short))
             {
-                Console.WriteLine($"2 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(short));
-
                 return true;
             }
             // int? / int
-
             if (typeof(TValue) == typeof(int?) || typeof(TValue) == typeof(int))
             {
-                Console.WriteLine($"3 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(int));
-
                 return true;
             }
             // long? / long
-
             if (typeof(TValue) == typeof(long?) || typeof(TValue) == typeof(long))
             {
-                Console.WriteLine($"4 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(long));
-
                 return true;
             }
             // float? / float
-
             if (typeof(TValue) == typeof(float?) || typeof(TValue) == typeof(float))
             {
-                Console.WriteLine($"5 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(float));
-
                 return true;
             }
             // double? / double
-
             if (typeof(TValue) == typeof(double?) || typeof(TValue) == typeof(double))
             {
-                Console.WriteLine($"6 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(double));
-
                 return true;
             }
             // decimal? / decimal
-
             if (typeof(TValue) == typeof(decimal?) || typeof(TValue) == typeof(decimal))
             {
-                Console.WriteLine($"7 - Input value: {value}");
                 newValue = (TValue)Convert.ChangeType(value, typeof(decimal));
-
                 return true;
             }
 
@@ -332,7 +312,6 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
         {
             Console.WriteLine($"exception: {ex.Message}");
             newValue = default!;
-
             return false;
         }
     }
@@ -390,6 +369,12 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public double Step { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the tick marks.
+    /// </summary>
+    [Parameter]
+    public IEnumerable<TickMark> TickMarks { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the value.
