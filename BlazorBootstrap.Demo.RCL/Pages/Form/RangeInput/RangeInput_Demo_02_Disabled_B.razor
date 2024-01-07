@@ -1,0 +1,20 @@
+<div class="mb-3">
+    <label class="form-label">Amount</label>
+    <RangeInput @ref="rangeInput"
+                TValue="int?"
+                @bind-Value="amount"
+                Min="0"
+                Max="100" />
+</div>
+
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+
+@code {
+    private RangeInput<int?> rangeInput = default!;
+    private int? amount = 10;
+
+    private void Disable() => rangeInput.Disable();
+
+    private void Enable() => rangeInput.Enable();
+}

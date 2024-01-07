@@ -14,11 +14,16 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
 <div class="mb-3"></div>
-<Demo Type="typeof(RangeInput_Demo_01_Basic_Usage)" Tabs="true" />
+<Demo Type="typeof(RangeInput_Demo_01_Basic_Usage)" Tabs="false" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Disabled" PageUrl="@pageUrl" HashTagName="disabled" />
-<div class="mb-3"></div>
-<Demo Type="typeof(RangeInput_Demo_02_Disabled)" Tabs="true" />
+<div class="mb-3">Use the <b>Disabled</b> parameter to disable the <b>RangeInput</b>.</div>
+<Demo Type="typeof(RangeInput_Demo_02_Disabled_A)" Tabs="true" />
+<div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <b>RangeInput</b>.</div>
+<Callout Type="CalloutType.Danger" Heading="NOTE">
+    Do not use both the <b>Disabled</b> parameter and <b>Enable()</b> &amp; <b>Disable()</b> methods.
+</Callout>
+<Demo Type="typeof(RangeInput_Demo_02_Disabled_B)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Min and max" PageUrl="@pageUrl" HashTagName="min-and-max" />
 <div class="mb-3"></div>
