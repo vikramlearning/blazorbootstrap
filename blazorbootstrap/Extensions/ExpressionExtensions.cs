@@ -320,6 +320,7 @@ public static class ExpressionExtensions
             return filterItem.Operator switch
                    {
                        FilterOperator.Contains => GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem),
+                       FilterOperator.NotContains => GetStringNotContainsExpressionDelegate<TItem>(parameterExpression, filterItem),
                        FilterOperator.StartsWith => GetStringStartsWithExpressionDelegate<TItem>(parameterExpression, filterItem),
                        FilterOperator.EndsWith => GetStringEndsWithExpressionDelegate<TItem>(parameterExpression, filterItem),
                        FilterOperator.Equals => GetStringEqualsExpressionDelegate<TItem>(parameterExpression, filterItem),
@@ -579,6 +580,20 @@ public static class ExpressionExtensions
         return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
+    public static Expression<Func<TItem, bool>> GetStringNotContainsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        // Get the original "contains" expression
+        var containsExpression = GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem);
+    
+        // Negate the body of the original expression
+        var notContainsExpressionBody = Expression.Not(containsExpression.Body);
+    
+        // Create a new lambda function with the same parameters, but with the negated body
+        var notContainsExpression = Expression.Lambda<Func<TItem, bool>>(notContainsExpressionBody, parameterExpression);
+    
+        return notContainsExpression;
+    }
+    
     public static Expression<Func<TItem, bool>> GetStringEndsWithExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
