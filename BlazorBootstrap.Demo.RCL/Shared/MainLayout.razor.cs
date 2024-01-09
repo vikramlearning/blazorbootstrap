@@ -40,8 +40,9 @@ public partial class MainLayout : LayoutComponentBase
             new (){ Id = "401", Text = "Currency Input", Href = "/form/currency-input", IconName = IconName.CurrencyDollar, ParentId = "4" },
             new (){ Id = "402", Text = "Date Input", Href = "/form/date-input", IconName = IconName.CalendarDate, ParentId = "4" },
             new (){ Id = "403", Text = "Number Input", Href = "/form/number-input", IconName = IconName.InputCursor, ParentId = "4" },
-            new (){ Id = "404", Text = "Switch", Href = "/form/switch", IconName = IconName.ToggleOn, ParentId = "4" },
-            new (){ Id = "405", Text = "Time Input", Href = "/form/time-input", IconName = IconName.ClockFill, ParentId = "4" },
+            new (){ Id = "404", Text = "Range Input", Href = "/form/range-input", IconName = IconName.Sliders, ParentId = "4" },
+            new (){ Id = "405", Text = "Switch", Href = "/form/switch", IconName = IconName.ToggleOn, ParentId = "4" },
+            new (){ Id = "406", Text = "Time Input", Href = "/form/time-input", IconName = IconName.ClockFill, ParentId = "4" },
 
             new (){ Id = "5", Text = "Components", IconName = IconName.GearFill, IconColor = IconColor.Danger },
             new (){ Id = "500", Text = "Accordion", Href = "/accordion", IconName = IconName.ChevronBarExpand, ParentId = "5" },

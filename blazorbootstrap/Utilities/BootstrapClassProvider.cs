@@ -104,6 +104,8 @@ public class BootstrapClassProvider
 
     public string FormControl() => "form-control";
 
+    public string FormRange() => "form-range";
+
     public string HeadingSize(HeadingSize headingSize) => $"h{ToHeadingSize(headingSize)}";
 
     public string IconColor(IconColor iconColor) => $"text-{ToIconColor(iconColor)}";
