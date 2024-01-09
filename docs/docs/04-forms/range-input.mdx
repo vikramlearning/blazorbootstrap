@@ -19,27 +19,34 @@ Blazor Bootstrap `RangeInput` component is built around HTML input of `type="ran
 
 ## Parameters
 
-| Name | Type | Default | Required | Description |
-|:--|:--|:--|:--|:--|
-| Disabled | bool | false | | Disables or enables the range input. |
-| Max| TValue | | | Gets or sets the maximum value of the range input. |
-| Min| TValue | | | Gets or sets the minimum value of the range input. |
-| Step | double | 1 | | Gets or sets the step value of the range input. |
-| TickMarks | `IEnumerable<TickMark>` | `default` | | Gets or sets the tick marks. |
-| Value | TValue | | | Gets or sets the value of the range input. |
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Disabled | bool | false | | Disables or enables the range input. | 1.10.6 |
+| Max| TValue | | | Gets or sets the maximum value of the range input. | 1.10.6 |
+| Min| TValue | | | Gets or sets the minimum value of the range input. | 1.10.6 |
+| Step | double | 1 | | Gets or sets the step value of the range input. | 1.10.6 |
+| TickMarks | `IEnumerable<TickMark>` | `default` | | Gets or sets the tick marks. | 1.10.6 |
+| Value | TValue | | | Gets or sets the value of the range input. | 1.10.6 |
 
 ## Methods
 
-| Name | Description |
-|:--|:--|
-| Disable() | Disables range input. |
-| Enable() | Enables range input. |
+| Name | Description | Added Version |
+|:--|:--|:--|
+| Disable() | Disables range input. | 1.10.6 |
+| Enable() | Enables range input. | 1.10.6 |
 
 ## Events
 
-| Name | Description |
-|:--|:--|
-| ValueChanged | This event fires when the user specifies a numeric value. |
+| Name | Description | Added Version |
+|:--|:--|:--|
+| ValueChanged | This event fires when the user specifies a numeric value. | 1.10.6 |
+
+## TickMark Properties
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Label | `string?` | | | Gets or sets the label. | 1.10.6 |
+| Value | `string?` | | | Gets or sets the value. | 1.10.6 |
 
 ## Examples
 
