@@ -21,240 +21,88 @@ Blazor Bootstrap `RangeInput` component is built around HTML input of `type="ran
 
 | Name | Type | Default | Required | Description |
 |:--|:--|:--|:--|:--|
-| AllowNegativeNumbers | bool | false | | Allows negative numbers. By default, negative numbers are not allowed. |
-| AutoComplete | bool | false | | Indicates whether the NumberInput can complete the values automatically by the browser. |
-| Disabled | bool | false | | Gets or sets the disabled. |
-| EnableMinMax | bool | false | | Determines whether to restrict the user input to Min and Max range. If true, restricts the user input between the Min and Max range. Else accepts the user input. |
-| Max| TValue | | | Gets or sets the max. Max ignored if EnableMinMax="false". |
-| Min| TValue | | | Gets or sets the min. Min ignored if EnableMinMax="false". |
-| Placeholder | string? | null | | Gets or sets the placeholder. |
-| Step | double? | null | | Gets or sets the step. |
-| TextAlignment | `Alignment` | `Alignment.None` | | Gets or sets the text alignment. |
-| Value | TValue | | | Gets or sets the value. |
+| Disabled | bool | false | | Disables or enables the range input. |
+| Max| TValue | | | Gets or sets the maximum value of the range input. |
+| Min| TValue | | | Gets or sets the minimum value of the range input. |
+| Step | double | 1 | | Gets or sets the step value of the range input. |
+| TickMarks | `IEnumerable<TickMark>` | `default` | | Gets or sets the tick marks. |
+| Value | TValue | | | Gets or sets the value of the range input. |
 
 ## Methods
 
 | Name | Description |
 |:--|:--|
-| Disable | Disables number input. |
-| Enable | Enables number input. |
+| Disable() | Disables range input. |
+| Enable() | Enables range input. |
 
 ## Events
 
 | Name | Description |
 |:--|:--|
-| ValueChanged | This event fired on every user keystroke that changes the `NumberInput` value. |
+| ValueChanged | This event fires when the user specifies a numeric value. |
 
 ## Examples
 
 ### Basic usage
 
-By default, `e + -` are blocked. For all integral numeric types, dot `.` is blocked.
+<img src="https://i.imgur.com/SztD1ZU.png" alt="Blazor Bootstrap: Range Input Component - Basic usage" />
 
-<img src="https://i.imgur.com/XXD0xF4.png" alt="Blazor Bootstrap: Number Input Component - Basic usage" />
-
-```cshtml {3} showLineNumbers
-<div class="mb-3">
-    <label class="form-label">Amount</label>
-    <NumberInput TValue="int" @bind-Value="@amount" Placeholder="Enter amount" />
-</div>
-<div class="mb-3">Entered Amount: @amount</div>
+```cshtml {1} showLineNumbers
+<RangeInput TValue="int" @bind-Value="amount1" Min="0" Max="100" />
 ```
 
-```cs showLineNumbers
+```cs {2} showLineNumbers
 @code {
-    private int amount;
+    int amount1 = 10;
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/number-input#basic-usage)
+<img src="https://i.imgur.com/nxvWYE4.png" alt="Blazor Bootstrap: Range Input Component - Multiple" />
 
-### Generic type
-
-`NumberInput` is a generic component. Always specify the exact type. In the below example <b>TValue</b> is set to `int`, `int?`, `float`, `float?`, `double`, `double?`, `decimal`, and `decimal?`.
-
-<img src="https://i.imgur.com/iUNBkki.png" alt="Blazor Bootstrap: Number Input Component - Generic type" />
-
-```cshtml {3,8,13,18,23,28,33,38} showLineNumbers
-<div class="mb-3">
-    <label class="form-label">Enter int number</label>
-    <NumberInput TValue="int" @bind-Value="@amount" />
+```cshtml {2,6,10,14} showLineNumbers
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="int" @bind-Value="amount1" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount1">@amount1</Badge>
 </div>
-
-<div class="mb-3">
-    <label class="form-label">Enter int? number</label>
-    <NumberInput TValue="int?" @bind-Value="@amount2" />
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="int?" @bind-Value="amount2" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount2">@amount2</Badge>
 </div>
-
-<div class="mb-3">
-    <label class="form-label">Enter float number</label>
-    <NumberInput TValue="float" @bind-Value="@amount3" />
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="float" @bind-Value="amount3" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount3">@amount3</Badge>
 </div>
-
-<div class="mb-3">
-    <label class="form-label">Enter float? number</label>
-    <NumberInput TValue="float?" @bind-Value="@amount4" />
-</div>
-
-<div class="mb-3">
-    <label class="form-label">Enter double number</label>
-    <NumberInput TValue="double" @bind-Value="@amount5" />
-</div>
-
-<div class="mb-3">
-    <label class="form-label">Enter double? number</label>
-    <NumberInput TValue="double?" @bind-Value="@amount6" />
-</div>
-
-<div class="mb-3">
-    <label class="form-label">Enter decimal number</label>
-    <NumberInput TValue="decimal" @bind-Value="@amount7" />
-</div>
-
-<div class="mb-3">
-    <label class="form-label">Enter decimal? number</label>
-    <NumberInput TValue="decimal?" @bind-Value="@amount8" />
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="float?" @bind-Value="amount4" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount4">@amount4</Badge>
 </div>
 ```
 
 ```cs {} showLineNumbers
 @code {
-    private int amount;
-    private int? amount2;
-    private float amount3;
-    private float? amount4;
-    private double amount5;
-    private double? amount6;
-    private decimal amount7;
-    private decimal? amount8;
+    int amount1 = 10;
+    int? amount2 = 20;
+    float amount3 = 30;
+    float? amount4 = 40;
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/number-input#generic-type)
+[See demo here](https://demos.blazorbootstrap.com/form/range-input#basic-usage)
 
-### Enable min and max
+### Disabled
 
-Set `EnableMinMax="true"` and set the `Min` and `Max` parameters to restrict the user input between the Min and Max range.
+Use the `Disabled` parameter to disable the `RangeInput`.
 
-<img src="https://i.imgur.com/v4SWtWs.png" alt="Blazor Bootstrap: Number Input Component - Enable min and max" />
+<img src="https://i.imgur.com/lVl4D7H.png" alt="Blazor Bootstrap: Range Input Component - Disabled parameter" />
 
-:::caution NOTE
-If the user tries to enter a number in the <b>NumberInput</b> field which is out of range, then it will override with Min or Max value based on the context. 
-If the user input is less than the Min value, then it will override with the Min value. 
-If the user input exceeds the Max value, it will override with the Max value.
-:::
-
-```cshtml {3} showLineNumbers
+```cshtml {5} showLineNumbers
 <div class="mb-3">
     <label class="form-label">Amount</label>
-    <NumberInput TValue="decimal?" @bind-Value="@amount" EnableMinMax="true" Min="10" Max="500" Placeholder="Enter amount" />
-    <span class="form-text">Tip: The amount must be between 10 and 500.</span>
-</div>
-<div class="mb-3">Entered Amount: @amount</div>
-```
-
-```cs {} showLineNumbers
-@code {
-    private decimal? amount;
-}
-```
-
-[See demo here](https://demos.blazorbootstrap.com/form/number-input#enable-min-and-max)
-
-### Step
-
-The `Step` sets the stepping interval when clicking the up and down spinner buttons. If not explicitly included, `Step` defaults to <b>1</b>.
-
-<img src="https://i.imgur.com/Lq10NP1.png" alt="Blazor Bootstrap: Number Input Component - Step" />
-
-```cshtml {3,10} showLineNumbers
-<div class="mb-3">
-    <label class="form-label">Amount</label>
-    <NumberInput TValue="int?" @bind-Value="@amount" Step="10" Placeholder="Enter amount" />
-    <span class="form-text">Info: Here <code>Step</code> parameter is set to <b>10</b>.</span>
-</div>
-<div class="mb-3">Entered Amount: @amount</div>
-
-<div class="mb-3">
-    <label class="form-label">Amount</label>
-    <NumberInput TValue="decimal?" @bind-Value="@amount2" Step="2.5" Placeholder="Enter amount" />
-    <span class="form-text">Info: Here <code>Step</code> parameter is set to <b>2.5</b>.</span>
-</div>
-<div class="mb-3">Entered Amount: @amount2</div>
-```
-
-```cs {} showLineNumbers
-@code {
-    private int? amount;
-    private decimal? amount2;
-}
-```
-
-[See demo here](https://demos.blazorbootstrap.com/form/number-input#step)
-
-### Text alignment
-
-You can change the text alignment according to your need. Use the `TextAlignment` parameter to set the alignment. In the below example, alignment is set to center and end.
-
-<img src="https://i.imgur.com/hbHHfKr.png" alt="Blazor Bootstrap: Number Input Component - Text alignment" />
-
-```cshtml {3,9} showLineNumbers
-<div class="mb-3">
-    <label class="form-label">Amount</label>
-    <NumberInput TValue="int" @bind-Value="@amount" TextAlignment="Alignment.Center" Placeholder="Enter amount" />
-</div>
-<div class="mb-3">Entered Amount: @amount</div>
-
-<div class="mb-3">
-    <label class="form-label">Amount</label>
-    <NumberInput TValue="decimal" @bind-Value="@amount2" TextAlignment="Alignment.End" Placeholder="Enter amount" />
-</div>
-<div class="mb-3">Entered Amount: @amount2</div>
-```
-
-```cs {} showLineNumbers
-@code {
-    private int amount;
-    private decimal amount2 = 2.34M;
-}
-```
-
-[See demo here](https://demos.blazorbootstrap.com/form/number-input#text-alignment)
-
-### Allow negative numbers
-
-By default, negative numbers are not allowed. Set the `AllowNegativeNumbers` parameter to true to allow the negative numbers.
-
-<img src="https://i.imgur.com/jmtUxzB.png" alt="Blazor Bootstrap: Number Input Component - Allow negative numbers" />
-
-```cshtml {3} showLineNumbers
-<div class="mb-3">
-    <label class="form-label">Amount</label>
-    <NumberInput TValue="int" @bind-Value="@amount" AllowNegativeNumbers="true" Placeholder="Enter amount" />
-    <span class="form-text">Tip: Negative numbers are also allowed.</span>
-</div>
-<div class="mb-3">Entered Amount: @amount</div>
-```
-
-```cs {} showLineNumbers
-@code {
-    private int amount;
-}
-```
-
-[See demo here](https://demos.blazorbootstrap.com/form/number-input#allow-negative-numbers)
-
-### Disable
-
-Use the <b>Disabled</b> parameter to disable the NumberInput.
-
-```cshtml {5,9-11} showLineNumbers
-<div class="mb-3">
-    <label class="form-label">Amount</label>
-    <NumberInput TValue="int?"
-                 @bind-Value="@amount"
-                 Disabled="@disabled"
-                 Placeholder="Enter amount" />
+    <RangeInput TValue="int?" 
+                @bind-Value="amount" 
+                Disabled="@disabled" 
+                Min="0" 
+                Max="100" />
 </div>
 
 <Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
@@ -262,206 +110,142 @@ Use the <b>Disabled</b> parameter to disable the NumberInput.
 <Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
 ```
 
-```cs {3,5,7,9} showLineNumbers
+```cs {5-7} showLineNumbers
 @code {
-    private int? amount;
+    private int? amount = 10;
     private bool disabled = true;
 
     private void Enable() => disabled = false;
-
     private void Disable() => disabled = true;
-
     private void Toggle() => disabled = !disabled;
 }
 ```
 
-Also, use **Enable()** and **Disable()** methods to enable and disable the NumberInput.
+Also, use `Enable()` and `Disable()` methods to enable and disable the `RangeInput`.
 
-:::caution NOTE
-Do not use both the **Disabled** parameter and **Enable()** & **Disable()** methods.
+:::danger
+Do not use both the `Disabled` parameter and `Enable()` & `Disable()` methods.
 :::
 
-```cshtml {3,9-10} showLineNumbers
+<img src="https://i.imgur.com/Xmo0wwM.png" alt="Blazor Bootstrap: Range Input Component - Disable method" />
+
+```cshtml {} showLineNumbers
 <div class="mb-3">
     <label class="form-label">Amount</label>
-    <NumberInput @ref="numberInput" 
-                 TValue="int?" 
-                 @bind-Value="@amount" 
-                 Placeholder="Enter amount" />
+    <RangeInput @ref="rangeInput"
+                TValue="int?"
+                @bind-Value="amount"
+                Min="0"
+                Max="100" />
 </div>
 
 <Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
 <Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
 ```
 
-```cs {2,5,7} showLineNumbers
+```cs {4,5} showLineNumbers
 @code {
-    private NumberInput<int?> numberInput = default!;
-    private int? amount;
-
-    private void Disable() => numberInput.Disable();
-
-    private void Enable() => numberInput.Enable();
+    private RangeInput<int?> rangeInput = default!;
+    private int? amount = 10;
+    private void Disable() => rangeInput.Disable();
+    private void Enable() => rangeInput.Enable();
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/number-input#disable)
+[See demo here](https://demos.blazorbootstrap.com/form/range-input#disabled)
 
-### Validations
+### Min and max
 
-Like any other blazor input component, `NumberInput` supports validations. Add the DataAnnotations on the `NumberInput` component to validate the user input before submitting the form. In the below example, we used <b>Required</b> and <b>Range</b> attributes.
+Set the `Min` and `Max` parameters to restrict the user input between the `Min` and `Max` range. By default, the minimum is 0.
 
-<img src="https://i.imgur.com/K7bepKc.png" alt="Blazor Bootstrap: Number Input Component - Validations" />
+:::caution
+By default the maximum is 100 for `sbyte?`, `short?`, `int?`, `long?`, `float?`, `double?` and `decimal?` data types. For other data types it is 0.
 
-```cshtml {17,18,23,24,31,32,39,40} showLineNumbers
-@using System.ComponentModel.DataAnnotations
+If the user tries to specify a numeric value which is out of range, then it will override with `Min` or `Max` value based on the context. If the user input is less than the minimum value, then it will override with the `Min` value. If the user input exceeds the maximum value, it will override with the `Max` value.
+:::
 
-<style>
-    .valid.modified:not([type=checkbox]) {
-        outline: 1px solid #26b050;
-    }
+<img src="https://i.imgur.com/F3aLA65.png" alt="Blazor Bootstrap: Range Input Component - Min and max" />
 
-    .invalid {
-        outline: 1px solid red;
-    }
-
-    .validation-message {
-        color: red;
-    }
-</style>
-
-<EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
-    <DataAnnotationsValidator />
-
-    <div class="form-group row mb-3">
-        <label class="col-md-2 col-form-label">Item Price: <span class="text-danger">*</span></label>
-        <div class="col-md-10">
-            <NumberInput TValue="decimal?" Value="invoice.Price" ValueExpression="() => invoice.Price" ValueChanged="(value) => PriceChanged(value)" Placeholder="Enter price" />
-            <ValidationMessage For="@(() => invoice.Price)" />
-        </div>
-    </div>
-
-    <div class="form-group row mb-3">
-        <label class="col-md-2 col-form-label">Item Discount:</label>
-        <div class="col-md-10">
-            <NumberInput TValue="decimal?" Value="invoice.Discount" ValueExpression="() => invoice.Discount" ValueChanged="(value) => DiscountChanged(value)" Placeholder="Enter discount" />
-            <ValidationMessage For="@(() => invoice.Discount)" />
-        </div>
-    </div>
-
-    <div class="form-group row mb-3">
-        <label class="col-md-2 col-form-label">Total Amount: <span class="text-danger">*</span></label>
-        <div class="col-md-10">
-            <NumberInput TValue="decimal?" @bind-Value="invoice.Total" Disabled="true" Placeholder="Enter total" />
-            <ValidationMessage For="@(() => invoice.Total)" />
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-12 text-right">
-            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
-            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
-        </div>
-    </div>
-</EditForm>
-```
-
-```cs {2-3,7-8,36,46,49-61} showLineNumbers
-@code {
-    private Invoice invoice = new();
-    private EditContext editContext;
-
-    protected override void OnInitialized()
-    {
-        editContext = new EditContext(invoice);
-        base.OnInitialized();
-    }
-
-    protected override void OnParametersSet()
-    {
-        CalculateToatl();
-        base.OnParametersSet();
-    }
-
-    private void PriceChanged(decimal? value)
-    {
-        invoice.Price = value;
-        CalculateToatl();
-    }
-
-    private void DiscountChanged(decimal? value)
-    {
-        invoice.Discount = value;
-        CalculateToatl();
-    }
-
-    private void CalculateToatl()
-    {
-        var price = invoice.Price.HasValue ? invoice.Price.Value : 0;
-        var discount = invoice.Discount.HasValue ? invoice.Discount.Value : 0;
-        invoice.Total = price - discount;
-    }
-
-    public void HandleOnValidSubmit()
-    {
-        Console.WriteLine($"Price: {invoice.Price}");
-        Console.WriteLine($"Discount: {invoice.Discount}");
-        Console.WriteLine($"Total: {invoice.Total}");
-    }
-
-    private void ResetForm()
-    {
-        invoice = new();
-        editContext = new EditContext(invoice);
-    }
-
-    public class Invoice
-    {
-        [Required(ErrorMessage = "Price required.")]
-        [Range(60, 500, ErrorMessage = "Price should be between 60 and 500.")]
-        public decimal? Price { get; set; } = 232M;
-
-        [Range(0, 50, ErrorMessage = "Discount should be between 0 and 50.")]
-        public decimal? Discount { get; set; }
-
-        [Required(ErrorMessage = "Amount required.")]
-        [Range(10, 500, ErrorMessage = "Total should be between 60 and 500.")]
-        public decimal? Total { get; set; }
-    }
-}
-```
-
-[See demo here](https://demos.blazorbootstrap.com/form/number-input#validations)
-
-### Events: ValueChanged
-
-This event fires on every user keystroke that changes the `NumberInput` value.
-
-<img src="https://i.imgur.com/1DGW8dG.png" alt="Blazor Bootstrap: Number Input Component - Events: ValueChanged" />
-
-```cshtml {4} showLineNumbers
-<div class="row mb-3">
-    <label class="col-md-2 col-form-label">Item Price: <span class="text-danger">*</span></label>
-    <div class="col-md-10">
-        <NumberInput TValue="decimal?" Value="price" ValueExpression="() => price" ValueChanged="(value) => PriceChanged(value)" Placeholder="Enter price" />
-    </div>
-</div>
-<div>
-    @displayPrice
+```cshtml {2} showLineNumbers
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="int" @bind-Value="amount1" Min="-10" Max="10" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount1">@amount1</Badge>
 </div>
 ```
 
-```cs {5-9} showLineNumbers
+```cs {} showLineNumbers
 @code {
-    private decimal? price = 10M;
-    private string displayPrice;
-
-    private void PriceChanged(decimal? value)
-    {
-        price = value; // this is mandatory
-        displayPrice = $"Price: {value}, changed at {DateTime.Now.ToLocalTime()}.";
-    }
+    int amount1 = -3;
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/number-input#event-value-changed)
+[See demo here](https://demos.blazorbootstrap.com/form/range-input#min-and-max)
+
+### Step
+
+The `Step` parameter is a number that specifies the granularity that the value must adhere to. Only values that match the specified stepping interval are valid.
+
+<img src="https://i.imgur.com/QTuu33z.png" alt="Blazor Bootstrap: Range Input Component - Step" />
+
+```cshtml {6,10,14} showLineNumbers
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="int" @bind-Value="amount1" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount1">@amount1</Badge>
+</div>
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="int?" @bind-Value="amount2" Min="0" Max="100" Step="5" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount2">@amount2</Badge>
+</div>
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="float" @bind-Value="amount3" Min="0" Max="100" Step="10" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount3">@amount3</Badge>
+</div>
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="float?" @bind-Value="amount4" Min="0" Max="100" Step="20" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount4">@amount4</Badge>
+</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    int amount1 = 10;
+    int? amount2 = 20;
+    float amount3 = 30;
+    float? amount4 = 40;
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/range-input#step)
+
+### Tick marks
+
+To add tick marks to a `RangeInput`, set the `TickMarks` parameter.
+`
+<img src="https://i.imgur.com/dcMBuxT.png" alt="Blazor Bootstrap: Range Input Component - Tick marks" />
+
+```cshtml {3} showLineNumbers
+<div class="d-flex mb-3">
+    <div class="flex-fill">
+        <RangeInput TValue="float" @bind-Value="temperature1" Min="0" Max="100" TickMarks="list" />
+    </div>
+</div>
+<Badge Color="BadgeColor.Primary" Class="mx-2" VisuallyHiddenText="amount1">@temperature1</Badge>
+<span>Fahrenheit</span>
+```
+
+```cs {4-11} showLineNumbers
+@code {
+    float temperature1 = 10;
+
+    IEnumerable<TickMark> list = new List<TickMark>
+    {
+        new(){ Label = "very cold!", Value = "0"},
+        new(){ Label = "cool", Value = "25"},
+        new(){ Label = "medium", Value = "50"},
+        new(){ Label = "getting warm!", Value = "75"},
+        new(){ Label = "hot!", Value = "100"},
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/range-input#tick-marks)

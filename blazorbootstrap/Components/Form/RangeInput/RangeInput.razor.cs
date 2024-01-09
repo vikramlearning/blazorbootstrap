@@ -1,5 +1,12 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a Blazor component that provides a range input for numeric values.
+/// </summary>
+/// <typeparam name="TValue">The type of the numeric value.</typeparam>
+/// <remarks>
+/// Supported types for TValue: sbyte, sbyte?, short, short?, int, int?, long, long?, float, float?, double, double?, decimal, decimal?
+/// </remarks>
 public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -80,12 +87,12 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Disables number input.
+    /// Disables the range input.
     /// </summary>
     public void Disable() => Disabled = true;
 
     /// <summary>
-    /// Enables number input.
+    /// Enables the range input.
     /// </summary>
     public void Enable() => Disabled = false;
 
@@ -343,7 +350,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Gets or sets the disabled.
+    /// Disables or enables the range input.
     /// </summary>
     [Parameter]
     public bool Disabled { get; set; }
@@ -353,19 +360,19 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
-    /// Gets or sets the max.
+    /// Gets or sets the maximum value of the range input.
     /// </summary>
     [Parameter]
     public TValue Max { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the min.
+    /// Gets or sets the minimum value of the range input.
     /// </summary>
     [Parameter]
     public TValue Min { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the step.
+    /// Gets or sets the step value of the range input.
     /// </summary>
     [Parameter]
     public double Step { get; set; } = 1;
@@ -377,13 +384,13 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     public IEnumerable<TickMark> TickMarks { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the value.
+    /// Gets or sets the value of the range input.
     /// </summary>
     [Parameter]
     public TValue Value { get; set; } = default!;
 
     /// <summary>
-    /// This event fired on every user keystroke that changes the NumberInput value.
+    /// This event fires when the user specifies a numeric value.
     /// </summary>
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
