@@ -1,4 +1,13 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
+<div>
+    <button id="prev">Previous</button>
+    <button id="next">Next</button>
+    &nbsp; &nbsp;
+    <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+</div>
 
-<Button Color="ButtonColor.Primary" @onclick="OnClick"> Show prompt </Button>
+<canvas id="the-canvas"></canvas>
+
+
+<Button Color="ButtonColor.Primary" @onclick="OnClick"> Show Pdf </Button>

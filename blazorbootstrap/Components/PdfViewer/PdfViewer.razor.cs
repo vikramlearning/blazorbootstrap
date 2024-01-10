@@ -4,8 +4,8 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 {
     [Inject] PdfViewerJsInterop PdfViewerJsInterop { get; set; } = default!;
 
-    protected void OnClick(EventArgs args)
+    private async Task OnClick(EventArgs args)
     {
-        PdfViewerJsInterop.Prompt("Hi, ");
+        await PdfViewerJsInterop.ShowPdf();
     }
 }

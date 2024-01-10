@@ -10,10 +10,10 @@ public class PdfViewerJsInterop : IAsyncDisposable
             "import", "./_content/Blazor.Bootstrap/pdf.viewer.js").AsTask());
     }
 
-    public async ValueTask<string> Prompt(string message)
+    public async Task ShowPdf()
     {
         var module = await moduleTask.Value;
-        return await module.InvokeAsync<string>("showPrompt", message);
+        await module.InvokeVoidAsync("showPdf");
     }
 
     public async ValueTask DisposeAsync()
