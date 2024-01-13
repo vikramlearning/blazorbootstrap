@@ -1,4 +1,5 @@
-import("./pdfjs-4.0.379.min.mjs");
+import * as pdfJS from "./pdfjs-4.0.379.min.mjs";
+import * as pdfWorker from "./pdfjs-4.0.379.worker.min.mjs";
 
 // If absolute URL from the remote server is provided, configure the CORS
 // header on that server.
@@ -8,7 +9,7 @@ var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compres
 var { pdfjsLib } = globalThis;
 
 // The workerSrc property shall be specified.
-//pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.mjs';
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 var pdfDoc = null,
     pageNum = 1,
@@ -24,6 +25,7 @@ var pdfDoc = null,
  */
 function renderPage(num) {
     pageRendering = true;
+
     // Using promise to fetch the page
     pdfDoc.getPage(num).then(function (page) {
         var viewport = page.getViewport({ scale: scale });
@@ -101,7 +103,7 @@ pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
 
 export function showPdf() {
     // The workerSrc property shall be specified.
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.mjs';
+    //pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.mjs';
 
     prompt('test', 'Type anything here');
 }
