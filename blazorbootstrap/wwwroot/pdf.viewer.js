@@ -5,11 +5,8 @@ import * as pdfWorker from "./pdfjs-4.0.379.worker.min.mjs";
 // header on that server.
 var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf';
 
-// Loaded via <script> tag, create shortcut to access PDF.js exports.
-var { pdfjsLib } = globalThis;
-
 // The workerSrc property shall be specified.
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
+pdfJS.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 var pdfDoc = null,
     pageNum = 1,
@@ -90,20 +87,17 @@ function onNextPage() {
 }
 document.getElementById('next').addEventListener('click', onNextPage);
 
-/**
- * Asynchronously downloads PDF.
- */
-pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
-    pdfDoc = pdfDoc_;
-    document.getElementById('page_count').textContent = pdfDoc.numPages;
-
-    // Initial/first page rendering
-    renderPage(pageNum);
-});
 
 export function showPdf() {
-    // The workerSrc property shall be specified.
-    //pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.mjs';
 
-    prompt('test', 'Type anything here');
+    /**
+     * Asynchronously downloads PDF.
+     */
+    pdfJS.getDocument(url).promise.then(function (pdfDoc_) {
+        pdfDoc = pdfDoc_;
+        document.getElementById('page_count').textContent = pdfDoc.numPages;
+
+        // Initial/first page rendering
+        renderPage(pageNum);
+    });
 }
