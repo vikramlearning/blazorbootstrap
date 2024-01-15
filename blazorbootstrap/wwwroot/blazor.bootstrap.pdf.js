@@ -3,18 +3,18 @@ import * as pdfWorker from "./pdfjs-4.0.379.worker.min.mjs";
 
 // If absolute URL from the remote server is provided, configure the CORS
 // header on that server.
-var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf';
+//var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf';
 
 // The workerSrc property shall be specified.
 pdfJS.GlobalWorkerOptions.workerSrc = pdfWorker;
 
-var pdfDoc = null,
+let pdfDoc = null,
     pageNum = 1,
     pageRendering = false,
     pageNumPending = null,
     scale = 0.8,
-    canvas = document.getElementById('the-canvas'),
-    ctx = canvas.getContext('2d');
+    canvas = null,
+    ctx = null;
 
 /**
  * Get page info from document, resize canvas accordingly, and render page.
@@ -87,17 +87,23 @@ function onNextPage() {
 }
 document.getElementById('next').addEventListener('click', onNextPage);
 
+export function initialize(elementId, url) {
+    canvas = document.getElementById(elementId);
 
-export function showPdf() {
+    if (canvas == null)
+        return { pageCount: 0, pageNumber: 0 };
 
-    /**
-     * Asynchronously downloads PDF.
-     */
-    pdfJS.getDocument(url).promise.then(function (pdfDoc_) {
-        pdfDoc = pdfDoc_;
+    ctx = canvas.getContext('2d');
+
+    pdfJS.getDocument(url).promise.then(function (doc) {
+        pdfDoc = doc;
         document.getElementById('page_count').textContent = pdfDoc.numPages;
 
-        // Initial/first page rendering
+        // render first page
         renderPage(pageNum);
+
+        return { pageCount: pdfDoc.numPages, pageNumber: 1 };
     });
+
+    return { pageCount: 0, pageNumber: 0 };
 }

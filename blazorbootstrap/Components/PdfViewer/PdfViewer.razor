@@ -7,7 +7,8 @@
     <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
 </div>
 
-<canvas id="the-canvas"></canvas>
-
-
-<Button Color="ButtonColor.Primary" @onclick="OnClick"> Show Pdf </Button>
+<canvas @ref="@ElementRef"
+        @attributes="@Attributes"
+        class="@ClassNames"
+        id="@ElementId">
+</canvas>

@@ -6,14 +6,13 @@ public class PdfViewerJsInterop : IAsyncDisposable
 
     public PdfViewerJsInterop(IJSRuntime jsRuntime)
     {
-        moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Blazor.Bootstrap/pdf.viewer.js").AsTask());
+        moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Blazor.Bootstrap/blazor.bootstrap.pdf.js").AsTask());
     }
 
-    public async Task ShowPdf()
+    public async Task<PdfViewerModel> InitializeAsync(string elementId, string url)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("showPdf");
+        return await module.InvokeAsync<PdfViewerModel>("initialize", elementId, url);
     }
 
     public async ValueTask DisposeAsync()
