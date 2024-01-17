@@ -2,14 +2,28 @@
 
 public partial class PdfViewer : BlazorBootstrapComponentBase
 {
-    private PdfViewerModel model;
+    private PdfViewerModel model = new();
+    private DotNetObjectReference<PdfViewer>? objRef;
     [Inject] PdfViewerJsInterop PdfViewerJsInterop { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        model = await PdfViewerJsInterop.InitializeAsync(ElementId, Url);
+        objRef ??= DotNetObjectReference.Create(this);
+        await PdfViewerJsInterop.InitializeAsync(objRef, ElementId, Url );
         await base.OnInitializedAsync();
     }
+
+    [JSInvokable]
+    public void Set(PdfViewerModel pdfViewerModel)
+    {
+        model = pdfViewerModel;
+    }
+
+    private async Task PreviousPageAsync() =>
+        await PdfViewerJsInterop.PreviousPageAsync(objRef, ElementId);
+
+    private async Task NextPageAsync() =>
+        await PdfViewerJsInterop.NextPageAsync(objRef, ElementId);
 
     #region Properties, Indexers
 

@@ -1,10 +1,11 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 <div>
-    <button id="prev">Previous</button>
-    <button id="next">Next</button>
-    &nbsp; &nbsp;
-    <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+    <Button Color="ButtonColor.Success" @onclick="PreviousPageAsync">Previous</Button>
+    <Button Color="ButtonColor.Success" @onclick="NextPageAsync">Next</Button>
+</div>
+<div>
+    <span>Page: @model?.PageNumber / @model?.PageCount</span>
 </div>
 
 <canvas @ref="@ElementRef"

@@ -42,7 +42,8 @@ class Pdf {
                 ' must be destroyed before the canvas with ID \'' + existingPdf.canvas.id + '\' can be reused.'
             );
         }
-        
+
+        this.id = canvas.id;
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
         //this.width = width;
@@ -102,19 +103,44 @@ function queueRenderPage(pdf, num) {
     }
 }
 
-export function initialize(elementId, url) {
+export function previous(dotNetHelper, elementId) {
+    let pdf = getPdf(elementId);
+
+    if (pdf.pageNum === 0 || pdf.pageNum === 1)
+        return;
+
+    if (pdf.pageNum > 0)
+        pdf.pageNum -= 1;
+
+    queueRenderPage(pdf, pdf.pageNum);
+
+    dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+}
+
+export function next(dotNetHelper, elementId) {
+    let pdf = getPdf(elementId);
+
+    if (pdf == null || pdf.pageNum === pdf.numPages)
+        return;
+
+    if (pdf.pageNum < pdf.numPages)
+        pdf.pageNum += 1;
+
+    queueRenderPage(pdf, pdf.pageNum);
+
+    dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+}
+
+export function initialize(dotNetHelper, elementId, url) {
     const pdf = new Pdf(elementId);
 
     pdfJS.getDocument(url).promise.then(function (doc) {
         pdf.pdfDoc = doc;
         pdf.numPages = doc.numPages;
         renderPage(pdf, pdf.pageNum);
-        return { pageCount: pdf.numPages, pageNumber: pdf.pageNum };
+        dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
     });
-
-    return { pageCount: 0, pageNumber: 0 };
 }
-
 
 /* helpers */
 export function _isDomSupported() {
