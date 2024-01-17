@@ -50,7 +50,7 @@ class Pdf {
         //this.height = height;
         this.pdfDoc = null;
         this.pageNum = 1;
-        this.numPages = 0;
+        this.pagesCount = 0;
         this.pageRendering = false;
         this.pageNumPending = null;
         this.scale = 1.3333;
@@ -115,21 +115,21 @@ export function previousPage(dotNetHelper, elementId) {
 
     queueRenderPage(pdf, pdf.pageNum);
 
-    dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
 
 export function nextPage(dotNetHelper, elementId) {
     let pdf = getPdf(elementId);
 
-    if (pdf == null || pdf.pageNum === pdf.numPages)
+    if (pdf == null || pdf.pageNum === pdf.pagesCount)
         return;
 
-    if (pdf.pageNum < pdf.numPages)
+    if (pdf.pageNum < pdf.pagesCount)
         pdf.pageNum += 1;
 
     queueRenderPage(pdf, pdf.pageNum);
 
-    dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
 
 export function firstPage(dotNetHelper, elementId) {
@@ -143,21 +143,21 @@ export function firstPage(dotNetHelper, elementId) {
 
     queueRenderPage(pdf, pdf.pageNum);
 
-    dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
 
 export function lastPage(dotNetHelper, elementId) {
     let pdf = getPdf(elementId);
 
-    if (pdf == null || (pdf.pageNum === 1 && pdf.pageNum === pdf.numPages))
+    if (pdf == null || (pdf.pageNum === 1 && pdf.pageNum === pdf.pagesCount))
         return;
 
-    if (pdf.pageNum < pdf.numPages)
-        pdf.pageNum = pdf.numPages;
+    if (pdf.pageNum < pdf.pagesCount)
+        pdf.pageNum = pdf.pagesCount;
 
     queueRenderPage(pdf, pdf.pageNum);
 
-    dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
 
 export function zoomInOut(dotNetHelper, elementId, scale) {
@@ -171,38 +171,43 @@ export function zoomInOut(dotNetHelper, elementId, scale) {
 
     queueRenderPage(pdf, pdf.pageNum);
 
-    dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
+}
+
+export function rotate(dotNetHelper, elementId, rotationDegrees) {
+    let pdf = getPdf(elementId);
+
+    if (pdf == null)
+        return;
+
+    if (!Number.isNaN(rotationDegrees))
+        pdf.rotate = rotationDegrees;
+
+    queueRenderPage(pdf, pdf.pageNum);
+
+    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
 
 // resize
 // print
 // download
-// firstpage
-// lastpage
-// nextpage
-// previouspage
-// zoomin
-// zoomout
 // zoomreset
-// rotatecw
-// rotateccw
 
-
-
-
-
-
-
-
+/*
+firstPageButton.disabled = this.pageNumber <= 1;
+lastPageButton.disabled = this.pageNumber >= this.pagesCount;
+pageRotateCwButton.disabled = this.pagesCount === 0;
+pageRotateCcwButton.disabled = this.pagesCount === 0;
+*/
 
 export function initialize(dotNetHelper, elementId, url) {
     const pdf = new Pdf(elementId);
 
     pdfJS.getDocument(url).promise.then(function (doc) {
         pdf.pdfDoc = doc;
-        pdf.numPages = doc.numPages;
+        pdf.pagesCount = doc.numPages;
         renderPage(pdf, pdf.pageNum);
-        dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+        dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
     });
 }
 

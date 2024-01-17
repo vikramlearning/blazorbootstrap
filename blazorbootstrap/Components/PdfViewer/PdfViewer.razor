@@ -2,32 +2,43 @@
 @inherits BlazorBootstrapComponentBase
 
 <div class="d-flex justify-content-between my-2">
-    <div class="d-flex align-items-start">
+    <div class="d-flex align-items-center">
         <Tooltip Class="mx-2" Title="Previous Page" role="button">
             <Icon Name="IconName.ChevronUp" Size="IconSize.x5" @onclick="PreviousPageAsync" />
         </Tooltip>
         <Tooltip Class="me-2" Title="Next Page" role="button">
             <Icon Name="IconName.ChevronDown" Size="IconSize.x5" @onclick="NextPageAsync" />
         </Tooltip>
-        <NumberInput Class="form-control-sm me-2" TValue="int" Style="width:80px;" Value="@pageNumber" ValueExpression="() => pageNumber" ValueChanged="(value) => PageNumberChanged(value)" Placeholder="Enter page number" /> <div class="align-self-center ps-2">of @pageCount</div>
+        <NumberInput Class="form-control-sm me-2" TValue="int" Style="width:80px;" Value="@pageNumber" ValueExpression="() => pageNumber" ValueChanged="(value) => PageNumberChanged(value)" Placeholder="Enter page number" /> <div class="align-self-center ps-2">of @pagesCount</div>
     </div>
-    <div>
+    <div class="d-flex align-items-center">
         <Tooltip Class="me-2" Title="Zoom Out" role="button">
             <Icon Name="IconName.Dash" Size="IconSize.x5" @onclick="ZoomOutAsync" />
         </Tooltip>
         <Tooltip Class="me-2" Title="Zoom In" role="button">
             <Icon Name="IconName.Plus" Size="IconSize.x5" @onclick="ZoomInAsync" />
         </Tooltip>
+        <InputSelect TValue="int" class="form-select" @bind-Value="zoomLevel">
+            <option value="1">Actual Size</option>
+            <option value="2">50%</option>
+            <option value="3">75%</option>
+            <option value="4">100%</option>
+            <option value="5">125%</option>
+            <option value="6">150%</option>
+            <option value="7">200%</option>
+            <option value="8">300%</option>
+            <option value="9">400%</option>
+        </InputSelect>
     </div>
-    <div>
+    <div class="d-flex align-items-center">
         <Tooltip Class="me-2" Title="Rotate Clockwise" role="button">
-            <Icon Name="IconName.ArrowClockwise" Size="IconSize.x5" @onclick="PreviousPageAsync" />
+            <Icon Name="IconName.ArrowClockwise" Size="IconSize.x5" @onclick="RotateClockwiseAsync" />
         </Tooltip>
         <Tooltip Class="me-2" Title="Rotate Counterclockwise" role="button">
-            <Icon Name="IconName.ArrowCounterclockwise" Size="IconSize.x5" @onclick="NextPageAsync" />
+            <Icon Name="IconName.ArrowCounterclockwise" Size="IconSize.x5" @onclick="RotateCounterclockwiseAsync" />
         </Tooltip>
     </div>
-    <div>
+    <div class="d-flex align-items-center">
         <Tooltip Class="me-2" Title="Go to First Page" role="button">
             <Icon Name="IconName.ChevronBarUp" Size="IconSize.x5" @onclick="FirstPageAsync" />
         </Tooltip>
