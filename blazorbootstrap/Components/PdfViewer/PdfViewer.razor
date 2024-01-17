@@ -1,15 +1,46 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
-<div>
-    <Button Color="ButtonColor.Success" @onclick="PreviousPageAsync">Previous</Button>
-    <Button Color="ButtonColor.Success" @onclick="NextPageAsync">Next</Button>
-</div>
-<div>
-    <span>Page: @model?.PageNumber / @model?.PageCount</span>
+
+<div class="d-flex justify-content-between my-2">
+    <div class="d-flex align-items-start">
+        <Tooltip Class="mx-2" Title="Previous Page" role="button">
+            <Icon Name="IconName.ChevronUp" Size="IconSize.x5" @onclick="PreviousPageAsync" />
+        </Tooltip>
+        <Tooltip Class="me-2" Title="Next Page" role="button">
+            <Icon Name="IconName.ChevronDown" Size="IconSize.x5" @onclick="NextPageAsync" />
+        </Tooltip>
+        <NumberInput Class="form-control-sm me-2" TValue="int" Style="width:80px;" Value="@pageNumber" ValueExpression="() => pageNumber" ValueChanged="(value) => PageNumberChanged(value)" Placeholder="Enter page number" /> <div class="align-self-center ps-2">of @pageCount</div>
+    </div>
+    <div>
+        <Tooltip Class="me-2" Title="Zoom Out" role="button">
+            <Icon Name="IconName.Dash" Size="IconSize.x5" @onclick="PreviousPageAsync" />
+        </Tooltip>
+        <Tooltip Class="me-2" Title="Zoom In" role="button">
+            <Icon Name="IconName.Plus" Size="IconSize.x5" @onclick="NextPageAsync" />
+        </Tooltip>
+    </div>
+    <div>
+        <Tooltip Class="me-2" Title="Rotate Clockwise" role="button">
+            <Icon Name="IconName.ArrowClockwise" Size="IconSize.x5" @onclick="PreviousPageAsync" />
+        </Tooltip>
+        <Tooltip Class="me-2" Title="Rotate Counterclockwise" role="button">
+            <Icon Name="IconName.ArrowCounterclockwise" Size="IconSize.x5" @onclick="NextPageAsync" />
+        </Tooltip>
+    </div>
+    <div>
+        <Tooltip Class="me-2" Title="Go to First Page" role="button">
+            <Icon Name="IconName.ChevronBarUp" Size="IconSize.x5" @onclick="FirstPageAsync" />
+        </Tooltip>
+        <Tooltip Class="me-2" Title="Go to Last Page" role="button">
+            <Icon Name="IconName.ChevronBarDown" Size="IconSize.x5" @onclick="LastPageAsync" />
+        </Tooltip>
+    </div>
 </div>
 
-<canvas @ref="@ElementRef"
-        @attributes="@Attributes"
-        class="@ClassNames"
-        id="@ElementId">
-</canvas>
+<div class="bg-secondary-subtle text-center py-3">
+    <canvas @ref="@ElementRef"
+            @attributes="@Attributes"
+            class="@ClassNames"
+            id="@ElementId">
+    </canvas>
+</div>

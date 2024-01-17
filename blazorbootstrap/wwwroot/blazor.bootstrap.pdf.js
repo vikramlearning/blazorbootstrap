@@ -53,7 +53,7 @@ class Pdf {
         this.numPages = 0;
         this.pageRendering = false;
         this.pageNumPending = null;
-        this.scale = 0.8;
+        this.scale = 1.3333;
 
         instances[this.id] = this;
     }
@@ -77,6 +77,7 @@ function renderPage(pdf, num) {
             canvasContext: pdf.ctx,
             viewport: viewport
         };
+
         var renderTask = page.render(renderContext);
 
         // Wait for rendering to finish
@@ -103,7 +104,7 @@ function queueRenderPage(pdf, num) {
     }
 }
 
-export function previous(dotNetHelper, elementId) {
+export function previousPage(dotNetHelper, elementId) {
     let pdf = getPdf(elementId);
 
     if (pdf.pageNum === 0 || pdf.pageNum === 1)
@@ -117,7 +118,7 @@ export function previous(dotNetHelper, elementId) {
     dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
 }
 
-export function next(dotNetHelper, elementId) {
+export function nextPage(dotNetHelper, elementId) {
     let pdf = getPdf(elementId);
 
     if (pdf == null || pdf.pageNum === pdf.numPages)
@@ -131,6 +132,55 @@ export function next(dotNetHelper, elementId) {
     dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
 }
 
+export function firstPage(dotNetHelper, elementId) {
+    let pdf = getPdf(elementId);
+
+    if (pdf == null || pdf.pageNum === 1)
+        return;
+
+    if (pdf.pageNum > 1)
+        pdf.pageNum = 1;
+
+    queueRenderPage(pdf, pdf.pageNum);
+
+    dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+}
+
+export function lastPage(dotNetHelper, elementId) {
+    let pdf = getPdf(elementId);
+
+    if (pdf == null || (pdf.pageNum === 1 && pdf.pageNum === pdf.numPages))
+        return;
+
+    if (pdf.pageNum < pdf.numPages)
+        pdf.pageNum = pdf.numPages;
+
+    queueRenderPage(pdf, pdf.pageNum);
+
+    dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+}
+
+// resize
+// print
+// download
+// firstpage
+// lastpage
+// nextpage
+// previouspage
+// zoomin
+// zoomout
+// zoomreset
+// rotatecw
+// rotateccw
+
+
+
+
+
+
+
+
+
 export function initialize(dotNetHelper, elementId, url) {
     const pdf = new Pdf(elementId);
 
@@ -143,6 +193,6 @@ export function initialize(dotNetHelper, elementId, url) {
 }
 
 /* helpers */
-export function _isDomSupported() {
+function _isDomSupported() {
     return typeof window !== 'undefined' && typeof document !== 'undefined';
 }

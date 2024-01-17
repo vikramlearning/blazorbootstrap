@@ -2,21 +2,26 @@
 
 public partial class PdfViewer : BlazorBootstrapComponentBase
 {
-    private PdfViewerModel model = new();
+    private int pageNumber = 0;
+    private int pageCount = 0;
+
     private DotNetObjectReference<PdfViewer>? objRef;
     [Inject] PdfViewerJsInterop PdfViewerJsInterop { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-        await PdfViewerJsInterop.InitializeAsync(objRef, ElementId, Url );
+        await PdfViewerJsInterop.InitializeAsync(objRef, ElementId, Url);
         await base.OnInitializedAsync();
     }
 
     [JSInvokable]
     public void Set(PdfViewerModel pdfViewerModel)
     {
-        model = pdfViewerModel;
+        if (pdfViewerModel is null) return;
+
+        pageNumber = pdfViewerModel.PageNumber;
+        pageCount = pdfViewerModel.PageCount;
     }
 
     private async Task PreviousPageAsync() =>
@@ -24,6 +29,17 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private async Task NextPageAsync() =>
         await PdfViewerJsInterop.NextPageAsync(objRef, ElementId);
+
+    private async Task FirstPageAsync() =>
+        await PdfViewerJsInterop.FirstPageAsync(objRef, ElementId);
+
+    private async Task LastPageAsync() =>
+        await PdfViewerJsInterop.LastPageAsync(objRef, ElementId);
+
+    private void PageNumberChanged(int value)
+    {
+
+    }
 
     #region Properties, Indexers
 

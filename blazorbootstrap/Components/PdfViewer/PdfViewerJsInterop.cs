@@ -18,13 +18,25 @@ public class PdfViewerJsInterop : IAsyncDisposable
     public async Task PreviousPageAsync(object objRef, string elementId)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("previous", objRef, elementId);
+        await module.InvokeVoidAsync("previousPage", objRef, elementId);
     }
 
     public async Task NextPageAsync(object objRef, string elementId)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("next", objRef, elementId);
+        await module.InvokeVoidAsync("nextPage", objRef, elementId);
+    }
+
+    public async Task FirstPageAsync(object objRef, string elementId)
+    {
+        var module = await moduleTask.Value;
+        await module.InvokeVoidAsync("firstPage", objRef, elementId);
+    }
+
+    public async Task LastPageAsync(object objRef, string elementId)
+    {
+        var module = await moduleTask.Value;
+        await module.InvokeVoidAsync("lastPage", objRef, elementId);
     }
 
     public async ValueTask DisposeAsync()
