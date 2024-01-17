@@ -1,109 +1,122 @@
 import * as pdfJS from "./pdfjs-4.0.379.min.mjs";
 import * as pdfWorker from "./pdfjs-4.0.379.worker.min.mjs";
 
-// If absolute URL from the remote server is provided, configure the CORS
-// header on that server.
-//var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf';
+if (pdfJS != null && pdfWorker != null) {
+    // The workerSrc property shall be specified.
+    pdfJS.GlobalWorkerOptions.workerSrc = pdfWorker;
+}
 
-// The workerSrc property shall be specified.
-pdfJS.GlobalWorkerOptions.workerSrc = pdfWorker;
+function getCanvas(item) {
+    if (_isDomSupported() && typeof item === 'string') {
+        item = document.getElementById(item);
+    } else if (item && item.length) {
+        // Support for array based queries (such as jQuery)
+        item = item[0];
+    }
 
-let pdfDoc = null,
-    pageNum = 1,
-    pageRendering = false,
-    pageNumPending = null,
-    scale = 0.8,
-    canvas = null,
-    ctx = null;
+    if (item && item.canvas) {
+        // Support for any object associated to a canvas (including a context2d)
+        item = item.canvas;
+    }
+
+    return item;
+}
+
+const getPdf = (key) => {
+    const canvas = getCanvas(key);
+    return Object.values(instances).filter((c) => c.canvas === canvas).pop();
+};
+
+const instances = {};
+
+class Pdf {
+    static instances = instances;
+    static getPdf = getPdf;
+
+    constructor(item) {
+        const canvas = getCanvas(item);
+        const existingPdf = getPdf(canvas);
+        if (existingPdf != null) {
+            throw new Error(
+                'Canvas is already in use. Canvas with ID \'' + existingPdf.id + '\'' +
+                ' must be destroyed before the canvas with ID \'' + existingPdf.canvas.id + '\' can be reused.'
+            );
+        }
+        
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
+        //this.width = width;
+        //this.height = height;
+        this.pdfDoc = null;
+        this.pageNum = 1;
+        this.numPages = 0;
+        this.pageRendering = false;
+        this.pageNumPending = null;
+        this.scale = 0.8;
+
+        instances[this.id] = this;
+    }
+}
 
 /**
  * Get page info from document, resize canvas accordingly, and render page.
  * @param num Page number.
  */
-function renderPage(num) {
-    pageRendering = true;
+function renderPage(pdf, num) {
+    pdf.pageRendering = true;
 
     // Using promise to fetch the page
-    pdfDoc.getPage(num).then(function (page) {
-        var viewport = page.getViewport({ scale: scale });
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
+    pdf.pdfDoc.getPage(num).then(function (page) {
+        var viewport = page.getViewport({ scale: pdf.scale });
+        pdf.canvas.height = viewport.height;
+        pdf.canvas.width = viewport.width;
 
         // Render PDF page into canvas context
         var renderContext = {
-            canvasContext: ctx,
+            canvasContext: pdf.ctx,
             viewport: viewport
         };
         var renderTask = page.render(renderContext);
 
         // Wait for rendering to finish
         renderTask.promise.then(function () {
-            pageRendering = false;
-            if (pageNumPending !== null) {
+            pdf.pageRendering = false;
+            if (pdf.pageNumPending !== null) {
                 // New page rendering is pending
-                renderPage(pageNumPending);
-                pageNumPending = null;
+                renderPage(pdf, pdf.pageNumPending);
+                pdf.pageNumPending = null;
             }
         });
     });
-
-    // Update page counters
-    document.getElementById('page_num').textContent = num;
 }
 
 /**
  * If another page rendering in progress, waits until the rendering is
  * finised. Otherwise, executes rendering immediately.
  */
-function queueRenderPage(num) {
-    if (pageRendering) {
-        pageNumPending = num;
+function queueRenderPage(pdf, num) {
+    if (pdf.pageRendering) {
+        pdf.pageNumPending = num;
     } else {
-        renderPage(num);
+        renderPage(pdf, num);
     }
 }
-
-/**
- * Displays previous page.
- */
-function onPrevPage() {
-    if (pageNum <= 1) {
-        return;
-    }
-    pageNum--;
-    queueRenderPage(pageNum);
-}
-document.getElementById('prev').addEventListener('click', onPrevPage);
-
-/**
- * Displays next page.
- */
-function onNextPage() {
-    if (pageNum >= pdfDoc.numPages) {
-        return;
-    }
-    pageNum++;
-    queueRenderPage(pageNum);
-}
-document.getElementById('next').addEventListener('click', onNextPage);
 
 export function initialize(elementId, url) {
-    canvas = document.getElementById(elementId);
-
-    if (canvas == null)
-        return { pageCount: 0, pageNumber: 0 };
-
-    ctx = canvas.getContext('2d');
+    const pdf = new Pdf(elementId);
 
     pdfJS.getDocument(url).promise.then(function (doc) {
-        pdfDoc = doc;
-        document.getElementById('page_count').textContent = pdfDoc.numPages;
-
-        // render first page
-        renderPage(pageNum);
-
-        return { pageCount: pdfDoc.numPages, pageNumber: 1 };
+        pdf.pdfDoc = doc;
+        pdf.numPages = doc.numPages;
+        renderPage(pdf, pdf.pageNum);
+        return { pageCount: pdf.numPages, pageNumber: pdf.pageNum };
     });
 
     return { pageCount: 0, pageNumber: 0 };
+}
+
+
+/* helpers */
+export function _isDomSupported() {
+    return typeof window !== 'undefined' && typeof document !== 'undefined';
 }
