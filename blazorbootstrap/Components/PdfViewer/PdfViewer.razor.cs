@@ -4,6 +4,9 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 {
     private int pageNumber = 0;
     private int pageCount = 0;
+    private double defaultScale = 1.0;
+    private double minScale = 0.1;
+    private double maxScale = 10.0;
 
     private DotNetObjectReference<PdfViewer>? objRef;
     [Inject] PdfViewerJsInterop PdfViewerJsInterop { get; set; } = default!;
@@ -38,8 +41,14 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private void PageNumberChanged(int value)
     {
-
+        // TODO: update
     }
+
+    private async Task ZoomOutAsync() => 
+        await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, 0.5);
+
+    private async Task ZoomInAsync() =>
+        await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, 1);
 
     #region Properties, Indexers
 

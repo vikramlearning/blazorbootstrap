@@ -39,6 +39,12 @@ public class PdfViewerJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("lastPage", objRef, elementId);
     }
 
+    public async Task ZoomInOutAsync(object objRef, string elementId, double scale)
+    {
+        var module = await moduleTask.Value;
+        await module.InvokeVoidAsync("zoomInOut", objRef, elementId, scale);
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (moduleTask.IsValueCreated)

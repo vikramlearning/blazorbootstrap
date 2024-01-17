@@ -160,6 +160,20 @@ export function lastPage(dotNetHelper, elementId) {
     dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
 }
 
+export function zoomInOut(dotNetHelper, elementId, scale) {
+    let pdf = getPdf(elementId);
+
+    if (pdf == null)
+        return;
+
+    if (!Number.isNaN(scale))
+        pdf.scale = scale;
+
+    queueRenderPage(pdf, pdf.pageNum);
+
+    dotNetHelper.invokeMethodAsync('Set', { pageCount: pdf.numPages, pageNumber: pdf.pageNum });
+}
+
 // resize
 // print
 // download
