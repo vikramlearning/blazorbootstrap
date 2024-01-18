@@ -634,3 +634,8 @@ main {
     writing-mode: vertical-lr;
     width: 100%;
 }
+
+/* pdf viewer */
+.pdf-viewer-dropdown-toggle::after {
+    content: inherit !important;
+}

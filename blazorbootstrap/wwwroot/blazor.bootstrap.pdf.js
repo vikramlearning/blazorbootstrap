@@ -53,7 +53,7 @@ class Pdf {
         this.pagesCount = 0;
         this.pageRendering = false;
         this.pageNumPending = null;
-        this.scale = 1.3333;
+        this.scale = 1;
         this.rotation = 0;
 
         instances[this.id] = this;
@@ -201,7 +201,7 @@ pageRotateCwButton.disabled = this.pagesCount === 0;
 pageRotateCcwButton.disabled = this.pagesCount === 0;
 */
 
-export function initialize(dotNetHelper, elementId, url) {
+export function initialize(dotNetHelper, elementId, scale, rotation, url) {
     const pdf = new Pdf(elementId);
 
     pdfJS.getDocument(url).promise.then(function (doc) {

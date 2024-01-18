@@ -4,19 +4,26 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 {
     private int pageNumber = 0;
     private int pagesCount = 0;
-    private double defaultScale = 1.0;
-    private double minScale = 0.1;
-    private double maxScale = 10.0;
-    private int zoomLevel = 1;
+
+    private int minZoomLevel = 1;
+    private int maxZoomLevel = 17;
+    private int zoomLevel = 8;
+    private string zoomPercentage = "100%";
+
+    private double scale = 1.0;
+    private double minScale = 0.25;
+    private double maxScale = 5;
+
     private double rotation = 0;
 
     private DotNetObjectReference<PdfViewer>? objRef;
+
     [Inject] PdfViewerJsInterop PdfViewerJsInterop { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-        await PdfViewerJsInterop.InitializeAsync(objRef, ElementId, Url);
+        await PdfViewerJsInterop.InitializeAsync(objRef, ElementId, scale, rotation, Url);
         await base.OnInitializedAsync();
     }
 
@@ -27,8 +34,6 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
         pageNumber = pdfViewerModel.PageNumber;
         pagesCount = pdfViewerModel.PagesCount;
-
-        Console.WriteLine($"pageNumber: {pdfViewerModel.PageNumber}, pagesCount: {pdfViewerModel.PagesCount}");
     }
 
     private async Task PreviousPageAsync() =>
@@ -48,11 +53,29 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         // TODO: update
     }
 
-    private async Task ZoomOutAsync() => 
-        await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, 0.5);
+    private async Task ZoomOutAsync()
+    {
+        if (zoomLevel == minZoomLevel) 
+            return;
 
-    private async Task ZoomInAsync() =>
-        await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, 1);
+        zoomLevel -= 1;
+        var zp = GetZoomPercentage(zoomLevel);
+        zoomPercentage = $"{zp}%";
+        scale = 0.01 * zp;
+        await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, scale);
+    }
+
+    private async Task ZoomInAsync()
+    {
+        if (zoomLevel == maxZoomLevel) 
+            return;
+
+        zoomLevel += 1;
+        var zp = GetZoomPercentage(zoomLevel);
+        zoomPercentage = $"{zp}%";
+        scale = 0.01 * zp;
+        await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, scale);
+    }
 
     private async Task RotateClockwiseAsync()
     {
@@ -77,4 +100,27 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     public string? Url { get; set; }
 
     #endregion
+
+    public int GetZoomPercentage(int zoomLevel) =>
+        zoomLevel switch
+        {
+            1 => 25,
+            2 => 33,
+            3 => 50,
+            4 => 67,
+            5 => 75,
+            6 => 80,
+            7 => 90,
+            8 => 100,
+            9 => 110,
+            10 => 125,
+            11 => 150,
+            12 => 175,
+            13 => 200,
+            14 => 250,
+            15 => 300,
+            16 => 400,
+            17 => 500,
+            _ => 100
+        };
 }
