@@ -45,10 +45,10 @@ public class PdfViewerJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("zoomInOut", objRef, elementId, scale);
     }
 
-    public async Task RotateAsync(object objRef, string elementId, double rotationDegrees)
+    public async Task RotateAsync(object objRef, string elementId, double rotation)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("rotate", objRef, elementId, rotationDegrees);
+        await module.InvokeVoidAsync("rotate", objRef, elementId, rotation);
     }
 
     public async ValueTask DisposeAsync()

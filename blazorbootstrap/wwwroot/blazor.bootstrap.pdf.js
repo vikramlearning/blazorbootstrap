@@ -54,6 +54,7 @@ class Pdf {
         this.pageRendering = false;
         this.pageNumPending = null;
         this.scale = 1.3333;
+        this.rotation = 0;
 
         instances[this.id] = this;
     }
@@ -68,7 +69,7 @@ function renderPage(pdf, num) {
 
     // Using promise to fetch the page
     pdf.pdfDoc.getPage(num).then(function (page) {
-        var viewport = page.getViewport({ scale: pdf.scale });
+        var viewport = page.getViewport({ scale: pdf.scale, rotation: pdf.rotation });
         pdf.canvas.height = viewport.height;
         pdf.canvas.width = viewport.width;
 
@@ -174,14 +175,14 @@ export function zoomInOut(dotNetHelper, elementId, scale) {
     dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
 
-export function rotate(dotNetHelper, elementId, rotationDegrees) {
+export function rotate(dotNetHelper, elementId, rotation) {
     let pdf = getPdf(elementId);
 
     if (pdf == null)
         return;
 
-    if (!Number.isNaN(rotationDegrees))
-        pdf.rotate = rotationDegrees;
+    if (!Number.isNaN(rotation))
+        pdf.rotation = rotation;
 
     queueRenderPage(pdf, pdf.pageNum);
 

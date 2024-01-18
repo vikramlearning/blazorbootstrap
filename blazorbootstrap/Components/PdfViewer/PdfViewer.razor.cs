@@ -8,7 +8,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     private double minScale = 0.1;
     private double maxScale = 10.0;
     private int zoomLevel = 1;
-    private double currentRotationDegrees = 90;
+    private double rotation = 0;
 
     private DotNetObjectReference<PdfViewer>? objRef;
     [Inject] PdfViewerJsInterop PdfViewerJsInterop { get; set; } = default!;
@@ -54,11 +54,19 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     private async Task ZoomInAsync() =>
         await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, 1);
 
-    private async Task RotateClockwiseAsync() =>
-        await PdfViewerJsInterop.RotateAsync(objRef, ElementId, 90);
+    private async Task RotateClockwiseAsync()
+    {
+        rotation += 90;
+        rotation = (rotation == 360) ? 0 : rotation;
+        await PdfViewerJsInterop.RotateAsync(objRef, ElementId, rotation);
+    }
 
-    private async Task RotateCounterclockwiseAsync() =>
-        await PdfViewerJsInterop.RotateAsync(objRef, ElementId, -90);
+    private async Task RotateCounterclockwiseAsync()
+    {
+        rotation -= 90;
+        rotation = (rotation == -360) ? 0 : rotation;
+        await PdfViewerJsInterop.RotateAsync(objRef, ElementId, rotation);
+    }
 
     #region Properties, Indexers
 
