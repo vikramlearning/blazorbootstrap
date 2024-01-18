@@ -50,7 +50,10 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private void PageNumberChanged(int value)
     {
-        // TODO: update
+        if (value < 1 || value > pagesCount)
+            pageNumber = 1;
+
+        // TODO: call generic page render method
     }
 
     private async Task ZoomOutAsync()
@@ -91,16 +94,6 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         await PdfViewerJsInterop.RotateAsync(objRef, ElementId, rotation);
     }
 
-    #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override bool ShouldAutoGenerateId => true;
-
-    [Parameter]
-    public string? Url { get; set; }
-
-    #endregion
-
     public int GetZoomPercentage(int zoomLevel) =>
         zoomLevel switch
         {
@@ -123,4 +116,14 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             17 => 500,
             _ => 100
         };
+
+    #region Properties, Indexers
+
+    /// <inheritdoc />
+    protected override bool ShouldAutoGenerateId => true;
+
+    [Parameter]
+    public string? Url { get; set; }
+
+    #endregion
 }
