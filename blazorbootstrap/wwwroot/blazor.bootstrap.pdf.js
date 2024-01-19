@@ -1,5 +1,5 @@
-import * as pdfJS from "./pdfjs-4.0.379.min.mjs";
-import * as pdfWorker from "./pdfjs-4.0.379.worker.min.mjs";
+import * as pdfJS from './pdfjs-4.0.379.min.mjs';
+import * as pdfWorker from './pdfjs-4.0.379.worker.min.mjs';
 
 if (pdfJS != null && pdfWorker != null) {
     // The workerSrc property shall be specified.
@@ -31,6 +31,7 @@ const pdfInstances = {};
 
 class Pdf {
     static instances = pdfInstances;
+
     static getPdf = getPdf;
 
     constructor(item) {
@@ -38,8 +39,7 @@ class Pdf {
         const existingPdf = getPdf(canvas);
         if (existingPdf != null) {
             throw new Error(
-                'Canvas is already in use. Canvas with ID \'' + existingPdf.id + '\'' +
-                ' must be destroyed before the canvas with ID \'' + existingPdf.canvas.id + '\' can be reused.'
+                `Canvas is already in use. Canvas with ID '${existingPdf.id}' must be destroyed before the canvas with ID '${existingPdf.canvas.id}' can be reused.`
             );
         }
 
@@ -68,21 +68,21 @@ function renderPage(pdf, num) {
     pdf.pageRendering = true;
 
     // Using promise to fetch the page
-    pdf.pdfDoc.getPage(num).then(function (page) {
-        var viewport = page.getViewport({ scale: pdf.scale, rotation: pdf.rotation });
+    pdf.pdfDoc.getPage(num).then(function(page) {
+        const viewport = page.getViewport({ scale: pdf.scale, rotation: pdf.rotation });
         pdf.canvas.height = viewport.height;
         pdf.canvas.width = viewport.width;
 
         // Render PDF page into canvas context
-        var renderContext = {
+        const renderContext = {
             canvasContext: pdf.ctx,
             viewport: viewport
         };
 
-        var renderTask = page.render(renderContext);
+        const renderTask = page.render(renderContext);
 
         // Wait for rendering to finish
-        renderTask.promise.then(function () {
+        renderTask.promise.then(function() {
             pdf.pageRendering = false;
             if (pdf.pageNumPending !== null) {
                 // New page rendering is pending
@@ -106,7 +106,7 @@ function queueRenderPage(pdf, num) {
 }
 
 export function previousPage(dotNetHelper, elementId) {
-    let pdf = getPdf(elementId);
+    const pdf = getPdf(elementId);
 
     if (pdf.pageNum === 0 || pdf.pageNum === 1)
         return;
@@ -115,11 +115,12 @@ export function previousPage(dotNetHelper, elementId) {
         pdf.pageNum -= 1;
 
     queueRenderPage(pdf, pdf.pageNum);
-    _callback(dotNetHelper, pdf);
+
+    setPdfViewerMetaData(dotNetHelper, pdf);
 }
 
 export function nextPage(dotNetHelper, elementId) {
-    let pdf = getPdf(elementId);
+    const pdf = getPdf(elementId);
 
     if (pdf == null || pdf.pageNum === pdf.pagesCount)
         return;
@@ -128,11 +129,12 @@ export function nextPage(dotNetHelper, elementId) {
         pdf.pageNum += 1;
 
     queueRenderPage(pdf, pdf.pageNum);
-    _callback(dotNetHelper, pdf);
+
+    setPdfViewerMetaData(dotNetHelper, pdf);
 }
 
 export function firstPage(dotNetHelper, elementId) {
-    let pdf = getPdf(elementId);
+    const pdf = getPdf(elementId);
 
     if (pdf == null || pdf.pageNum === 1)
         return;
@@ -141,11 +143,12 @@ export function firstPage(dotNetHelper, elementId) {
         pdf.pageNum = 1;
 
     queueRenderPage(pdf, pdf.pageNum);
-    _callback(dotNetHelper, pdf);
+
+    setPdfViewerMetaData(dotNetHelper, pdf);
 }
 
 export function lastPage(dotNetHelper, elementId) {
-    let pdf = getPdf(elementId);
+    const pdf = getPdf(elementId);
 
     if (pdf == null || (pdf.pageNum === 1 && pdf.pageNum === pdf.pagesCount))
         return;
@@ -154,11 +157,12 @@ export function lastPage(dotNetHelper, elementId) {
         pdf.pageNum = pdf.pagesCount;
 
     queueRenderPage(pdf, pdf.pageNum);
-    _callback(dotNetHelper, pdf);
+
+    setPdfViewerMetaData(dotNetHelper, pdf);
 }
 
 export function gotoPage(dotNetHelper, elementId, gotoPageNum) {
-    let pdf = getPdf(elementId);
+    const pdf = getPdf(elementId);
 
     if (pdf == null || gotoPageNum < 1 || gotoPageNum > pdf.pagesCount)
         return;
@@ -166,11 +170,12 @@ export function gotoPage(dotNetHelper, elementId, gotoPageNum) {
     pdf.pageNum = gotoPageNum;
 
     queueRenderPage(pdf, pdf.pageNum);
-    _callback(dotNetHelper, pdf);
+
+    setPdfViewerMetaData(dotNetHelper, pdf);
 }
 
 export function zoomInOut(dotNetHelper, elementId, scale) {
-    let pdf = getPdf(elementId);
+    const pdf = getPdf(elementId);
 
     if (pdf == null)
         return;
@@ -179,12 +184,10 @@ export function zoomInOut(dotNetHelper, elementId, scale) {
         pdf.scale = scale;
 
     queueRenderPage(pdf, pdf.pageNum);
-
-    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
 
 export function rotate(dotNetHelper, elementId, rotation) {
-    let pdf = getPdf(elementId);
+    const pdf = getPdf(elementId);
 
     if (pdf == null || Number.isNaN(rotation) || rotation % 90 !== 0)
         return;
@@ -192,7 +195,6 @@ export function rotate(dotNetHelper, elementId, rotation) {
     pdf.rotation = rotation;
 
     queueRenderPage(pdf, pdf.pageNum);
-    _callback(dotNetHelper, pdf);
 }
 
 // resize
@@ -212,15 +214,15 @@ export function initialize(dotNetHelper, elementId, scale, rotation, url) {
     pdf.scale = scale;
     pdf.rotation = rotation;
 
-    pdfJS.getDocument(url).promise.then(function (doc) {
+    pdfJS.getDocument(url).promise.then(function(doc) {
         pdf.pdfDoc = doc;
         pdf.pagesCount = doc.numPages;
         renderPage(pdf, pdf.pageNum);
-        _callback(dotNetHelper, pdf);
+        dotNetHelper.invokeMethodAsync('DocumentLoaded', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
     });
 }
 
-function _callback(dotNetHelper, pdf) {
+function setPdfViewerMetaData(dotNetHelper, pdf) {
     dotNetHelper.invokeMethodAsync('SetPdfViewerMetaData', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
 

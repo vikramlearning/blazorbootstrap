@@ -13,15 +13,32 @@
 
 <Callout Type="CalloutType.Danger" Heading="NOTE">Similar to modals, only one offcanvas can be shown at a time.</Callout>
 
-<PdfViewer Class="mb-3" Url="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf" />
+<p>@eventLog</p>
+
+<PdfViewer Class="mb-3"
+           Url="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf"
+           OnDocumentLoaded="OnDocumentLoaded"
+           OnPageChanged="OnPageChanged" />
 
 <PdfViewer Class="mb-3" Url="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf" />
 
 <PdfViewer Class="mb-3" Url="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf" />
-    
+
 @code {
     private string pageUrl = "/pdf-viewer";
     private string title = "Blazor Pdf Viewer Component";
     private string description = "Build hidden sidebars into your project for navigation, shopping carts, and more with Blazor Bootstrap offcanvas component.";
     private string imageUrl = "https://i.imgur.com/1vNz5Ci.jpg";
+
+    private string eventLog { get; set; } = $"Last event: ..., CurrentPage: 0, TotalPages: 0";
+
+    private async Task OnDocumentLoaded(PdfViewerEventArgs args)
+    {
+        eventLog = $"Last event: OnDocumentLoaded, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
+    }
+
+    private async Task OnPageChanged(PdfViewerEventArgs args)
+    {
+        eventLog = $"Last event: OnPageChanged, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
+    }
 }
