@@ -10,7 +10,7 @@
             <Tooltip Class="me-2" Title="Next Page" role="button">
                 <Icon Name="IconName.ChevronDown" Size="IconSize.x5" @onclick="NextPageAsync" />
             </Tooltip>
-            <NumberInput Class="form-control-sm text-center" TValue="int" Style="width:60px;" Value="@pageNumber" ValueExpression="() => pageNumber" ValueChanged="(value) => PageNumberChanged(value)" Placeholder="Enter page number" />
+            <NumberInput Class="form-control-sm text-center" TValue="int" Style="width:60px;" Value="@pageNumber" ValueExpression="() => pageNumber" ValueChanged="(value) => PageNumberChangedAsync(value)" Placeholder="Enter page number" />
             <div class="align-self-center ps-2">of @pagesCount</div>
         </div>
         <div class="d-flex align-items-center">

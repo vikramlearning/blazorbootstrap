@@ -28,12 +28,14 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public void Set(PdfViewerModel pdfViewerModel)
+    public void SetPdfViewerMetaData(PdfViewerModel pdfViewerModel)
     {
         if (pdfViewerModel is null) return;
 
         pageNumber = pdfViewerModel.PageNumber;
         pagesCount = pdfViewerModel.PagesCount;
+
+        StateHasChanged();
     }
 
     private async Task PreviousPageAsync() =>
@@ -48,17 +50,19 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     private async Task LastPageAsync() =>
         await PdfViewerJsInterop.LastPageAsync(objRef, ElementId);
 
-    private void PageNumberChanged(int value)
+    private async Task PageNumberChangedAsync(int value)
     {
         if (value < 1 || value > pagesCount)
             pageNumber = 1;
+        else
+            pageNumber = value;
 
-        // TODO: call generic page render method
+        await PdfViewerJsInterop.GotoPageAsync(objRef, ElementId, pageNumber);
     }
 
     private async Task ZoomOutAsync()
     {
-        if (zoomLevel == minZoomLevel) 
+        if (zoomLevel == minZoomLevel)
             return;
 
         zoomLevel -= 1;
@@ -70,7 +74,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private async Task ZoomInAsync()
     {
-        if (zoomLevel == maxZoomLevel) 
+        if (zoomLevel == maxZoomLevel)
             return;
 
         zoomLevel += 1;
@@ -94,7 +98,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         await PdfViewerJsInterop.RotateAsync(objRef, ElementId, rotation);
     }
 
-    public int GetZoomPercentage(int zoomLevel) =>
+    private int GetZoomPercentage(int zoomLevel) =>
         zoomLevel switch
         {
             1 => 25,

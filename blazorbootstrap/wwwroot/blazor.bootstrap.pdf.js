@@ -24,13 +24,13 @@ function getCanvas(item) {
 
 const getPdf = (key) => {
     const canvas = getCanvas(key);
-    return Object.values(instances).filter((c) => c.canvas === canvas).pop();
+    return Object.values(pdfInstances).filter((c) => c.canvas === canvas).pop();
 };
 
-const instances = {};
+const pdfInstances = {};
 
 class Pdf {
-    static instances = instances;
+    static instances = pdfInstances;
     static getPdf = getPdf;
 
     constructor(item) {
@@ -56,7 +56,7 @@ class Pdf {
         this.scale = 1;
         this.rotation = 0;
 
-        instances[this.id] = this;
+        pdfInstances[this.id] = this;
     }
 }
 
@@ -115,8 +115,7 @@ export function previousPage(dotNetHelper, elementId) {
         pdf.pageNum -= 1;
 
     queueRenderPage(pdf, pdf.pageNum);
-
-    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
+    _callback(dotNetHelper, pdf);
 }
 
 export function nextPage(dotNetHelper, elementId) {
@@ -129,8 +128,7 @@ export function nextPage(dotNetHelper, elementId) {
         pdf.pageNum += 1;
 
     queueRenderPage(pdf, pdf.pageNum);
-
-    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
+    _callback(dotNetHelper, pdf);
 }
 
 export function firstPage(dotNetHelper, elementId) {
@@ -143,8 +141,7 @@ export function firstPage(dotNetHelper, elementId) {
         pdf.pageNum = 1;
 
     queueRenderPage(pdf, pdf.pageNum);
-
-    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
+    _callback(dotNetHelper, pdf);
 }
 
 export function lastPage(dotNetHelper, elementId) {
@@ -157,8 +154,19 @@ export function lastPage(dotNetHelper, elementId) {
         pdf.pageNum = pdf.pagesCount;
 
     queueRenderPage(pdf, pdf.pageNum);
+    _callback(dotNetHelper, pdf);
+}
 
-    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
+export function gotoPage(dotNetHelper, elementId, gotoPageNum) {
+    let pdf = getPdf(elementId);
+
+    if (pdf == null || gotoPageNum < 1 || gotoPageNum > pdf.pagesCount)
+        return;
+
+    pdf.pageNum = gotoPageNum;
+
+    queueRenderPage(pdf, pdf.pageNum);
+    _callback(dotNetHelper, pdf);
 }
 
 export function zoomInOut(dotNetHelper, elementId, scale) {
@@ -178,15 +186,13 @@ export function zoomInOut(dotNetHelper, elementId, scale) {
 export function rotate(dotNetHelper, elementId, rotation) {
     let pdf = getPdf(elementId);
 
-    if (pdf == null)
+    if (pdf == null || Number.isNaN(rotation) || rotation % 90 !== 0)
         return;
 
-    if (!Number.isNaN(rotation))
-        pdf.rotation = rotation;
+    pdf.rotation = rotation;
 
     queueRenderPage(pdf, pdf.pageNum);
-
-    dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
+    _callback(dotNetHelper, pdf);
 }
 
 // resize
@@ -203,16 +209,21 @@ pageRotateCcwButton.disabled = this.pagesCount === 0;
 
 export function initialize(dotNetHelper, elementId, scale, rotation, url) {
     const pdf = new Pdf(elementId);
+    pdf.scale = scale;
+    pdf.rotation = rotation;
 
     pdfJS.getDocument(url).promise.then(function (doc) {
         pdf.pdfDoc = doc;
         pdf.pagesCount = doc.numPages;
         renderPage(pdf, pdf.pageNum);
-        dotNetHelper.invokeMethodAsync('Set', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
+        _callback(dotNetHelper, pdf);
     });
 }
 
-/* helpers */
+function _callback(dotNetHelper, pdf) {
+    dotNetHelper.invokeMethodAsync('SetPdfViewerMetaData', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
+}
+
 function _isDomSupported() {
     return typeof window !== 'undefined' && typeof document !== 'undefined';
 }
