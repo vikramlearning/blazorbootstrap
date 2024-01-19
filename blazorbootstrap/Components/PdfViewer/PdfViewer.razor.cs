@@ -53,8 +53,8 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         pageNumber = pdfViewerModel.PageNumber;
         pagesCount = pdfViewerModel.PagesCount;
 
-        if (OnDocumentLoaded.HasDelegate)
-            OnDocumentLoaded.InvokeAsync(new PdfViewerEventArgs(pageNumber, pagesCount));
+        if (OnPageChanged.HasDelegate)
+            OnPageChanged.InvokeAsync(new PdfViewerEventArgs(pageNumber, pagesCount));
     }
 
     private async Task FirstPageAsync() => await PdfViewerJsInterop.FirstPageAsync(objRef, ElementId);
@@ -97,6 +97,8 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     }
 
     private async Task PreviousPageAsync() => await PdfViewerJsInterop.PreviousPageAsync(objRef, ElementId);
+
+    private async Task PrintAsync() => await PdfViewerJsInterop.PrintAsync(objRef, ElementId);
 
     private async Task RotateClockwiseAsync()
     {

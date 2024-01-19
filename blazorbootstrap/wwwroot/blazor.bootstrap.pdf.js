@@ -7,7 +7,7 @@ if (pdfJS != null && pdfWorker != null) {
 }
 
 function getCanvas(item) {
-    if (_isDomSupported() && typeof item === 'string') {
+    if (isDomSupported() && typeof item === 'string') {
         item = document.getElementById(item);
     } else if (item && item.length) {
         // Support for array based queries (such as jQuery)
@@ -68,7 +68,7 @@ function renderPage(pdf, num) {
     pdf.pageRendering = true;
 
     // Using promise to fetch the page
-    pdf.pdfDoc.getPage(num).then(function(page) {
+    pdf.pdfDoc.getPage(num).then((page) => {
         const viewport = page.getViewport({ scale: pdf.scale, rotation: pdf.rotation });
         pdf.canvas.height = viewport.height;
         pdf.canvas.width = viewport.width;
@@ -82,13 +82,16 @@ function renderPage(pdf, num) {
         const renderTask = page.render(renderContext);
 
         // Wait for rendering to finish
-        renderTask.promise.then(function() {
+        renderTask.promise.then(() => {
             pdf.pageRendering = false;
             if (pdf.pageNumPending !== null) {
                 // New page rendering is pending
                 renderPage(pdf, pdf.pageNumPending);
                 pdf.pageNumPending = null;
             }
+        })
+        .catch((error) => {
+
         });
     });
 }
@@ -108,7 +111,7 @@ function queueRenderPage(pdf, num) {
 export function previousPage(dotNetHelper, elementId) {
     const pdf = getPdf(elementId);
 
-    if (pdf.pageNum === 0 || pdf.pageNum === 1)
+    if (pdf == null || pdf.pageNum === 0 || pdf.pageNum === 1)
         return;
 
     if (pdf.pageNum > 0)
@@ -117,6 +120,31 @@ export function previousPage(dotNetHelper, elementId) {
     queueRenderPage(pdf, pdf.pageNum);
 
     setPdfViewerMetaData(dotNetHelper, pdf);
+}
+
+export function print(dotNetHelper, elementId) {
+    const pdf = getPdf(elementId);
+
+    if (pdf == null || pdf.pagesCount === 0)
+        return;
+
+    const img = document.createElement("img");
+    img.src = pdf.canvas.toDataURL();
+
+    const wrapper = document.createElement("div");
+    wrapper.append(img);
+    setTimeout(() => {
+        const w = window.open('', '', '');
+        w.document.write('<html>');
+        w.document.write('<body>');
+        w.document.write(wrapper.innerHTML);
+        w.document.write('</body>');
+        w.document.write('</html>');
+        w.document.close();
+        w.print();
+        w.close();
+    },
+    200);
 }
 
 export function nextPage(dotNetHelper, elementId) {
@@ -214,7 +242,7 @@ export function initialize(dotNetHelper, elementId, scale, rotation, url) {
     pdf.scale = scale;
     pdf.rotation = rotation;
 
-    pdfJS.getDocument(url).promise.then(function(doc) {
+    pdfJS.getDocument(url).promise.then(function (doc) {
         pdf.pdfDoc = doc;
         pdf.pagesCount = doc.numPages;
         renderPage(pdf, pdf.pageNum);
@@ -226,6 +254,6 @@ function setPdfViewerMetaData(dotNetHelper, pdf) {
     dotNetHelper.invokeMethodAsync('SetPdfViewerMetaData', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
 
-function _isDomSupported() {
+function isDomSupported() {
     return typeof window !== 'undefined' && typeof document !== 'undefined';
 }
