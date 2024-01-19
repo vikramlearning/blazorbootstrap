@@ -83,16 +83,16 @@ function renderPage(pdf, num) {
 
         // Wait for rendering to finish
         renderTask.promise.then(() => {
-            pdf.pageRendering = false;
-            if (pdf.pageNumPending !== null) {
-                // New page rendering is pending
-                renderPage(pdf, pdf.pageNumPending);
-                pdf.pageNumPending = null;
-            }
-        })
-        .catch((error) => {
+                pdf.pageRendering = false;
+                if (pdf.pageNumPending !== null) {
+                    // New page rendering is pending
+                    renderPage(pdf, pdf.pageNumPending);
+                    pdf.pageNumPending = null;
+                }
+            })
+            .catch((error) => {
 
-        });
+            });
     });
 }
 
@@ -128,21 +128,38 @@ export function print(dotNetHelper, elementId) {
     if (pdf == null || pdf.pagesCount === 0)
         return;
 
-    const img = document.createElement("img");
-    img.src = pdf.canvas.toDataURL();
+    const wrapper = document.createElement('div');
 
-    const wrapper = document.createElement("div");
-    wrapper.append(img);
+    const img1 = document.createElement('img');
+    img1.src = pdf.canvas.toDataURL();
+    wrapper.append(img1);
+    //wrapper.append('<div style="break-after: page;">&nbsp;</div>'); // TODO: append page break
+    const img2 = document.createElement('img');
+    img2.src = pdf.canvas.toDataURL();
+    wrapper.append(img2);
+
     setTimeout(() => {
-        const w = window.open('', '', '');
-        w.document.write('<html>');
-        w.document.write('<body>');
-        w.document.write(wrapper.innerHTML);
-        w.document.write('</body>');
-        w.document.write('</html>');
-        w.document.close();
-        w.print();
-        w.close();
+        // Ref: https://www.geeksforgeeks.org/print-the-contents-of-a-div-element-using-javascript/
+        //const w = window.open('', '', '');
+        //w.document.write('<html>');
+        //w.document.write('<body>');
+        //w.document.write(wrapper.innerHTML);
+        //w.document.write('</body>');
+        //w.document.write('</html>');
+        //w.document.close();
+        //w.print();
+        //w.close();
+
+        // Ref: https://stackoverflow.com/a/64773176
+        const iframeEl = document.createElement('iframe');
+        iframeEl.style = 'display:none';
+        document.body.appendChild(iframeEl);
+        const pri = iframeEl.contentWindow;
+        pri.document.open();
+        pri.document.write(wrapper.innerHTML);
+        pri.document.close();
+        pri.focus();
+        pri.print();
     },
     200);
 }
@@ -242,7 +259,7 @@ export function initialize(dotNetHelper, elementId, scale, rotation, url) {
     pdf.scale = scale;
     pdf.rotation = rotation;
 
-    pdfJS.getDocument(url).promise.then(function (doc) {
+    pdfJS.getDocument(url).promise.then(function(doc) {
         pdf.pdfDoc = doc;
         pdf.pagesCount = doc.numPages;
         renderPage(pdf, pdf.pageNum);
