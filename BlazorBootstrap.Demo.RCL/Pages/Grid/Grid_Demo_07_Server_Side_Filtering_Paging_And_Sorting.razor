@@ -27,6 +27,9 @@ Class="table table-hover table-bordered table-striped"
     <GridColumn TItem="Customer2" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
         @context.Country
     </GridColumn>
+    <GridColumn TItem="Customer2" HeaderText="CustomerType" PropertyName="CustomerType" SortString="CustomerType" SortKeySelector="item => item.CustomerType" FilterTextboxWidth="80">
+        @context.CustomerType
+    </GridColumn>
 
 </Grid>
 

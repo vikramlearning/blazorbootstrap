@@ -97,6 +97,11 @@ public partial class GridColumn<TItem>
             if (filterOperator == FilterOperator.None)
                 FilterOperator = filterOperator = FilterOperator.Equals;
         }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameEnum)
+        {
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.In;
+        }
     }
 
     internal void SetFilterOperator(FilterOperator filterOperator) => FilterOperator = this.filterOperator = filterOperator;

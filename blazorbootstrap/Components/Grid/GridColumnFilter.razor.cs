@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Reflection;
+
+namespace BlazorBootstrap;
 
 public partial class GridColumnFilter : BlazorBootstrapComponentBase
 {
@@ -9,6 +11,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     private IEnumerable<FilterOperatorInfo>? filterOperators;
 
     private string? filterValue;
+    private HashSet<string> filterValues = new HashSet<string>();
 
     private string? selectedFilterSymbol;
 
@@ -60,6 +63,11 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
             if (filterOperator is FilterOperator.None or FilterOperator.Clear)
                 filterOperator = FilterOperator.Equals;
         }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum)
+        {
+            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
+                filterOperator = FilterOperator.Contains;
+        }
     }
 
     private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync(string propertyTypeName)
@@ -105,6 +113,26 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
             await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
     }
 
+    private async Task OnFilterEnumValueChangedAsync(object? e)
+    {
+        var value = e?.ToString();
+        if (value is null) return;
+        
+        var values = filterValue?.Split(',').ToHashSet() ?? new HashSet<string>();
+
+        if (!values.Add(value)) 
+        {
+            values.Remove(value);
+        }
+        values.Remove(string.Empty);
+        
+        filterValue = string.Join(',', values);
+        filterValues = values;
+
+        if (GridColumnFilterChanged.HasDelegate)
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
+    }
+
     private void SetSelectedFilterSymbol()
     {
         if (PropertyTypeName is StringConstants.PropertyTypeNameInt16
@@ -121,6 +149,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
                                      or StringConstants.PropertyTypeNameDateTime)
             selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
         else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
     }
 
     #endregion
@@ -167,6 +196,9 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public string? PropertyTypeName { get; set; }
+
+    [Parameter]
+    public PropertyInfo? PropertyInfo { get; set; }
 
     /// <summary>
     /// Gets or sets the units.

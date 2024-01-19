@@ -320,6 +320,7 @@ public static class ExpressionExtensions
             return filterItem.Operator switch
                    {
                        FilterOperator.Contains => GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem),
+                       FilterOperator.DoesNotContain => GetStringDoesNotContainExpressionDelegate<TItem>(parameterExpression, filterItem),
                        FilterOperator.StartsWith => GetStringStartsWithExpressionDelegate<TItem>(parameterExpression, filterItem),
                        FilterOperator.EndsWith => GetStringEndsWithExpressionDelegate<TItem>(parameterExpression, filterItem),
                        FilterOperator.Equals => GetStringEqualsExpressionDelegate<TItem>(parameterExpression, filterItem),
@@ -346,6 +347,15 @@ public static class ExpressionExtensions
                        FilterOperator.Equals => GetBooleanEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
                        FilterOperator.NotEquals => GetBooleanNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
                        _ => GetBooleanEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName)
+                   };
+
+        if (propertyTypeName == StringConstants.PropertyTypeNameEnum)
+            return filterItem.Operator switch
+                   {
+                       FilterOperator.Contains => GetEnumContainsExpressionDelegate<TItem>(parameterExpression, filterItem),
+                       FilterOperator.Equals => GetEnumEqualsExpressionDelegate<TItem>(parameterExpression, filterItem),
+                       FilterOperator.In => GetEnumInExpressionDelegate<TItem>(parameterExpression, filterItem),
+                       _ => GetEnumContainsExpressionDelegate<TItem>(parameterExpression, filterItem)
                    };
 
         return null;
@@ -579,6 +589,26 @@ public static class ExpressionExtensions
         return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
+    public static Expression<Func<TItem, bool>> GetStringDoesNotContainExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var someValue = Expression.Constant(filterItem.Value, typeof(string));
+        var comparisonExpression = Expression.Constant(filterItem.StringComparison);
+
+        // Handle null check
+        var nullCheckExpression = Expression.NotEqual(propertyExp, Expression.Constant(null, typeof(string)));
+
+        // Create method call expression for Contains method
+        var methodInfo = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) });
+        var containsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+        var notContainsExpression = Expression.Not(containsExpression);
+
+        // Combine null check and not contains expression using AndAlso
+        var finalExpression = Expression.AndAlso(nullCheckExpression, notContainsExpression);
+
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
+    }
+
     public static Expression<Func<TItem, bool>> GetStringEndsWithExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
@@ -629,10 +659,10 @@ public static class ExpressionExtensions
         // Create method call expression for Equals method
         var methodInfo = typeof(string).GetMethod(nameof(string.Equals), new[] { typeof(string), typeof(StringComparison) });
         var equalsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
-        var notEqualsExpresion = Expression.Equal(equalsExpression, Expression.Constant(false, typeof(bool)));
+        var notEqualsExpression = Expression.Not(equalsExpression);
 
         // Combine null check and equals expression using AndAlso
-        var finalExpression = Expression.AndAlso(nullCheckExpression, notEqualsExpresion);
+        var finalExpression = Expression.AndAlso(nullCheckExpression, notEqualsExpression);
 
         return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
@@ -655,6 +685,86 @@ public static class ExpressionExtensions
 
         return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
+    
+    public static string EnumToString(Enum e) {
+        return e.ToString();
+    }
+    public static Expression<Func<TItem, bool>> GetEnumContainsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var propertyExp = Expression.Convert(
+            Expression.Convert(Expression.Property(parameterExpression, filterItem.PropertyName), typeof(Enum)), 
+            typeof(string),
+            typeof(ExpressionExtensions).GetMethod(nameof(EnumToString), new [] {typeof(Enum)})
+        );
+        var someValue = Expression.Constant(filterItem.Value, typeof(string));
+        var comparisonExpression = Expression.Constant(filterItem.StringComparison);
+
+        // Handle null check
+        var nullCheckExpression = Expression.NotEqual(propertyExp, Expression.Constant(null, typeof(string)));
+
+        // Create method call expression for Contains method
+        var methodInfo = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) });
+        var containsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+
+        // Combine null check and contains expression using AndAlso
+        var finalExpression = Expression.AndAlso(nullCheckExpression, containsExpression);
+
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetEnumEqualsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var propertyExp = Expression.Convert(
+            Expression.Convert(Expression.Property(parameterExpression, filterItem.PropertyName), typeof(Enum)), 
+            typeof(string),
+            typeof(ExpressionExtensions).GetMethod(nameof(EnumToString), new [] {typeof(Enum)})
+        );
+        var someValue = Expression.Constant(filterItem.Value, typeof(string));
+        var comparisonExpression = Expression.Constant(filterItem.StringComparison);
+
+        // Handle null check
+        var nullCheckExpression = Expression.NotEqual(propertyExp, Expression.Constant(null, typeof(string)));
+
+        // Create method call expression for Equals method
+        var methodInfo = typeof(string).GetMethod(nameof(string.Equals), new[] { typeof(string), typeof(StringComparison) });
+        var equalsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+
+        // Combine null check and equals expression using AndAlso
+        var finalExpression = Expression.AndAlso(nullCheckExpression, equalsExpression);
+
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
+    }
+    
+    public static Expression<Func<TItem, bool>> GetEnumInExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var propertyExp = Expression.Convert(
+            Expression.Convert(Expression.Property(parameterExpression, filterItem.PropertyName), typeof(Enum)), 
+            typeof(string),
+            typeof(ExpressionExtensions).GetMethod(nameof(EnumToString), new [] {typeof(Enum)})
+        );
+        var comparisonExpression = Expression.Constant(filterItem.StringComparison);
+
+        // Handle null check
+        var nullCheckExpression = Expression.NotEqual(propertyExp, Expression.Constant(null, typeof(string)));
+
+        // Create method call expression for Equals method
+        var methodInfo = typeof(string).GetMethod(nameof(string.Equals), new[] { typeof(string), typeof(StringComparison) });
+        var values = filterItem.Value.Split(',');
+        
+        Expression equalsExpression = Expression.Constant(false);
+        foreach(var value in values) {
+            var someValue = Expression.Constant(value, typeof(string));
+            var equalsExpressionPart = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+            equalsExpression = Expression.Or(equalsExpression, equalsExpressionPart);
+        }
+
+        // Combine null check and equals expression using AndAlso
+        var finalExpression = Expression.AndAlso(nullCheckExpression, equalsExpression);
+
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
+    }
+
+
 
     public static bool IsNullableType(this Type type) => Nullable.GetUnderlyingType(type) != null;
 

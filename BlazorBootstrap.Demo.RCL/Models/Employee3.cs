@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap.Demo.RCL.Models;
 
-public record class Employee3
+public record Employee3
 {
     public int Id { get; init; }
     public string FirstName { get; init; }

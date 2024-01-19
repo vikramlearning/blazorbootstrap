@@ -67,6 +67,8 @@ public static class FilterOperatorHelper
             return GetDateFilterOperators();
 
         if (propertyTypeName == StringConstants.PropertyTypeNameBoolean) return GetBooleanFilterOperators();
+        
+        if (propertyTypeName == StringConstants.PropertyTypeNameEnum) return GetEnumFilterOperators();
 
         return new List<FilterOperatorInfo>();
     }
@@ -92,7 +94,7 @@ public static class FilterOperatorHelper
         List<FilterOperatorInfo> result = new()
                                           {
                                               new FilterOperatorInfo("*a*", "Contains", FilterOperator.Contains),
-                                              //result.Add(new("!*a*", "Does not contain", FilterOperator.DoesNotContain));
+                                              new FilterOperatorInfo("!*a*", "Does not contain", FilterOperator.DoesNotContain),
                                               new FilterOperatorInfo("a**", "Starts with", FilterOperator.StartsWith),
                                               new FilterOperatorInfo("**a", "Ends with", FilterOperator.EndsWith),
                                               //result.Add(new("=''", "Is empty", FilterOperator.IsEmpty));
@@ -101,6 +103,19 @@ public static class FilterOperatorHelper
                                               new FilterOperatorInfo("!=", "Not equals", FilterOperator.NotEquals),
                                               //result.Add(new("null", "Is null", FilterOperator.IsNull));
                                               //result.Add(new("!null", "Is not null", FilterOperator.IsNotNull));
+                                              new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
+                                          };
+
+        return result;
+    }
+
+    public static IEnumerable<FilterOperatorInfo> GetEnumFilterOperators()
+    {
+        List<FilterOperatorInfo> result = new()
+                                          {
+                                              new FilterOperatorInfo("*a*", "Contains", FilterOperator.Contains),
+                                              new FilterOperatorInfo("=", "Equals", FilterOperator.Equals),
+                                              new FilterOperatorInfo("in", "In", FilterOperator.In),
                                               new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
                                           };
 

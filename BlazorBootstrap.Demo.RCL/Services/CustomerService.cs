@@ -20,9 +20,8 @@ public class CustomerService : ICustomerService
         return customers.Where(lambda.Compile()).OrderBy(customer => customer.CustomerName);
     }
 
-    public async Task<Tuple<IEnumerable<Customer2>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
-    {
-        var customers = await _httpClient.GetFromJsonAsync<IEnumerable<Customer2>>("sample-data/customer/customer.json", cancellationToken);
+    public async Task<Tuple<IEnumerable<Customer2>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default) {
+        var customers = await _httpClient.GetFromJsonAsync<IEnumerable<Customer2>>("sample-data/customer/customer.json",   cancellationToken);
         if (customers is null)
             return new(Enumerable.Empty<Customer2>(), 0);
 

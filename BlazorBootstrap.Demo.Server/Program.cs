@@ -1,5 +1,12 @@
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Json;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 // Add services to the container.
 if (builder.Environment.IsDevelopment())
     builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5031/") });

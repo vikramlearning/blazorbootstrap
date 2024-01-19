@@ -15,6 +15,7 @@ internal class StringConstants
     public const string PropertyTypeNameDateOnly = "DateOnly";
     public const string PropertyTypeNameDateTime = "DateTime";
     public const string PropertyTypeNameBoolean = "Boolean";
+    public const string PropertyTypeNameEnum = "Enum";
 
     public const string DataBootstrapToggle = "data-bs-toggle";
 

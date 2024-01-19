@@ -20,6 +20,9 @@
     <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
         @context.IsActive
     </GridColumn>
+    <GridColumn TItem="Employee4" HeaderText="Customer Type" PropertyName="CustomerType">
+        @context.CustomerType
+    </GridColumn>
 
 </Grid>
 
@@ -44,16 +47,16 @@
     {
         return new List<Employee4>
         {
-            new Employee4 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
-            new Employee4 { Id = null, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
-            new Employee4 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
-            new Employee4 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
-            new Employee4 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
-            new Employee4 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
-            new Employee4 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
-            new Employee4 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
-            new Employee4 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = null, IsActive = true },
-            new Employee4 { Id = 110, Name = "Vijay", Designation = null, DOJ = new DateOnly(1990, 7, 1), IsActive = true },
+            new Employee4 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true, CustomerType = CustomerType.One},
+            new Employee4 { Id = null, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true, CustomerType = CustomerType.Two },
+            new Employee4 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true, CustomerType = CustomerType.Three },
+            new Employee4 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false, CustomerType = CustomerType.One },
+            new Employee4 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true, CustomerType = CustomerType.Two },
+            new Employee4 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true, CustomerType = CustomerType.Three },
+            new Employee4 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true, CustomerType = CustomerType.One },
+            new Employee4 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true, CustomerType = CustomerType.Two },
+            new Employee4 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = null, IsActive = true, CustomerType = CustomerType.Three },
+            new Employee4 { Id = 110, Name = "Vijay", Designation = null, DOJ = new DateOnly(1990, 7, 1), IsActive = true, CustomerType = CustomerType.One },
         };
     }
 }
