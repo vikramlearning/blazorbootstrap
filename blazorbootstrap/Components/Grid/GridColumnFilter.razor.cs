@@ -9,8 +9,11 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     private FilterOperator filterOperator;
 
     private IEnumerable<FilterOperatorInfo>? filterOperators;
+    
+    private Button closeButton = default!;
 
     private string? filterValue;
+    private string? enumFilterValue;
     private HashSet<string> filterValues = new HashSet<string>();
 
     private string? selectedFilterSymbol;
@@ -133,6 +136,13 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
             await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
     }
 
+    private void OnEnumFilterListValueChangedAsync(ChangeEventArgs? args)
+    {
+        enumFilterValue = args?.Value?.ToString();
+
+        StateHasChanged();
+    }
+
     private void SetSelectedFilterSymbol()
     {
         if (PropertyTypeName is StringConstants.PropertyTypeNameInt16
@@ -207,4 +217,9 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     public Unit Unit { get; set; }
 
     #endregion
+
+    private void ClearInputText() {
+        enumFilterValue = string.Empty;
+        StateHasChanged();
+    }
 }

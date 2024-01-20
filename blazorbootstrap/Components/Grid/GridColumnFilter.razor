@@ -54,33 +54,90 @@
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum && filterOperator == FilterOperator.In)
     {
-        <button type="button" class="btn btn-light me-1 d-flex dropdown-toggle bb-grid-filter" data-bs-toggle="dropdown" aria-expanded="false">
-            @if (string.IsNullOrWhiteSpace(filterValue)) 
-            {
-                <span>&lt;Select...&gt;</span>
-            } else if (filterValue.Split(',').Length > 1) {
-                <span>&lt;Multiple Values&gt;</span>
-            } else {
-                <span>@filterValue</span>
-            }
-        </button>
-        <ul class="dropdown-menu">
-            @foreach (var item in Enum.GetValues(PropertyInfo.PropertyType))
-            {
-                <li class="mx-1 rounded-3">
-                    <div class="dropdown-item p-1" role="button"  @onclick="async () => await OnFilterEnumValueChangedAsync(item)">
-                        <span class="filter-symbol">
-                            @if (filterValues.Contains(item.ToString())) {
-                                <Icon Name="IconName.Check"/>   
-                            }
-                        </span> <span>
-                            @item.ToString()
-                        </span>
-                    </div>
-                </li>
-            }
-        </ul>
+        <Dropdown AutoClose="true" AutoCloseBehavior="DropdownAutoCloseBehavior.Outside">
+            <DropdownToggleButton Color="ButtonColor.Light">
+                @if (string.IsNullOrWhiteSpace(filterValue)) 
+                {
+                    <span>&lt;Select...&gt;</span>
+                } else if (filterValue.Split(',').Length > 1) {
+                    <span>&lt;Multiple Values&gt;</span>
+                } else {
+                    <span>@filterValue</span>
+                }
+            </DropdownToggleButton>
+            <DropdownMenu>
+                <div class="input-group">
+                    <input class="form-control mx-2 px-2" style="padding-right: 1.75rem !important;" type="text" value="@enumFilterValue" @oninput="@(OnEnumFilterListValueChangedAsync)"/>
+                    @if (enumFilterValue != null && enumFilterValue.Length > 0) {
+                        <Button @ref="closeButton"
+                                Class="border-0 position-absolute end-0"
+                                Style="z-index: 100; top: 2px;"
+                                @onclick="ClearInputText">
+            
+                            <Icon Name="IconName.XLg"></Icon>
+            
+                        </Button>
+                    }
+                </div>
+                @foreach (var item in Enum.GetValues(PropertyInfo.PropertyType).Cast<Enum>().Where(x => x.ToString().ToLower().Contains(enumFilterValue?.ToLower() ?? ""))) {
+                    <li class="mx-1 rounded-3">
+                        <div class="dropdown-item p-1" role="button" @onclick="async () => await OnFilterEnumValueChangedAsync(item)">
+                            <span class="filter-symbol">
+                                @if (filterValues.Contains(item.ToString())) {
+                                    <Icon Name="IconName.Check"/>
+                                }
+                            </span>
+                            <span>
+                                @item.ToString()
+                            </span>
+                        </div>
+                    </li>
+                }
+            </DropdownMenu>
+        </Dropdown>
     }
+    @* else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum && filterOperator == FilterOperator.In) *@
+    @* { *@
+    @*     <button type="button" class="btn btn-light me-1 d-flex dropdown-toggle bb-grid-filter" data-bs-toggle="dropdown" aria-expanded="false"> *@
+    @*         @if (string.IsNullOrWhiteSpace(filterValue))  *@
+    @*         { *@
+    @*             <span>&lt;Select...&gt;</span> *@
+    @*         } else if (filterValue.Split(',').Length > 1) { *@
+    @*             <span>&lt;Multiple Values&gt;</span> *@
+    @*         } else { *@
+    @*             <span>@filterValue</span> *@
+    @*         } *@
+    @*     </button> *@
+    @*     <ul class="dropdown-menu"> *@
+    @*         <div class="input-group"> *@
+    @*             <input class="form-control mx-2 px-2" style="padding-right: 1.75rem !important;" type="text" value="@enumFilterValue" @oninput="@(OnEnumFilterListValueChangedAsync)"/> *@
+    @*             @if (enumFilterValue != null && enumFilterValue.Length > 0) { *@
+    @*                 <Button @ref="closeButton" *@
+    @*                         Class="border-0 position-absolute end-0" *@
+    @*                         Style="z-index: 100; top: 2px;" *@
+    @*                         @onclick="ClearInputText"> *@
+    @*      *@
+    @*                     <Icon Name="IconName.XLg"></Icon> *@
+    @*      *@
+    @*                 </Button> *@
+    @*             } *@
+    @*         </div> *@
+    @*         @foreach (var item in Enum.GetValues(PropertyInfo.PropertyType).Cast<Enum>().Where(x => x.ToString().ToLower().Contains(enumFilterValue?.ToLower() ?? ""))) { *@
+    @*             <li class="mx-1 rounded-3"> *@
+    @*                 <div class="dropdown-item p-1" role="button" @onclick="async () => await OnFilterEnumValueChangedAsync(item)"> *@
+    @*                     <span class="filter-symbol"> *@
+    @*                         @if (filterValues.Contains(item.ToString())) { *@
+    @*                             <Icon Name="IconName.Check"/> *@
+    @*                         } *@
+    @*                     </span> *@
+    @*                     <span> *@
+    @*                         @item.ToString() *@
+    @*                     </span> *@
+    @*                 </div> *@
+    @*             </li> *@
+    @*         } *@
+    @*     </ul> *@
+    @* } *@
     else // string
     {
         <input class="form-control" style="@filterStyle" type="text" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))"/>
