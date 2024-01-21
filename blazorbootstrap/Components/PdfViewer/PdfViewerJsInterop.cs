@@ -64,10 +64,10 @@ public class PdfViewerJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("previousPage", objRef, elementId);
     }
 
-    public async Task PrintAsync(object objRef, string elementId)
+    public async Task PrintAsync(object objRef, string elementId, string url)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("print", objRef, elementId);
+        await module.InvokeVoidAsync("print", objRef, elementId, url);
     }
 
     public async Task RotateAsync(object objRef, string elementId, double rotation)

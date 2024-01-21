@@ -14,7 +14,7 @@ function getCanvas(item) {
         item = item[0];
     }
 
-    if (item && item.canvas) {
+    if (item && item.canvas !== undefined && item.canvas) {
         // Support for any object associated to a canvas (including a context2d)
         item = item.canvas;
     }
@@ -37,11 +37,9 @@ class Pdf {
     constructor(item) {
         const canvas = getCanvas(item);
         const existingPdf = getPdf(canvas);
-        if (existingPdf != null) {
-            throw new Error(
-                `Canvas is already in use. Canvas with ID '${existingPdf.id}' must be destroyed before the canvas with ID '${existingPdf.canvas.id}' can be reused.`
-            );
-        }
+
+        //if (existingPdf === undefined)
+        //    return;
 
         this.id = canvas.id;
         this.canvas = canvas;
@@ -83,22 +81,22 @@ function renderPage(pdf, num) {
 
         // Wait for rendering to finish
         renderTask.promise.then(() => {
-                pdf.pageRendering = false;
-                if (pdf.pageNumPending !== null) {
-                    // New page rendering is pending
-                    renderPage(pdf, pdf.pageNumPending);
-                    pdf.pageNumPending = null;
-                }
-            })
-            .catch((error) => {
-
-            });
+            pdf.pageRendering = false;
+            if (pdf.pageNumPending !== null) {
+                // New page rendering is pending
+                renderPage(pdf, pdf.pageNumPending);
+                pdf.pageNumPending = null;
+            }
+        })
+        .catch((error) => {
+            // TODO: track exception
+        });
     });
 }
 
 /**
  * If another page rendering in progress, waits until the rendering is
- * finised. Otherwise, executes rendering immediately.
+ * finished. Otherwise, executes rendering immediately.
  */
 function queueRenderPage(pdf, num) {
     if (pdf.pageRendering) {
@@ -122,46 +120,44 @@ export function previousPage(dotNetHelper, elementId) {
     setPdfViewerMetaData(dotNetHelper, pdf);
 }
 
-export function print(dotNetHelper, elementId) {
-    const pdf = getPdf(elementId);
+export async function print(dotNetHelper, elementId, url) {
+    const pdfDoc = await pdfJS.getDocument(url).promise;
+    const pageRange = [1,2,3,4]; // Print pages 1 to 3, inclusive
 
-    if (pdf == null || pdf.pagesCount === 0)
-        return;
+    const printIframe = document.getElementById(elementId);
 
-    const wrapper = document.createElement('div');
+    for (const pageNumber of pageRange) {
+        const page = await pdfDoc.getPage(pageNumber);
 
-    const img1 = document.createElement('img');
-    img1.src = pdf.canvas.toDataURL();
-    wrapper.append(img1);
-    //wrapper.append('<div style="break-after: page;">&nbsp;</div>'); // TODO: append page break
-    const img2 = document.createElement('img');
-    img2.src = pdf.canvas.toDataURL();
-    wrapper.append(img2);
+        // Render and print each page sequentially
+        const viewport = page.getViewport({ scale: 1.333 });
+        const canvas = document.createElement("canvas");
+        //canvas.style = 'display:none';
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: canvas.getContext("2d"),
+            viewport: viewport
+        };
+        await page.render(renderContext).promise;
+
+        // Append canvas to iframe for each page
+        const iframeDoc = printIframe.contentWindow.document;
+        iframeDoc.body.appendChild(canvas);
+    }
 
     setTimeout(() => {
-        // Ref: https://www.geeksforgeeks.org/print-the-contents-of-a-div-element-using-javascript/
-        //const w = window.open('', '', '');
-        //w.document.write('<html>');
-        //w.document.write('<body>');
-        //w.document.write(wrapper.innerHTML);
-        //w.document.write('</body>');
-        //w.document.write('</html>');
-        //w.document.close();
-        //w.print();
-        //w.close();
+        // Print all pages at once
+        printIframe.contentWindow.print();
 
-        // Ref: https://stackoverflow.com/a/64773176
-        const iframeEl = document.createElement('iframe');
-        iframeEl.style = 'display:none';
-        document.body.appendChild(iframeEl);
-        const pri = iframeEl.contentWindow;
-        pri.document.open();
-        pri.document.write(wrapper.innerHTML);
-        pri.document.close();
-        pri.focus();
-        pri.print();
+        // Clean up by removing all canvases
+        const canvases = document.querySelectorAll("#printIframe canvas");
+        for (const canvas of canvases) {
+            iframeDoc.body.removeChild(canvas);
+        }
     },
-    200);
+    1000);
 }
 
 export function nextPage(dotNetHelper, elementId) {
@@ -259,7 +255,7 @@ export function initialize(dotNetHelper, elementId, scale, rotation, url) {
     pdf.scale = scale;
     pdf.rotation = rotation;
 
-    pdfJS.getDocument(url).promise.then(function(doc) {
+    pdfJS.getDocument(url).promise.then(function (doc) {
         pdf.pdfDoc = doc;
         pdf.pagesCount = doc.numPages;
         renderPage(pdf, pdf.pageNum);
@@ -268,6 +264,9 @@ export function initialize(dotNetHelper, elementId, scale, rotation, url) {
 }
 
 function setPdfViewerMetaData(dotNetHelper, pdf) {
+    if (dotNetHelper == null)
+        return;
+
     dotNetHelper.invokeMethodAsync('SetPdfViewerMetaData', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
 
