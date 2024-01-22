@@ -25,6 +25,8 @@ public partial class Tabs : BlazorBootstrapComponentBase
         else
             builder.Append(BootstrapClassProvider.NavPills);
 
+        builder.Append("flex-column", ShowVertical);
+
         base.BuildClasses(builder);
     }
 
@@ -192,6 +194,12 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public bool EnableFadeEffect { get; set; }
+
+    /// <summary>
+    /// Gets or sets if tabs should be shown vertically or not.
+    /// </summary>
+    [Parameter]
+    public bool ShowVertical { get; set; }
 
     /// <summary>
     /// Get or sets the nav style.

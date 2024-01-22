@@ -7,8 +7,9 @@
 
 @if (tabs.Any())
 {
+    <div class="@(ShowVertical ? "d-flex align-items-start" : "")">
     <nav>
-        <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="tablist">
+        <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="tablist" aria-orientation="@(ShowVertical ? "vertical" : "horizontal")">
             @foreach (var t in tabs)
             {
                 var tabElementId = t.ElementId;
@@ -36,5 +37,6 @@
                 @t.Content
             </div>
         }
+    </div>
     </div>
 }
