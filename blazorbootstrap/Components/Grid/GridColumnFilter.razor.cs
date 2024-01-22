@@ -24,7 +24,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        filterOperators = await GetFilterOperatorsAsync(PropertyTypeName);
+        filterOperators = await GetFilterOperatorsAsync();
         filterOperator = FilterOperator;
         filterValue = FilterValue;
 
@@ -69,11 +69,16 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum)
         {
             if (filterOperator is FilterOperator.None or FilterOperator.Clear)
+                filterOperator = FilterOperator.In;
+        }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameGuid)
+        {
+            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
                 filterOperator = FilterOperator.Contains;
         }
     }
 
-    private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync(string propertyTypeName)
+    private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync()
     {
         if (FiltersTranslationProvider is null)
             return FilterOperatorHelper.GetFilterOperators(PropertyTypeName);
@@ -160,6 +165,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
             selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
         else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
         else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameGuid) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
     }
 
     #endregion

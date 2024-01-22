@@ -4,7 +4,7 @@
 
 		<PackageId>Sf.Blazor.Bootstrap</PackageId>
     <Version>1.10.5</Version>
-		<PackageVersion>1.10.5.1</PackageVersion>
+		<PackageVersion>1.10.5.2</PackageVersion>
 
 		<!--<PackageIconUrl></PackageIconUrl>-->
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>

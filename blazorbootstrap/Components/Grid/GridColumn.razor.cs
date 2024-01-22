@@ -102,6 +102,11 @@ public partial class GridColumn<TItem>
             if (filterOperator == FilterOperator.None)
                 FilterOperator = filterOperator = FilterOperator.In;
         }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameGuid)
+        {
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.Equals;
+        }
     }
 
     internal void SetFilterOperator(FilterOperator filterOperator) => FilterOperator = this.filterOperator = filterOperator;
