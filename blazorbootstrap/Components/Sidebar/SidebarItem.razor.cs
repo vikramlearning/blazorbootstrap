@@ -82,7 +82,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
         return hrefAbsolute != null
                && (EqualsHrefExactlyOrIfTrailingSlashAdded(currentUriAbsolute, hrefAbsolute)
-                   || (Match == NavLinkMatch.Prefix && IsStrictlyPrefixWithSeparator(currentUriAbsolute, hrefAbsolute)));
+                   || (Item.Match == NavLinkMatch.Prefix && IsStrictlyPrefixWithSeparator(currentUriAbsolute, hrefAbsolute)));
     }
 
     private void ToggleNavItemGroup() => navitemGroupExpanded = !navitemGroupExpanded;
@@ -115,12 +115,6 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter] 
     public int SubLevel { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value representing the URL matching behavior.
-    /// </summary>
-    [Parameter]
-    public NavLinkMatch Match { get; set; }
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
