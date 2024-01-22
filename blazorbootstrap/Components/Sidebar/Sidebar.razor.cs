@@ -12,6 +12,8 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
     private bool isMobile = false;
 
+    private IEnumerable<NavItem>? items = null;
+
     private DotNetObjectReference<Sidebar> objRef = default!;
 
     private bool requestInProgress = false;
@@ -35,6 +37,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
         {
             var width = await JS.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
             await bsWindowResize(width);
+            await RefreshDataAsync(firstRender);
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -56,6 +59,29 @@ public partial class Sidebar : BlazorBootstrapComponentBase
             isMobile = true;
         else
             isMobile = false;
+    }
+
+    /// <summary>
+    /// Refresh the sidebar data.
+    /// </summary>
+    /// <returns>Task</returns>
+    public async Task RefreshDataAsync(bool firstRender = false)
+    {
+        if (requestInProgress)
+            return;
+
+        requestInProgress = true;
+
+        if (DataProvider != null)
+        {
+            var request = new SidebarDataProviderRequest();
+            var result = await DataProvider.Invoke(request);
+            items = result != null ? result.Data : new List<NavItem>();
+        }
+
+        requestInProgress = false;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
@@ -111,10 +137,12 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     public string? CustomIconName { get; set; }
 
     /// <summary>
-    /// Gets or sets the collection of <see cref="NavItem" /> which should be displayed by the sidebar.
+    /// DataProvider is for items to render.
+    /// The provider should always return an instance of 'SidebarDataProviderResult', and 'null' is not allowed.
     /// </summary>
-    [Parameter, EditorRequired]
-    public IEnumerable<NavItem> Items { get; set; } = Enumerable.Empty<NavItem>();
+    [Parameter]
+    [EditorRequired]
+    public SidebarDataProviderDelegate? DataProvider { get; set; }
 
     /// <summary>
     /// Gets or sets the IconName.

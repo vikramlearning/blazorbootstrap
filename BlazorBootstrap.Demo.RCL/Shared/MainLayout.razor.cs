@@ -4,7 +4,7 @@ public partial class MainLayout : LayoutComponentBase
 {
     private string version = default!;
     private Sidebar sidebar = default!;
-
+    private IEnumerable<NavItem> navItems = default!;
 
     [Inject] public IConfiguration Configuration { get; set; } = default!;
 
@@ -15,7 +15,13 @@ public partial class MainLayout : LayoutComponentBase
     }
 
 
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
 
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
     private IEnumerable<NavItem> GetNavItems()
     {
 

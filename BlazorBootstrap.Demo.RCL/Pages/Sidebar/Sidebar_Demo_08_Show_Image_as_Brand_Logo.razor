@@ -4,7 +4,7 @@
              ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
              Title="Blazor Bootstrap"
              BadgeText="v1.3.1"
-             Items="GetNavItems()" />
+             DataProvider="SidebarDataProvider" />
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-between">
@@ -21,7 +21,15 @@
 
 @code {
     Sidebar sidebar = default!;
-    
+    private IEnumerable<NavItem> navItems = default!;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
 
     private IEnumerable<NavItem> GetNavItems()
     {
