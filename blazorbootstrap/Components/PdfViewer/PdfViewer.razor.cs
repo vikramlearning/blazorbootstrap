@@ -98,7 +98,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private async Task PreviousPageAsync() => await PdfViewerJsInterop.PreviousPageAsync(objRef, ElementId);
 
-    private async Task PrintAsync() => await PdfViewerJsInterop.PrintAsync(objRef, $"{ElementId}_i", Url);
+    private async Task PrintAsync() => await PdfViewerJsInterop.PrintAsync(objRef, ElementId, Url);
 
     private async Task RotateClockwiseAsync()
     {
