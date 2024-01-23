@@ -17,6 +17,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     private double rotation = 0;
 
     private double scale = 1.0;
+    private int defaultZoomLevel = 8;
     private int zoomLevel = 8;
     private string zoomPercentage = "100%";
 
@@ -133,6 +134,15 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
         zoomLevel -= 1;
         var zp = GetZoomPercentage(zoomLevel);
+        zoomPercentage = $"{zp}%";
+        scale = 0.01 * zp;
+        await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, scale);
+    }
+
+    private async Task ResetZoomAsync()
+    {
+        zoomLevel = defaultZoomLevel;
+        var zp = GetZoomPercentage(defaultZoomLevel);
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
         await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, scale);
