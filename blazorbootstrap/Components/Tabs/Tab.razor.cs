@@ -78,5 +78,13 @@ public partial class Tab : BlazorBootstrapComponentBase
     [Parameter]
     public RenderFragment TitleTemplate { get; set; } = default!;
 
+    /// <summary>
+    /// This event fires when the user clicks on the corresponding tab button.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnTabClicked { get; set; }
+
     #endregion
+
+
 }

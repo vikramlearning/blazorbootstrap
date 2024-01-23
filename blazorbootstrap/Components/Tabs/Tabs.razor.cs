@@ -101,7 +101,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var tab = tabs.FirstOrDefault(x => !x.Disabled);
 
         if (tab != null)
-            await ShowTabAsync(tab.ElementId);
+            await ShowTabAsync(tab);
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var tab = tabs.LastOrDefault(x => !x.Disabled);
 
         if (tab != null)
-            await ShowTabAsync(tab.ElementId);
+            await ShowTabAsync(tab);
     }
 
     /// <summary>
@@ -126,7 +126,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var tab = tabs[index];
 
         if (tab != null && !tab.Disabled)
-            await ShowTabAsync(tab.ElementId);
+            await ShowTabAsync(tab);
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var tab = tabs.LastOrDefault(x => x.Name == tabName && !x.Disabled);
 
         if (tab != null)
-            await ShowTabAsync(tab.ElementId);
+            await ShowTabAsync(tab);
     }
 
     internal void AddTab(Tab tab)
@@ -161,17 +161,18 @@ public partial class Tabs : BlazorBootstrapComponentBase
         activeTab ??= tabs.FirstOrDefault(x => !x.Disabled);
 
         if (activeTab != null)
-            await ShowTabAsync(activeTab.ElementId);
+            await ShowTabAsync(activeTab);
     }
 
-    private async Task OnTabClickAsync(string tabElementId) => await ShowTabAsync(tabElementId);
+    private async Task OnTabClickAsync(Tab tab) => await ShowTabAsync(tab);
 
-    private async Task ShowTabAsync(string elementId)
+    private async Task ShowTabAsync(Tab tab)
     {
         if (!isDefaultActiveTabSet)
             isDefaultActiveTabSet = true;
 
-        await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", elementId);
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.ElementId);
+        await tab.OnTabClicked.InvokeAsync();
     }
 
     #endregion
