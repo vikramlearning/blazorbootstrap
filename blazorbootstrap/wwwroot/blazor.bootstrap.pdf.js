@@ -2,7 +2,6 @@ import * as pdfJS from './pdfjs-4.0.379.min.mjs';
 import * as pdfWorker from './pdfjs-4.0.379.worker.min.mjs';
 
 if (pdfJS != null && pdfWorker != null) {
-    // The workerSrc property shall be specified.
     pdfJS.GlobalWorkerOptions.workerSrc = pdfWorker;
 }
 
@@ -10,12 +9,12 @@ function getCanvas(item) {
     if (isDomSupported() && typeof item === 'string') {
         item = document.getElementById(item);
     } else if (item && item.length) {
-        // Support for array based queries (such as jQuery)
+        // support for array based queries
         item = item[0];
     }
 
     if (item && item.canvas !== undefined && item.canvas) {
-        // Support for any object associated to a canvas (including a context2d)
+        // support for any object associated to a canvas (including a context2d)
         item = item.canvas;
     }
 
@@ -35,10 +34,7 @@ class Pdf {
 
     constructor(item) {
         const canvas = getCanvas(item);
-        const existingPdf = getPdf(canvas);
-
-        //if (existingPdf === undefined)
-        //    return;
+        //const existingPdf = getPdf(canvas);
 
         this.id = canvas.id;
         this.canvas = canvas;
@@ -126,35 +122,37 @@ export function previousPage(dotNetHelper, elementId) {
 
 export async function print(dotNetHelper, elementId, url) {
     const pdfDoc = await pdfJS.getDocument(url).promise;
-    const pageRange = [1, 2, 3, 4]; // Print pages 1 to 3, inclusive
+    const pageRange = [1, 2, 3, 4]; // TODO: update this
 
-    //const printIframe = document.getElementById(elementId);
     const iframeEl = document.createElement('iframe');
     iframeEl.style = 'display:none';
     document.body.appendChild(iframeEl);
 
     for (const pageNumber of pageRange) {
         const page = await pdfDoc.getPage(pageNumber);
-
-        // Render and print each page sequentially
-        const viewport = page.getViewport({ scale: 1.33333 });
+        
+        const viewport = page.getViewport({ scale: 1.5 });
         const canvas = document.createElement("canvas");
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
+        //canvas.style.height = `${viewport.height * 2}px`;
+        //canvas.style.width = `${viewport.width * 2}px`;
+
+        const ctx = canvas.getContext('2d');
+
         const renderContext = {
-            canvasContext: canvas.getContext("2d"),
+            //intent: 'print',
+            canvasContext: ctx,
             viewport: viewport
         };
         await page.render(renderContext).promise;
-
-        // Append canvas to iframe for each page
+        
         const iframeDoc = iframeEl.contentWindow.document;
         iframeDoc.body.appendChild(canvas);
     }
 
     setTimeout(() => {
-        // Print all pages at once
         iframeEl.contentWindow.print();
         iframeEl.remove();
     },
