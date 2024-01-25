@@ -155,12 +155,21 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
+    /// <summary>
+    /// This event fires immediately after the PDF document is loaded.
+    /// </summary>
     [Parameter] public EventCallback<PdfViewerEventArgs> OnDocumentLoaded { get; set; }
 
+    /// <summary>
+    /// This event fires immediately after the page is changed.
+    /// </summary>
     [Parameter] public EventCallback<PdfViewerEventArgs> OnPageChanged { get; set; }
 
     [Inject] private PdfViewerJsInterop PdfViewerJsInterop { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the PDF URL.
+    /// </summary>
     [Parameter] public string? Url { get; set; }
 
     #endregion

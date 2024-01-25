@@ -6,39 +6,17 @@
 
 <h1>Blazor Pdf Viewer</h1>
 <div class="lead mb-3">
-    Build hidden sidebars into your project for navigation, shopping carts, and more with a offcanvas component.
+    The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions.
 </div>
 
 @* <CarbonAds /> *@
 
-<Callout Type="CalloutType.Danger" Heading="NOTE">Similar to modals, only one offcanvas can be shown at a time.</Callout>
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(PdfViewer_Demo_01_Examples)" Tabs="true" />
 
-<p>@eventLog</p>
-
-<PdfViewer Class="mb-3"
-           Url="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf"
-           OnDocumentLoaded="OnDocumentLoaded"
-           OnPageChanged="OnPageChanged" />
-
-@* <PdfViewer Class="mb-3" Url="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf" />
-
-<PdfViewer Class="mb-3" Url="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf" />
- *@
 @code {
     private string pageUrl = "/pdf-viewer";
     private string title = "Blazor Pdf Viewer Component";
-    private string description = "Build hidden sidebars into your project for navigation, shopping carts, and more with Blazor Bootstrap offcanvas component.";
-    private string imageUrl = "https://i.imgur.com/1vNz5Ci.jpg";
-
-    private string eventLog { get; set; } = $"Last event: ..., CurrentPage: 0, TotalPages: 0";
-
-    private async Task OnDocumentLoaded(PdfViewerEventArgs args)
-    {
-        eventLog = $"Last event: OnDocumentLoaded, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
-    }
-
-    private async Task OnPageChanged(PdfViewerEventArgs args)
-    {
-        eventLog = $"Last event: OnPageChanged, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
-    }
+    private string description = "The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions.";
+    private string imageUrl = "https://i.imgur.com/7Vz9Efi.png";
 }
