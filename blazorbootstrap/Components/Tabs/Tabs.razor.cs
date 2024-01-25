@@ -172,7 +172,9 @@ public partial class Tabs : BlazorBootstrapComponentBase
             isDefaultActiveTabSet = true;
 
         await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.ElementId);
-        await tab.OnTabClicked.InvokeAsync();
+
+        if (tab?.OnTabClicked.HasDelegate ?? false)
+            await tab.OnTabClicked.InvokeAsync();
     }
 
     #endregion
