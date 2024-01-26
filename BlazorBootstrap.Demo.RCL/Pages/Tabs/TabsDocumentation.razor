@@ -45,17 +45,17 @@
 <Demo Type="typeof(Tabs_Demo_07_Vertical_C_Underline)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Activate individual tabs" PageUrl="@pageUrl" HashTagName="activate-individual-tabs" />
-<div>You can activate individual tabs in several ways. Use predefined methods <code>ShowFirstTabAsync</code>, <code>ShowLastTabAsync</code>, <code>ShowTabByIndexAsync</code>, and <code>ShowTabByNameAsync</code>, as shown below.</div>
+<div>You can activate individual tabs in several ways. Use predefined methods such as <code>ShowFirstTabAsync</code>, <code>ShowLastTabAsync</code>, <code>ShowTabByIndexAsync</code>, and <code>ShowTabByNameAsync</code>, as shown below.</div>
 <Demo Type="typeof(Tabs_Demo_08_Activate_Individual_Tabs)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
 <div>
-    When showing a new tab, the events fire in the following order:    
+    When displaying a new tab, the events fire in the following sequence:
     <p class="py-2 px-3">
-        1. <code>OnHiding</code> (on the current active tab)<br />
-        2. <code>OnShowing</code> (on the to-be-shown tab)<br />
-        3. <code>OnHidden</code> (on the previous active tab, the same one as for the <code>OnHiding</code> event)<br />
-        4. <code>OnShown</code> (on the newly-active just-shown tab, the same one as for the <code>OnShowing</code> event)<br />
+        1. <code>OnHiding</code> (on the currently active tab)<br />
+        2. <code>OnShowing</code> (on the tab that is about to be displayed)<br />
+        3. <code>OnHidden</code> (on the previously active tab, which is the same one that triggered the <code>OnHiding</code> event)<br />
+        4. <code>OnShown</code> (on the newly activated tab that has just been displayed, which is the same one that triggered the <code>OnShowing</code> event)<br />
     </p>
     <table class="table">
         <thead>
