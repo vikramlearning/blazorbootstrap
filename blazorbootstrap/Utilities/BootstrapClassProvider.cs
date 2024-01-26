@@ -120,6 +120,11 @@ public class BootstrapClassProvider
 
     public string ModalHeader(ModalType modalType) => $"text-bg-{ToModalTypeColor(modalType)} border-bottom {ToModalHeaderBottomBorderColor(modalType)}";
 
+    public string Nav() => "nav";
+    public string NavPills() => $"{Nav()}-pills";
+    public string NavTabs() => $"{Nav()}-tabs";
+    public string NavUnderline() => $"{Nav()}-underline";
+
     public string Offcanvas() => "offcanvas";
 
     public string Offcanvas(Placement placement) => $"{Offcanvas()}-{ToPlacement(placement)}";
@@ -178,9 +183,9 @@ public class BootstrapClassProvider
     public string TablePrimary() => "table-primary";
     public string TableResponsive() => "table-responsive";
     public string TableSecondary() => "table-secondary";
+    public string TableSmall() => "table-sm";
     public string TableSticky() => "bb-table-sticky";
     public string TableStriped() => "table-striped";
-    public string TableSmall() => "table-sm";
     public string TableStripedColumns() => "table-striped-columns";
     public string TableSuccess() => "table-success";
     public string TableWarning() => "table-warning";
@@ -701,14 +706,6 @@ public class BootstrapClassProvider
             BlazorBootstrap.TooltipPlacement.Right => "right",
             _ => "top"
         };
-
-    #endregion
-
-    #region Properties, Indexers
-
-    public string Nav => "nav";
-    public string NavPills => $"{Nav}-pills";
-    public string NavTabs => $"{Nav}-tabs";
 
     #endregion
 }

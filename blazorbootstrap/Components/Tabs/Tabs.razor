@@ -5,11 +5,11 @@
     @ChildContent
 </CascadingValue>
 
-@if (tabs.Any())
+@if (tabs?.Any() ?? false)
 {
-    <div class="@(ShowVertical ? "d-flex align-items-start" : "")">
+    <div class="@navParentDivCssClass">
         <nav>
-            <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="tablist" aria-orientation="@(ShowVertical ? "vertical" : "horizontal")">
+            <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="tablist" aria-orientation="horizontal">
                 @foreach (var t in tabs)
                 {
                     var tabElementId = t.ElementId;
@@ -30,7 +30,7 @@
                 }
             </div>
         </nav>
-        <div class="tab-content">
+        <div class="@tabContentCssClass">
             @foreach (var t in tabs)
             {
                 <div class="tab-pane @(EnableFadeEffect ? "fade" : "")" id="nav-@t.ElementId" role="tabpanel" aria-labelledby="@t.ElementId">
