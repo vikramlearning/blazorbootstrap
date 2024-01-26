@@ -236,15 +236,15 @@ window.blazorBootstrap = {
 
             currencyEl?.addEventListener('keydown', function (event) {
 
-                switch (event.keyCode) {
-                    case 8:   // backspace
-                    case 9:   // tab
-                    case 13:  // enter
-                    case 37:  // arrows left
-                    case 38:  // arrows up
-                    case 39:  // arrows right
-                    case 40:  // arrows down
-                    case 46:  // delete key
+                switch (event.code) {
+                    case "Backspace":
+                    case "Tab":
+                    case "Enter":
+                    case "ArrowLeft":
+                    case "ArrowUp":
+                    case "ArrowRight":
+                    case "ArrowDown":
+                    case "Delete":
                         return;
                 }
 
