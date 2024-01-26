@@ -18,12 +18,11 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Nav);
-
-        if (NavStyle == NavStyle.Tabs)
-            builder.Append(BootstrapClassProvider.NavTabs);
-        else
-            builder.Append(BootstrapClassProvider.NavPills);
+        builder.Append(BootstrapClassProvider.Nav());
+        builder.Append(BootstrapClassProvider.NavTabs(), NavStyle == NavStyle.Tabs);
+        builder.Append(BootstrapClassProvider.NavPills(), NavStyle is (NavStyle.Pills or NavStyle.VerticalPills));
+        builder.Append(BootstrapClassProvider.NavUnderline(), NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline));
+        builder.Append("flex-column", isVertical);
 
         base.BuildClasses(builder);
     }
@@ -48,6 +47,11 @@ public partial class Tabs : BlazorBootstrapComponentBase
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
+
+        Attributes ??= new();
+        if(isVertical)
+            Attributes.Add("aria-orientation", "vertical");
+
         await base.OnInitializedAsync();
 
         ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
@@ -196,6 +200,13 @@ public partial class Tabs : BlazorBootstrapComponentBase
     [Parameter]
     public bool EnableFadeEffect { get; set; }
 
+    private bool isVertical =>
+        NavStyle == NavStyle.Vertical
+        || NavStyle == NavStyle.VerticalPills
+        || NavStyle == NavStyle.VerticalUnderline;
+
+    private string? navParentDivCssClass => isVertical ? "d-flex" : default;
+
     /// <summary>
     /// Get or sets the nav style.
     /// </summary>
@@ -225,6 +236,8 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public EventCallback<TabsEventArgs> OnShown { get; set; }
+
+    private string? tabContentCssClass => isVertical ? "tab-content flex-grow-1" : "tab-content";
 
     #endregion
 }
