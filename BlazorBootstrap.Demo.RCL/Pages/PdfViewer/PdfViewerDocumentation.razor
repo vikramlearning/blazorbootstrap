@@ -1,0 +1,22 @@
+﻿@page "/pdf-viewer"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Pdf Viewer</h1>
+<div class="lead mb-3">
+    The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions.
+</div>
+
+@* <CarbonAds /> *@
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(PdfViewer_Demo_01_Examples)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/pdf-viewer";
+    private string title = "Blazor Pdf Viewer Component";
+    private string description = "The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions.";
+    private string imageUrl = "https://i.imgur.com/7Vz9Efi.png";
+}
