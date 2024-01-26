@@ -1,6 +1,6 @@
 ﻿---
 title: Blazor Tabs Component
-description: Documentation and examples for how to use Blazor Bootstrap tabs components.
+description: Documentation and examples for using Blazor Bootstrap Tabs components.
 image: https://i.imgur.com/KelXx6Z.png
 
 sidebar_label: Tabs
@@ -11,7 +11,7 @@ import CarbonAd from '/carbon-ad.mdx'
 
 # Blazor Tabs
 
-Documentation and examples for how to use Blazor Bootstrap tabs components.
+Documentation and examples for using Blazor Bootstrap Tabs components.
 
 <CarbonAd />
 
@@ -29,18 +29,28 @@ Documentation and examples for how to use Blazor Bootstrap tabs components.
 |:--|:--|
 | ShowFirstTabAsync | Selects the first tab and show its associated pane. |
 | ShowLastTabAsync | Selects the last tab and show its associated pane. |
-| ShowTabByNameAsync(string) | Selects the tab by name and show its associated pane. |
-| ShowTabByIndexAsync(int) | Selects the tab by index and show its associated pane. |
+| ShowTabByIndexAsync(int tabIndex) | Selects the tab by index and show its associated pane. |
+| ShowTabByNameAsync(string tabName) | Selects the tab by name and show its associated pane. |
+
+## Tabs Callback Events
+
+| Event | Description | Added Version |
+|:--|:--|:--|
+| OnHidden | This event fires after a new tab is shown (and thus the previous active tab is hidden). | 1.0.0 |
+| OnHiding | This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden). | 1.0.0 |
+| OnShowing | This event fires on tab show, but before the new tab has been shown. | 1.0.0 |
+| OnShown | This event fires on tab show after a tab has been shown. | 1.0.0 |
 
 ## Tab Parameters
 
 | Name | Type | Description | Required | Default |
 |:--|:--|:--|:--|:--|
+| Content | RenderFragment | Specifies the content to be rendered inside the tab. | ✔️ | |
+| Disabled | bool | Gets or sets the disabled. | | false |
+| IsActive | bool | Gets or sets the active tab. | | false |
+| Name | string | Gets or sets the tab name. | | |
 | Title | string | Gets or sets the tab title. | | |
 | TitleTemplate | RenderFragment | Gets or sets the tab title template. | | |
-| Content | RenderFragment | Specifies the content to be rendered inside the tab. | ✔️ | |
-| IsActive | bool | Gets or sets the active tab. | | false |
-| Disabled | bool | Gets or sets the disabled. | | false |
 
 :::info Note
 Either **Title** or **TitleTemplate** is required.

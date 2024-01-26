@@ -7,7 +7,7 @@
 
 @if (tabs?.Any() ?? false)
 {
-    <div class="@navParentDivCssClass">
+    <div class="@NavParentDivCssClass">
         <nav>
             <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="tablist">
                 @foreach (var t in tabs)
@@ -30,7 +30,7 @@
                 }
             </div>
         </nav>
-        <div class="@tabContentCssClass">
+        <div class="@TabContentCssClass">
             @foreach (var t in tabs)
             {
                 <div class="tab-pane @(EnableFadeEffect ? "fade" : "")" id="nav-@t.ElementId" role="tabpanel" aria-labelledby="@t.ElementId">

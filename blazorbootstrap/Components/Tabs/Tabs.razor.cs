@@ -22,7 +22,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         builder.Append(BootstrapClassProvider.NavTabs(), NavStyle == NavStyle.Tabs);
         builder.Append(BootstrapClassProvider.NavPills(), NavStyle is (NavStyle.Pills or NavStyle.VerticalPills));
         builder.Append(BootstrapClassProvider.NavUnderline(), NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline));
-        builder.Append("flex-column", isVertical);
+        builder.Append("flex-column", IsVertical);
 
         base.BuildClasses(builder);
     }
@@ -49,7 +49,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         objRef ??= DotNetObjectReference.Create(this);
 
         Attributes ??= new();
-        if(isVertical)
+        if(IsVertical)
             Attributes.Add("aria-orientation", "vertical");
 
         await base.OnInitializedAsync();
@@ -122,12 +122,12 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <summary>
     /// Selects the tab by index and show its associated pane.
     /// </summary>
-    /// <param name="index">The zero-based index of the element to get or set.</param>
-    public async Task ShowTabByIndexAsync(int index)
+    /// <param name="tabIndex">The zero-based index of the element to get or set.</param>
+    public async Task ShowTabByIndexAsync(int tabIndex)
     {
-        if (index < 0 || index >= tabs.Count) throw new IndexOutOfRangeException();
+        if (tabIndex < 0 || tabIndex >= tabs.Count) throw new IndexOutOfRangeException();
 
-        var tab = tabs[index];
+        var tab = tabs[tabIndex];
 
         if (tab != null && !tab.Disabled)
             await ShowTabAsync(tab);
@@ -200,12 +200,12 @@ public partial class Tabs : BlazorBootstrapComponentBase
     [Parameter]
     public bool EnableFadeEffect { get; set; }
 
-    private bool isVertical =>
+    private bool IsVertical =>
         NavStyle == NavStyle.Vertical
         || NavStyle == NavStyle.VerticalPills
         || NavStyle == NavStyle.VerticalUnderline;
 
-    private string? navParentDivCssClass => isVertical ? "d-flex" : default;
+    private string? NavParentDivCssClass => IsVertical ? "d-flex" : default;
 
     /// <summary>
     /// Get or sets the nav style.
@@ -237,7 +237,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<TabsEventArgs> OnShown { get; set; }
 
-    private string? tabContentCssClass => isVertical ? "tab-content flex-grow-1" : "tab-content";
+    private string? TabContentCssClass => IsVertical ? "tab-content flex-grow-1" : "tab-content";
 
     #endregion
 }
