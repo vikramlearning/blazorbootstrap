@@ -9,11 +9,11 @@
 {
     <div class="@navParentDivCssClass">
         <nav>
-            <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="tablist" aria-orientation="horizontal">
+            <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="tablist">
                 @foreach (var t in tabs)
                 {
                     var tabElementId = t.ElementId;
-                    <button class="nav-link @(t.Disabled ? "disabled" : "")" id="@t.ElementId" data-bs-target="#nav-@t.ElementId" type="button" role="tab" aria-selected="false" @onclick="async () => await OnTabClickAsync(tabElementId)">
+                    <button class="nav-link @(t.Disabled ? "disabled" : "")" id="@t.ElementId" data-bs-target="#nav-@t.ElementId" type="button" role="tab" aria-selected="false" @onclick="async () => await OnTabClickAsync(t)">
                         @if (t.TitleTemplate != null)
                         {
                             @t.TitleTemplate

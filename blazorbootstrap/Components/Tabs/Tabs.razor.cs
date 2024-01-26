@@ -47,6 +47,11 @@ public partial class Tabs : BlazorBootstrapComponentBase
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
+
+        Attributes ??= new();
+        if(isVertical)
+            Attributes.Add("aria-orientation", "vertical");
+
         await base.OnInitializedAsync();
 
         ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
