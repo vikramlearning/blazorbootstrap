@@ -10,9 +10,9 @@
 </div>
 
 @code {
-    private string customerName;
+    private string? customerName;
 
-    public IEnumerable<Customer> customers;
+    public IEnumerable<Customer> customers = Enumerable.Empty<Customer>();
 
     private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
     {

@@ -34,7 +34,7 @@ public class EmployeeService : IEmployeeService
         if (filters is not null && filters.Any())
         {
             var parameterExpression = Expression.Parameter(typeof(Employee)); // second param optional
-            Expression<Func<Employee, bool>> lambda = null;
+            Expression<Func<Employee, bool>>? lambda = null;
 
             foreach (var filter in filters)
             {

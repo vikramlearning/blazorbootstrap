@@ -52,7 +52,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// <param name="chartData"></param>
     /// <param name="chartOptions"></param>
     /// <param name="plugins"></param>
-    public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
         {

@@ -108,7 +108,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </summary>
     public void Enable() => Disabled = false;
 
-    private string ExtractValue(object value, CultureInfo cultureInfo)
+    private string ExtractValue(object? value, CultureInfo cultureInfo)
     {
         if (value is null || string.IsNullOrWhiteSpace(value.ToString()))
             return string.Empty;
@@ -121,7 +121,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
         if (AllowNegativeNumbers)
             validChars = string.Concat(validChars, "-");
 
-        return string.Concat(value?.ToString()?.Replace(",", ".")?.Where(c => validChars.Contains(c)));
+        return string.Concat(value.ToString()!.Replace(",", ".").Where(c => validChars.Contains(c)));
     }
 
     private bool isFloatingNumber() =>
@@ -138,7 +138,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns>bool</returns>
-    private bool IsLeftGreaterThanRight(TValue left, TValue right)
+    private bool IsLeftGreaterThanRight(TValue? left, TValue? right)
     {
         // sbyte
         if (typeof(TValue) == typeof(sbyte))
@@ -325,7 +325,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
         formattedValue = await JS.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", Value is null ? "" : Value, Locale, options);
     }
 
-    private bool TryParseValue(object value, out TValue newValue)
+    private bool TryParseValue(object value, out TValue? newValue)
     {
         try
         {
@@ -501,7 +501,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the value.
     /// </summary>
     [Parameter]
-    public TValue Value { get; set; } = default!;
+    public TValue? Value { get; set; } = default!;
 
     /// <summary>
     /// This event fired on every user keystroke that changes the CurrencyInput value.
