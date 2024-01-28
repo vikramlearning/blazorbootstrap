@@ -85,7 +85,7 @@ public static class EnumExtensions
     /// </summary>
     /// <param name="buttonType"></param>
     /// <returns>string</returns>
-    public static string ToButtonTypeString(this ButtonType buttonType) =>
+    public static string? ToButtonTypeString(this ButtonType buttonType) =>
         buttonType switch
         {
             ButtonType.Button => "button",
@@ -151,7 +151,7 @@ public static class EnumExtensions
     /// </summary>
     /// <param name="target"></param>
     /// <returns>string</returns>
-    public static string ToTargetString(this Target target) =>
+    public static string? ToTargetString(this Target target) =>
         target switch
         {
             Target.Blank => "_blank",

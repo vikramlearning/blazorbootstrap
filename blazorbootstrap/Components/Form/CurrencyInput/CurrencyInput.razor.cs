@@ -33,7 +33,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             var currentValue = Value; // object
 
             if (currentValue is null || !TryParseValue(currentValue, out var value))
-                Value = default;
+                Value = default!;
             else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, Value)) // value < min
                 Value = Min;
             else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
@@ -121,7 +121,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
         if (AllowNegativeNumbers)
             validChars = string.Concat(validChars, "-");
 
-        return string.Concat(value?.ToString()?.Replace(",", ".")?.Where(c => validChars.Contains(c)));
+        return string.Concat(value?.ToString()?.Replace(",", ".")?.Where(c => validChars.Contains(c))!);
     }
 
     private bool isFloatingNumber() =>
@@ -271,10 +271,10 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
     private async Task OnChange(ChangeEventArgs e)
     {
-        var newValue = ExtractValue(e.Value, cultureInfo);
+        var newValue = ExtractValue(e.Value!, cultureInfo);
 
         if (newValue is null || !TryParseValue(newValue, out var value))
-            Value = default;
+            Value = default!;
         else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, value)) // value < min
             Value = Min;
         else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
@@ -385,14 +385,14 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
                 return true;
             }
 
-            newValue = default;
+            newValue = default!;
 
             return false;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"exception: {ex.Message}");
-            newValue = default;
+            newValue = default!;
 
             return false;
         }

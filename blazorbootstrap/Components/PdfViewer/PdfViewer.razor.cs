@@ -26,7 +26,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-        await PdfViewerJsInterop.InitializeAsync(objRef, ElementId, scale, rotation, Url);
+        await PdfViewerJsInterop.InitializeAsync(objRef!, ElementId!, scale, rotation, Url!);
         await base.OnInitializedAsync();
     }
 
@@ -56,7 +56,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             OnPageChanged.InvokeAsync(new PdfViewerEventArgs(pageNumber, pagesCount));
     }
 
-    private async Task FirstPageAsync() => await PdfViewerJsInterop.FirstPageAsync(objRef, ElementId);
+    private async Task FirstPageAsync() => await PdfViewerJsInterop.FirstPageAsync(objRef!, ElementId!);
 
     private int GetZoomPercentage(int zoomLevel) =>
         zoomLevel switch
@@ -81,9 +81,9 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             _ => 100
         };
 
-    private async Task LastPageAsync() => await PdfViewerJsInterop.LastPageAsync(objRef, ElementId);
+    private async Task LastPageAsync() => await PdfViewerJsInterop.LastPageAsync(objRef!, ElementId!);
 
-    private async Task NextPageAsync() => await PdfViewerJsInterop.NextPageAsync(objRef, ElementId);
+    private async Task NextPageAsync() => await PdfViewerJsInterop.NextPageAsync(objRef!, ElementId!);
 
     private async Task PageNumberChangedAsync(int value)
     {
@@ -92,25 +92,25 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         else
             pageNumber = value;
 
-        await PdfViewerJsInterop.GotoPageAsync(objRef, ElementId, pageNumber);
+        await PdfViewerJsInterop.GotoPageAsync(objRef!, ElementId!, pageNumber);
     }
 
-    private async Task PreviousPageAsync() => await PdfViewerJsInterop.PreviousPageAsync(objRef, ElementId);
+    private async Task PreviousPageAsync() => await PdfViewerJsInterop.PreviousPageAsync(objRef!, ElementId!);
 
-    private async Task PrintAsync() => await PdfViewerJsInterop.PrintAsync(objRef, ElementId, Url);
+    private async Task PrintAsync() => await PdfViewerJsInterop.PrintAsync(objRef!, ElementId!, Url!);
 
     private async Task RotateClockwiseAsync()
     {
         rotation += 90;
-        rotation = rotation == 360 ? 0 : rotation;
-        await PdfViewerJsInterop.RotateAsync(objRef, ElementId, rotation);
+        rotation = rotation.Equals(360) ? 0 : rotation;
+        await PdfViewerJsInterop.RotateAsync(objRef!, ElementId!, rotation);
     }
 
     private async Task RotateCounterclockwiseAsync()
     {
         rotation -= 90;
-        rotation = rotation == -360 ? 0 : rotation;
-        await PdfViewerJsInterop.RotateAsync(objRef, ElementId, rotation);
+        rotation = rotation.Equals(-360) ? 0 : rotation;
+        await PdfViewerJsInterop.RotateAsync(objRef!, ElementId!, rotation);
     }
 
     private async Task ZoomInAsync()
@@ -122,7 +122,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         var zp = GetZoomPercentage(zoomLevel);
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
-        await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, scale);
+        await PdfViewerJsInterop.ZoomInOutAsync(objRef!, ElementId!, scale);
     }
 
     private async Task ZoomOutAsync()
@@ -134,7 +134,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         var zp = GetZoomPercentage(zoomLevel);
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
-        await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, scale);
+        await PdfViewerJsInterop.ZoomInOutAsync(objRef!, ElementId!, scale);
     }
 
     private async Task ResetZoomAsync()
@@ -143,7 +143,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         var zp = GetZoomPercentage(defaultZoomLevel);
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
-        await PdfViewerJsInterop.ZoomInOutAsync(objRef, ElementId, scale);
+        await PdfViewerJsInterop.ZoomInOutAsync(objRef!, ElementId!, scale);
     }
 
     #endregion

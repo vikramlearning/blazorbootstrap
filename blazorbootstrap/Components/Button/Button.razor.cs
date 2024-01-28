@@ -54,7 +54,7 @@ public partial class Button : BlazorBootstrapComponentBase
         builder.Append(BootstrapClassProvider.ButtonDisabled(), Disabled && Type == ButtonType.Link);
         builder.Append(BootstrapClassProvider.ButtonActive(), Active);
         builder.Append(BootstrapClassProvider.ButtonBlock(), Block);
-        builder.Append(BootstrapClassProvider.ButtonLoading(), Loading && LoadingTemplate != null);
+        builder.Append(BootstrapClassProvider.ButtonLoading()!, Loading && LoadingTemplate is not null);
         builder.Append(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
 
         base.BuildClasses(builder);
@@ -330,7 +330,7 @@ public partial class Button : BlazorBootstrapComponentBase
         }
     }
 
-    private string buttonTypeString => Type.ToButtonTypeString();
+    private string buttonTypeString => Type.ToButtonTypeString()!;
 
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="Button" />.

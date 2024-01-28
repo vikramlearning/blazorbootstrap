@@ -27,7 +27,7 @@ public class BootstrapIconProvider
     /// </summary>
     /// <param name="iconSize">The icon size.</param>
     /// <returns>The CSS class for the icon size, or null if the size is not supported.</returns>
-    public string IconSize(IconSize iconSize)
+    public string? IconSize(IconSize iconSize)
     {
         return iconSize switch
                {

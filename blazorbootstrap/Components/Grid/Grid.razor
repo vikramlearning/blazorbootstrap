@@ -33,7 +33,7 @@
                             var columnClassList = new HashSet<string>();
                             var columnStyleList = new List<string>();
 
-                            columnClassList.Add(column.Class);
+                            columnClassList.Add(column.Class!);
                             if (column.Freeze)
                             {
                                 columnClassList.Add("freeze-column");

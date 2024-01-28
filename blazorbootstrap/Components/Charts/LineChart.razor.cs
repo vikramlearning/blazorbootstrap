@@ -99,7 +99,7 @@ public partial class LineChart : BlazorBootstrapChart
         return chartData;
     }
 
-    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));

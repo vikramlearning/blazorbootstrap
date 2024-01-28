@@ -32,7 +32,9 @@ public partial class Accordion
     /// <param name="index">The index of the AccordionItem to hide.</param>
     public async Task HideAccordionItemByIndexAsync(int index)
     {
-        if (index < 0 || index >= items.Count) throw new IndexOutOfRangeException();
+        if (!items?.Any() ?? false) return;
+
+        if (index < 0 || index >= items!.Count) throw new IndexOutOfRangeException();
 
         var accordionItem = items[index];
 
@@ -46,7 +48,9 @@ public partial class Accordion
     /// <param name="accordionItemName">The name of the AccordionItem to hide.</param>
     public async Task HideAccordionItemByNameAsync(string accordionItemName)
     {
-        var accordionItem = items.FirstOrDefault(x => x.Name == accordionItemName);
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.FirstOrDefault(x => x.Name == accordionItemName);
 
         if (accordionItem is not null)
             await accordionItem.HideAsync();
@@ -57,7 +61,9 @@ public partial class Accordion
     /// </summary>
     public async Task HideAllAccordionItemsAsync()
     {
-        foreach (var accordionItem in items)
+        if (!items?.Any() ?? false) return;
+
+        foreach (var accordionItem in items!)
             if (accordionItem is not null)
                 await accordionItem.HideAsync();
     }
@@ -67,7 +73,9 @@ public partial class Accordion
     /// </summary>
     public async Task HideFirstAccordionItemAsync()
     {
-        var accordionItem = items.FirstOrDefault();
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.FirstOrDefault();
 
         if (accordionItem is not null)
             await accordionItem.HideAsync();
@@ -78,7 +86,9 @@ public partial class Accordion
     /// </summary>
     public async Task HideLastAccordionItemAsync()
     {
-        var accordionItem = items.LastOrDefault();
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.LastOrDefault();
 
         if (accordionItem is not null)
             await accordionItem.HideAsync();
@@ -90,7 +100,9 @@ public partial class Accordion
     /// <param name="index">The index of the AccordionItem to show.</param>
     public async Task ShowAccordionItemByIndexAsync(int index)
     {
-        if (index < 0 || index >= items.Count) throw new IndexOutOfRangeException();
+        if (!items?.Any() ?? false) return;
+
+        if (index < 0 || index >= items!.Count) throw new IndexOutOfRangeException();
 
         var accordionItem = items[index];
 
@@ -104,7 +116,9 @@ public partial class Accordion
     /// <param name="accordionItemName">The name of the AccordionItem to show.</param>
     public async Task ShowAccordionItemByNameAsync(string accordionItemName)
     {
-        var accordionItem = items.FirstOrDefault(x => x.Name == accordionItemName);
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.FirstOrDefault(x => x.Name == accordionItemName);
 
         if (accordionItem is not null)
             await accordionItem.ShowAsync();
@@ -115,8 +129,10 @@ public partial class Accordion
     /// </summary>
     public async Task ShowAllAccordionItemsAsync()
     {
+        if (!items?.Any() ?? false) return;
+
         if (AlwaysOpen)
-            foreach (var accordionItem in items)
+            foreach (var accordionItem in items!)
                 if (accordionItem is not null)
                     await accordionItem.ShowAsync();
     }
@@ -126,7 +142,9 @@ public partial class Accordion
     /// </summary>
     public async Task ShowFirstAccordionItemAsync()
     {
-        var accordionItem = items.FirstOrDefault();
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.FirstOrDefault();
 
         if (accordionItem is not null)
             await accordionItem.ShowAsync();
@@ -137,7 +155,9 @@ public partial class Accordion
     /// </summary>
     public async Task ShowLastAccordionItemAsync()
     {
-        var accordionItem = items.LastOrDefault();
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.LastOrDefault();
 
         if (accordionItem is not null)
             await accordionItem.ShowAsync();
@@ -149,7 +169,11 @@ public partial class Accordion
     /// <param name="accordionItem">The AccordionItem to add.</param>
     internal void Add(AccordionItem accordionItem)
     {
-        if (accordionItem != null) items?.Add(accordionItem);
+        if (items is null) 
+            items = new List<AccordionItem>();
+
+        if (accordionItem is not null)
+            items.Add(accordionItem);
     }
 
     #endregion

@@ -44,7 +44,7 @@ public partial class Badge
     [Parameter]
     public RenderFragment ChildContent
     {
-        get => childContent;
+        get => childContent!;
         set
         {
             childContent = value;

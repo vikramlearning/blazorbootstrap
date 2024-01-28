@@ -95,7 +95,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
             this.title = title;
 
         childComponent = type;
-        this.parameters = parameters;
+        this.parameters = parameters!;
         await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", ElementId);
         await InvokeAsync(StateHasChanged);
     }

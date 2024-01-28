@@ -229,7 +229,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// </summary>
     /// <remarks>
     /// Note that this ID is not defined for the component but instead for the underlined element that it represents.
-    /// eg: for the TextEdit the ID will be set on the input element.
     /// </remarks>
     [Parameter]
     public string? ElementId { get; set; }

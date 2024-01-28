@@ -198,7 +198,7 @@ public class BootstrapClassProvider
 
     public string TextNoWrap() => "text-nowrap";
 
-    public string ToAlertColor(AlertColor color) =>
+    public string? ToAlertColor(AlertColor color) =>
         color switch
         {
             BlazorBootstrap.AlertColor.Primary => "primary",
@@ -212,7 +212,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToAlignment(Alignment alignment) =>
+    public string? ToAlignment(Alignment alignment) =>
         alignment switch
         {
             Alignment.Start => "start",
@@ -232,7 +232,7 @@ public class BootstrapClassProvider
             _ => ""
         };
 
-    public string ToBackgroundColor(BackgroundColor color) =>
+    public string? ToBackgroundColor(BackgroundColor color) =>
         color switch
         {
             BlazorBootstrap.BackgroundColor.Primary => "primary",
@@ -249,7 +249,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToBadgeColor(BadgeColor color) =>
+    public string? ToBadgeColor(BadgeColor color) =>
         color switch
         {
             BlazorBootstrap.BadgeColor.Primary => "primary",
@@ -286,7 +286,7 @@ public class BootstrapClassProvider
             _ => "top-0 start-100 translate-middle" // default: Top right
         };
 
-    public string ToButtonColor(ButtonColor color) =>
+    public string? ToButtonColor(ButtonColor color) =>
         color switch
         {
             BlazorBootstrap.ButtonColor.Primary => "primary",
@@ -326,7 +326,7 @@ public class BootstrapClassProvider
             _ => ""
         };
 
-    public string ToColor(TextColor color) =>
+    public string? ToColor(TextColor color) =>
         color switch
         {
             BlazorBootstrap.TextColor.Primary => "primary",
@@ -340,7 +340,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToDialogSize(DialogSize size) =>
+    public string? ToDialogSize(DialogSize size) =>
         size switch
         {
             DialogSize.Regular => null,
@@ -350,7 +350,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToDisplayHeadingSize(DisplayHeadingSize displayHeadingSize) =>
+    public string? ToDisplayHeadingSize(DisplayHeadingSize displayHeadingSize) =>
         displayHeadingSize switch
         {
             BlazorBootstrap.DisplayHeadingSize.H1 => "1",
@@ -389,7 +389,7 @@ public class BootstrapClassProvider
             _ => ""
         };
 
-    public string ToHeadingSize(HeadingSize headingSize) =>
+    public string? ToHeadingSize(HeadingSize headingSize) =>
         headingSize switch
         {
             BlazorBootstrap.HeadingSize.H1 => "1",
@@ -401,7 +401,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToIconColor(IconColor color) =>
+    public string? ToIconColor(IconColor color) =>
         color switch
         {
             BlazorBootstrap.IconColor.Primary => "primary",
@@ -418,7 +418,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToModalFullscreen(ModalFullscreen fullscreen) =>
+    public string? ToModalFullscreen(ModalFullscreen fullscreen) =>
         fullscreen switch
         {
             ModalFullscreen.Disabled => null,
@@ -431,7 +431,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToModalHeaderBottomBorderColor(ModalType modalType) =>
+    public string? ToModalHeaderBottomBorderColor(ModalType modalType) =>
         modalType switch
         {
             ModalType.Primary => "border-primary",
@@ -445,7 +445,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToModalSize(ModalSize size) =>
+    public string? ToModalSize(ModalSize size) =>
         size switch
         {
             ModalSize.Regular => null,
@@ -455,7 +455,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToModalTypeColor(ModalType modalType) =>
+    public string? ToModalTypeColor(ModalType modalType) =>
         modalType switch
         {
             ModalType.Primary => "primary",
@@ -469,7 +469,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToOffcanvasSize(OffcanvasSize size) =>
+    public string? ToOffcanvasSize(OffcanvasSize size) =>
         size switch
         {
             OffcanvasSize.Regular => null,
@@ -482,7 +482,7 @@ public class BootstrapClassProvider
 
     public string TooltipAlwaysActive() => "b-tooltip-active";
 
-    public string TooltipColor(TooltipColor color) => ToTooltipColor(color);
+    public string? TooltipColor(TooltipColor color) => ToTooltipColor(color);
 
     public string TooltipFade() => "b-tooltip-fade";
 
@@ -492,7 +492,7 @@ public class BootstrapClassProvider
 
     public string TooltipPlacement(TooltipPlacement tooltipPlacement) => $"{Tooltip()}-{ToTooltipPlacement(tooltipPlacement)}";
 
-    public string ToPaginationSize(PaginationSize size) =>
+    public string? ToPaginationSize(PaginationSize size) =>
         size switch
         {
             BlazorBootstrap.PaginationSize.Small => "sm",
@@ -500,7 +500,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToPlaceholderAnimation(PlaceholderAnimation animation) =>
+    public string? ToPlaceholderAnimation(PlaceholderAnimation animation) =>
         animation switch
         {
             BlazorBootstrap.PlaceholderAnimation.Glow => "glow",
@@ -508,7 +508,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToPlaceholderColor(PlaceholderColor color) =>
+    public string? ToPlaceholderColor(PlaceholderColor color) =>
         color switch
         {
             BlazorBootstrap.PlaceholderColor.Primary => "primary",
@@ -522,7 +522,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToPlaceholderSize(PlaceholderSize size) =>
+    public string? ToPlaceholderSize(PlaceholderSize size) =>
         size switch
         {
             BlazorBootstrap.PlaceholderSize.ExtraSmall => "xs",
@@ -531,7 +531,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToPlaceholderWidth(PlaceholderWidth width) =>
+    public string? ToPlaceholderWidth(PlaceholderWidth width) =>
         width switch
         {
             BlazorBootstrap.PlaceholderWidth.Col1 => "col-1",
@@ -569,7 +569,7 @@ public class BootstrapClassProvider
             _ => ""
         };
 
-    public string ToProgressColor(ProgressColor color) =>
+    public string? ToProgressColor(ProgressColor color) =>
         color switch
         {
             ProgressColor.Primary => "primary",
@@ -582,7 +582,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToScreenreader(Screenreader screenreader) =>
+    public string? ToScreenreader(Screenreader screenreader) =>
         screenreader switch
         {
             Screenreader.Only => "sr-only",
@@ -590,7 +590,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToSize(Size size) =>
+    public string? ToSize(Size size) =>
         size switch
         {
             Size.ExtraSmall => "xs",
@@ -601,7 +601,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToTabColor(TabColor color) =>
+    public string? ToTabColor(TabColor color) =>
         color switch
         {
             TabColor.Primary => "bg-primary text-white",
@@ -624,7 +624,7 @@ public class BootstrapClassProvider
             _ => ""
         };
 
-    public string ToTextColor(TextColor color) =>
+    public string? ToTextColor(TextColor color) =>
         color switch
         {
             BlazorBootstrap.TextColor.Primary => "primary",
@@ -641,7 +641,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToToastBackgroundColor(ToastType toastType) =>
+    public string? ToToastBackgroundColor(ToastType toastType) =>
         toastType switch
         {
             ToastType.Primary => "primary",
@@ -670,7 +670,7 @@ public class BootstrapClassProvider
             _ => "top-0 end-0" // default: Top right
         };
 
-    public string ToToastTextColor(ToastType toastType) =>
+    public string? ToToastTextColor(ToastType toastType) =>
         toastType switch
         {
             ToastType.Primary
@@ -684,7 +684,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string ToTooltipColor(TooltipColor color) =>
+    public string? ToTooltipColor(TooltipColor color) =>
         color switch
         {
             BlazorBootstrap.TooltipColor.Primary => "bb-tooltip-primary",

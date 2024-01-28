@@ -59,7 +59,7 @@ public partial class DropdownItem
         base.OnInitialized();
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         if (isFirstRenderComplete)
         {
@@ -117,11 +117,11 @@ public partial class DropdownItem
                 Attributes.Add("role", "button");
 
             if (!Attributes.TryGetValue("href", out _))
-                Attributes.Add("href", To);
+                Attributes.Add("href", To!);
 
             if (Target != Target.None)
                 if (!Attributes.TryGetValue("target", out _))
-                    Attributes.Add("target", Target.ToTargetString());
+                    Attributes.Add("target", Target.ToTargetString()!);
 
             if (Disabled)
             {
@@ -194,7 +194,7 @@ public partial class DropdownItem
         }
     }
 
-    private string buttonTypeString => Type.ToButtonTypeString();
+    private string buttonTypeString => Type.ToButtonTypeString()!;
 
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="ChildContent" />.

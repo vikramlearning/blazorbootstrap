@@ -21,11 +21,11 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     protected override void OnParametersSet()
     {
-        if (!HasChilds || ChildItems is null || !ChildItems.Any())
+        if (!HasChilds || !(ChildItems?.Any() ?? false))
             return;
 
         foreach (var childItem in ChildItems)
-            if (ShouldExpand(NavigationManager.Uri, childItem.Href))
+            if (ShouldExpand(NavigationManager.Uri, childItem.Href!))
             {
                 navitemGroupExpanded = true;
 

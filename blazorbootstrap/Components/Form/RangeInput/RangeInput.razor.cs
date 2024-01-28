@@ -39,7 +39,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             var currentValue = Value; // object
 
             if (currentValue is null || !TryParseValue(currentValue, out var value))
-                Value = default;
+                Value = default!;
             else if (Min is not null && IsLeftGreaterThanRight(Min, Value)) // value < min
                 Value = Min;
             else if (Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
@@ -89,7 +89,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     [JSInvokable]
     public async Task bsOnInput(object? newValue)
     {
-        SetValue(newValue.ToString());
+        SetValue(newValue?.ToString());
         await HandleChangeAsync();
     }
 
@@ -274,7 +274,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     private void SetValue(object? newValue)
     {
         if (newValue is null || !TryParseValue(newValue, out var value))
-            Value = default;
+            Value = default!;
         else if (Min is not null && IsLeftGreaterThanRight(Min, value)) // value < min
             Value = Min;
         else if (Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max

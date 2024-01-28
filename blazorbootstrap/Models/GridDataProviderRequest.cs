@@ -16,7 +16,7 @@ public class GridDataProviderRequest<TItem>
             try
             {
                 var parameterExpression = Expression.Parameter(typeof(TItem)); // second param optional
-                Expression<Func<TItem, bool>> lambda = null;
+                Expression<Func<TItem, bool>>? lambda = null;
 
                 foreach (var filter in Filters)
                     if (lambda is null)
@@ -24,7 +24,8 @@ public class GridDataProviderRequest<TItem>
                     else
                         lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter));
 
-                resultData = resultData.Where(lambda.Compile());
+                if (lambda is not null)
+                    resultData = resultData.Where(lambda.Compile());
             }
             catch (Exception ex)
             {
@@ -83,7 +84,7 @@ public class GridDataProviderRequest<TItem>
     /// <summary>
     /// Current filters.
     /// </summary>
-    public IEnumerable<FilterItem> Filters { get; init; }
+    public IEnumerable<FilterItem> Filters { get; init; } = default!;
 
     /// <summary>
     /// Page number.
@@ -98,7 +99,7 @@ public class GridDataProviderRequest<TItem>
     /// <summary>
     /// Current sorting.
     /// </summary>
-    public IEnumerable<SortingItem<TItem>> Sorting { get; init; }
+    public IEnumerable<SortingItem<TItem>> Sorting { get; init; } = default!;
 
     #endregion
 }

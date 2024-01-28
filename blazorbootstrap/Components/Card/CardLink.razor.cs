@@ -83,7 +83,7 @@ public partial class CardLink
         Attributes ??= new Dictionary<string, object>();
 
         if (!Attributes.TryGetValue("href", out _))
-            Attributes.Add("href", To);
+            Attributes.Add("href", To!);
 
         if (Target != Target.None)
             if (!Attributes.TryGetValue("target", out _))
