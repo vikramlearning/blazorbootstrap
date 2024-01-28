@@ -121,7 +121,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     [Parameter] public Target Target { get; set; }
 
-    private string targetString => Target.ToTargetString();
+    private string targetString => Target.ToTargetString()!;
 
     [Parameter] public string? Text { get; set; }
 

@@ -87,7 +87,7 @@ public partial class CardLink
 
         if (Target != Target.None)
             if (!Attributes.TryGetValue("target", out _))
-                Attributes.Add("target", Target.ToTargetString());
+                Attributes.Add("target", Target.ToTargetString()!);
 
         if (Disabled)
         {

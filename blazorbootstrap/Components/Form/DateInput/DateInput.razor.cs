@@ -48,7 +48,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
                 else // DateOnly? / DateTime?
                     Value = default!;
             }
-            else if (EnableMinMax && min is not null && IsLeftGreaterThanRight(min, Value)) //  value < min
+            else if (EnableMinMax && min is not null && IsLeftGreaterThanRight(min, Value!)) //  value < min
             {
                 Value = EnableMinMax && min is not null ? min : default!;
             }
@@ -63,7 +63,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
 
             formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
             formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
-            formattedValue = GetFormattedValue(Value);
+            formattedValue = GetFormattedValue(Value!);
 
             await ValueChanged.InvokeAsync(Value);
         }
@@ -236,7 +236,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
 
         //this.formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
         //this.formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
-        formattedValue = GetFormattedValue(Value);
+        formattedValue = GetFormattedValue(Value!);
 
         if (oldValue!.Equals(Value))
             await JS.InvokeVoidAsync("window.blazorBootstrap.dateInput.setValue", ElementId, formattedValue);
