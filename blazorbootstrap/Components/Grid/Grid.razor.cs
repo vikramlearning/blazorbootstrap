@@ -19,8 +19,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private string headerCheckboxId = default!;
 
-    private CheckboxState headerCheckboxState = CheckboxState.Unchecked;
-
     private RenderFragment? headerSelectionTemplate;
 
     private bool isFirstRenderComplete = false;

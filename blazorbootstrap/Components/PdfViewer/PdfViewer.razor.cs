@@ -4,9 +4,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private double maxScale = 5;
     private int maxZoomLevel = 17;
-    private double minScale = 0.25;
 
     private int minZoomLevel = 1;
 

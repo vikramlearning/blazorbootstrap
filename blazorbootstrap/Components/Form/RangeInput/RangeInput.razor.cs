@@ -5,7 +5,8 @@
 /// </summary>
 /// <typeparam name="TValue">The type of the numeric value.</typeparam>
 /// <remarks>
-/// Supported types for TValue: sbyte, sbyte?, short, short?, int, int?, long, long?, float, float?, double, double?, decimal, decimal?
+/// Supported types for TValue: sbyte, sbyte?, short, short?, int, int?, long, long?, float, float?, double, double?,
+/// decimal, decimal?
 /// </remarks>
 public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 {
@@ -13,10 +14,9 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
     private FieldIdentifier fieldIdentifier;
 
-    private sbyte min = 0;
     private sbyte max = 100;
-    private sbyte step = 1;
-    private bool showTickMarks => TickMarks?.Any() ?? false;
+
+    private sbyte min = 0;
 
     private DotNetObjectReference<RangeInput<TValue>> objRef = default!;
 
@@ -86,6 +86,13 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    [JSInvokable]
+    public async Task bsOnInput(object? newValue)
+    {
+        SetValue(newValue.ToString());
+        await HandleChangeAsync();
+    }
+
     /// <summary>
     /// Disables the range input.
     /// </summary>
@@ -95,6 +102,12 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Enables the range input.
     /// </summary>
     public void Enable() => Disabled = false;
+
+    private async Task HandleChangeAsync()
+    {
+        await ValueChanged.InvokeAsync(Value);
+        EditContext?.NotifyFieldChanged(fieldIdentifier);
+    }
 
     /// <summary>
     /// Determines where the left input is greater than the right input.
@@ -233,94 +246,10 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
         return false;
     }
 
-    [JSInvokable]
-    public async Task bsOnInput(object? newValue)
-    {
-        SetValue(newValue.ToString());
-        await HandleChangeAsync();
-    }
-
     private async Task OnChange(ChangeEventArgs e)
     {
         SetValue(e.Value);
         await HandleChangeAsync();
-    }
-
-    private void SetValue(object? newValue)
-    {
-        if (newValue is null || !TryParseValue(newValue, out var value))
-            Value = default;
-        else if (Min is not null && IsLeftGreaterThanRight(Min, value)) // value < min
-            Value = Min;
-        else if (Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
-            Value = Max;
-        else
-            Value = value;
-    }
-
-    private async Task HandleChangeAsync()
-    {
-        await ValueChanged.InvokeAsync(Value);
-        EditContext?.NotifyFieldChanged(fieldIdentifier);
-    }
-
-    private bool TryParseValue(object value, out TValue newValue)
-    {
-        try
-        {
-            // sbyte? / sbyte
-            if (typeof(TValue) == typeof(sbyte?) || typeof(TValue) == typeof(sbyte))
-            {
-                newValue = (TValue)Convert.ChangeType(value, typeof(sbyte));
-                return true;
-            }
-            // short? / short
-            if (typeof(TValue) == typeof(short?) || typeof(TValue) == typeof(short))
-            {
-                newValue = (TValue)Convert.ChangeType(value, typeof(short));
-                return true;
-            }
-            // int? / int
-            if (typeof(TValue) == typeof(int?) || typeof(TValue) == typeof(int))
-            {
-                newValue = (TValue)Convert.ChangeType(value, typeof(int));
-                return true;
-            }
-            // long? / long
-            if (typeof(TValue) == typeof(long?) || typeof(TValue) == typeof(long))
-            {
-                newValue = (TValue)Convert.ChangeType(value, typeof(long));
-                return true;
-            }
-            // float? / float
-            if (typeof(TValue) == typeof(float?) || typeof(TValue) == typeof(float))
-            {
-                newValue = (TValue)Convert.ChangeType(value, typeof(float));
-                return true;
-            }
-            // double? / double
-            if (typeof(TValue) == typeof(double?) || typeof(TValue) == typeof(double))
-            {
-                newValue = (TValue)Convert.ChangeType(value, typeof(double));
-                return true;
-            }
-            // decimal? / decimal
-            if (typeof(TValue) == typeof(decimal?) || typeof(TValue) == typeof(decimal))
-            {
-                newValue = (TValue)Convert.ChangeType(value, typeof(decimal));
-                return true;
-            }
-
-            newValue = default!;
-
-            return false;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"exception: {ex.Message}");
-            newValue = default!;
-            return false;
-        }
     }
 
     private void SetDefaultValues()
@@ -335,10 +264,95 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             || typeof(TValue) == typeof(decimal?))
         {
             if (Min is null)
-                Min = TryParseValue(min, out TValue _min) ? _min : _min;
+                Min = TryParseValue(min, out var _min) ? _min : _min;
 
             if (Max is null)
-                Min = TryParseValue(min, out TValue _max) ? _max : _max;
+                Max = TryParseValue(max, out var _max) ? _max : _max;
+        }
+    }
+
+    private void SetValue(object? newValue)
+    {
+        if (newValue is null || !TryParseValue(newValue, out var value))
+            Value = default;
+        else if (Min is not null && IsLeftGreaterThanRight(Min, value)) // value < min
+            Value = Min;
+        else if (Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
+            Value = Max;
+        else
+            Value = value;
+    }
+
+    private bool TryParseValue(object value, out TValue newValue)
+    {
+        try
+        {
+            // sbyte? / sbyte
+            if (typeof(TValue) == typeof(sbyte?) || typeof(TValue) == typeof(sbyte))
+            {
+                newValue = (TValue)Convert.ChangeType(value, typeof(sbyte));
+
+                return true;
+            }
+
+            // short? / short
+            if (typeof(TValue) == typeof(short?) || typeof(TValue) == typeof(short))
+            {
+                newValue = (TValue)Convert.ChangeType(value, typeof(short));
+
+                return true;
+            }
+
+            // int? / int
+            if (typeof(TValue) == typeof(int?) || typeof(TValue) == typeof(int))
+            {
+                newValue = (TValue)Convert.ChangeType(value, typeof(int));
+
+                return true;
+            }
+
+            // long? / long
+            if (typeof(TValue) == typeof(long?) || typeof(TValue) == typeof(long))
+            {
+                newValue = (TValue)Convert.ChangeType(value, typeof(long));
+
+                return true;
+            }
+
+            // float? / float
+            if (typeof(TValue) == typeof(float?) || typeof(TValue) == typeof(float))
+            {
+                newValue = (TValue)Convert.ChangeType(value, typeof(float));
+
+                return true;
+            }
+
+            // double? / double
+            if (typeof(TValue) == typeof(double?) || typeof(TValue) == typeof(double))
+            {
+                newValue = (TValue)Convert.ChangeType(value, typeof(double));
+
+                return true;
+            }
+
+            // decimal? / decimal
+            if (typeof(TValue) == typeof(decimal?) || typeof(TValue) == typeof(decimal))
+            {
+                newValue = (TValue)Convert.ChangeType(value, typeof(decimal));
+
+                return true;
+            }
+
+            newValue = default!;
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"exception: {ex.Message}");
+            newValue = default!;
+
+            return false;
         }
     }
 
@@ -370,6 +384,8 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public TValue Min { get; set; } = default!;
+
+    private bool showTickMarks => TickMarks?.Any() ?? false;
 
     /// <summary>
     /// Gets or sets the step value of the range input.

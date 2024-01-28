@@ -6,9 +6,8 @@ public partial class DropdownToggleButton
 
     private ButtonColor color = ButtonColor.None;
 
-    private bool isSplitButton;
-
     private Size size = Size.None;
+
     private bool split;
 
     #endregion
