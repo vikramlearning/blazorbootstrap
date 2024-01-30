@@ -7,12 +7,12 @@
 <Button Color="ButtonColor.Primary" @onclick="() => OnShowOffcanvasClick(Placement.Bottom)">Show bottom offcanvas</Button>
 
 @code {
-    private Offcanvas offcanvas;
+    private Offcanvas offcanvas = default!;
     private Placement placement;
 
     private async Task OnShowOffcanvasClick(Placement placement)
     {
         this.placement = placement;
-        await offcanvas?.ShowAsync();
+        await offcanvas.ShowAsync();
     }
 }

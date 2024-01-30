@@ -4,7 +4,7 @@ public class Demo : ComponentBase
 {
     #region Members
 
-    private string code;
+    private string? code;
 
     #endregion
 
@@ -15,7 +15,7 @@ public class Demo : ComponentBase
         if (code is null)
         {
             var resourceName = Type.FullName + ".razor";
-            using (Stream stream = Type.Assembly.GetManifestResourceStream(resourceName))
+            using (Stream stream = Type.Assembly.GetManifestResourceStream(resourceName)!)
             {
                 try
                 {
@@ -163,7 +163,7 @@ public class Demo : ComponentBase
 
     [Parameter] public bool Tabs { get; set; } = false;
 
-    [Parameter] public Type Type { get; set; }
+    [Parameter] public Type Type { get; set; } = default!;
 
     #endregion
 }

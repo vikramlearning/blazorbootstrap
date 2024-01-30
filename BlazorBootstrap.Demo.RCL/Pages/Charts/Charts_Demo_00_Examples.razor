@@ -2,8 +2,8 @@
 <LineChart @ref="lineChart" />
 
 @code {
-    private BarChart barChart;
-    private LineChart lineChart;
+    private BarChart barChart = default!;
+    private LineChart lineChart = default!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -46,16 +46,16 @@
 
         options.Interaction.Mode = InteractionMode.Index;
 
-        options.Plugins.Title.Text = "MANHATTAN";
+        options.Plugins.Title!.Text = "MANHATTAN";
         options.Plugins.Title.Display = true;
-        options.Plugins.Title.Font.Size = 20;
+        options.Plugins.Title.Font!.Size = 20;
 
         options.Responsive = true;
 
-        options.Scales.X.Title.Text = "Overs";
+        options.Scales.X!.Title!.Text = "Overs";
         options.Scales.X.Title.Display = true;
 
-        options.Scales.Y.Title.Text = "Runs";
+        options.Scales.Y!.Title!.Text = "Runs";
         options.Scales.Y.Title.Display = true;
 
         await barChart.InitializeAsync(data, options);
@@ -101,16 +101,16 @@
 
         options.Interaction.Mode = InteractionMode.Index;
 
-        options.Plugins.Title.Text = "WORM";
+        options.Plugins.Title!.Text = "WORM";
         options.Plugins.Title.Display = true;
-        options.Plugins.Title.Font.Size = 20;
+        options.Plugins.Title.Font!.Size = 20;
 
         options.Responsive = true;
 
-        options.Scales.X.Title.Text = "Overs";
+        options.Scales.X!.Title!.Text = "Overs";
         options.Scales.X.Title.Display = true;
 
-        options.Scales.Y.Title.Text = "Runs";
+        options.Scales.Y!.Title!.Text = "Runs";
         options.Scales.Y.Title.Display = true;
 
         await lineChart.InitializeAsync(data, options);

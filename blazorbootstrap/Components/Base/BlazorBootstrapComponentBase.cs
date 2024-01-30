@@ -238,9 +238,9 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// </summary>
     public ElementReference ElementRef { get; set; }
 
-    [Inject] protected IIdGenerator IdGenerator { get; set; }
+    [Inject] protected IIdGenerator IdGenerator { get; set; } = default!;
 
-    [Inject] protected IJSRuntime JS { get; set; }
+    [Inject] protected IJSRuntime JS { get; set; } = default!;
 
     /// <summary>
     /// Indicates if component has been rendered in the browser.

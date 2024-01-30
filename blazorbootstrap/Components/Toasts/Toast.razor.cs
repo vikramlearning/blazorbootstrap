@@ -4,7 +4,7 @@ public partial class Toast : BlazorBootstrapComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    private string customIconName = default!;
+    private string? customIconName;
 
     private DotNetObjectReference<Toast> objRef = default!;
 

@@ -67,9 +67,8 @@
 
 @code {
     private FlightForm flightForm = new();
-    private EditContext editContext;
-
-    [Inject] ToastService _toastService { get; set; }
+    private EditContext? editContext;
+    [Inject] ToastService ToastService { get; set; } = default!;
 
     protected override void OnInitialized()
     {
@@ -87,7 +86,7 @@
             helpText: $"{DateTime.Now.ToLocalTime()}",
             message: "Flight schedule created."
         );
-        _toastService.Notify(toastMessage);
+        ToastService.Notify(toastMessage);
     }
 
     private void ResetForm()
@@ -99,7 +98,7 @@
     public class FlightForm
     {
         [Required(ErrorMessage = "Flight Number required.")]
-        public string FlightNumber { get; set; }
+        public string? FlightNumber { get; set; }
 
         [Required(ErrorMessage = "Departure Date required.")]
         public DateOnly? DepartureDate { get; set; }

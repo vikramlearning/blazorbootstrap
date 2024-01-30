@@ -448,7 +448,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the locale. Default locale is 'en-US'.
     /// </summary>
     [Parameter]
-    [EditorRequired]
+    //[EditorRequired]
     public string Locale { get; set; } = "en-US";
 
     /// <summary>

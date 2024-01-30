@@ -25,11 +25,10 @@
 </Grid>
 
 @code {
-    BlazorBootstrap.Grid<Employee1> grid;
-    private IEnumerable<Employee1> employees;
+    BlazorBootstrap.Grid<Employee1> grid = default!;
+    private IEnumerable<Employee1>? employees;
 
-    [Inject] public IJSRuntime JS { get; set; }
-    public GridSettings Settings { get; set; }
+    [Inject] public IJSRuntime JS { get; set; } = default!;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {

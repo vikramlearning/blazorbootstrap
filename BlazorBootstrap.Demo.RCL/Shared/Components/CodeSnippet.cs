@@ -4,7 +4,7 @@ public class CodeSnippet : ComponentBase
 {
     #region Members
 
-    private string code;
+    private string? code;
 
     #endregion
 
@@ -18,7 +18,7 @@ public class CodeSnippet : ComponentBase
             {
                 var resourceName = File.Replace("~", typeof(CodeSnippet).Assembly.GetName().Name).Replace("/", ".").Replace("\\", ".");
 
-                using (Stream stream = typeof(CodeSnippet).Assembly.GetManifestResourceStream(resourceName))
+                using (Stream stream = typeof(CodeSnippet).Assembly.GetManifestResourceStream(resourceName)!)
                 {
                     using (StreamReader reader = new StreamReader(stream))
                     {
@@ -80,9 +80,9 @@ public class CodeSnippet : ComponentBase
 
     [Inject] protected IJSRuntime JS { get; set; } = null!;
 
-    [Parameter] public string Language { get; set; }
+    [Parameter] public string? Language { get; set; }
 
-    [Parameter] public string File { get; set; }
+    [Parameter] public string? File { get; set; }
 
     #endregion
 }

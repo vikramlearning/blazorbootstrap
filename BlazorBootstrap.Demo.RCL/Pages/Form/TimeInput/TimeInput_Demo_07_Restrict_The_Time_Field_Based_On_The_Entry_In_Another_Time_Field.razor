@@ -54,12 +54,12 @@
     private bool disableArrivalTimeInput = true;
 
     private FlightForm flightForm = new();
-    private EditContext editContext;
+    private EditContext? editContext;
 
     private TimeOnly? arrivalMinTime;
     private TimeOnly? arrivalMaxTime;
 
-    [Inject] ToastService _toastService { get; set; }
+    [Inject] ToastService ToastService { get; set; } = default!;
 
     protected override void OnInitialized()
     {
@@ -97,7 +97,8 @@
             helpText: $"{DateTime.Now.ToLocalTime()}",
             message: "Flight schedule created."
         );
-        _toastService.Notify(toastMessage);
+
+        ToastService.Notify(toastMessage);
     }
 
     private void ResetForm()

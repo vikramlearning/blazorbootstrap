@@ -56,7 +56,7 @@ public partial class Badge
     /// Gets or sets the badge color.
     /// </summary>
     [Parameter]
-    [EditorRequired]
+    //[EditorRequired]
     public BadgeColor Color
     {
         get => color;

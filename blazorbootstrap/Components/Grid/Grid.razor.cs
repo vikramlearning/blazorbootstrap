@@ -697,7 +697,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public float Height { get; set; } = 320;
 
-    [Parameter] [EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
+    [Parameter] 
+    //[EditorRequired] 
+    public string ItemsPerPageText { get; set; } = "Items per page"!;
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.
@@ -723,7 +725,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the page size selector items.
     /// </summary>
     [Parameter]
-    [EditorRequired]
+    //[EditorRequired]
     public int[] PageSizeSelectorItems { get; set; } = { 10, 20, 50 };
 
     /// <summary>
@@ -745,8 +747,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the pagination items text format.
     /// </summary>
     [Parameter]
-    [EditorRequired]
-    public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items";
+    //[EditorRequired]
+    public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items"!;
 
     /// <summary>
     /// Gets or sets a value indicating whether Grid is responsive.

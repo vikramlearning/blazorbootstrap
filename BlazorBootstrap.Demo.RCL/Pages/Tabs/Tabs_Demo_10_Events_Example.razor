@@ -1,5 +1,5 @@
 ﻿<Tabs EnableFadeEffect="true"
-      OnShowing="@(args => OnTabShowingAsync(args))"
+OnShowing="@(args => OnTabShowingAsync(args))"
       OnShown="@(args => OnTabShownAsync(args))"
       OnHiding="@(args => OnTabHidingAsync(args))"
       OnHidden="@(args => OnTabHiddenAsync(args))">
@@ -24,8 +24,8 @@
 <p>Previous Active Tab: <strong>@previousActiveTabTitle</strong></p>
 
 @code {
-    private string activeTabTitle;
-    private string previousActiveTabTitle;
+    private string? activeTabTitle;
+    private string? previousActiveTabTitle;
 
     private void OnTabShowingAsync(TabsEventArgs args)
     {

@@ -140,7 +140,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public SidebarDataProviderDelegate? DataProvider { get; set; }
+    public SidebarDataProviderDelegate? DataProvider { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the IconName.
@@ -161,7 +161,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public string? Title { get; set; }
+    public string? Title { get; set; } = default!;
 
     #endregion
 }

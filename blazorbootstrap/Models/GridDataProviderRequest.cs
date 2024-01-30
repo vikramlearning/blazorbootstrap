@@ -22,7 +22,7 @@ public class GridDataProviderRequest<TItem>
                     if (lambda is null)
                         lambda = ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter);
                     else
-                        lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter));
+                        lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter)!);
 
                 if (lambda is not null)
                     resultData = resultData.Where(lambda.Compile());
@@ -63,13 +63,13 @@ public class GridDataProviderRequest<TItem>
         // apply paging
         var skip = 0;
         var take = data.Count();
-        var totalCount = resultData.Count(); // before paging
+        var totalCount = resultData!.Count(); // before paging
 
         if (PageNumber > 0 && PageSize > 0)
         {
             skip = (PageNumber - 1) * PageSize;
             take = PageSize;
-            resultData = resultData.Skip(skip).Take(take);
+            resultData = resultData!.Skip(skip).Take(take);
         }
 
         return new GridDataProviderResult<TItem> { Data = resultData, TotalCount = totalCount };
