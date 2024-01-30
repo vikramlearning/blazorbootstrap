@@ -34,16 +34,16 @@ public class EmployeeService : IEmployeeService
         if (filters is not null && filters.Any())
         {
             var parameterExpression = Expression.Parameter(typeof(Employee)); // second param optional
-            Expression<Func<Employee, bool>> lambda = null;
+            Expression<Func<Employee, bool>>? lambda = null;
 
             foreach (var filter in filters)
             {
                 if (lambda is null)
-                    lambda = ExpressionExtensions.GetExpressionDelegate<Employee>(parameterExpression, filter);
+                    lambda = ExpressionExtensions.GetExpressionDelegate<Employee>(parameterExpression, filter)!;
                 else
-                    lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<Employee>(parameterExpression, filter));
+                    lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<Employee>(parameterExpression, filter)!);
             }
-            employees = employees.Where(lambda.Compile());
+            employees = employees.Where(lambda!.Compile());
         }
 
         // apply sorting then paging

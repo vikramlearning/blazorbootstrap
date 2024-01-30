@@ -5,10 +5,9 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     #region Fields and Constants
 
     private TooltipColor color = default!;
-
     private bool isFirstRenderComplete = false;
     private DotNetObjectReference<Tooltip> objRef = default!;
-    private string title = default!;
+    private string? title;
 
     #endregion
 
@@ -82,7 +81,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
 
     [Parameter] public TooltipColor Color { get; set; }
 
-    private string colorClass => BootstrapClassProvider.TooltipColor(Color);
+    private string colorClass => BootstrapClassProvider.TooltipColor(Color)!;
     private string placement => Placement.ToTooltipPlacementName();
 
     /// <summary>

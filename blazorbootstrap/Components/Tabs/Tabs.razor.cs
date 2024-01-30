@@ -63,7 +63,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
-        var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
         await OnHidden.InvokeAsync(args);
     }
 
@@ -73,7 +73,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
-        var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
         await OnHiding.InvokeAsync(args);
     }
 
@@ -83,7 +83,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
-        var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
         await OnShown.InvokeAsync(args);
     }
 
@@ -93,7 +93,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
-        var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
         await OnShowing.InvokeAsync(args);
     }
 
@@ -102,7 +102,9 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     public async Task ShowFirstTabAsync()
     {
-        var tab = tabs.FirstOrDefault(x => !x.Disabled);
+        if (!tabs?.Any() ?? false) return;
+
+        var tab = tabs!.FirstOrDefault(x => !x.Disabled);
 
         if (tab != null)
             await ShowTabAsync(tab);
@@ -113,7 +115,9 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     public async Task ShowLastTabAsync()
     {
-        var tab = tabs.LastOrDefault(x => !x.Disabled);
+        if (!tabs?.Any() ?? false) return;
+
+        var tab = tabs!.LastOrDefault(x => !x.Disabled);
 
         if (tab != null)
             await ShowTabAsync(tab);
@@ -125,7 +129,9 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <param name="tabIndex">The zero-based index of the element to get or set.</param>
     public async Task ShowTabByIndexAsync(int tabIndex)
     {
-        if (tabIndex < 0 || tabIndex >= tabs.Count) throw new IndexOutOfRangeException();
+        if (!tabs?.Any() ?? false) return;
+
+        if (tabIndex < 0 || tabIndex >= tabs!.Count) throw new IndexOutOfRangeException();
 
         var tab = tabs[tabIndex];
 
@@ -139,7 +145,9 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <param name="tabName"></param>
     public async Task ShowTabByNameAsync(string tabName)
     {
-        var tab = tabs.LastOrDefault(x => x.Name == tabName && !x.Disabled);
+        if (!tabs?.Any() ?? false) return;
+
+        var tab = tabs!.LastOrDefault(x => x.Name == tabName && !x.Disabled);
 
         if (tab != null)
             await ShowTabAsync(tab);
@@ -151,7 +159,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         {
             tabs?.Add(tab);
 
-            if (tab.IsActive && !tab.Disabled) activeTab = tab;
+            if (tab is { IsActive: true, Disabled: false }) activeTab = tab;
 
             StateHasChanged(); // This is mandatory
         }
@@ -162,7 +170,9 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     internal async Task SetDefaultActiveTabAsync()
     {
-        activeTab ??= tabs.FirstOrDefault(x => !x.Disabled);
+        if (!tabs?.Any() ?? false) return;
+
+        activeTab ??= tabs?.FirstOrDefault(x => !x.Disabled)!;
 
         if (activeTab != null)
             await ShowTabAsync(activeTab);

@@ -7,7 +7,7 @@
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="ResetProgressBar">Reset</Button>
 
 @code {
-    ProgressBar progressBar;
+    ProgressBar progressBar = default!;
 
     private void IncreaseProgressBar()
     {

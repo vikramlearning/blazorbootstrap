@@ -154,7 +154,8 @@ public partial class Modal : BlazorBootstrapComponentBase
             Message = message;
 
         childComponent = type;
-        this.parameters = parameters;
+
+        this.parameters = parameters!;
 
         await InvokeAsync(StateHasChanged);
 
@@ -271,11 +272,11 @@ public partial class Modal : BlazorBootstrapComponentBase
     [Parameter]
     public string Message { get; set; } = default!;
 
-    private string modalFullscreen => BootstrapClassProvider.ToModalFullscreen(Fullscreen);
+    private string modalFullscreen => BootstrapClassProvider.ToModalFullscreen(Fullscreen)!;
 
     [Inject] private ModalService ModalService { get; set; } = default!;
 
-    private string modalSize => BootstrapClassProvider.ToModalSize(Size);
+    private string modalSize => BootstrapClassProvider.ToModalSize(Size)!;
 
     /// <summary>
     /// Gets or sets the modal type.

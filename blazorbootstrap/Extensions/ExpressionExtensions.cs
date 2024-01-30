@@ -26,7 +26,7 @@ public static class ExpressionExtensions
             value = Expression.Constant(filterValue);
         }
 
-        return value;
+        return value!;
     }
 
     public static Expression<Func<TItem, bool>> GetBooleanEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
@@ -63,7 +63,7 @@ public static class ExpressionExtensions
             constantExpression = Expression.Constant(filterValue);
         }
 
-        return constantExpression;
+        return constantExpression!;
     }
 
     public static Expression<Func<TItem, bool>> GetDateEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
@@ -389,7 +389,7 @@ public static class ExpressionExtensions
             constantExpression = Expression.Constant((double?)filterValue);
         }
 
-        return constantExpression;
+        return constantExpression!;
     }
 
     public static Expression<Func<TItem, bool>> GetNumberEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
@@ -571,7 +571,7 @@ public static class ExpressionExtensions
 
         // Create method call expression for Contains method
         var methodInfo = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) });
-        var containsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+        var containsExpression = Expression.Call(propertyExp, methodInfo!, someValue, comparisonExpression);
 
         // Combine null check and contains expression using AndAlso
         var finalExpression = Expression.AndAlso(nullCheckExpression, containsExpression);
@@ -590,7 +590,7 @@ public static class ExpressionExtensions
 
         // Create method call expression for Equals method
         var methodInfo = typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string), typeof(StringComparison) });
-        var equalsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+        var equalsExpression = Expression.Call(propertyExp, methodInfo!, someValue, comparisonExpression);
 
         // Combine null check and equals expression using AndAlso
         var finalExpression = Expression.AndAlso(nullCheckExpression, equalsExpression);
@@ -609,7 +609,7 @@ public static class ExpressionExtensions
 
         // Create method call expression for Equals method
         var methodInfo = typeof(string).GetMethod(nameof(string.Equals), new[] { typeof(string), typeof(StringComparison) });
-        var equalsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+        var equalsExpression = Expression.Call(propertyExp, methodInfo!, someValue, comparisonExpression);
 
         // Combine null check and equals expression using AndAlso
         var finalExpression = Expression.AndAlso(nullCheckExpression, equalsExpression);
@@ -628,7 +628,7 @@ public static class ExpressionExtensions
 
         // Create method call expression for Equals method
         var methodInfo = typeof(string).GetMethod(nameof(string.Equals), new[] { typeof(string), typeof(StringComparison) });
-        var equalsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+        var equalsExpression = Expression.Call(propertyExp, methodInfo!, someValue, comparisonExpression);
         var notEqualsExpresion = Expression.Equal(equalsExpression, Expression.Constant(false, typeof(bool)));
 
         // Combine null check and equals expression using AndAlso
@@ -648,7 +648,7 @@ public static class ExpressionExtensions
 
         // Create method call expression for Equals method
         var methodInfo = typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string), typeof(StringComparison) });
-        var equalsExpression = Expression.Call(propertyExp, methodInfo, someValue, comparisonExpression);
+        var equalsExpression = Expression.Call(propertyExp, methodInfo!, someValue, comparisonExpression);
 
         // Combine null check and equals expression using AndAlso
         var finalExpression = Expression.AndAlso(nullCheckExpression, equalsExpression);

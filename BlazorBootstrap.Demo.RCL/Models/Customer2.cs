@@ -3,10 +3,10 @@
 public record Customer2
 (
     int CustomerId,
-    string CustomerName,
-    string Phone,
-    string Email,
-    string Address,
-    string PostalZip,
-    string Country
+    string? CustomerName,
+    string? Phone,
+    string? Email,
+    string? Address,
+    string? PostalZip,
+    string? Country
 );

@@ -34,11 +34,10 @@
 </div>
 
 @code {
-    private string customerName1;
-    private string customerName2;
-    private string customerName3;
-
-    public IEnumerable<Customer> customers;
+    private string? customerName1;
+    private string? customerName2;
+    private string? customerName3;
+    public IEnumerable<Customer>? customers;
 
     private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
     {

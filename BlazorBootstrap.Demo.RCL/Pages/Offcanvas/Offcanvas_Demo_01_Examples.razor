@@ -19,15 +19,9 @@
 <Button Color="ButtonColor.Primary" @onclick="OnShowOffcanvasClick">Show offcanvas</Button>
 
 @code {
-    private Offcanvas offcanvas;
+    private Offcanvas offcanvas = default!;
 
-    private async Task OnShowOffcanvasClick()
-    {
-        await offcanvas?.ShowAsync();
-    }
+    private async Task OnShowOffcanvasClick() => await offcanvas.ShowAsync();
 
-    private async Task OnHideOffcanvasClick()
-    {
-        await offcanvas?.HideAsync();
-    }
+    private async Task OnHideOffcanvasClick() => await offcanvas.HideAsync();
 }

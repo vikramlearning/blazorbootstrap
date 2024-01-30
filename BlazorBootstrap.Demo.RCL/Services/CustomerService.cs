@@ -17,7 +17,7 @@ public class CustomerService : ICustomerService
 
         var parameterExpression = Expression.Parameter(typeof(Customer2)); // second param optional
         var lambda = ExpressionExtensions.GetExpressionDelegate<Customer2>(parameterExpression, filter);
-        return customers.Where(lambda.Compile()).OrderBy(customer => customer.CustomerName);
+        return customers.Where(lambda!.Compile()).OrderBy(customer => customer.CustomerName);
     }
 
     public async Task<Tuple<IEnumerable<Customer2>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
@@ -30,16 +30,16 @@ public class CustomerService : ICustomerService
         if (filters is not null && filters.Any())
         {
             var parameterExpression = Expression.Parameter(typeof(Customer2)); // second param optional
-            Expression<Func<Customer2, bool>> lambda = null;
+            Expression<Func<Customer2, bool>>? lambda = null;
 
             foreach (var filter in filters)
             {
                 if (lambda is null)
-                    lambda = ExpressionExtensions.GetExpressionDelegate<Customer2>(parameterExpression, filter);
+                    lambda = ExpressionExtensions.GetExpressionDelegate<Customer2>(parameterExpression, filter)!;
                 else
-                    lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<Customer2>(parameterExpression, filter));
+                    lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<Customer2>(parameterExpression, filter)!);
             }
-            customers = customers.Where(lambda.Compile());
+            customers = customers.Where(lambda!.Compile());
         }
 
         // apply sorting then paging

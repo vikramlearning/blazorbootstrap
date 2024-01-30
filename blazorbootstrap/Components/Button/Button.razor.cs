@@ -54,7 +54,7 @@ public partial class Button : BlazorBootstrapComponentBase
         builder.Append(BootstrapClassProvider.ButtonDisabled(), Disabled && Type == ButtonType.Link);
         builder.Append(BootstrapClassProvider.ButtonActive(), Active);
         builder.Append(BootstrapClassProvider.ButtonBlock(), Block);
-        builder.Append(BootstrapClassProvider.ButtonLoading(), Loading && LoadingTemplate != null);
+        builder.Append(BootstrapClassProvider.ButtonLoading()!, Loading && LoadingTemplate is not null);
         builder.Append(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
 
         base.BuildClasses(builder);
@@ -202,11 +202,11 @@ public partial class Button : BlazorBootstrapComponentBase
                 Attributes.Add("role", "button");
 
             if (!Attributes.TryGetValue("href", out _))
-                Attributes.Add("href", To);
+                Attributes.Add("href", To!);
 
             if (Target != Target.None)
                 if (!Attributes.TryGetValue("target", out _))
-                    Attributes.Add("target", Target.ToTargetString());
+                    Attributes.Add("target", Target.ToTargetString()!);
 
             if (Disabled)
             {
@@ -274,9 +274,9 @@ public partial class Button : BlazorBootstrapComponentBase
                 Attributes.Add("title", TooltipTitle);
 
             if (Attributes.TryGetValue("data-bs-custom-class", out _))
-                Attributes["data-bs-custom-class"] = BootstrapClassProvider.TooltipColor(TooltipColor);
+                Attributes["data-bs-custom-class"] = BootstrapClassProvider.TooltipColor(TooltipColor)!;
             else
-                Attributes.Add("data-bs-custom-class", BootstrapClassProvider.TooltipColor(TooltipColor));
+                Attributes.Add("data-bs-custom-class", BootstrapClassProvider.TooltipColor(TooltipColor)!);
         }
         // button disabled (or) tooltip text empty
         else
@@ -330,7 +330,7 @@ public partial class Button : BlazorBootstrapComponentBase
         }
     }
 
-    private string buttonTypeString => Type.ToButtonTypeString();
+    private string buttonTypeString => Type.ToButtonTypeString()!;
 
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="Button" />.

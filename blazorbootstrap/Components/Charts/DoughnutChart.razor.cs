@@ -29,7 +29,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
                 if (data is DoughnutChartDatasetData doughnutChartDatasetData)
                 {
                     doughnutChartDataset.Data?.Add(doughnutChartDatasetData.Data);
-                    doughnutChartDataset.BackgroundColor?.Add(doughnutChartDatasetData.BackgroundColor);
+                    doughnutChartDataset.BackgroundColor?.Add(doughnutChartDatasetData.BackgroundColor!);
                 }
 
         await JS.InvokeVoidAsync("window.blazorChart.doughnut.addDatasetData", ElementId, dataLabel, data);
@@ -76,7 +76,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
                 if (chartDatasetData is DoughnutChartDatasetData doughnutChartDatasetData)
                 {
                     doughnutChartDataset.Data?.Add(doughnutChartDatasetData.Data);
-                    doughnutChartDataset.BackgroundColor?.Add(doughnutChartDatasetData.BackgroundColor);
+                    doughnutChartDataset.BackgroundColor?.Add(doughnutChartDatasetData.BackgroundColor!);
                 }
             }
 
@@ -105,7 +105,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         return chartData;
     }
 
-    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is not null && chartData.Datasets is not null)
         {

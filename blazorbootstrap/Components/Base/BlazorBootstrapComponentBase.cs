@@ -229,7 +229,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// </summary>
     /// <remarks>
     /// Note that this ID is not defined for the component but instead for the underlined element that it represents.
-    /// eg: for the TextEdit the ID will be set on the input element.
     /// </remarks>
     [Parameter]
     public string? ElementId { get; set; }
@@ -239,9 +238,9 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// </summary>
     public ElementReference ElementRef { get; set; }
 
-    [Inject] protected IIdGenerator IdGenerator { get; set; }
+    [Inject] protected IIdGenerator IdGenerator { get; set; } = default!;
 
-    [Inject] protected IJSRuntime JS { get; set; }
+    [Inject] protected IJSRuntime JS { get; set; } = default!;
 
     /// <summary>
     /// Indicates if component has been rendered in the browser.

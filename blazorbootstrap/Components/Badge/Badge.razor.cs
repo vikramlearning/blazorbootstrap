@@ -44,7 +44,7 @@ public partial class Badge
     [Parameter]
     public RenderFragment ChildContent
     {
-        get => childContent;
+        get => childContent!;
         set
         {
             childContent = value;
@@ -56,7 +56,7 @@ public partial class Badge
     /// Gets or sets the badge color.
     /// </summary>
     [Parameter]
-    [EditorRequired]
+    //[EditorRequired]
     public BadgeColor Color
     {
         get => color;

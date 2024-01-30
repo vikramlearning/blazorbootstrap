@@ -52,7 +52,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// <param name="chartData"></param>
     /// <param name="chartOptions"></param>
     /// <param name="plugins"></param>
-    public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
         {
@@ -167,7 +167,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     {
         var datasets = new List<object>();
 
-        if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
+        if (chartData?.Datasets?.Any() ?? false)
             foreach (var dataset in chartData.Datasets)
                 if (dataset is BarChartDataset)
                     datasets.Add((BarChartDataset)dataset);
@@ -180,7 +180,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
                 else if (dataset is PieChartDataset)
                     datasets.Add((PieChartDataset)dataset);
 
-        var data = new { chartData.Labels, Datasets = datasets };
+        var data = new { chartData?.Labels, Datasets = datasets };
 
         return data;
     }

@@ -39,7 +39,7 @@
 <Button Color="ButtonColor.Primary" @onclick="ShowLastTabAsync">Last Tab</Button>
 
 @code{
-    Tabs tabs;
+    Tabs tabs = default!;
 
     private async Task ShowFirstTabAsync() => await tabs.ShowFirstTabAsync();
     private async Task ShowSecondTabAsync() => await tabs.ShowTabByIndexAsync(1);

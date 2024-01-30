@@ -13,8 +13,12 @@ public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
     protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Toast());
-        builder.Append($"text-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}");
-        builder.Append($"bg-{BootstrapClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
+
+        if (ToastMessage is not null)
+        {
+            builder.Append($"text-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}");
+            builder.Append($"bg-{BootstrapClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
+        }
 
         base.BuildClasses(builder);
     }
@@ -40,16 +44,16 @@ public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
     }
 
     [JSInvokable]
-    public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, ElementId!));
 
     [JSInvokable]
-    public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, ElementId!));
 
     [JSInvokable]
-    public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, ElementId!));
 
     [JSInvokable]
-    public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, ElementId!));
 
     /// <summary>
     /// Hides an element’s toast.
@@ -74,7 +78,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
     [Parameter]
     public bool AutoHide { get; set; } = true;
 
-    private string CloseButtonClass => $"btn-close-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}";
+    private string CloseButtonClass => $"btn-close-{BootstrapClassProvider.ToToastTextColor(ToastMessage!.Type)}";
 
     /// <summary>
     /// Delay hiding the toast (ms).

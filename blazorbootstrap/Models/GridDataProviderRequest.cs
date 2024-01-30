@@ -16,15 +16,16 @@ public class GridDataProviderRequest<TItem>
             try
             {
                 var parameterExpression = Expression.Parameter(typeof(TItem)); // second param optional
-                Expression<Func<TItem, bool>> lambda = null;
+                Expression<Func<TItem, bool>>? lambda = null;
 
                 foreach (var filter in Filters)
                     if (lambda is null)
                         lambda = ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter);
                     else
-                        lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter));
+                        lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, filter)!);
 
-                resultData = resultData.Where(lambda.Compile());
+                if (lambda is not null)
+                    resultData = resultData.Where(lambda.Compile());
             }
             catch (Exception ex)
             {
@@ -62,13 +63,13 @@ public class GridDataProviderRequest<TItem>
         // apply paging
         var skip = 0;
         var take = data.Count();
-        var totalCount = resultData.Count(); // before paging
+        var totalCount = resultData!.Count(); // before paging
 
         if (PageNumber > 0 && PageSize > 0)
         {
             skip = (PageNumber - 1) * PageSize;
             take = PageSize;
-            resultData = resultData.Skip(skip).Take(take);
+            resultData = resultData!.Skip(skip).Take(take);
         }
 
         return new GridDataProviderResult<TItem> { Data = resultData, TotalCount = totalCount };
@@ -83,7 +84,7 @@ public class GridDataProviderRequest<TItem>
     /// <summary>
     /// Current filters.
     /// </summary>
-    public IEnumerable<FilterItem> Filters { get; init; }
+    public IEnumerable<FilterItem> Filters { get; init; } = default!;
 
     /// <summary>
     /// Page number.
@@ -98,7 +99,7 @@ public class GridDataProviderRequest<TItem>
     /// <summary>
     /// Current sorting.
     /// </summary>
-    public IEnumerable<SortingItem<TItem>> Sorting { get; init; }
+    public IEnumerable<SortingItem<TItem>> Sorting { get; init; } = default!;
 
     #endregion
 }

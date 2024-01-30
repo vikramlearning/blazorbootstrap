@@ -152,7 +152,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
             if (result is not null)
             {
                 items = result.Data;
-                totalCount = result.TotalCount ?? result.Data.Count();
+                totalCount = result.TotalCount ?? result.Data!.Count();
             }
             else
             {
@@ -204,7 +204,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         searchInProgress = true;
 
         selectedIndex = -1;
-        Value = args.Value.ToString();
+        Value = args?.Value?.ToString()!;
 
         SetInputHasValue();
 
@@ -238,7 +238,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         selectedItem = item;
         selectedIndex = -1;
         items = Enumerable.Empty<TItem>();
-        Value = GetPropertyValue(item);
+        Value = GetPropertyValue(item)!;
         await ValueChanged.InvokeAsync(Value);
 
         await HideAsync();
@@ -258,8 +258,8 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         if (key is "ArrowDown" or "ArrowUp" or "Home" or "End")
             selectedIndex = await JS.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key, selectedIndex);
         else if (key == "Enter")
-            if (selectedIndex >= 0 && selectedIndex <= items.Count() - 1)
-                await OnItemSelectedAsync(items.ElementAt(selectedIndex));
+            if (selectedIndex >= 0 && selectedIndex <= items!.Count() - 1)
+                await OnItemSelectedAsync(items!.ElementAt(selectedIndex));
         // TODO: check anything needs to be handled here
     }
 

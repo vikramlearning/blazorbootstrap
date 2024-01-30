@@ -4,8 +4,8 @@
          DataProvider="SidebarDataProvider" />
 
 @code {
-    Sidebar sidebar;
-    IEnumerable<NavItem> navItems;
+    Sidebar sidebar = default!;
+    IEnumerable<NavItem>? navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
     {

@@ -34,7 +34,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
         if (firstRender)
         {
             var width = await JS.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
-            await bsWindowResize(width);
+            bsWindowResize(width);
             await RefreshDataAsync(firstRender);
         }
 
@@ -51,7 +51,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public async Task bsWindowResize(int width)
+    public void bsWindowResize(int width)
     {
         if (width < 641) // mobile
             isMobile = true;
@@ -140,7 +140,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public SidebarDataProviderDelegate? DataProvider { get; set; }
+    public SidebarDataProviderDelegate? DataProvider { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the IconName.
@@ -161,7 +161,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public string? Title { get; set; }
+    public string? Title { get; set; } = default!;
 
     #endregion
 }

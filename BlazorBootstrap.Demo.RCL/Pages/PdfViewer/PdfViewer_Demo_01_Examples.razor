@@ -8,9 +8,9 @@
 @code {
     private string eventLog { get; set; } = $"Last event: ..., CurrentPage: 0, TotalPages: 0";
 
-    private async Task OnDocumentLoaded(PdfViewerEventArgs args)
+    private void OnDocumentLoaded(PdfViewerEventArgs args)
         => eventLog = $"Last event: OnDocumentLoaded, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
 
-    private async Task OnPageChanged(PdfViewerEventArgs args)
+    private void OnPageChanged(PdfViewerEventArgs args)
         => eventLog = $"Last event: OnPageChanged, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
 }

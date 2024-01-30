@@ -10,9 +10,8 @@
 </div>
 
 @code {
-    private string customerName;
-
-    [Inject] ICustomerService _customerService { get; set; }
+    private string? customerName;
+    [Inject] ICustomerService _customerService { get; set; } = default!;
 
     private async Task<AutoCompleteDataProviderResult<Customer2>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer2> request)
     {
