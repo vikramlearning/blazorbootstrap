@@ -630,6 +630,32 @@ window.blazorBootstrap = {
                 });
             });
         },
+        initializeNewTab: (tabId, dotNetHelper) => {
+            let tabEl = document.getElementById(tabId);
+            if (tabEl == null)
+                return;
+
+            tabEl?.addEventListener('show.bs.tab', (event) => {
+                // event.target --> active tab
+                // event.relatedTarget --> previous active tab (if available)
+                dotNetHelper.invokeMethodAsync('bsShowTab', event.target?.id, event.relatedTarget?.id);
+            });
+            tabEl?.addEventListener('shown.bs.tab', (event) => {
+                // event.target --> active tab
+                // event.relatedTarget --> previous active tab
+                dotNetHelper.invokeMethodAsync('bsShownTab', event.target?.id, event.relatedTarget?.id);
+            });
+            tabEl?.addEventListener('hide.bs.tab', (event) => {
+                // event.target --> current active tab
+                // event.relatedTarget --> new soon-to-be-active tab
+                dotNetHelper.invokeMethodAsync('bsHideTab', event.relatedTarget?.id, event.target?.id);
+            });
+            tabEl?.addEventListener('hidden.bs.tab', (event) => {
+                // event.target --> previous active tab
+                // event.relatedTarget --> new active tab
+                dotNetHelper.invokeMethodAsync('bsHiddenTab', event.relatedTarget?.id, event.target?.id);
+            });
+        },
         show: (elementId) => {
             let navTabsEl = document.getElementById(elementId);
             if (navTabsEl != null)
