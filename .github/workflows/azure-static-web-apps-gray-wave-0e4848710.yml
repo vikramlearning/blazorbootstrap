@@ -29,13 +29,13 @@ jobs:
       - name: Setup .NET Core SDK
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: '8.0.x'
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GRAY_WAVE_0E4848710 }}
           skip_deploy_on_missing_secrets: true
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
