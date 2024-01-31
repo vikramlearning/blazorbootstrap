@@ -48,8 +48,9 @@ public partial class Tabs : BlazorBootstrapComponentBase
     {
         objRef ??= DotNetObjectReference.Create(this);
 
-        Attributes ??= new();
-        if(IsVertical)
+        Attributes ??= new Dictionary<string, object>();
+
+        if (IsVertical)
             Attributes.Add("aria-orientation", "vertical");
 
         await base.OnInitializedAsync();
@@ -98,6 +99,30 @@ public partial class Tabs : BlazorBootstrapComponentBase
     }
 
     /// <summary>
+    /// Initializes the most recently added tab, optionally displaying it.
+    /// </summary>
+    /// <param name="showTab">Specifies whether to display the tab after initialization.</param>
+    public void InitializeRecentTab(bool showTab)
+    {
+        if (!tabs?.Any() ?? false) return;
+
+        ExecuteAfterRender(
+            async () =>
+            {
+                var tab = tabs!.LastOrDefault();
+
+                if (tab is { Disabled: false })
+                {
+                    await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initializeNewTab", tab.ElementId, objRef);
+
+                    if (showTab)
+                        await ShowTabAsync(tab);
+                }
+            }
+        );
+    }
+
+    /// <summary>
     /// Selects the first tab and show its associated pane.
     /// </summary>
     public async Task ShowFirstTabAsync()
@@ -106,7 +131,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
         var tab = tabs!.FirstOrDefault(x => !x.Disabled);
 
-        if (tab != null)
+        if (tab is { Disabled: false })
             await ShowTabAsync(tab);
     }
 
@@ -119,7 +144,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
         var tab = tabs!.LastOrDefault(x => !x.Disabled);
 
-        if (tab != null)
+        if (tab is { Disabled: false })
             await ShowTabAsync(tab);
     }
 
@@ -135,14 +160,14 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
         var tab = tabs[tabIndex];
 
-        if (tab != null && !tab.Disabled)
+        if (tab is { Disabled: false })
             await ShowTabAsync(tab);
     }
 
     /// <summary>
     /// Selects the tab by name and show its associated pane.
     /// </summary>
-    /// <param name="tabName"></param>
+    /// <param name="tabName">The name of the tab to select.</param>
     public async Task ShowTabByNameAsync(string tabName)
     {
         if (!tabs?.Any() ?? false) return;
@@ -155,14 +180,12 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
     internal void AddTab(Tab tab)
     {
-        if (tab != null)
-        {
-            tabs?.Add(tab);
+        tabs!.Add(tab);
 
-            if (tab is { IsActive: true, Disabled: false }) activeTab = tab;
+        if (tab is { IsActive: true, Disabled: false })
+            activeTab = tab;
 
-            StateHasChanged(); // This is mandatory
-        }
+        StateHasChanged(); // This is mandatory
     }
 
     /// <summary>
@@ -172,9 +195,9 @@ public partial class Tabs : BlazorBootstrapComponentBase
     {
         if (!tabs?.Any() ?? false) return;
 
-        activeTab ??= tabs?.FirstOrDefault(x => !x.Disabled)!;
+        activeTab ??= tabs!.FirstOrDefault(x => !x.Disabled)!;
 
-        if (activeTab != null)
+        if (activeTab is not null)
             await ShowTabAsync(activeTab);
     }
 
