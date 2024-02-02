@@ -64,7 +64,7 @@ public partial class Tab : BlazorBootstrapComponentBase
     /// This event fires when the user clicks the corresponding tab button and the tab is displayed.
     /// </summary>
     [Parameter]
-    public EventCallback OnTabClicked { get; set; }
+    public EventCallback<TabEventArgs> OnClick { get; set; }
 
     /// <summary>
     /// Gets or sets the parent.

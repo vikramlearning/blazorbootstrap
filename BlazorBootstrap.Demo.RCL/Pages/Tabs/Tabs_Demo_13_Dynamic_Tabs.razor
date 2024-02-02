@@ -2,7 +2,7 @@
     @foreach (var customer in customers)
     {
         <Tab Title="@customer.CustomerName"
-             OnTabClicked="() => OnTabClicked(customer)">
+             OnClick="(args) => OnTabClick(args, customer)">
             <Content>
                 <div class="mt-3">
                     This is the placeholder content for the <b>@customer.CustomerName</b> tab.
@@ -37,5 +37,5 @@
         tabs.InitializeRecentTab(showTab: true);
     }
 
-    private void OnTabClicked(Customer customer) => selectedCustomer = customer;
+    private void OnTabClick(TabEventArgs args, Customer customer) => selectedCustomer = customer;
 }

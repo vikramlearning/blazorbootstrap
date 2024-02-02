@@ -2,11 +2,28 @@
 
 public partial class ScriptLoader : BlazorBootstrapComponentBase
 {
+    #region Fields and Constants
+
+    private const string type = "text/javascript";
+
+    #endregion
+
     #region Methods
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.load", ElementId, Async, ScriptId, Source, Type);
+        if (firstRender)
+            await JS.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.load", ElementId, Async, ScriptId, Source, type);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrWhiteSpace(Source))
+            throw new ArgumentNullException(nameof(Source));
+
+        base.OnParametersSet();
     }
 
     #endregion
@@ -33,13 +50,8 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// directly within a document.
     /// </summary>
     [Parameter]
-    public string? Source { get; set; }
-
-    /// <summary>
-    /// This parameter indicates the type of script represented.
-    /// </summary>
-    [Parameter]
-    public string? Type { get; set; }
+    [EditorRequired]
+    public string? Source { get; set; } = default!;
 
     #endregion
 }

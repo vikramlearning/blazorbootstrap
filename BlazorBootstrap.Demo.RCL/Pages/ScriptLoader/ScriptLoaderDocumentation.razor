@@ -1,0 +1,31 @@
+﻿@page "/script-loader"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Script Loader</h1>
+<div class="lead mb-3">
+    Documentation and examples for using the Blazor Bootstrap Script Loader component.
+</div>
+
+<CarbonAds />
+
+    <SectionHeading Size="HeadingSize.H2" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
+<div class="mb-3">
+    In the following example, the jQuery script is loaded using the Script Loader component. 
+</div>
+<Demo Type="typeof(ScriptLoader_Demo_01_Examples)" />
+
+<Callout Type="CalloutType.Info" Heading="Test">
+    To test whether the jQuery script has been loaded successfully, run <code>$('#script1')[0]</code> in the browser console.
+</Callout>
+
+<img src="https://i.imgur.com/EWEGAZv.png" class="img-fluid" alt="Blazor Script Loader - Test whether the jQuery script has been loaded successfully" />
+
+@code {
+    private string pageUrl = "/script-loader";
+    private string title = "Blazor ScriptLoader Component";
+    private string description = "Documentation and examples for using the Blazor Bootstrap ScriptLoader component.";
+    private string imageUrl = "https://i.imgur.com/sBiYPeQ.png";
+}
