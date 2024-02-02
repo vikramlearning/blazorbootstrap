@@ -27,8 +27,9 @@ Documentation and examples for using Blazor Bootstrap Tabs components.
 
 | Name | Description | Added Version |
 |:--|:--|:--|
-| ShowFirstTabAsync | Selects the first tab and show its associated pane. | 1.0.0 |
-| ShowLastTabAsync | Selects the last tab and show its associated pane. | 1.0.0 |
+| InitializeRecentTab(bool showTab) | Initializes the most recently added tab, optionally displaying it.| 1.11.0 |
+| ShowFirstTabAsync() | Selects the first tab and show its associated pane. | 1.0.0 |
+| ShowLastTabAsync() | Selects the last tab and show its associated pane. | 1.0.0 |
 | ShowTabByIndexAsync(int tabIndex) | Selects the tab by index and show its associated pane. | 1.0.0 |
 | ShowTabByNameAsync(string tabName) | Selects the tab by name and show its associated pane. | 1.0.0 |
 
@@ -60,7 +61,7 @@ Either **Title** or **TitleTemplate** is required.
 
 | Event | Description | Added Version |
 |:--|:--|:--|
-| OnTabClicked | This event fires when the user clicks the corresponding tab button and the tab is displayed. | 1.11.0 |
+| OnClick | This event fires when the user clicks the corresponding tab button and the tab is displayed. | 1.11.0 |
 
 ## Examples
 
@@ -513,15 +514,17 @@ If no tab was already active, then the `OnHiding` and `OnHidden` events will not
 
 [See demo here.](https://demos.blazorbootstrap.com/tabs#methods-set-active-tab-onafterrender)
 
-### Tab call back event: OnTabClicked
+### Tab: OnClick
 
 <img src="https://i.imgur.com/bJXYlr5.png" alt="Blazor Tabs Component - Return object on tab switch" />
 
-```cshtml {4} showLineNumbers
+```cshtml {6} showLineNumbers
 <Tabs>
     @foreach (var customer in customers)
     {
-        <Tab IsActive="selectedCustomer == customer" OnTabClicked="async () => await OnTabClickedAsync(customer)" Title="@customer.CustomerName">
+        <Tab Title="@customer.CustomerName"
+             IsActive="selectedCustomer.CustomerId == customer.CustomerId"
+             OnClick="(args) => OnTabClick(args, customer)">
             <Content>
                 <div class="mt-3">
                     This is the placeholder content for the <b>@customer.CustomerName</b> tab.
@@ -530,36 +533,75 @@ If no tab was already active, then the `OnHiding` and `OnHidden` events will not
         </Tab>
     }
 </Tabs>
+
+@if (selectedCustomer is not null)
+{
+    <div class="mt-3">Selected customer: <b>@selectedCustomer.CustomerName</b></div>
+}
 ```
 
-```cs {22-26} showLineNumbers
+```cs {8} showLineNumbers
+@code {
+    private List<Customer> customers = new() { new(1, "Marvin Klein"), new(2, "Vikram Reddy"), new(3, "Bandita PA"), new(4, "Daina JJ") };
+
+    private Customer selectedCustomer = default!;
+
+    protected override void OnInitialized() => selectedCustomer = customers.First();
+
+    private void OnTabClick(TabEventArgs args, Customer customer) => selectedCustomer = customer;
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#tab-on-tab-clicked)
+
+### Dynamic tabs
+
+<img src="https://i.imgur.com/fSTOpxk.png" alt="Blazor Tabs Component - Dynamic tabs" />
+
+```cshtml {2-12} showLineNumbers
+<Tabs @ref="tabs">
+    @foreach (var customer in customers)
+    {
+        <Tab Title="@customer.CustomerName"
+             OnClick="(args) => OnTabClick(args, customer)">
+            <Content>
+                <div class="mt-3">
+                    This is the placeholder content for the <b>@customer.CustomerName</b> tab.
+                </div>
+            </Content>
+        </Tab>
+    }
+</Tabs>
+
 @if (selectedCustomer is not null)
 {
     <div class="mt-3">Selected customer: <b>@selectedCustomer.CustomerName</b></div>
 }
 
+<Button Color="ButtonColor.Success" Class="mt-3" @onclick="AddCustomer">Add customer</Button>
+```
+
+```cs {4,14,16} showLineNumbers
 @code {
-    private List<Customer> customers = new()
-                                       {
-                                           new Customer(1, "Marvin Klein"),
-                                           new Customer(2, "Vikram Reddy"),
-                                           new Customer(3, "Bandita PA"),
-                                           new Customer(4, "Daina JJ")
-                                       };
+    Tabs tabs = default!;
 
-    private Customer? selectedCustomer;
+    private List<Customer> customers = new() { new(1, "Marvin Klein"), new(2, "Vikram Reddy"), new(3, "Bandita PA"), new(4, "Daina JJ") };
 
-    protected override void OnInitialized()
+    private Customer selectedCustomer = default!;
+
+    protected override void OnInitialized() => selectedCustomer = customers.Last();
+
+    private void AddCustomer()
     {
-        selectedCustomer = customers.First();
+        var count = customers.Count;
+        var customer = new Customer(count + 1, $"Customer {count + 1}");
+        customers.Add(customer);
+        //selectedCustomer = customer; NOTE: this line is not required
+        tabs.InitializeRecentTab(showTab: true);
     }
 
-    private Task OnTabClickedAsync(Customer customer)
-    {
-        selectedCustomer = customer;
-        return Task.CompletedTask;
-    }
+    private void OnTabClick(TabEventArgs args, Customer customer) => selectedCustomer = customer;
 }
 ```
 
-[See demo here.](https://demos.blazorbootstrap.com/tabs#tab-callback-event-on-tab-clicked)
+[See demo here.](https://demos.blazorbootstrap.com/tabs#dynamic-tabs)
