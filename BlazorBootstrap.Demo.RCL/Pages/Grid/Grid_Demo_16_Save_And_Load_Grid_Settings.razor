@@ -54,11 +54,11 @@
     {
         var settingsJson = await JS.InvokeAsync<string>("window.localStorage.getItem", "grid-settings");
         if (string.IsNullOrWhiteSpace(settingsJson))
-            return null;
+            return null!;
 
         var settings = JsonSerializer.Deserialize<GridSettings>(settingsJson);
         if (settings is null)
-            return null;
+            return null!;
 
         return settings;
     }
