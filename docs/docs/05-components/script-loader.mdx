@@ -25,6 +25,13 @@ Documentation and examples for using the Blazor Bootstrap Script Loader componen
 | ScriptId | `string?` | null | | Gets or set the script id. | 1.11.0 |
 | Source | `string?` | null | ✔️ | This parameter specifies the URI of an external script; this can be used as an alternative to embedding a script directly within a document. | 1.11.0 |
 
+## Script Loader Events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| OnError | An event that is fired when a script loading error occurs. | 1.11.0 |
+| OnLoad | An event that is fired when a script has been successfully loaded. | 1.11.0 |
+
 ## How it works
 
 In the following example, the jQuery script is loaded using the Script Loader component.
@@ -43,3 +50,27 @@ To test whether the jQuery script has been loaded successfully, run <code>$('#sc
 <img src="https://i.imgur.com/EWEGAZv.png" alt="Blazor Script Loader - Test whether the jQuery script has been loaded successfully" />
 
 [See demo here.](https://demos.blazorbootstrap.com/script-loader#how-it-works)
+
+## Events
+
+In the following example, an incorrect script source is specified. 
+This is why the `OnError` callback event is called, and the message is updated with the error message.
+
+```cshtml {3,4,6} showLineNumbers
+<ScriptLoader Async="true"
+              Class="mt-4"
+              OnLoad="OnScriptLoad"
+              OnError="OnScriptError"
+              ScriptId="script2"
+              Source="//cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min1.js"/>
+
+<div class="text-danger">@message</div>
+```
+
+```cs {4,6} showLineNumbers
+@code {
+    string? message;
+    private void OnScriptLoad() => message = "Script loaded successfully.";
+    private void OnScriptError(string errorMessage) => message = errorMessage;
+}
+```

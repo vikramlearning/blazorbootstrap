@@ -562,10 +562,10 @@ window.blazorBootstrap = {
         }
     },
     scriptLoader: {
-        load: (elementId, async, scriptId, source, type) => {
+        initialize: (elementId, async, scriptId, source, type, dotNetHelper) => {
             let scriptLoaderEl = document.getElementById(elementId);
 
-            if (source.length == 0) {
+            if (source.length === 0) {
                 console.error(`Invalid src url.`);
                 return;
             }
@@ -583,9 +583,13 @@ window.blazorBootstrap = {
             if (type != null)
                 scriptEl.type = type;
 
-            scriptEl.onerror = function () {
-                console.error(`An error occurred while loading the script: ${source}`);
-            }
+            scriptEl.addEventListener("error", (event) => {
+                dotNetHelper.invokeMethodAsync('OnErrorJS', `An error occurred while loading the script: ${source}`);
+            });
+
+            scriptEl.addEventListener("load", (event) => {
+                dotNetHelper.invokeMethodAsync('OnLoadJS');
+            });
 
             if (scriptLoaderEl != null)
                 scriptLoaderEl.appendChild(scriptEl);

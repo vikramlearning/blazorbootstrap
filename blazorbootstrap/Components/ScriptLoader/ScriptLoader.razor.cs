@@ -1,21 +1,33 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// A component for loading scripts dynamically in a Blazor application.
+/// </summary>
 public partial class ScriptLoader : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
+    /// <summary>
+    /// The default content type for scripts.
+    /// </summary>
     private const string type = "text/javascript";
+
+    /// <summary>
+    /// A reference to this component instance for use in JavaScript calls.
+    /// </summary>
+    private DotNetObjectReference<ScriptLoader> objRef = default!;
 
     #endregion
 
     #region Methods
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
-            await JS.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.load", ElementId, Async, ScriptId, Source, type);
+        objRef ??= DotNetObjectReference.Create(this);
 
-        await base.OnAfterRenderAsync(firstRender);
+        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", ElementId, Async, ScriptId, Source, type, objRef); });
+
+        await base.OnInitializedAsync();
     }
 
     protected override void OnParametersSet()
@@ -26,6 +38,27 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
         base.OnParametersSet();
     }
 
+    /// <summary>
+    /// Handles a script error event from JavaScript.
+    /// </summary>
+    /// <param name="errorMessage">The error message.</param>
+    [JSInvokable]
+    public void OnErrorJS(string errorMessage)
+    {
+        if (OnError.HasDelegate)
+            OnError.InvokeAsync(errorMessage);
+    }
+
+    /// <summary>
+    /// Handles a script load event from JavaScript.
+    /// </summary>
+    [JSInvokable]
+    public void OnLoadJS()
+    {
+        if (OnLoad.HasDelegate)
+            OnLoad.InvokeAsync();
+    }
+
     #endregion
 
     #region Properties, Indexers
@@ -34,20 +67,31 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Gets or sets the async.
+    /// Gets or sets a value indicating whether the script should be loaded asynchronously.
     /// </summary>
     [Parameter]
     public bool Async { get; set; }
 
     /// <summary>
-    /// Gets or set the script id.
+    /// An event that is fired when a script loading error occurs.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnError { get; set; }
+
+    /// <summary>
+    /// An event that is fired when a script has been successfully loaded.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnLoad { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ID of the script element.
     /// </summary>
     [Parameter]
     public string? ScriptId { get; set; }
 
     /// <summary>
-    /// This parameter specifies the URI of an external script; this can be used as an alternative to embedding a script
-    /// directly within a document.
+    /// Specifies the URI of the external script to load.
     /// </summary>
     [Parameter]
     [EditorRequired]
