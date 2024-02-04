@@ -30,6 +30,20 @@
             <category>docs</category>
         </item>
         <item>
+            <title><![CDATA[Blazor Bootstrap v1.11.1]]></title>
+            <link>https://docs.blazorbootstrap.com/blog/2024/02/04/blazorbootstrap-1.11.1</link>
+            <guid>https://docs.blazorbootstrap.com/blog/2024/02/04/blazorbootstrap-1.11.1</guid>
+            <pubDate>Sun, 04 Feb 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 1.11.1 with PDF Viewer updates!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 1.11.1 with PDF Viewer updates!!!</p><p><img loading="lazy" src="https://i.imgur.com/7Vz9Efi.png" alt="image" title="Blazor Bootstrap: PDF Viewer Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p>We have made improvements to the base components</p></li><li><p><code>PDF Viewer</code> component</p><ul><li>PDF Viewer JS call issue fixed. <a href="https://github.com/vikramlearning/blazorbootstrap/pull/547" target="_blank" rel="noopener noreferrer">#547</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://getblazorbootstrap.com/docs/components/charts" target="_blank" rel="noopener noreferrer">Blazor Chart Components Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.11.1</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>pdfviewer</category>
+        </item>
+        <item>
             <title><![CDATA[Blazor Bootstrap v1.10.5]]></title>
             <link>https://docs.blazorbootstrap.com/blog/2024/01/01/blazorbootstrap-1.10.5</link>
             <guid>https://docs.blazorbootstrap.com/blog/2024/01/01/blazorbootstrap-1.10.5</guid>
