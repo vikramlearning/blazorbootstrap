@@ -4,10 +4,31 @@
         <title>Blazor Bootstrap Docs Blog</title>
         <link>https://docs.blazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Docs Blog</description>
-        <lastBuildDate>Mon, 01 Jan 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 04 Feb 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v1.11.0]]></title>
+            <link>https://docs.blazorbootstrap.com/blog/2024/02/04/blazorbootstrap-1.11.0</link>
+            <guid>https://docs.blazorbootstrap.com/blog/2024/02/04/blazorbootstrap-1.11.0</guid>
+            <pubDate>Sun, 04 Feb 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release version 1.11.0, featuring new PDF Viewer, Range Input, and Script Loader components, along with updates to Auto Complete, Badge, Grid, and Tabs.]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release version 1.11.0, featuring new PDF Viewer, Range Input, and Script Loader components, along with updates to Auto Complete, Badge, Grid, and Tabs.</p><p><img loading="lazy" src="https://i.imgur.com/7Vz9Efi.png" alt="image" title="Blazor Bootstrap: PDF Viewer Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's New<a href="#whats-new" class="hash-link" aria-label="Direct link to What's New" title="Direct link to What's New">​</a></h2><ul><li>'PDF Viewer' component<ul><li>Allows users to view PDF files directly in the browser, eliminating the need for third-party browser tools or extensions.</li><li>Supports two callback events: OnDocumentLoaded and OnPageChanged</li></ul></li><li>'Range Input' component<ul><li>Disabled</li><li>Min and Max</li><li>Step</li><li>Tick marks</li></ul></li><li>'Script Loader' component<ul><li>Allows users to load JS sctipt files dynamically on the fly.</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>Auto Complete</code> component</p><ul><li>AutoComplete dispose issue <a href="https://github.com/vikramlearning/blazorbootstrap/pull/527" target="_blank" rel="noopener noreferrer">#527</a></li></ul></li><li><p><code>Badge</code> component</p><ul><li>Badge: Demos update <a href="https://github.com/vikramlearning/blazorbootstrap/pull/497" target="_blank" rel="noopener noreferrer">#497</a></li></ul></li><li><p><code>Grid</code> component</p><ul><li>GGrid: Filters - Support string NotEqual <a href="https://github.com/vikramlearning/blazorbootstrap/issues/486" target="_blank" rel="noopener noreferrer">#486</a></li></ul></li><li><p><code>Tabs</code> component</p><ul><li>Dynamic Tabs <a href="https://github.com/vikramlearning/blazorbootstrap/pull/538" target="_blank" rel="noopener noreferrer">#538</a></li><li>Vertical Tabs <a href="https://github.com/vikramlearning/blazorbootstrap/pull/533" target="_blank" rel="noopener noreferrer">#533</a></li><li>Vertical Pills Tabs<a href="https://github.com/vikramlearning/blazorbootstrap/pull/533" target="_blank" rel="noopener noreferrer">#533</a></li><li>Vertical Underline Tabs<a href="https://github.com/vikramlearning/blazorbootstrap/pull/533" target="_blank" rel="noopener noreferrer">#533</a></li><li>Underline Tabs<a href="https://github.com/vikramlearning/blazorbootstrap/pull/533" target="_blank" rel="noopener noreferrer">#533</a></li><li>Tab: OnClick call back event <a href="https://github.com/vikramlearning/blazorbootstrap/pull/543" target="_blank" rel="noopener noreferrer">#543</a></li></ul></li><li><p>Other updates</p><ul><li>Upgrade bootstrap version to 5.3.2 <a href="https://github.com/vikramlearning/blazorbootstrap/pull/498" target="_blank" rel="noopener noreferrer">#498</a></li><li>Fix build warnings <a href="https://github.com/vikramlearning/blazorbootstrap/pull/534" target="_blank" rel="noopener noreferrer">#534</a></li><li>Nuget update <a href="https://github.com/vikramlearning/blazorbootstrap/pull/520" target="_blank" rel="noopener noreferrer">#520</a></li><li>Update docs to Bootstrap Icons 1.11.3 <a href="https://github.com/vikramlearning/blazorbootstrap/pull/541" target="_blank" rel="noopener noreferrer">#541</a></li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li><li><a href="https://docs.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Documentation</a></li></ul>]]></content:encoded>
+            <category>v1.11.0</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>autocomplete</category>
+            <category>badge</category>
+            <category>grid</category>
+            <category>pdfviewer</category>
+            <category>rangeinput</category>
+            <category>scriptloader</category>
+            <category>tabs</category>
+            <category>docs</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v1.10.5]]></title>
             <link>https://docs.blazorbootstrap.com/blog/2024/01/01/blazorbootstrap-1.10.5</link>
