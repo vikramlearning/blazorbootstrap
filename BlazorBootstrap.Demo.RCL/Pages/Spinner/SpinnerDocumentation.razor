@@ -1,0 +1,22 @@
+﻿@page "/spinner"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Spinner</h1>
+<div class="lead mb-3">
+    The Icon component will display an icon from any icon font.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Spinner_Demo_01_Examples)" />
+
+@code{
+    private string pageUrl = "/spinner";
+    private string title = "Blazor Spinner Component";
+    private string description = "Blazor Bootstrap Spinner component will display an icon from any icon font."; // TODO: update this
+    private string imageUrl = "https://i.imgur.com/273TamX.png"; // TODO: update this
+}

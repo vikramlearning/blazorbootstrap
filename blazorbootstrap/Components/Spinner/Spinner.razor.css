@@ -1,0 +1,30 @@
+/* scss-docs-start spinner-dots-keyframes */
+@keyframes spinner-dots {
+    0% {
+        opacity: 1;
+    }
+
+    50%, 100% {
+        opacity: .3;
+    }
+}
+
+/* scss-docs-end spinner-dots-keyframes */
+.spinner-dots {
+    user-select: none;
+}
+
+    .spinner-dots > circle:first-of-type, 
+    .spinner-dots > circle:last-of-type, 
+    .spinner-dots > circle:nth-of-type(2) {
+        fill: currentcolor;
+        animation: spinner-dots .75s infinite ease-in-out alternate;
+    }
+
+    .spinner-dots > circle:nth-of-type(2) {
+        animation-delay: .25s;
+    }
+
+    .spinner-dots > circle:last-of-type {
+        animation-delay: .5s;
+    }

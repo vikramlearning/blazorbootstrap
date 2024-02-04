@@ -170,6 +170,9 @@ public class BootstrapClassProvider
 
     public string Show() => "show";
 
+    public string Spinner(SpinnerColor color) => ToSpinnerColor(color)!;
+    public string SpinnerDots() => "spinner-dots";
+
     public string Table() => "table";
     public string TableActive() => "table-active";
     public string TableBordered() => "table-bordered";
@@ -598,6 +601,20 @@ public class BootstrapClassProvider
             Size.Medium => "md",
             Size.Large => "lg",
             Size.ExtraLarge => "xl",
+            _ => null
+        };
+
+    public string? ToSpinnerColor(SpinnerColor color) =>
+        color switch
+        {
+            SpinnerColor.Primary => "text-primary",
+            SpinnerColor.Secondary => "text-secondary",
+            SpinnerColor.Success => "text-success",
+            SpinnerColor.Danger => "text-danger",
+            SpinnerColor.Warning => "text-warning",
+            SpinnerColor.Info => "text-info",
+            SpinnerColor.Light => "text-light",
+            SpinnerColor.Dark => "text-dark",
             _ => null
         };
 
