@@ -34,7 +34,9 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// Initializes a new instance of the <see cref="BlazorBootstrapComponentBase" /> class.
     /// </summary>
+#pragma warning disable CS8618
     public BlazorBootstrapComponentBase()
+#pragma warning restore CS8618
     {
         ClassBuilder = new CssClassBuilder(BuildClasses);
         StyleBuilder = new CssStyleBuilder(BuildStyles);
