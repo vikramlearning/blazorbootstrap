@@ -2,14 +2,7 @@
 
 public partial class Spinner : BlazorBootstrapComponentBase
 {
-    [Parameter] public int Width { get; set; } = 32;
-
-    [Parameter] public int Height { get; set; } = 16;
-
-    [Parameter]
-    public SpinnerColor Color { get; set; }
-
-    [Parameter] public string Title { get; set; } = "Loading...";
+    #region Methods
 
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
@@ -18,6 +11,20 @@ public partial class Spinner : BlazorBootstrapComponentBase
         builder.Append(BootstrapClassProvider.Spinner(Color));
     }
 
+    #endregion
+
+    #region Properties, Indexers
+
     /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
+
+    [Parameter] public SpinnerColor Color { get; set; }
+
+    [Parameter] public int Height { get; set; } = 16;
+
+    [Parameter] public string Title { get; set; } = "Loading...";
+
+    [Parameter] public int Width { get; set; } = 32;
+
+    #endregion
 }

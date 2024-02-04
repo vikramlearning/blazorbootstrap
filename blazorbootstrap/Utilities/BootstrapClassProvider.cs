@@ -169,9 +169,12 @@ public class BootstrapClassProvider
     public string ProgressBarStriped() => $"{ProgressBar()}-striped";
 
     public string Show() => "show";
-
+    
+    public string Spinner() => "spinner";
     public string Spinner(SpinnerColor color) => ToSpinnerColor(color)!;
-    public string SpinnerDots() => "spinner-dots";
+    public string SpinnerBorder() => $"{Spinner()}-border";
+    public string SpinnerDots() => $"{Spinner()}-dots";
+    public string SpinnerGrow() => $"{Spinner()}-grow";
 
     public string Table() => "table";
     public string TableActive() => "table-active";

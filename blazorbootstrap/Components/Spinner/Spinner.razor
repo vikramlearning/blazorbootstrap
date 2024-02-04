@@ -1,9 +1,13 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<svg id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" width="@Width" height="@Height" role="status" xmlns="http://www.w3.org/2000/svg">
+@* <svg id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" width="@Width" height="@Height" role="status" xmlns="http://www.w3.org/2000/svg">
     <title>@Title</title>
     <circle cx="4" cy="8" r="4"/>
     <circle cx="16" cy="8" r="4"/>
     <circle cx="28" cy="8" r="4"/>
-</svg>
+</svg> *@
+
+<div id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="status">
+    <span class="visually-hidden">Loading...</span>
+</div>
