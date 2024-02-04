@@ -160,7 +160,7 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ![Blazor Bootstrap - Progress](https://i.imgur.com/MK142lQ.png "Blazor Bootstrap - Progress")
 
 ### Blazor Bootstrap - Range Input
-![Blazor Bootstrap - Range Input](https://i.imgur.com/iUNBkki.png "Blazor Bootstrap - Range Input")
+![Blazor Bootstrap - Range Input](https://i.imgur.com/rWDDHaf.png "Blazor Bootstrap - Range Input")
 
 ### Blazor Bootstrap - Script Loader
 ![Blazor Bootstrap - Script Loader](https://i.imgur.com/sBiYPeQ.png "Blazor Bootstrap - Script Loader")
