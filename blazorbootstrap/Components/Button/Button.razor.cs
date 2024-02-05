@@ -30,6 +30,8 @@ public partial class Button : BlazorBootstrapComponentBase
 
     private Target previousTarget;
 
+    private string? previousTo = default!;
+
     private string previousTooltipTitle = default!;
 
     private ButtonType previousType;
@@ -93,6 +95,7 @@ public partial class Button : BlazorBootstrapComponentBase
         previousType = Type;
         previousTarget = Target;
         previousTabIndex = TabIndex;
+        previousTo = To;
         previousTooltipTitle = TooltipTitle;
         tooltipColor = TooltipColor;
 
@@ -134,6 +137,12 @@ public partial class Button : BlazorBootstrapComponentBase
             if (previousTabIndex != TabIndex)
             {
                 previousTabIndex = TabIndex;
+                setButtonAttributesAgain = true;
+            }
+
+            if (previousTo != To)
+            {
+                previousTo = To;
                 setButtonAttributesAgain = true;
             }
 
@@ -201,9 +210,17 @@ public partial class Button : BlazorBootstrapComponentBase
             if (!Attributes.TryGetValue("role", out _))
                 Attributes.Add("role", "button");
 
+            // To can be changed when the Button is used within a Virtualize component
+            if (!Attributes.TryGetValue("href", out _))
+                Attributes.Add("href", To!);
+            else
+                Attributes["href"] = To!;
+
             if (Target != Target.None)
                 if (!Attributes.TryGetValue("target", out _))
                     Attributes.Add("target", Target.ToTargetString()!);
+                else
+                    Attributes["target"] = Target.ToTargetString()!;
 
             if (Disabled)
             {
