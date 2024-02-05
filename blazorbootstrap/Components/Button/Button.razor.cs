@@ -201,9 +201,6 @@ public partial class Button : BlazorBootstrapComponentBase
             if (!Attributes.TryGetValue("role", out _))
                 Attributes.Add("role", "button");
 
-            if (!Attributes.TryGetValue("href", out _))
-                Attributes.Add("href", To!);
-
             if (Target != Target.None)
                 if (!Attributes.TryGetValue("target", out _))
                     Attributes.Add("target", Target.ToTargetString()!);
