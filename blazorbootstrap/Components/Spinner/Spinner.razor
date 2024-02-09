@@ -1,13 +1,21 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-@* <svg id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" width="@Width" height="@Height" role="status" xmlns="http://www.w3.org/2000/svg">
-    <title>@Title</title>
-    <circle cx="4" cy="8" r="4"/>
-    <circle cx="16" cy="8" r="4"/>
-    <circle cx="28" cy="8" r="4"/>
-</svg> *@
-
-<div id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="status">
-    <span class="visually-hidden">Loading...</span>
-</div>
+@if (Type == SpinnerType.Dots)
+{
+    <svg id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" width="@Width" height="@Height" role="status" xmlns="http://www.w3.org/2000/svg">
+        @if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <title>@Title</title>
+        }
+        <circle cx="4" cy="8" r="4" />
+        <circle cx="16" cy="8" r="4" />
+        <circle cx="28" cy="8" r="4" />
+    </svg>
+}
+else
+{
+    <div id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="status">
+        <span class="visually-hidden">@VisuallyHiddenText</span>
+    </div>
+}
