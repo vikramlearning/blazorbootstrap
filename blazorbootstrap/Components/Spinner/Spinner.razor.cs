@@ -1,7 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Spinner : BlazorBootstrapComponentBase
 {
@@ -17,10 +14,9 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.SpinnerBorder(), Type == SpinnerType.Border);
-        builder.Append(BootstrapClassProvider.SpinnerGrow(), Type == SpinnerType.Grow);
-        builder.Append(BootstrapClassProvider.SpinnerDots(), Type == SpinnerType.Dots);
+        builder.Append(BootstrapClassProvider.Spinner(Type));
         builder.Append(BootstrapClassProvider.Spinner(Color));
+        builder.Append(BootstrapClassProvider.Spinner(Type, Size), Type is (SpinnerType.Border or SpinnerType.Grow));
 
         base.BuildClasses(builder);
     }
@@ -32,8 +28,8 @@ public partial class Spinner : BlazorBootstrapComponentBase
         if (Type != SpinnerType.Dots)
         {
             if (string.IsNullOrWhiteSpace(Title))
-                Attributes.Remove("title"); 
-            else if(!Attributes.TryGetValue("title", out _))
+                Attributes.Remove("title");
+            else if (!Attributes.TryGetValue("title", out _))
                 Attributes.Add("title", Title);
             else if (Attributes.TryGetValue("title", out _))
                 Attributes["title"] = Title;
@@ -62,7 +58,9 @@ public partial class Spinner : BlazorBootstrapComponentBase
 
     [Parameter] public int Height { get; set; } = 16;
 
-    [Parameter] public string Title { get; set; } = "Loading...";
+    [Parameter] public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
+
+    [Parameter] public string? Title { get; set; }
 
     [Parameter]
     public SpinnerType Type
@@ -75,13 +73,13 @@ public partial class Spinner : BlazorBootstrapComponentBase
         }
     }
 
-    [Parameter] public int Width { get; set; } = 32;
-
     /// <summary>
     /// Gets or sets the visually hidden text.
     /// </summary>
     [Parameter]
-    public string VisuallyHiddenText { get; set; } = "Loading...";
+    public string? VisuallyHiddenText { get; set; } = "Loading...";
+
+    [Parameter] public int Width { get; set; } = 32;
 
     #endregion
 }
