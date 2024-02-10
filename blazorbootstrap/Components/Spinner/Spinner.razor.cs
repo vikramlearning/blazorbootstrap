@@ -104,5 +104,7 @@ public partial class Spinner : BlazorBootstrapComponentBase
     [Parameter]
     public string? VisuallyHiddenText { get; set; } = "Loading...";
 
+    [Parameter] public bool Visible { get; set; } = true;
+
     #endregion
 }
