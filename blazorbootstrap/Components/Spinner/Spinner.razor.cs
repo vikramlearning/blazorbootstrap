@@ -5,6 +5,7 @@ public partial class Spinner : BlazorBootstrapComponentBase
     #region Fields and Constants
 
     private SpinnerColor color = SpinnerColor.None;
+
     private SpinnerType type = SpinnerType.Border;
 
     #endregion
@@ -38,6 +39,30 @@ public partial class Spinner : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
+    private (int Width, int Height, List<SpinnerCircle> Circles) GetSpinnerSvgInfo()
+    {
+        var radius = 4; // default: SpinnerSize.Medium
+
+        if (Size == SpinnerSize.Small)
+            radius = 2;
+        else if (Size == SpinnerSize.Large)
+            radius = 6;
+        else if (Size == SpinnerSize.ExtraLarge)
+            radius = 8;
+
+        var defaultSpace = 4;
+        var diameter = 2 * radius;
+
+        var circle1 = new SpinnerCircle(radius, radius, diameter);
+        var circle2 = new SpinnerCircle(radius, circle1.Cx + diameter + defaultSpace, diameter);
+        var circle3 = new SpinnerCircle(radius, circle2.Cx + diameter + defaultSpace, diameter);
+
+        var width = defaultSpace + diameter * 3 + defaultSpace;
+        var height = defaultSpace + diameter + defaultSpace;
+
+        return (width, height, new List<SpinnerCircle> { circle1, circle2, circle3 });
+    }
+
     #endregion
 
     #region Properties, Indexers
@@ -56,9 +81,9 @@ public partial class Spinner : BlazorBootstrapComponentBase
         }
     }
 
-    [Parameter] public int Height { get; set; } = 16;
-
     [Parameter] public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
+
+    private (int Width, int Height, List<SpinnerCircle> Circles) SpinnerSvg => GetSpinnerSvgInfo();
 
     [Parameter] public string? Title { get; set; }
 
@@ -78,8 +103,6 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public string? VisuallyHiddenText { get; set; } = "Loading...";
-
-    [Parameter] public int Width { get; set; } = 32;
 
     #endregion
 }
