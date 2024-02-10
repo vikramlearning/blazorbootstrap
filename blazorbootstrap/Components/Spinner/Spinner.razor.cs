@@ -39,8 +39,13 @@ public partial class Spinner : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
+    /// <summary>
+    /// Calculates width, height, and circles information for the spinner SVG.
+    /// </summary>
+    /// <returns>A tuple containing width, height, and a list of spinner circles.</returns>
     private (int Width, int Height, List<SpinnerCircle> Circles) GetSpinnerSvgInfo()
     {
+        // Calculate radius based on Size
         var radius = 4; // default: SpinnerSize.Medium
 
         if (Size == SpinnerSize.Small)
@@ -51,6 +56,8 @@ public partial class Spinner : BlazorBootstrapComponentBase
             radius = 8;
 
         var defaultSpace = 4;
+
+        // Calculate other dimensions based on radius
         var diameter = 2 * radius;
 
         var circle1 = new SpinnerCircle(radius, radius, diameter);
@@ -70,6 +77,9 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
+    /// <summary>
+    /// Gets or sets the color of the spinner.
+    /// </summary>
     [Parameter]
     public SpinnerColor Color
     {
@@ -81,12 +91,26 @@ public partial class Spinner : BlazorBootstrapComponentBase
         }
     }
 
-    [Parameter] public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
+    /// <summary>
+    /// Gets or sets the size of the spinner.
+    /// </summary>
+    [Parameter]
+    public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
 
+    /// <summary>
+    /// Gets the width, height, and circles information for the spinner SVG.
+    /// </summary>
     private (int Width, int Height, List<SpinnerCircle> Circles) SpinnerSvg => GetSpinnerSvgInfo();
 
-    [Parameter] public string? Title { get; set; }
+    /// <summary>
+    /// Gets or sets the title text used as an accessibility attribute.
+    /// </summary>
+    [Parameter]
+    public string? Title { get; set; }
 
+    /// <summary>
+    /// Gets or sets the type of the spinner.
+    /// </summary>
     [Parameter]
     public SpinnerType Type
     {
@@ -99,12 +123,16 @@ public partial class Spinner : BlazorBootstrapComponentBase
     }
 
     /// <summary>
+    /// Gets or sets whether the spinner is visible or not.
+    /// </summary>
+    [Parameter]
+    public bool Visible { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the visually hidden text.
     /// </summary>
     [Parameter]
     public string? VisuallyHiddenText { get; set; } = "Loading...";
-
-    [Parameter] public bool Visible { get; set; } = true;
 
     #endregion
 }
