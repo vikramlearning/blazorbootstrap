@@ -283,6 +283,31 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             Value = value;
     }
 
+    private string GetInvariantNumber(TValue value)
+    {
+        if (value is null)
+        {
+            return string.Empty;
+        }
+
+        if (value is float floatValue)
+        {
+            return floatValue.ToString(CultureInfo.InvariantCulture);
+        }
+
+        if (value is double doubleValue)
+        {
+            return doubleValue.ToString(CultureInfo.InvariantCulture);
+        }
+
+        if (value is decimal decimalValue)
+        {
+            return decimalValue.ToString(CultureInfo.InvariantCulture);
+        }
+
+        // All numbers without decimal places work fine by default
+        return value?.ToString() ?? string.Empty;
+    }
     private bool TryParseValue(object value, out TValue newValue)
     {
         try
@@ -322,7 +347,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             // float? / float
             if (typeof(TValue) == typeof(float?) || typeof(TValue) == typeof(float))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(float));
+                newValue = (TValue)Convert.ChangeType(value, typeof(float), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -330,7 +355,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             // double? / double
             if (typeof(TValue) == typeof(double?) || typeof(TValue) == typeof(double))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(double));
+                newValue = (TValue)Convert.ChangeType(value, typeof(double), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -338,7 +363,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             // decimal? / decimal
             if (typeof(TValue) == typeof(decimal?) || typeof(TValue) == typeof(decimal))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(decimal));
+                newValue = (TValue)Convert.ChangeType(value, typeof(decimal), CultureInfo.InvariantCulture);
 
                 return true;
             }
