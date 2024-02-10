@@ -16,15 +16,15 @@ We are excited to release version 1.11.0, featuring new PDF Viewer, Range Input,
 
 ## What's New
 
-- 'PDF Viewer' component
+- `PDF Viewer` component
   - Allows users to view PDF files directly in the browser, eliminating the need for third-party browser tools or extensions.
   - Supports two callback events: OnDocumentLoaded and OnPageChanged
-- 'Range Input' component
+- `Range Input` component
   - Disabled
   - Min and Max
   - Step
   - Tick marks
-- 'Script Loader' component
+- `Script Loader` component
   - Allows users to load JS sctipt files dynamically on the fly.
 
 ## What's changed

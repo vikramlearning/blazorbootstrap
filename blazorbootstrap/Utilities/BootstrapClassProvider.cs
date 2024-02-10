@@ -169,6 +169,11 @@ public class BootstrapClassProvider
     public string ProgressBarStriped() => $"{ProgressBar()}-striped";
 
     public string Show() => "show";
+    
+    public string Spinner() => "spinner";
+    public string Spinner(SpinnerColor color) => ToSpinnerColor(color)!;
+    public string Spinner(SpinnerType type) => $"{Spinner()}-{ToSpinnerType(type)}";
+    public string Spinner(SpinnerType type, SpinnerSize size) => $"{Spinner(type)}-{ToSpinnerSize(size)}";
 
     public string Table() => "table";
     public string TableActive() => "table-active";
@@ -599,6 +604,39 @@ public class BootstrapClassProvider
             Size.Large => "lg",
             Size.ExtraLarge => "xl",
             _ => null
+        };
+
+    public string? ToSpinnerColor(SpinnerColor color) =>
+        color switch
+        {
+            SpinnerColor.Primary => "text-primary",
+            SpinnerColor.Secondary => "text-secondary",
+            SpinnerColor.Success => "text-success",
+            SpinnerColor.Danger => "text-danger",
+            SpinnerColor.Warning => "text-warning",
+            SpinnerColor.Info => "text-info",
+            SpinnerColor.Light => "text-light",
+            SpinnerColor.Dark => "text-dark",
+            _ => null
+        };
+
+    public string ToSpinnerSize(SpinnerSize size) =>
+        size switch
+        {
+            SpinnerSize.Small => "sm",
+            SpinnerSize.Medium => "md",
+            SpinnerSize.Large => "lg",
+            SpinnerSize.ExtraLarge => "xl",
+            _ => "md"
+        };
+
+    public string ToSpinnerType(SpinnerType type) =>
+        type switch
+        {
+            SpinnerType.Border => "border",
+            SpinnerType.Grow => "grow",
+            SpinnerType.Dots => "dots",
+            _ => "border"
         };
 
     public string? ToTabColor(TabColor color) =>
