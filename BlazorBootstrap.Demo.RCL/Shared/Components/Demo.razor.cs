@@ -2,7 +2,7 @@
 
 public partial class Demo : ComponentBase
 {
-    #region Members
+    #region Fields and Constants
 
     private string? codeSnippet;
 
@@ -10,19 +10,26 @@ public partial class Demo : ComponentBase
 
     #region Methods
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        await JS.InvokeVoidAsync("highlightCode");
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         if (codeSnippet is null)
         {
             var resourceName = Type.FullName + ".razor";
-            using (Stream stream = Type.Assembly.GetManifestResourceStream(resourceName)!)
+
+            using (var stream = Type.Assembly.GetManifestResourceStream(resourceName)!)
             {
                 try
                 {
                     if (stream is null)
                         return;
 
-                    using (StreamReader reader = new StreamReader(stream))
+                    using (var reader = new StreamReader(stream))
                     {
                         codeSnippet = await reader.ReadToEndAsync();
                     }
@@ -35,15 +42,9 @@ public partial class Demo : ComponentBase
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-        await JS.InvokeVoidAsync("highlightCode");
-    }
-
     #endregion
 
-    #region Properties
+    #region Properties, Indexers
 
     [Inject] protected IJSRuntime JS { get; set; } = default!;
 

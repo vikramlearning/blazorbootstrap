@@ -4,16 +4,26 @@
 <!--googleoff: index-->
 @if (ShowCodeOnly)
 {
-    <div class="highlight show-code-only">
-        <pre>
-            <code class="@LanguageCssClass">
-                @if (codeSnippet is not null)
-                {
-                    <text>@codeSnippet.Trim()</text>
-                }
-            </code>
-        </pre>
-    </div>
+    <div class="bd-example-snippet bd-code-snippet">
+        <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border">
+            <small class="font-monospace text-body-secondary text-uppercase">html</small>
+            <div class="d-flex ms-auto">
+                <Tooltip Title="Copy to clipboard" role="button">
+                    <Icon Name="IconName.Clipboard" />
+                </Tooltip>
+            </div>
+        </div>
+         <div class="highlight">
+             <pre>
+                    <code class="@LanguageCssClass">
+                        @if (codeSnippet is not null)
+                        {
+                            <text>@codeSnippet.Trim()</text>
+                        }
+                    </code>
+                </pre>
+         </div>
+     </div>
 }
 else if (!Tabs)
 {
