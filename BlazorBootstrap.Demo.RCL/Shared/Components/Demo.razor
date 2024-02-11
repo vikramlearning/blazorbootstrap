@@ -1,0 +1,66 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inherits ComponentBase
+
+<!--googleoff: index-->
+@if (ShowCodeOnly)
+{
+    <div class="highlight show-code-only">
+        <pre>
+            <code class="@LanguageCssClass">
+                @if (codeSnippet is not null)
+                {
+                    <text>@codeSnippet.Trim()</text>
+                }
+            </code>
+        </pre>
+    </div>
+}
+else if (!Tabs)
+{
+    <div class="bb-example">
+        <DynamicComponent Type="this.Type"/>
+    </div>
+    <div class="highlight">
+        <pre>
+            <code class="@LanguageCssClass">
+                @if (codeSnippet is not null)
+                {
+                    <text>@codeSnippet.Trim()</text>
+                }
+            </code>
+        </pre>
+    </div>
+}
+else // Tabs = true
+{
+    <Tabs EnableFadeEffect="true">
+        <Tab IsActive="true">
+            <TitleTemplate>
+                <Icon Name="IconName.Display" Class="me-2" /><b>Example</b>
+            </TitleTemplate>
+            <Content>
+                <div class="bb-example border-top-0 mt-0">
+                    <DynamicComponent Type="this.Type"/>
+                </div>
+            </Content>
+        </Tab>
+        <Tab>
+            <TitleTemplate>
+                <Icon Name="IconName.CodeSlash" Class="me-2" /><b>View Source</b>
+            </TitleTemplate>
+            <Content>
+                <div class="highlight">
+                    <pre>
+                        <code class="@LanguageCssClass">
+                            @if (codeSnippet is not null)
+                            {
+                                <text>@codeSnippet.Trim()</text>
+                            }
+                        </code>
+                    </pre>
+                </div>
+            </Content>
+        </Tab>
+    </Tabs>
+}
+<!--googleon: index-->
