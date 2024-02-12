@@ -6,9 +6,9 @@
 {
     <div class="bd-example-snippet bd-code-snippet">
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border">
-            <small class="font-monospace text-body-secondary text-uppercase">html</small>
+            <small class="font-monospace text-body-secondary text-uppercase">razor</small>
             <div class="d-flex ms-auto">
-                <Tooltip Title="Copy to clipboard" role="button">
+                <Tooltip Title="Copy to clipboard" role="button" @onclick="CopyToClipboardAsync">
                     <Icon Name="IconName.Clipboard" />
                 </Tooltip>
             </div>
@@ -32,9 +32,9 @@ else if (!Tabs)
             <DynamicComponent Type="this.Type"/>
         </div>
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border border-top-0">
-            <small class="font-monospace text-body-secondary text-uppercase">html</small>
+            <small class="font-monospace text-body-secondary text-uppercase">razor</small>
             <div class="d-flex ms-auto">
-                <Tooltip Title="Copy to clipboard" role="button">
+                <Tooltip Title="Copy to clipboard" role="button" @onclick="CopyToClipboardAsync">
                     <Icon Name="IconName.Clipboard" />
                 </Tooltip>
             </div>

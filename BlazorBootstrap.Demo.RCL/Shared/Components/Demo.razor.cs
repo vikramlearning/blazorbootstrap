@@ -6,14 +6,27 @@ public partial class Demo : ComponentBase
 
     private string? codeSnippet;
 
+    /// <summary>
+    /// A reference to this component instance for use in JavaScript calls.
+    /// </summary>
+    private DotNetObjectReference<Demo> objRef = default!;
+
     #endregion
 
     #region Methods
 
+    protected override async Task OnInitializedAsync()
+    {
+        objRef ??= DotNetObjectReference.Create(this);
+        await base.OnInitializedAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+            await JS.InvokeVoidAsync("highlightCode");
+
         await base.OnAfterRenderAsync(firstRender);
-        await JS.InvokeVoidAsync("highlightCode");
     }
 
     protected override async Task OnParametersSetAsync()
@@ -40,6 +53,36 @@ public partial class Demo : ComponentBase
                 }
             }
         }
+    }
+
+    private async Task CopyToClipboardAsync()
+    {
+        await JS.InvokeVoidAsync("copyToClipboard", codeSnippet, objRef);
+    }
+
+    /// <summary>
+    /// Handles a script error event from JavaScript.
+    /// </summary>
+    /// <param name="errorMessage">The error message.</param>
+    [JSInvokable]
+    public void OnCopyFailJS(string errorMessage)
+    {
+        Console.WriteLine($"OnCopyFailJS called, errorMessage: {errorMessage}");
+    }
+
+    /// <summary>
+    /// Handles a script load event from JavaScript.
+    /// </summary>
+    [JSInvokable]
+    public void OnCopySuccessJS()
+    {
+        Console.WriteLine($"OnCopySuccessJS called.");
+    }
+
+    [JSInvokable]
+    public void ResetCopyStatusJS()
+    {
+        Console.WriteLine($"ResetCopyStatusJS called.");
     }
 
     #endregion

@@ -70,8 +70,10 @@ public class CodeSnippet : ComponentBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if(firstRender)
+            await JS.InvokeVoidAsync("highlightCode");
+
         await base.OnAfterRenderAsync(firstRender);
-        await JS.InvokeVoidAsync("highlightCode");
     }
 
     #endregion
