@@ -4,6 +4,12 @@ public partial class Demo : ComponentBase
 {
     #region Fields and Constants
 
+    private IconColor clipboardTooltipIconColor = IconColor.Dark;
+
+    private IconName clipboardTooltipIconName = IconName.Clipboard;
+
+    private string? clipboardTooltipTitle = "Copy to clipboard";
+
     private string? codeSnippet;
 
     /// <summary>
@@ -15,18 +21,18 @@ public partial class Demo : ComponentBase
 
     #region Methods
 
-    protected override async Task OnInitializedAsync()
-    {
-        objRef ??= DotNetObjectReference.Create(this);
-        await base.OnInitializedAsync();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
             await JS.InvokeVoidAsync("highlightCode");
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        objRef ??= DotNetObjectReference.Create(this);
+        await base.OnInitializedAsync();
     }
 
     protected override async Task OnParametersSetAsync()
@@ -55,13 +61,8 @@ public partial class Demo : ComponentBase
         }
     }
 
-    private async Task CopyToClipboardAsync()
-    {
-        await JS.InvokeVoidAsync("copyToClipboard", codeSnippet, objRef);
-    }
-
     /// <summary>
-    /// Handles a script error event from JavaScript.
+    /// Handles a copy error event from JavaScript.
     /// </summary>
     /// <param name="errorMessage">The error message.</param>
     [JSInvokable]
@@ -71,18 +72,36 @@ public partial class Demo : ComponentBase
     }
 
     /// <summary>
-    /// Handles a script load event from JavaScript.
+    /// Handles a copy success event from JavaScript.
     /// </summary>
     [JSInvokable]
-    public void OnCopySuccessJS()
+    public async Task OnCopySuccessJS()
     {
-        Console.WriteLine($"OnCopySuccessJS called.");
+        clipboardTooltipTitle = "Copied!";
+        clipboardTooltipIconName = IconName.Check2;
+        clipboardTooltipIconColor = IconColor.Success;
+
+        StateHasChanged();
+
+        Console.WriteLine("OnCopySuccessJS called.");
     }
 
+    /// <summary>
+    /// Handles a copy status reset event from JavaScript.
+    /// </summary>
     [JSInvokable]
     public void ResetCopyStatusJS()
     {
-        Console.WriteLine($"ResetCopyStatusJS called.");
+        clipboardTooltipTitle = "Copy to clipboard";
+        clipboardTooltipIconName = IconName.Clipboard;
+        clipboardTooltipIconColor = IconColor.Dark;
+        StateHasChanged();
+        Console.WriteLine("ResetCopyStatusJS called.");
+    }
+
+    private async Task CopyToClipboardAsync()
+    {
+        await JS.InvokeVoidAsync("copyToClipboard", codeSnippet, objRef);
     }
 
     #endregion

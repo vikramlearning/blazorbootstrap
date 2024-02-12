@@ -66,6 +66,11 @@ public partial class Tooltip : BlazorBootstrapComponentBase
             }
     }
 
+    public async Task ShowAsync()
+    {
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.show", ElementRef);
+    }
+
     #endregion
 
     #region Properties, Indexers
