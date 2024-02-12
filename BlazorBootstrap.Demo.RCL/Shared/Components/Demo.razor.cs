@@ -68,22 +68,20 @@ public partial class Demo : ComponentBase
     [JSInvokable]
     public void OnCopyFailJS(string errorMessage)
     {
-        Console.WriteLine($"OnCopyFailJS called, errorMessage: {errorMessage}");
+        // TODO: show message
     }
 
     /// <summary>
     /// Handles a copy success event from JavaScript.
     /// </summary>
     [JSInvokable]
-    public async Task OnCopySuccessJS()
+    public void OnCopySuccessJS()
     {
         clipboardTooltipTitle = "Copied!";
         clipboardTooltipIconName = IconName.Check2;
         clipboardTooltipIconColor = IconColor.Success;
 
         StateHasChanged();
-
-        Console.WriteLine("OnCopySuccessJS called.");
     }
 
     /// <summary>
@@ -95,14 +93,11 @@ public partial class Demo : ComponentBase
         clipboardTooltipTitle = "Copy to clipboard";
         clipboardTooltipIconName = IconName.Clipboard;
         clipboardTooltipIconColor = IconColor.Dark;
+
         StateHasChanged();
-        Console.WriteLine("ResetCopyStatusJS called.");
     }
 
-    private async Task CopyToClipboardAsync()
-    {
-        await JS.InvokeVoidAsync("copyToClipboard", codeSnippet, objRef);
-    }
+    private async Task CopyToClipboardAsync() => await JS.InvokeVoidAsync("copyToClipboard", codeSnippet, objRef);
 
     #endregion
 
