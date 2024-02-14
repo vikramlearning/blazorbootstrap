@@ -48,7 +48,7 @@ public partial class Alert
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", ElementId, objRef); });
     }
 
     [JSInvokable]

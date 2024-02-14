@@ -5,46 +5,24 @@ public class BootstrapClassProvider
     #region Methods
 
     public string Accordion() => "accordion";
-    public string AccordionButton() => $"{Accordion()}-button";
     public string AccordionFlush() => $"{Accordion()}-flush";
     public string AccordionItem() => $"{Accordion()}-item";
-    public string AccordionItemBody() => $"{Accordion()}-body";
-    public string AccordionItemHeader() => $"{Accordion()}-header";
 
     public string Active() => "active";
 
     public string Alert() => "alert";
-
     public string AlertColor(AlertColor color) => $"{Alert()}-{ToAlertColor(color)}";
-
-    public string? AlertDescription() => null;
-
     public string AlertDismisable() => "alert-dismissible";
-
-    public string AlertFade() => Fade();
-
-    public string? AlertHasDescription() => null;
-
-    public string? AlertHasMessage() => null;
-
-    public string? AlertMessage() => null;
-
-    public string AlertShow() => Show();
-
+    
     public string BackgroundColor(BackgroundColor backgroundColor) => $"bg-{ToBackgroundColor(backgroundColor)}";
 
     public string Badge() => "badge";
-
     public string BadgeColor(BadgeColor color) => $"text-bg-{ToBadgeColor(color)}";
 
     public string Button() => "btn";
-
     public string ButtonActive() => "active";
-
     public string ButtonBlock() => $"{Button()}-block";
-
     public string ButtonColor(ButtonColor color) => $"{Button()}-{ToButtonColor(color)}";
-
     public string ButtonDisabled() => "disabled";
 
     public string ButtonGroup() => $"{Button()}-group";
@@ -69,23 +47,15 @@ public class BootstrapClassProvider
     public string CardText() => $"{Card()}-text";
     public string CardTitle() => $"{Card()}-title";
 
-    public string Checks() => "form-check-input";
     public string ChecksReverse() => "form-check-reverse";
 
     public string Collapse() => "collapse";
 
-    public string Collapsed() => "collapsed";
     public string CollapseHorizontal() => $"{Collapse()}-horizontal";
 
     public string ConfirmationModal() => "modal-confirmation";
 
     public string Disabled() => "disabled";
-
-    public string DisplayHeadingSize(DisplayHeadingSize displayHeadingSize) => $"display-{ToDisplayHeadingSize(displayHeadingSize)}";
-
-    public string Divider() => "divider";
-
-    public string DividerType(DividerType dividerType) => $"{Divider()}-{ToDividerType(dividerType)}";
 
     public string Dropdown() => "dropdown";
 
@@ -109,10 +79,6 @@ public class BootstrapClassProvider
     public string HeadingSize(HeadingSize headingSize) => $"h{ToHeadingSize(headingSize)}";
 
     public string IconColor(IconColor iconColor) => $"text-{ToIconColor(iconColor)}";
-
-    public string IsInValid() => "invalid";
-
-    public string IsValid() => "valid";
 
     public string Modal() => "modal";
 
@@ -141,13 +107,7 @@ public class BootstrapClassProvider
 
     public string PaginationLink() => "page-link";
 
-    public string? PaginationLinkActive() => null;
-
-    public string? PaginationLinkDisabled() => null;
-
     public string PaginationSize(PaginationSize size) => $"{Pagination()}-{ToPaginationSize(size)}";
-
-    public string PillBadge() => "rounded-pill";
 
     public string Placeholder() => "placeholder";
     public string PlaceholderAnimation(PlaceholderAnimation animation) => $"{Placeholder()}-{ToPlaceholderAnimation(animation)}";
@@ -159,7 +119,6 @@ public class BootstrapClassProvider
     public string PositionAbsolute() => $"{Position()}-absolute";
     public string PositionFixed() => $"{Position()}-fixed";
     public string PositionRelative() => $"{Position()}-relative";
-    public string PositionStatic() => $"{Position()}-static";
     public string PositionSticky() => $"{Position()}-sticky";
 
     public string Progress() => "progress";
@@ -174,31 +133,11 @@ public class BootstrapClassProvider
     public string Spinner(SpinnerColor color) => ToSpinnerColor(color)!;
     public string Spinner(SpinnerType type) => $"{Spinner()}-{ToSpinnerType(type)}";
     public string Spinner(SpinnerType type, SpinnerSize size) => $"{Spinner(type)}-{ToSpinnerSize(size)}";
-
-    public string Table() => "table";
-    public string TableActive() => "table-active";
-    public string TableBordered() => "table-bordered";
-    public string TableBorderless() => "table-borderless";
-    public string TableDanger() => "table-danger";
-    public string TableDark() => "table-dark";
-    public string TableGroupDivider() => "table-group-divider";
-    public string TableHover() => "table-hover";
-    public string TableInfo() => "table-info";
-    public string TableLight() => "table-light";
-    public string TablePrimary() => "table-primary";
-    public string TableResponsive() => "table-responsive";
-    public string TableSecondary() => "table-secondary";
-    public string TableSmall() => "table-sm";
+    
     public string TableSticky() => "bb-table-sticky";
-    public string TableStriped() => "table-striped";
-    public string TableStripedColumns() => "table-striped-columns";
-    public string TableSuccess() => "table-success";
-    public string TableWarning() => "table-warning";
 
     public string TextAlignment(Alignment alignment) => $"text-{ToAlignment(alignment)}";
-
-    public string TextAndBackgroundColor(BackgroundColor backgroundColor) => $"text-bg-{ToBackgroundColor(backgroundColor)}";
-
+    
     public string TextColor(TextColor textColor) => $"text-{ToTextColor(textColor)}";
 
     public string TextNoWrap() => "text-nowrap";
@@ -331,20 +270,6 @@ public class BootstrapClassProvider
             _ => ""
         };
 
-    public string? ToColor(TextColor color) =>
-        color switch
-        {
-            BlazorBootstrap.TextColor.Primary => "primary",
-            BlazorBootstrap.TextColor.Secondary => "secondary",
-            BlazorBootstrap.TextColor.Success => "success",
-            BlazorBootstrap.TextColor.Danger => "danger",
-            BlazorBootstrap.TextColor.Warning => "warning",
-            BlazorBootstrap.TextColor.Info => "info",
-            BlazorBootstrap.TextColor.Light => "light",
-            BlazorBootstrap.TextColor.Dark => "dark",
-            _ => null
-        };
-
     public string? ToDialogSize(DialogSize size) =>
         size switch
         {
@@ -353,25 +278,6 @@ public class BootstrapClassProvider
             DialogSize.Large => "modal-lg",
             DialogSize.ExtraLarge => "modal-xl",
             _ => null
-        };
-
-    public string? ToDisplayHeadingSize(DisplayHeadingSize displayHeadingSize) =>
-        displayHeadingSize switch
-        {
-            BlazorBootstrap.DisplayHeadingSize.H1 => "1",
-            BlazorBootstrap.DisplayHeadingSize.H2 => "2",
-            BlazorBootstrap.DisplayHeadingSize.H3 => "3",
-            BlazorBootstrap.DisplayHeadingSize.H4 => "4",
-            _ => null
-        };
-
-    public string ToDividerType(DividerType dividerType) =>
-        dividerType switch
-        {
-            BlazorBootstrap.DividerType.Dashed => "dashed",
-            BlazorBootstrap.DividerType.Dotted => "dotted",
-            BlazorBootstrap.DividerType.TextContent => "text",
-            _ => "solid"
         };
 
     public string ToDropdownDirection(DropdownDirection direction) =>
@@ -483,19 +389,7 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string Tooltip() => "b-tooltip";
-
-    public string TooltipAlwaysActive() => "b-tooltip-active";
-
     public string? TooltipColor(TooltipColor color) => ToTooltipColor(color);
-
-    public string TooltipFade() => "b-tooltip-fade";
-
-    public string TooltipInline() => "b-tooltip-inline";
-
-    public string TooltipMultiline() => "b-tooltip-multiline";
-
-    public string TooltipPlacement(TooltipPlacement tooltipPlacement) => $"{Tooltip()}-{ToTooltipPlacement(tooltipPlacement)}";
 
     public string? ToPaginationSize(PaginationSize size) =>
         size switch
@@ -587,14 +481,6 @@ public class BootstrapClassProvider
             _ => null
         };
 
-    public string? ToScreenreader(Screenreader screenreader) =>
-        screenreader switch
-        {
-            Screenreader.Only => "sr-only",
-            Screenreader.OnlyFocusable => "sr-only-focusable",
-            _ => null
-        };
-
     public string? ToSize(Size size) =>
         size switch
         {
@@ -637,20 +523,6 @@ public class BootstrapClassProvider
             SpinnerType.Grow => "grow",
             SpinnerType.Dots => "dots",
             _ => "border"
-        };
-
-    public string? ToTabColor(TabColor color) =>
-        color switch
-        {
-            TabColor.Primary => "bg-primary text-white",
-            TabColor.Secondary => "bg-secondary text-white",
-            TabColor.Success => "bg-success text-white",
-            TabColor.Danger => "bg-danger text-white",
-            TabColor.Warning => "bg-warning text-dark",
-            TabColor.Info => "bg-info text-dark",
-            TabColor.Light => "bg-light text-dark",
-            TabColor.Dark => "bg-dark text-white",
-            _ => null
         };
 
     public string ToTextAlignment(Alignment alignment) =>
@@ -734,15 +606,6 @@ public class BootstrapClassProvider
             BlazorBootstrap.TooltipColor.Light => "bb-tooltip-light",
             BlazorBootstrap.TooltipColor.Dark => "bb-tooltip-dark",
             _ => null
-        };
-
-    public string ToTooltipPlacement(TooltipPlacement tooltipPlacement) =>
-        tooltipPlacement switch
-        {
-            BlazorBootstrap.TooltipPlacement.Bottom => "bottom",
-            BlazorBootstrap.TooltipPlacement.Left => "left",
-            BlazorBootstrap.TooltipPlacement.Right => "right",
-            _ => "top"
         };
 
     #endregion

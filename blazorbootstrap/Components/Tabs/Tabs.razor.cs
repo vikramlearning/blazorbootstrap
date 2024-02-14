@@ -55,7 +55,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
     }
 
     [JSInvokable]
@@ -106,7 +106,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     {
         if (!tabs?.Any() ?? false) return;
 
-        ExecuteAfterRender(
+        QueueAfterRenderAction(
             async () =>
             {
                 var tab = tabs!.LastOrDefault();

@@ -15,17 +15,17 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// The custom class names for the component.
     /// </summary>
-    private string? customClass;
-
-    /// <summary>
-    /// The custom styles for the component.
-    /// </summary>
-    private string? customStyle;
+    private string? @class;
 
     /// <summary>
     /// A stack of functions to execute after the rendering.
     /// </summary>
-    private Queue<Func<Task>>? executeAfterRenderQueue;
+    private Queue<Func<Task>>? renderQueue;
+
+    /// <summary>
+    /// The custom styles for the component.
+    /// </summary>
+    private string? style;
 
     #endregion
 
@@ -38,8 +38,8 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     public BlazorBootstrapComponentBase()
 #pragma warning restore CS8618
     {
-        ClassBuilder = new CssClassBuilder(BuildClasses);
-        StyleBuilder = new CssStyleBuilder(BuildStyles);
+        CssClassBuilder = new CssClassBuilder(BuildClasses);
+        CssStyleBuilder = new CssStyleBuilder(BuildStyles);
     }
 
     #endregion
@@ -51,11 +51,10 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     {
         Rendered = true;
 
-        if (executeAfterRenderQueue?.Count > 0)
-            while (executeAfterRenderQueue.Count > 0)
+        if (renderQueue?.Count > 0)
+            while (renderQueue.Count > 0)
             {
-                var action = executeAfterRenderQueue.Dequeue();
-
+                var action = renderQueue.Dequeue();
                 await action();
             }
 
@@ -86,7 +85,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// Marks the class names as dirty, so that they will be regenerated the next time they are requested.
     /// </summary>
-    protected internal virtual void DirtyClasses() => ClassBuilder?.Dirty();
+    protected internal virtual void DirtyClasses() => CssClassBuilder?.Dirty();
 
     /// <summary>
     /// Builds the class names for this component.
@@ -111,7 +110,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// Marks the styles as dirty, so that they will be regenerated the next time they are requested.
     /// </summary>
-    protected virtual void DirtyStyles() => StyleBuilder?.Dirty();
+    protected virtual void DirtyStyles() => CssStyleBuilder?.Dirty();
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -123,14 +122,14 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
         {
             if (disposing)
             {
-                ClassBuilder = null;
-                StyleBuilder = null;
+                CssClassBuilder = null;
+                CssStyleBuilder = null;
             }
 
-            if (disposing && executeAfterRenderQueue != null)
+            if (disposing && renderQueue != null)
             {
-                executeAfterRenderQueue.Clear();
-                executeAfterRenderQueue = null;
+                renderQueue.Clear();
+                renderQueue = null;
             }
 
             Disposed = true;
@@ -149,8 +148,8 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
             {
                 if (disposing)
                 {
-                    ClassBuilder = null;
-                    StyleBuilder = null;
+                    CssClassBuilder = null;
+                    CssStyleBuilder = null;
                 }
 
                 AsyncDisposed = true;
@@ -168,11 +167,10 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// Pushes an action to the stack to be executed after the rendering is done.
     /// </summary>
     /// <param name="action"></param>
-    protected void ExecuteAfterRender(Func<Task> action)
+    protected void QueueAfterRenderAction(Func<Task> action)
     {
-        executeAfterRenderQueue ??= new Queue<Func<Task>>();
-
-        executeAfterRenderQueue.Enqueue(action);
+        renderQueue ??= new Queue<Func<Task>>();
+        renderQueue.Enqueue(action);
     }
 
     #endregion
@@ -202,24 +200,29 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     [Parameter]
     public string? Class
     {
-        get => customClass;
+        get => @class;
         set
         {
-            customClass = value;
+            @class = value;
 
             DirtyClasses();
         }
     }
 
     /// <summary>
-    /// Gets the class builder.
-    /// </summary>
-    protected CssClassBuilder? ClassBuilder { get; private set; }
-
-    /// <summary>
     /// Gets the built class-names based on all the rules set by the component parameters.
     /// </summary>
-    public string? ClassNames => ClassBuilder!.ClassNames;
+    public string? ClassNames => CssClassBuilder!.ClassNames;
+
+    /// <summary>
+    /// Gets the class builder.
+    /// </summary>
+    protected CssClassBuilder? CssClassBuilder { get; private set; }
+
+    /// <summary>
+    /// Gets the style mapper.
+    /// </summary>
+    protected CssStyleBuilder? CssStyleBuilder { get; private set; }
 
     /// <summary>
     /// Indicates if the component is already fully disposed.
@@ -263,24 +266,19 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     [Parameter]
     public string? Style
     {
-        get => customStyle;
+        get => style;
         set
         {
-            customStyle = value;
+            style = value;
 
             DirtyStyles();
         }
     }
 
     /// <summary>
-    /// Gets the style mapper.
-    /// </summary>
-    protected CssStyleBuilder? StyleBuilder { get; private set; }
-
-    /// <summary>
     /// Gets the built styles based on all the rules set by the component parameters.
     /// </summary>
-    public string? StyleNames => StyleBuilder!.Styles;
+    public string? StyleNames => CssStyleBuilder!.Styles;
 
     #endregion
 }

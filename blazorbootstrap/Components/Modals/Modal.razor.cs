@@ -72,7 +72,7 @@ public partial class Modal : BlazorBootstrapComponentBase
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.modal.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, objRef); });
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.modal.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, objRef); });
     }
 
     [JSInvokable]

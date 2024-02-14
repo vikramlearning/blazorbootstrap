@@ -47,7 +47,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", ElementId, objRef); });
     }
 
     [JSInvokable]

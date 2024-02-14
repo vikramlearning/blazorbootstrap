@@ -46,7 +46,7 @@ public partial class Dropdown
 
         base.OnInitialized();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.dropdown.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.dropdown.initialize", ElementId, objRef); });
     }
 
     [JSInvokable]
