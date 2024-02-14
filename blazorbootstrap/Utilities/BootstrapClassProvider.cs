@@ -5,8 +5,8 @@ public static class BootstrapClassProvider
     #region Methods
 
     public static string Accordion { get; } = "accordion";
-    public static string AccordionFlush() => $"{Accordion}-flush";
-    public static string AccordionItem() => $"{Accordion}-item";
+    public static string AccordionFlush => $"{Accordion}-flush";
+    public static string AccordionItem => $"{Accordion}-item";
 
     public static string Active { get; } = "active";
 

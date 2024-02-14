@@ -15,7 +15,7 @@ public partial class AccordionItem
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.AccordionItem());
+        builder.Append(BootstrapClassProvider.AccordionItem);
 
         base.BuildClasses(builder);
     }

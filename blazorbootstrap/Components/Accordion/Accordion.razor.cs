@@ -14,7 +14,7 @@ public partial class Accordion
     protected override void BuildClasses(CssClassBuilder builder)
     {
         builder.Append(BootstrapClassProvider.Accordion);
-        builder.Append(BootstrapClassProvider.AccordionFlush(), Flush);
+        builder.Append(BootstrapClassProvider.AccordionFlush, Flush);
         base.BuildClasses(builder);
     }
 
