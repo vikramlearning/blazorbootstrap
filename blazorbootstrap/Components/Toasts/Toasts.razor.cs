@@ -12,8 +12,8 @@ public partial class Toasts : BlazorBootstrapComponentBase, IDisposable
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.ToastContainer());
-        builder.Append(BootstrapClassProvider.PositionFixed());
+        builder.Append(BootstrapClassProvider.ToastContainer);
+        builder.Append(BootstrapClassProvider.PositionFixed);
         builder.Append(BootstrapClassProvider.ToToastsPlacement(Placement));
 
         base.BuildClasses(builder);

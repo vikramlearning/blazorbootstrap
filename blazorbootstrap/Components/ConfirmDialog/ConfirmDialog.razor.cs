@@ -34,9 +34,9 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Modal());
-        builder.Append(BootstrapClassProvider.ConfirmationModal());
-        builder.Append(BootstrapClassProvider.ModalFade());
+        builder.Append(BootstrapClassProvider.Modal);
+        builder.Append(BootstrapClassProvider.ConfirmationModal);
+        builder.Append(BootstrapClassProvider.ModalFade);
 
         base.BuildClasses(builder);
     }

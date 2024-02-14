@@ -15,9 +15,9 @@ public partial class ProgressBar
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.ProgressBar());
-        builder.Append(BootstrapClassProvider.ProgressBarStriped(), type is ProgressType.Striped or ProgressType.StripedAndAnimated);
-        builder.Append(BootstrapClassProvider.ProgressBarAnimated(), type == ProgressType.StripedAndAnimated);
+        builder.Append(BootstrapClassProvider.ProgressBar);
+        builder.Append(BootstrapClassProvider.ProgressBarStriped, type is ProgressType.Striped or ProgressType.StripedAndAnimated);
+        builder.Append(BootstrapClassProvider.ProgressBarAnimated, type == ProgressType.StripedAndAnimated);
         builder.Append(BootstrapClassProvider.ProgressBackgroundColor(color), color != ProgressColor.None);
         base.BuildClasses(builder);
     }

@@ -29,9 +29,9 @@ public partial class DropdownItem
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.DropdownItem());
-        builder.Append(BootstrapClassProvider.Active(), Active);
-        builder.Append(BootstrapClassProvider.Disabled(), Disabled);
+        builder.Append(BootstrapClassProvider.DropdownItem);
+        builder.Append(BootstrapClassProvider.Active, Active);
+        builder.Append(BootstrapClassProvider.Disabled, Disabled);
 
         base.BuildClasses(builder);
     }

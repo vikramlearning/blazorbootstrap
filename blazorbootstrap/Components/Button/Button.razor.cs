@@ -49,14 +49,14 @@ public partial class Button : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Button());
+        builder.Append(BootstrapClassProvider.Button);
         builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
         builder.Append(BootstrapClassProvider.ButtonOutline(Color), Color != ButtonColor.None && Outline);
         builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
-        builder.Append(BootstrapClassProvider.ButtonDisabled(), Disabled && Type == ButtonType.Link);
-        builder.Append(BootstrapClassProvider.ButtonActive(), Active);
-        builder.Append(BootstrapClassProvider.ButtonBlock(), Block);
-        builder.Append(BootstrapClassProvider.ButtonLoading()!, Loading && LoadingTemplate is not null);
+        builder.Append(BootstrapClassProvider.ButtonDisabled, Disabled && Type == ButtonType.Link);
+        builder.Append(BootstrapClassProvider.ButtonActive, Active);
+        builder.Append(BootstrapClassProvider.ButtonBlock, Block);
+        builder.Append(BootstrapClassProvider.ButtonLoading!, Loading && LoadingTemplate is not null);
         builder.Append(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
 
         base.BuildClasses(builder);

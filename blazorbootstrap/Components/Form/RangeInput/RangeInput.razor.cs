@@ -26,7 +26,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.FormRange());
+        builder.Append(BootstrapClassProvider.FormRange);
         base.BuildClasses(builder);
     }
 

@@ -18,10 +18,10 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Nav());
-        builder.Append(BootstrapClassProvider.NavTabs(), NavStyle == NavStyle.Tabs);
-        builder.Append(BootstrapClassProvider.NavPills(), NavStyle is (NavStyle.Pills or NavStyle.VerticalPills));
-        builder.Append(BootstrapClassProvider.NavUnderline(), NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline));
+        builder.Append(BootstrapClassProvider.Nav);
+        builder.Append(BootstrapClassProvider.NavTabs, NavStyle == NavStyle.Tabs);
+        builder.Append(BootstrapClassProvider.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills));
+        builder.Append(BootstrapClassProvider.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline));
         builder.Append("flex-column", IsVertical);
 
         base.BuildClasses(builder);

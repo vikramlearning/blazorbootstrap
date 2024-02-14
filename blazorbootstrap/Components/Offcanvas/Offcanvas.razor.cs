@@ -22,8 +22,8 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Offcanvas());
-        builder.Append(BootstrapClassProvider.Offcanvas(Placement));
+        builder.Append(BootstrapClassProvider.Offcanvas);
+        builder.Append(BootstrapClassProvider.OffcanvasPlacement(Placement));
         builder.Append(BootstrapClassProvider.ToOffcanvasSize(Size)!);
 
         base.BuildClasses(builder);

@@ -18,7 +18,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.FormControl());
+        builder.Append(BootstrapClassProvider.FormControl);
         builder.Append(BootstrapClassProvider.TextAlignment(TextAlignment), TextAlignment != Alignment.None);
 
         base.BuildClasses(builder);

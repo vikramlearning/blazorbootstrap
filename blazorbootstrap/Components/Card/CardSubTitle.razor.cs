@@ -7,7 +7,7 @@ public partial class CardSubTitle
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.CardSubTitle());
+        builder.Append(BootstrapClassProvider.CardSubTitle);
 
         base.BuildClasses(builder);
     }

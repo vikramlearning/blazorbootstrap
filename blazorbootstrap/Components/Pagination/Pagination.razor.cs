@@ -15,7 +15,7 @@ public partial class Pagination : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Pagination());
+        builder.Append(BootstrapClassProvider.Pagination);
         builder.Append(BootstrapClassProvider.PaginationSize(Size), Size != PaginationSize.None);
         builder.Append(BootstrapClassProvider.FlexAlignment(Alignment), Alignment != Alignment.None);
         //builder.Append(BootstrapClassProvider.BackgroundColor(BackgroundColor), BackgroundColor != BackgroundColor.None);

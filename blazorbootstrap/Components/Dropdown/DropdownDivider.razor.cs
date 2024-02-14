@@ -7,7 +7,7 @@ public partial class DropdownDivider
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.DropdownDivider());
+        builder.Append(BootstrapClassProvider.DropdownDivider);
 
         base.BuildClasses(builder);
     }

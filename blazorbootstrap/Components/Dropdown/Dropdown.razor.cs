@@ -13,7 +13,7 @@ public partial class Dropdown
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.ButtonGroup());
+        builder.Append(BootstrapClassProvider.ButtonGroup);
         builder.Append(BootstrapClassProvider.DropdownDirection(Direction));
 
         base.BuildClasses(builder);

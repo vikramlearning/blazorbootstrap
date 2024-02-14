@@ -139,7 +139,7 @@ public partial class GridColumn<TItem>
 
                                         // text nowrap
                                         if (TextNoWrap)
-                                            classList.Add(BootstrapClassProvider.TextNoWrap());
+                                            classList.Add(BootstrapClassProvider.TextNoWrap);
 
                                         // custom column class
                                         var columnClass = ColumnClass?.Invoke(rowData) ?? "";

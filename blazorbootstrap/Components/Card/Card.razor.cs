@@ -7,7 +7,7 @@ public partial class Card
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Card());
+        builder.Append(BootstrapClassProvider.Card);
         builder.Append(BootstrapClassProvider.ToTextAlignment(TextAlignment));
         builder.Append(BootstrapClassProvider.ToCardColor(Color));
 

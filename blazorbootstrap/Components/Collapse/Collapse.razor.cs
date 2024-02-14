@@ -15,8 +15,8 @@ public partial class Collapse
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Collapse());
-        builder.Append(BootstrapClassProvider.CollapseHorizontal(), Horizontal);
+        builder.Append(BootstrapClassProvider.Collapse);
+        builder.Append(BootstrapClassProvider.CollapseHorizontal, Horizontal);
 
         base.BuildClasses(builder);
     }

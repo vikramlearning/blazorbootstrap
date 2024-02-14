@@ -12,7 +12,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Toast());
+        builder.Append(BootstrapClassProvider.Toast);
 
         if (ToastMessage is not null)
         {

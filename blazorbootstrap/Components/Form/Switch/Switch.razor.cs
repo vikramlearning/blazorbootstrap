@@ -84,7 +84,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     [Parameter]
     public string Label { get; set; } = default!;
 
-    private string reverse => Reverse ? BootstrapClassProvider.ChecksReverse() : "";
+    private string reverse => Reverse ? BootstrapClassProvider.ChecksReverse : "";
 
     /// <summary>
     /// Determines whether to put the switch on the opposite side.

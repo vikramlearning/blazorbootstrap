@@ -17,11 +17,11 @@ public partial class DropdownToggleButton
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Button());
+        builder.Append(BootstrapClassProvider.Button);
         builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None);
         builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
-        builder.Append(BootstrapClassProvider.DropdownToggle());
-        builder.Append(BootstrapClassProvider.DropdownToggleSplit(), Split);
+        builder.Append(BootstrapClassProvider.DropdownToggle);
+        builder.Append(BootstrapClassProvider.DropdownToggleSplit, Split);
 
         base.BuildClasses(builder);
     }

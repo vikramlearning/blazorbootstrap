@@ -18,7 +18,7 @@ public partial class Toast : BlazorBootstrapComponentBase, IDisposable
 
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Toast());
+        builder.Append(BootstrapClassProvider.Toast);
         builder.Append(BootstrapClassProvider.BackgroundColor(BackgroundColor.White));
 
         base.BuildClasses(builder);

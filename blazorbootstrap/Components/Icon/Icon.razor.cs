@@ -31,13 +31,7 @@ public partial class Icon : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <summary>
-    /// An icon provider that is responsible to give the icon a class-name.
-    /// </summary>
-    [Inject]
-    protected BootstrapIconProvider BootstrapIconProvider { get; set; } = default!;
-
+    
     /// <summary>
     /// Gets or sets the icon color.
     /// </summary>

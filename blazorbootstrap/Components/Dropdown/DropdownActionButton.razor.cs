@@ -15,7 +15,7 @@ public partial class DropdownActionButton
     /// <inheritdoc />
     protected override void BuildClasses(CssClassBuilder builder)
     {
-        builder.Append(BootstrapClassProvider.Button());
+        builder.Append(BootstrapClassProvider.Button);
         builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None);
         builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
 
