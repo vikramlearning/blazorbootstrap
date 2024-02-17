@@ -26,8 +26,8 @@ public partial class Preload : BlazorBootstrapComponentBase
 
     protected override void BuildStyles()
     {
-        this.AddClass("display:block", showBackdrop);
-        this.AddClass("display:none", !showBackdrop);
+        this.AddStyle("display:block", showBackdrop);
+        this.AddStyle("display:none", !showBackdrop);
 
         base.BuildStyles();
     }

@@ -26,7 +26,7 @@ public partial class ProgressBar
     protected override void BuildStyles()
     {
         // FIX: Toast progressbar not showing: https://github.com/vikramlearning/blazorbootstrap/issues/155
-        this.AddClass($"width:{width.ToString(CultureInfo.InvariantCulture)}%", width is >= 0 and <= 100);
+        this.AddStyle($"width:{width.ToString(CultureInfo.InvariantCulture)}%", width is >= 0 and <= 100);
 
         base.BuildStyles();
     }

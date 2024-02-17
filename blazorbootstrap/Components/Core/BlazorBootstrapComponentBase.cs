@@ -50,7 +50,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// The styles, as a string.
     /// </summary>
-    private string? styles;
+    private string? styleNames;
 
     /// <summary>
     /// A stack of functions to execute after the rendering.
@@ -185,7 +185,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     protected virtual void BuildStyles()
     {
         if (Style != null)
-            AddClass(Style);
+            AddStyle(Style);
     }
 
     /// <summary>
@@ -377,12 +377,12 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 
                 BuildStyles();
 
-                styles = styleList.Any() ? string.Join(";", styleList) : null;
+                styleNames = styleList.Any() ? string.Join(";", styleList) : null;
 
                 isStyleDirty = false;
             }
 
-            return styles;
+            return styleNames;
         }
     }
 

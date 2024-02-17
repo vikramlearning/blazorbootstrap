@@ -19,7 +19,7 @@ public partial class Progress : BlazorBootstrapComponentBase
 
     protected override void BuildStyles()
     {
-        this.AddClass($"height:{height}px", height >= 0);
+        this.AddStyle($"height:{height}px", height >= 0);
 
         base.BuildStyles();
     }

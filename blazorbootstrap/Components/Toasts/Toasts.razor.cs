@@ -82,8 +82,13 @@ public partial class Toasts : BlazorBootstrapComponentBase
             var deleteMessages = Messages.GetRange(0, Messages.Count - StackLength);
 
             foreach (var message in deleteMessages)
+            {
+                if (message is not null)
+                    Messages.Remove(message);
+
                 if (string.IsNullOrWhiteSpace(message.ElementId))
                     await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
+            }
         }
     }
 
