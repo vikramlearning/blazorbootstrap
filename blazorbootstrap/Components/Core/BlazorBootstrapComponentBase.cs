@@ -18,29 +18,44 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     private string? @class;
 
     /// <summary>
-    /// A stack of functions to execute after the rendering.
+    /// The list of class names.
     /// </summary>
-    private Queue<Func<Task>>? renderQueue;
+    private HashSet<string> classList = new();
+
+    /// <summary>
+    /// The class names, as a string.
+    /// </summary>
+    private string? classNames;
+
+    /// <summary>
+    /// Whether the class names are dirty and need to be rebuilt.
+    /// </summary>
+    private bool isClassDirty = true;
+
+    /// <summary>
+    /// Whether the styles are dirty and need to be rebuilt.
+    /// </summary>
+    private bool isStyleDirty = true;
 
     /// <summary>
     /// The custom styles for the component.
     /// </summary>
     private string? style;
 
-    #endregion
-
-    #region Constructors
+    /// <summary>
+    /// The list of styles.
+    /// </summary>
+    private HashSet<string> styleList = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BlazorBootstrapComponentBase" /> class.
+    /// The styles, as a string.
     /// </summary>
-#pragma warning disable CS8618
-    public BlazorBootstrapComponentBase()
-#pragma warning restore CS8618
-    {
-        CssClassBuilder = new CssClassBuilder(BuildClasses);
-        CssStyleBuilder = new CssStyleBuilder(BuildStyles);
-    }
+    private string? styles;
+
+    /// <summary>
+    /// A stack of functions to execute after the rendering.
+    /// </summary>
+    private Queue<Func<Task>>? renderQueue;
 
     #endregion
 
@@ -55,6 +70,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
             while (renderQueue.Count > 0)
             {
                 var action = renderQueue.Dequeue();
+
                 await action();
             }
 
@@ -71,6 +87,73 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
         base.OnInitialized();
     }
 
+    /// <summary>
+    /// Appends a string to the class name.
+    /// </summary>
+    /// <param name="value">The string to append.</param>
+    internal void AddClass(string value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+            classList.Add(value);
+    }
+
+    /// <summary>
+    /// Appends a string to the class name if the specified condition is true.
+    /// </summary>
+    /// <param name="value">The string to append.</param>
+    /// <param name="when">The condition to check.</param>
+    internal void AddClass(string value, bool when)
+    {
+        if (when && !string.IsNullOrWhiteSpace(value))
+            classList.Add(value);
+    }
+
+    /// <summary>
+    /// Appends a list of strings to the class name.
+    /// </summary>
+    /// <param name="values">The list of strings to append.</param>
+    internal void AddClass(IEnumerable<string> values)
+    {
+        if (values is not null && values.Any())
+            classList.UnionWith(values); // TODO: performance check
+    }
+
+    /// <summary>
+    /// Appends a string to the style.
+    /// </summary>
+    /// <param name="value">The string to append.</param>
+    internal void AddStyle(string value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+            styleList.Add(value);
+    }
+
+    /// <summary>
+    /// Appends a string to the style if the specified condition is true.
+    /// </summary>
+    /// <param name="value">The string to append.</param>
+    /// <param name="condition">The condition to check.</param>
+    internal void AddStyle(string value, bool condition)
+    {
+        if (condition && !string.IsNullOrWhiteSpace(value))
+            styleList.Add(value);
+    }
+
+    /// <summary>
+    /// Appends a list of strings to the styles.
+    /// </summary>
+    /// <param name="values">The list of strings to append.</param>
+    internal void AddStyle(IEnumerable<string> values)
+    {
+        if (values is not null && values.Any())
+            styleList.UnionWith(values); // TODO: performance check
+    }
+
+    /// <summary>
+    /// Marks the classList as dirty, so that the class names will be rebuilt the next time they are requested.
+    /// </summary>
+    public void Dirty() => isClassDirty = true;
+
     /// <inheritdoc />
     public void Dispose() => Dispose(true);
 
@@ -85,32 +168,30 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// Marks the class names as dirty, so that they will be regenerated the next time they are requested.
     /// </summary>
-    protected internal virtual void DirtyClasses() => CssClassBuilder?.Dirty();
+    protected internal virtual void DirtyClasses() => isClassDirty = true;
 
     /// <summary>
     /// Builds the class names for this component.
     /// </summary>
-    /// <param name="builder">The class builder used to append the class names.</param>
-    protected virtual void BuildClasses(CssClassBuilder builder)
+    protected virtual void BuildClasses()
     {
         if (Class != null)
-            builder.Append(Class);
+            AddClass(Class);
     }
 
     /// <summary>
-    /// Builds the styles for this component.
+    /// Builds the class names for this component.
     /// </summary>
-    /// <param name="builder">The style builder used to append the styles.</param>
-    protected virtual void BuildStyles(CssStyleBuilder builder)
+    protected virtual void BuildStyles()
     {
         if (Style != null)
-            builder.Append(Style);
+            AddClass(Style);
     }
 
     /// <summary>
     /// Marks the styles as dirty, so that they will be regenerated the next time they are requested.
     /// </summary>
-    protected virtual void DirtyStyles() => CssStyleBuilder?.Dirty();
+    protected virtual void DirtyStyles() => isStyleDirty = true;
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -122,8 +203,8 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
         {
             if (disposing)
             {
-                CssClassBuilder = null;
-                CssStyleBuilder = null;
+                classList = null!;
+                styleList = null!;
             }
 
             if (disposing && renderQueue != null)
@@ -148,8 +229,8 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
             {
                 if (disposing)
                 {
-                    CssClassBuilder = null;
-                    CssStyleBuilder = null;
+                    classList = null!;
+                    styleList = null!;
                 }
 
                 AsyncDisposed = true;
@@ -186,7 +267,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// Captures all the custom attributes that are not part of BlazorBootstrap component.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object> Attributes { get; set; }
+    public Dictionary<string, object> Attributes { get; set; } = default!;
 
     /// <summary>
     /// Optional CSS class names. If given, these will be included in the class attribute of the component.
@@ -204,19 +285,30 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     }
 
     /// <summary>
-    /// Gets the built class-names based on all the rules set by the component parameters.
+    /// Gets the class names.
     /// </summary>
-    public string? ClassNames => CssClassBuilder!.ClassNames;
+    /// <remarks>
+    /// The class names are lazily built, so the first time this property is accessed, the `buildClasses` action will be
+    /// called.
+    /// </remarks>
+    public string? ClassNames
+    {
+        get
+        {
+            if (isClassDirty)
+            {
+                classList = new HashSet<string>();
 
-    /// <summary>
-    /// Gets the class builder.
-    /// </summary>
-    protected CssClassBuilder? CssClassBuilder { get; private set; }
+                BuildClasses();
 
-    /// <summary>
-    /// Gets the style mapper.
-    /// </summary>
-    protected CssStyleBuilder? CssStyleBuilder { get; private set; }
+                classNames = classList.Any() ? string.Join(" ", classList) : null;
+
+                isClassDirty = false;
+            }
+
+            return classNames;
+        }
+    }
 
     /// <summary>
     /// Indicates if the component is already fully disposed.
@@ -270,9 +362,29 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     }
 
     /// <summary>
-    /// Gets the built styles based on all the rules set by the component parameters.
+    /// Gets the styles.
     /// </summary>
-    public string? StyleNames => CssStyleBuilder!.Styles;
+    /// <remarks>
+    /// The styles are lazily built, so the first time this property is accessed, the `buildStyles` action will be called.
+    /// </remarks>
+    public string? StyleNames
+    {
+        get
+        {
+            if (isStyleDirty)
+            {
+                styleList = new HashSet<string>();
+
+                BuildStyles();
+
+                styles = styleList.Any() ? string.Join(";", styleList) : null;
+
+                isStyleDirty = false;
+            }
+
+            return styles;
+        }
+    }
 
     #endregion
 }

@@ -1,16 +1,16 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class CardHeader
+public partial class CardHeader : BlazorBootstrapComponentBase
 {
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.CardHeader);
-        builder.Append(BootstrapClassProvider.ToCardColor(Color));
+        this.AddClass(BootstrapClassProvider.CardHeader);
+        this.AddClass(BootstrapClassProvider.ToCardColor(Color));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

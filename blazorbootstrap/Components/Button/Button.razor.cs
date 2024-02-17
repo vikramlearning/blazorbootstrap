@@ -47,19 +47,19 @@ public partial class Button : BlazorBootstrapComponentBase
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Button);
-        builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
-        builder.Append(BootstrapClassProvider.ButtonOutline(Color), Color != ButtonColor.None && Outline);
-        builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
-        builder.Append(BootstrapClassProvider.ButtonDisabled, Disabled && Type == ButtonType.Link);
-        builder.Append(BootstrapClassProvider.ButtonActive, Active);
-        builder.Append(BootstrapClassProvider.ButtonBlock, Block);
-        builder.Append(BootstrapClassProvider.ButtonLoading!, Loading && LoadingTemplate is not null);
-        builder.Append(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
+        this.AddClass(BootstrapClassProvider.Button);
+        this.AddClass(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
+        this.AddClass(BootstrapClassProvider.ButtonOutline(Color), Color != ButtonColor.None && Outline);
+        this.AddClass(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
+        this.AddClass(BootstrapClassProvider.ButtonDisabled, Disabled && Type == ButtonType.Link);
+        this.AddClass(BootstrapClassProvider.ButtonActive, Active);
+        this.AddClass(BootstrapClassProvider.ButtonBlock, Block);
+        this.AddClass(BootstrapClassProvider.ButtonLoading!, Loading && LoadingTemplate is not null);
+        this.AddClass(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />

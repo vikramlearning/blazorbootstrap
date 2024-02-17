@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Alert
+public partial class Alert : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -15,8 +15,6 @@ public partial class Alert
     /// <inheritdoc />
     protected override void BuildClasses()
     {
-        Console.WriteLine($"Alert: BuildClasses");
-
         this.AddClass(BootstrapClassProvider.Alert);
         this.AddClass(BootstrapClassProvider.AlertColor(Color), Color != AlertColor.None);
         this.AddClass(BootstrapClassProvider.AlertDismisable, Dismissable);
@@ -47,15 +45,10 @@ public partial class Alert
 
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine($"Alert: OnInitializedAsync");
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
-    }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await JS.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", ElementId, objRef);
-        await base.OnAfterRenderAsync(firstRender);
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", ElementId, objRef); });
     }
 
     [JSInvokable]
@@ -92,7 +85,6 @@ public partial class Alert
         set
         {
             color = value;
-            Console.WriteLine($"Alert: Color");
             DirtyClasses();
         }
     }

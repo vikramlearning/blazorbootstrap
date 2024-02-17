@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Accordion
+public partial class Accordion : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -15,6 +15,7 @@ public partial class Accordion
     {
         this.AddClass(BootstrapClassProvider.Accordion);
         this.AddClass(BootstrapClassProvider.AccordionFlush, Flush);
+
         base.BuildClasses();
     }
 

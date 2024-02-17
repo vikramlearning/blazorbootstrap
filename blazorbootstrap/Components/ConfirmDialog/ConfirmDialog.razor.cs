@@ -32,21 +32,21 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Modal);
-        builder.Append(BootstrapClassProvider.ConfirmationModal);
-        builder.Append(BootstrapClassProvider.ModalFade);
+        this.AddClass(BootstrapClassProvider.Modal);
+        this.AddClass(BootstrapClassProvider.ConfirmationModal);
+        this.AddClass(BootstrapClassProvider.ModalFade);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
-    protected override void BuildStyles(CssStyleBuilder builder)
+    protected override void BuildStyles()
     {
-        builder.Append("display:block", showBackdrop);
-        builder.Append("display:none", !showBackdrop);
+        this.AddStyle("display:block", showBackdrop);
+        this.AddClass("display:none", !showBackdrop);
 
-        base.BuildStyles(builder);
+        base.BuildStyles();
     }
 
     /// <summary>

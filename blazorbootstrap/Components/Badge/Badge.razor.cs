@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Badge
+public partial class Badge : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -19,16 +19,16 @@ public partial class Badge
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Badge);
-        builder.Append(BootstrapClassProvider.BadgeColor(Color), Color != BadgeColor.None);
-        builder.Append(BootstrapClassProvider.ToBadgeIndicator(IndicatorType), IndicatorType != BadgeIndicatorType.None);
-        builder.Append(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
-        builder.Append(BootstrapClassProvider.ToBadgePlacement(Placement), Placement != BadgePlacement.None);
-        builder.Append("p-2", childContent is null);
+        this.AddClass(BootstrapClassProvider.Badge);
+        this.AddClass(BootstrapClassProvider.BadgeColor(Color), Color != BadgeColor.None);
+        this.AddClass(BootstrapClassProvider.ToBadgeIndicator(IndicatorType), IndicatorType != BadgeIndicatorType.None);
+        this.AddClass(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
+        this.AddClass(BootstrapClassProvider.ToBadgePlacement(Placement), Placement != BadgePlacement.None);
+        this.AddClass("p-2", childContent is null);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion
