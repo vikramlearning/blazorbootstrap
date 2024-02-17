@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DropdownActionButton
+public partial class DropdownActionButton : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -13,13 +13,13 @@ public partial class DropdownActionButton
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Button);
-        builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None);
-        builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
+        this.AddClass(BootstrapClassProvider.Button);
+        this.AddClass(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None);
+        this.AddClass(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override void OnInitialized()

@@ -1,15 +1,15 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DropdownDivider
+public partial class DropdownDivider : BlazorBootstrapComponentBase
 {
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.DropdownDivider);
+        this.AddClass(BootstrapClassProvider.DropdownDivider);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

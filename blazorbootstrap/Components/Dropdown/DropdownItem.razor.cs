@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DropdownItem
+public partial class DropdownItem : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -27,13 +27,13 @@ public partial class DropdownItem
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.DropdownItem);
-        builder.Append(BootstrapClassProvider.Active, Active);
-        builder.Append(BootstrapClassProvider.Disabled, Disabled);
+        this.AddClass(BootstrapClassProvider.DropdownItem);
+        this.AddClass(BootstrapClassProvider.Active, Active);
+        this.AddClass(BootstrapClassProvider.Disabled, Disabled);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override void OnAfterRender(bool firstRender)
