@@ -720,6 +720,10 @@ window.blazorBootstrap = {
             if (elementRef != null)
                 bootstrap?.Tooltip?.getOrCreateInstance(elementRef);
         },
+        show: (elementRef) => {
+            if (elementRef != null)
+                bootstrap?.Tooltip?.getOrCreateInstance(elementRef)?.show();
+        },
         update: (elementRef) => {
             if (elementRef != null)
                 bootstrap?.Tooltip?.getOrCreateInstance(elementRef)?.update();

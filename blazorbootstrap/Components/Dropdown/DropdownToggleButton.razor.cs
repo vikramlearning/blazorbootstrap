@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DropdownToggleButton
+public partial class DropdownToggleButton : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -15,15 +15,15 @@ public partial class DropdownToggleButton
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Button());
-        builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None);
-        builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
-        builder.Append(BootstrapClassProvider.DropdownToggle());
-        builder.Append(BootstrapClassProvider.DropdownToggleSplit(), Split);
+        this.AddClass(BootstrapClassProvider.Button);
+        this.AddClass(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None);
+        this.AddClass(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
+        this.AddClass(BootstrapClassProvider.DropdownToggle);
+        this.AddClass(BootstrapClassProvider.DropdownToggleSplit, Split);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override void OnInitialized()

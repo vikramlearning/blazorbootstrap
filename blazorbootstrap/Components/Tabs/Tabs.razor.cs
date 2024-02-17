@@ -16,15 +16,15 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Nav());
-        builder.Append(BootstrapClassProvider.NavTabs(), NavStyle == NavStyle.Tabs);
-        builder.Append(BootstrapClassProvider.NavPills(), NavStyle is (NavStyle.Pills or NavStyle.VerticalPills));
-        builder.Append(BootstrapClassProvider.NavUnderline(), NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline));
-        builder.Append("flex-column", IsVertical);
+        this.AddClass(BootstrapClassProvider.Nav);
+        this.AddClass(BootstrapClassProvider.NavTabs, NavStyle == NavStyle.Tabs);
+        this.AddClass(BootstrapClassProvider.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills));
+        this.AddClass(BootstrapClassProvider.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline));
+        this.AddClass("flex-column", IsVertical);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -55,7 +55,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
     }
 
     [JSInvokable]
@@ -106,7 +106,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     {
         if (!tabs?.Any() ?? false) return;
 
-        ExecuteAfterRender(
+        QueueAfterRenderAction(
             async () =>
             {
                 var tab = tabs!.LastOrDefault();

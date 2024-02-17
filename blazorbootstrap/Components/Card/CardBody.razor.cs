@@ -1,15 +1,15 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class CardBody
+public partial class CardBody : BlazorBootstrapComponentBase
 {
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.CardBody());
+        this.AddClass(BootstrapClassProvider.CardBody);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

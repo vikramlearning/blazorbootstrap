@@ -14,22 +14,22 @@ public partial class Preload : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Modal());
-        builder.Append(BootstrapClassProvider.PageLoadingModal());
-        builder.Append(BootstrapClassProvider.ModalFade());
-        builder.Append(BootstrapClassProvider.Show(), showBackdrop);
+        this.AddClass(BootstrapClassProvider.Modal);
+        this.AddClass(BootstrapClassProvider.PageLoadingModal);
+        this.AddClass(BootstrapClassProvider.ModalFade);
+        this.AddClass(BootstrapClassProvider.Show, showBackdrop);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
-    protected override void BuildStyles(CssStyleBuilder builder)
+    protected override void BuildStyles()
     {
-        builder.Append("display:block", showBackdrop);
-        builder.Append("display:none", !showBackdrop);
+        this.AddStyle("display:block", showBackdrop);
+        this.AddStyle("display:none", !showBackdrop);
 
-        base.BuildStyles(builder);
+        base.BuildStyles();
     }
 
     /// <inheritdoc />

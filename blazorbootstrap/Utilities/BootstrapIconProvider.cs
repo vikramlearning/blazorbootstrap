@@ -1,13 +1,13 @@
 ﻿namespace BlazorBootstrap;
 
-public class BootstrapIconProvider
+public static class BootstrapIconProvider
 {
     #region Methods
 
     /// <summary>
     /// The prefix for all Bootstrap icons.
     /// </summary>
-    public string Icon()
+    public static string Icon()
     {
         return "bi";
     }
@@ -17,7 +17,7 @@ public class BootstrapIconProvider
     /// </summary>
     /// <param name="iconName">The icon name.</param>
     /// <returns>The CSS class for the icon.</returns>
-    public string Icon(IconName iconName)
+    public static string Icon(IconName iconName)
     {
         return $"{Icon()}-{ToIconName(iconName)}";
     }
@@ -27,7 +27,7 @@ public class BootstrapIconProvider
     /// </summary>
     /// <param name="iconSize">The icon size.</param>
     /// <returns>The CSS class for the icon size, or null if the size is not supported.</returns>
-    public string? IconSize(IconSize iconSize)
+    public static string? IconSize(IconSize iconSize)
     {
         return iconSize switch
                {
@@ -46,7 +46,7 @@ public class BootstrapIconProvider
     /// </summary>
     /// <param name="iconName">The icon name.</param>
     /// <returns>The CSS class name for the icon.</returns>
-    public string ToIconName(IconName iconName)
+    public static string ToIconName(IconName iconName)
     {
         return iconName switch
                {

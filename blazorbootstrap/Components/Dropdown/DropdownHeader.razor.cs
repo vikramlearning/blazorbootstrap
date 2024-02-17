@@ -1,15 +1,15 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DropdownHeader
+public partial class DropdownHeader : BlazorBootstrapComponentBase
 {
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.DropdownHeader());
+        this.AddClass(BootstrapClassProvider.DropdownHeader);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

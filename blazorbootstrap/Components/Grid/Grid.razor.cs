@@ -41,11 +41,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
-   protected override void BuildClasses(CssClassBuilder builder)
+   protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.TableSticky(), FixedHeader);
+        this.AddClass(BootstrapClassProvider.TableSticky, FixedHeader);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

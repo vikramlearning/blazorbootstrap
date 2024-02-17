@@ -28,7 +28,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => await PdfViewerJsInterop.InitializeAsync(objRef!, ElementId!, scale, rotation, Url!));
+        QueueAfterRenderAction(async () => await PdfViewerJsInterop.InitializeAsync(objRef!, ElementId!, scale, rotation, Url!));
     }
 
     [JSInvokable]

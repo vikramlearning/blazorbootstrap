@@ -17,27 +17,21 @@ public partial class Icon : BlazorBootstrapComponentBase
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapIconProvider.Icon(), string.IsNullOrWhiteSpace(CustomIconName));
-        builder.Append(BootstrapIconProvider.Icon(Name), string.IsNullOrWhiteSpace(CustomIconName));
-        builder.Append(customName, !string.IsNullOrWhiteSpace(CustomIconName));
-        builder.Append(BootstrapIconProvider.IconSize(Size)!, Size != IconSize.None);
-        builder.Append(BootstrapClassProvider.IconColor(color), Color != IconColor.None);
+        this.AddClass(BootstrapIconProvider.Icon(), string.IsNullOrWhiteSpace(CustomIconName));
+        this.AddClass(BootstrapIconProvider.Icon(Name), string.IsNullOrWhiteSpace(CustomIconName));
+        this.AddClass(customName, !string.IsNullOrWhiteSpace(CustomIconName));
+        this.AddClass(BootstrapIconProvider.IconSize(Size)!, Size != IconSize.None);
+        this.AddClass(BootstrapClassProvider.IconColor(color), Color != IconColor.None);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion
 
     #region Properties, Indexers
-
-    /// <summary>
-    /// An icon provider that is responsible to give the icon a class-name.
-    /// </summary>
-    [Inject]
-    protected BootstrapIconProvider BootstrapIconProvider { get; set; } = default!;
-
+    
     /// <summary>
     /// Gets or sets the icon color.
     /// </summary>

@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public class BootstrapStyleProvider
+public static class BootstrapStyleProvider
 {
     #region Methods
     

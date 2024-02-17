@@ -50,7 +50,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
 
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef); });
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef); });
     }
 
     protected override async Task OnParametersSetAsync()
@@ -64,6 +64,11 @@ public partial class Tooltip : BlazorBootstrapComponentBase
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
             }
+    }
+
+    public async Task ShowAsync()
+    {
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.show", ElementRef);
     }
 
     #endregion

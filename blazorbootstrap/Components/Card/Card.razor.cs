@@ -1,17 +1,17 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Card
+public partial class Card : BlazorBootstrapComponentBase
 {
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Card());
-        builder.Append(BootstrapClassProvider.ToTextAlignment(TextAlignment));
-        builder.Append(BootstrapClassProvider.ToCardColor(Color));
+        this.AddClass(BootstrapClassProvider.Card);
+        this.AddClass(BootstrapClassProvider.ToTextAlignment(TextAlignment));
+        this.AddClass(BootstrapClassProvider.ToCardColor(Color));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

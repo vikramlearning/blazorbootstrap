@@ -24,10 +24,11 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.FormRange());
-        base.BuildClasses(builder);
+        this.AddClass(BootstrapClassProvider.FormRange);
+
+        base.BuildClasses();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

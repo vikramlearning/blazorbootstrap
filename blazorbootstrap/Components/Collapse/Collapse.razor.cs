@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Collapse
+public partial class Collapse : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -13,12 +13,12 @@ public partial class Collapse
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Collapse());
-        builder.Append(BootstrapClassProvider.CollapseHorizontal(), Horizontal);
+        this.AddClass(BootstrapClassProvider.Collapse);
+        this.AddClass(BootstrapClassProvider.CollapseHorizontal, Horizontal);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -45,7 +45,9 @@ public partial class Collapse
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", ElementId, Parent, Toggle, objRef); });
+
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", ElementId, Parent, Toggle, objRef); });
+
         await base.OnInitializedAsync();
     }
 

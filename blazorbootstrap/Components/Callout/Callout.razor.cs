@@ -10,12 +10,12 @@ public partial class Callout : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Callout());
-        builder.Append(BootstrapClassProvider.ToCalloutType(Type));
+        this.AddClass(BootstrapClassProvider.Callout);
+        this.AddClass(BootstrapClassProvider.ToCalloutType(Type));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     private string GetHeading() =>
@@ -49,7 +49,7 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
-    private string CalloutHeadingCSSClass => BootstrapClassProvider.CalloutHeading();
+    private string CalloutHeadingCSSClass => BootstrapClassProvider.CalloutHeading;
 
     /// <summary>
     /// Specifies the content to be rendered inside this.

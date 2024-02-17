@@ -20,13 +20,13 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append("bb-sidebar");
-        builder.Append("collapsed", collapseSidebar);
-        builder.Append("expanded", !collapseSidebar);
+        this.AddClass("bb-sidebar");
+        this.AddClass("collapsed", collapseSidebar);
+        this.AddClass("expanded", !collapseSidebar);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -45,9 +45,10 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     {
         Attributes ??= new Dictionary<string, object>();
         objRef ??= DotNetObjectReference.Create(this);
+
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", ElementId, objRef); });
     }
 
     [JSInvokable]
