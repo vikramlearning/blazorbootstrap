@@ -13,13 +13,15 @@ public partial class Alert
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Alert);
-        builder.Append(BootstrapClassProvider.AlertColor(Color), Color != AlertColor.None);
-        builder.Append(BootstrapClassProvider.AlertDismisable, Dismissable);
+        Console.WriteLine($"Alert: BuildClasses");
 
-        base.BuildClasses(builder);
+        this.AddClass(BootstrapClassProvider.Alert);
+        this.AddClass(BootstrapClassProvider.AlertColor(Color), Color != AlertColor.None);
+        this.AddClass(BootstrapClassProvider.AlertDismisable, Dismissable);
+
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -45,10 +47,15 @@ public partial class Alert
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine($"Alert: OnInitializedAsync");
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
+    }
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", ElementId, objRef); });
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JS.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", ElementId, objRef);
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     [JSInvokable]
@@ -85,6 +92,7 @@ public partial class Alert
         set
         {
             color = value;
+            Console.WriteLine($"Alert: Color");
             DirtyClasses();
         }
     }

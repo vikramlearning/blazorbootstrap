@@ -13,11 +13,10 @@ public partial class AccordionItem
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.AccordionItem);
-
-        base.BuildClasses(builder);
+        this.AddClass(BootstrapClassProvider.AccordionItem);
+        base.BuildClasses();
     }
 
     protected override void OnInitialized()

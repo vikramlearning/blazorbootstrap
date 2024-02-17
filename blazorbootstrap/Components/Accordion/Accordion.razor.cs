@@ -11,11 +11,11 @@ public partial class Accordion
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Accordion);
-        builder.Append(BootstrapClassProvider.AccordionFlush, Flush);
-        base.BuildClasses(builder);
+        this.AddClass(BootstrapClassProvider.Accordion);
+        this.AddClass(BootstrapClassProvider.AccordionFlush, Flush);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
