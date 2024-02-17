@@ -60,7 +60,6 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
     /// </summary>
     protected override void OnInitialized()
     {
-        Console.WriteLine("ComponentBase: OnInitialized");
         if (ShouldAutoGenerateId && ElementId == null) ElementId = IdGenerator.GetNextId();
 
         base.OnInitialized();
@@ -74,8 +73,6 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
     {
         if (!string.IsNullOrWhiteSpace(value))
             classList.Add(value);
-
-        Console.WriteLine($"ComponentBase: AddClass1: {classList.Count}");
     }
 
     /// <summary>
@@ -87,8 +84,6 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
     {
         if (when && !string.IsNullOrWhiteSpace(value))
             classList.Add(value);
-
-        Console.WriteLine($"ComponentBase: AddClass2: {classList.Count}");
     }
 
     /// <summary>
@@ -98,7 +93,7 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
     public void AddClass(IEnumerable<string> values)
     {
         if (values is not null && values.Any())
-            classList.UnionWith(values); // TODO: performace check
+            classList.UnionWith(values); // TODO: performance check
     }
 
     /// <summary>
@@ -129,7 +124,7 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
     public void AddStyle(IEnumerable<string> values)
     {
         if (values is not null && values.Any())
-            styleList.UnionWith(values); // TODO: performace check
+            styleList.UnionWith(values); // TODO: performance check
     }
 
     /// <summary>
@@ -151,19 +146,13 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
     /// <summary>
     /// Marks the class names as dirty, so that they will be regenerated the next time they are requested.
     /// </summary>
-    protected internal virtual void DirtyClasses()
-    {
-        isClassDirty = true;
-        //StateHasChanged();
-    }
+    protected internal virtual void DirtyClasses() => isClassDirty = true;
 
     /// <summary>
     /// Builds the class names for this component.
     /// </summary>
     protected virtual void BuildClasses()
     {
-        Console.WriteLine("ComponentBase: BuildClasses");
-
         if (Class != null)
             AddClass(Class);
     }
@@ -173,8 +162,6 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
     /// </summary>
     protected virtual void BuildStyles()
     {
-        Console.WriteLine("ComponentBase: BuildStyles");
-
         if (Style != null)
             AddClass(Style);
     }
@@ -182,11 +169,7 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
     /// <summary>
     /// Marks the styles as dirty, so that they will be regenerated the next time they are requested.
     /// </summary>
-    protected virtual void DirtyStyles()
-    {
-        isStyleDirty = true;
-        //StateHasChanged();
-    }
+    protected virtual void DirtyStyles() => isStyleDirty = true;
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -198,7 +181,8 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
         {
             if (disposing)
             {
-                // TODO: update
+                classList = null!;
+                styleList = null!;
             }
 
             Disposed = true;
@@ -217,7 +201,8 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
             {
                 if (disposing)
                 {
-                    // TODO: update
+                    classList = null!;
+                    styleList = null!;
                 }
 
                 AsyncDisposed = true;
@@ -272,11 +257,8 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
     {
         get
         {
-            Console.WriteLine("ComponentBase: ClassNames 1");
-
             if (isClassDirty)
             {
-                Console.WriteLine("ComponentBase: ClassNames 2");
                 classList = new HashSet<string>();
 
                 BuildClasses();
@@ -284,7 +266,6 @@ public class ComponentBase2 : ComponentBase, IDisposable, IAsyncDisposable
                 classNames = classList.Any() ? string.Join(" ", classList) : null;
 
                 isClassDirty = false;
-                Console.WriteLine($"ComponentBase: classNames 3: {classNames}");
             }
 
             return classNames;
