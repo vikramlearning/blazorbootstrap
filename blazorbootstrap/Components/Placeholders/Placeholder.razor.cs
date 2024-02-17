@@ -14,14 +14,14 @@ public partial class Placeholder : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Placeholder);
-        builder.Append(BootstrapClassProvider.PlaceholderWidth(Width));
-        builder.Append(BootstrapClassProvider.PlaceholderColor(Color), Color != PlaceholderColor.None);
-        builder.Append(BootstrapClassProvider.PlaceholderSize(Size), Size != PlaceholderSize.None);
+        this.AddClass(BootstrapClassProvider.Placeholder);
+        this.AddClass(BootstrapClassProvider.PlaceholderWidth(Width));
+        this.AddClass(BootstrapClassProvider.PlaceholderColor(Color), Color != PlaceholderColor.None);
+        this.AddClass(BootstrapClassProvider.PlaceholderSize(Size), Size != PlaceholderSize.None);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

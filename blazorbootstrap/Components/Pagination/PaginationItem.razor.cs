@@ -5,13 +5,13 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.PaginationItem);
-        builder.Append(BootstrapClassProvider.PaginationItemActive, Active);
-        builder.Append(BootstrapClassProvider.PaginationItemDisabled, Disabled);
+        this.AddClass(BootstrapClassProvider.PaginationItem);
+        this.AddClass(BootstrapClassProvider.PaginationItemActive, Active);
+        this.AddClass(BootstrapClassProvider.PaginationItemDisabled, Disabled);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override void OnParametersSet()

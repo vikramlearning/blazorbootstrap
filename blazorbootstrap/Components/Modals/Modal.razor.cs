@@ -32,12 +32,12 @@ public partial class Modal : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Modal);
-        builder.Append(BootstrapClassProvider.ModalFade);
+        this.AddClass(BootstrapClassProvider.Modal);
+        this.AddClass(BootstrapClassProvider.ModalFade);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />

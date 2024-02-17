@@ -13,13 +13,13 @@ public partial class Spinner : BlazorBootstrapComponentBase
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.SpinnerType(Type));
-        builder.Append(BootstrapClassProvider.SpinnerColor(Color));
-        builder.Append(BootstrapClassProvider.SpinnerTypeSize(Type, Size), Type is (SpinnerType.Border or SpinnerType.Grow));
+        this.AddClass(BootstrapClassProvider.SpinnerType(Type));
+        this.AddClass(BootstrapClassProvider.SpinnerColor(Color));
+        this.AddClass(BootstrapClassProvider.SpinnerTypeSize(Type, Size), Type is (SpinnerType.Border or SpinnerType.Grow));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override void OnInitialized()

@@ -12,12 +12,12 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.FormControl);
-        builder.Append(BootstrapClassProvider.TextAlignment(TextAlignment), TextAlignment != Alignment.None);
+        this.AddClass(BootstrapClassProvider.FormControl);
+        this.AddClass(BootstrapClassProvider.TextAlignment(TextAlignment), TextAlignment != Alignment.None);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

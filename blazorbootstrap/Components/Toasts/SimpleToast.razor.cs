@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
+public partial class SimpleToast : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -10,17 +10,17 @@ public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Toast);
+        this.AddClass(BootstrapClassProvider.Toast);
 
         if (ToastMessage is not null)
         {
-            builder.Append($"text-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}");
-            builder.Append($"bg-{BootstrapClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
+            this.AddClass($"text-{BootstrapClassProvider.ToToastTextColor(ToastMessage.Type)}");
+            this.AddClass($"bg-{BootstrapClassProvider.ToToastBackgroundColor(ToastMessage.Type)}");
         }
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -38,6 +38,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
+
         await base.OnInitializedAsync();
 
         QueueAfterRenderAction(async () => { await ShowAsync(); });

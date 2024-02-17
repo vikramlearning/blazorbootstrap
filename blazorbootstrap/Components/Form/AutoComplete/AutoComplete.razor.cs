@@ -24,12 +24,12 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.FormControl);
-        builder.Append(BootstrapClassProvider.ToAutoCompleteSize(Size));
+        this.AddClass(BootstrapClassProvider.FormControl);
+        this.AddClass(BootstrapClassProvider.ToAutoCompleteSize(Size));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />

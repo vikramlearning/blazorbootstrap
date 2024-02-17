@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Toast : BlazorBootstrapComponentBase, IDisposable
+public partial class Toast : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -16,12 +16,12 @@ public partial class Toast : BlazorBootstrapComponentBase, IDisposable
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Toast);
-        builder.Append(BootstrapClassProvider.BackgroundColor(BackgroundColor.White));
+        this.AddClass(BootstrapClassProvider.Toast);
+        this.AddClass(BootstrapClassProvider.BackgroundColor(BackgroundColor.White));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />

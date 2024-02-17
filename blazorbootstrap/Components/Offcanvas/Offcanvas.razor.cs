@@ -20,13 +20,13 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Offcanvas);
-        builder.Append(BootstrapClassProvider.OffcanvasPlacement(Placement));
-        builder.Append(BootstrapClassProvider.ToOffcanvasSize(Size)!);
+        this.AddClass(BootstrapClassProvider.Offcanvas);
+        this.AddClass(BootstrapClassProvider.OffcanvasPlacement(Placement));
+        this.AddClass(BootstrapClassProvider.ToOffcanvasSize(Size)!);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />

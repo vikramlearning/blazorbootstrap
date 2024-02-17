@@ -8,18 +8,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     #endregion
 
-    #region Constructors
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BlazorBootstrapComponentBase" /> class.
-    /// </summary>
-    public BlazorBootstrapChart()
-    {
-        ContainerStyleBuilder = new CssStyleBuilder(BuildContainerStyles);
-    }
-
-    #endregion
-
     #region Methods
 
     //public async Task Stop() { }
@@ -116,39 +104,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             style += $"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}";
 
         return style;
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected new void Dispose(bool disposing)
-    {
-        if (!Disposed)
-            if (disposing)
-                ContainerStyleBuilder = null;
-
-        base.Dispose(disposing);
-    }
-
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected new ValueTask DisposeAsync(bool disposing)
-    {
-        try
-        {
-            if (!AsyncDisposed)
-                if (disposing)
-                    ContainerStyleBuilder = null;
-
-            return base.DisposeAsync(disposing);
-        }
-        catch (Exception ex)
-        {
-            return new ValueTask(Task.FromException(ex));
-        }
     }
 
     protected string GetChartType() =>

@@ -27,10 +27,11 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.FormControl);
-        base.BuildClasses(builder);
+        this.AddClass(BootstrapClassProvider.FormControl);
+
+        base.BuildClasses();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

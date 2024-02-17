@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Progress
+public partial class Progress : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -10,21 +10,24 @@ public partial class Progress
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Progress);
-        base.BuildClasses(builder);
+        this.AddClass(BootstrapClassProvider.Progress);
+
+        base.BuildClasses();
     }
 
-    protected override void BuildStyles(CssStyleBuilder builder)
+    protected override void BuildStyles()
     {
-        builder.Append($"height:{height}px", height >= 0);
-        base.BuildStyles(builder);
+        this.AddClass($"height:{height}px", height >= 0);
+
+        base.BuildStyles();
     }
 
     protected override void OnInitialized()
     {
         height = Height;
+
         base.OnInitialized();
     }
 
