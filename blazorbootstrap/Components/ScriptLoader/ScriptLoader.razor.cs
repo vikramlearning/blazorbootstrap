@@ -25,7 +25,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     {
         objRef ??= DotNetObjectReference.Create(this);
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", ElementId, Async, ScriptId, Source, type, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", ElementId, Async, ScriptId, Source, type, objRef), new RenderPriority());
 
         await base.OnInitializedAsync();
     }

@@ -56,7 +56,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, IsScrollable, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, IsScrollable, objRef), new RenderPriority());
     }
 
     [JSInvokable]

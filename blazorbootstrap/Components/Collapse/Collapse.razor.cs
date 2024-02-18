@@ -46,7 +46,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
     {
         objRef ??= DotNetObjectReference.Create(this);
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", ElementId, Parent, Toggle, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", ElementId, Parent, Toggle, objRef), new RenderPriority());
 
         await base.OnInitializedAsync();
     }

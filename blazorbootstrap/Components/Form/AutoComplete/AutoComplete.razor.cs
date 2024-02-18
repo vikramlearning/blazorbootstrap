@@ -66,7 +66,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
         await base.OnInitializedAsync();
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", ElementRef, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", ElementRef, objRef), new RenderPriority());
     }
 
     [JSInvokable]
