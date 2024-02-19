@@ -41,7 +41,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
 
         await base.OnInitializedAsync();
 
-        QueueAfterRenderAction(async () => { await ShowAsync(); });
+        QueueAfterRenderAction(async () => await ShowAsync(), new RenderPriority());
     }
 
     [JSInvokable]

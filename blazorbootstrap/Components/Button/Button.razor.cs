@@ -103,7 +103,7 @@ public partial class Button : BlazorBootstrapComponentBase
 
         base.OnInitialized();
 
-        if (!string.IsNullOrWhiteSpace(TooltipTitle)) QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef); });
+        if (!string.IsNullOrWhiteSpace(TooltipTitle)) QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef), new RenderPriority());
     }
 
     protected override async Task OnParametersSetAsync()

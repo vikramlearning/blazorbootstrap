@@ -55,7 +55,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// A stack of functions to execute after the rendering.
     /// </summary>
-    private Queue<Func<Task>>? renderQueue;
+    private PriorityQueue<Func<Task>, RenderPriority>? renderQueue;
 
     #endregion
 
@@ -248,10 +248,11 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// Pushes an action to the stack to be executed after the rendering is done.
     /// </summary>
     /// <param name="action"></param>
-    protected void QueueAfterRenderAction(Func<Task> action)
+    /// <param name="renderPriority"></param>
+    protected void QueueAfterRenderAction(Func<Task> action, RenderPriority renderPriority)
     {
-        renderQueue ??= new Queue<Func<Task>>();
-        renderQueue.Enqueue(action);
+        renderQueue ??= new PriorityQueue<Func<Task>, RenderPriority>();
+        renderQueue.Enqueue(action, renderPriority);
     }
 
     #endregion
@@ -385,6 +386,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
             return styleNames;
         }
     }
-
+    
     #endregion
 }

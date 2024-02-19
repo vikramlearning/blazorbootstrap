@@ -55,7 +55,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
         await base.OnInitializedAsync();
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef), new RenderPriority());
     }
 
     [JSInvokable]
@@ -118,7 +118,8 @@ public partial class Tabs : BlazorBootstrapComponentBase
                     if (showTab)
                         await ShowTabAsync(tab);
                 }
-            }
+            },
+            new RenderPriority()
         );
     }
 

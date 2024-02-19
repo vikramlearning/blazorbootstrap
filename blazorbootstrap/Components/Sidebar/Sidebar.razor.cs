@@ -48,7 +48,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
         await base.OnInitializedAsync();
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", ElementId, objRef), new RenderPriority());
     }
 
     [JSInvokable]

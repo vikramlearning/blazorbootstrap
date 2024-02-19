@@ -78,7 +78,7 @@ public partial class Toast : BlazorBootstrapComponentBase
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        QueueAfterRenderAction(async () => { await ShowAsync(); });
+        QueueAfterRenderAction(async () => await ShowAsync(), new RenderPriority());
     }
 
     [JSInvokable]

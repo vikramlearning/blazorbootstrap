@@ -50,7 +50,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
 
         await base.OnInitializedAsync();
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef), new RenderPriority());
     }
 
     protected override async Task OnParametersSetAsync()
