@@ -278,7 +278,7 @@ Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-between">
-            <Icon Name="IconName.List" role="button" @onclick="ToogleSidebar" />
+            <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
@@ -325,7 +325,7 @@ Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
         return navItems;
     }
 
-    private void ToogleSidebar() => sidebar.ToggleSidebar();
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
 }
 ```
 
@@ -348,7 +348,7 @@ A badge is useful when displaying the application version, environment, or other
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-between">
-            <Icon Name="IconName.List" role="button" @onclick="ToogleSidebar" />
+            <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
@@ -395,7 +395,7 @@ A badge is useful when displaying the application version, environment, or other
         return navItems;
     }
 
-    private void ToogleSidebar() => sidebar.ToggleSidebar();
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
 }
 ```
 
@@ -418,7 +418,7 @@ Use the `CustomIconName` parameter to set the custom logo icon using font awesom
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-between">
-            <Icon Name="IconName.List" role="button" @onclick="ToogleSidebar" />
+            <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
@@ -465,7 +465,7 @@ Use the `CustomIconName` parameter to set the custom logo icon using font awesom
         return navItems;
     }
 
-    private void ToogleSidebar() => sidebar.ToggleSidebar();
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
 }
 ```
 
@@ -488,7 +488,7 @@ Use the `ImageSrc` parameter to set the brand logo.
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-between">
-            <Icon Name="IconName.List" role="button" @onclick="ToogleSidebar" />
+            <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
@@ -535,7 +535,7 @@ Use the `ImageSrc` parameter to set the brand logo.
         return navItems;
     }
 
-    private void ToogleSidebar() => sidebar.ToggleSidebar();
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
 }
 ```
 
