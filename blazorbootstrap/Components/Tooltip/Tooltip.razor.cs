@@ -5,10 +5,9 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     #region Fields and Constants
 
     private TooltipColor color = default!;
-
     private bool isFirstRenderComplete = false;
     private DotNetObjectReference<Tooltip> objRef = default!;
-    private string title = default!;
+    private string? title;
 
     #endregion
 
@@ -51,7 +50,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
 
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef), new RenderPriority());
     }
 
     protected override async Task OnParametersSetAsync()
@@ -65,6 +64,11 @@ public partial class Tooltip : BlazorBootstrapComponentBase
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
             }
+    }
+
+    public async Task ShowAsync()
+    {
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.show", ElementRef);
     }
 
     #endregion
@@ -82,7 +86,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
 
     [Parameter] public TooltipColor Color { get; set; }
 
-    private string colorClass => BootstrapClassProvider.TooltipColor(Color);
+    private string colorClass => BootstrapClassProvider.TooltipColor(Color)!;
     private string placement => Placement.ToTooltipPlacementName();
 
     /// <summary>

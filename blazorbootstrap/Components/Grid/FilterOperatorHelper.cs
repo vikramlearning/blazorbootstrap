@@ -98,7 +98,7 @@ public static class FilterOperatorHelper
                                               //result.Add(new("=''", "Is empty", FilterOperator.IsEmpty));
                                               //result.Add(new("!=''", "Is not empty", FilterOperator.IsNotEmpty));
                                               new FilterOperatorInfo("=", "Equals", FilterOperator.Equals),
-                                              //result.Add(new("!=", "Not equals", FilterOperator.NotEquals));
+                                              new FilterOperatorInfo("!=", "Not equals", FilterOperator.NotEquals),
                                               //result.Add(new("null", "Is null", FilterOperator.IsNull));
                                               //result.Add(new("!null", "Is not null", FilterOperator.IsNotNull));
                                               new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)

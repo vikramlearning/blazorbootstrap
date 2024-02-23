@@ -47,9 +47,8 @@
 
 @code {
     private CustomerAddress customerAddress = new();
-    private EditContext _editContext;
-
-    [Inject] ICustomerService _customerService { get; set; }
+    private EditContext? _editContext;
+    [Inject] ICustomerService _customerService { get; set; } = default!;
 
     protected override void OnInitialized()
     {
@@ -79,9 +78,9 @@
     public class CustomerAddress
     {
         [Required]
-        public string CustomerName { get; set; }
+        public string CustomerName { get; set; } = default!;
 
         [Required]
-        public string Address { get; set; }
+        public string Address { get; set; } = default!;
     }
 }

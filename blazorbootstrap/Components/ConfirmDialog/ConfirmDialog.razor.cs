@@ -32,21 +32,21 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Modal());
-        builder.Append(BootstrapClassProvider.ConfirmationModal());
-        builder.Append(BootstrapClassProvider.ModalFade());
+        this.AddClass(BootstrapClassProvider.Modal);
+        this.AddClass(BootstrapClassProvider.ConfirmationModal);
+        this.AddClass(BootstrapClassProvider.ModalFade);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
-    protected override void BuildStyles(CssStyleBuilder builder)
+    protected override void BuildStyles()
     {
-        builder.Append("display:block", showBackdrop);
-        builder.Append("display:none", !showBackdrop);
+        this.AddStyle("display:block", showBackdrop);
+        this.AddClass("display:none", !showBackdrop);
 
-        base.BuildStyles(builder);
+        base.BuildStyles();
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     /// <param name="message1">message1 for the confirmation dialog.</param>
     /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
     /// <returns>bool</returns>
-    public Task<bool> ShowAsync(string title, string message1, ConfirmDialogOptions? confirmDialogOptions = null) => Show(title, message1, null, null, null, confirmDialogOptions);
+    public Task<bool> ShowAsync(string title, string message1, ConfirmDialogOptions? confirmDialogOptions = null) => Show(title, message1, null, null, null, confirmDialogOptions!);
 
     /// <summary>
     /// Shows confirm dialog.
@@ -66,7 +66,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     /// <param name="message2">message2 for the confirmation dialog. This is optional.</param>
     /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
     /// <returns>bool</returns>
-    public Task<bool> ShowAsync(string title, string message1, string message2, ConfirmDialogOptions? confirmDialogOptions = null) => Show(title, message1, message2, null, null, confirmDialogOptions);
+    public Task<bool> ShowAsync(string title, string message1, string message2, ConfirmDialogOptions? confirmDialogOptions = null) => Show(title, message1, message2, null, null, confirmDialogOptions!);
 
     /// <summary>
     /// Shows confirm dialog.
@@ -76,7 +76,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     /// <param name="parameters"></param>
     /// <param name="confirmDialogOptions"></param>
     /// <returns>bool</returns>
-    public Task<bool> ShowAsync<T>(string title, Dictionary<string, object>? parameters = null, ConfirmDialogOptions? confirmDialogOptions = null) where T : ComponentBase => Show(title, null, null, typeof(T), parameters, confirmDialogOptions);
+    public Task<bool> ShowAsync<T>(string title, Dictionary<string, object>? parameters = null, ConfirmDialogOptions? confirmDialogOptions = null) where T : ComponentBase => Show(title, null, null, typeof(T), parameters, confirmDialogOptions!);
 
     /// <summary>
     /// Hides confirm dialog.
@@ -97,13 +97,13 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     private void OnNoClick()
     {
         Hide();
-        taskCompletionSource.SetResult(false);
+        taskCompletionSource?.SetResult(false);
     }
 
     private void OnYesClick()
     {
         Hide();
-        taskCompletionSource.SetResult(true);
+        taskCompletionSource?.SetResult(true);
     }
 
     private Task<bool> Show(string title, string? message1, string? message2, Type? type, Dictionary<string, object>? parameters, ConfirmDialogOptions confirmDialogOptions)

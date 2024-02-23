@@ -3,12 +3,12 @@
 	<PropertyGroup>
 
 		<PackageId>Blazor.Bootstrap</PackageId>
-    <Version>1.10.4</Version>
-		<PackageVersion>1.10.4</PackageVersion>
+    <Version>1.11.1</Version>
+		<PackageVersion>1.11.1</PackageVersion>
 
 		<!--<PackageIconUrl></PackageIconUrl>-->
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-		<PackageProjectUrl>https://getblazorbootstrap.com/</PackageProjectUrl>
+		<PackageProjectUrl>https://docs.blazorbootstrap.com/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/vikramlearning/blazorbootstrap</RepositoryUrl>
 		<PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap, BlazorAlert, BlazorAutoComplete, BlazorButtons, BlazorCallout, BlazorCharts, BlazorConfirmDialog, BlazorGrid, BlazorModal, BlazorCurrencyInput, BlazorNumberInput, BlazorInput, BlazorNumber, BlazorDate, BlazorDateInput, BlazorDatePicker, BlazorTime, BlazorTimeInput, BlazorTimePicker, BlazorOffcanvas, BlazorPagination, BlazorPlaceholders, BlazorPreload, BlazorProgress, BlazorSidebar, BlazorSwitch, BlazorTabs, BlazorToasts, BlazorTooltips, BlazorBarChart, BlazorDoughnutChart, BlazorLineChart, BlazorPieChart</PackageTags>		
 		<Description>Blazor Bootstrap is a component library built on top of Blazor and Bootstrap5 CSS framework.</Description>
@@ -45,7 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.11" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.26" />
 	</ItemGroup>
 
 </Project>

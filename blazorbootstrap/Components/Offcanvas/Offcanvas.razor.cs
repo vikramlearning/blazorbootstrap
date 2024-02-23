@@ -20,13 +20,13 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Offcanvas());
-        builder.Append(BootstrapClassProvider.Offcanvas(Placement));
-        builder.Append(BootstrapClassProvider.ToOffcanvasSize(Size));
+        this.AddClass(BootstrapClassProvider.Offcanvas);
+        this.AddClass(BootstrapClassProvider.OffcanvasPlacement(Placement));
+        this.AddClass(BootstrapClassProvider.ToOffcanvasSize(Size)!);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -56,7 +56,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, IsScrollable, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, IsScrollable, objRef), new RenderPriority());
     }
 
     [JSInvokable]
@@ -95,7 +95,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
             this.title = title;
 
         childComponent = type;
-        this.parameters = parameters;
+        this.parameters = parameters!;
         await JS.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", ElementId);
         await InvokeAsync(StateHasChanged);
     }

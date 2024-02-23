@@ -1,5 +1,5 @@
 ﻿<Grid TItem="Employee1" 
-    Class="table table-hover table-bordered table-striped" 
+Class="table table-hover table-bordered table-striped" 
     DataProvider="EmployeesDataProvider" 
     AllowFiltering="true" 
     Responsive="true">
@@ -23,7 +23,7 @@
 </Grid>
 
 @code {
-    private IEnumerable<Employee1> employees;
+    private IEnumerable<Employee1>? employees;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {

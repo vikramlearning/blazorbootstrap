@@ -17,7 +17,7 @@
 </Grid>
 
 @code {
-    private IEnumerable<Employee1> employees;
+    private IEnumerable<Employee1>? employees;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {

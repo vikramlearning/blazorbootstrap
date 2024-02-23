@@ -3,7 +3,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'Blazor Bootstrap',
+    title: 'Blazor Bootstrap Docs',
     tagline: 'High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.',
     url: 'https://docs.blazorbootstrap.com',
     baseUrl: '/',
@@ -60,7 +60,7 @@ const config = {
                     src: 'img/logo.svg',
                 },
                 items: [
-                    { type: 'doc', docId: 'getting-started/blazor-webassembly', label: 'Docs', position: 'left' },
+                    { type: 'doc', docId: 'getting-started/blazor-webassembly-net-8', label: 'Docs', position: 'left' },
                     { to: '/blog', label: 'Blog', position: 'left' },
                     { href: 'https://demos.blazorbootstrap.com', label: 'Demos', position: 'left' },
                     { href: 'https://github.com/vikramlearning/blazorbootstrap', label: 'GitHub', position: 'right', },
@@ -81,8 +81,8 @@ const config = {
                     {
                         title: 'Guides',
                         items: [
-                            { label: 'Getting started', to: '/getting-started/blazor-webassembly', },
-                            { label: 'Install Nuget', to: '/getting-started/blazor-webassembly#install-nuget-package', },
+                            { label: 'Getting started', to: '/getting-started/blazor-webassembly-net-8', },
+                            { label: 'Install Nuget', to: '/getting-started/blazor-webassembly-net-8#install-nuget-package', },
                             { label: 'Starter templates', to: 'https://github.com/vikramlearning/blazorbootstrap-starter-templates', },
                         ],
                     },
@@ -125,16 +125,20 @@ const config = {
             {
                 redirects: [
                     {
-                        from: '/docs/getting-started/blazor-webassembly',
-                        to: '/getting-started/blazor-webassembly',
+                        from: '/getting-started/blazor-webassembly',
+                        to: '/getting-started/blazor-webassembly-net-8',
                     },
                     {
-                        from: '/docs/getting-started/blazor-server',
-                        to: '/getting-started/blazor-server',
+                        from: '/getting-started/blazor-server',
+                        to: '/getting-started/blazor-webapp-server-global-net-8',
                     },
                     {
                         from: '/docs/getting-started/maui-blazor',
-                        to: '/getting-started/maui-blazor',
+                        to: '/getting-started/maui-blazor-net-8',
+                    },
+                    {
+                        from: '/getting-started/maui-blazor',
+                        to: '/getting-started/maui-blazor-net-8',
                     },
                     {
                         from: '/docs/layout/blazor-webassembly',

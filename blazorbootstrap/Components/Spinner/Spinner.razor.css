@@ -1,0 +1,88 @@
+/* scss-docs-start spinner-dots-keyframes */
+@keyframes spinner-dots {
+    0% {
+        opacity: 1;
+    }
+
+    50%, 100% {
+        opacity: .3;
+    }
+}
+
+/* scss-docs-end spinner-dots-keyframes */
+.spinner-dots {
+    user-select: none;
+}
+
+    .spinner-dots > circle:first-of-type, 
+    .spinner-dots > circle:last-of-type, 
+    .spinner-dots > circle:nth-of-type(2) {
+        fill: currentcolor;
+        animation: spinner-dots .75s infinite ease-in-out alternate;
+    }
+
+    .spinner-dots > circle:nth-of-type(2) {
+        animation-delay: .25s;
+    }
+
+    .spinner-dots > circle:last-of-type {
+        animation-delay: .5s;
+    }
+
+/* Size: START */
+
+/* default */
+.spinner-border-sm {
+    --bs-spinner-width: 1rem;
+    --bs-spinner-height: 1rem;
+    --bs-spinner-border-width: 0.25em;
+    --bs-spinner-vertical-align: -0.125em;
+}
+/* custom CSS classes */
+.spinner-border-md {
+    --bs-spinner-width: 2rem;
+    --bs-spinner-height: 2rem;
+    --bs-spinner-border-width: 0.25em;
+    --bs-spinner-vertical-align: -0.125em;
+}
+.spinner-border-lg {
+    --bs-spinner-width: 3rem;
+    --bs-spinner-height: 3rem;
+    --bs-spinner-border-width: 0.25em;
+    --bs-spinner-vertical-align: -0.125em;
+}
+.spinner-border-xl {
+    --bs-spinner-width: 4rem;
+    --bs-spinner-height: 4rem;
+    --bs-spinner-border-width: 0.25em;
+    --bs-spinner-vertical-align: -0.125em;
+}
+
+/* default */
+.spinner-grow-sm {
+    --bs-spinner-width: 1rem;
+    --bs-spinner-height: 1rem;
+    --bs-spinner-border-width: 0.25em;
+    --bs-spinner-vertical-align: -0.125em;
+}
+/* custom CSS classes */
+.spinner-grow-md {
+    --bs-spinner-width: 2rem;
+    --bs-spinner-height: 2rem;
+    --bs-spinner-border-width: 0.25em;
+    --bs-spinner-vertical-align: -0.125em;
+}
+.spinner-grow-lg {
+    --bs-spinner-width: 3rem;
+    --bs-spinner-height: 3rem;
+    --bs-spinner-border-width: 0.25em;
+    --bs-spinner-vertical-align: -0.125em;
+}
+.spinner-grow-xl {
+    --bs-spinner-width: 4rem;
+    --bs-spinner-height: 4rem;
+    --bs-spinner-border-width: 0.25em;
+    --bs-spinner-vertical-align: -0.125em;
+}
+
+/* Size: END */

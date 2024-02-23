@@ -77,7 +77,7 @@ public class ToastMessage : IEquatable<ToastMessage>
 
     #region Methods
 
-    public bool Equals(ToastMessage other) => other != null && Id.Equals(other.Id);
+    public bool Equals(ToastMessage? other) => other != null && Id.Equals(other?.Id);
 
     internal void SetElementId(string elementId) => ElementId = elementId;
 
@@ -90,18 +90,19 @@ public class ToastMessage : IEquatable<ToastMessage>
     /// <summary>
     /// Specify custom icons of your own, like fontawesome. Example: 'fas fa-alarm-clock'
     /// </summary>
-    public string CustomIconName { get; set; }
+    public string? CustomIconName { get; set; }
 
-    internal string ElementId { get; private set; }
+    internal string? ElementId { get; private set; }
 
-    public string HelpText { get; set; }
+    public string? HelpText { get; set; }
 
     public IconName IconName { get; set; }
+
     internal Guid Id { get; }
 
-    public string Message { get; set; }
+    public string? Message { get; set; }
 
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     public ToastType Type { get; set; }
 

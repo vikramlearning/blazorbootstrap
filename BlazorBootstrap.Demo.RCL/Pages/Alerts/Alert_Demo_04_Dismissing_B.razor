@@ -3,6 +3,6 @@
 </Alert>
 
 @code {
-    Alert warningAlert;
-    private async Task CloseAlert() => await warningAlert?.CloseAsync();
+    Alert warningAlert = default!;
+    private async Task CloseAlert() => await warningAlert.CloseAsync();
 }

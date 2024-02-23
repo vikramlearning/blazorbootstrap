@@ -1,15 +1,15 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class CardGroup
+public partial class CardGroup : BlazorBootstrapComponentBase
 {
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.CardGroup());
+        this.AddClass(BootstrapClassProvider.CardGroup);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

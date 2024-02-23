@@ -27,10 +27,11 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.FormControl());
-        base.BuildClasses(builder);
+        this.AddClass(BootstrapClassProvider.FormControl);
+
+        base.BuildClasses();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -48,11 +49,11 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
                 else // TimeOnly?
                     Value = default!;
             }
-            else if (EnableMinMax && min is not null && IsLeftGreaterThanRight(min, Value)) //  value < min
+            else if (EnableMinMax && min is not null && IsLeftGreaterThanRight(min, Value!)) //  value < min
             {
                 Value = EnableMinMax && min is not null ? min : default!;
             }
-            else if (EnableMinMax && max is not null && IsLeftGreaterThanRight(Value, max)) // value > max
+            else if (EnableMinMax && max is not null && IsLeftGreaterThanRight(Value!, max)) // value > max
             {
                 Value = max;
             }
@@ -63,7 +64,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
 
             formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
             formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
-            formattedValue = GetFormattedValue(Value);
+            formattedValue = GetFormattedValue(Value!);
 
             await ValueChanged.InvokeAsync(Value);
         }
@@ -96,13 +97,13 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
 
     protected override async Task OnParametersSetAsync()
     {
-        if (EnableMinMax && !min.Equals(Min))
+        if (EnableMinMax && !min!.Equals(Min))
         {
             min = Min;
             formattedMin = EnableMinMax && min is not null ? GetFormattedValue(min) : string.Empty;
         }
 
-        if (EnableMinMax && !max.Equals(Max))
+        if (EnableMinMax && !max!.Equals(Max))
         {
             max = Max;
             formattedMax = EnableMinMax && max is not null ? GetFormattedValue(max) : string.Empty;
@@ -110,9 +111,9 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
 
         if ((oldValue is null && Value is not null)
             || (oldValue is not null && Value is null)
-            || !oldValue.Equals(Value))
+            || !oldValue!.Equals(Value))
         {
-            await SetValueAsync(oldValue, Value);
+            await SetValueAsync(oldValue!, Value!);
             oldValue = Value;
         }
     }
@@ -192,11 +193,11 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
             else // TimeOnly?
                 Value = default!;
         }
-        else if (EnableMinMax && min is not null && IsLeftGreaterThanRight(min, value)) //  value < min
+        else if (EnableMinMax && min is not null && IsLeftGreaterThanRight(min, value!)) //  value < min
         {
             Value = min;
         }
-        else if (EnableMinMax && max is not null && IsLeftGreaterThanRight(value, max)) // value > max
+        else if (EnableMinMax && max is not null && IsLeftGreaterThanRight(value!, max)) // value > max
         {
             Value = max;
         }
@@ -205,9 +206,9 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
             Value = value;
         }
 
-        formattedValue = GetFormattedValue(Value);
+        formattedValue = GetFormattedValue(Value!);
 
-        if (oldValue.Equals(Value))
+        if (oldValue!.Equals(Value))
             await JS.InvokeVoidAsync("window.blazorBootstrap.timeInput.setValue", ElementId, formattedValue);
 
         await ValueChanged.InvokeAsync(Value);

@@ -1,11 +1,11 @@
-﻿<Breadcrumb style="--bs-breadcrumb-divider: '>';" Items="NavItems2" />
+﻿<Breadcrumb style="--bs-breadcrumb-divider: '>';" Items="navItems" />
 
 @code {
-    private List<BreadcrumbItem> NavItems2 { get; set; }
+    private List<BreadcrumbItem>? navItems;
 
     protected override void OnInitialized()
     {
-        NavItems2 = new List<BreadcrumbItem>
+        navItems = new List<BreadcrumbItem>
         {
             new BreadcrumbItem{ Text = "Home", Href ="/" },
             new BreadcrumbItem{ Text = "Docs", Href ="/docs" },

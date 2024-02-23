@@ -42,7 +42,7 @@
     private string description = "Indicate the loading state of a page with Blazor Bootstrap preload component.";
     private string imageUrl = "https://i.imgur.com/2cPuqFa.png";
 
-    [Inject] PreloadService PreloadService { get; set; }
+    [Inject] PreloadService PreloadService { get; set; } = default!;
 
     protected override void OnInitialized()
     {

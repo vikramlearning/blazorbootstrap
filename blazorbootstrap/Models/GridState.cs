@@ -7,7 +7,7 @@ public class GridState<TItem>
 {
     #region Constructors
 
-    public GridState(int pageIndex, IEnumerable<SortingItem<TItem>> sorting)
+    public GridState(int pageIndex, IEnumerable<SortingItem<TItem>>? sorting)
     {
         PageIndex = pageIndex;
         Sorting = sorting;
@@ -25,7 +25,7 @@ public class GridState<TItem>
     /// <summary>
     /// Current sorting.
     /// </summary>
-    public IEnumerable<SortingItem<TItem>> Sorting { get; }
+    public IEnumerable<SortingItem<TItem>>? Sorting { get; }
 
     #endregion
 }

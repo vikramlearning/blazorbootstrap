@@ -7,28 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Pages\GettingStarted\maui-blazor\Snippet_03_Starter_Template_Register_services_Program.cs" />
-    <Compile Remove="Pages\GettingStarted\server\Snippet_03_Starter_Template_Register_services_Program.cs" />
-    <Compile Remove="Pages\GettingStarted\webassembly\Snippet_03_Starter_Template_Register_services_Program.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Pages\GettingStarted\maui-blazor\Snippet_03_Starter_Template_Register_services_Program.cs" />
-    <Content Include="Pages\GettingStarted\server\Snippet_03_Starter_Template_Register_services_Program.cs" />
-    <Content Include="Pages\GettingStarted\webassembly\Snippet_03_Starter_Template_Register_services_Program.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\blazorbootstrap\BlazorBootstrap.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Pages\Spinner\" />
+    <Folder Include="Pages\ScriptLoader\" />
   </ItemGroup>
 
   <Target Name="EmbedDemos" BeforeTargets="PrepareForBuild">

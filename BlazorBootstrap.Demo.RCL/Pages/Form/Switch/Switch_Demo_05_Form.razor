@@ -51,22 +51,22 @@
 @code {
     private bool disableSave;
     private Employee employee = new();
-    private EditContext editContext;
+    private EditContext? editContext;
 
-    [Inject] private ToastService ToastService { get; set; }
+    [Inject] private ToastService ToastService { get; set; } = default!;
 
     protected override void OnInitialized()
     {
         employee = new() { FirstName = "Vikram Reddy", LastName = "Gaddam", IsActive = true };
         editContext = new EditContext(employee);
-        editContext.OnFieldChanged += HandleFieldChanged;
+        editContext.OnFieldChanged += HandleFieldChanged!;
 
         base.OnInitialized();
     }
 
     public void HandleOnValidSubmit()
     {
-        disableSave = !editContext.Validate();
+        disableSave = !(editContext?.Validate() ?? false);
 
         var toastMessage = new ToastMessage
             {
@@ -82,7 +82,7 @@
 
     private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
     {
-        disableSave = !editContext.Validate();
+        disableSave = !(editContext?.Validate() ?? false);
 
         var toastMessage = new ToastMessage
             {
@@ -99,7 +99,7 @@
     {
         employee = new();
         editContext = new EditContext(employee);
-        editContext.OnFieldChanged += HandleFieldChanged;
+        editContext.OnFieldChanged += HandleFieldChanged!;
     }
 
     public class Employee

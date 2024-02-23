@@ -62,12 +62,12 @@
     private bool disableEndDate = true;
 
     private OnlineCourseForm onlineCourseForm = new();
-    private EditContext editContext;
+    private EditContext? editContext;
 
     private DateTime? courseMinDate;
     private DateTime? courseMaxDate;
 
-    [Inject] ToastService _toastService { get; set; }
+    [Inject] ToastService ToastService { get; set; } = default!;
 
     protected override void OnInitialized()
     {
@@ -105,7 +105,7 @@
             helpText: $"{DateTime.Now.ToLocalTime()}",
             message: "Online course schedule created."
         );
-        _toastService.Notify(toastMessage);
+        ToastService.Notify(toastMessage);
     }
 
     private void ResetForm()
@@ -117,7 +117,7 @@
     public class OnlineCourseForm
     {
         [Required(ErrorMessage = "Course Name required.")]
-        public string CourseName { get; set; }
+        public string? CourseName { get; set; }
 
         [Required(ErrorMessage = "Start Date required.")]
         public DateTime? StartDate { get; set; }

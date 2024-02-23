@@ -21,7 +21,7 @@
 
         doughnutChartOptions = new();
         doughnutChartOptions.Responsive = true;
-        doughnutChartOptions.Plugins.Title.Text = "2022 - Sales";
+        doughnutChartOptions.Plugins.Title!.Text = "2022 - Sales";
         doughnutChartOptions.Plugins.Title.Display = true;
     }
 
@@ -41,7 +41,6 @@
 
         var newDatasets = new List<IChartDataset>();
 
-        var datasetIndex = 0;
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is DoughnutChartDataset doughnutChartDataset

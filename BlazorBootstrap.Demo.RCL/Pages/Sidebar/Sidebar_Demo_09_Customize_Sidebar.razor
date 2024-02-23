@@ -21,9 +21,9 @@
 </div>
 
 @code {
-    Sidebar sidebar;
+    Sidebar sidebar = default!;
     bool applyPurpleStyle = false;
-    IEnumerable<NavItem> navItems;
+    IEnumerable<NavItem>? navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
     {
