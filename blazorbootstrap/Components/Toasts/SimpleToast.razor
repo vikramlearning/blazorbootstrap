@@ -5,7 +5,7 @@
     <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
         <div class="d-flex">
             <div class="toast-body">
-                @ToastMessage.Message
+                @ToastMessage?.Message
             </div>
             @if (!AutoHide || ShowCloseButton)
             {

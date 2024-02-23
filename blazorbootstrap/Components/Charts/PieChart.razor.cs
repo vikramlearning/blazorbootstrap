@@ -29,7 +29,7 @@ public partial class PieChart : BlazorBootstrapChart
                 if (data is PieChartDatasetData pieChartDatasetData)
                 {
                     pieChartDataset.Data?.Add(pieChartDatasetData.Data);
-                    pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor);
+                    pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor!);
                 }
 
         await JS.InvokeVoidAsync("window.blazorChart.pie.addDatasetData", ElementId, dataLabel, data);
@@ -76,7 +76,7 @@ public partial class PieChart : BlazorBootstrapChart
                 if (chartDatasetData is PieChartDatasetData pieChartDatasetData)
                 {
                     pieChartDataset.Data?.Add(pieChartDatasetData.Data);
-                    pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor);
+                    pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor!);
                 }
             }
 
@@ -105,7 +105,7 @@ public partial class PieChart : BlazorBootstrapChart
         return chartData;
     }
 
-    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is not null && chartData.Datasets is not null)
         {

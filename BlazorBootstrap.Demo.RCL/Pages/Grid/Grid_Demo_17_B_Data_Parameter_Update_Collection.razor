@@ -20,9 +20,8 @@
 </Grid>
 
 @code {
-    Grid<Employee1> grid;
-
-    private List<Employee1> employees;
+    Grid<Employee1> grid = default!;
+    private List<Employee1>? employees;
 
     protected override void OnInitialized()
     {
@@ -39,14 +38,14 @@
     {
         // for the same employees collection, we are adding an object
         // explicit grid refresh required
-        employees.Add(CreateEmployee());
+        employees!.Add(CreateEmployee());
         await grid.RefreshDataAsync();
     }
 
     private void AddEmployee2()
     {
         // creates a shallow copy
-        var emps = employees.GetRange(0, employees.Count);
+        var emps = employees!.GetRange(0, employees.Count);
         emps.Add(CreateEmployee());
         // now employees variable has a new reference. So no need to refresh the grid explicitly
         // explicit grid refresh is not required
@@ -56,7 +55,7 @@
     private Employee1 CreateEmployee()
     {
         var emp = new Employee1();
-        emp.Id = employees.Max(x => x.Id) + 1;
+        emp.Id = employees!.Max(x => x.Id) + 1;
         emp.Name = $"Employee {emp.Id}";
         emp.Designation = $"QA Engineer {emp.Id}";
         emp.DOJ = new DateOnly(new Random().Next(1970, 2000), new Random().Next(1, 12), new Random().Next(1, 25));

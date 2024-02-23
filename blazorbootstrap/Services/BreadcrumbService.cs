@@ -4,7 +4,7 @@ public class BreadcrumbService
 {
     #region Events
 
-    internal event Action<List<BreadcrumbItem>> OnNotify;
+    internal event Action<List<BreadcrumbItem>> OnNotify = default!;
 
     #endregion
 

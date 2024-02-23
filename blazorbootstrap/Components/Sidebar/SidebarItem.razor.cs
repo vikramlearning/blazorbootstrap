@@ -10,22 +10,22 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append("nav-item");
-        builder.Append("nav-item-group", HasChilds);
-        builder.Append("active", navitemGroupExpanded);
+        this.AddClass("nav-item");
+        this.AddClass("nav-item-group", HasChilds);
+        this.AddClass("active", navitemGroupExpanded);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override void OnParametersSet()
     {
-        if (!HasChilds || ChildItems is null || !ChildItems.Any())
+        if (!HasChilds || !(ChildItems?.Any() ?? false))
             return;
 
         foreach (var childItem in ChildItems)
-            if (ShouldExpand(NavigationManager.Uri, childItem.Href))
+            if (ShouldExpand(NavigationManager.Uri, childItem.Href!))
             {
                 navitemGroupExpanded = true;
 
@@ -121,7 +121,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     [Parameter] public Target Target { get; set; }
 
-    private string targetString => Target.ToTargetString();
+    private string targetString => Target.ToTargetString()!;
 
     [Parameter] public string? Text { get; set; }
 

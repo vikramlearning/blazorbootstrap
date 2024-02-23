@@ -8,18 +8,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     #endregion
 
-    #region Constructors
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BlazorBootstrapComponentBase" /> class.
-    /// </summary>
-    public BlazorBootstrapChart()
-    {
-        ContainerStyleBuilder = new CssStyleBuilder(BuildContainerStyles);
-    }
-
-    #endregion
-
     #region Methods
 
     //public async Task Stop() { }
@@ -52,7 +40,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// <param name="chartData"></param>
     /// <param name="chartOptions"></param>
     /// <param name="plugins"></param>
-    public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
         {
@@ -104,49 +92,18 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
                 await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, chartOptions);
         }
     }
-
-    protected virtual void BuildContainerStyles(CssStyleBuilder builder)
+    
+    private string GetChartContainerSizeAsStyle()
     {
-        builder.Append("position:relative", Width.HasValue || Height.HasValue);
-        
-        if (Width.HasValue)
-            builder.Append($"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}", Width.HasValue);
-        
-        if (Height.HasValue)
-            builder.Append($"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}", Height.HasValue);
-    }
+        var style = "";
 
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected new void Dispose(bool disposing)
-    {
-        if (!Disposed)
-            if (disposing)
-                ContainerStyleBuilder = null;
+        if (Width > 0)
+            style += $"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}";
 
-        base.Dispose(disposing);
-    }
+        if (Height > 0)
+            style += $"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}";
 
-    /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-    /// </summary>
-    /// <param name="disposing"></param>
-    protected new ValueTask DisposeAsync(bool disposing)
-    {
-        try
-        {
-            if (!AsyncDisposed)
-                if (disposing)
-                    ContainerStyleBuilder = null;
-
-            return base.DisposeAsync(disposing);
-        }
-        catch (Exception ex)
-        {
-            return new ValueTask(Task.FromException(ex));
-        }
+        return style;
     }
 
     protected string GetChartType() =>
@@ -167,7 +124,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     {
         var datasets = new List<object>();
 
-        if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
+        if (chartData?.Datasets?.Any() ?? false)
             foreach (var dataset in chartData.Datasets)
                 if (dataset is BarChartDataset)
                     datasets.Add((BarChartDataset)dataset);
@@ -180,7 +137,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
                 else if (dataset is PieChartDataset)
                     datasets.Add((PieChartDataset)dataset);
 
-        var data = new { chartData.Labels, Datasets = datasets };
+        var data = new { chartData?.Labels, Datasets = datasets };
 
         return data;
     }
@@ -188,16 +145,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     #endregion
 
     #region Properties, Indexers
-
-    /// <summary>
-    /// Gets the style mapper.
-    /// </summary>
-    protected CssStyleBuilder? ContainerStyleBuilder { get; private set; }
-
-    /// <summary>
-    /// Gets the built styles based on all the rules set by the component parameters.
-    /// </summary>
-    public string? ContainerStyles => ContainerStyleBuilder!.Styles;
 
     /// <summary>
     /// Gets or sets chart container height.
@@ -230,6 +177,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// </summary>
     [Parameter]
     public Unit WidthUnit { get; set; } = Unit.Px;
+
+    internal string ContainerStyle => GetChartContainerSizeAsStyle();
 
     #endregion
 }

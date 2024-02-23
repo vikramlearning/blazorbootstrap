@@ -2,7 +2,7 @@
 <Button Color="ButtonColor.Dark" @onclick="ShowSavingDataAsync">Show Saving data...</Button>
 
 @code {
-    [Inject] protected PreloadService PreloadService { get; set; }
+    [Inject] protected PreloadService PreloadService { get; set; } = default!;
 
     private async Task ShowLoadingDataAsync()
     {

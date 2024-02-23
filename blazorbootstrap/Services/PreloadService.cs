@@ -4,8 +4,8 @@ public class PreloadService
 {
     #region Events
 
-    internal event Action OnHide;
-    internal event Action<SpinnerColor, string?> OnShow;
+    internal event Action OnHide = default!;
+    internal event Action<SpinnerColor, string?> OnShow = default!;
 
     #endregion
 

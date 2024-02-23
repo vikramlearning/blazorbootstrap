@@ -10,11 +10,11 @@ public partial class PlaceholderContainer : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.PlaceholderAnimation(Animation));
+        this.AddClass(BootstrapClassProvider.PlaceholderAnimation(Animation));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

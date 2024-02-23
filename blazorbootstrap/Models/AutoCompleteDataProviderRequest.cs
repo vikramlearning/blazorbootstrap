@@ -6,19 +6,20 @@ public class AutoCompleteDataProviderRequest<TItem>
 
     public AutoCompleteDataProviderResult<TItem> ApplyTo(IEnumerable<TItem> data)
     {
-        if (data == null)
+        if (data is null)
             return new AutoCompleteDataProviderResult<TItem> { Data = null, TotalCount = null };
 
         var resultData = data;
 
         // apply filter
-        if (Filter != null)
+        if (Filter is not null)
             try
             {
                 var parameterExpression = Expression.Parameter(typeof(TItem)); // second param optional
                 var lambda = ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, Filter);
 
-                resultData = resultData.Where(lambda.Compile());
+                if (lambda is not null)
+                    resultData = resultData.Where(lambda.Compile());
             }
             catch (Exception ex)
             {
@@ -35,7 +36,7 @@ public class AutoCompleteDataProviderRequest<TItem>
     #region Properties, Indexers
 
     public CancellationToken CancellationToken { get; init; } = default;
-    public FilterItem Filter { get; init; }
+    public FilterItem Filter { get; init; } = default!;
 
     #endregion
 }

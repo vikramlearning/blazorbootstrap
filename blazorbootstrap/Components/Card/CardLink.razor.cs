@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class CardLink
+public partial class CardLink : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -21,12 +21,12 @@ public partial class CardLink
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.CardLink());
-        builder.Append(BootstrapClassProvider.Disabled(), Disabled);
+        this.AddClass(BootstrapClassProvider.CardLink);
+        this.AddClass(BootstrapClassProvider.Disabled, Disabled);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -83,11 +83,11 @@ public partial class CardLink
         Attributes ??= new Dictionary<string, object>();
 
         if (!Attributes.TryGetValue("href", out _))
-            Attributes.Add("href", To);
+            Attributes.Add("href", To!);
 
         if (Target != Target.None)
             if (!Attributes.TryGetValue("target", out _))
-                Attributes.Add("target", Target.ToTargetString());
+                Attributes.Add("target", Target.ToTargetString()!);
 
         if (Disabled)
         {

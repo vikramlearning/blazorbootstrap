@@ -2,7 +2,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 if (builder.Environment.IsDevelopment())
-    builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5021/") });
+    builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5031/") });
 else
     builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://demos.blazorbootstrap.com/") });
 

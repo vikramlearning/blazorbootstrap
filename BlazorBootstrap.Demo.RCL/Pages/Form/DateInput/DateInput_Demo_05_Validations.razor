@@ -43,7 +43,7 @@
 
 @code {
     private Invoice invoice = new();
-    private EditContext editContext;
+    private EditContext? editContext;
 
     protected override void OnInitialized()
     {
@@ -69,6 +69,6 @@
         public DateOnly? InvoiceDate { get; set; }
 
         [Required(ErrorMessage = "Customer Name required.")]
-        public string CustomerName { get; set; }
+        public string? CustomerName { get; set; }
     }
 }

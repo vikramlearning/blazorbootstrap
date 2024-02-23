@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Dropdown
+public partial class Dropdown : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -11,12 +11,12 @@ public partial class Dropdown
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.ButtonGroup());
-        builder.Append(BootstrapClassProvider.DropdownDirection(Direction));
+        this.AddClass(BootstrapClassProvider.ButtonGroup);
+        this.AddClass(BootstrapClassProvider.DropdownDirection(Direction));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -46,7 +46,7 @@ public partial class Dropdown
 
         base.OnInitialized();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.dropdown.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.dropdown.initialize", ElementId, objRef), new RenderPriority());
     }
 
     [JSInvokable]

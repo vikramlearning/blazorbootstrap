@@ -61,6 +61,12 @@ public partial class Tab : BlazorBootstrapComponentBase
     public string Name { get; set; } = default!;
 
     /// <summary>
+    /// This event fires when the user clicks the corresponding tab button and the tab is displayed.
+    /// </summary>
+    [Parameter]
+    public EventCallback<TabEventArgs> OnClick { get; set; }
+
+    /// <summary>
     /// Gets or sets the parent.
     /// </summary>
     [CascadingParameter]

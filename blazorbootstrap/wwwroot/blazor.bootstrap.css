@@ -621,3 +621,21 @@ main {
     --bs-spinner-border-width: 0.225em;
     --bs-spinner-vertical-align: -0.125em;
 }
+
+/* range */
+.bb-form-range-input{
+    appearance: auto !important;
+}
+
+.bb-range-data-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    writing-mode: vertical-lr;
+    width: 100%;
+}
+
+/* pdf viewer */
+.pdf-viewer-dropdown-toggle::after {
+    content: inherit !important;
+}
