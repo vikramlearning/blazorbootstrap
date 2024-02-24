@@ -50,6 +50,9 @@
     /* table */
     --bb-table-sticky-background-color: #fff;
     --bb-table-freeze-column-background-color: #efefef;
+    /* callout */
+    --bb-callout-link: 10, 88, 202;
+    --bb-callout-code-color: #ab296a;
 }
 
 /* preload */
@@ -77,117 +80,55 @@
 
 /* callout */
 .bb-callout {
+    --bs-link-color-rgb: var(--bb-callout-link);
+    --bs-code-color: var(--bb-callout-code-color);
     padding: 1.25rem;
     margin-top: 1.25rem;
     margin-bottom: 1.25rem;
-    border-left: 0.25rem solid rgba(var(--bs-dark-rgb), .5);
-    background-color: rgba(var(--bs-dark-rgb), .075);
-    border-radius: .25rem;
+    color: var(--bb-callout-color, inherit);
+    background-color: var(--bb-callout-bg, var(--bs-gray-100));
+    border-left: 0.25rem solid var(--bb-callout-border, var(--bs-gray-300))
 }
 
     .bb-callout h4 {
         margin-bottom: .25rem;
     }
 
-    .bb-callout p:last-child {
+    .bb-callout > :last-child {
         margin-bottom: 0 !important;
     }
-
-    .bb-callout code {
-        border: 0.1rem solid rgba(0, 0, 0, .05);
-        color: rgba(var(--bs-dark-rgb), 1);
-        background-color: rgba(var(--bs-dark-rgb), .15);
-        border-radius: .25rem;
-        padding: 0.1rem;
-        padding-left: 0.3rem;
-        padding-right: 0.3rem;
-    }
-
-    .bb-callout a {
-        color: rgba(var(--bs-dark-rgb), 1);
-        font-weight: 600;
-        text-decoration: none;
-    }
-
-        .bb-callout a:hover {
-            text-decoration: underline;
-        }
 
     .bb-callout + .bb-callout {
         margin-top: -.25rem;
     }
 
+    .bb-callout .highlight {
+        background-color: rgba(0,0,0,0.05)
+    }
+
 .bb-callout-info {
-    border-left: 0.25rem solid rgba(var(--bs-info-rgb), .5);
-    background-color: rgba(var(--bs-info-rgb), .075);
+    --bb-callout-color: var(--bs-info-text-emphasis);
+    --bb-callout-bg: var(--bs-info-bg-subtle);
+    --bb-callout-border: var(--bs-info-border-subtle)
 }
-
-    .bb-callout-info .bb-callout-heading {
-        color: rgba(var(--bs-info-rgb), 0.75);
-    }
-
-    .bb-callout-info code {
-        color: rgba(var(--bs-info-rgb), 1);
-        background-color: rgba(var(--bs-info-rgb), .15);
-    }
-
-    .bb-callout-info a {
-        color: rgba(var(--bs-info-rgb), 1);
-    }
 
 .bb-callout-warning {
-    border-left: 0.25rem solid rgba(var(--bs-warning-rgb), .5);
-    background-color: rgba(var(--bs-warning-rgb), .075);
+    --bb-callout-color: var(--bs-warning-text-emphasis);
+    --bb-callout-bg: var(--bs-warning-bg-subtle);
+    --bb-callout-border: var(--bs-warning-border-subtle)
 }
-
-    .bb-callout-warning .bb-callout-heading {
-        color: rgba(var(--bs-warning-rgb), 0.75);
-    }
-
-    .bb-callout-warning code {
-        color: rgba(var(--bs-warning-rgb), 1);
-        background-color: rgba(var(--bs-warning-rgb), .15);
-    }
-
-    .bb-callout-warning a {
-        color: rgba(var(--bs-warning-rgb), 1);
-    }
 
 .bb-callout-danger {
-    border-left: 0.25rem solid rgba(var(--bs-danger-rgb), .5);
-    background-color: rgba(var(--bs-danger-rgb), .075);
+    --bb-callout-color: var(--bs-danger-text-emphasis);
+    --bb-callout-bg: var(--bs-danger-bg-subtle);
+    --bb-callout-border: var(--bs-danger-border-subtle)
 }
-
-    .bb-callout-danger .bb-callout-heading {
-        color: rgba(var(--bs-danger-rgb), 0.75);
-    }
-
-    .bb-callout-danger code {
-        color: rgba(var(--bs-danger-rgb), 1);
-        background-color: rgba(var(--bs-danger-rgb), .15);
-    }
-
-    .bb-callout-danger a {
-        color: rgba(var(--bs-danger-rgb), 1);
-    }
 
 .bb-callout-success {
-    border-left: 0.25rem solid rgba(var(--bs-success-rgb), .5);
-    background-color: rgba(var(--bs-success-rgb), .075);
+    --bb-callout-color: var(--bs-success-text-emphasis);
+    --bb-callout-bg: var(--bs-success-bg-subtle);
+    --bb-callout-border: var(--bs-success-border-subtle)
 }
-
-    .bb-callout-success .bb-callout-heading {
-        color: rgba(var(--bs-success-rgb), 0.75);
-    }
-
-    .bb-callout-success code {
-        color: rgba(var(--bs-success-rgb), 1);
-        background-color: rgba(var(--bs-success-rgb), .15);
-    }
-
-    .bb-callout-success a {
-        color: rgba(var(--bs-success-rgb), 1);
-    }
 
 /* offcanvas */
 .offcanvas-footer {
@@ -276,22 +217,15 @@ table > thead > tr:nth-child(2) > th.freeze-column {
 /* freeze column left */
 /* th: row-1 */
 table > thead > tr > th:not(.freeze-column-right):first-child.freeze-column {
-    box-shadow: inset 1px 0 0 var(--bs-table-border-color), 
-        inset 0 1px 0 var(--bs-table-border-color), 
-        inset 0 -1px 0 var(--bs-table-border-color);
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
 }
 
 table > thead > tr > th:not(.freeze-column-right).freeze-column {
-    box-shadow: inset 1px 0 0 var(--bs-table-border-color), 
-        inset -1px 0 0 var(--bs-table-border-color), 
-        inset 0 1px 0 var(--bs-table-border-color), 
-        inset 0 -1px 0 var(--bs-table-border-color);
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color), inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
 }
 
 table > thead > tr > th:not(.freeze-column-right):last-child.freeze-column {
-    box-shadow: inset 1px 0 0 var(--bs-table-border-color), 
-        inset 0 -1px 0 var(--bs-table-border-color), 
-        inset -1px 0 0 var(--bs-table-border-color);
+    box-shadow: inset 1px 0 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color), inset -1px 0 0 var(--bs-table-border-color);
 }
 
 /* th: row-2 */
@@ -623,7 +557,7 @@ main {
 }
 
 /* range */
-.bb-form-range-input{
+.bb-form-range-input {
     appearance: auto !important;
 }
 
