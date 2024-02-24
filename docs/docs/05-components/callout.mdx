@@ -17,11 +17,12 @@ Blazor Bootstrap callout component provides content presentation in a visually d
 
 ## Parameters
 
-| Name | Type | Default | Required | Description |
-|:--|:--|:--|:--|:--|
-| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside this. |
-| Heading | string | | | Gets or sets the callout heading. |
-| Type | enum | `CalloutType.Default` | | Use `CalloutType.Default` or `CalloutType.Info` or `CalloutType.Warning` or `CalloutType.Danger` or `CalloutType.Tip` |
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside this. | 1.0.0 |
+| Heading | string | null | | Gets or sets the callout heading. | 1.0.0 |
+| HideHeading | bool | false | | Gets or sets a value indicating whether to hide the callout heading. | 1.0.0 |
+| Type | `CalloutType` | `CalloutType.Default` | | Use `CalloutType.Default` or `CalloutType.Info` or `CalloutType.Warning` or `CalloutType.Danger` or `CalloutType.Tip` | 1.12.0 |
 
 ## Examples
 

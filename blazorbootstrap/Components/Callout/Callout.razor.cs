@@ -68,6 +68,12 @@ public partial class Callout : BlazorBootstrapComponentBase
     [Parameter]
     public string? Heading { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether to hide the callout heading.
+    /// </summary>
+    [Parameter]
+    public bool HideHeading { get; set; }
+
     private IconName iconName => GetIconName();
 
     /// <summary>
@@ -83,12 +89,6 @@ public partial class Callout : BlazorBootstrapComponentBase
             DirtyClasses();
         }
     }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether to hide the callout heading.
-    /// </summary>
-    [Parameter]
-    public bool HideHeading { get; set; }
 
     #endregion
 }
