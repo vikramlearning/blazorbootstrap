@@ -18,18 +18,21 @@ public partial class Callout : BlazorBootstrapComponentBase
         base.BuildClasses();
     }
 
-    private string GetHeading() =>
-        string.IsNullOrWhiteSpace(Heading)
-            ? type switch
-              {
-                  CalloutType.Default => "NOTE",
-                  CalloutType.Info => "INFO",
-                  CalloutType.Warning => "WARNING",
-                  CalloutType.Danger => "DANGER",
-                  CalloutType.Tip => "TIP",
-                  _ => ""
-              }
-            : Heading;
+    private string GetHeading()
+    {
+        if (!string.IsNullOrWhiteSpace(Heading))
+            return Heading;
+
+        return type switch
+        {
+            CalloutType.Default => "NOTE",
+            CalloutType.Info => "INFO",
+            CalloutType.Warning => "WARNING",
+            CalloutType.Danger => "DANGER",
+            CalloutType.Tip or CalloutType.Success => "TIP",
+            _ => ""
+        };
+    }
 
     private IconName GetIconName() =>
         type switch
@@ -38,7 +41,7 @@ public partial class Callout : BlazorBootstrapComponentBase
             CalloutType.Info => IconName.InfoCircleFill,
             CalloutType.Warning => IconName.ExclamationTriangleFill,
             CalloutType.Danger => IconName.Fire,
-            CalloutType.Tip => IconName.Lightbulb,
+            CalloutType.Tip or CalloutType.Success => IconName.Lightbulb,
             _ => IconName.InfoCircleFill
         };
 

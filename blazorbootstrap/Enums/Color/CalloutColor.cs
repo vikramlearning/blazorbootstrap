@@ -28,5 +28,11 @@ public enum CalloutType
     /// <summary>
     /// Success color.
     /// </summary>
-    Tip
+    [Obsolete("This enum value is obsolete. Use `Success` instead.")]
+    Tip,
+
+    /// <summary>
+    /// Success color.
+    /// </summary>
+    Success
 }

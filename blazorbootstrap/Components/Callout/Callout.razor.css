@@ -1,8 +1,3 @@
-:root {
-    --bb-callout-link: 10, 88, 202;
-    --bb-callout-code-color: #ab296a;
-}
-
 .bb-callout {
     --bs-link-color-rgb: var(--bb-callout-link);
     --bs-code-color: var(--bb-callout-code-color);

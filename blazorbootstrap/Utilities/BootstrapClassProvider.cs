@@ -237,7 +237,7 @@ public static class BootstrapClassProvider
             BlazorBootstrap.CalloutType.Danger => $"{Callout}-danger",
             BlazorBootstrap.CalloutType.Warning => $"{Callout}-warning",
             BlazorBootstrap.CalloutType.Info => $"{Callout}-info",
-            BlazorBootstrap.CalloutType.Tip => $"{Callout}-success",
+            BlazorBootstrap.CalloutType.Tip or BlazorBootstrap.CalloutType.Success => $"{Callout}-success",
             _ => ""
         };
 

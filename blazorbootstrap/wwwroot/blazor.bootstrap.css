@@ -50,6 +50,9 @@
     /* table */
     --bb-table-sticky-background-color: #fff;
     --bb-table-freeze-column-background-color: #efefef;
+    /* callout */
+    --bb-callout-link: 10, 88, 202;
+    --bb-callout-code-color: #ab296a;
 }
 
 /* preload */
