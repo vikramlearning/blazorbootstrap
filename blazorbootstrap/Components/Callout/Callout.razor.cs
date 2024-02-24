@@ -52,7 +52,7 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
-    private string CalloutHeadingCSSClass => BootstrapClassProvider.CalloutHeading;
+    private string CalloutHeadingCssClass => BootstrapClassProvider.CalloutHeading;
 
     /// <summary>
     /// Specifies the content to be rendered inside this.
@@ -83,6 +83,12 @@ public partial class Callout : BlazorBootstrapComponentBase
             DirtyClasses();
         }
     }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to hide the callout heading.
+    /// </summary>
+    [Parameter]
+    public bool HideHeading { get; set; }
 
     #endregion
 }
