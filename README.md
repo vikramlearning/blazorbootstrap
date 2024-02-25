@@ -14,7 +14,8 @@
 </p>
 
 <br>
-We strongly recommend all BlazorBootstrap users migrate to version 2.0.0. [Read more...](https://docs.blazorbootstrap.com/blog/2024/02/25/upgrade-to-v2.0.0)
+
+**NOTE:** We strongly recommend all BlazorBootstrap users migrate to version 2.0.0. [Read more...](https://docs.blazorbootstrap.com/blog/2024/02/25/upgrade-to-v2.0.0)
 
 ## Status
 
