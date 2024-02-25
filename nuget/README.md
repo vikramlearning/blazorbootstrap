@@ -1,6 +1,9 @@
 ﻿# Blazor Bootstrap Component Library
 
-### Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
+### An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.
+
+<br>
+We strongly recommend all BlazorBootstrap users migrate to version 2.0.0. [Read more...](https://docs.blazorbootstrap.com/blog/2024/02/25/upgrade-to-v2.0.0)
 
 ## Table of contents
 
@@ -16,7 +19,7 @@
 Get started any way you want
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.11.1`
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 2.0.0`
 - Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with **.NET CLI**: `dotnet new install Blazor.Bootstrap.Templates::1.10.0`
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)

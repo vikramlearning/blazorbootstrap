@@ -13,6 +13,9 @@
   <br>
 </p>
 
+<br>
+We strongly recommend all BlazorBootstrap users migrate to version 2.0.0. [Read more...](https://docs.blazorbootstrap.com/blog/2024/02/25/upgrade-to-v2.0.0)
+
 ## Status
 
 [![NuGet](https://img.shields.io/nuget/vpre/blazor.bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
@@ -35,7 +38,7 @@
 
 ## Install
 
-Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.11.1`
+Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 2.0.0`
 
 ## Install Blazor Bootstrap templates
 
