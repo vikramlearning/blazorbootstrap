@@ -17,6 +17,10 @@ h1:focus-visible {
     outline: inherit !important;
 }
 
+.skippy {
+    background-color: #4c0bce;
+}
+
 .bd-navbar {
     padding: .75rem 0;
     background-color: transparent;
