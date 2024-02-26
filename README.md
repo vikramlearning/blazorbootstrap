@@ -83,6 +83,7 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | RangeInput | [Docs](https://docs.blazorbootstrap.com/forms/range-input) | [Demos](https://demos.blazorbootstrap.com/form/range-input) |
 | Script Loader | [Docs](https://docs.blazorbootstrap.com/components/script-loader) | [Demos](https://demos.blazorbootstrap.com/script-loader) |
 | Sidebar | [Docs](https://docs.blazorbootstrap.com/components/sidebar) | [Demos](https://demos.blazorbootstrap.com/sidebar) |
+| Spinners | [Docs](https://docs.blazorbootstrap.com/components/spinners) | [Demos](https://demos.blazorbootstrap.com/spinners) |
 | Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/form/switch) |
 | Tabs | [Docs](https://docs.blazorbootstrap.com/components/tabs) | [Demos](https://demos.blazorbootstrap.com/tabs) |
 | Time Input | [Docs](https://docs.blazorbootstrap.com/forms/time-input) | [Demos](https://demos.blazorbootstrap.com/form/time-input) |
