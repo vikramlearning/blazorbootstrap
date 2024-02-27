@@ -1,15 +1,15 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class CardSubTitle
+public partial class CardSubTitle : BlazorBootstrapComponentBase
 {
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.CardSubTitle());
+        this.AddClass(BootstrapClassProvider.CardSubTitle);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

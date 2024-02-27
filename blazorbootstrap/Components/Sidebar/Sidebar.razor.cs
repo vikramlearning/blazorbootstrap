@@ -22,13 +22,13 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append("bb-sidebar");
-        builder.Append("collapsed", collapseSidebar);
-        builder.Append("expanded", !collapseSidebar);
+        this.AddClass("bb-sidebar");
+        this.AddClass("collapsed", collapseSidebar);
+        this.AddClass("expanded", !collapseSidebar);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -36,7 +36,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
         if (firstRender)
         {
             var width = await JS.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
-            await bsWindowResize(width);
+            bsWindowResize(width);
             await RefreshDataAsync(firstRender);
         }
 
@@ -47,13 +47,14 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     {
         Attributes ??= new Dictionary<string, object>();
         objRef ??= DotNetObjectReference.Create(this);
+
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", ElementId, objRef), new RenderPriority());
     }
 
     [JSInvokable]
-    public async Task bsWindowResize(int width)
+    public void bsWindowResize(int width)
     {
         if (width < 641) // mobile
             isMobile = true;
@@ -142,7 +143,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public SidebarDataProviderDelegate? DataProvider { get; set; }
+    public SidebarDataProviderDelegate? DataProvider { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the IconName.
@@ -163,7 +164,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public string? Title { get; set; }
+    public string? Title { get; set; } = default!;
 
     #endregion
 }

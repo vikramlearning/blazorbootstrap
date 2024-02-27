@@ -1,0 +1,33 @@
+<div class="mb-3">
+    <label class="form-label">Amount</label>
+    <RangeInput TValue="int?" 
+                @bind-Value="amount" 
+                Disabled="@disabled" 
+                Min="0" 
+                Max="100" />
+</div>
+
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
+
+@code {
+    private int? amount = 10;
+    private bool disabled = true;
+
+    private void Enable()
+    {
+        Console.WriteLine($"BEFORE Enable: disabled: {disabled}");
+        disabled = false;
+        Console.WriteLine($"AFTER Enable: disabled: {disabled}");
+    }
+
+    private void Disable()
+    {
+        Console.WriteLine($"BEFORE Disable: disabled: {disabled}");
+        disabled = true;
+        Console.WriteLine($"AFTER Disable: disabled: {disabled}");
+    }
+
+    private void Toggle() => disabled = !disabled;
+}

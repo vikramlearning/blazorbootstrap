@@ -4,6 +4,8 @@ public partial class Preload : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
+    private string? loadingText;
+
     private bool showBackdrop;
 
     private string? spinnerColor;
@@ -12,22 +14,22 @@ public partial class Preload : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Modal());
-        builder.Append(BootstrapClassProvider.PageLoadingModal());
-        builder.Append(BootstrapClassProvider.ModalFade());
-        builder.Append(BootstrapClassProvider.Show(), showBackdrop);
+        this.AddClass(BootstrapClassProvider.Modal);
+        this.AddClass(BootstrapClassProvider.PageLoadingModal);
+        this.AddClass(BootstrapClassProvider.ModalFade);
+        this.AddClass(BootstrapClassProvider.Show, showBackdrop);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
-    protected override void BuildStyles(CssStyleBuilder builder)
+    protected override void BuildStyles()
     {
-        builder.Append("display:block", showBackdrop);
-        builder.Append("display:none", !showBackdrop);
+        this.AddStyle("display:block", showBackdrop);
+        this.AddStyle("display:none", !showBackdrop);
 
-        base.BuildStyles(builder);
+        base.BuildStyles();
     }
 
     /// <inheritdoc />
@@ -58,11 +60,13 @@ public partial class Preload : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
-    private void OnShow(SpinnerColor spinnerColor)
+    private void OnShow(SpinnerColor spinnerColor, string? loadingText)
     {
         this.spinnerColor = spinnerColor.ToSpinnerColor();
+        
+        this.showBackdrop = true;
 
-        showBackdrop = true;
+        this.loadingText = loadingText;
 
         DirtyClasses();
         DirtyStyles();
@@ -88,6 +92,12 @@ public partial class Preload : BlazorBootstrapComponentBase
     /// </summary>
     [Inject]
     private PreloadService PageLoadingService { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the loading text.
+    /// </summary>
+    [Parameter]
+    public string? LoadingText { get; set; }
 
     #endregion
 }

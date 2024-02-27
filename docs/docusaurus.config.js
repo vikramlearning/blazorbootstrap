@@ -3,7 +3,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-    title: 'Blazor Bootstrap',
+    title: 'Blazor Bootstrap Docs',
     tagline: 'High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.',
     url: 'https://docs.blazorbootstrap.com',
     baseUrl: '/',
@@ -48,9 +48,9 @@ const config = {
         ({
             announcementBar: {
                 id: 'support_us',
-                content: '⭐️ If you like Blazor Bootstrap, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/vikramlearning/blazorbootstrap">GitHub</a>! ⭐️',
-                //backgroundColor: '#fafbfc',
-                //textColor: '#091E42',
+                content: '🚨 We strongly recommend all BlazorBootstrap users migrate to version 2.0.0. <a target="_blank" rel="noopener noreferrer" href="/blog/2024/02/25/upgrade-to-v2.0.0">Read more...</a>',
+                backgroundColor: '#f1aeb5',
+                textColor: '#58151c',
                 isCloseable: true,
             },
             navbar: {
@@ -60,9 +60,9 @@ const config = {
                     src: 'img/logo.svg',
                 },
                 items: [
-                    { type: 'doc', docId: 'getting-started/blazor-webassembly', label: 'Docs', position: 'left' },
-                    { to: '/blog', label: 'Blog', position: 'left' },
+                    { type: 'doc', docId: 'getting-started/blazor-webassembly-net-8', label: 'Docs', position: 'left' },
                     { href: 'https://demos.blazorbootstrap.com', label: 'Demos', position: 'left' },
+                    { to: '/blog', label: 'Blog', position: 'left' },
                     { href: 'https://github.com/vikramlearning/blazorbootstrap', label: 'GitHub', position: 'right', },
                     { href: 'https://twitter.com/blazorbootstrap', label: 'Twitter', position: 'right', },
                 ],
@@ -81,8 +81,8 @@ const config = {
                     {
                         title: 'Guides',
                         items: [
-                            { label: 'Getting started', to: '/getting-started/blazor-webassembly', },
-                            { label: 'Install Nuget', to: '/getting-started/blazor-webassembly#install-nuget-package', },
+                            { label: 'Getting started', to: '/getting-started/blazor-webassembly-net-8', },
+                            { label: 'Install Nuget', to: '/getting-started/blazor-webassembly-net-8#install-nuget-package', },
                             { label: 'Starter templates', to: 'https://github.com/vikramlearning/blazorbootstrap-starter-templates', },
                         ],
                     },
@@ -125,16 +125,20 @@ const config = {
             {
                 redirects: [
                     {
-                        from: '/docs/getting-started/blazor-webassembly',
-                        to: '/getting-started/blazor-webassembly',
+                        from: '/getting-started/blazor-webassembly',
+                        to: '/getting-started/blazor-webassembly-net-8',
                     },
                     {
-                        from: '/docs/getting-started/blazor-server',
-                        to: '/getting-started/blazor-server',
+                        from: '/getting-started/blazor-server',
+                        to: '/getting-started/blazor-webapp-server-global-net-8',
                     },
                     {
                         from: '/docs/getting-started/maui-blazor',
-                        to: '/getting-started/maui-blazor',
+                        to: '/getting-started/maui-blazor-net-8',
+                    },
+                    {
+                        from: '/getting-started/maui-blazor',
+                        to: '/getting-started/maui-blazor-net-8',
                     },
                     {
                         from: '/docs/layout/blazor-webassembly',

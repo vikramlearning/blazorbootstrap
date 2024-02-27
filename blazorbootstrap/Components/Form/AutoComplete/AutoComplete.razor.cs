@@ -24,12 +24,12 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.FormControl());
-        builder.Append(BootstrapClassProvider.ToAutoCompleteSize(Size));
+        this.AddClass(BootstrapClassProvider.FormControl);
+        this.AddClass(BootstrapClassProvider.ToAutoCompleteSize(Size));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -38,7 +38,16 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         if (disposing)
         {
             cancellationTokenSource?.Dispose();
-            await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementRef); // NOTE: Always pass ElementRef
+            try
+            {
+                if (Rendered)
+                    await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", ElementRef); // NOTE: Always pass ElementRef
+            }
+            catch (JSDisconnectedException)
+            {
+                // do nothing
+            }
+
             objRef?.Dispose();
         }
 
@@ -57,7 +66,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", ElementRef, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", ElementRef, objRef), new RenderPriority());
     }
 
     [JSInvokable]
@@ -143,7 +152,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
             if (result is not null)
             {
                 items = result.Data;
-                totalCount = result.TotalCount ?? result.Data.Count();
+                totalCount = result.TotalCount ?? result.Data!.Count();
             }
             else
             {
@@ -195,7 +204,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         searchInProgress = true;
 
         selectedIndex = -1;
-        Value = args.Value.ToString();
+        Value = args?.Value?.ToString()!;
 
         SetInputHasValue();
 
@@ -229,7 +238,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         selectedItem = item;
         selectedIndex = -1;
         items = Enumerable.Empty<TItem>();
-        Value = GetPropertyValue(item);
+        Value = GetPropertyValue(item)!;
         await ValueChanged.InvokeAsync(Value);
 
         await HideAsync();
@@ -249,8 +258,8 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         if (key is "ArrowDown" or "ArrowUp" or "Home" or "End")
             selectedIndex = await JS.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key, selectedIndex);
         else if (key == "Enter")
-            if (selectedIndex >= 0 && selectedIndex <= items.Count() - 1)
-                await OnItemSelectedAsync(items.ElementAt(selectedIndex));
+            if (selectedIndex >= 0 && selectedIndex <= items!.Count() - 1)
+                await OnItemSelectedAsync(items!.ElementAt(selectedIndex));
         // TODO: check anything needs to be handled here
     }
 
@@ -302,6 +311,17 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     public string EmptyText { get; set; } = "No records found.";
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+
+    /// <summary>
+    /// Gets all Style attributes for the autocomplete delete button.
+    /// </summary>
+    private string DeleteButtonStyle => Size switch
+    {
+        AutoCompleteSize.Small => "z-index: 100; top: -2px;",
+        AutoCompleteSize.Default => "z-index: 100; top: 2px;",
+        AutoCompleteSize.Large => "z-index: 100; top: 7px;",
+        _ => "z-index: 100;",
+    };
 
     /// <summary>
     /// Gets or sets the loading text.

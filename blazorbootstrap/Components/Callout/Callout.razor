@@ -2,11 +2,14 @@
 @inherits BlazorBootstrapComponentBase
 
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@Attributes">
-    <div class="@CalloutHeadingCSSClass mb-2">
-        <strong>
-            <Icon Name="iconName" class="me-2"></Icon>@heading
-        </strong>
-    </div>
+    @if (!HideHeading)
+    {
+        <div class="@CalloutHeadingCssClass mb-2">
+            <strong>
+                <Icon Name="iconName" class="me-2"></Icon>@heading
+            </strong>
+        </div>
+    }
     <div>
         @ChildContent
     </div>

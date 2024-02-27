@@ -13,14 +13,14 @@ public static class Config
     /// <returns>IServiceCollection</returns>
     public static IServiceCollection AddBlazorBootstrap(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<BootstrapClassProvider>();
-        serviceCollection.AddSingleton<BootstrapIconProvider>();
         serviceCollection.AddScoped<IIdGenerator, IdGenerator>();
 
         serviceCollection.AddScoped<BreadcrumbService>();
         serviceCollection.AddScoped<ModalService>();
         serviceCollection.AddScoped<PreloadService>();
         serviceCollection.AddScoped<ToastService>();
+
+        serviceCollection.AddScoped<PdfViewerJsInterop>();
 
         return serviceCollection;
     }

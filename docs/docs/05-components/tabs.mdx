@@ -1,0 +1,607 @@
+﻿---
+title: Blazor Tabs Component
+description: Documentation and examples for using Blazor Bootstrap Tabs components.
+image: https://i.imgur.com/KelXx6Z.png
+
+sidebar_label: Tabs
+sidebar_position: 22
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Tabs
+
+Documentation and examples for using Blazor Bootstrap Tabs components.
+
+<CarbonAd />
+
+## Tabs Parameters
+
+| Name | Type | Description | Required | Default | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | | 1.0.0 |
+| EnableFadeEffect | bool | Gets or sets the tabs fade effect. | | false | 1.0.0 |
+| NavStyle | `NavStyle` | Get or sets the nav style. | | `NavStyle.Tabs` | 1.0.0 |
+
+## Tabs Methods
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| InitializeRecentTab(bool showTab) | Initializes the most recently added tab, optionally displaying it.| 1.11.0 |
+| ShowFirstTabAsync() | Selects the first tab and show its associated pane. | 1.0.0 |
+| ShowLastTabAsync() | Selects the last tab and show its associated pane. | 1.0.0 |
+| ShowTabByIndexAsync(int tabIndex) | Selects the tab by index and show its associated pane. | 1.0.0 |
+| ShowTabByNameAsync(string tabName) | Selects the tab by name and show its associated pane. | 1.0.0 |
+
+## Tabs Callback Events
+
+| Event | Description | Added Version |
+|:--|:--|:--|
+| OnHidden | This event fires after a new tab is shown (and thus the previous active tab is hidden). | 1.0.0 |
+| OnHiding | This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden). | 1.0.0 |
+| OnShowing | This event fires on tab show, but before the new tab has been shown. | 1.0.0 |
+| OnShown | This event fires on tab show after a tab has been shown. | 1.0.0 |
+
+## Tab Parameters
+
+| Name | Type | Description | Required | Default | Added Version |
+|:--|:--|:--|-:-|:--|:--|
+| Content | RenderFragment | Specifies the content to be rendered inside the tab. | ✔️ | | 1.0.0 |
+| Disabled | bool | Gets or sets the disabled. | | false | 1.0.0 |
+| IsActive | bool | Gets or sets the active tab. | | false | 1.0.0 |
+| Name | string | Gets or sets the tab name. | | | 1.0.0 |
+| Title | string | Gets or sets the tab title. | | | 1.0.0 |
+| TitleTemplate | RenderFragment | Gets or sets the tab title template. | | | 1.0.0 |
+
+:::info Note
+Either **Title** or **TitleTemplate** is required.
+:::
+
+## Tab Callback Events
+
+| Event | Description | Added Version |
+|:--|:--|:--|
+| OnClick | This event fires when the user clicks the corresponding tab button and the tab is displayed. | 1.11.0 |
+
+## Examples
+
+### Tabs
+
+<img src="https://i.imgur.com/ranwriJ.png" alt="Blazor Tabs Component - Examples" />
+
+```cshtml showLineNumbers
+<Tabs>
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#examples)
+
+### Fade effect
+
+To create a fade-in effect for tabs, add the `EnableFadeEffect="true"` parameter. Additionally, set the `IsActive="true"` parameter on the first tab pane to display its content initially.
+
+<img src="https://i.imgur.com/ranwriJ.png" alt="Blazor Tabs Component - Fade effect" />
+
+```cshtml {1, 2} showLineNumbers
+<Tabs EnableFadeEffect="true">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#fade-effect)
+
+### Title with icon
+
+To customize the tab title, use the **TitleTemplate** parameter, as demonstrated in the following example.
+
+<img src="https://i.imgur.com/KelXx6Z.png" alt="Blazor Tabs Component - Title with icon" />
+
+```cshtml {3-5,13-15,23-25} showLineNumbers
+<Tabs EnableFadeEffect="true">
+    <Tab IsActive="true">
+        <TitleTemplate>
+            <Icon Name="IconName.HouseFill" /> Home
+        </TitleTemplate>
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab>
+        <TitleTemplate>
+            <Icon Name="IconName.PersonFill" /> Profile
+        </TitleTemplate>
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab>
+        <TitleTemplate>
+            <Icon Name="IconName.PhoneFill" /> Contact
+        </TitleTemplate>
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#title-with-icon)
+
+### Disable Tab
+
+Disable specific tabs by adding `Disabled="true"` parameter.
+
+<img src="https://i.imgur.com/TCG6gCz.png" alt="Blazor Tabs Component - Disable Tab" />
+
+```cshtml {16} showLineNumbers
+<Tabs EnableFadeEffect="true">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Projects" Disabled="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Projects tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#disable-tab)
+
+### Pills
+
+To transform the tabs into pills, use the parameter `NavStyle="NavStyle.Pills"`.
+
+<img src="https://i.imgur.com/IyRJ0PS.png" alt="Blazor Tabs Component - Pills" />
+
+```cshtml {1} showLineNumbers
+<Tabs EnableFadeEffect="true" NavStyle="NavStyle.Pills">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Home tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Profile tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-2">
+                <b>This is some placeholder content the Contact tab's associated content.</b> Clicking another tab will toggle the visibility of this one for the next.
+            </p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#pills)
+
+### Underline
+
+Use the `NavStyle="NavStyle.Underline"` parameter to change the tabs to an underlined style.
+
+<img src="https://i.imgur.com/acZh4rq.png" alt="Blazor Tabs Component - Underline" />
+
+```cshtml {1} showLineNumbers
+<Tabs EnableFadeEffect="true" NavStyle="NavStyle.Underline">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Home</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Profile</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Contact</b> tab.</p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#underline)
+
+### Vertical
+
+Display your tabs vertically by setting the **NavStyle** parameter to **NavStyle.Vertical**.
+
+<img src="https://i.imgur.com/aiPVCnk.png" alt="Blazor Tabs Component - Vertical" />
+
+```cshtml {1} showLineNumbers
+<Tabs NavStyle="NavStyle.Vertical">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>Home</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>Profile</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>Contact</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="About">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>About</b> tab.</p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#vertical)
+
+### Vertical pills
+
+<img src="https://i.imgur.com/CfPc32q.png" alt="Blazor Tabs Component - Vertical pills" />
+
+```cshtml {1} showLineNumbers
+<Tabs NavStyle="NavStyle.VerticalPills">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>Home</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>Profile</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>Contact</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="About">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>About</b> tab.</p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#vertical-pills)
+
+### Vertical underline
+
+<img src="https://i.imgur.com/AVpqmiE.png" alt="Blazor Tabs Component - Vertical underline" />
+
+```cshtml {1} showLineNumbers
+<Tabs NavStyle="NavStyle.VerticalUnderline">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>Home</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>Profile</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>Contact</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="About">
+        <Content>
+            <p class="ms-3">This is the placeholder content for the <b>About</b> tab.</p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#vertical-underline)
+
+### Activate individual tabs
+
+You can activate individual tabs in several ways. Use predefined methods such as `ShowFirstTabAsync`, `ShowLastTabAsync`, `ShowTabByIndexAsync`, and `ShowTabByNameAsync`, as shown below.
+
+<img src="https://i.imgur.com/NdE5oqH.png" alt="Blazor Tabs Component - Activate individual tabs" />
+
+```cshtml showLineNumbers
+<Tabs @ref="tabs" EnableFadeEffect="true">
+    <Tab Title="Home" IsActive="true">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Home</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Profile</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Contact</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Products" Name="Products">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Products</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="FAQs" Name="FAQ">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>FAQs</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="About">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>About</b> tab.</p>
+        </Content>
+    </Tab>
+</Tabs>
+
+<Button Color="ButtonColor.Primary" @onclick="ShowFirstTabAsync">First Tab</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowSecondTabAsync">Second Tab</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowThirdTabAsync">Third Tab</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowProductsTabAsync">Products Tab</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowFaqsAsync">FAQs Tab</Button>
+<Button Color="ButtonColor.Primary" @onclick="ShowLastTabAsync">Last Tab</Button>
+```
+
+```cs showLineNumbers
+@code{
+    Tabs tabs;
+
+    private async Task ShowFirstTabAsync() => await tabs.ShowFirstTabAsync();
+    private async Task ShowSecondTabAsync() => await tabs.ShowTabByIndexAsync(1);
+    private async Task ShowThirdTabAsync() => await tabs.ShowTabByIndexAsync(2);
+    private async Task ShowProductsTabAsync() => await tabs.ShowTabByNameAsync("Products");
+    private async Task ShowFaqsAsync() => await tabs.ShowTabByNameAsync("FAQ");
+    private async Task ShowLastTabAsync() => await tabs.ShowLastTabAsync();
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#activate-individual-tabs)
+
+### Events
+
+When displaying a new tab, the events fire in the following sequence:
+
+1. `OnHiding` (on the currently active tab)
+1. `OnShowing` (on the tab that is about to be displayed)
+1. `OnHidden` (on the previously active tab, which is the same one that triggered the `OnHiding` event)
+1. `OnShown` (on the newly activated tab that has just been displayed, which is the same one that triggered the `OnShowing` event)
+
+:::info Note
+If no tab was already active, then the `OnHiding` and `OnHidden` events will not be fired.
+:::
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#events)
+
+### Methods: Set active tab OnAfterRender
+
+<img src="https://i.imgur.com/NdE5oqH.png" alt="Blazor Tabs Component - Activate individual tabs" />
+
+```cshtml showLineNumbers
+<Tabs @ref="tabs">
+    <Tab Title="Home">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Home</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Profile">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Profile</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Contact">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>Contact</b> tab.</p>
+        </Content>
+    </Tab>
+    <Tab Title="About">
+        <Content>
+            <p class="mt-3">This is the placeholder content for the <b>About</b> tab.</p>
+        </Content>
+    </Tab>
+</Tabs>
+```
+
+```cs showLineNumbers
+@code {
+    Tabs tabs = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            string userDefaultPreferredTab = "Profile"; // Get the value from Service / API
+
+            switch (userDefaultPreferredTab)
+            {
+                case "Home":
+                    await tabs.ShowTabByIndexAsync(0);
+                    break;
+                case "Profile":
+                    await tabs.ShowTabByIndexAsync(1);                    
+                    break;
+                case "Contact":
+                    await tabs.ShowTabByIndexAsync(2);
+                    break;
+                case "About":
+                    await tabs.ShowTabByIndexAsync(3);
+                    break;
+                default:
+                    await tabs.ShowTabByIndexAsync(0);
+                    break;
+            }
+        }
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#methods-set-active-tab-onafterrender)
+
+### Tab: OnClick
+
+<img src="https://i.imgur.com/bJXYlr5.png" alt="Blazor Tabs Component - Return object on tab switch" />
+
+```cshtml {6} showLineNumbers
+<Tabs>
+    @foreach (var customer in customers)
+    {
+        <Tab Title="@customer.CustomerName"
+             IsActive="selectedCustomer.CustomerId == customer.CustomerId"
+             OnClick="(args) => OnTabClick(args, customer)">
+            <Content>
+                <div class="mt-3">
+                    This is the placeholder content for the <b>@customer.CustomerName</b> tab.
+                </div>
+            </Content>
+        </Tab>
+    }
+</Tabs>
+
+@if (selectedCustomer is not null)
+{
+    <div class="mt-3">Selected customer: <b>@selectedCustomer.CustomerName</b></div>
+}
+```
+
+```cs {8} showLineNumbers
+@code {
+    private List<Customer> customers = new() { new(1, "Marvin Klein"), new(2, "Vikram Reddy"), new(3, "Bandita PA"), new(4, "Daina JJ") };
+
+    private Customer selectedCustomer = default!;
+
+    protected override void OnInitialized() => selectedCustomer = customers.First();
+
+    private void OnTabClick(TabEventArgs args, Customer customer) => selectedCustomer = customer;
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#tab-on-tab-clicked)
+
+### Dynamic tabs
+
+<img src="https://i.imgur.com/fSTOpxk.png" alt="Blazor Tabs Component - Dynamic tabs" />
+
+```cshtml {2-12} showLineNumbers
+<Tabs @ref="tabs">
+    @foreach (var customer in customers)
+    {
+        <Tab Title="@customer.CustomerName"
+             OnClick="(args) => OnTabClick(args, customer)">
+            <Content>
+                <div class="mt-3">
+                    This is the placeholder content for the <b>@customer.CustomerName</b> tab.
+                </div>
+            </Content>
+        </Tab>
+    }
+</Tabs>
+
+@if (selectedCustomer is not null)
+{
+    <div class="mt-3">Selected customer: <b>@selectedCustomer.CustomerName</b></div>
+}
+
+<Button Color="ButtonColor.Success" Class="mt-3" @onclick="AddCustomer">Add customer</Button>
+```
+
+```cs {4,14,16} showLineNumbers
+@code {
+    Tabs tabs = default!;
+
+    private List<Customer> customers = new() { new(1, "Marvin Klein"), new(2, "Vikram Reddy"), new(3, "Bandita PA"), new(4, "Daina JJ") };
+
+    private Customer selectedCustomer = default!;
+
+    protected override void OnInitialized() => selectedCustomer = customers.Last();
+
+    private void AddCustomer()
+    {
+        var count = customers.Count;
+        var customer = new Customer(count + 1, $"Customer {count + 1}");
+        customers.Add(customer);
+        //selectedCustomer = customer; NOTE: this line is not required
+        tabs.InitializeRecentTab(showTab: true);
+    }
+
+    private void OnTabClick(TabEventArgs args, Customer customer) => selectedCustomer = customer;
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#dynamic-tabs)

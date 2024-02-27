@@ -10,6 +10,8 @@
     Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
 </div>
 
+<CarbonAds />
+
 <SectionHeading Size="HeadingSize.H2" Text="Client side data" PageUrl="@pageUrl" HashTagName="client-side-data" />
 <Demo Type="typeof(AutoComplete_Demo_01_A_Client_Side_Filtering)" Tabs="true" />
 
@@ -80,6 +82,9 @@
     Do not use both the <b>Disabled</b> parameter and <b>Enable()</b> &amp; <b>Disable()</b> methods.
 </Callout>
 <Demo Type="typeof(AutoComplete_Demo_05_B_Disable)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Sizing" PageUrl="@pageUrl" HashTagName="sizing" />
+<Demo Type="typeof(AutoComplete_Demo_06_Sizing)" Tabs="true" />
 
 @code {
     private string pageUrl = "/autocomplete";

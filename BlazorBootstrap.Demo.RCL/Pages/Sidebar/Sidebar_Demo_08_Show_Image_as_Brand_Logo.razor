@@ -8,7 +8,7 @@
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-between">
-            <Icon Name="IconName.List" role="button" @onclick="ToogleSidebar" />
+            <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
@@ -81,5 +81,5 @@
 
     }
 
-    private void ToogleSidebar() => sidebar.ToggleSidebar();
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
 }

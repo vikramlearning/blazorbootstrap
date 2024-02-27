@@ -19,13 +19,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private string headerCheckboxId = default!;
 
-    private CheckboxState headerCheckboxState = CheckboxState.Unchecked;
-
     private RenderFragment? headerSelectionTemplate;
 
     private bool isFirstRenderComplete = false;
 
-    private List<TItem> items = null;
+    private List<TItem>? items = null;
 
     private object? lastAssignedDataOrDataProvider;
 
@@ -43,11 +41,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+   protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.TableSticky(), FixedHeader);
+        this.AddClass(BootstrapClassProvider.TableSticky, FixedHeader);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -121,10 +119,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (FixedHeader)
         {
-            styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit}");
+            styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
         }
 
-        return string.Join(":", styleAttributes);
+        return string.Join(";", styleAttributes);
     }
 
     /// <summary>
@@ -169,13 +167,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await LoadGridSettingsAsync();
 
         var request = new GridDataProviderRequest<TItem>
-        {
-            PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
-            PageSize = AllowPaging ? pageSize : 0,
-            Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting() : null,
-            Filters = AllowFiltering ? GetFilters() : null,
-            CancellationToken = cancellationToken
-        };
+                      {
+                          PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
+                          PageSize = AllowPaging ? pageSize : 0,
+                          Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting()! : null!,
+                          Filters = AllowFiltering ? GetFilters()! : null!,
+                          CancellationToken = cancellationToken
+                      };
 
         GridDataProviderResult<TItem> result = default!;
 
@@ -186,8 +184,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (result is not null)
         {
-            items = result.Data.ToList();
-            totalCount = result.TotalCount ?? result.Data.Count();
+            items = result.Data!.ToList();
+            totalCount = result.TotalCount ?? result.Data!.Count();
         }
         else
         {
@@ -299,8 +297,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         !AllowSorting || columns == null || !columns.Any()
             ? null
             : columns?
-              .Where(column => column.CanSort() && column.IsDefaultSortColumn)
-              ?
+              .Where(column => column.CanSort() && column.IsDefaultSortColumn)?
               .SelectMany(item => item.GetSorting());
 
     private string GetPaginationItemsText()
@@ -383,7 +380,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     private async Task OnHeaderCheckboxChanged(ChangeEventArgs args)
     {
         allItemsSelected = bool.TryParse(args?.Value?.ToString(), out var checkboxState) && checkboxState;
-        selectedItems = allItemsSelected ? new HashSet<TItem>(items) : new HashSet<TItem>();
+        selectedItems = allItemsSelected ? new HashSet<TItem>(items!) : new HashSet<TItem>();
         SelectedItemsCount = selectedItems.Count;
         await CheckOrUnCheckAll();
 
@@ -398,9 +395,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         await RefreshDataAsync(false);
     }
 
-    private async Task OnPageSizeChangedAsync(ChangeEventArgs args)
+    private async Task OnPageSizeChangedAsync(int newPageSize)
     {
-        int.TryParse(args?.Value?.ToString(), out var newPageSize);
         pageSize = PageSize = newPageSize;
         await ResetPageNumberAsync();
         await SaveGridSettingsAsync();
@@ -415,7 +411,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         {
             _ = isChecked ? selectedItems.Add(item) : selectedItems.Remove(item);
             SelectedItemsCount = selectedItems.Count;
-            allItemsSelected = SelectedItemsCount == items.Count;
+            allItemsSelected = SelectedItemsCount == (items?.Count ?? 0);
 
             if (allItemsSelected)
                 await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
@@ -437,11 +433,16 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await SelectedItemsChanged.InvokeAsync(selectedItems);
     }
 
+    private async Task OnScroll(EventArgs e)
+    {
+        await JS.InvokeVoidAsync("window.blazorBootstrap.grid.scroll", ElementId);
+    }
+
     private void PrepareCheckboxIds()
     {
         checkboxIds ??= new Dictionary<int, string>();
         var currentLength = checkboxIds.Count;
-        var itemsCount = items.Count;
+        var itemsCount = (items?.Count ?? 0);
 
         if (currentLength < itemsCount)
             for (var i = currentLength; i < itemsCount; i++)
@@ -453,16 +454,16 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     private async Task RefreshSelectionAsync()
     {
-        selectedItems = items.Count == 0
+        selectedItems = (items?.Count ?? 0) == 0
                             ? new HashSet<TItem>()
-                            : selectedItems?.Intersect(items).ToHashSet() ?? new HashSet<TItem>();
+                            : selectedItems?.Intersect(items!).ToHashSet() ?? new HashSet<TItem>();
 
         SelectedItemsCount = selectedItems.Count;
-        allItemsSelected = selectedItems.Count > 0 && items.Count == selectedItems.Count;
+        allItemsSelected = SelectedItemsCount > 0 && items!.Count == SelectedItemsCount;
 
         if (allItemsSelected)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
-        else if (selectedItems.Count > 0)
+        else if (SelectedItemsCount > 0)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Indeterminate);
         else
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
@@ -569,6 +570,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public bool AllowSorting { get; set; }
 
     /// <summary>
+    /// Automatically hides the paging controls when the grid item count is less than or equal to the <see cref="PageSize" /> and this property is set to `true`.
+    /// </summary>
+    [Parameter]
+    public bool AutoHidePaging { get; set; }
+
+    /// <summary>
     /// Specifies the content to be rendered inside the grid.
     /// </summary>
     [Parameter]
@@ -666,7 +673,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                                             // disable the checkbox
                                             // remove the onchange event binding
                                             // add disabled attribute
-                                            if (DisableAllRowsSelection?.Invoke(items) ?? false)
+                                            if (DisableAllRowsSelection?.Invoke(items!) ?? false)
                                             {
                                                 builder.AddAttribute(109, "disabled", "disabled");
                                             }
@@ -684,13 +691,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                                         builder.CloseElement(); // close: th
                                     };
 
-    /// <summary>
+   /// <summary>
     /// Gets or sets the grid height.
     /// </summary>
     [Parameter]
     public float Height { get; set; } = 320;
 
-    [Parameter][EditorRequired] public string ItemsPerPageText { get; set; } = "Items per page";
+    [Parameter] 
+    //[EditorRequired] 
+    public string ItemsPerPageText { get; set; } = "Items per page"!;
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.
@@ -716,7 +725,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the page size selector items.
     /// </summary>
     [Parameter]
-    [EditorRequired]
+    //[EditorRequired]
     public int[] PageSizeSelectorItems { get; set; } = { 10, 20, 50 };
 
     /// <summary>
@@ -738,8 +747,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the pagination items text format.
     /// </summary>
     [Parameter]
-    [EditorRequired]
-    public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items";
+    //[EditorRequired]
+    public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items"!;
 
     /// <summary>
     /// Gets or sets a value indicating whether Grid is responsive.
@@ -784,7 +793,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the units.
     /// </summary>
     [Parameter]
-    public Unit Unit { get; set; } = Unit.px;
+    public Unit Unit { get; set; } = Unit.Px;
 
     private int totalPages => GetTotalPagesCount();
 

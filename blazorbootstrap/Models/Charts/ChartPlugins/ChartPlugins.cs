@@ -4,8 +4,14 @@ public class ChartPlugins
 {
     #region Properties, Indexers
 
+    /// <summary>
+    /// The chart legend displays data about the datasets that are appearing on the chart.
+    /// </summary>
     public ChartPluginsLegend Legend { get; set; } = new();
 
+    /// <summary>
+    /// The chart title defines text to draw at the top of the chart.
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTitle? Title { get; set; } = new();
 

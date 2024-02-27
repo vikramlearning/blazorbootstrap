@@ -10,14 +10,14 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append("nav-item");
-        builder.Append("nav-item-group", Item.ChildItems.Any());
-        builder.Append("nav-sub-item", IsSubItem);
-        builder.Append("active", navitemGroupExpanded);
+        this.AddClass("nav-item");
+        this.AddClass("nav-item-group", Item.ChildItems.Any());
+        this.AddClass("nav-sub-item", IsSubItem);
+        this.AddClass("active", navitemGroupExpanded);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override void OnParametersSet()

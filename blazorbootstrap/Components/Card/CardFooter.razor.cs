@@ -1,15 +1,15 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class CardFooter
+public partial class CardFooter : BlazorBootstrapComponentBase
 {
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.CardFooter());
+        this.AddClass(BootstrapClassProvider.CardFooter);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

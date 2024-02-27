@@ -13,40 +13,45 @@ public enum Unit
     /// <summary>
     /// Ems.
     /// </summary>
-    em,
+    Em,
+
+    /// <summary>
+    /// Percent.
+    /// </summary>
+    Percentage,
 
     /// <summary>
     /// Points.
     /// </summary>
-    pt,
+    Pt,
 
     /// <summary>
     /// Pixels.
     /// </summary>
-    px,
+    Px,
 
     /// <summary>
     /// Root ems.
     /// </summary>
-    rem,
+    Rem,
 
     /// <summary>
     /// Viewport height.
     /// </summary>
-    vh,
+    Vh,
 
     /// <summary>
     /// Viewport maximum height.
     /// </summary>
-    vmax,
+    VMax,
 
     /// <summary>
     /// Viewport minimum height.
     /// </summary>
-    vmin,
+    VMin,
 
     /// <summary>
     /// Viewport width.
     /// </summary>
-    vw,
+    Vw
 }

@@ -8,7 +8,7 @@ public class LineChartDataset : ChartDataset
     /// Line dash.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int> BorderDash { get; set; }
+    public List<int>? BorderDash { get; set; }
 
     /// <summary>
     /// Line dash offset.
@@ -34,7 +34,7 @@ public class LineChartDataset : ChartDataset
     /// Hover line dash.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int> HoverBorderDash { get; set; }
+    public List<int>? HoverBorderDash { get; set; }
 
     /// <summary>
     /// The label for the dataset which appears in the legend and tooltips.
@@ -68,13 +68,13 @@ public class LineChartDataset : ChartDataset
     /// Point background color when hovered.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string> PointHoverBackgroundColor { get; set; }
+    public List<string>? PointHoverBackgroundColor { get; set; }
 
     /// <summary>
     /// Point border color when hovered.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string> PointHoverBorderColor { get; set; }
+    public List<string>? PointHoverBorderColor { get; set; }
 
     /// <summary>
     /// Border width of point when hovered.

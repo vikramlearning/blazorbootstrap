@@ -18,7 +18,7 @@ function HomepageHeader() {
                 <div className={styles.buttons}>
                     <Link
                         className="button button--secondary button--lg"
-                        to="/docs/getting-started/blazor-webassembly">
+                        to="/docs/getting-started/blazor-webassembly-net-8">
                         Get started
                     </Link>
                 </div>
@@ -39,5 +39,5 @@ export default function Home() {
     //         </main>
     //     </Layout>
     // );
-    return <Redirect to='/getting-started/blazor-webassembly' />;
+    return <Redirect to='/getting-started/blazor-webassembly-net-8' />;
 }

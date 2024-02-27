@@ -8,10 +8,10 @@
 
 @if (columns.Any())
 {
-    <div class="@responsiveCssClass" style="@gridParentStyle">
+    <div class="@responsiveCssClass" style="@gridParentStyle" onscroll="@OnScroll">
         <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
             <thead class="@THeadCssClass">
-                <tr class="@(FixedHeader ? BootstrapClassProvider.TextNoWrap() : "") @HeaderRowCssClass">
+                <tr class="@(FixedHeader ? BootstrapClassProvider.TextNoWrap : "") @HeaderRowCssClass">
                     @if (AllowSelection)
                     {
                         @HeaderSelectionTemplate
@@ -30,7 +30,24 @@
                         }
                         @foreach (var column in columns)
                         {
-                            <th class="@column.Class">
+                            var columnClassList = new HashSet<string>();
+                            var columnStyleList = new List<string>();
+
+                            columnClassList.Add(column.Class!);
+                            if (column.Freeze)
+                            {
+                                columnClassList.Add("freeze-column");
+
+                                if (column.FreezeDirection == FreezeDirection.Left)
+                                    columnStyleList.Add($"left:{column.FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
+                                else
+                                {
+                                    columnStyleList.Add($"right:{column.FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
+                                    columnClassList.Add("freeze-column-right");
+                                }
+                            }
+
+                            <th class="@string.Join(" ", columnClassList)" style="@string.Join(";", columnStyleList)">
                                 @if (column.Filterable)
                                 {
                                     <GridColumnFilter FilterOperator="@column.FilterOperator"
@@ -48,7 +65,7 @@
                 }
             </thead>
             <tbody>
-                @if (requestInProgress) // || totalCount == null
+                @if (requestInProgress) //|| totalCount == null
                 {
                     // show placeholders
                     @for (var i = 0; i < 5; i++)
@@ -116,7 +133,7 @@
         </table>
     </div>
 
-    @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0)
+    @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0 && (!AutoHidePaging || (AutoHidePaging && totalCount.Value > pageSize)))
     {
         <div class="d-flex justify-content-between align-middle mt-2">
             <Pagination ActivePageNumber="@gridCurrentState.PageIndex"
@@ -133,12 +150,12 @@
                 <div>
                     <div class="d-flex justify-content-center align-middle">
                         <div>
-                            <select class="form-select" role="button" @onchange="OnPageSizeChangedAsync">
+                            <InputSelect class="form-select" role="button" TValue="int" Value="@pageSize" ValueExpression="() => pageSize" ValueChanged="async (value) => await OnPageSizeChangedAsync(value)">
                                 @foreach (var i in PageSizeSelectorItems)
                                 {
-                                    <option>@i</option>
+                                    <option value="@i">@i</option>
                                 }
-                            </select>
+                            </InputSelect>
                         </div>
                         <div class="bb-grid-pagination-text">@ItemsPerPageText</div>
                     </div>

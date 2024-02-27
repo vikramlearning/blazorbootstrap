@@ -1,0 +1,50 @@
+.bb-callout {
+    --bs-link-color-rgb: var(--bb-callout-link);
+    --bs-code-color: var(--bb-callout-code-color);
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    color: var(--bb-callout-color, inherit);
+    background-color: var(--bb-callout-bg, var(--bs-gray-100));
+    border-left: 0.25rem solid var(--bb-callout-border, var(--bs-gray-300))
+}
+
+.bb-callout h4 {
+    margin-bottom: .25rem;
+}
+
+.bb-callout > :last-child {
+    margin-bottom: 0 !important;
+}
+
+.bb-callout + .bb-callout {
+    margin-top: -.25rem;
+}
+
+.bb-callout .highlight {
+    background-color: rgba(0,0,0,0.05)
+}
+
+.bb-callout-info {
+    --bb-callout-color: var(--bs-info-text-emphasis);
+    --bb-callout-bg: var(--bs-info-bg-subtle);
+    --bb-callout-border: var(--bs-info-border-subtle)
+}
+
+.bb-callout-warning {
+    --bb-callout-color: var(--bs-warning-text-emphasis);
+    --bb-callout-bg: var(--bs-warning-bg-subtle);
+    --bb-callout-border: var(--bs-warning-border-subtle)
+}
+
+.bb-callout-danger {
+    --bb-callout-color: var(--bs-danger-text-emphasis);
+    --bb-callout-bg: var(--bs-danger-bg-subtle);
+    --bb-callout-border: var(--bs-danger-border-subtle)
+}
+
+.bb-callout-success {
+    --bb-callout-color: var(--bs-success-text-emphasis);
+    --bb-callout-bg: var(--bs-success-bg-subtle);
+    --bb-callout-border: var(--bs-success-border-subtle)
+}

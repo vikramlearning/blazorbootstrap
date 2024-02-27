@@ -9,6 +9,8 @@
     A Blazor Bootstrap pie chart component is a circular chart that shows the proportional values of different categories.
 </div>
 
+<CarbonAds />
+
 <SectionHeading Size="HeadingSize.H4" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites" />
 <div class="mb-3">
     Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
@@ -26,6 +28,12 @@
 
 <SectionHeading Size="HeadingSize.H4" Text="Data labels" PageUrl="@pageUrl" HashTagName="data-labels" />
 <Demo Type="typeof(PieChart_Demo_02_Datalabels)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Change legend position" PageUrl="@pageUrl" HashTagName="change-legend-position" />
+<div class="mb-3">
+    This sample demonstrates how to change the position of the chart legend.
+</div>
+<Demo Type="typeof(PieChart_Demo_03_Change_Legend_Position)" Tabs="true" />
 
 @code {
     private string pageUrl = "/charts/pie-chart";

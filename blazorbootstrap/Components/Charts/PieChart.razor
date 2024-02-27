@@ -1,6 +1,6 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapChart
 
-<div style="@chartContainerStyle">
-    <canvas @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes"></canvas>
+<div style="@ContainerStyle">
+    <canvas @attributes="@Attributes" class="@ClassNames" id="@ElementId" @ref="@ElementRef" style="@StyleNames"></canvas>
 </div>

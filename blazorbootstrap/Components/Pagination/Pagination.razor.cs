@@ -13,14 +13,14 @@ public partial class Pagination : BlazorBootstrapComponentBase
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Pagination());
-        builder.Append(BootstrapClassProvider.PaginationSize(Size), Size != PaginationSize.None);
-        builder.Append(BootstrapClassProvider.FlexAlignment(Alignment), Alignment != Alignment.None);
-        //builder.Append(BootstrapClassProvider.BackgroundColor(BackgroundColor), BackgroundColor != BackgroundColor.None);
+        this.AddClass(BootstrapClassProvider.Pagination);
+        this.AddClass(BootstrapClassProvider.PaginationSize(Size), Size != PaginationSize.None);
+        this.AddClass(BootstrapClassProvider.FlexAlignment(Alignment), Alignment != Alignment.None);
+        //this.AddClass(BootstrapClassProvider.BackgroundColor(BackgroundColor), BackgroundColor != BackgroundColor.None);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     private int GetNextPageNumber()

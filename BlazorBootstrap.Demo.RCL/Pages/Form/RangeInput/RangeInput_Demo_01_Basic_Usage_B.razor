@@ -1,0 +1,23 @@
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="int" @bind-Value="amount1" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount1">@amount1</Badge>
+</div>
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="int?" @bind-Value="amount2" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount2">@amount2</Badge>
+</div>
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="float" @bind-Value="amount3" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount3">@amount3</Badge>
+</div>
+<div class="d-flex flex-row mb-3">
+        <RangeInput TValue="float?" @bind-Value="amount4" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount4">@amount4</Badge>
+</div>
+
+@code {
+    int amount1 = 10;
+    int? amount2 = 20;
+    float amount3 = 30;
+    float? amount4 = 40;
+}

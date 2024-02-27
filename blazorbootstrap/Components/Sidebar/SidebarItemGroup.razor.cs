@@ -4,11 +4,11 @@ public partial class SidebarItemGroup : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append("flex-column");
+        this.AddClass("flex-column");
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

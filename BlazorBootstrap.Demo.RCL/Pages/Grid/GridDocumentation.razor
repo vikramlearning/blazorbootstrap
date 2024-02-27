@@ -9,6 +9,8 @@
     Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
 </div>
 
+<CarbonAds />
+
 <SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
 <div>For filtering, <code>AllowFiltering</code> and <code>PropertyName</code> parameters are required.</div>
 <div class="mb-3">Add <code>AllowFiltering="true"</code> parameter to Grid and <code>PropertyName</code> parameter to all the GridColumns.</div>
@@ -84,10 +86,6 @@
 <SectionHeading Size="HeadingSize.H2" Text="Cell nowrap" PageUrl="@pageUrl" HashTagName="cell-nowrap" />
 <div class="mb-3">To prevent text from wrapping, add <code>TextNoWrap="true"</code> to the GridColumn.</div>
 <Demo Type="typeof(Grid_Demo_13_Grid_Cell_Nowrap)" Tabs="true" />
-
-<SectionHeading Size="HeadingSize.H2" Text="Pagination alignment" PageUrl="@pageUrl" HashTagName="pagination-alignment" />
-<div class="mb-3">Change the alignment of pagination by adding the <code>PaginationAlignment</code> parameter to the Grid. By default, <code>PaginationAlignment</code> is set to <code>Alignment.Start</code>. Other options you can use are <code>Alignment.Center</code> and <code>Alignment.End</code>.</div>
-<Demo Type="typeof(Grid_Demo_14_Pagination_Alignment)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Empty data" PageUrl="@pageUrl" HashTagName="empty-data" />
 <div class="mb-3">If there are no records to display in the Grid, by default, it will display the <strong>No records to display</strong> message. You can change this message by adding the <code>EmptyText</code> parameter to the Grid.</div>
@@ -182,9 +180,27 @@
 <Demo Type="typeof(Grid_Demo_30_Translations)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Fixed header" PageUrl="@pageUrl" HashTagName="fixed-header" />
+<div class="mb-3">
+    To set the fixed header, set the <b>FixedHeader</b> parameter to <b>true</b>. The minimum height of the grid is <b>320 pixels</b>.
+    You can change the units to em, pt, px, or etc. by setting the <b>Unit</b> parameter.
+</div>
 <Demo Type="typeof(Grid_Demo_31_Fixed_Header_A)" Tabs="true" />
-<div class="my-3"></div>
-<Demo Type="typeof(Grid_Demo_31_Fixed_Header_B)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Fixed header with filters" PageUrl="@pageUrl" HashTagName="fixed-header-with-filters" />
+<Demo Type="typeof(Grid_Demo_31_Fixed_Header_B_With_Filters)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Freeze columns" PageUrl="@pageUrl" HashTagName="freeze-columns" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_32_Freeze_Column_A_Text_Nowrap)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Freeze columns with fixed header" PageUrl="@pageUrl" HashTagName="freeze-columns-with-fixed-header" />
+<Demo Type="typeof(Grid_Demo_32_Freeze_Column_B_Fixed_Header)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Freeze columns with fixed header and filters" PageUrl="@pageUrl" HashTagName="freeze-columns-with-fixed-header-and-filters" />
+<Demo Type="typeof(Grid_Demo_32_Freeze_Column_C_Fixed_Header_With_Filters)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Auto hide paging" PageUrl="@pageUrl" HashTagName="auto-hide-paging" />
+<Demo Type="typeof(Grid_Demo_33_AutoHide_Paging)" Tabs="true" />
 
 @code {
     private string pageUrl = "/grid";

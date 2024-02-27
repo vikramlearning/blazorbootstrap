@@ -1,16 +1,16 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DropdownMenu
+public partial class DropdownMenu : BlazorBootstrapComponentBase
 {
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.DropdownMenu());
-        builder.Append(BootstrapClassProvider.DropdownMenuPosition(Position));
+        this.AddClass(BootstrapClassProvider.DropdownMenu);
+        this.AddClass(BootstrapClassProvider.DropdownMenuPosition(Position));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

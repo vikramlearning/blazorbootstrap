@@ -32,12 +32,12 @@ public partial class Modal : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Modal());
-        builder.Append(BootstrapClassProvider.ModalFade());
+        this.AddClass(BootstrapClassProvider.Modal);
+        this.AddClass(BootstrapClassProvider.ModalFade);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -72,7 +72,7 @@ public partial class Modal : BlazorBootstrapComponentBase
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.modal.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.modal.initialize", ElementId, UseStaticBackdrop, CloseOnEscape, objRef), new RenderPriority());
     }
 
     [JSInvokable]
@@ -154,7 +154,8 @@ public partial class Modal : BlazorBootstrapComponentBase
             Message = message;
 
         childComponent = type;
-        this.parameters = parameters;
+
+        this.parameters = parameters!;
 
         await InvokeAsync(StateHasChanged);
 
@@ -271,11 +272,11 @@ public partial class Modal : BlazorBootstrapComponentBase
     [Parameter]
     public string Message { get; set; } = default!;
 
-    private string modalFullscreen => BootstrapClassProvider.ToModalFullscreen(Fullscreen);
+    private string modalFullscreen => BootstrapClassProvider.ToModalFullscreen(Fullscreen)!;
 
     [Inject] private ModalService ModalService { get; set; } = default!;
 
-    private string modalSize => BootstrapClassProvider.ToModalSize(Size);
+    private string modalSize => BootstrapClassProvider.ToModalSize(Size)!;
 
     /// <summary>
     /// Gets or sets the modal type.

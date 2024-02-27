@@ -6,18 +6,20 @@
 
 <h1>Blazor Tabs</h1>
 <div class="lead mb-3">
-    Documentation and examples for how to use Blazor Bootstrap <code>Tabs</code> components.
+    Documentation and examples for using Blazor Bootstrap Tabs components.
 </div>
+
+<CarbonAds />
 
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <Demo Type="typeof(Tabs_Demo_01_Examples)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Fade effect" PageUrl="@pageUrl" HashTagName="fade-effect" />
-<div>To make tabs fade in, add <code>EnableFadeEffect="true"</code> parameter. The first tab pane must also have <code>IsActive="true"</code> parameter to make the initial content visible.</div>
+<div>To create a fade-in effect for tabs, add the <code>EnableFadeEffect="true"</code> parameter. Additionally, set the <code>IsActive="true"</code> parameter on the first tab pane to display its content initially.</div>
 <Demo Type="typeof(Tabs_Demo_02_Enable_FadeEffect)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Title with Icon" PageUrl="@pageUrl" HashTagName="title-with-icon" />
-<div>To customize the tab title, use <code>TitleTemplate</code>, as shown in the below example.</div>
+<div>To customize the tab title, use the <b>TitleTemplate</b> parameter, as demonstrated in the following example.</div>
 <Demo Type="typeof(Tabs_Demo_03_Title_with_Icon)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Disable Tab" PageUrl="@pageUrl" HashTagName="disable-tab" />
@@ -25,21 +27,35 @@
 <Demo Type="typeof(Tabs_Demo_04_Disable_Tab)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Pills" PageUrl="@pageUrl" HashTagName="pills" />
-<div>Use <code>NavStyle="NavStyle.Pills"</code> parameter to change the tabs to pills.</div>
+<div>To transform the tabs into pills, use the parameter <code>NavStyle="NavStyle.Pills"</code>.</div>
 <Demo Type="typeof(Tabs_Demo_05_Nav_Style_Pills)" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Underline" PageUrl="@pageUrl" HashTagName="underline" />
+<div>Use the <code>NavStyle="NavStyle.Underline"</code> parameter to change the tabs to an underlined style.</div>
+<Demo Type="typeof(Tabs_Demo_06_Nav_Style_Underline)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Vertical" PageUrl="@pageUrl" HashTagName="vertical" />
+<div>Display your tabs vertically by setting the <b>NavStyle</b> parameter to <b>NavStyle.Vertical</b>.</div>
+<Demo Type="typeof(Tabs_Demo_07_Vertical_A)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Vertical pills" PageUrl="@pageUrl" HashTagName="vertical-pills" />
+<Demo Type="typeof(Tabs_Demo_07_Vertical_B_Pills)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Vertical underline" PageUrl="@pageUrl" HashTagName="vertical-underline" />
+<Demo Type="typeof(Tabs_Demo_07_Vertical_C_Underline)" />
+
 <SectionHeading Size="HeadingSize.H2" Text="Activate individual tabs" PageUrl="@pageUrl" HashTagName="activate-individual-tabs" />
-<div>You can activate individual tabs in several ways. Use predefined methods <code>ShowFirstTabAsync</code>, <code>ShowLastTabAsync</code>, <code>ShowTabByIndexAsync</code>, and <code>ShowTabByNameAsync</code>, as shown below.</div>
-<Demo Type="typeof(Tabs_Demo_06_Activate_Individual_Tabs)" />
+<div>You can activate individual tabs in several ways. Use predefined methods such as <code>ShowFirstTabAsync</code>, <code>ShowLastTabAsync</code>, <code>ShowTabByIndexAsync</code>, and <code>ShowTabByNameAsync</code>, as shown below.</div>
+<Demo Type="typeof(Tabs_Demo_08_Activate_Individual_Tabs)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
 <div>
-    When showing a new tab, the events fire in the following order:    
+    When displaying a new tab, the events fire in the following sequence:
     <p class="py-2 px-3">
-        1. <code>OnHiding</code> (on the current active tab)<br />
-        2. <code>OnShowing</code> (on the to-be-shown tab)<br />
-        3. <code>OnHidden</code> (on the previous active tab, the same one as for the <code>OnHiding</code> event)<br />
-        4. <code>OnShown</code> (on the newly-active just-shown tab, the same one as for the <code>OnShowing</code> event)<br />
+        1. <code>OnHiding</code> (on the currently active tab)<br />
+        2. <code>OnShowing</code> (on the tab that is about to be displayed)<br />
+        3. <code>OnHidden</code> (on the previously active tab, which is the same one that triggered the <code>OnHiding</code> event)<br />
+        4. <code>OnShown</code> (on the newly activated tab that has just been displayed, which is the same one that triggered the <code>OnShowing</code> event)<br />
     </p>
     <table class="table">
         <thead>
@@ -71,17 +87,23 @@
         If no tab was already active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
     </Callout>
 </div>
-<Demo Type="typeof(Tabs_Demo_07_Events_Order)" />
+<Demo Type="typeof(Tabs_Demo_09_Events_Order)" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Events - Example" PageUrl="@pageUrl" HashTagName="events-example" />
-<Demo Type="typeof(Tabs_Demo_08_Events_Example)" />
+<Demo Type="typeof(Tabs_Demo_10_Events_Example)" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Set active tab OnAfterRender" PageUrl="@pageUrl" HashTagName="set-active-tab-onafterrender" />
-<Demo Type="typeof(Tabs_Demo_09_Set_Active_Tab_OnAfterRender)" />
+<SectionHeading Size="HeadingSize.H2" Text="Methods: Set active tab OnAfterRender" PageUrl="@pageUrl" HashTagName="methods-set-active-tab-onafterrender" />
+<Demo Type="typeof(Tabs_Demo_11_Methods_Set_Active_Tab_OnAfterRender)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Tab: OnClick" PageUrl="@pageUrl" HashTagName="tab-on-click" />
+<Demo Type="typeof(Tabs_Demo_12_Tab_Callback_Event_OnClick)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Dynamic tabs" PageUrl="@pageUrl" HashTagName="dynamic-tabs" />
+<Demo Type="typeof(Tabs_Demo_13_Dynamic_Tabs)" />
 
 @code {
     private string pageUrl = "/tabs";
     private string title = "Blazor Tabs Component";
-    private string description = "Documentation and examples for how to use Blazor Bootstrap tabs components.";
+    private string description = "Documentation and examples for using Blazor Bootstrap Tabs components.";
     private string imageUrl = "https://i.imgur.com/ranwriJ.png";
 }

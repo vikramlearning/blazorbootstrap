@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Heading
+public partial class Heading : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -11,11 +11,11 @@ public partial class Heading
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.HeadingSize(headingSize));
+        this.AddClass(BootstrapClassProvider.HeadingSize(headingSize));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion

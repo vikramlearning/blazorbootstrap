@@ -85,7 +85,7 @@ public static class EnumExtensions
     /// </summary>
     /// <param name="buttonType"></param>
     /// <returns>string</returns>
-    public static string ToButtonTypeString(this ButtonType buttonType) =>
+    public static string? ToButtonTypeString(this ButtonType buttonType) =>
         buttonType switch
         {
             ButtonType.Button => "button",
@@ -107,6 +107,24 @@ public static class EnumExtensions
             CalloutType.Warning => "bb-callout-warning",
             CalloutType.Info => "bb-callout-info",
             _ => ""
+        };
+
+    /// <summary>
+    /// Converts value into css valid string.
+    /// </summary>
+    public static string ToCssString(this Unit value) =>
+        value switch
+        {
+            Unit.Em => "em",
+            Unit.Percentage => "%",
+            Unit.Pt => "pt",
+            Unit.Px => "px",
+            Unit.Rem => "rem",
+            Unit.Vh => "vh",
+            Unit.VMax => "vmax",
+            Unit.VMin => "vmin",
+            Unit.Vw => "vw",
+            _ => string.Empty
         };
 
     /// <summary>
@@ -133,7 +151,7 @@ public static class EnumExtensions
     /// </summary>
     /// <param name="target"></param>
     /// <returns>string</returns>
-    public static string ToTargetString(this Target target) =>
+    public static string? ToTargetString(this Target target) =>
         target switch
         {
             Target.Blank => "_blank",

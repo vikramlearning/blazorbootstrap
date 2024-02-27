@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public class BlazorBootstrapChart : BlazorBootstrapComponentBase
+public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, IAsyncDisposable
 {
     #region Fields and Constants
 
@@ -22,6 +22,16 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase
 
     public virtual async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) => await Task.FromResult(chartData);
 
+    /// <inheritdoc />
+    public new virtual void Dispose() => Dispose(true);
+
+    /// <inheritdoc />
+    public new virtual async ValueTask DisposeAsync()
+    {
+        await DisposeAsync(true);
+        Dispose(false);
+    }
+
     //public async Task Clear() { }
 
     /// <summary>
@@ -30,7 +40,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase
     /// <param name="chartData"></param>
     /// <param name="chartOptions"></param>
     /// <param name="plugins"></param>
-    public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[] plugins = null)
+    public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
         {
@@ -54,14 +64,20 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    public async Task ResizeAsync(int width, int height) => await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, width, height);
+    /// <param name="widthUnit"></param>
+    /// <param name="heightUnit"></param>
+    public async Task ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px)
+    {
+        var widthWithUnit = $"width:{width.ToString(CultureInfo.InvariantCulture)}{widthUnit.ToCssString()}";
+        var heightWithUnit = $"height:{height.ToString(CultureInfo.InvariantCulture)}{heightUnit.ToCssString()}";
+        await JS.InvokeVoidAsync("window.blazorChart.resize", ElementId, widthWithUnit, heightWithUnit);
+    }
 
     /// <summary>
     /// Update chart.
     /// </summary>
     /// <param name="chartData"></param>
     /// <param name="chartOptions"></param>
-    /// <param name="plugins"></param>
     public virtual async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
@@ -75,6 +91,19 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase
             else
                 await JS.InvokeVoidAsync("window.blazorChart.update", ElementId, GetChartType(), _data, chartOptions);
         }
+    }
+    
+    private string GetChartContainerSizeAsStyle()
+    {
+        var style = "";
+
+        if (Width > 0)
+            style += $"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}";
+
+        if (Height > 0)
+            style += $"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}";
+
+        return style;
     }
 
     protected string GetChartType() =>
@@ -91,24 +120,11 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase
             _ => "line" // default
         };
 
-    private string GetChartContainerSizeAsStyle()
-    {
-        var style = "";
-
-        if (Width > 0)
-            style += $"width:{Width}px;";
-
-        if (Height > 0)
-            style += $"height:{Height}px;";
-
-        return style;
-    }
-
     private object GetChartDataObject(ChartData chartData)
     {
         var datasets = new List<object>();
 
-        if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
+        if (chartData?.Datasets?.Any() ?? false)
             foreach (var dataset in chartData.Datasets)
                 if (dataset is BarChartDataset)
                     datasets.Add((BarChartDataset)dataset);
@@ -121,7 +137,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase
                 else if (dataset is PieChartDataset)
                     datasets.Add((PieChartDataset)dataset);
 
-        var data = new { chartData.Labels, Datasets = datasets };
+        var data = new { chartData?.Labels, Datasets = datasets };
 
         return data;
     }
@@ -130,19 +146,39 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
-    internal string chartContainerStyle => GetChartContainerSizeAsStyle();
+    /// <summary>
+    /// Gets or sets chart container height.
+    /// </summary>
+    /// <remarks>
+    /// The default unit of measure is <see cref="Unit.Px" />.
+    /// To change the unit of measure see <see cref="HeightUnit" />.
+    /// </remarks>
+    [Parameter]
+    public int? Height { get; set; }
 
     /// <summary>
-    /// Gets or sets chart height.
+    /// Gets or sets chart container height unit of measure.
     /// </summary>
     [Parameter]
-    public int Height { get; set; }
+    public Unit HeightUnit { get; set; } = Unit.Px;
 
     /// <summary>
-    /// Get or sets chart width.
+    /// Get or sets chart container width.
+    /// </summary>
+    /// <remarks>
+    /// The default unit of measure is <see cref="Unit.Px" />.
+    /// To change the unit of measure see <see cref="WidthUnit" />.
+    /// </remarks>
+    [Parameter]
+    public int? Width { get; set; }
+
+    /// <summary>
+    /// Gets or sets chart container width unit of measure.
     /// </summary>
     [Parameter]
-    public int Width { get; set; }
+    public Unit WidthUnit { get; set; } = Unit.Px;
+
+    internal string ContainerStyle => GetChartContainerSizeAsStyle();
 
     #endregion
 }

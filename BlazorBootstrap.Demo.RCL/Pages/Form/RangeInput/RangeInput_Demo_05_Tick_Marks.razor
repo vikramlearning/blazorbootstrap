@@ -1,0 +1,20 @@
+<div class="d-flex mb-3">
+    <div class="flex-fill">
+        <RangeInput TValue="float" @bind-Value="temperature1" Min="0" Max="100" TickMarks="list" />
+    </div>
+</div>
+<Badge Color="BadgeColor.Primary" Class="mx-2" VisuallyHiddenText="amount1">@temperature1</Badge>
+<span>Fahrenheit</span>
+
+@code {
+    float temperature1 = 10;
+
+    IEnumerable<TickMark> list = new List<TickMark>
+    {
+        new(){ Label = "very cold!", Value = "0"},
+        new(){ Label = "cool", Value = "25"},
+        new(){ Label = "medium", Value = "50"},
+        new(){ Label = "getting warm!", Value = "75"},
+        new(){ Label = "hot!", Value = "100"},
+    };
+}

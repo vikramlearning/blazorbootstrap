@@ -1,0 +1,14 @@
+﻿<ScriptLoader Async="true"
+              Class="mt-4"
+              OnLoad="OnScriptLoad"
+              OnError="OnScriptError"
+              ScriptId="script2"
+              Source="//cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min1.js"/>
+
+<div class="text-danger">@message</div>
+
+@code {
+    string? message;
+    private void OnScriptLoad() => message = "Script loaded successfully.";
+    private void OnScriptError(string errorMessage) => message = errorMessage;
+}

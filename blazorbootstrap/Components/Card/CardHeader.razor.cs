@@ -1,15 +1,16 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class CardHeader
+public partial class CardHeader : BlazorBootstrapComponentBase
 {
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.CardHeader());
+        this.AddClass(BootstrapClassProvider.CardHeader);
+        this.AddClass(BootstrapClassProvider.ToCardColor(Color));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     #endregion
@@ -24,6 +25,12 @@ public partial class CardHeader
     /// </summary>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the card header color.
+    /// </summary>
+    [Parameter]
+    public CardColor Color { get; set; }
 
     #endregion
 }

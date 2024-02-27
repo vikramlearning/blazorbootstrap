@@ -1,0 +1,22 @@
+﻿@code {
+
+    [Inject] protected PreloadService PreloadService { get; set; } = default!;
+
+    private void GetEmployees()
+    {
+        try
+        {
+            PreloadService.Show();
+
+            // call the service/api to get the employees
+        }
+        catch
+        {
+            // handle exception
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
+    }
+}

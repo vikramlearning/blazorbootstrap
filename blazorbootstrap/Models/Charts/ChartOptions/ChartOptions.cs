@@ -17,7 +17,14 @@ public class ChartOptions : IChartOptions
     public string? Locale { get; set; }
 
     /// <summary>
-    ///     <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />
+    /// Gets or sets the MaintainAspectRatio of the chart.
+    /// <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />
+    /// </summary>
+    public bool MaintainAspectRatio { get; set; } = true;
+
+    /// <summary>
+    /// Gets or set the responsive.
+    /// <see cref="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />
     /// </summary>
     public bool Responsive { get; set; }
 
@@ -51,7 +58,9 @@ public class Interaction
 
     #region Constructors
 
+#pragma warning disable CS8618
     public Interaction()
+#pragma warning restore CS8618
     {
         Mode = InteractionMode.Nearest;
     }
@@ -62,15 +71,15 @@ public class Interaction
 
     private void SetMode(InteractionMode interactionMode) =>
         ChartInteractionMode = interactionMode switch
-                               {
-                                   InteractionMode.Dataset => "dataset",
-                                   InteractionMode.Index => "index",
-                                   InteractionMode.Nearest => "nearest",
-                                   InteractionMode.Point => "point",
-                                   InteractionMode.X => "x",
-                                   InteractionMode.Y => "y",
-                                   _ => ""
-                               };
+        {
+            InteractionMode.Dataset => "dataset",
+            InteractionMode.Index => "index",
+            InteractionMode.Nearest => "nearest",
+            InteractionMode.Point => "point",
+            InteractionMode.X => "x",
+            InteractionMode.Y => "y",
+            _ => ""
+        };
 
     #endregion
 

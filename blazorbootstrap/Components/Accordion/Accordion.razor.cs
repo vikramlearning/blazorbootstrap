@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Accordion
+public partial class Accordion : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -11,11 +11,12 @@ public partial class Accordion
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Accordion());
-        builder.Append(BootstrapClassProvider.AccordionFlush(), Flush);
-        base.BuildClasses(builder);
+        this.AddClass(BootstrapClassProvider.Accordion);
+        this.AddClass(BootstrapClassProvider.AccordionFlush, Flush);
+
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -27,12 +28,82 @@ public partial class Accordion
     }
 
     /// <summary>
-    /// Show the <see cref="AccordionItem" /> by index.
+    /// Hides the <see cref="AccordionItem" /> by index.
     /// </summary>
-    /// <param name="index"></param>
+    /// <param name="index">The index of the AccordionItem to hide.</param>
+    public async Task HideAccordionItemByIndexAsync(int index)
+    {
+        if (!items?.Any() ?? false) return;
+
+        if (index < 0 || index >= items!.Count) throw new IndexOutOfRangeException();
+
+        var accordionItem = items[index];
+
+        if (accordionItem is not null)
+            await accordionItem.HideAsync();
+    }
+
+    /// <summary>
+    /// Hides the <see cref="AccordionItem" /> by name.
+    /// </summary>
+    /// <param name="accordionItemName">The name of the AccordionItem to hide.</param>
+    public async Task HideAccordionItemByNameAsync(string accordionItemName)
+    {
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.FirstOrDefault(x => x.Name == accordionItemName);
+
+        if (accordionItem is not null)
+            await accordionItem.HideAsync();
+    }
+
+    /// <summary>
+    /// Hides all <see cref="AccordionItem" /> instances.
+    /// </summary>
+    public async Task HideAllAccordionItemsAsync()
+    {
+        if (!items?.Any() ?? false) return;
+
+        foreach (var accordionItem in items!)
+            if (accordionItem is not null)
+                await accordionItem.HideAsync();
+    }
+
+    /// <summary>
+    /// Hides the first <see cref="AccordionItem" />.
+    /// </summary>
+    public async Task HideFirstAccordionItemAsync()
+    {
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.FirstOrDefault();
+
+        if (accordionItem is not null)
+            await accordionItem.HideAsync();
+    }
+
+    /// <summary>
+    /// Hides the last <see cref="AccordionItem" />.
+    /// </summary>
+    public async Task HideLastAccordionItemAsync()
+    {
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.LastOrDefault();
+
+        if (accordionItem is not null)
+            await accordionItem.HideAsync();
+    }
+
+    /// <summary>
+    /// Shows the <see cref="AccordionItem" /> by index.
+    /// </summary>
+    /// <param name="index">The index of the AccordionItem to show.</param>
     public async Task ShowAccordionItemByIndexAsync(int index)
     {
-        if (index < 0 || index >= items.Count) throw new IndexOutOfRangeException();
+        if (!items?.Any() ?? false) return;
+
+        if (index < 0 || index >= items!.Count) throw new IndexOutOfRangeException();
 
         var accordionItem = items[index];
 
@@ -41,42 +112,69 @@ public partial class Accordion
     }
 
     /// <summary>
-    /// Show the <see cref="AccordionItem" /> by name.
+    /// Shows the <see cref="AccordionItem" /> by name.
     /// </summary>
-    /// <param name="accordionItemName">AccordionItem Name</param>
+    /// <param name="accordionItemName">The name of the AccordionItem to show.</param>
     public async Task ShowAccordionItemByNameAsync(string accordionItemName)
     {
-        var accordionItem = items.FirstOrDefault(x => x.Name == accordionItemName);
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.FirstOrDefault(x => x.Name == accordionItemName);
 
         if (accordionItem is not null)
             await accordionItem.ShowAsync();
     }
 
     /// <summary>
-    /// Show the first <see cref="AccordionItem" />.
+    /// Shows all <see cref="AccordionItem" /> instances if AlwaysOpen is true.
+    /// </summary>
+    public async Task ShowAllAccordionItemsAsync()
+    {
+        if (!items?.Any() ?? false) return;
+
+        if (AlwaysOpen)
+            foreach (var accordionItem in items!)
+                if (accordionItem is not null)
+                    await accordionItem.ShowAsync();
+    }
+
+    /// <summary>
+    /// Shows the first <see cref="AccordionItem" />.
     /// </summary>
     public async Task ShowFirstAccordionItemAsync()
     {
-        var accordionItem = items.FirstOrDefault();
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.FirstOrDefault();
 
         if (accordionItem is not null)
             await accordionItem.ShowAsync();
     }
 
     /// <summary>
-    /// Show the last <see cref="AccordionItem" />.
+    /// Shows the last <see cref="AccordionItem" />.
     /// </summary>
     public async Task ShowLastAccordionItemAsync()
     {
-        var accordionItem = items.LastOrDefault();
+        if (!items?.Any() ?? false) return;
+
+        var accordionItem = items!.LastOrDefault();
 
         if (accordionItem is not null)
             await accordionItem.ShowAsync();
     }
 
+    /// <summary>
+    /// Adds an <see cref="AccordionItem" /> to the collection.
+    /// </summary>
+    /// <param name="accordionItem">The AccordionItem to add.</param>
     internal void Add(AccordionItem accordionItem)
     {
-        if (accordionItem != null) items?.Add(accordionItem);
+        if (items is null) 
+            items = new List<AccordionItem>();
+
+        if (accordionItem is not null)
+            items.Add(accordionItem);
     }
 
     #endregion
