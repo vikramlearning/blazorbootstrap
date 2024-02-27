@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.ComponentModel.Design;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// The base class for all BlazorBootstrap components.
@@ -91,7 +93,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// Appends a string to the class name.
     /// </summary>
     /// <param name="value">The string to append.</param>
-    internal void AddClass(string value)
+    public virtual void AddClass(string value)
     {
         if (!string.IsNullOrWhiteSpace(value))
             classList.Add(value);
@@ -102,7 +104,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// </summary>
     /// <param name="value">The string to append.</param>
     /// <param name="when">The condition to check.</param>
-    internal void AddClass(string value, bool when)
+    public virtual void AddClass(string value, bool when)
     {
         if (when && !string.IsNullOrWhiteSpace(value))
             classList.Add(value);
@@ -112,7 +114,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// Appends a list of strings to the class name.
     /// </summary>
     /// <param name="values">The list of strings to append.</param>
-    internal void AddClass(IEnumerable<string> values)
+    public virtual void AddClass(IEnumerable<string> values)
     {
         if (values is not null && values.Any())
             classList.UnionWith(values); // TODO: performance check
@@ -122,7 +124,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// Appends a string to the style.
     /// </summary>
     /// <param name="value">The string to append.</param>
-    internal void AddStyle(string value)
+    public virtual void AddStyle(string value)
     {
         if (!string.IsNullOrWhiteSpace(value))
             styleList.Add(value);
@@ -133,7 +135,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// </summary>
     /// <param name="value">The string to append.</param>
     /// <param name="condition">The condition to check.</param>
-    internal void AddStyle(string value, bool condition)
+    public virtual void AddStyle(string value, bool condition)
     {
         if (condition && !string.IsNullOrWhiteSpace(value))
             styleList.Add(value);
@@ -143,7 +145,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// Appends a list of strings to the styles.
     /// </summary>
     /// <param name="values">The list of strings to append.</param>
-    internal void AddStyle(IEnumerable<string> values)
+    public virtual void AddStyle(IEnumerable<string> values)
     {
         if (values is not null && values.Any())
             styleList.UnionWith(values); // TODO: performance check
