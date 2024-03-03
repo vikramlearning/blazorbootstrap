@@ -1,0 +1,34 @@
+.bb-treeview.collapsed .expanded-only {
+    display: none;
+}
+
+.bb-treeview.collapsed .bi.expanded-only {
+    display: none !important;
+}
+
+.bb-treeview .nav-link-icon {
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+.bb-treeview nav .nav-item ::deep a {
+    color: var(--bb-treeview-nav-item-text-color);
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+    .bb-treeview nav .nav-item ::deep a:hover {
+        background-color: var(--bb-treeview-nav-item-background-hover-color);
+        color: var(--bb-treeview-nav-item-text-hover-color);
+    }
+
+    .bb-treeview nav .nav-item ::deep a.active {
+        background-color: var(--bb-treeview-nav-item-background-hover-color);
+        color: var(--bb-treeview-nav-item-text-active-color);
+        font-weight: 600;
+    }
+
+/* MDN REFERENCE: https://developer.mozilla.org/en-US/docs/Web/CSS/:has#browser_compatibility */
+.bb-treeview nav .nav-item.nav-item-group:has(.nav-link.active) {
+    background-color: var(--bb-treeview-nav-item-group-background-color);
+}

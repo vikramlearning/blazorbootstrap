@@ -53,6 +53,27 @@
     /* callout */
     --bb-callout-link: 10, 88, 202;
     --bb-callout-code-color: #ab296a;
+    /* tree view */
+    --bb-treeview-width: 270px;
+    --bb-treeview-collapsed-width: 50px;
+    --bb-treeview-background-color: rgba(255, 255, 255, 1);
+    --bb-treeview-top-row-background-color: var(--bb-violet);
+    --bb-treeview-top-row-border-color: var(--bb-violet);
+    --bb-treeview-title-text-color: rgb(255,255,255);
+    --bb-treeview-brand-icon-color: rgb(255,255,255);
+    --bb-treeview-brand-image-width: 24px;
+    --bb-treeview-brand-image-height: 24px;
+    --bb-treeview-title-badge-text-color: var(--bb-violet);
+    --bb-treeview-title-badge-background-color: rgb(255,255,255);
+    --bb-treeview-navbar-toggler-icon-color: var(--bb-violet);
+    --bb-treeview-navbar-toggler-background-color: rgb(255,255,255);
+    --bb-treeview-content-border-color: rgb(214,213,213);
+    --bb-treeview-nav-item-text-color: rgba(0,0,0,0.9);
+    --bb-treeview-nav-item-text-active-color-rgb: 112.520718,44.062154,249.437846;
+    --bb-treeview-nav-item-text-hover-color: rgba(var(--bb-treeview-nav-item-text-active-color-rgb),0.9);
+    --bb-treeview-nav-item-text-active-color: rgba(var(--bb-treeview-nav-item-text-active-color-rgb),0.9);
+    --bb-treeview-nav-item-background-hover-color: rgba(var(--bb-treeview-nav-item-text-active-color-rgb),0.08);
+    --bb-treeview-nav-item-group-background-color: rgba(var(--bb-treeview-nav-item-text-active-color-rgb),0.08);
 }
 
 /* preload */

@@ -733,6 +733,14 @@ window.blazorBootstrap = {
                 bootstrap?.Tooltip?.getOrCreateInstance(elementRef)?.dispose();
         }
     },
+    treeview: {
+        initialize: (elementId, dotNetHelper) => {
+            window.addEventListener("resize", () => {
+                dotNetHelper.invokeMethodAsync('bsWindowResize', window.innerWidth);
+            });
+        },
+        windowSize: () => window.innerWidth
+    },
     // global function
     invokeMethodAsync: (callbackEventName, dotNetHelper) => {
         dotNetHelper.invokeMethodAsync(callbackEventName);

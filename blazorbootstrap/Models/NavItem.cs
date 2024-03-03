@@ -45,6 +45,11 @@ public class NavItem
     public string? Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the item level.
+    /// </summary>
+    public int Level { get; set; } = 0;
+
+    /// <summary>
     /// Gets or sets the URL matching behavior.
     /// </summary>
     public NavLinkMatch Match { get; set; }

@@ -1,0 +1,23 @@
+@page "/tree-view"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor TreeView</h1>
+<div class="lead mb-3">
+    Visualize the loading state of a component or page using the Blazor Bootstrap Spinner component.
+</div>
+
+@* <CarbonAds /> *@
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div class="mb-3"></div>
+<Demo Type="typeof(TreeView_Demo_01_Example)" />
+
+@code {
+    private string pageUrl = "tree-view";
+    private string title = "Blazor TreeView Component";
+    private string description = "Visualize the loading state of a component or page using the Blazor Bootstrap Spinner component.";
+    private string imageUrl = "https://i.imgur.com/273TamX.png"; // TODO: update this
+}

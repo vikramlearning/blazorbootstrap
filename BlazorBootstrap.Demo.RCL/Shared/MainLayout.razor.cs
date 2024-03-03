@@ -70,6 +70,7 @@ public partial class MainLayout : LayoutComponentBase
             new (){ Id = "522", Text = "Tabs", Href = "/tabs", IconName = IconName.WindowPlus, ParentId = "5" },
             new (){ Id = "523", Text = "Toasts", Href = "/toasts", IconName = IconName.ExclamationTriangleFill, ParentId = "5" },
             new (){ Id = "524", Text = "Tooltips", Href = "/tooltips", IconName = IconName.ChatSquareDotsFill, ParentId = "5" },
+            new (){ Id = "525", Text = "Tree View", Href = "/tree-view", IconName = IconName.ListNested, ParentId = "5" },
 
             new (){ Id = "6", Text = "Data Visualization", IconName = IconName.BarChartFill, IconColor = IconColor.Warning },
             new (){ Id = "600", Text = "Bar Chart", Href = "/charts/bar-chart", IconName = IconName.BarChartFill, ParentId = "6", Match = NavLinkMatch.All },
