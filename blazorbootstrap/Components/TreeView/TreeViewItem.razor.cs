@@ -6,7 +6,15 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
 
     private bool navitemGroupExpanded = false;
 
-    private string navLinkStyle => GetNavLinkStyle();
+    /// <summary>
+    /// Get nav link style.
+    /// Level 0 = 1rem    = 0 + 1 + (0 * 0.5)
+    /// Level 1 = 2.5rem  = 1 + 1 + (1 * 0.5)
+    /// Level 2 = 4rem    = 2 + 1 + (2 * 0.5)
+    /// ...
+    /// Level n = .....   = n + 1 + (n * 0.5)
+    /// </summary>
+    private string navLinkStyle => $"padding-left:{Level + 1 + (Level * 0.5)}rem;";
 
     #endregion
 
@@ -20,19 +28,6 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
         this.AddClass("active", navitemGroupExpanded);
 
         base.BuildClasses();
-    }
-
-    private string GetNavLinkStyle()
-    {
-        double padding = 1;
-
-        // Level 0 = 1rem    = 0 + 1 + (0 * 0.5)
-        // Level 1 = 2.5rem  = 1 + 1 + (1 * 0.5)
-        // Level 2 = 4rem    = 2 + 1 + (2 * 0.5)
-
-        padding = Level + 1 + (Level * 0.5);
-
-        return $"padding-left:{padding}rem;";
     }
 
     protected override void OnParametersSet()
