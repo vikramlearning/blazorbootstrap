@@ -75,7 +75,15 @@ public static class BootstrapClassProvider
 
     public static string Modal { get; } = "modal";
     public static string ModalFade { get; } = Fade;
-    public static string ModalHeader(ModalType modalType) => $"text-bg-{ToModalTypeColor(modalType)} border-bottom {ToModalHeaderBottomBorderColor(modalType)}";
+    public static string ModalHeader(ModalType modalType)
+    {
+        if(modalType is ModalType.Default)
+        {
+            return "border-bottom";
+        }
+
+        return $"text-bg-{ToModalTypeColor(modalType)} border-bottom {ToModalHeaderBottomBorderColor(modalType)}";
+    }
 
     public static string Nav { get; } = "nav";
     public static string NavPills { get; } = $"{Nav}-pills";
