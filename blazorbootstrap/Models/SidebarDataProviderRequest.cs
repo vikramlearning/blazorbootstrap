@@ -22,7 +22,7 @@ public class SidebarDataProviderRequest
             if (string.IsNullOrWhiteSpace(navItem.Id))
                 continue;
 
-            var childNavItems = data.Where(x => x.ParentId == navItem.Id)?.OrderBy(x => x.Sequence);
+            var childNavItems = data.Where(x => x.ParentId == navItem.Id)?.OrderBy(x => x.Sequence)?.ToList();
 
             if (childNavItems is not null && childNavItems.Any())
             {

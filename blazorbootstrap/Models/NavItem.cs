@@ -7,7 +7,7 @@ public class NavItem
     /// <summary>
     /// Gets or sets the collection of child navigation items.
     /// </summary>
-    internal IEnumerable<NavItem>? ChildItems { get; set; }
+    internal List<NavItem>? ChildItems { get; set; }
 
     /// <summary>
     /// Gets or sets an additional CSS class.
