@@ -4,10 +4,11 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private bool navitemGroupExpanded = false;
+    private bool navItemGroupExpanded = false;
 
     /// <summary>
     /// Get nav link style.
+    /// Implementation:
     /// Level 0 = 1rem    = 0 + 1 + (0 * 0.5)
     /// Level 1 = 2.5rem  = 1 + 1 + (1 * 0.5)
     /// Level 2 = 4rem    = 2 + 1 + (2 * 0.5)
@@ -25,7 +26,7 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
         this.AddClass("nav-item");
         this.AddClass($"nav-item-level-{Level}");
         this.AddClass("nav-item-group", HasChilds);
-        this.AddClass("active", navitemGroupExpanded);
+        this.AddClass("active", navItemGroupExpanded);
 
         base.BuildClasses();
     }
@@ -38,11 +39,13 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
         foreach (var childItem in ChildItems)
             if (ShouldExpand(NavigationManager.Uri, childItem.Href!))
             {
-                navitemGroupExpanded = true;
+                navItemGroupExpanded = true;
 
                 return;
             }
     }
+
+    private void HandleNavItemGroupExpandedHasChanged(bool value) => navItemGroupExpanded = true;
 
     private void AutoHideNavMenu()
     {
@@ -95,7 +98,7 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
                    || (Match == NavLinkMatch.Prefix && IsStrictlyPrefixWithSeparator(currentUriAbsolute, hrefAbsolute)));
     }
 
-    private void ToggleNavItemGroup() => navitemGroupExpanded = !navitemGroupExpanded;
+    private void ToggleNavItemGroup() => navItemGroupExpanded = !navItemGroupExpanded;
 
     #endregion
 

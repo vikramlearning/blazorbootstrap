@@ -5,7 +5,7 @@
     @if (HasChilds)
     {
         <NavLink class="nav-link" style="@navLinkStyle" role="button" @onclick="ToggleNavItemGroup">
-            @if (navitemGroupExpanded)
+            @if (navItemGroupExpanded)
             {
                 <span class="nav-link-arrow expanded-only">
                     <Icon Name="IconName.ChevronDown" />
@@ -17,6 +17,10 @@
                     <Icon Name="IconName.ChevronRight" />
                 </span>
             }
+
+            @* <span class="nav-link-icon ms-2">
+                <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+            </span> *@
 
             <span class="nav-link-text fw-semibold expanded-only ms-2">@Text</span>
 
@@ -33,7 +37,7 @@
         </NavLink>
     }
 
-    @if (navitemGroupExpanded && HasChilds && ChildItems is not null && ChildItems.Any())
+    @if (navItemGroupExpanded && HasChilds && ChildItems is not null && ChildItems.Any())
     {
         @foreach (var childItem in ChildItems)
         {
