@@ -4,7 +4,7 @@
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
     @if (HasChilds)
     {
-        <NavLink class="nav-link" role="button" @onclick="ToggleNavItemGroup">
+        <NavLink class="nav-link" style="@navLinkStyle" role="button" @onclick="ToggleNavItemGroup">
             @if (navitemGroupExpanded)
             {
                 <span class="nav-link-arrow expanded-only">
@@ -18,18 +18,18 @@
                 </span>
             }
 
-            <span class="nav-link-text fw-semibold expanded-only ms-3">@Text 1</span>
+            <span class="nav-link-text fw-semibold expanded-only ms-2">@Text</span>
 
         </NavLink>
     }
     else
     {
-        <NavLink class="nav-link" href="@Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
-            <span class="nav-link-icon ms-3">
+        <NavLink class="nav-link" style="@navLinkStyle" href="@Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
+            <span class="nav-link-icon">
                 <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
             </span>
 
-            <span class="nav-link-text expanded-only ms-3">@Text 0</span>
+            <span class="nav-link-text expanded-only ms-2">@Text</span>
         </NavLink>
     }
 
@@ -46,7 +46,8 @@
                           Match="@childItem.Match"
                           HasChilds="@childItem.HasChildItems"
                           ChildItems="@childItem.ChildItems"
-                          Class="@childItem.Class" />
+                          Class="@childItem.Class"
+                          Level="@childItem.Level" />
         }
     }
 </div>

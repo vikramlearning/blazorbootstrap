@@ -6,6 +6,8 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
 
     private bool navitemGroupExpanded = false;
 
+    private string navLinkStyle => GetNavLinkStyle();
+
     #endregion
 
     #region Methods
@@ -13,10 +15,24 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
     protected override void BuildClasses()
     {
         this.AddClass("nav-item");
+        this.AddClass($"nav-item-level-{Level}");
         this.AddClass("nav-item-group", HasChilds);
         this.AddClass("active", navitemGroupExpanded);
 
         base.BuildClasses();
+    }
+
+    private string GetNavLinkStyle()
+    {
+        double padding = 1;
+
+        // Level 0 = 1rem    = 0 + 1 + (0 * 0.5)
+        // Level 1 = 2.5rem  = 1 + 1 + (1 * 0.5)
+        // Level 2 = 4rem    = 2 + 1 + (2 * 0.5)
+
+        padding = Level + 1 + (Level * 0.5);
+
+        return $"padding-left:{padding}rem;";
     }
 
     protected override void OnParametersSet()
@@ -109,6 +125,8 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
 
     [Parameter] public IconName IconName { get; set; }
 
+    [Parameter] public int Level { get; set; } = 0;
+
     /// <summary>
     /// Gets or sets a value representing the URL matching behavior.
     /// </summary>
@@ -117,7 +135,7 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
-    [CascadingParameter] public Sidebar Parent { get; set; } = default!;
+    [CascadingParameter] public TreeView Parent { get; set; } = default!;
 
     [Parameter] public Target Target { get; set; }
 
