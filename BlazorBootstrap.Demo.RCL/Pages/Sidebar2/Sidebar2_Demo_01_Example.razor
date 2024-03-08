@@ -1,16 +1,16 @@
-<Sidebar2 @ref="treeView"
-          IconName="IconName.BootstrapFill"
+<Sidebar2 IconName="IconName.BootstrapFill"
           Title="Blazor Bootstrap"
           DataProvider="Sidebar2DataProvider" />
 
 @code {
-    Sidebar2 treeView = default!;
     IEnumerable<NavItem>? navItems;
 
     private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
     {
         if (navItems is null)
             navItems = GetNavItems();
+
+        await Task.Delay(2000);
 
         return await Task.FromResult(request.ApplyTo(navItems));
     }
@@ -29,8 +29,8 @@
             new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
 
             new NavItem { Id = "7", IconName = IconName.ListNested, Text = "Sidebar 2", ParentId="4"},
-            new NavItem { Id = "701", Href = "/sidebar2", IconName = IconName.ListNested, Text = "Child 1", ParentId="7"},
-            new NavItem { Id = "702", Href = "/sidebar2-02", IconName = IconName.ListNested, Text = "Child 2", ParentId="7"},
+            new NavItem { Id = "701", Href = "/sidebar2", IconName = IconName.Dash, Text = "How to use", ParentId="7"},
+            new NavItem { Id = "702", Href = "/sidebar2-examples", IconName = IconName.Dash, Text = "Examples", ParentId="7"},
 
             new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms" },
             new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},

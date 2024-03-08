@@ -32,7 +32,16 @@
             </div>
 
             <div class="@navMenuCssClass">
-                <SidebarItemGroup NavItems="@items" />
+                @if (items is null)
+                {
+                    <div class="text-center my-2">
+                        <Spinner Type="SpinnerType.Dots" Color="SpinnerColor.Secondary" />
+                    </div>
+                }
+                else
+                {
+                    <SidebarItemGroup NavItems="@items" />
+                }
             </div>
         </aside>
     </CascadingValue>

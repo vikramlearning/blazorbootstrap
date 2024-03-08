@@ -75,6 +75,7 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
         {
             var request = new Sidebar2DataProviderRequest();
             var result = await DataProvider.Invoke(request);
+
             items = result != null ? result.Data : new List<NavItem>();
         }
 
