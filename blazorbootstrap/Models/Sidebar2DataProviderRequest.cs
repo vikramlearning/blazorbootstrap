@@ -32,8 +32,6 @@ public class Sidebar2DataProviderRequest
 
             if (childNavItems?.Any() ?? false)
             {
-                //Console.WriteLine($"Id: {navItem.Id}, Text: {navItem.Text}");
-
                 navItem.HasChildItems = true;
                 navItem.ChildItems = childNavItems;
 
@@ -57,8 +55,6 @@ public class Sidebar2DataProviderRequest
         foreach (var item in items)
         {
             item.Level = currentLevel;
-
-            //Console.WriteLine($"currentLevel: {currentLevel}, item: {item.Id}, {item.Text}");
 
             if (string.IsNullOrWhiteSpace(item.Id))
                 continue;
