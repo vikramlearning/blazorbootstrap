@@ -49,15 +49,6 @@ public class Sidebar2DataProviderRequest
             }
         }
 
-        //Console.WriteLine($"{JsonSerializer.Serialize(result)}");
-
-        Console.WriteLine($"{result[2].Text}");
-        Console.WriteLine($"{result[2].HasChildItems}");
-        Console.WriteLine($"{result[2].ChildItems[2].Text}");
-        Console.WriteLine($"{result[2].ChildItems[2].HasChildItems}");
-        Console.WriteLine($"{result[2].ChildItems[2].ChildItems[0].Text}");
-        Console.WriteLine($"{result[2].ChildItems[2].ChildItems[0].HasChildItems}");
-
         return new Sidebar2DataProviderResult { Data = result };
     }
 
