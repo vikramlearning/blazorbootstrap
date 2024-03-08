@@ -22,7 +22,7 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
 
     protected override void BuildClasses()
     {
-        this.AddClass("bb-treeview");
+        this.AddClass("bb-sidebar2");
         this.AddClass("collapsed", collapseSidebar);
         this.AddClass("expanded", !collapseSidebar);
 
@@ -106,7 +106,7 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
         if (collapseNavMenu)
             classList.Add("collapse");
 
-        classList.Add("bb-treeview-content nav-scrollable bb-scrollbar");
+        classList.Add("bb-sidebar2-content nav-scrollable bb-scrollbar");
 
         if (collapseSidebar)
             classList.Add("bb-scrollbar-hidden");

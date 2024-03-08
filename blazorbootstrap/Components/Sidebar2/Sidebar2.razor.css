@@ -1,26 +1,34 @@
-.bb-treeview {
-    background-color: var(--bb-treeview-background-color);
+.bb-sidebar2 {
+    background-color: var(--bb-sidebar2-background-color);
+    border-right: 1px solid var(--bb-sidebar2-content-border-color);
 }
 
-    .bb-treeview.collapsed {
-        width: var(--bb-treeview-collapsed-width);
+    .bb-sidebar2.collapsed {
+        width: var(--bb-sidebar2-collapsed-width);
     }
 
-        .bb-treeview.collapsed .expanded-only {
+        .bb-sidebar2.collapsed .expanded-only {
             display: none;
         }
 
 @media (min-width: 641px) {
-    .bb-treeview {
-        width: var(--bb-treeview-width);
+    .bb-sidebar2 {
+        width: var(--bb-sidebar2-width);
         position: sticky;
         top: 0;
     }
 }
 
+.bb-sidebar2-top-row {
+    height: 3.5rem;
+    background-color: var(--bb-sidebar2-top-row-background-color);
+    border-bottom: 1px solid var(--bb-sidebar2-top-row-border-color);
+    border-right: 1px solid var(--bb-sidebar2-top-row-border-color);
+}
+
 .navbar-toggler {
-    background-color: var(--bb-treeview-navbar-toggler-background-color);
-    color: rgb(var(--bb-treeview-nav-item-text-active-color-rgb));
+    background-color: var(--bb-sidebar2-navbar-toggler-background-color);
+    color: rgb(var(--bb-sidebar2-nav-item-text-active-color-rgb));
     padding: inherit !important;
     padding-right: 0.25rem !important;
     padding-left: 0.25rem !important;
@@ -30,22 +38,11 @@
 
 .navbar-toggler-icon {
     background-image: inherit !important;
-    color: var(--bb-treeview-navbar-toggler-icon-color) !important;
+    color: var(--bb-sidebar2-navbar-toggler-icon-color) !important;
 }
 
 .navbar-toggler:focus {
     box-shadow: none !important;
-}
-
-.bb-treeview-top-row {
-    height: 3.5rem;
-    background-color: var(--bb-treeview-top-row-background-color);
-    border-bottom: 1px solid var(--bb-treeview-top-row-border-color);
-    border-right: 1px solid var(--bb-treeview-top-row-border-color);
-}
-
-.bb-treeview-content {
-    border-right: 1px solid var(--bb-treeview-content-border-color);
 }
 
 .navbar-brand {
@@ -53,27 +50,27 @@
 }
 
 .navbar-brand-icon {
-    color: var(--bb-treeview-brand-icon-color);
+    color: var(--bb-sidebar2-brand-icon-color);
 }
 
 .navbar-brand-image {
-    height: var(--bb-treeview-brand-image-height);
+    height: var(--bb-sidebar2-brand-image-height);
 }
 
     .navbar-brand-image img {
-        width: var(--bb-treeview-brand-image-width);
-        height: var(--bb-treeview-brand-image-height);
+        width: var(--bb-sidebar2-brand-image-width);
+        height: var(--bb-sidebar2-brand-image-height);
         vertical-align: initial !important;
     }
 
 .navbar-brand-text {
-    color: var(--bb-treeview-title-text-color);
+    color: var(--bb-sidebar2-title-text-color);
     font-weight: 600 !important;
 }
 
 .navbar-brand-badge {
-    color: var(--bb-treeview-title-badge-text-color);
-    background-color: var(--bb-treeview-title-badge-background-color);
+    color: var(--bb-sidebar2-title-badge-text-color);
+    background-color: var(--bb-sidebar2-title-badge-background-color);
 }
 
 @media (min-width: 641px) {
