@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public class TreeViewDataProviderResult
+public class Sidebar2DataProviderResult
 {
     #region Properties, Indexers
 

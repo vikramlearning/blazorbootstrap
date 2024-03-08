@@ -1,14 +1,14 @@
 ﻿namespace BlazorBootstrap;
 
-public class TreeViewDataProviderRequest
+public class Sidebar2DataProviderRequest
 {
     #region Methods
 
-    public TreeViewDataProviderResult ApplyTo(IEnumerable<NavItem> data)
+    public Sidebar2DataProviderResult ApplyTo(IEnumerable<NavItem> data)
     {
         if (data is null)
         {
-            return new TreeViewDataProviderResult { Data = Enumerable.Empty<NavItem>() };
+            return new Sidebar2DataProviderResult { Data = Enumerable.Empty<NavItem>() };
         }
 
         var result = new List<NavItem>();
@@ -16,10 +16,10 @@ public class TreeViewDataProviderRequest
 
         if (!parentNavItems?.Any() ?? true)
         {
-            return new TreeViewDataProviderResult { Data = Enumerable.Empty<NavItem>() };
+            return new Sidebar2DataProviderResult { Data = Enumerable.Empty<NavItem>() };
         }
 
-        result.AddRange(parentNavItems);
+        result.AddRange(parentNavItems!);
 
         foreach (var navItem in result)
         {
@@ -58,7 +58,7 @@ public class TreeViewDataProviderRequest
         Console.WriteLine($"{result[2].ChildItems[2].ChildItems[0].Text}");
         Console.WriteLine($"{result[2].ChildItems[2].ChildItems[0].HasChildItems}");
 
-        return new TreeViewDataProviderResult { Data = result };
+        return new Sidebar2DataProviderResult { Data = result };
     }
 
     private void SetLevel(IEnumerable<NavItem> data, List<NavItem> items, int currentLevel, HashSet<string> visitedIds)

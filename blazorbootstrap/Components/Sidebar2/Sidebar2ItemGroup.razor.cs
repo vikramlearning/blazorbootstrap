@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class TreeViewItemGroup : BlazorBootstrapComponentBase
+public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
 {
     #region Methods
 

@@ -1,13 +1,13 @@
-<TreeView @ref="treeView"
+<Sidebar2 @ref="treeView"
           IconName="IconName.BootstrapFill"
           Title="Blazor Bootstrap"
-          DataProvider="TreeViewDataProvider" />
+          DataProvider="Sidebar2DataProvider" />
 
 @code {
-    TreeView treeView = default!;
+    Sidebar2 treeView = default!;
     IEnumerable<NavItem>? navItems;
 
-    private async Task<TreeViewDataProviderResult> TreeViewDataProvider(TreeViewDataProviderRequest request)
+    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
     {
         if (navItems is null)
             navItems = GetNavItems();

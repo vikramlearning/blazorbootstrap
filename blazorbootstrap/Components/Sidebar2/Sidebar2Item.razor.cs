@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class TreeViewItem : BlazorBootstrapComponentBase
+public partial class Sidebar2Item : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -44,8 +44,6 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
                 return;
             }
     }
-
-    private void HandleNavItemGroupExpandedHasChanged(bool value) => navItemGroupExpanded = true;
 
     private void AutoHideNavMenu()
     {
@@ -133,7 +131,7 @@ public partial class TreeViewItem : BlazorBootstrapComponentBase
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
-    [CascadingParameter] public TreeView Parent { get; set; } = default!;
+    [CascadingParameter] public Sidebar2 Parent { get; set; } = default!;
 
     [Parameter] public Target Target { get; set; }
 

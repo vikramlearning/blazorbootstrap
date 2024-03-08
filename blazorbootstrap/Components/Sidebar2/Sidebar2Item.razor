@@ -5,25 +5,15 @@
     @if (HasChilds)
     {
         <NavLink class="nav-link" style="@navLinkStyle" role="button" @onclick="ToggleNavItemGroup">
-            @if (navItemGroupExpanded)
-            {
-                <span class="nav-link-arrow expanded-only">
-                    <Icon Name="IconName.ChevronDown" />
-                </span>
-            }
-            else
-            {
-                <span class="nav-link-arrow expanded-only">
-                    <Icon Name="IconName.ChevronRight" />
-                </span>
-            }
+            <span class="nav-link-arrow expanded-only">
+                <Icon Name="@(navItemGroupExpanded ? IconName.ChevronDown : IconName.ChevronRight)" />
+            </span>
 
             @* <span class="nav-link-icon ms-2">
                 <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
-            </span> *@
+               </span> *@
 
             <span class="nav-link-text fw-semibold expanded-only ms-2">@Text</span>
-
         </NavLink>
     }
     else
@@ -41,7 +31,7 @@
     {
         @foreach (var childItem in ChildItems)
         {
-            <TreeViewItem IconName="@childItem.IconName"
+            <Sidebar2Item IconName="@childItem.IconName"
                           CustomIconName="@childItem.CustomIconName"
                           IconColor="@childItem.IconColor"
                           Href="@childItem.Href"

@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class TreeView : BlazorBootstrapComponentBase
+public partial class Sidebar2 : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -12,7 +12,7 @@ public partial class TreeView : BlazorBootstrapComponentBase
 
     private IEnumerable<NavItem>? items = null;
 
-    private DotNetObjectReference<TreeView> objRef = default!;
+    private DotNetObjectReference<Sidebar2> objRef = default!;
 
     private bool requestInProgress = false;
 
@@ -73,7 +73,7 @@ public partial class TreeView : BlazorBootstrapComponentBase
 
         if (DataProvider != null)
         {
-            var request = new TreeViewDataProviderRequest();
+            var request = new Sidebar2DataProviderRequest();
             var result = await DataProvider.Invoke(request);
             items = result != null ? result.Data : new List<NavItem>();
         }
@@ -141,7 +141,7 @@ public partial class TreeView : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     [EditorRequired]
-    public TreeViewDataProviderDelegate? DataProvider { get; set; } = default!;
+    public Sidebar2DataProviderDelegate? DataProvider { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the IconName.
