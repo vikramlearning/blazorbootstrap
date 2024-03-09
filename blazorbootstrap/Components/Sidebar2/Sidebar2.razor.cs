@@ -22,9 +22,9 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
 
     protected override void BuildClasses()
     {
-        AddClass("bb-sidebar2");
-        AddClass("collapsed", collapseSidebar);
-        AddClass("expanded", !collapseSidebar);
+        this.AddClass("bb-sidebar2");
+        this.AddClass("collapsed", collapseSidebar);
+        this.AddClass("expanded", !collapseSidebar);
 
         base.BuildClasses();
     }

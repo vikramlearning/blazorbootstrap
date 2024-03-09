@@ -20,8 +20,6 @@ public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 
-    [Parameter] public IEnumerable<NavItem>? NavItems { get; set; }
-
     /// <summary>
     /// Gets or sets a value representing the URL matching behavior.
     /// </summary>
@@ -29,6 +27,8 @@ public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
     public NavLinkMatch Match { get; set; }
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+    [Parameter] public IEnumerable<NavItem>? NavItems { get; set; }
 
     #endregion
 }
