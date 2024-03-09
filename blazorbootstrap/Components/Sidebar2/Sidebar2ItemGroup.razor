@@ -7,15 +7,16 @@
         foreach (var item in NavItems)
         {
             <Sidebar2Item IconName="@item.IconName"
-                         CustomIconName="@item.CustomIconName"
-                         IconColor="@item.IconColor"
-                         Href="@item.Href"
-                         Text="@item.Text"
-                         Target="@item.Target"
-                         Match="@item.Match"
-                         HasChilds="@item.HasChildItems"
-                         ChildItems="@item.ChildItems"
-                         Class="@item.Class" />
+                          CustomIconName="@item.CustomIconName"
+                          IconColor="@item.IconColor"
+                          Href="@item.Href"
+                          Text="@item.Text"
+                          Target="@item.Target"
+                          Match="@item.Match"
+                          HasChilds="@item.HasChildItems"
+                          ChildItems="@item.ChildItems"
+                          NavItemGroupExpanded="navItemGroupExpanded"
+                          Class="@item.Class" />
         }
     }
 </nav>

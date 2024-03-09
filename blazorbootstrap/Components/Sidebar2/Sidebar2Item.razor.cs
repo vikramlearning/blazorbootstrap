@@ -26,32 +26,17 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
         this.AddClass("nav-item");
         this.AddClass($"nav-item-level-{Level}");
         this.AddClass("nav-item-group", HasChilds);
-        this.AddClass("active", navItemGroupExpanded);
+        this.AddClass("active", NavItemGroupExpanded);
 
         base.BuildClasses();
     }
 
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
-        if (!HasChilds || !(ChildItems?.Any() ?? false))
-            return;
+        if (NavLinkExtensions.ShouldExpand(NavigationManager, ChildItems!, Match))
+            NavItemGroupExpanded = true;
 
-        foreach (var childItem in ChildItems)
-            if (NavLinkExtensions.ShouldExpand(NavigationManager, childItem.Href!, Match))
-            {
-                navItemGroupExpanded = true;
-
-                Console.WriteLine($"{Text} - navItemGroupExpanded: {navItemGroupExpanded}");
-
-                // Only on after render
-                //if (Rendered && navItemGroupExpanded && OnNavItemGroupExpanded is not null)
-                if (navItemGroupExpanded && OnNavItemGroupExpanded is not null)
-                {
-                    OnNavItemGroupExpanded?.Invoke(true);
-                }
-
-                return;
-            }
+        base.OnInitialized();
     }
 
     private void AutoHideNavMenu()
@@ -59,7 +44,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
         Root.HideNavMenuOnMobile();
     }
 
-    private void ToggleNavItemGroup() => navItemGroupExpanded = !navItemGroupExpanded;
+    private void ToggleNavItemGroup() => NavItemGroupExpanded = !NavItemGroupExpanded;
 
     #endregion
 
@@ -104,9 +89,11 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
 
     [Parameter] public Action<bool> OnNavItemGroupExpanded { get; set; } = default!;
 
-    private void HandleNavItemGroupExpanded(bool expanded)
+    [Parameter]
+    public bool NavItemGroupExpanded
     {
-        Console.WriteLine($"{Level}: {Text}");
+        get { return navItemGroupExpanded; }
+        set { navItemGroupExpanded = value; }
     }
 
     #endregion

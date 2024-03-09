@@ -39,14 +39,32 @@ public static class NavLinkExtensions
                   );
     }
 
-    public static bool ShouldExpand(
-        NavigationManager navigationManager, 
-        string href,
-        NavLinkMatch match)
+    public static bool ShouldExpand(NavigationManager navigationManager, string href, NavLinkMatch match)
     {
         var hrefAbsolute = href is null ? null : navigationManager.ToAbsoluteUri(href).AbsoluteUri;
         return hrefAbsolute is not null
                && (EqualsHrefExactlyOrIfTrailingSlashAdded(navigationManager.Uri, hrefAbsolute)
                    || (match == NavLinkMatch.Prefix && IsStrictlyPrefixWithSeparator(navigationManager.Uri, hrefAbsolute)));
+    }
+
+    public static bool ShouldExpand(NavigationManager navigationManager, IEnumerable<NavItem> navItems, NavLinkMatch match, int currentLevel = 0)
+    {
+        if(currentLevel > 16)
+            return false;
+
+        if (navItems?.Any() ?? false)
+        {
+            foreach (var item in navItems)
+            {
+                if (ShouldExpand(navigationManager, item.Href!, match))
+                    return true;
+
+                if (item?.HasChildItems ?? false)
+                    if (ShouldExpand(navigationManager, item.ChildItems!, match, currentLevel + 1))
+                        return true;
+            }
+        }
+
+        return false;
     }
 }

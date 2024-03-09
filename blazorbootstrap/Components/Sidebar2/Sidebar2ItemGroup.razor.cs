@@ -11,6 +11,14 @@ public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
         base.BuildClasses();
     }
 
+    protected override void OnInitialized()
+    {
+        if (NavLinkExtensions.ShouldExpand(NavigationManager, NavItems!, Match))
+            navItemGroupExpanded = true;
+
+        base.OnInitialized();
+    }
+
     #endregion
 
     #region Properties, Indexers
@@ -21,6 +29,16 @@ public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 
     [Parameter] public IEnumerable<NavItem>? NavItems { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value representing the URL matching behavior.
+    /// </summary>
+    [Parameter]
+    public NavLinkMatch Match { get; set; }
+
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+    private bool navItemGroupExpanded;
 
     #endregion
 }
