@@ -1,0 +1,24 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<nav @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    @if (NavItems is not null && NavItems.Any())
+    {
+        foreach (var item in NavItems)
+        {
+            var navItemGroupExpanded = NavLinkExtensions.ShouldExpand(NavigationManager, item.ChildItems!, Match);
+
+            <Sidebar2Item IconName="@item.IconName"
+                          CustomIconName="@item.CustomIconName"
+                          IconColor="@item.IconColor"
+                          Href="@item.Href"
+                          Text="@item.Text"
+                          Target="@item.Target"
+                          Match="@item.Match"
+                          HasChilds="@item.HasChildItems"
+                          ChildItems="@item.ChildItems"
+                          NavItemGroupExpanded="navItemGroupExpanded"
+                          Class="@item.Class" />
+        }
+    }
+</nav>
