@@ -8,6 +8,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     private bool isFirstRenderComplete = false;
     private DotNetObjectReference<Tooltip> objRef = default!;
     private string? title;
+
     #endregion
 
     #region Methods
@@ -60,7 +61,6 @@ public partial class Tooltip : BlazorBootstrapComponentBase
                 title = Title;
                 color = Color;
 
-
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", ElementRef);
                 await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", ElementRef);
             }
@@ -87,6 +87,13 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     [Parameter] public TooltipColor Color { get; set; }
 
     private string colorClass => BootstrapClassProvider.TooltipColor(Color)!;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to display the content as HTML instead of text.
+    /// </summary>
+    [Parameter]
+    public bool IsHtml { get; set; }
+
     private string placement => Placement.ToTooltipPlacementName();
 
     /// <summary>
@@ -101,12 +108,6 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     [Parameter]
     [EditorRequired]
     public string Title { get; set; } = default!;
-    
-    /// <summary>
-    /// Displays the content as HTML instead of text when set to true.
-    /// </summary>
-    [Parameter]
-    public bool IsHtml { get; set; }
 
     #endregion
 }
