@@ -4,24 +4,24 @@
 
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
-<h1>Blazor Sidebar 2</h1>
+<h1>Blazor Sidebar2</h1>
 <div class="lead mb-3">
-    Visualize the loading state of a component or page using the Blazor Bootstrap Spinner component.
+    Use the Blazor Bootstrap <code>Sidebar2</code> component to display consistent, cross-browser, and responsive navigation links that support more than two nested levels.
 </div>
 
 @* <CarbonAds /> *@
 
-<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
 <div class="mb-3"></div>
-<Demo Type="typeof(Sidebar2_Demo_01_Example)" />
+<Demo Type="typeof(Sidebar2_Demo_01_Basic_Usage)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="More nested levels" PageUrl="@pageUrl" HashTagName="more-nested-levels" />
 <div class="mb-3"></div>
-<Demo Type="typeof(Sidebar2_Demo_02_More_Nested_Levels)" />
+<Demo Type="typeof(Sidebar2_Demo_02_More_Nested_Levels)" Tabs="true" />
 
 @code {
     private string pageUrl = "sidebar2";
     private string title = "Blazor Sidebar2 Component";
-    private string description = "Visualize the loading state of a component or page using the Blazor Bootstrap Spinner component.";
+    private string description = "Use the Blazor Bootstrap Sidebar2 component to display consistent, cross-browser, and responsive navigation links that support more than two nested levels.";
     private string imageUrl = "https://i.imgur.com/273TamX.png"; // TODO: update this
 }
