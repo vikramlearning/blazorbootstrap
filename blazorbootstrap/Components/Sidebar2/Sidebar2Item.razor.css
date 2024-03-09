@@ -36,3 +36,7 @@
 .bb-sidebar2 nav .nav-item.nav-item-group:has(.nav-item-group.active) {
     background-color: var(--bb-sidebar2-nav-item-group-background-color);
 }
+
+.bb-sidebar2 nav .nav-item.nav-item-group.active {
+    background-color: var(--bb-sidebar2-nav-item-group-background-color);
+}

@@ -6,6 +6,8 @@
     {
         foreach (var item in NavItems)
         {
+            var navItemGroupExpanded = NavLinkExtensions.ShouldExpand(NavigationManager, item.ChildItems!, Match);
+
             <Sidebar2Item IconName="@item.IconName"
                           CustomIconName="@item.CustomIconName"
                           IconColor="@item.IconColor"
