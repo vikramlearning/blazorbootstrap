@@ -5,25 +5,47 @@
     @if (HasChilds)
     {
         <NavLink class="nav-link" style="@navLinkStyle" role="button" @onclick="ToggleNavItemGroup">
-            <span class="nav-link-arrow expanded-only">
-                <Icon Name="@(navItemGroupExpanded ? IconName.ChevronDown : IconName.ChevronRight)" />
+            @{
+                var navLinkArrowCssClass = "";
+                if (Level == 0 && navItemGroupExpanded)
+                    navLinkArrowCssClass = "ps-1";
+                else if (Level > 0 && !navItemGroupExpanded)
+                    navLinkArrowCssClass = "ps-1";
+                else if (Level > 0)
+                    navLinkArrowCssClass = "ps-2";
+            }
+            <span class="nav-link-arrow @navLinkArrowCssClass expanded-only">
+                <Icon Name="@(navItemGroupExpanded ? IconName.ChevronDown : IconName.ChevronRight)"/>
             </span>
 
             @* <span class="nav-link-icon ms-2">
                 <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
-               </span> *@
+            </span> *@
 
-            <span class="nav-link-text fw-semibold expanded-only ms-2">@Text</span>
+            @{
+                var navLinkTextCssClass = "ms-2";
+                if (navItemGroupExpanded)
+                    navLinkTextCssClass += " fw-semibold";
+            }
+            <span class="nav-link-text @navLinkTextCssClass expanded-only">@Text</span>
         </NavLink>
     }
     else
     {
         <NavLink class="nav-link" style="@navLinkStyle" href="@Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
-            <span class="nav-link-icon">
+            @{
+                var navLinkArrowCssClass = "ps-2";
+                if (Level == 0)
+                    navLinkArrowCssClass = "";
+            }
+            <span class="nav-link-icon @navLinkArrowCssClass">
                 <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
             </span>
 
-            <span class="nav-link-text expanded-only ms-2">@Text</span>
+            @{
+                var navLinkTextCssClass = "ms-2";
+            }
+            <span class="nav-link-text @navLinkTextCssClass expanded-only">@Text</span>
         </NavLink>
     }
 

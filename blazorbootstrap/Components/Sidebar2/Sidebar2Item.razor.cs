@@ -8,14 +8,8 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Get nav link style.
-    /// Implementation:
-    /// Level 0 = 1rem    = 0 + 1 + (0 * 0.5)
-    /// Level 1 = 2.5rem  = 1 + 1 + (1 * 0.5)
-    /// Level 2 = 4rem    = 2 + 1 + (2 * 0.5)
-    /// ...
-    /// Level n = .....   = n + 1 + (n * 0.5)
     /// </summary>
-    private string navLinkStyle => $"padding-left:{Level + 1 + (Level * 0.5)}rem;";
+    private string navLinkStyle => GetNavLinkStyle();
 
     #endregion
 
@@ -29,6 +23,25 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
         this.AddClass("active", NavItemGroupExpanded);
 
         base.BuildClasses();
+    }
+
+    private string GetNavLinkStyle()
+    {
+        // Implementation:
+        // Level 0 = 1rem    = 0 + 1 + (0 * 0.5)
+        // Level 1 = 2.5rem  = 1 + 1 + (1 * 0.5)
+        // Level 2 = 4rem    = 2 + 1 + (2 * 0.5)
+        // ...
+        // Level n = .....   = n + 1 + (n * 0.5)
+
+        double level = Level + 1 + (Level * 0.5);
+
+        if (HasChilds && !NavItemGroupExpanded)
+            level += 0.25;
+        else if (!HasChilds && Level == 0)
+            level += 0.25;
+
+        return $"padding-left:{level}rem;";
     }
 
     protected override void OnInitialized()
