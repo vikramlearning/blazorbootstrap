@@ -87,6 +87,13 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     [Parameter] public TooltipColor Color { get; set; }
 
     private string colorClass => BootstrapClassProvider.TooltipColor(Color)!;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to display the content as HTML instead of text.
+    /// </summary>
+    [Parameter]
+    public bool IsHtml { get; set; }
+
     private string placement => Placement.ToTooltipPlacementName();
 
     /// <summary>
