@@ -290,7 +290,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(float?) || typeof(TValue) == typeof(float))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(float));
+                newValue = (TValue)Convert.ChangeType(value, typeof(float), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -298,7 +298,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(double?) || typeof(TValue) == typeof(double))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(double));
+                newValue = (TValue)Convert.ChangeType(value, typeof(double), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -306,7 +306,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(decimal?) || typeof(TValue) == typeof(decimal))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(decimal));
+                newValue = (TValue)Convert.ChangeType(value, typeof(decimal), CultureInfo.InvariantCulture);
 
                 return true;
             }
