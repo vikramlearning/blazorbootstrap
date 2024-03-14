@@ -4,10 +4,10 @@
 <Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="Size.Small" @onclick="UpdateEnglandNextOverRunsAsync"> England Next Over </Button>
 
 @code {
-    private LineChart lineChart;
-    private LineChartOptions lineChartOptions;
-    private ChartData chartData;
-    private List<string> labels;
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
+    private List<string> labels = default!;
 
     private List<double> indiaRunsArray = new() { 9, 20, 29, 33, 50, 66, 75, 86, 91, 105, 120, 126, 141, 150, 156, 164, 177, 180, 184, 195 };
     private List<double> englandRunsArray = new() { 1, 1, 8, 19, 24, 26, 39, 47, 56, 66, 75, 88, 95, 100, 109, 114, 124, 129, 140, 142 };
@@ -87,16 +87,16 @@
 
         options.Interaction.Mode = InteractionMode.Index;
 
-        options.Plugins.Title.Text = "WORM";
+        options.Plugins.Title!.Text = "WORM";
         options.Plugins.Title.Display = true;
-        options.Plugins.Title.Font.Size = 20;
+        options.Plugins.Title!.Font!.Size = 20;
 
         options.Responsive = true;
 
-        options.Scales.X.Title.Text = "Overs";
+        options.Scales.X!.Title!.Text = "Overs";
         options.Scales.X.Title.Display = true;
 
-        options.Scales.Y.Title.Text = "Runs";
+        options.Scales.Y!.Title!.Text = "Runs";
         options.Scales.Y.Title.Display = true;
         options.Scales.Y.SuggestedMax = 150;
 

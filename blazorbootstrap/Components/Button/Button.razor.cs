@@ -30,6 +30,8 @@ public partial class Button : BlazorBootstrapComponentBase
 
     private Target previousTarget;
 
+    private string? previousTo = default!;
+
     private string previousTooltipTitle = default!;
 
     private ButtonType previousType;
@@ -45,19 +47,19 @@ public partial class Button : BlazorBootstrapComponentBase
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Button());
-        builder.Append(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
-        builder.Append(BootstrapClassProvider.ButtonOutline(Color), Color != ButtonColor.None && Outline);
-        builder.Append(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
-        builder.Append(BootstrapClassProvider.ButtonDisabled(), Disabled && Type == ButtonType.Link);
-        builder.Append(BootstrapClassProvider.ButtonActive(), Active);
-        builder.Append(BootstrapClassProvider.ButtonBlock(), Block);
-        builder.Append(BootstrapClassProvider.ButtonLoading(), Loading && LoadingTemplate != null);
-        builder.Append(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
+        this.AddClass(BootstrapClassProvider.Button);
+        this.AddClass(BootstrapClassProvider.ButtonColor(Color), Color != ButtonColor.None && !Outline);
+        this.AddClass(BootstrapClassProvider.ButtonOutline(Color), Color != ButtonColor.None && Outline);
+        this.AddClass(BootstrapClassProvider.ButtonSize(Size), Size != Size.None);
+        this.AddClass(BootstrapClassProvider.ButtonDisabled, Disabled && Type == ButtonType.Link);
+        this.AddClass(BootstrapClassProvider.ButtonActive, Active);
+        this.AddClass(BootstrapClassProvider.ButtonBlock, Block);
+        this.AddClass(BootstrapClassProvider.ButtonLoading!, Loading && LoadingTemplate is not null);
+        this.AddClass(BootstrapClassProvider.ToPosition(Position), Position != Position.None);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -93,6 +95,7 @@ public partial class Button : BlazorBootstrapComponentBase
         previousType = Type;
         previousTarget = Target;
         previousTabIndex = TabIndex;
+        previousTo = To;
         previousTooltipTitle = TooltipTitle;
         tooltipColor = TooltipColor;
 
@@ -100,7 +103,7 @@ public partial class Button : BlazorBootstrapComponentBase
 
         base.OnInitialized();
 
-        if (!string.IsNullOrWhiteSpace(TooltipTitle)) ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef); });
+        if (!string.IsNullOrWhiteSpace(TooltipTitle)) QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", ElementRef), new RenderPriority());
     }
 
     protected override async Task OnParametersSetAsync()
@@ -134,6 +137,12 @@ public partial class Button : BlazorBootstrapComponentBase
             if (previousTabIndex != TabIndex)
             {
                 previousTabIndex = TabIndex;
+                setButtonAttributesAgain = true;
+            }
+
+            if (previousTo != To)
+            {
+                previousTo = To;
                 setButtonAttributesAgain = true;
             }
 
@@ -201,12 +210,17 @@ public partial class Button : BlazorBootstrapComponentBase
             if (!Attributes.TryGetValue("role", out _))
                 Attributes.Add("role", "button");
 
+            // To can be changed when the Button is used within a Virtualize component
             if (!Attributes.TryGetValue("href", out _))
-                Attributes.Add("href", To);
+                Attributes.Add("href", To!);
+            else
+                Attributes["href"] = To!;
 
             if (Target != Target.None)
                 if (!Attributes.TryGetValue("target", out _))
-                    Attributes.Add("target", Target.ToTargetString());
+                    Attributes.Add("target", Target.ToTargetString()!);
+                else
+                    Attributes["target"] = Target.ToTargetString()!;
 
             if (Disabled)
             {
@@ -274,9 +288,9 @@ public partial class Button : BlazorBootstrapComponentBase
                 Attributes.Add("title", TooltipTitle);
 
             if (Attributes.TryGetValue("data-bs-custom-class", out _))
-                Attributes["data-bs-custom-class"] = BootstrapClassProvider.TooltipColor(TooltipColor);
+                Attributes["data-bs-custom-class"] = BootstrapClassProvider.TooltipColor(TooltipColor)!;
             else
-                Attributes.Add("data-bs-custom-class", BootstrapClassProvider.TooltipColor(TooltipColor));
+                Attributes.Add("data-bs-custom-class", BootstrapClassProvider.TooltipColor(TooltipColor)!);
         }
         // button disabled (or) tooltip text empty
         else
@@ -330,7 +344,7 @@ public partial class Button : BlazorBootstrapComponentBase
         }
     }
 
-    private string buttonTypeString => Type.ToButtonTypeString();
+    private string buttonTypeString => Type.ToButtonTypeString()!;
 
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="Button" />.
@@ -482,6 +496,6 @@ public partial class Button : BlazorBootstrapComponentBase
 
     // TODO: Review
     // - Disable text wrapping: https://getbootstrap.com/docs/5.1/components/buttons/#disable-text-wrapping
-    // - Toogle states: https://getbootstrap.com/docs/5.1/components/buttons/#toggle-states
+    // - Toggle states: https://getbootstrap.com/docs/5.1/components/buttons/#toggle-states
     // - IDispose
 }

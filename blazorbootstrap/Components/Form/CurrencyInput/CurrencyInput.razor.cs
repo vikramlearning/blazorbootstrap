@@ -16,12 +16,12 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.FormControl());
-        builder.Append(BootstrapClassProvider.TextAlignment(TextAlignment), TextAlignment != Alignment.None);
+        this.AddClass(BootstrapClassProvider.FormControl);
+        this.AddClass(BootstrapClassProvider.TextAlignment(TextAlignment), TextAlignment != Alignment.None);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -33,7 +33,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             var currentValue = Value; // object
 
             if (currentValue is null || !TryParseValue(currentValue, out var value))
-                Value = default;
+                Value = default!;
             else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, Value)) // value < min
                 Value = Min;
             else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(Value, Max)) // value > max
@@ -121,7 +121,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
         if (AllowNegativeNumbers)
             validChars = string.Concat(validChars, "-");
 
-        return string.Concat(value?.ToString()?.Replace(",", ".")?.Where(c => validChars.Contains(c)));
+        return string.Concat(value?.ToString()?.Replace(",", ".")?.Where(c => validChars.Contains(c))!);
     }
 
     private bool isFloatingNumber() =>
@@ -271,10 +271,10 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
     private async Task OnChange(ChangeEventArgs e)
     {
-        var newValue = ExtractValue(e.Value, cultureInfo);
+        var newValue = ExtractValue(e.Value!, cultureInfo);
 
         if (newValue is null || !TryParseValue(newValue, out var value))
-            Value = default;
+            Value = default!;
         else if (EnableMinMax && Min is not null && IsLeftGreaterThanRight(Min, value)) // value < min
             Value = Min;
         else if (EnableMinMax && Max is not null && IsLeftGreaterThanRight(value, Max)) // value > max
@@ -385,14 +385,14 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
                 return true;
             }
 
-            newValue = default;
+            newValue = default!;
 
             return false;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"exception: {ex.Message}");
-            newValue = default;
+            newValue = default!;
 
             return false;
         }
@@ -448,7 +448,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the locale. Default locale is 'en-US'.
     /// </summary>
     [Parameter]
-    [EditorRequired]
+    //[EditorRequired]
     public string Locale { get; set; } = "en-US";
 
     /// <summary>

@@ -25,11 +25,10 @@
 </Grid>
 
 @code {
-    BlazorBootstrap.Grid<Employee1> grid;
-    private IEnumerable<Employee1> employees;
+    BlazorBootstrap.Grid<Employee1> grid = default!;
+    private IEnumerable<Employee1>? employees;
 
-    [Inject] public IJSRuntime JS { get; set; }
-    public GridSettings Settings { get; set; }
+    [Inject] public IJSRuntime JS { get; set; } = default!;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
@@ -55,11 +54,11 @@
     {
         var settingsJson = await JS.InvokeAsync<string>("window.localStorage.getItem", "grid-settings");
         if (string.IsNullOrWhiteSpace(settingsJson))
-            return null;
+            return null!;
 
         var settings = JsonSerializer.Deserialize<GridSettings>(settingsJson);
         if (settings is null)
-            return null;
+            return null!;
 
         return settings;
     }

@@ -1,0 +1,66 @@
+﻿<div class="bb-page">
+
+    <Sidebar2 CustomIconName="bi bi-apple"
+              Title="Blazor Bootstrap"
+              BadgeText="v2.1.0"
+              DataProvider="Sidebar2DataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-end">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">Page content goes here</div>
+        </article>
+    </main>
+
+</div>
+
+@code {
+    IEnumerable<NavItem>? navItems;
+
+    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        await Task.Delay(2000);
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content", IconColor = IconColor.Primary },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components", IconColor = IconColor.Success },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
+
+            new NavItem { Id = "7", IconName = IconName.ListNested, Text = "Sidebar 2", ParentId="4"},
+            new NavItem { Id = "701", Href = "/sidebar2/how-to-use", IconName = IconName.Dash, Text = "How to use", ParentId="7"},
+
+            new NavItem { Id = "702", IconName = IconName.Dash, Text = "Examples", ParentId="7"},
+            new NavItem { Id = "70201", Href = "/sidebar2", IconName = IconName.Dash, Text = "Nested levels", ParentId="702"},
+
+            new NavItem { Id = "8", IconName = IconName.Grid, Text = "Grid", ParentId="4", IconColor = IconColor.Danger },
+            new NavItem { Id = "801", Href = "/grid/#", IconName = IconName.Dash, Text = "How to use", ParentId="8"},
+            new NavItem { Id = "802", IconName = IconName.Dash, Text = "Examples", ParentId="8"},
+            new NavItem { Id = "80201", Href = "/grid/#", IconName = IconName.Dash, Text = "Filters", ParentId="802"},
+
+            new NavItem { Id = "9", IconName = IconName.WindowPlus, Text = "Forms", IconColor = IconColor.Warning },
+            new NavItem { Id = "10", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="9"},
+            new NavItem { Id = "11", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="9"},
+            new NavItem { Id = "12", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="9"},
+            new NavItem { Id = "13", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="9"},
+        };
+
+        return navItems;
+    }
+}

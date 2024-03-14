@@ -13,6 +13,10 @@
   <br>
 </p>
 
+<br>
+
+**NOTE:** We strongly recommend all BlazorBootstrap users migrate to version 2.0.0. [Read more...](https://docs.blazorbootstrap.com/blog/2024/02/25/upgrade-to-v2.0.0)
+
 ## Status
 
 [![NuGet](https://img.shields.io/nuget/vpre/blazor.bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
@@ -35,7 +39,7 @@
 
 ## Install
 
-Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 1.10.5`
+Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 2.0.0`
 
 ## Install Blazor Bootstrap templates
 
@@ -72,10 +76,14 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Number Input | [Docs](https://docs.blazorbootstrap.com/forms/number-input) | [Demos](https://demos.blazorbootstrap.com/form/number-input) |
 | Offcanvas | [Docs](https://docs.blazorbootstrap.com/components/offcanvas) | [Demos](https://demos.blazorbootstrap.com/offcanvas) |
 | Pagination | [Docs](https://docs.blazorbootstrap.com/components/pagination) | [Demos](https://demos.blazorbootstrap.com/pagination) |
+| PDF Viewer | [Docs](https://docs.blazorbootstrap.com/components/pdf-viewer) | [Demos](https://demos.blazorbootstrap.com/pdf-viewer) |
 | Placeholders | [Docs](https://docs.blazorbootstrap.com/components/placeholders) | [Demos](https://demos.blazorbootstrap.com/placeholders) |
 | Preload | [Docs](https://docs.blazorbootstrap.com/components/preload) | [Demos](https://demos.blazorbootstrap.com/preload) |
 | Progress | [Docs](https://docs.blazorbootstrap.com/components/progress) | [Demos](https://demos.blazorbootstrap.com/progress) |
+| RangeInput | [Docs](https://docs.blazorbootstrap.com/forms/range-input) | [Demos](https://demos.blazorbootstrap.com/form/range-input) |
+| Script Loader | [Docs](https://docs.blazorbootstrap.com/components/script-loader) | [Demos](https://demos.blazorbootstrap.com/script-loader) |
 | Sidebar | [Docs](https://docs.blazorbootstrap.com/components/sidebar) | [Demos](https://demos.blazorbootstrap.com/sidebar) |
+| Spinners | [Docs](https://docs.blazorbootstrap.com/components/spinners) | [Demos](https://demos.blazorbootstrap.com/spinners) |
 | Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/form/switch) |
 | Tabs | [Docs](https://docs.blazorbootstrap.com/components/tabs) | [Demos](https://demos.blazorbootstrap.com/tabs) |
 | Time Input | [Docs](https://docs.blazorbootstrap.com/forms/time-input) | [Demos](https://demos.blazorbootstrap.com/form/time-input) |
@@ -147,11 +155,20 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Pagination
 ![Blazor Bootstrap - Pagination](https://i.imgur.com/SCbZVd4.jpg "Blazor Bootstrap - Pagination")
 
+### Blazor Bootstrap - PDF Viewer
+![Blazor Bootstrap - PDF Viewer](https://i.imgur.com/7Vz9Efi.png "Blazor Bootstrap - PDF Viewer")
+
 ### Blazor Bootstrap - Preload
 ![Blazor Bootstrap - Preload](https://i.imgur.com/3pvzbXY.png "Blazor Bootstrap - Preload")
 
 ### Blazor Bootstrap - Progress
 ![Blazor Bootstrap - Progress](https://i.imgur.com/MK142lQ.png "Blazor Bootstrap - Progress")
+
+### Blazor Bootstrap - Range Input
+![Blazor Bootstrap - Range Input](https://i.imgur.com/rWDDHaf.png "Blazor Bootstrap - Range Input")
+
+### Blazor Bootstrap - Script Loader
+![Blazor Bootstrap - Script Loader](https://i.imgur.com/sBiYPeQ.png "Blazor Bootstrap - Script Loader")
 
 ### Blazor Bootstrap - Sidebar
 ![Blazor Bootstrap - Sidebar](https://i.imgur.com/d91Q9Zt.png "Blazor Bootstrap - Sidebar")
@@ -174,4 +191,4 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ## Copyright and license
 
-Code and documentation copyright 2023 [Blazor Bootstrap](https://docs.blazorbootstrap.com/) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/master/LICENSE.txt).
+Code and documentation copyright 2024 [Blazor Bootstrap](https://docs.blazorbootstrap.com/) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/master/LICENSE.txt).

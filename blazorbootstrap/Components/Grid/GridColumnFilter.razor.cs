@@ -81,14 +81,14 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync()
     {
         if (FiltersTranslationProvider is null)
-            return FilterOperatorHelper.GetFilterOperators(PropertyTypeName);
+            return FilterOperatorHelper.GetFilterOperators(PropertyTypeName!);
 
         var filters = await FiltersTranslationProvider.Invoke();
 
-        if (filters is null || !filters.Any())
-            return FilterOperatorHelper.GetFilterOperators(PropertyTypeName);
+        if (!(filters?.Any() ?? false))
+            return FilterOperatorHelper.GetFilterOperators(PropertyTypeName!);
 
-        return FilterOperatorHelper.GetFilterOperators(PropertyTypeName, filters);
+        return FilterOperatorHelper.GetFilterOperators(PropertyTypeName!, filters!);
     }
 
     private async Task OnFilterOperatorChangedAsync(FilterOperatorInfo filterOperatorInfo)
@@ -110,7 +110,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         SetSelectedFilterSymbol();
 
         if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
     }
 
     private async Task OnFilterValueChangedAsync(ChangeEventArgs args)
@@ -118,7 +118,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         filterValue = args?.Value?.ToString();
 
         if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue, filterOperator));
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
     }
 
     private async Task OnFilterEnumValueChangedAsync(object? e)

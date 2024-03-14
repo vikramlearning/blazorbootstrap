@@ -14,50 +14,50 @@
     <Icon Name="IconName.Activity"></Icon>
 </Button>
 @code {
-    private Button saveButton1, saveButton2, saveButton3, saveButton4, saveButton5;
+    private Button saveButton1 = default!, saveButton2 = default!, saveButton3 = default!, saveButton4 = default!, saveButton5 = default!;
 
     private async Task OnSave1Click()
     {
-        saveButton1?.ShowLoading("Loading...");
+        saveButton1.ShowLoading("Loading...");
 
         await Task.Delay(3000); // API call
 
-        saveButton1?.HideLoading();
+        saveButton1.HideLoading();
     }
 
     private async Task OnSave2Click()
     {
-        saveButton2?.ShowLoading("Loading...");
+        saveButton2.ShowLoading("Loading...");
 
         await Task.Delay(3000); // API call
 
-        saveButton2?.HideLoading();
+        saveButton2.HideLoading();
     }
 
     private async Task OnSave3Click()
     {
-        saveButton3?.ShowLoading("Loading...");
+        saveButton3.ShowLoading("Loading...");
 
         await Task.Delay(3000); // API call
 
-        saveButton3?.HideLoading();
+        saveButton3.HideLoading();
     }
 
     private async Task OnSave4Click()
     {
-        saveButton4?.ShowLoading("Loading...");
+        saveButton4.ShowLoading("Loading...");
 
         await Task.Delay(3000); // API call
 
-        saveButton4?.HideLoading();
+        saveButton4.HideLoading();
     }
 
     private async Task OnSave5Click()
     {
-        saveButton5?.ShowLoading("Loading...");
+        saveButton5.ShowLoading("Loading...");
 
         await Task.Delay(3000); // API call
 
-        saveButton5?.HideLoading();
+        saveButton5.HideLoading();
     }
 }

@@ -4,7 +4,7 @@ description: Use Blazor Bootstrap tooltip component to add custom tooltips to yo
 image: https://i.imgur.com/uqvqb2i.jpg
 
 sidebar_label: Tooltips
-sidebar_position: 22
+sidebar_position: 25
 ---
 
 import CarbonAd from '/carbon-ad.mdx'
@@ -21,6 +21,7 @@ Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
 |--|--|--|--|--|--|
 | ChildContent | RenderFragment | Specifies the content to be rendered inside this. | | | 1.0.0 |
 | Color | `TooltipColor` | Gets or sets the tooltip color. | | `TooltipColor.None` | 1.10.0 |
+| IsHtml | bool | Gets or sets a value indicating whether to display the content as HTML instead of text. | | `false` | 2.1.0 |
 | Placement | `TooltipPlacement` | Specifies the tooltip placement. Default is top right. | | `TooltipPlacement.Top` | 1.0.0 |
 | Title | string | Displays informative text when users hover, focus, or tap an element. | ✔️ | | 1.0.0 |
 
@@ -107,3 +108,12 @@ Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
 }
 ```
 [see demo here](https://demos.blazorbootstrap.com/tooltips#dynamically-update-the-tooltip-text)
+
+### Tooltip with HTML
+
+<img src="https://i.imgur.com/2xuTx6b.png" alt="Blazor Bootstrap: Tooltip with HTML" />
+
+```cshtml {} showLineNumbers
+<Tooltip Class="me-4" Title="<strong>Tooltip</strong> <em>with</em> <u>HTML</u>" IsHtml="true">Tooltip with HTML</Tooltip>
+```
+[see demo here](https://demos.blazorbootstrap.com/tooltips#tooltip-with-html)

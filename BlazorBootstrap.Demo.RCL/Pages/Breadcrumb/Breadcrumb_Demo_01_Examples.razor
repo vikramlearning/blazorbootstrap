@@ -1,19 +1,19 @@
-﻿<Breadcrumb Items="NavItems1" />
-<Breadcrumb Items="NavItems2" />
+﻿<Breadcrumb Items="navItems1" />
+<Breadcrumb Items="navItems2" />
 
 @code {
-    private List<BreadcrumbItem> NavItems1 { get; set; }
-    private List<BreadcrumbItem> NavItems2 { get; set; }
+    private List<BreadcrumbItem>? navItems1;
+    private List<BreadcrumbItem>? navItems2;
 
     protected override void OnInitialized()
     {
-        NavItems1 = new List<BreadcrumbItem>
+        navItems1 = new List<BreadcrumbItem>
         {
             new BreadcrumbItem{ Text = "Home", Href ="/" },
             new BreadcrumbItem{ Text = "Breadcrumb", IsCurrentPage = true }
         };
 
-        NavItems2 = new List<BreadcrumbItem>
+        navItems2 = new List<BreadcrumbItem>
         {
             new BreadcrumbItem{ Text = "Home", Href ="/" },
             new BreadcrumbItem{ Text = "Docs", Href ="/docs" },

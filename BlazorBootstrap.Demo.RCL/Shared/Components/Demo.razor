@@ -1,0 +1,91 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inherits ComponentBase
+
+<!--googleoff: index-->
+@if (ShowCodeOnly)
+{
+    <div class="bd-example-snippet bd-code-snippet">
+        <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border">
+            <small class="font-monospace text-body-secondary text-uppercase">razor</small>
+            <div class="d-flex ms-auto">
+                <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="CopyToClipboardAsync">
+                    <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
+                </Tooltip>
+            </div>
+        </div>
+         <div class="highlight">
+             <pre>
+                    <code class="@LanguageCssClass">
+                        @if (codeSnippet is not null)
+                        {
+                            <text>@codeSnippet.Trim()</text>
+                        }
+                    </code>
+                </pre>
+         </div>
+     </div>
+}
+else if (!Tabs)
+{
+    <div class="bd-example-snippet bd-code-snippet">
+        <div class="bb-example">
+            <DynamicComponent Type="this.Type"/>
+        </div>
+        <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border border-top-0">
+            <small class="font-monospace text-body-secondary text-uppercase">razor</small>
+            <div class="d-flex ms-auto">
+                <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="CopyToClipboardAsync">
+                    <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
+                </Tooltip>
+            </div>
+        </div>
+        <div class="highlight">
+            <pre>
+                <code class="@LanguageCssClass">
+                    @if (codeSnippet is not null)
+                    {
+                        <text>@codeSnippet.Trim()</text>
+                    }
+                </code>
+            </pre>
+        </div>
+    </div>
+}
+else // Tabs = true
+{
+    <Tabs EnableFadeEffect="true">
+        <Tab IsActive="true">
+            <TitleTemplate>
+                <Icon Name="IconName.Display" Class="me-2" /><b>Example</b>
+            </TitleTemplate>
+            <Content>
+                <div class="bb-example border-top-0 mt-0">
+                    <DynamicComponent Type="this.Type"/>
+                </div>
+            </Content>
+        </Tab>
+        <Tab>
+            <TitleTemplate>
+                <Icon Name="IconName.CodeSlash" Class="me-2" /><b>View Source</b>
+            </TitleTemplate>
+            <Content>
+                <div class="position-relative d-block float-end mt-3 me-3 me-sm-4">
+                    <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="CopyToClipboardAsync">
+                        <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
+                    </Tooltip>
+                </div>
+                <div class="highlight">
+                    <pre class="mt-0 me-4">
+                        <code class="@LanguageCssClass">
+                            @if (codeSnippet is not null)
+                            {
+                                <text>@codeSnippet.Trim()</text>
+                            }
+                        </code>
+                    </pre>
+                </div>
+            </Content>
+        </Tab>
+    </Tabs>
+}
+<!--googleon: index-->

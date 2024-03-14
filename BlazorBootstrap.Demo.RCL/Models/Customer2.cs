@@ -3,13 +3,14 @@
 namespace BlazorBootstrap.Demo.RCL.Models;
 
 public record Customer2 {
-    public Customer2(int CustomerId,
-        string CustomerName,
-        string Phone,
-        string Email,
-        string Address,
-        string PostalZip,
-        string Country,
+    public Customer2(
+        int CustomerId,
+        string? CustomerName,
+        string? Phone,
+        string? Email,
+        string? Address,
+        string? PostalZip,
+        string? Country,
         CustomerType CustomerType = CustomerType.Two) {
         this.CustomerId = CustomerId;
         this.CustomerName = CustomerName;
@@ -22,12 +23,12 @@ public record Customer2 {
     }
 
     public int CustomerId { get; init; }
-    public string CustomerName { get; init; }
-    public string Phone { get; init; }
-    public string Email { get; init; }
-    public string Address { get; init; }
-    public string PostalZip { get; init; }
-    public string Country { get; init; }
+    public string? CustomerName { get; init; }
+    public string? Phone { get; init; }
+    public string? Email { get; init; }
+    public string? Address { get; init; }
+    public string? PostalZip { get; init; }
+    public string? Country { get; init; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public CustomerType CustomerType { get; init; }
 

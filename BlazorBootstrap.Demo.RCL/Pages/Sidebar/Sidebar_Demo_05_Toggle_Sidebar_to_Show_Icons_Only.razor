@@ -7,7 +7,7 @@
 
     <main>
         <div class="bb-top-row px-4 d-flex justify-content-between">
-            <Icon Name="IconName.List" role="button" @onclick="ToogleSidebar" />
+            <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
@@ -19,8 +19,8 @@
 </div>
 
 @code {
-    Sidebar sidebar;
-    IEnumerable<NavItem> navItems;
+    Sidebar sidebar = default!;
+    IEnumerable<NavItem>? navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
     {
@@ -54,5 +54,5 @@
         return navItems;
     }
 
-    private void ToogleSidebar() => sidebar.ToggleSidebar();
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
 }

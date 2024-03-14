@@ -10,26 +10,29 @@ public partial class Callout : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Callout());
-        builder.Append(BootstrapClassProvider.ToCalloutType(Type));
+        this.AddClass(BootstrapClassProvider.Callout);
+        this.AddClass(BootstrapClassProvider.ToCalloutType(Type));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
-    private string GetHeading() =>
-        string.IsNullOrWhiteSpace(Heading)
-            ? type switch
-              {
-                  CalloutType.Default => "NOTE",
-                  CalloutType.Info => "INFO",
-                  CalloutType.Warning => "WARNING",
-                  CalloutType.Danger => "DANGER",
-                  CalloutType.Tip => "TIP",
-                  _ => ""
-              }
-            : Heading;
+    private string GetHeading()
+    {
+        if (!string.IsNullOrWhiteSpace(Heading))
+            return Heading;
+
+        return type switch
+        {
+            CalloutType.Default => "NOTE",
+            CalloutType.Info => "INFO",
+            CalloutType.Warning => "WARNING",
+            CalloutType.Danger => "DANGER",
+            CalloutType.Tip or CalloutType.Success => "TIP",
+            _ => ""
+        };
+    }
 
     private IconName GetIconName() =>
         type switch
@@ -38,7 +41,7 @@ public partial class Callout : BlazorBootstrapComponentBase
             CalloutType.Info => IconName.InfoCircleFill,
             CalloutType.Warning => IconName.ExclamationTriangleFill,
             CalloutType.Danger => IconName.Fire,
-            CalloutType.Tip => IconName.Lightbulb,
+            CalloutType.Tip or CalloutType.Success => IconName.Lightbulb,
             _ => IconName.InfoCircleFill
         };
 
@@ -49,7 +52,7 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override bool ShouldAutoGenerateId => true;
 
-    private string CalloutHeadingCSSClass => BootstrapClassProvider.CalloutHeading();
+    private string CalloutHeadingCssClass => BootstrapClassProvider.CalloutHeading;
 
     /// <summary>
     /// Specifies the content to be rendered inside this.
@@ -64,6 +67,12 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public string? Heading { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to hide the callout heading.
+    /// </summary>
+    [Parameter]
+    public bool HideHeading { get; set; }
 
     private IconName iconName => GetIconName();
 

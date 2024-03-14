@@ -16,16 +16,15 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Nav);
+        this.AddClass(BootstrapClassProvider.Nav);
+        this.AddClass(BootstrapClassProvider.NavTabs, NavStyle == NavStyle.Tabs);
+        this.AddClass(BootstrapClassProvider.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills));
+        this.AddClass(BootstrapClassProvider.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline));
+        this.AddClass("flex-column", IsVertical);
 
-        if (NavStyle == NavStyle.Tabs)
-            builder.Append(BootstrapClassProvider.NavTabs);
-        else
-            builder.Append(BootstrapClassProvider.NavPills);
-
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -48,9 +47,15 @@ public partial class Tabs : BlazorBootstrapComponentBase
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
+
+        Attributes ??= new Dictionary<string, object>();
+
+        if (IsVertical)
+            Attributes.Add("aria-orientation", "vertical");
+
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef); });
+        QueueAfterRenderAction(async () => await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", ElementId, objRef), new RenderPriority());
     }
 
     [JSInvokable]
@@ -59,7 +64,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
-        var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
         await OnHidden.InvokeAsync(args);
     }
 
@@ -69,7 +74,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
-        var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
         await OnHiding.InvokeAsync(args);
     }
 
@@ -79,7 +84,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
-        var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
         await OnShown.InvokeAsync(args);
     }
 
@@ -89,8 +94,33 @@ public partial class Tabs : BlazorBootstrapComponentBase
         var activeTabTitle = tabs?.FirstOrDefault(x => x.ElementId == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.ElementId == previousActiveTabId)?.Title;
 
-        var args = new TabsEventArgs(activeTabTitle, previousActiveTabTitle);
+        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
         await OnShowing.InvokeAsync(args);
+    }
+
+    /// <summary>
+    /// Initializes the most recently added tab, optionally displaying it.
+    /// </summary>
+    /// <param name="showTab">Specifies whether to display the tab after initialization.</param>
+    public void InitializeRecentTab(bool showTab)
+    {
+        if (!tabs?.Any() ?? false) return;
+
+        QueueAfterRenderAction(
+            async () =>
+            {
+                var tab = tabs!.LastOrDefault();
+
+                if (tab is { Disabled: false })
+                {
+                    await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initializeNewTab", tab.ElementId, objRef);
+
+                    if (showTab)
+                        await ShowTabAsync(tab);
+                }
+            },
+            new RenderPriority()
+        );
     }
 
     /// <summary>
@@ -98,10 +128,12 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     public async Task ShowFirstTabAsync()
     {
-        var tab = tabs.FirstOrDefault(x => !x.Disabled);
+        if (!tabs?.Any() ?? false) return;
 
-        if (tab != null)
-            await ShowTabAsync(tab.ElementId);
+        var tab = tabs!.FirstOrDefault(x => !x.Disabled);
+
+        if (tab is { Disabled: false })
+            await ShowTabAsync(tab);
     }
 
     /// <summary>
@@ -109,48 +141,52 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     public async Task ShowLastTabAsync()
     {
-        var tab = tabs.LastOrDefault(x => !x.Disabled);
+        if (!tabs?.Any() ?? false) return;
 
-        if (tab != null)
-            await ShowTabAsync(tab.ElementId);
+        var tab = tabs!.LastOrDefault(x => !x.Disabled);
+
+        if (tab is { Disabled: false })
+            await ShowTabAsync(tab);
     }
 
     /// <summary>
     /// Selects the tab by index and show its associated pane.
     /// </summary>
-    /// <param name="index">The zero-based index of the element to get or set.</param>
-    public async Task ShowTabByIndexAsync(int index)
+    /// <param name="tabIndex">The zero-based index of the element to get or set.</param>
+    public async Task ShowTabByIndexAsync(int tabIndex)
     {
-        if (index < 0 || index >= tabs.Count) throw new IndexOutOfRangeException();
+        if (!tabs?.Any() ?? false) return;
 
-        var tab = tabs[index];
+        if (tabIndex < 0 || tabIndex >= tabs!.Count) throw new IndexOutOfRangeException();
 
-        if (tab != null && !tab.Disabled)
-            await ShowTabAsync(tab.ElementId);
+        var tab = tabs[tabIndex];
+
+        if (tab is { Disabled: false })
+            await ShowTabAsync(tab);
     }
 
     /// <summary>
     /// Selects the tab by name and show its associated pane.
     /// </summary>
-    /// <param name="tabName"></param>
+    /// <param name="tabName">The name of the tab to select.</param>
     public async Task ShowTabByNameAsync(string tabName)
     {
-        var tab = tabs.LastOrDefault(x => x.Name == tabName && !x.Disabled);
+        if (!tabs?.Any() ?? false) return;
+
+        var tab = tabs!.LastOrDefault(x => x.Name == tabName && !x.Disabled);
 
         if (tab != null)
-            await ShowTabAsync(tab.ElementId);
+            await ShowTabAsync(tab);
     }
 
     internal void AddTab(Tab tab)
     {
-        if (tab != null)
-        {
-            tabs?.Add(tab);
+        tabs!.Add(tab);
 
-            if (tab.IsActive && !tab.Disabled) activeTab = tab;
+        if (tab is { IsActive: true, Disabled: false })
+            activeTab = tab;
 
-            StateHasChanged(); // This is mandatory
-        }
+        StateHasChanged(); // This is mandatory
     }
 
     /// <summary>
@@ -158,20 +194,25 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     internal async Task SetDefaultActiveTabAsync()
     {
-        activeTab ??= tabs.FirstOrDefault(x => !x.Disabled);
+        if (!tabs?.Any() ?? false) return;
 
-        if (activeTab != null)
-            await ShowTabAsync(activeTab.ElementId);
+        activeTab ??= tabs!.FirstOrDefault(x => !x.Disabled)!;
+
+        if (activeTab is not null)
+            await ShowTabAsync(activeTab);
     }
 
-    private async Task OnTabClickAsync(string tabElementId) => await ShowTabAsync(tabElementId);
+    private async Task OnTabClickAsync(Tab tab) => await ShowTabAsync(tab);
 
-    private async Task ShowTabAsync(string elementId)
+    private async Task ShowTabAsync(Tab tab)
     {
         if (!isDefaultActiveTabSet)
             isDefaultActiveTabSet = true;
 
-        await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", elementId);
+        await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.ElementId);
+
+        if (tab?.OnClick.HasDelegate ?? false)
+            await tab.OnClick.InvokeAsync(new TabEventArgs(tab!.Name, tab.Title));
     }
 
     #endregion
@@ -192,6 +233,13 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public bool EnableFadeEffect { get; set; }
+
+    private bool IsVertical =>
+        NavStyle == NavStyle.Vertical
+        || NavStyle == NavStyle.VerticalPills
+        || NavStyle == NavStyle.VerticalUnderline;
+
+    private string? NavParentDivCssClass => IsVertical ? "d-flex" : default;
 
     /// <summary>
     /// Get or sets the nav style.
@@ -222,6 +270,8 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public EventCallback<TabsEventArgs> OnShown { get; set; }
+
+    private string? TabContentCssClass => IsVertical ? "tab-content flex-grow-1" : "tab-content";
 
     #endregion
 }

@@ -7,7 +7,7 @@ public class NavItem
     /// <summary>
     /// Gets or sets the collection of child navigation items.
     /// </summary>
-    internal IEnumerable<NavItem>? ChildItems { get; set; }
+    internal List<NavItem>? ChildItems { get; set; }
 
     /// <summary>
     /// Gets or sets an additional CSS class.
@@ -43,6 +43,11 @@ public class NavItem
     /// Gets or sets the Id.
     /// </summary>
     public string? Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the item level.
+    /// </summary>
+    public int Level { get; set; } = 0;
 
     /// <summary>
     /// Gets or sets the URL matching behavior.

@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class DropdownItem
+public partial class DropdownItem : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -27,13 +27,13 @@ public partial class DropdownItem
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.DropdownItem());
-        builder.Append(BootstrapClassProvider.Active(), Active);
-        builder.Append(BootstrapClassProvider.Disabled(), Disabled);
+        this.AddClass(BootstrapClassProvider.DropdownItem);
+        this.AddClass(BootstrapClassProvider.Active, Active);
+        this.AddClass(BootstrapClassProvider.Disabled, Disabled);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -59,7 +59,7 @@ public partial class DropdownItem
         base.OnInitialized();
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         if (isFirstRenderComplete)
         {
@@ -117,11 +117,11 @@ public partial class DropdownItem
                 Attributes.Add("role", "button");
 
             if (!Attributes.TryGetValue("href", out _))
-                Attributes.Add("href", To);
+                Attributes.Add("href", To!);
 
             if (Target != Target.None)
                 if (!Attributes.TryGetValue("target", out _))
-                    Attributes.Add("target", Target.ToTargetString());
+                    Attributes.Add("target", Target.ToTargetString()!);
 
             if (Disabled)
             {
@@ -194,7 +194,7 @@ public partial class DropdownItem
         }
     }
 
-    private string buttonTypeString => Type.ToButtonTypeString();
+    private string buttonTypeString => Type.ToButtonTypeString()!;
 
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="ChildContent" />.

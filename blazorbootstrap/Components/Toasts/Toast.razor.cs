@@ -1,10 +1,10 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Toast : BlazorBootstrapComponentBase, IDisposable
+public partial class Toast : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private string customIconName = default!;
+    private string? customIconName;
 
     private DotNetObjectReference<Toast> objRef = default!;
 
@@ -16,12 +16,12 @@ public partial class Toast : BlazorBootstrapComponentBase, IDisposable
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.Toast());
-        builder.Append(BootstrapClassProvider.BackgroundColor(BackgroundColor.White));
+        this.AddClass(BootstrapClassProvider.Toast);
+        this.AddClass(BootstrapClassProvider.BackgroundColor(BackgroundColor.White));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -78,20 +78,20 @@ public partial class Toast : BlazorBootstrapComponentBase, IDisposable
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        ExecuteAfterRender(async () => { await ShowAsync(); });
+        QueueAfterRenderAction(async () => await ShowAsync(), new RenderPriority());
     }
 
     [JSInvokable]
-    public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId!));
 
     [JSInvokable]
-    public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId!));
 
     [JSInvokable]
-    public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId!));
 
     [JSInvokable]
-    public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId));
+    public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(ToastMessage.Id, ElementId!));
 
     /// <summary>
     /// Hides an element’s toast.

@@ -5,11 +5,11 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
     #region Methods
 
     /// <inheritdoc />
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.PaginationLink());
+        this.AddClass(BootstrapClassProvider.PaginationLink);
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     protected override void OnParametersSet()

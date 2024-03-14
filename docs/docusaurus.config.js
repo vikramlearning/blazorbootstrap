@@ -48,9 +48,9 @@ const config = {
         ({
             announcementBar: {
                 id: 'support_us',
-                content: '⭐️ If you like Blazor Bootstrap, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/vikramlearning/blazorbootstrap">GitHub</a>! ⭐️',
-                //backgroundColor: '#fafbfc',
-                //textColor: '#091E42',
+                content: '🚨 We strongly recommend all BlazorBootstrap users migrate to version 2.0.0. <a target="_blank" rel="noopener noreferrer" href="/blog/2024/02/25/upgrade-to-v2.0.0">Read more...</a>',
+                backgroundColor: '#f1aeb5',
+                textColor: '#58151c',
                 isCloseable: true,
             },
             navbar: {
@@ -61,8 +61,8 @@ const config = {
                 },
                 items: [
                     { type: 'doc', docId: 'getting-started/blazor-webassembly-net-8', label: 'Docs', position: 'left' },
-                    { to: '/blog', label: 'Blog', position: 'left' },
                     { href: 'https://demos.blazorbootstrap.com', label: 'Demos', position: 'left' },
+                    { to: '/blog', label: 'Blog', position: 'left' },
                     { href: 'https://github.com/vikramlearning/blazorbootstrap', label: 'GitHub', position: 'right', },
                     { href: 'https://twitter.com/blazorbootstrap', label: 'Twitter', position: 'right', },
                 ],

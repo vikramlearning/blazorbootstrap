@@ -1,0 +1,48 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<CascadingValue IsFixed="true" Value="this">
+    <CascadingValue Value="@collapseSidebar">
+        <aside @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" role="navigation" @attributes="@Attributes">
+            <div class="bb-sidebar2-top-row navbar">
+                <div class="container-fluid ps-3">
+                    <a class="navbar-brand d-flex align-items-center" href="">
+                        @if (!string.IsNullOrWhiteSpace(ImageSrc))
+                        {
+                            <span class="navbar-brand-image me-2">
+                                <img src="@ImageSrc" alt="@Title" />
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="navbar-brand-icon">
+                                <Icon Name="@IconName" CustomIconName="@CustomIconName" Class="fs-4 me-2" />
+                            </span>
+                        }
+                        <span class="navbar-brand-text fw-semibold expanded-only me-2">@Title</span>
+                        @if (!string.IsNullOrWhiteSpace(BadgeText))
+                        {
+                            <span class="navbar-brand-badge badge expanded-only">@BadgeText</span>
+                        }
+                    </a>
+                    <button title="Navigation menu" class="navbar-toggler px-2" @onclick="ToggleNavMenu">
+                        <span class="navbar-toggler-icon bi bi-list"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="@navMenuCssClass">
+                @if (items is null)
+                {
+                    <div class="text-center my-2">
+                        <Spinner Type="SpinnerType.Dots" Color="SpinnerColor.Secondary" />
+                    </div>
+                }
+                else
+                {
+                    <Sidebar2ItemGroup NavItems="@items" />
+                }
+            </div>
+        </aside>
+    </CascadingValue>
+</CascadingValue>

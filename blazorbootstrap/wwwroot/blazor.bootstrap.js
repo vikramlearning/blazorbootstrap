@@ -236,15 +236,15 @@ window.blazorBootstrap = {
 
             currencyEl?.addEventListener('keydown', function (event) {
 
-                switch (event.keyCode) {
-                    case 8:   // backspace
-                    case 9:   // tab
-                    case 13:  // enter
-                    case 37:  // arrows left
-                    case 38:  // arrows up
-                    case 39:  // arrows right
-                    case 40:  // arrows down
-                    case 46:  // delete key
+                switch (event.code) {
+                    case "Backspace":
+                    case "Tab":
+                    case "Enter":
+                    case "ArrowLeft":
+                    case "ArrowUp":
+                    case "ArrowRight":
+                    case "ArrowDown":
+                    case "Delete":
                         return;
                 }
 
@@ -562,10 +562,10 @@ window.blazorBootstrap = {
         }
     },
     scriptLoader: {
-        load: (elementId, async, scriptId, source, type) => {
+        initialize: (elementId, async, scriptId, source, type, dotNetHelper) => {
             let scriptLoaderEl = document.getElementById(elementId);
 
-            if (source.length == 0) {
+            if (source.length === 0) {
                 console.error(`Invalid src url.`);
                 return;
             }
@@ -583,9 +583,13 @@ window.blazorBootstrap = {
             if (type != null)
                 scriptEl.type = type;
 
-            scriptEl.onerror = function () {
-                console.error(`An error occurred while loading the script: ${source}`);
-            }
+            scriptEl.addEventListener("error", (event) => {
+                dotNetHelper.invokeMethodAsync('OnErrorJS', `An error occurred while loading the script: ${source}`);
+            });
+
+            scriptEl.addEventListener("load", (event) => {
+                dotNetHelper.invokeMethodAsync('OnLoadJS');
+            });
 
             if (scriptLoaderEl != null)
                 scriptLoaderEl.appendChild(scriptEl);
@@ -628,6 +632,32 @@ window.blazorBootstrap = {
                     // event.relatedTarget --> new active tab
                     dotNetHelper.invokeMethodAsync('bsHiddenTab', event.relatedTarget?.id, event.target?.id);
                 });
+            });
+        },
+        initializeNewTab: (tabId, dotNetHelper) => {
+            let tabEl = document.getElementById(tabId);
+            if (tabEl == null)
+                return;
+
+            tabEl?.addEventListener('show.bs.tab', (event) => {
+                // event.target --> active tab
+                // event.relatedTarget --> previous active tab (if available)
+                dotNetHelper.invokeMethodAsync('bsShowTab', event.target?.id, event.relatedTarget?.id);
+            });
+            tabEl?.addEventListener('shown.bs.tab', (event) => {
+                // event.target --> active tab
+                // event.relatedTarget --> previous active tab
+                dotNetHelper.invokeMethodAsync('bsShownTab', event.target?.id, event.relatedTarget?.id);
+            });
+            tabEl?.addEventListener('hide.bs.tab', (event) => {
+                // event.target --> current active tab
+                // event.relatedTarget --> new soon-to-be-active tab
+                dotNetHelper.invokeMethodAsync('bsHideTab', event.relatedTarget?.id, event.target?.id);
+            });
+            tabEl?.addEventListener('hidden.bs.tab', (event) => {
+                // event.target --> previous active tab
+                // event.relatedTarget --> new active tab
+                dotNetHelper.invokeMethodAsync('bsHiddenTab', event.relatedTarget?.id, event.target?.id);
             });
         },
         show: (elementId) => {
@@ -690,6 +720,10 @@ window.blazorBootstrap = {
             if (elementRef != null)
                 bootstrap?.Tooltip?.getOrCreateInstance(elementRef);
         },
+        show: (elementRef) => {
+            if (elementRef != null)
+                bootstrap?.Tooltip?.getOrCreateInstance(elementRef)?.show();
+        },
         update: (elementRef) => {
             if (elementRef != null)
                 bootstrap?.Tooltip?.getOrCreateInstance(elementRef)?.update();
@@ -698,6 +732,14 @@ window.blazorBootstrap = {
             if (elementRef != null)
                 bootstrap?.Tooltip?.getOrCreateInstance(elementRef)?.dispose();
         }
+    },
+    treeview: {
+        initialize: (elementId, dotNetHelper) => {
+            window.addEventListener("resize", () => {
+                dotNetHelper.invokeMethodAsync('bsWindowResize', window.innerWidth);
+            });
+        },
+        windowSize: () => window.innerWidth
     },
     // global function
     invokeMethodAsync: (callbackEventName, dotNetHelper) => {

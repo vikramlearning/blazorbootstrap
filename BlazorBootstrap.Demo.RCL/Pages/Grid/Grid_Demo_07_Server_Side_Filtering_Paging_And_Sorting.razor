@@ -44,8 +44,8 @@ Class="table table-hover table-bordered table-striped"
         if (request.Sorting is not null && request.Sorting.Any())
         {
             // Note: Multi column sorting is not supported at this moment
-            sortString = request.Sorting.FirstOrDefault().SortString;
-            sortDirection = request.Sorting.FirstOrDefault().SortDirection;
+            sortString = request.Sorting.FirstOrDefault()!.SortString;
+            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
         }
         var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
         return await Task.FromResult(new GridDataProviderResult<Customer2> { Data = result.Item1, TotalCount = result.Item2 });

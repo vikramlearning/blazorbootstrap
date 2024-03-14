@@ -1,0 +1,91 @@
+.bb-sidebar2 {
+    background-color: var(--bb-sidebar2-background-color);
+    border-right: 1px solid var(--bb-sidebar2-content-border-color);
+}
+
+    .bb-sidebar2.collapsed {
+        width: var(--bb-sidebar2-collapsed-width);
+    }
+
+        .bb-sidebar2.collapsed .expanded-only {
+            display: none;
+        }
+
+@media (min-width: 641px) {
+    .bb-sidebar2 {
+        width: var(--bb-sidebar2-width);
+        position: sticky;
+        top: 0;
+    }
+}
+
+.bb-sidebar2-top-row {
+    height: 3.5rem;
+    background-color: var(--bb-sidebar2-top-row-background-color);
+    border-bottom: 1px solid var(--bb-sidebar2-top-row-border-color);
+    border-right: 1px solid var(--bb-sidebar2-top-row-border-color);
+}
+
+.navbar-toggler {
+    background-color: var(--bb-sidebar2-navbar-toggler-background-color);
+    color: rgb(var(--bb-sidebar2-nav-item-text-active-color-rgb));
+    padding: inherit !important;
+    padding-right: 0.25rem !important;
+    padding-left: 0.25rem !important;
+    line-height: inherit !important;
+    font-size: inherit !important;
+}
+
+.navbar-toggler-icon {
+    background-image: inherit !important;
+    color: var(--bb-sidebar2-navbar-toggler-icon-color) !important;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none !important;
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+}
+
+.navbar-brand-icon {
+    color: var(--bb-sidebar2-brand-icon-color);
+}
+
+.navbar-brand-image {
+    height: var(--bb-sidebar2-brand-image-height);
+}
+
+    .navbar-brand-image img {
+        width: var(--bb-sidebar2-brand-image-width);
+        height: var(--bb-sidebar2-brand-image-height);
+        vertical-align: initial !important;
+    }
+
+.navbar-brand-text {
+    color: var(--bb-sidebar2-title-text-color);
+    font-weight: 600 !important;
+}
+
+.navbar-brand-badge {
+    color: var(--bb-sidebar2-title-badge-text-color);
+    background-color: var(--bb-sidebar2-title-badge-background-color);
+}
+
+@media (min-width: 641px) {
+    .navbar-toggler {
+        display: none;
+    }
+
+    .collapse {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+    }
+
+    .nav-scrollable {
+        /* Allow sidebar to scroll for tall menus */
+        height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+}

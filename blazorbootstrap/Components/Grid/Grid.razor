@@ -11,7 +11,7 @@
     <div class="@responsiveCssClass" style="@gridParentStyle" onscroll="@OnScroll">
         <table @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
             <thead class="@THeadCssClass">
-                <tr class="@(FixedHeader ? BootstrapClassProvider.TextNoWrap() : "") @HeaderRowCssClass">
+                <tr class="@(FixedHeader ? BootstrapClassProvider.TextNoWrap : "") @HeaderRowCssClass">
                     @if (AllowSelection)
                     {
                         @HeaderSelectionTemplate
@@ -33,7 +33,7 @@
                             var columnClassList = new HashSet<string>();
                             var columnStyleList = new List<string>();
 
-                            columnClassList.Add(column.Class);
+                            columnClassList.Add(column.Class!);
                             if (column.Freeze)
                             {
                                 columnClassList.Add("freeze-column");

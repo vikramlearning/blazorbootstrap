@@ -55,7 +55,7 @@ public class ModalService
     internal void OnClose()
     {
         OnHide?.Invoke();
-        OnHide = null;
+        OnHide = null!;
     }
 
     #endregion

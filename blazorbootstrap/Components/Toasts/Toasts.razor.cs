@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class Toasts : BlazorBootstrapComponentBase, IDisposable
+public partial class Toasts : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -10,13 +10,13 @@ public partial class Toasts : BlazorBootstrapComponentBase, IDisposable
 
     #region Methods
 
-    protected override void BuildClasses(CssClassBuilder builder)
+    protected override void BuildClasses()
     {
-        builder.Append(BootstrapClassProvider.ToastContainer());
-        builder.Append(BootstrapClassProvider.PositionFixed());
-        builder.Append(BootstrapClassProvider.ToToastsPlacement(Placement));
+        this.AddClass(BootstrapClassProvider.ToastContainer);
+        this.AddClass(BootstrapClassProvider.PositionFixed);
+        this.AddClass(BootstrapClassProvider.ToToastsPlacement(Placement));
 
-        base.BuildClasses(builder);
+        base.BuildClasses();
     }
 
     /// <inheritdoc />
@@ -82,8 +82,13 @@ public partial class Toasts : BlazorBootstrapComponentBase, IDisposable
             var deleteMessages = Messages.GetRange(0, Messages.Count - StackLength);
 
             foreach (var message in deleteMessages)
+            {
+                if (message is not null)
+                    Messages.Remove(message);
+
                 if (string.IsNullOrWhiteSpace(message.ElementId))
                     await JS.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
+            }
         }
     }
 
