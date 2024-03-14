@@ -131,6 +131,12 @@ table button.dropdown-toggle.bb-grid-filter::after {
 }
 
 /* grid - fixed header */
+.bb-table {
+    /* NOTE: intentionally overriding the behavior */
+    --bs-table-color: inherit !important;
+    --bs-table-bg: inherit !important;
+}
+
 .bb-table-sticky {
     border-collapse: collapse;
     border-spacing: 0;
