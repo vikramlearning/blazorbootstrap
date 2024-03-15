@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace BlazorBootstrap.Demo.RCL.Models;
+﻿namespace BlazorBootstrap.Demo.RCL.Models;
 
 public record Customer2
 (
