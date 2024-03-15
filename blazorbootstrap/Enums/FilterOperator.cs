@@ -86,6 +86,11 @@ public enum FilterOperator
     /// Satisfied if the current value is not among the list of values.
     /// </summary>
     NotIn,
+    
+    /// <summary>
+    /// Satisfied if the current value is between two values.
+    /// </summary>
+    Between,
 
     /// <summary>
     /// Clear the current filter.
