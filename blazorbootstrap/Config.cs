@@ -4,6 +4,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class Config
 {
+    public const string FilterBetweenSeparator = ";";
     #region Methods
 
     /// <summary>

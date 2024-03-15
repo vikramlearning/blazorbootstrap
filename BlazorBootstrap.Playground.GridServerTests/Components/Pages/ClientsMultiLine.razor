@@ -1,4 +1,4 @@
-@page "/clients"
+@page "/clients-multi"
 @using BlazorBootstrap.Playground.GridServerTests.Models
 @using BlazorBootstrap.Playground.GridServerTests.Services
 
@@ -11,6 +11,9 @@
       AllowFiltering="true"
       AllowPaging="true"
       AllowSorting="true"
+      PageSizeSelectorVisible="true"
+      FiltersRowCssClass="two-row-filters"
+      PageSizeSelectorItems="@(new[] {10, 20, 50, 100})"
       Responsive="true">
     <GridColumn TItem="Client" HeaderText="Id" PropertyName="Id" SortString="Id" SortKeySelector="item => item.Id">@context.Id</GridColumn>
     <GridColumn TItem="Client" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email">@context.Email</GridColumn>

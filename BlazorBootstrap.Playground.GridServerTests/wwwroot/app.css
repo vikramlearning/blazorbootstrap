@@ -49,3 +49,18 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+tr.two-row-filters > th > div.d-flex {
+    display: block !important;
+}
+
+tr.two-row-filters > th > div.d-flex > button.d-flex.btn {
+    width: 100% !important;
+    display: block !important;
+    margin-bottom: 0.5em;
+}
+
+tr.two-row-filters > th > div.d-flex > input.form-control {
+    width: 100% !important;
+    display: block !important;
+}

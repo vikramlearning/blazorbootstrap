@@ -38,15 +38,36 @@
          || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
          || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
     {
-        <input class="form-control" style="@filterStyle" type="number" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))">
+        if (filterOperator == FilterOperator.Between)
+        {
+            <input class="form-control" style="@filterStyle" type="number" value="@betweenLeftValue" @oninput="@(async args => await OnBetweenLeftValueChangedAsync(args))">
+            <input class="form-control" style="@filterStyle" type="number" value="@betweenRightValue" @oninput="@(async args => await OnBetweenRightValueChangedAsync(args))">
+        } else 
+        {
+            <input class="form-control" style="@filterStyle" type="number" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))">
+        }
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly)
     {
-        <input class="form-control" style="@filterStyle" type="date" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))"/>
+        if (filterOperator == FilterOperator.Between)
+        {
+            <input class="form-control" style="@filterStyle" type="date" value="@betweenLeftValue" @oninput="@(async args => await OnBetweenLeftValueChangedAsync(args))">
+            <input class="form-control" style="@filterStyle" type="date" value="@betweenRightValue" @oninput="@(async args => await OnBetweenRightValueChangedAsync(args))">
+        } else 
+        {
+            <input class="form-control" style="@filterStyle" type="date" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))">
+        }
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
     {
-        <input class="form-control" style="@filterStyle" type="datetime-local" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))"/>
+        if (filterOperator == FilterOperator.Between)
+        {
+            <input class="form-control" style="@filterStyle" type="datetime-local" value="@betweenLeftValue" @oninput="@(async args => await OnBetweenLeftValueChangedAsync(args))">
+            <input class="form-control" style="@filterStyle" type="datetime-local" value="@betweenRightValue" @oninput="@(async args => await OnBetweenRightValueChangedAsync(args))">
+        } else 
+        {
+            <input class="form-control" style="@filterStyle" type="datetime-local" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))">
+        }
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
     {
