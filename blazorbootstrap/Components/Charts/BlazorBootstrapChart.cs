@@ -98,10 +98,10 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
         var style = "";
 
         if (Width > 0)
-            style += $"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()}";
+            style += $"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};";
 
         if (Height > 0)
-            style += $"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}";
+            style += $"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()};";
 
         return style;
     }
