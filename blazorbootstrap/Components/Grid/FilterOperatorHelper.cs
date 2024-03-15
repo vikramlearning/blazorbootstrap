@@ -21,6 +21,7 @@ public static class FilterOperatorHelper
                                               new FilterOperatorInfo("<=", "Less than or equals", FilterOperator.LessThanOrEquals),
                                               new FilterOperatorInfo(">", "Greater than", FilterOperator.GreaterThan),
                                               new FilterOperatorInfo(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals),
+                                              new FilterOperatorInfo("[..]","Between", FilterOperator.Between),
                                               new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
                                           };
 
@@ -84,6 +85,7 @@ public static class FilterOperatorHelper
                                               new FilterOperatorInfo("<=", "Less than or equals", FilterOperator.LessThanOrEquals),
                                               new FilterOperatorInfo(">", "Greater than", FilterOperator.GreaterThan),
                                               new FilterOperatorInfo(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals),
+                                              new FilterOperatorInfo("[..]","Between", FilterOperator.Between),
                                               new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
                                           };
 

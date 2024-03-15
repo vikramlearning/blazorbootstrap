@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BlazorBootstrap;
 
@@ -13,6 +14,8 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     private Button closeButton = default!;
 
     private string? filterValue;
+    private string? betweenLeftValue;
+    private string? betweenRightValue;
     private string? enumFilterValue;
     private HashSet<string> filterValues = new HashSet<string>();
 
@@ -93,8 +96,8 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
 
     private async Task OnFilterOperatorChangedAsync(FilterOperatorInfo filterOperatorInfo)
     {
-        if (filterOperatorInfo.FilterOperator == FilterOperator.Clear)
-        {
+        if (filterOperatorInfo.FilterOperator == FilterOperator.Clear) {
+            filterOperator = FilterOperator.Clear;
             SetDefaultFilter();
 
             if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
@@ -105,6 +108,18 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         else
         {
             filterOperator = filterOperatorInfo.FilterOperator;
+            if (filterOperator == FilterOperator.Between)
+            {
+                filterValue = $"{betweenLeftValue};{betweenRightValue}";
+            }
+            else if (filterOperator == FilterOperator.In)
+            {
+                filterValue = string.Join(',', filterValues);
+            }
+            else
+            {
+                filterValue = filterValue?.Split(Config.FilterBetweenSeparator).FirstOrDefault();
+            }
         }
 
         SetSelectedFilterSymbol();
@@ -116,6 +131,30 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     private async Task OnFilterValueChangedAsync(ChangeEventArgs args)
     {
         filterValue = args?.Value?.ToString();
+
+        if (GridColumnFilterChanged.HasDelegate)
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
+    }
+
+    private async Task OnBetweenLeftValueChangedAsync(ChangeEventArgs args)
+    {
+        betweenLeftValue = args?.Value?.ToString();
+
+        var rightValue = betweenRightValue ?? betweenLeftValue;
+        
+        filterValue = $"{betweenLeftValue}{Config.FilterBetweenSeparator}{rightValue}";
+
+        if (GridColumnFilterChanged.HasDelegate)
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
+    }
+
+    private async Task OnBetweenRightValueChangedAsync(ChangeEventArgs args)
+    {
+        betweenRightValue = args?.Value?.ToString();
+
+        var leftValue = betweenLeftValue ?? betweenRightValue;
+        
+        filterValue = $"{leftValue}{Config.FilterBetweenSeparator}{betweenRightValue}";
 
         if (GridColumnFilterChanged.HasDelegate)
             await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
