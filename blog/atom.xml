@@ -2,11 +2,37 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://docs.blazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Docs Blog</title>
-    <updated>2024-02-25T00:00:00.000Z</updated>
+    <updated>2024-03-17T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://docs.blazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Docs Blog</subtitle>
     <icon>https://docs.blazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v2.1.0]]></title>
+        <id>https://docs.blazorbootstrap.com/blog/2024/03/17/blazorbootstrap-2.1.0</id>
+        <link href="https://docs.blazorbootstrap.com/blog/2024/03/17/blazorbootstrap-2.1.0"/>
+        <updated>2024-03-17T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release 2.1.0 with New Sidebar2 Component and Other Improvements!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release 2.1.0 with New Sidebar2 Component and Other Improvements!!!</p><p><img loading="lazy" src="https://i.imgur.com/vs8kl7G.png" alt="image" title="Blazor Bootstrap: Sidebar2 Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's New<a href="#whats-new" class="hash-link" aria-label="Direct link to What's New" title="Direct link to What's New">​</a></h2><ul><li><code>Sidebar2</code> component</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>BarVhart</code> component</p></li><li><p><code>Callout</code> component</p></li><li><p><code>CurrencyInput</code> component</p></li><li><p><code>Grid</code> component</p></li><li><p><code>NumberInput</code> component</p></li><li><p><code>PdfViewer</code> component</p></li><li><p><code>RangeInput</code> component</p></li><li><p><code>Tooltip</code> component</p></li><li><p>Documentation &amp; Demos</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v2.1.0" term="v2.1.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="bootstrap5" term="bootstrap5"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="barchart" term="barchart"/>
+        <category label="callout" term="callout"/>
+        <category label="currencyinput" term="currencyinput"/>
+        <category label="grid" term="grid"/>
+        <category label="numberinput" term="numberinput"/>
+        <category label="pdfviewer" term="pdfviewer"/>
+        <category label="rangeinput" term="rangeinput"/>
+        <category label="sidebar2" term="sidebar2"/>
+        <category label="tooltip" term="tooltip"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v2.0.0]]></title>
         <id>https://docs.blazorbootstrap.com/blog/2024/02/25/blazorbootstrap-2.0.0</id>
