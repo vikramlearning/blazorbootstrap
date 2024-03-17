@@ -1,0 +1,65 @@
+﻿<div class="mb-3">
+    <label class="form-label">Locale: <b>en-IN</b></label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount1" Locale="en-IN" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount1</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>en-US</b></label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount2" Locale="en-US" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount2</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>fr-FR</b></label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount3" Locale="fr-FR" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount3</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>es-ES</b></label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount4" Locale="es-ES" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount4</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>de-DE</b></label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount5" Locale="de-DE" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount5</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>fr-CA</b></label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount6" Locale="fr-CA" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount6</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>en-PH</b></label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount7" Locale="en-PH" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount7</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>en-SE</b></label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount8" Locale="en-SE" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount8</div>
+
+<div class="mb-3">
+    <label class="form-label">Locale: <b>zh-CN</b></label>
+    <CurrencyInput TValue="decimal" @bind-Value="@amount9" Locale="zh-CN" Placeholder="Enter amount" />
+</div>
+<div class="mb-3">Entered Amount: @amount9</div>
+
+@code {
+    private decimal amount1 = 12345678.55m;
+    private decimal amount2 = 12345678.55m;
+    private decimal amount3 = 12345678.55m;
+    private decimal amount4 = 12345678.55m;
+    private decimal amount5 = 12345678.55m;
+    private decimal amount6 = 12345678.55m;
+    private decimal amount7 = 12345678.55m;
+    private decimal amount8 = 12345678.55m;
+    private decimal amount9 = 12345678.55m;
+}

@@ -231,7 +231,7 @@ window.blazorBootstrap = {
         }
     },
     currencyInput: {
-        initialize: (elementId, isFloat, allowNegativeNumbers) => {
+        initialize: (elementId, isFloat, allowNegativeNumbers, decimalSeperator) => {
             let currencyEl = document.getElementById(elementId);
 
             currencyEl?.addEventListener('keydown', function (event) {
@@ -251,7 +251,7 @@ window.blazorBootstrap = {
                 let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
                 if (isFloat) {
-                    validChars.push('.'); // TODO: check ',' for specific culture
+                    validChars.push(decimalSeperator);
                 }
 
                 if (allowNegativeNumbers) {
@@ -268,7 +268,7 @@ window.blazorBootstrap = {
                     let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
                     if (isFloat) {
-                        validChars.push('.'); // TODO: check ',' for specific culture
+                        validChars.push(decimalSeperator);
                     }
 
                     if (allowNegativeNumbers) {
