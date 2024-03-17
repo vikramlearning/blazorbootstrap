@@ -8,9 +8,9 @@
        id="@ElementId"
        class="@ClassNames @fieldCssClasses"
        style="@StyleNames"
-       value="@Value"
+       value="@GetInvariantNumber(Value)"
+       step="@Step?.ToString(CultureInfo.InvariantCulture)"
        disabled="@Disabled"
        placeholder="@Placeholder"
-       step="@step"
        autocomplete="@autoComplete"
        @onchange="OnChange"/>

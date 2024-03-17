@@ -309,6 +309,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
         // All numbers without decimal places work fine by default
         return value?.ToString() ?? string.Empty;
     }
+
     private bool TryParseValue(object value, out TValue newValue)
     {
         try
