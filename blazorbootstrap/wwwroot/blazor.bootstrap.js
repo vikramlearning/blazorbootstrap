@@ -467,13 +467,15 @@ window.blazorBootstrap = {
         }
     },
     numberInput: {
-        initialize: (elementId, isFloat, allowNegativeNumbers) => {
+        initialize: (elementId, isFloat, allowNegativeNumbers, numberDecimalSeparator) => {
             let numberEl = document.getElementById(elementId);
 
             numberEl?.addEventListener('keydown', function (event) {
                 let invalidChars = ["e", "E", "+"];
-                if (!isFloat)
+                if (!isFloat) {
                     invalidChars.push("."); // restrict '.' for integer types
+                    invalidChars.push(numberDecimalSeparator); // restrict ',' for specific culture
+                }
 
                 if (!allowNegativeNumbers) {
                     invalidChars.push("-"); // restrict '-'

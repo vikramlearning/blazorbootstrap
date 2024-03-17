@@ -104,6 +104,20 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// </summary>
     public void Enable() => Disabled = false;
 
+    private string GetInvariantNumber(TValue value)
+    {
+        if (value is null) return string.Empty;
+
+        if (value is float floatValue) return floatValue.ToString(CultureInfo.InvariantCulture);
+
+        if (value is double doubleValue) return doubleValue.ToString(CultureInfo.InvariantCulture);
+
+        if (value is decimal decimalValue) return decimalValue.ToString(CultureInfo.InvariantCulture);
+
+        // All numbers without decimal places work fine by default
+        return value?.ToString() ?? string.Empty;
+    }
+
     private async Task HandleChangeAsync()
     {
         await ValueChanged.InvokeAsync(Value);
@@ -284,31 +298,6 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             Value = value;
     }
 
-    private string GetInvariantNumber(TValue value)
-    {
-        if (value is null)
-        {
-            return string.Empty;
-        }
-
-        if (value is float floatValue)
-        {
-            return floatValue.ToString(CultureInfo.InvariantCulture);
-        }
-
-        if (value is double doubleValue)
-        {
-            return doubleValue.ToString(CultureInfo.InvariantCulture);
-        }
-
-        if (value is decimal decimalValue)
-        {
-            return decimalValue.ToString(CultureInfo.InvariantCulture);
-        }
-
-        // All numbers without decimal places work fine by default
-        return value?.ToString() ?? string.Empty;
-    }
     private bool TryParseValue(object value, out TValue newValue)
     {
         try
