@@ -95,6 +95,20 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// </summary>
     public void Enable() => Disabled = false;
 
+    private string GetInvariantNumber(TValue value)
+    {
+        if (value is null) return string.Empty;
+
+        if (value is float floatValue) return floatValue.ToString(CultureInfo.InvariantCulture);
+
+        if (value is double doubleValue) return doubleValue.ToString(CultureInfo.InvariantCulture);
+
+        if (value is decimal decimalValue) return decimalValue.ToString(CultureInfo.InvariantCulture);
+
+        // All numbers without decimal places work fine by default
+        return value?.ToString() ?? string.Empty;
+    }
+
     private bool isFloatingNumber() =>
         typeof(TValue) == typeof(float)
         || typeof(TValue) == typeof(float?)
@@ -260,32 +274,6 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
         await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
-    }
-
-    private string GetInvariantNumber(TValue value)
-    {
-        if (value is null)
-        {
-            return string.Empty;
-        }
-
-        if (value is float floatValue)
-        {
-            return floatValue.ToString(CultureInfo.InvariantCulture);
-        }
-
-        if (value is double doubleValue)
-        {
-            return doubleValue.ToString(CultureInfo.InvariantCulture);
-        }
-
-        if (value is decimal decimalValue)
-        {
-            return decimalValue.ToString(CultureInfo.InvariantCulture);
-        }
-
-        // All numbers without decimal places work fine by default
-        return value?.ToString() ?? string.Empty;
     }
 
     private bool TryParseValue(object value, out TValue newValue)
