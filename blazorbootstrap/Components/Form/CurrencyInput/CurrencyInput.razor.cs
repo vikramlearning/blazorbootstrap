@@ -28,7 +28,6 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-
             await JS.InvokeVoidAsync("window.blazorBootstrap.currencyInput.initialize", ElementId, isFloatingNumber(), AllowNegativeNumbers, cultureInfo.NumberFormat.CurrencyDecimalSeparator);
 
             var currentValue = Value; // object
@@ -122,8 +121,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
         if (AllowNegativeNumbers)
             validChars = string.Concat(validChars, "-");
 
-        var test = string.Concat(value?.ToString()?.Replace(",", ".")?.Where(c => validChars.Contains(c))!);
-        return test;
+        return string.Concat(value?.ToString()?.Replace(",", ".")?.Where(c => validChars.Contains(c))!);
     }
 
     private bool isFloatingNumber() =>
