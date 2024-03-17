@@ -138,7 +138,7 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
 
     /// <summary>
     /// DataProvider is for items to render.
-    /// The provider should always return an instance of 'SidebarDataProviderResult', and 'null' is not allowed.
+    /// The provider should always return an instance of <see cref="Sidebar2DataProviderResult"/>, and 'null' is not allowed.
     /// </summary>
     [Parameter]
     [EditorRequired]
