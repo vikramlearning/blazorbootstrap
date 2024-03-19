@@ -174,6 +174,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Sidebar
 ![Blazor Bootstrap - Sidebar](https://i.imgur.com/d91Q9Zt.png "Blazor Bootstrap - Sidebar")
 
+### Blazor Bootstrap - Sidebar2
+![Blazor Bootstrap - Sidebar2](https://i.imgur.com/HUP7ydv.png "Blazor Bootstrap - Sidebar2")
+
 ### Blazor Bootstrap - Switch
 ![Blazor Bootstrap - Switch](https://i.imgur.com/ALKzreq.png "Blazor Bootstrap - Switch")
 
