@@ -6,6 +6,10 @@
 public enum ModalType
 {
     /// <summary>
+    /// No color at all.
+    /// </summary>
+    Default,
+    /// <summary>
     /// Primary color.
     /// </summary>
     Primary,

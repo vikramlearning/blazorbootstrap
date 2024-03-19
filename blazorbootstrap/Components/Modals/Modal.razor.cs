@@ -18,7 +18,7 @@ public partial class Modal : BlazorBootstrapComponentBase
 
     private bool isVisible;
 
-    private ModalType modalType = ModalType.Light;
+    private ModalType modalType = ModalType.Default;
 
     private DotNetObjectReference<Modal> objRef = default!;
 
