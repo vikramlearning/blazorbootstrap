@@ -2,9 +2,9 @@
 
 	<PropertyGroup>
 
-		<PackageId>Sf.Blazor.Bootstrap</PackageId>
+		<PackageId>Blazor.Bootstrap</PackageId>
     <Version>2.1.0</Version>
-		<PackageVersion>2.1.0.0</PackageVersion>
+		<PackageVersion>2.1.0</PackageVersion>
 
 		<!--<PackageIconUrl></PackageIconUrl>-->
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>

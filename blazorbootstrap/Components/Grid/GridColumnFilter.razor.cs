@@ -99,6 +99,9 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         if (filterOperatorInfo.FilterOperator == FilterOperator.Clear) {
             filterOperator = FilterOperator.Clear;
             SetDefaultFilter();
+            filterValues.Clear();
+            betweenLeftValue = string.Empty;
+            betweenRightValue = string.Empty;
 
             if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
                 filterValue = null;

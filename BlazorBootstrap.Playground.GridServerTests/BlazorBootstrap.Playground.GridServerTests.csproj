@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\blazorbootstrap\BlazorBootstrap.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\bootstrap\bootstrap.min.css" />
       <_ContentIncludedByDefault Remove="wwwroot\bootstrap\bootstrap.min.css.map" />
     </ItemGroup>
@@ -23,6 +19,10 @@
 
     <ItemGroup>
       <PackageReference Include="Bogus" Version="35.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\blazorbootstrap\BlazorBootstrap.csproj" />
     </ItemGroup>
 
 </Project>
