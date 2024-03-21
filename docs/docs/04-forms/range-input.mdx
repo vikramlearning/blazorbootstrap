@@ -224,10 +224,27 @@ The `Step` parameter is a number that specifies the granularity that the value m
 
 [See demo here](https://demos.blazorbootstrap.com/form/range-input#step)
 
+### Decimal values
+
+<img src="https://i.imgur.com/Z6v6dqw.png" alt="Blazor Bootstrap: Range Input Component - Decimal values" />
+
+```cshtml {} showLineNumbers
+<RangeInput TValue="decimal" @bind-Value="amount1" Min="0" Max="100" Step="0.01" />
+<div class="mt-2">@amount1</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    decimal amount1 = 0;
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/range-input#decimal-values)
+
 ### Tick marks
 
 To add tick marks to a `RangeInput`, set the `TickMarks` parameter.
-`
+
 <img src="https://i.imgur.com/dcMBuxT.png" alt="Blazor Bootstrap: Range Input Component - Tick marks" />
 
 ```cshtml {3} showLineNumbers

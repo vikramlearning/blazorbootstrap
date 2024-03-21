@@ -25,6 +25,7 @@ Blazor Bootstrap `NumberInput` component is built around HTML input of `type="nu
 | AutoComplete | bool | false | | Indicates whether the NumberInput can complete the values automatically by the browser. |
 | Disabled | bool | false | | Gets or sets the disabled. |
 | EnableMinMax | bool | false | | Determines whether to restrict the user input to Min and Max range. If true, restricts the user input between the Min and Max range. Else accepts the user input. |
+| Locale | string | `en-US` | ✔️ | Gets or sets the locale. |
 | Max| TValue | | | Gets or sets the max. Max ignored if EnableMinMax="false". |
 | Min| TValue | | | Gets or sets the min. Min ignored if EnableMinMax="false". |
 | Placeholder | string? | null | | Gets or sets the placeholder. |
@@ -36,8 +37,8 @@ Blazor Bootstrap `NumberInput` component is built around HTML input of `type="nu
 
 | Name | Description |
 |:--|:--|
-| Disable | Disables number input. |
-| Enable | Enables number input. |
+| Disable() | Disables number input. |
+| Enable() | Enables number input. |
 
 ## Events
 
@@ -75,45 +76,53 @@ By default, `e + -` are blocked. For all integral numeric types, dot `.` is bloc
 
 <img src="https://i.imgur.com/iUNBkki.png" alt="Blazor Bootstrap: Number Input Component - Generic type" />
 
-```cshtml {3,8,13,18,23,28,33,38} showLineNumbers
+```cshtml {3,9,15,21,27,33,39,45} showLineNumbers
 <div class="mb-3">
     <label class="form-label">Enter int number</label>
     <NumberInput TValue="int" @bind-Value="@amount" />
+    <div class="mt-1">Entered Number: @amount</div>
 </div>
 
 <div class="mb-3">
     <label class="form-label">Enter int? number</label>
     <NumberInput TValue="int?" @bind-Value="@amount2" />
+    <div class="mt-1">Entered Number: @amount2</div>
 </div>
 
 <div class="mb-3">
     <label class="form-label">Enter float number</label>
     <NumberInput TValue="float" @bind-Value="@amount3" />
+    <div class="mt-1">Entered Number: @amount3</div>
 </div>
 
 <div class="mb-3">
     <label class="form-label">Enter float? number</label>
     <NumberInput TValue="float?" @bind-Value="@amount4" />
+    <div class="mt-1">Entered Number: @amount4</div>
 </div>
 
 <div class="mb-3">
     <label class="form-label">Enter double number</label>
     <NumberInput TValue="double" @bind-Value="@amount5" />
+    <div class="mt-1">Entered Number: @amount5</div>
 </div>
 
 <div class="mb-3">
     <label class="form-label">Enter double? number</label>
     <NumberInput TValue="double?" @bind-Value="@amount6" />
+    <div class="mt-1">Entered Number: @amount6</div>
 </div>
 
 <div class="mb-3">
     <label class="form-label">Enter decimal number</label>
     <NumberInput TValue="decimal" @bind-Value="@amount7" />
+    <div class="mt-1">Entered Number: @amount7</div>
 </div>
 
 <div class="mb-3">
     <label class="form-label">Enter decimal? number</label>
     <NumberInput TValue="decimal?" @bind-Value="@amount8" />
+    <div class="mt-1">Entered Number: @amount8</div>
 </div>
 ```
 

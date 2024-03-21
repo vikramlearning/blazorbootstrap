@@ -2,7 +2,7 @@
 
 ### An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.
 
-**NOTE:** We strongly recommend all BlazorBootstrap users migrate to version 2.0.0. [Read more...](https://docs.blazorbootstrap.com/blog/2024/02/25/upgrade-to-v2.0.0)
+**NOTE:** We strongly recommend all BlazorBootstrap users migrate to version 2.x.x. [Read more...](https://docs.blazorbootstrap.com/blog/2024/02/25/upgrade-to-v2.0.0)
 
 ## Table of contents
 
@@ -18,7 +18,7 @@
 Get started any way you want
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 2.0.0`
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 2.1.0`
 - Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with **.NET CLI**: `dotnet new install Blazor.Bootstrap.Templates::1.10.0`
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
@@ -64,6 +64,7 @@ Get started any way you want
 | RangeInput | [Docs](https://docs.blazorbootstrap.com/forms/range-input) | [Demos](https://demos.blazorbootstrap.com/form/range-input) |
 | Script Loader | [Docs](https://docs.blazorbootstrap.com/components/script-loader) | [Demos](https://demos.blazorbootstrap.com/script-loader) |
 | Sidebar | [Docs](https://docs.blazorbootstrap.com/components/sidebar) | [Demos](https://demos.blazorbootstrap.com/sidebar) |
+| Sidebar2 | [Docs](https://docs.blazorbootstrap.com/components/sidebar2) | [Demos](https://demos.blazorbootstrap.com/sidebar2) |
 | Spinners | [Docs](https://docs.blazorbootstrap.com/components/spinners) | [Demos](https://demos.blazorbootstrap.com/spinners) |
 | Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/form/switch) |
 | Tabs | [Docs](https://docs.blazorbootstrap.com/components/tabs) | [Demos](https://demos.blazorbootstrap.com/tabs) |

@@ -48,7 +48,7 @@ const config = {
         ({
             announcementBar: {
                 id: 'support_us',
-                content: '🚨 We strongly recommend all BlazorBootstrap users migrate to version 2.0.0. <a target="_blank" rel="noopener noreferrer" href="/blog/2024/02/25/upgrade-to-v2.0.0">Read more...</a>',
+                content: '🚨 We strongly recommend all BlazorBootstrap users migrate to version 2.x.x. <a target="_blank" rel="noopener noreferrer" href="/blog/2024/02/25/upgrade-to-v2.0.0">Read more...</a>',
                 backgroundColor: '#f1aeb5',
                 textColor: '#58151c',
                 isCloseable: true,
