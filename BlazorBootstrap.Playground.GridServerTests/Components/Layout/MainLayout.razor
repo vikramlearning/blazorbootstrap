@@ -1,0 +1,52 @@
+﻿@inherits LayoutComponentBase
+
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Blazor Bootstrap"
+             DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-end">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">@Body</div>
+        </article>
+    </main>
+
+</div>
+
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+                   {
+                       new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All},
+                       new NavItem { Id = "2", Href = "/clients-one", IconName = IconName.Table, Text = "Clients One Line Filters"},
+                       new NavItem { Id = "3", Href = "/clients-multi", IconName = IconName.Table, Text = "Clients Multi Line Filters"},
+                   };
+
+        return navItems;
+    }
+}
+
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>

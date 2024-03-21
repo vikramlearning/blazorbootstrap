@@ -57,6 +57,7 @@
                                                       FixedHeader="@FixedHeader"
                                                       GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
                                                       PropertyTypeName="@column.GetPropertyTypeName()"
+                                                      PropertyInfo="@typeof(TItem).GetProperty(column.PropertyName)"
                                                       Unit="@Unit" />
                                 }
                             </th>

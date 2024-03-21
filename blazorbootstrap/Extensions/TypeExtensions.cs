@@ -18,7 +18,8 @@ public static class TypeExtensions
         if (type is null || string.IsNullOrWhiteSpace(propertyName))
             return string.Empty;
 
-        var propertyTypeName = type.GetProperty(propertyName)?.PropertyType?.ToString();
+        var propType = type.GetProperty(propertyName)?.PropertyType;
+        var propertyTypeName = propType?.ToString();
 
         if (string.IsNullOrWhiteSpace(propertyTypeName))
             return string.Empty;
@@ -55,6 +56,12 @@ public static class TypeExtensions
 
         if (propertyTypeName.Contains(StringConstants.PropertyTypeNameBoolean, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameBoolean;
+
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameGuid, StringComparison.InvariantCulture))
+            return StringConstants.PropertyTypeNameGuid;
+
+        if (propType?.IsEnum ?? false)
+            return StringConstants.PropertyTypeNameEnum;
 
         return string.Empty;
     }

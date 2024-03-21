@@ -1,0 +1,46 @@
+@page "/clients-one"
+@using BlazorBootstrap.Playground.GridServerTests.Models
+@using BlazorBootstrap.Playground.GridServerTests.Services
+
+
+<h3>Clients</h3>
+
+<Grid TItem="Client"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="ClientDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      AllowSorting="true"
+      Responsive="true">
+    <GridColumn TItem="Client" HeaderText="Id" PropertyName="Id" SortString="Id" SortKeySelector="item => item.Id">@context.Id</GridColumn>
+    <GridColumn TItem="Client" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email">@context.Email</GridColumn>
+    <GridColumn TItem="Client" HeaderText="Name" PropertyName="Name" SortString="Name" SortKeySelector="item => item.Name">@context.Name</GridColumn>
+    <GridColumn TItem="Client" HeaderText="Type" PropertyName="Type" SortString="Type" SortKeySelector="item => item.Type">@context.Type</GridColumn>
+    <GridColumn TItem="Client" HeaderText="Status" PropertyName="Status" SortString="Status" SortKeySelector="item => item.Status">@context.Status</GridColumn>
+    <GridColumn TItem="Client" HeaderText="RegisteredAt" PropertyName="RegisteredAt" SortString="RegisteredAt" SortKeySelector="item => item.RegisteredAt">@context.RegisteredAt</GridColumn>
+    <GridColumn TItem="Client" HeaderText="IsPowerUser" PropertyName="IsPowerUser" SortString="IsPowerUser" SortKeySelector="item => item.IsPowerUser">@context.IsPowerUser</GridColumn>
+    <GridColumn TItem="Client" HeaderText="Karma" PropertyName="Karma" SortString="Karma" SortKeySelector="item => item.Karma">@context.Karma</GridColumn>
+    <GridColumn TItem="Client" HeaderText="Rating" PropertyName="Rating" SortString="Rating" SortKeySelector="item => item.Rating">@context.Rating</GridColumn>
+</Grid>
+
+@code {
+
+    [Inject]
+    private ClientService ClientService { get; set; } = default!;
+
+    private async Task<GridDataProviderResult<Client>> ClientDataProvider(GridDataProviderRequest<Client> request) {
+        string sortString = "";
+        SortDirection sortDirection = SortDirection.None;
+
+        if (request.Sorting is not null && request.Sorting.Any())
+        {
+            // Note: Multi column sorting is not supported at this moment
+            sortString = request.Sorting.FirstOrDefault().SortString;
+            sortDirection = request.Sorting.FirstOrDefault().SortDirection;
+        }
+        var result = await ClientService.GetClients(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection);
+        
+        return new GridDataProviderResult<Client> { Data = result.Item1, TotalCount = result.Item2 };
+    }
+
+}
