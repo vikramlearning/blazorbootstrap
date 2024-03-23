@@ -1,0 +1,26 @@
+﻿@page "/sortable-list"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Sortable List</h1>
+<div class="lead mb-3">
+    Build vertically collapsing accordions in combination with our Collapse component.
+</div>
+
+@* <CarbonAds /> *@
+
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div class="mb-3">
+    Click the accordions below to expand/collapse the accordion content.
+</div>
+<Demo Type="typeof(SortableList_Demo_01_Examples)" Tabs="false" />
+
+@code {
+    private string pageUrl = "/sortable-list";
+    private string title = "Blazor Sortable List Component";
+    private string description = "Build vertically collapsing accordions in combination with our Collapse component."; // TODO: update
+    private string imageUrl = "https://i.imgur.com/g4zpMXp.png"; // TODO: update
+}
