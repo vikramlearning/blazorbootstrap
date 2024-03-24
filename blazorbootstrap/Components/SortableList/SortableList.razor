@@ -1,8 +1,16 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
+@typeparam TItem
 
-<CascadingValue Value="@(this)" IsFixed="true">
-    <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-        @ChildContent
-    </div>
-</CascadingValue>
+<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    @if (Data?.Any() ?? false)
+    {
+        @foreach (var item in Data)
+        {
+            if (ItemTemplate is not null)
+            {
+                <div class="list-group-item">@ItemTemplate(item)</div>
+            }
+        }
+    }
+</div>

@@ -1,7 +1,16 @@
-﻿<SortableList>
-    <SortableListItem>An item</SortableListItem>
-    <SortableListItem>A second item</SortableListItem>
-    <SortableListItem>A third item</SortableListItem>
-    <SortableListItem>A fourth item</SortableListItem>
-    <SortableListItem>And a fifth one</SortableListItem>
+﻿<SortableList TItem="Employee" Data="items" Context="item">
+    <ItemTemplate>
+        @item.Name
+    </ItemTemplate>
 </SortableList>
+
+@code {
+
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+    }
+
+    public List<Employee> items = Enumerable.Range(1, 5).Select(i => new Employee { Id = i, Name = $"Item {i}" }).ToList();
+}

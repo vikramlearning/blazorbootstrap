@@ -3,5 +3,8 @@ export function initialize(dotNetHelper, elementId) {
     let listGroupEl = document.getElementById(elementId);
     if (listGroupEl == null)
         return;
-    const sortable = Sortable.create(listGroupEl);
+
+    if (Sortable) {
+        const sortable = Sortable.create(listGroupEl);
+    }
 }

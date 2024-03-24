@@ -1,12 +1,14 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class SortableList : BlazorBootstrapComponentBase
+public partial class SortableList<TItem> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private List<SortableListItem>? items = new();
+    private CancellationTokenSource cancellationTokenSource = default!;
 
-    private DotNetObjectReference<SortableList>? objRef;
+    private List<TItem>? items = new();
+
+    private DotNetObjectReference<SortableList<TItem>>? objRef;
 
     #endregion
 
@@ -31,22 +33,9 @@ public partial class SortableList : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
     {
-        if (disposing) items = null;
+        if (disposing) Data = null!;
 
         await base.DisposeAsync(disposing);
-    }
-
-    /// <summary>
-    /// Adds an <see cref="SortableListItem" /> to the collection.
-    /// </summary>
-    /// <param name="item">The <see cref="SortableListItem" /> to add.</param>
-    internal void Add(SortableListItem item)
-    {
-        if (items is null)
-            items = new List<SortableListItem>();
-
-        if (item is not null)
-            items.Add(item);
     }
 
     #endregion
@@ -62,6 +51,12 @@ public partial class SortableList : BlazorBootstrapComponentBase
     [Parameter]
     [EditorRequired]
     public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public List<TItem> Data { get; set; } = default!;
+
+    [Parameter]
+    public RenderFragment<TItem>? ItemTemplate { get; set; }
 
     /// <summary>
     /// Provides JavaScript interop functionality for the Sortable List.
