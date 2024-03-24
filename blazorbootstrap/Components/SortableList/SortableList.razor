@@ -3,7 +3,18 @@
 @typeparam TItem
 
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
-    @if (Data?.Any() ?? false)
+    @if (IsLoading)
+    {
+        if(LoadingTemplate is not null)
+        {
+            <div class="list-group-item">@LoadingTemplate</div>
+        }
+        else
+        {
+            <Spinner Type="SpinnerType.Dots" Color="SpinnerColor.Secondary" />
+        }
+    }
+    else if (Data?.Any() ?? false)
     {
         @foreach (var item in Data)
         {
@@ -11,6 +22,17 @@
             {
                 <div class="list-group-item">@ItemTemplate(item)</div>
             }
+        }
+    }
+    else
+    {
+        if (EmptyDataTemplate is not null)
+        {
+            <div class="list-group-item">@EmptyDataTemplate</div>
+        }
+        else
+        {
+            <div class="list-group-item">@EmptyText</div>
         }
     }
 </div>

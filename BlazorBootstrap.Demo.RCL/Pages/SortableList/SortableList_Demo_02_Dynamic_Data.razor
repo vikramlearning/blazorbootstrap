@@ -1,0 +1,27 @@
+﻿<SortableList Class="mb-3" TItem="Employee" Data="items" Context="item" IsLoading="isLoading">
+    <ItemTemplate>
+        @item.Name
+    </ItemTemplate>
+</SortableList>
+
+<Button Color="ButtonColor.Success" @onclick="LoadDataAsync"> Load data </Button>
+
+@code {
+    public bool isLoading = false;
+    public List<Employee> items = null!;
+
+    private async Task LoadDataAsync()
+    {
+        isLoading = true;
+        await Task.Delay(3000);
+        items = Enumerable.Range(1, 5).Select(i => new Employee { Id = i, Name = $"Item {i}" }).ToList();
+        isLoading = false;
+        await base.OnInitializedAsync();
+    }
+
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+    }
+}

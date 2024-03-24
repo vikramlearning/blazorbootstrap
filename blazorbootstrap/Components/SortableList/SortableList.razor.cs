@@ -6,8 +6,6 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
 
     private CancellationTokenSource cancellationTokenSource = default!;
 
-    private List<TItem>? items = new();
-
     private DotNetObjectReference<SortableList<TItem>>? objRef;
 
     #endregion
@@ -52,11 +50,33 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     [EditorRequired]
     public RenderFragment ChildContent { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the items.
+    /// </summary>
     [Parameter]
     public List<TItem> Data { get; set; } = default!;
 
+    /// <summary>
+    /// Template to render when there are no items to display.
+    /// </summary>
+    public RenderFragment EmptyDataTemplate { get; set; } = default!;
+
+    /// <summary>
+    /// Shows text on no records.
+    /// </summary>
+    [Parameter]
+    public string EmptyText { get; set; } = "No records to display";
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
     [Parameter]
     public RenderFragment<TItem>? ItemTemplate { get; set; }
+
+    /// <summary>
+    /// Template to render when data load in-progress.
+    /// </summary>
+    public RenderFragment LoadingTemplate { get; set; } = default!;
 
     /// <summary>
     /// Provides JavaScript interop functionality for the Sortable List.
