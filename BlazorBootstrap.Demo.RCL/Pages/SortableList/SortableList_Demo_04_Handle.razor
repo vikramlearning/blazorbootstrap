@@ -1,0 +1,24 @@
+﻿<SortableList Class="mb-3"
+              Handle=".bb-sortable-list-handle"
+              TItem="Employee"
+              Data="items"
+              Context="item">
+
+    <ItemTemplate>
+        <div class="d-flex justify-content-start">
+            <div class="bb-sortable-list-handle pe-2"><Icon Name="IconName.GripVertical" /></div>
+            <div>@item.Name</div>
+        </div>
+    </ItemTemplate>
+
+</SortableList>
+
+@code {
+    public List<Employee> items = Enumerable.Range(1, 5).Select(i => new Employee { Id = i, Name = $"Item {i}" }).ToList();
+
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+    }
+}

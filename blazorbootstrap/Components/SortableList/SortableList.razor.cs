@@ -25,7 +25,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        QueueAfterRenderAction(async () => await SortableListJsInterop.InitializeAsync(objRef!, ElementId!), new RenderPriority());
+        QueueAfterRenderAction(async () => await SortableListJsInterop.InitializeAsync(objRef!, ElementId!, Handle!), new RenderPriority());
     }
 
     /// <inheritdoc />
@@ -66,6 +66,12 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public string EmptyText { get; set; } = "No records to display";
+
+    /// <summary>
+    /// Gets or sets the drag handle selector.
+    /// </summary>
+    [Parameter]
+    public string? Handle { get; set; }
 
     [Parameter]
     public bool IsLoading { get; set; }
