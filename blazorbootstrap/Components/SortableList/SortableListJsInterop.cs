@@ -28,10 +28,10 @@ public class SortableListJsInterop : IAsyncDisposable
         }
     }
 
-    public async Task InitializeAsync(object objRef, string elementId, string handle, string group)
+    public async Task InitializeAsync(object objRef, string elementId, string handle, string group, object pull, object put)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("initialize", objRef, elementId, handle, group);
+        await module.InvokeVoidAsync("initialize", objRef, elementId, handle, group, pull, put);
     }
 
     #endregion

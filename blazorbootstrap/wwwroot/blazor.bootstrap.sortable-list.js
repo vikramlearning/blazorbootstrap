@@ -1,4 +1,4 @@
-export function initialize(dotNetHelper, elementId, handle, group) {
+export function initialize(dotNetHelper, elementId, handle, group, pull, put) {
     let listGroupEl = document.getElementById(elementId);
     if (listGroupEl == null)
         return;
@@ -6,7 +6,11 @@ export function initialize(dotNetHelper, elementId, handle, group) {
     if (Sortable) {
         const sortable = Sortable.create(listGroupEl, {
             animation: 150,
-            group: group,
+            group: {
+                name: group,
+                pull: pull,
+                put: put
+            },
             handle: handle, // handle's class
         });
     }

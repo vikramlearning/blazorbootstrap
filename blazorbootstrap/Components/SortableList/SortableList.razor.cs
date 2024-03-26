@@ -24,8 +24,8 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     {
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
-
-        QueueAfterRenderAction(async () => await SortableListJsInterop.InitializeAsync(objRef!, ElementId!, Handle!, Group!), new RenderPriority());
+        
+        QueueAfterRenderAction(async () => await SortableListJsInterop.InitializeAsync(objRef!, ElementId!, Handle!, Group!, Pull.ToSortableListPullMode(), Put.ToSortableListPutMode()), new RenderPriority());
     }
 
     /// <inheritdoc />
@@ -47,7 +47,6 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Specifies the content to be rendered inside the <see cref="SortableList" />.
     /// </summary>
     [Parameter]
-    [EditorRequired]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
@@ -59,6 +58,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Template to render when there are no items to display.
     /// </summary>
+    [Parameter]
     public RenderFragment EmptyDataTemplate { get; set; } = default!;
 
     /// <summary>
@@ -88,7 +88,14 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Template to render when data load in-progress.
     /// </summary>
+    [Parameter]
     public RenderFragment LoadingTemplate { get; set; } = default!;
+
+    [Parameter]
+    public SortableListPullMode Pull { get; set; }
+
+    [Parameter]
+    public SortableListPutMode Put { get; set; }
 
     /// <summary>
     /// Provides JavaScript interop functionality for the Sortable List.
