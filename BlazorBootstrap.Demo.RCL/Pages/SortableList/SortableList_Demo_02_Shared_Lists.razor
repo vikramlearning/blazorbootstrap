@@ -1,11 +1,26 @@
-﻿<SortableList TItem="Employee" Data="items" Context="item">
-    <ItemTemplate>
-        @item.Name
-    </ItemTemplate>
-</SortableList>
+﻿<div class="container">
+    <div class="row">
+        <div class="col">
+            <SortableList TItem="Employee" Group="SharedListExample2" Data="items1" Context="item">
+                <ItemTemplate>
+                    @item.Name
+                </ItemTemplate>
+            </SortableList>
+        </div>
+        <div class="col">
+            <SortableList TItem="Employee" Group="SharedListExample2" Data="items1" Context="item">
+                <ItemTemplate>
+                    @item.Name
+                </ItemTemplate>
+            </SortableList>
+        </div>
+    </div>
+</div>
 
 @code {
-    public List<Employee> items = Enumerable.Range(1, 5).Select(i => new Employee { Id = i, Name = $"Item {i}" }).ToList();
+    public List<Employee> items1 = Enumerable.Range(1, 5).Select(i => new Employee { Id = i, Name = $"Item {i}" }).ToList();
+
+    public List<Employee> items2 = Enumerable.Range(1, 5).Select(i => new Employee { Id = i, Name = $"Item {i}" }).ToList();
 
     public class Employee
     {
