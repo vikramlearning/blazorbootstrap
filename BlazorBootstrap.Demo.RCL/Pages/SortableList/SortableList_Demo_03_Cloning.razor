@@ -1,27 +1,25 @@
-﻿<div class="container">
-    <div class="row">
-        <div class="col">
-            <SortableList TItem="Employee"
-                          Data="items3"
-                          Context="item"
-                          Group="SharedListExample3"
-                          Pull="SortableListPullMode.Clone">
-                <ItemTemplate>
-                    @item.Name
-                </ItemTemplate>
-            </SortableList>
-        </div>
-        <div class="col">
-            <SortableList TItem="Employee"
-                          Data="items4"
-                          Context="item"
-                          Group="SharedListExample3"
-                          Pull="SortableListPullMode.Clone">
-                <ItemTemplate>
-                    @item.Name
-                </ItemTemplate>
-            </SortableList>
-        </div>
+﻿<div class="row">
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Data="items3"
+                      Context="item"
+                      Group="SharedListExample3"
+                      Pull="SortableListPullMode.Clone">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Data="items4"
+                      Context="item"
+                      Group="SharedListExample3"
+                      Pull="SortableListPullMode.Clone">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
     </div>
 </div>
 
