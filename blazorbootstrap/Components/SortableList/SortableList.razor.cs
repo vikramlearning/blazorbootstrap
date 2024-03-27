@@ -8,6 +8,8 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
 
     private DotNetObjectReference<SortableList<TItem>>? objRef;
 
+    private string filter = ".bb-sortable-list-item-disabled";
+
     #endregion
 
     #region Methods
@@ -24,8 +26,8 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     {
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
-        
-        QueueAfterRenderAction(async () => await SortableListJsInterop.InitializeAsync(objRef!, ElementId!, Handle!, Group!, Pull.ToSortableListPullMode(), Put.ToSortableListPutMode()), new RenderPriority());
+
+        QueueAfterRenderAction(async () => await SortableListJsInterop.InitializeAsync(objRef!, ElementId!, Handle!, Group!, AllowSorting, Pull.ToSortableListPullMode(), Put.ToSortableListPutMode(), filter), new RenderPriority());
     }
 
     /// <inheritdoc />
@@ -67,6 +69,12 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public string EmptyText { get; set; } = "No records to display";
 
+    [Parameter]
+    public Func<TItem, bool> DisableItem { get; set; } = default!;
+
+    [Parameter]
+    public string? DisabledItemCssClass { get; set; } = default!;
+
     /// <summary>
     /// Gets or sets the group.
     /// </summary>
@@ -96,6 +104,9 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
 
     [Parameter]
     public SortableListPutMode Put { get; set; }
+
+    [Parameter]
+    public bool AllowSorting { get; set; } = true;
 
     /// <summary>
     /// Provides JavaScript interop functionality for the Sortable List.

@@ -4,6 +4,5 @@ public enum SortableListPutMode
 {
     True,
     False,
-    //Clone,
-    //Array
+    //@Array
 }

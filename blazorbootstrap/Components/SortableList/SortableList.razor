@@ -5,7 +5,7 @@
 <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
     @if (IsLoading)
     {
-        if(LoadingTemplate is not null)
+        if (LoadingTemplate is not null)
         {
             <div class="list-group-item">@LoadingTemplate</div>
         }
@@ -20,7 +20,15 @@
         {
             if (ItemTemplate is not null)
             {
-                <div class="list-group-item">@ItemTemplate(item)</div>
+                var disableItem = DisableItem?.Invoke(item) ?? false;
+                if (disableItem) // disable item
+                {
+                    <div class="list-group-item @filter.Replace(".", "") @DisabledItemCssClass">@ItemTemplate(item)</div>
+                }
+                else
+                {
+                    <div class="list-group-item">@ItemTemplate(item)</div>
+                }
             }
         }
     }

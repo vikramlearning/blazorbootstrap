@@ -133,7 +133,7 @@ public static class EnumExtensions
             SortableListPullMode.True => true,
             SortableListPullMode.False => false,
             SortableListPullMode.Clone => "clone",
-            //SortableListPullMode.Array => array
+            //SortableListPullMode.Array => "array"
         };
 
     public static object ToSortableListPutMode(this SortableListPutMode mode) =>
@@ -141,7 +141,7 @@ public static class EnumExtensions
         {
             SortableListPutMode.True => true,
             SortableListPutMode.False => false,
-            //SortableListPullMode.Array => array
+            //SortableListPullMode.Array => "array"
         };
 
     /// <summary>

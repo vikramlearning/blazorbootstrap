@@ -1,4 +1,8 @@
-﻿<SortableList TItem="Employee" Data="items" Context="item">
+﻿<SortableList TItem="Employee"
+              Data="items" 
+              Context="item" 
+              DisableItem="(emp) => emp.Id == 4" 
+              DisabledItemCssClass="list-group-item-danger">
     <ItemTemplate>
         @item.Name
     </ItemTemplate>

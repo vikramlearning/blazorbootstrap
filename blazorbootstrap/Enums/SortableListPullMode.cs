@@ -5,5 +5,5 @@ public enum SortableListPullMode
     True,
     False,
     Clone,
-    //Array
+    //@Array
 }
