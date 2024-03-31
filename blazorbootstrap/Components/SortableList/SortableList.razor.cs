@@ -38,6 +38,20 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
         await base.DisposeAsync(disposing);
     }
 
+    [JSInvokable]
+    public async Task OnUpdateJS(int oldIndex, int newIndex)
+    {
+        if (OnUpdate.HasDelegate)
+            await OnUpdate.InvokeAsync(new(oldIndex, newIndex));
+    }
+
+    [JSInvokable]
+    public async Task OnRemoveJS(int oldIndex, int newIndex)
+    {
+        if (OnUpdate.HasDelegate)
+            await OnUpdate.InvokeAsync(new(oldIndex, newIndex));
+    }
+
     #endregion
 
     #region Properties, Indexers
@@ -98,6 +112,12 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public RenderFragment LoadingTemplate { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<SortableListEventArgs> OnUpdate { get; set; }
+
+    [Parameter]
+    public EventCallback<SortableListEventArgs> OnRemove { get; set; }
 
     [Parameter]
     public SortableListPullMode Pull { get; set; }
