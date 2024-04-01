@@ -1,4 +1,4 @@
-export function initialize(dotNetHelper, elementId, handle, group, allowSorting, pull, put, filter) {
+export function initialize(elementId, elementName, handle, group, allowSorting, pull, put, filter, dotNetHelper) {
     let listGroupEl = document.getElementById(elementId);
     if (listGroupEl == null)
         return;

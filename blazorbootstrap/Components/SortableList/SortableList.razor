@@ -2,7 +2,7 @@
 @inherits BlazorBootstrapComponentBase
 @typeparam TItem
 
-<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+<div @ref="@ElementRef" id="@ElementId" name="@Name" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
     @if (IsLoading)
     {
         if (LoadingTemplate is not null)

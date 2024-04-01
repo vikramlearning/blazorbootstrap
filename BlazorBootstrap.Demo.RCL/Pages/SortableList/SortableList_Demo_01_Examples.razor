@@ -1,4 +1,4 @@
-﻿<SortableList TItem="Employee" Data="employees" Context="item" OnUpdate="@OnEmployeesListUpdate">
+﻿<SortableList TItem="Employee" Data="employees" Context="item" OnUpdate="@OnEmployeeListUpdate">
     <ItemTemplate>
         @item.Name
     </ItemTemplate>
@@ -7,7 +7,7 @@
 @code {
     public List<Employee> employees = Enumerable.Range(1, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
 
-    private void OnEmployeesListUpdate(SortableListEventArgs args)
+    private void OnEmployeeListUpdate(SortableListEventArgs args)
     {
         var itemToMove = employees[args.OldIndex];
 

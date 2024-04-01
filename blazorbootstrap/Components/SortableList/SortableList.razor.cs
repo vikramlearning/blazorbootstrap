@@ -27,7 +27,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
-        QueueAfterRenderAction(async () => await SortableListJsInterop.InitializeAsync(objRef!, ElementId!, Handle!, Group!, AllowSorting, Pull.ToSortableListPullMode(), Put.ToSortableListPutMode(), filter), new RenderPriority());
+        QueueAfterRenderAction(async () => await SortableListJsInterop.InitializeAsync(ElementId!, Name!, Handle!, Group!, AllowSorting, Pull.ToSortableListPullMode(), Put.ToSortableListPutMode(), filter, objRef!), new RenderPriority());
     }
 
     /// <inheritdoc />
@@ -48,8 +48,8 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     [JSInvokable]
     public async Task OnRemoveJS(int oldIndex, int newIndex)
     {
-        if (OnUpdate.HasDelegate)
-            await OnUpdate.InvokeAsync(new(oldIndex, newIndex));
+        if (OnRemove.HasDelegate)
+            await OnRemove.InvokeAsync(new(oldIndex, newIndex));
     }
 
     #endregion
@@ -112,6 +112,12 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public RenderFragment LoadingTemplate { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the name of the <see cref="SortableList<TItem>" />.
+    /// </summary>
+    [Parameter]
+    public string? Name { get; set; }
 
     [Parameter]
     public EventCallback<SortableListEventArgs> OnUpdate { get; set; }
