@@ -10,12 +10,22 @@ public class SortableListEventArgs : EventArgs
         NewIndex = newIndex;
     }
 
+    public SortableListEventArgs(int oldIndex, int newIndex, string fromListName, string toListName)
+    {
+        OldIndex = oldIndex;
+        NewIndex = newIndex;
+        FromListName = fromListName;
+        ToListName = toListName;
+    }
+
     #endregion
 
     #region Properties, Indexers
 
-    public int OldIndex { get; }
+    public string? FromListName { get; }
     public int NewIndex { get; }
+    public int OldIndex { get; }
+    public string? ToListName { get; }
 
     #endregion
 }

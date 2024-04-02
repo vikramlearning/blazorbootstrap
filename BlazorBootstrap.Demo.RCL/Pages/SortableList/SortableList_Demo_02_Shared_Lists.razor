@@ -2,6 +2,7 @@
     <div class="col">
         <SortableList TItem="Employee"
                       Group="SharedListExample2"
+                      Name="empList1"
                       Data="employeeList1"
                       Context="item"
                       OnUpdate="OnEmployeeList1Update"
@@ -14,6 +15,7 @@
     <div class="col">
         <SortableList TItem="Employee"
                       Group="SharedListExample2"
+                      Name="empList2"
                       Data="employeeList2"
                       Context="item"
                       OnUpdate="OnEmployeeList2Update"
@@ -64,7 +66,7 @@
 
     private void OnEmployeeList1Remove(SortableListEventArgs args)
     {
-        Console.WriteLine($"OnEmployeeList1Remove: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}");
+        Console.WriteLine($"OnEmployeeList1Remove: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}, FromListName={args.FromListName}, ToListName={args.ToListName}");
 
         // get the item at the old index in list 1
         var item = employeeList1[args.OldIndex];
@@ -78,7 +80,7 @@
 
     private void OnEmployeeList2Remove(SortableListEventArgs args)
     {
-        Console.WriteLine($"OnEmployeeList2Remove: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}");
+        Console.WriteLine($"OnEmployeeList2Remove: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}, FromListName={args.FromListName}, ToListName={args.ToListName}");
 
         // get the item at the old index in list 2
         var item = employeeList2[args.OldIndex];

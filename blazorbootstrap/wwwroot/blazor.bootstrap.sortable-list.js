@@ -27,7 +27,18 @@ export function initialize(elementId, elementName, handle, group, allowSorting, 
                 event.item.remove();
                 event.from.insertBefore(event.item, event.from.childNodes[event.oldIndex]);
 
-                dotNetHelper.invokeMethodAsync('OnRemoveJS', event.oldDraggableIndex, event.newDraggableIndex);
+                let fromElName = '';
+                let toElName = '';
+
+                let fromEl = document.getElementById(event.from.id);
+                if (fromEl)
+                    fromElName = fromEl.getAttribute('name');
+
+                let toEl = document.getElementById(event.to.id);
+                if (toEl)
+                    toElName = toEl.getAttribute('name');
+
+                dotNetHelper.invokeMethodAsync('OnRemoveJS', event.oldDraggableIndex, event.newDraggableIndex, fromElName, toElName);
             },
             sort: allowSorting
         });

@@ -46,10 +46,10 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public async Task OnRemoveJS(int oldIndex, int newIndex)
+    public async Task OnRemoveJS(int oldIndex, int newIndex, string fromListName, string toListName)
     {
         if (OnRemove.HasDelegate)
-            await OnRemove.InvokeAsync(new(oldIndex, newIndex));
+            await OnRemove.InvokeAsync(new(oldIndex, newIndex, fromListName, toListName));
     }
 
     #endregion
