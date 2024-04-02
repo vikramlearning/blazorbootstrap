@@ -255,9 +255,15 @@ public partial class MainLayout : LayoutComponentBase
                         IconName = IconName.LayoutSidebar
                     },
                     new ()
-                    { 
-                        Text = "Sidebar 2", 
-                        Href = "/sidebar2", 
+                    {
+                        Text = "Sidebar 2",
+                        Href = "/sidebar2",
+                        IconName = IconName.ListNested
+                    },
+                    new ()
+                    {
+                        Text = "Sidebar 3",
+                        Href = "/sidebar3",
                         IconName = IconName.ListNested
                     },
                     new ()
