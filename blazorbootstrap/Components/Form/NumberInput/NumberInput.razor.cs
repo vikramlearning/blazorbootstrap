@@ -4,6 +4,8 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
+    private CultureInfo cultureInfo = default!;
+
     private FieldIdentifier fieldIdentifier;
 
     private string step = default!;
@@ -24,7 +26,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", ElementId, isFloatingNumber(), AllowNegativeNumbers);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", ElementId, isFloatingNumber(), AllowNegativeNumbers, cultureInfo.NumberFormat.NumberDecimalSeparator);
 
             var currentValue = Value; // object
 
@@ -71,6 +73,15 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 
         step = Step.HasValue ? $"{Step.Value}" : "any";
 
+        try
+        {
+            cultureInfo = new CultureInfo(Locale);
+        }
+        catch (CultureNotFoundException)
+        {
+            cultureInfo = new CultureInfo("en-US");
+        }
+
         await base.OnInitializedAsync();
     }
 
@@ -83,6 +94,20 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Enables number input.
     /// </summary>
     public void Enable() => Disabled = false;
+
+    private string GetInvariantNumber(TValue value)
+    {
+        if (value is null) return string.Empty;
+
+        if (value is float floatValue) return floatValue.ToString(CultureInfo.InvariantCulture);
+
+        if (value is double doubleValue) return doubleValue.ToString(CultureInfo.InvariantCulture);
+
+        if (value is decimal decimalValue) return decimalValue.ToString(CultureInfo.InvariantCulture);
+
+        // All numbers without decimal places work fine by default
+        return value?.ToString() ?? string.Empty;
+    }
 
     private bool isFloatingNumber() =>
         typeof(TValue) == typeof(float)
@@ -290,7 +315,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(float?) || typeof(TValue) == typeof(float))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(float));
+                newValue = (TValue)Convert.ChangeType(value, typeof(float), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -298,7 +323,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(double?) || typeof(TValue) == typeof(double))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(double));
+                newValue = (TValue)Convert.ChangeType(value, typeof(double), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -306,7 +331,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(decimal?) || typeof(TValue) == typeof(decimal))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(decimal));
+                newValue = (TValue)Convert.ChangeType(value, typeof(decimal), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -361,6 +386,13 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     public bool EnableMinMax { get; set; }
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+
+    /// <summary>
+    /// Gets or sets the locale. Default locale is 'en-US'.
+    /// </summary>
+    [Parameter]
+    //[EditorRequired]
+    public string Locale { get; set; } = "en-US";
 
     /// <summary>
     /// Gets or sets the max.

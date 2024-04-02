@@ -1,5 +1,5 @@
 ---
-title: Upgrade to v2.0.0
+title: Upgrade to v2.x.x
 authors:
   name: Vikram Reddy
   title: Creator
@@ -9,9 +9,9 @@ authors:
 
 ### Recommendation
 
-We strongly recommend all `BlazorBootstrap` users migrate to version **2.0.0**.
+We strongly recommend all `BlazorBootstrap` users migrate to version **2.x.x**.
 
-If you are using version `1.x.x` for non-commercial purposes, you may continue using them, but upgrading to version `2.0.0` is strongly recommended.
+If you are using version `1.x.x` for non-commercial purposes, you may continue using them, but upgrading to version `2.x.x` is strongly recommended.
 
 If you are using version `1.x.x` for commercial purposes, you are no longer permitted to do so due to code usage concerns regarding Blazorise's ClassBuilder and StyleBuilder classes.
 

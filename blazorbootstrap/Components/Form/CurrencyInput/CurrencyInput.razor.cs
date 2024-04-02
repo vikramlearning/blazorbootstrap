@@ -28,7 +28,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("window.blazorBootstrap.currencyInput.initialize", ElementId, isFloatingNumber(), AllowNegativeNumbers);
+            await JS.InvokeVoidAsync("window.blazorBootstrap.currencyInput.initialize", ElementId, isFloatingNumber(), AllowNegativeNumbers, cultureInfo.NumberFormat.CurrencyDecimalSeparator);
 
             var currentValue = Value; // object
 
@@ -332,7 +332,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             // sbyte? / sbyte
             if (typeof(TValue) == typeof(sbyte?) || typeof(TValue) == typeof(sbyte))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(sbyte));
+                newValue = (TValue)Convert.ChangeType(value, typeof(sbyte), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -340,7 +340,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(short?) || typeof(TValue) == typeof(short))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(short));
+                newValue = (TValue)Convert.ChangeType(value, typeof(short), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -348,7 +348,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(int?) || typeof(TValue) == typeof(int))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(int));
+                newValue = (TValue)Convert.ChangeType(value, typeof(int), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -356,7 +356,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(long?) || typeof(TValue) == typeof(long))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(long));
+                newValue = (TValue)Convert.ChangeType(value, typeof(long), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -364,7 +364,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(float?) || typeof(TValue) == typeof(float))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(float));
+                newValue = (TValue)Convert.ChangeType(value, typeof(float), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -372,7 +372,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(double?) || typeof(TValue) == typeof(double))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(double));
+                newValue = (TValue)Convert.ChangeType(value, typeof(double), CultureInfo.InvariantCulture);
 
                 return true;
             }
@@ -380,7 +380,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
             if (typeof(TValue) == typeof(decimal?) || typeof(TValue) == typeof(decimal))
             {
-                newValue = (TValue)Convert.ChangeType(value, typeof(decimal));
+                newValue = (TValue)Convert.ChangeType(value, typeof(decimal), CultureInfo.InvariantCulture);
 
                 return true;
             }

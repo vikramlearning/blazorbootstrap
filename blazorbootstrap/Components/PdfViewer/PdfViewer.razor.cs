@@ -9,6 +9,9 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     private int minZoomLevel = 1;
 
     private DotNetObjectReference<PdfViewer>? objRef;
+
+    private Orientation? oldOrientation;
+
     private int pageNumber = 0;
     private int pagesCount = 0;
 
@@ -25,10 +28,26 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        rotation = Orientation == Orientation.Portrait ? 0 : -90;
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
 
         QueueAfterRenderAction(async () => await PdfViewerJsInterop.InitializeAsync(objRef!, ElementId!, scale, rotation, Url!), new RenderPriority());
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Rendered)
+        {
+            if (!Orientation.Equals(oldOrientation))
+            {
+                oldOrientation = Orientation;
+                rotation = Orientation == Orientation.Portrait ? 0 : -90;
+                await PdfViewerJsInterop.RotateAsync(objRef!, ElementId!, rotation);
+            }
+        }
+
+        await base.OnParametersSetAsync();
     }
 
     [JSInvokable]
@@ -105,12 +124,34 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         rotation += 90;
         rotation = rotation.Equals(360) ? 0 : rotation;
         await PdfViewerJsInterop.RotateAsync(objRef!, ElementId!, rotation);
+
+        // Orientation
+        SetOrientation();
     }
 
     private async Task RotateCounterclockwiseAsync()
     {
         rotation -= 90;
         rotation = rotation.Equals(-360) ? 0 : rotation;
+        await PdfViewerJsInterop.RotateAsync(objRef!, ElementId!, rotation);
+
+        // Orientation
+        SetOrientation();
+    }
+
+    private void SetOrientation()
+    {
+        if (rotation == 0)
+            oldOrientation = Orientation = Orientation.Portrait;
+        else if (rotation == -90)
+            oldOrientation = Orientation = Orientation.Landscape;
+    }
+
+    private async Task SwitchOrientationAsync()
+    {
+        oldOrientation = Orientation;
+        Orientation = Orientation == Orientation.Portrait ? Orientation.Landscape : Orientation.Portrait;
+        rotation = Orientation == Orientation.Portrait ? 0 : -90;
         await PdfViewerJsInterop.RotateAsync(objRef!, ElementId!, rotation);
     }
 
@@ -164,12 +205,21 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter] public EventCallback<PdfViewerEventArgs> OnPageChanged { get; set; }
 
+    /// <summary>
+    /// Provides JavaScript interop functionality for the PDF viewer.
+    /// </summary>
     [Inject] private PdfViewerJsInterop PdfViewerJsInterop { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the PDF URL.
+    /// Gets or sets the URL of the PDF document to be displayed.
     /// </summary>
     [Parameter] public string? Url { get; set; }
+
+    /// <summary>
+    /// Gets or sets the preferred orientation for the PDF viewer.
+    /// </summary>
+    [Parameter]
+    public Orientation Orientation { get; set; }
 
     #endregion
 }

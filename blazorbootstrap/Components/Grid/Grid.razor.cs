@@ -43,6 +43,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
    protected override void BuildClasses()
     {
+        this.AddClass("bb-table");
         this.AddClass(BootstrapClassProvider.TableSticky, FixedHeader);
 
         base.BuildClasses();
