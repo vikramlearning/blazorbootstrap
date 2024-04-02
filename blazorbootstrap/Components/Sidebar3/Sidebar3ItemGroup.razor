@@ -1,0 +1,13 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<nav @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    @if (NavItems is not null && NavItems.Any())
+    {
+        foreach (var item in NavItems)
+        {
+            <Sidebar3Item Item="item"
+                                Class="@item.Class" />
+        }
+    }
+</nav>

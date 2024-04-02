@@ -1,0 +1,33 @@
+.bb-sidebar.collapsed .expanded-only {
+    display: none;
+}
+
+.bb-sidebar.collapsed .bi.expanded-only {
+    display: none !important;
+}
+
+.bb-sidebar .nav-link-icon {
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+.bb-sidebar nav .nav-item ::deep a {
+    color: var(--bb-sidebar3-nav-item-text-color);
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+    .bb-sidebar nav .nav-item ::deep a:hover {
+        background-color: var(--bb-sidebar3-nav-item-background-hover-color);
+        color: var(--bb-sidebar3-nav-item-text-hover-color);
+    }
+
+    .bb-sidebar nav .nav-item ::deep a.active {
+        background-color: var(--bb-sidebar3-nav-item-background-hover-color);
+        color: var(--bb-sidebar3-nav-item-text-active-color);
+        font-weight: 600;
+    }
+
+.bb-sidebar nav .nav-item .indent {
+    padding-left: var(--bb-sidebar3-nav-sub-level-padding-left);
+}

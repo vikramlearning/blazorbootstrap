@@ -1,0 +1,121 @@
+<Sidebar3 IconName="IconName.BootstrapFill"
+          Title="Blazor Bootstrap"
+          BadgeText="v2.1.0"
+          DataProvider="Sidebar3DataProvider" />
+
+@code {
+    IEnumerable<Sidebar3NavItem>? navItems;
+
+    private async Task<Sidebar3DataProviderResult> Sidebar3DataProvider(Sidebar3DataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        await Task.Delay(2);
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<Sidebar3NavItem> GetNavItems()
+    {
+
+
+        yield return new Sidebar3NavItem
+        {
+            Href = "/getting-started",
+            IconName = IconName.HouseDoorFill,
+            Text = "Getting Started"
+        };
+
+        yield return new Sidebar3NavItem
+        {
+            IconName = IconName.LayoutSidebarInset,
+            Text = "Content",
+            ChildItems = new List<Sidebar3NavItem>()
+            {
+                new() 
+                { 
+                    Href = "/icons", 
+                    IconName = IconName.PersonSquare, 
+                    Text = "Icons" 
+                }
+            }
+        };
+
+        yield return new Sidebar3NavItem
+        {
+            IconName = IconName.ExclamationTriangleFill,
+            Text = "Components",
+            ChildItems = new List<Sidebar3NavItem>()
+            {
+                new() 
+                { 
+                    Href = "/alerts", 
+                    IconName = IconName.CheckCircleFill, 
+                    Text = "Alerts" 
+                },
+                new() 
+                { 
+                    Href = "/breadcrumb", 
+                    IconName = IconName.SegmentedNav, 
+                    Text = "Breadcrumb" 
+                },
+                new()
+                {
+                    IconName = IconName.ListNested, 
+                    Text = "Sidebar 3",
+                    ChildItems = new List<Sidebar3NavItem>
+                    {
+                        new()
+                        {
+                            Href = "/sidebar3",
+                            IconName = IconName.Dash,
+                            Text = "How to use"
+                        },
+                        new()
+                        {
+                            Href = "/sidebar3-examples", 
+                            IconName = IconName.Dash, 
+                            Text = "Examples"
+                        },
+
+                    }
+                }
+            }
+        };
+
+
+        yield return new Sidebar3NavItem
+        {
+            IconName = IconName.WindowPlus,
+            Text = "Forms",
+            ChildItems = new List<Sidebar3NavItem>()
+            {
+                new()
+                { 
+                    Href = "/autocomplete", 
+                    IconName = IconName.InputCursorText, 
+                    Text = "Auto Complete" 
+                },
+                new()
+                { 
+                    Href = "/currency-input", 
+                    IconName = IconName.CurrencyDollar, 
+                    Text = "Currency Input" 
+                },
+                new()
+                { 
+                    Href = "/number-input", 
+                    IconName = IconName.InputCursor, 
+                    Text = "Number Input" 
+                },
+                new()
+                { 
+                    Href = "/switch", 
+                    IconName = IconName.ToggleOn, 
+                    Text = "Switch" 
+                },
+            }
+        };
+    }
+}

@@ -1,0 +1,25 @@
+@page "/sidebar3"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Sidebar3</h1>
+<div class="lead mb-3">
+    Use the Blazor Bootstrap <code>Sidebar3</code> component to display consistent, cross-browser, and responsive navigation links that support more than two nested levels.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Sidebar3_Demo_01_Basic_Usage)" Tabs="true" />
+
+
+
+@code {
+    private string pageUrl = "sidebar3";
+    private string title = "Blazor Sidebar3 Component";
+    private string description = "Use the Blazor Bootstrap Sidebar3 component to display consistent, cross-browser, and responsive navigation links that support more than two nested levels.";
+    private string imageUrl = "https://i.imgur.com/U0l6wXo.png";
+}
