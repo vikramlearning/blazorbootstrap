@@ -34,8 +34,6 @@
 
     private void OnEmployeeList1Update(SortableListEventArgs args)
     {
-        Console.WriteLine($"OnEmployeeList1Update: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}");
-
         var itemToMove = employeeList1[args.OldIndex];
 
         employeeList1.RemoveAt(args.OldIndex);
@@ -50,8 +48,6 @@
 
     private void OnEmployeeList2Update(SortableListEventArgs args)
     {
-        Console.WriteLine($"OnEmployeeList2Update: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}");
-
         var itemToMove = employeeList2[args.OldIndex];
 
         employeeList2.RemoveAt(args.OldIndex);
@@ -66,8 +62,6 @@
 
     private void OnEmployeeList1Remove(SortableListEventArgs args)
     {
-        Console.WriteLine($"OnEmployeeList1Remove: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}, FromListName={args.FromListName}, ToListName={args.ToListName}");
-
         // get the item at the old index in list 1
         var item = employeeList1[args.OldIndex];
 
@@ -80,8 +74,6 @@
 
     private void OnEmployeeList2Remove(SortableListEventArgs args)
     {
-        Console.WriteLine($"OnEmployeeList2Remove: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}, FromListName={args.FromListName}, ToListName={args.ToListName}");
-
         // get the item at the old index in list 2
         var item = employeeList2[args.OldIndex];
 
