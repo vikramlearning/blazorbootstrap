@@ -1,4 +1,6 @@
-﻿<SortableList TItem="Employee" Data="items" Context="item">
+﻿<SortableList TItem="Employee"
+              Data="items"
+              Context="item">
     <ItemTemplate>
         @item.Name
     </ItemTemplate>
@@ -7,9 +9,5 @@
 @code {
     public List<Employee> items = null!;
 
-    public class Employee
-    {
-        public int Id { get; set; }
-        public string? Name { get; set; }
-    }
+    public record Employee(int Id, string? Name);
 }
