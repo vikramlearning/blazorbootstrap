@@ -1,8 +1,9 @@
 ﻿<SortableList Class="mb-3"
               Handle=".bb-sortable-list-handle"
               TItem="Employee"
-              Data="items"
-              Context="item">
+              Data="employees"
+              Context="item"
+              OnUpdate="@OnEmployeeListUpdate">
 
     <ItemTemplate>
         <div class="d-flex justify-content-start">
@@ -14,11 +15,19 @@
 </SortableList>
 
 @code {
-    public List<Employee> items = Enumerable.Range(1, 5).Select(i => new Employee { Id = i, Name = $"Item {i}" }).ToList();
+    public List<Employee> employees = Enumerable.Range(1, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
 
-    public class Employee
+    private void OnEmployeeListUpdate(SortableListEventArgs args)
     {
-        public int Id { get; set; }
-        public string? Name { get; set; }
+        var itemToMove = employees[args.OldIndex];
+
+        employees.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employees.Count)
+            employees.Insert(args.NewIndex, itemToMove);
+        else
+            employees.Add(itemToMove);
     }
+
+    public record Employee(int Id, string? Name);
 }

@@ -1,4 +1,7 @@
-﻿<SortableList TItem="Employee" Data="employees" Context="item" OnUpdate="@OnEmployeeListUpdate">
+﻿<SortableList TItem="Employee"
+              Data="employees"
+              Context="item"
+              OnUpdate="@OnEmployeeListUpdate">
     <ItemTemplate>
         @item.Name
     </ItemTemplate>
@@ -17,8 +20,6 @@
             employees.Insert(args.NewIndex, itemToMove);
         else
             employees.Add(itemToMove);
-
-        StateHasChanged();
     }
 
     public record Employee(int Id, string? Name);

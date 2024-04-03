@@ -42,8 +42,6 @@
             employeeList1.Insert(args.NewIndex, itemToMove);
         else
             employeeList1.Add(itemToMove);
-
-        StateHasChanged();
     }
 
     private void OnEmployeeList2Update(SortableListEventArgs args)
@@ -56,8 +54,6 @@
             employeeList2.Insert(args.NewIndex, itemToMove);
         else
             employeeList2.Add(itemToMove);
-
-        StateHasChanged();
     }
 
     private void OnEmployeeList1Remove(SortableListEventArgs args)

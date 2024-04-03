@@ -49,8 +49,6 @@
 
     private void OnEmployeeList1Update(SortableListEventArgs args)
     {
-        Console.WriteLine($"OnEmployeeList1Update: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}");
-
         var itemToMove = employeeList1[args.OldIndex];
 
         employeeList1.RemoveAt(args.OldIndex);
@@ -59,14 +57,10 @@
             employeeList1.Insert(args.NewIndex, itemToMove);
         else
             employeeList1.Add(itemToMove);
-
-        StateHasChanged();
     }
 
     private void OnEmployeeList2Update(SortableListEventArgs args)
     {
-        Console.WriteLine($"OnEmployeeList2Update: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}");
-
         var itemToMove = employeeList2[args.OldIndex];
 
         employeeList2.RemoveAt(args.OldIndex);
@@ -75,14 +69,10 @@
             employeeList2.Insert(args.NewIndex, itemToMove);
         else
             employeeList2.Add(itemToMove);
-
-        StateHasChanged();
     }
 
     private void OnEmployeeList3Update(SortableListEventArgs args)
     {
-        Console.WriteLine($"OnEmployeeList3Update: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}");
-
         var itemToMove = employeeList3[args.OldIndex];
 
         employeeList3.RemoveAt(args.OldIndex);
@@ -91,17 +81,13 @@
             employeeList3.Insert(args.NewIndex, itemToMove);
         else
             employeeList3.Add(itemToMove);
-
-        StateHasChanged();
     }
 
     private void OnEmployeeListRemove(SortableListEventArgs args)
     {
-        Console.WriteLine($"OnEmployeeList1Remove: OldIndex={args.OldIndex}, NewIndex={args.NewIndex}, FromListName={args.FromListName}, ToListName={args.ToListName}");
-
         Employee? item = default!;
 
-        // get the item at the old index in list
+        // get the item at the old index
         if (args.FromListName == "empList1")
             item = employeeList1[args.OldIndex];
         else if (args.FromListName == "empList2")
@@ -109,7 +95,7 @@
         else
             item = employeeList3[args.OldIndex];
 
-        // add it to the new index in list
+        // add it to the new index
         if (args.ToListName == "empList1")
             employeeList1.Insert(args.NewIndex, item);
         else if (args.ToListName == "empList2")
@@ -117,7 +103,7 @@
         else
             employeeList3.Insert(args.NewIndex, item);
 
-        // remove the item from the old index in list
+        // remove the item from the old index
         if (args.FromListName == "empList1")
             employeeList1.Remove(employeeList1[args.OldIndex]);
         else if (args.FromListName == "empList2")
