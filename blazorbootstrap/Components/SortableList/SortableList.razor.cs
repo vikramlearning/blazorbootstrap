@@ -39,10 +39,10 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public async Task OnUpdateJS(int oldIndex, int newIndex)
+    public async Task OnAddJS(int oldIndex, int newIndex)
     {
-        if (OnUpdate.HasDelegate)
-            await OnUpdate.InvokeAsync(new(oldIndex, newIndex));
+        if (OnAdd.HasDelegate)
+            await OnAdd.InvokeAsync(new(oldIndex, newIndex));
     }
 
     [JSInvokable]
@@ -50,6 +50,13 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     {
         if (OnRemove.HasDelegate)
             await OnRemove.InvokeAsync(new(oldIndex, newIndex, fromListName, toListName));
+    }
+
+    [JSInvokable]
+    public async Task OnUpdateJS(int oldIndex, int newIndex)
+    {
+        if (OnUpdate.HasDelegate)
+            await OnUpdate.InvokeAsync(new(oldIndex, newIndex));
     }
 
     #endregion
@@ -120,10 +127,13 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     public string? Name { get; set; }
 
     [Parameter]
-    public EventCallback<SortableListEventArgs> OnUpdate { get; set; }
+    public EventCallback<SortableListEventArgs> OnAdd { get; set; }
 
     [Parameter]
     public EventCallback<SortableListEventArgs> OnRemove { get; set; }
+
+    [Parameter]
+    public EventCallback<SortableListEventArgs> OnUpdate { get; set; }
 
     [Parameter]
     public SortableListPullMode Pull { get; set; }

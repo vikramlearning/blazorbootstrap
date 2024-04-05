@@ -13,11 +13,9 @@ export function initialize(elementId, elementName, handle, group, allowSorting, 
                 put: put
             },
             handle: handle, // handle's class
-            onUpdate: (event) => {
+            onAdd: (event) => {
                 event.item.remove();
-                event.to.insertBefore(event.item, event.to.childNodes[event.oldIndex]);
-
-                dotNetHelper.invokeMethodAsync('OnUpdateJS', event.oldDraggableIndex, event.newDraggableIndex);
+                dotNetHelper.invokeMethodAsync('OnAddJS', event.oldDraggableIndex, event.newDraggableIndex);
             },
             onRemove: (event) => {
                 if (event.pullMode === 'clone') {
@@ -39,6 +37,11 @@ export function initialize(elementId, elementName, handle, group, allowSorting, 
                     toElName = toEl.getAttribute('name');
 
                 dotNetHelper.invokeMethodAsync('OnRemoveJS', event.oldDraggableIndex, event.newDraggableIndex, fromElName, toElName);
+            },
+            onUpdate: (event) => {
+                event.item.remove();
+                event.to.insertBefore(event.item, event.to.childNodes[event.oldIndex]);
+                dotNetHelper.invokeMethodAsync('OnUpdateJS', event.oldDraggableIndex, event.newDraggableIndex);
             },
             sort: allowSorting
         });
