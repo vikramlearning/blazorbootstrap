@@ -33,23 +33,21 @@ The Blazor Bootstrap Sortable List component, built on top of <b>SortableJS</b>,
 | IsLoading | bool | | | Gets or sets a value indicating whether the list is currently loading. | 2.2.0 |
 | ItemTemplate | `RenderFragment<TItem>?` | | | Specifies the template used to render individual items in the list. | 2.2.0 |
 | LoadingTemplate | `RenderFragment` | | | Specifies the template to render while the list data is loading. | 2.2.0 |
-| | Name | `string?` | | Gets or sets the name of the `SortableList` component. | 2.2.0 |
-| | Pull | `SortableListPullMode` | | Gets or sets the pull mode for the sortable list. | 2.2.0 |
-| | Put | `SortableListPutMode` | | Gets or sets the put mode for the sortable list. | 2.2.0 |
+| Name | `string?` | | Gets or sets the name of the `SortableList` component. | 2.2.0 |
+| Pull | `SortableListPullMode` | | | Gets or sets the pull mode for the sortable list. | 2.2.0 |
+| Put | `SortableListPutMode` | | | Gets or sets the put mode for the sortable list. | 2.2.0 |
 
 ## Methods
 
-| Name | Description | Added Version |
-|:--|:--|:--|
-| RefreshDataAsync() | Refresh the sidebar data. | 2.2.0 |
+There are no public methods available.
 
+## Callback Events
 
-## NavItem Properties
-
-| Name | Type | Default | Required | Description | Added Version |
-|:--|:--|:--|:--|:--|:--|
-| Class | `string?` | null | | Gets or sets an additional CSS class. | 2.2.0 |
-
+| Event | Description | Added Version |
+|--|--|--|
+| OnAdd | Gets or sets an event callback that fires when an item is added to the list. | 2.2.0 |
+| OnRemove | Gets or sets an event callback that fires when an item is removed from the list. | 2.2.0 |
+| OnUpdate | Gets or sets an event callback that fires when an item is updated in the list. | 2.2.0 |
 
 ## Examples
 
