@@ -91,7 +91,7 @@ const config = {
                         items: [
                             { label: 'Issues', href: 'https://github.com/vikramlearning/blazorbootstrap/issues', },
                             { label: 'Discussions', href: 'https://github.com/vikramlearning/blazorbootstrap/discussions', },
-                            //{ label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/blazorbootstrap', },
+                            { label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/blazor-bootstrap', },
                             { label: 'Twitter', href: 'https://twitter.com/blazorbootstrap', },
                         ],
                     },

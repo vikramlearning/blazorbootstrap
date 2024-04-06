@@ -1,0 +1,40 @@
+﻿<SortableList Class="mb-3"
+              TItem="Employee"
+              Data="employees"
+              Context="item"
+              IsLoading="isLoading"
+              OnUpdate="@OnEmployeeListUpdate">
+    <ItemTemplate>
+        @item.Name
+    </ItemTemplate>
+</SortableList>
+
+<Button Color="ButtonColor.Success" @onclick="LoadDataAsync"> Load data </Button>
+
+@code {
+    public bool isLoading = false;
+    public List<Employee> employees = null!;
+
+    private async Task LoadDataAsync()
+    {
+        isLoading = true;
+        await Task.Delay(3000);
+        employees = Enumerable.Range(1, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+        isLoading = false;
+        await base.OnInitializedAsync();
+    }
+
+    private void OnEmployeeListUpdate(SortableListEventArgs args)
+    {
+        var itemToMove = employees[args.OldIndex];
+
+        employees.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employees.Count)
+            employees.Insert(args.NewIndex, itemToMove);
+        else
+            employees.Add(itemToMove);
+    }
+
+    public record Employee(int Id, string? Name);
+}

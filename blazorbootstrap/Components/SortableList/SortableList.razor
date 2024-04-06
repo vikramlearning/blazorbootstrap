@@ -1,0 +1,46 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+
+<div @ref="@ElementRef" id="@ElementId" name="@Name" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    @if (IsLoading)
+    {
+        if (LoadingTemplate is not null)
+        {
+            <div class="list-group-item">@LoadingTemplate</div>
+        }
+        else
+        {
+            <Spinner Type="SpinnerType.Dots" Color="SpinnerColor.Secondary" />
+        }
+    }
+    else if (Data?.Any() ?? false)
+    {
+        @foreach (var item in Data)
+        {
+            if (ItemTemplate is not null)
+            {
+                var disableItem = DisableItem?.Invoke(item) ?? false;
+                if (disableItem) // disable item
+                {
+                    <div class="list-group-item @filter.Replace(".", "") @DisabledItemCssClass">@ItemTemplate(item)</div>
+                }
+                else
+                {
+                    <div class="list-group-item">@ItemTemplate(item)</div>
+                }
+            }
+        }
+    }
+    else
+    {
+        if (EmptyDataTemplate is not null)
+        {
+            <div class="list-group-item">@EmptyDataTemplate</div>
+        }
+        else
+        {
+            <div class="list-group-item">@EmptyText</div>
+        }
+    }
+</div>

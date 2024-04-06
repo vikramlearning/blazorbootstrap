@@ -1,0 +1,84 @@
+﻿<div class="row">
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Group="SharedListExample2"
+                      Name="empList1"
+                      Data="employeeList1"
+                      Context="item"
+                      OnUpdate="OnEmployeeList1Update"
+                      OnRemove="OnEmployeeList1Remove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Group="SharedListExample2"
+                      Name="empList2"
+                      Data="employeeList2"
+                      Context="item"
+                      OnUpdate="OnEmployeeList2Update"
+                      OnRemove="OnEmployeeList2Remove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+</div>
+
+@code {
+    public List<Employee> employeeList1 = Enumerable.Range(1, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    public List<Employee> employeeList2 = Enumerable.Range(6, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    private void OnEmployeeList1Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList1[args.OldIndex];
+
+        employeeList1.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList1.Count)
+            employeeList1.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList1.Add(itemToMove);
+    }
+
+    private void OnEmployeeList2Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList2[args.OldIndex];
+
+        employeeList2.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList2.Count)
+            employeeList2.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList2.Add(itemToMove);
+    }
+
+    private void OnEmployeeList1Remove(SortableListEventArgs args)
+    {
+        // get the item at the old index in list 1
+        var item = employeeList1[args.OldIndex];
+
+        // add it to the new index in list 2
+        employeeList2.Insert(args.NewIndex, item);
+
+        // remove the item from the old index in list 1
+        employeeList1.Remove(employeeList1[args.OldIndex]);
+    }
+
+    private void OnEmployeeList2Remove(SortableListEventArgs args)
+    {
+        // get the item at the old index in list 2
+        var item = employeeList2[args.OldIndex];
+
+        // add it to the new index in list 1
+        employeeList1.Insert(args.NewIndex, item);
+
+        // remove the item from the old index in list 2
+        employeeList2.Remove(employeeList2[args.OldIndex]);
+    }
+
+    public record Employee(int Id, string? Name);
+}

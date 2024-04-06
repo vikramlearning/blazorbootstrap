@@ -67,6 +67,7 @@ public partial class MainLayout : LayoutComponentBase
             new (){ Id = "519", Text = "Script Loader", Href = "/script-loader", IconName = IconName.CodeSlash, ParentId = "5" },
             new (){ Id = "520", Text = "Sidebar", Href = "/sidebar", IconName = IconName.LayoutSidebar, ParentId = "5" },
             new (){ Id = "521", Text = "Sidebar 2", Href = "/sidebar2", IconName = IconName.ListNested, ParentId = "5" },
+            new (){ Id = "521", Text = "Sortable List", Href = "/sortable-list", IconName = IconName.ArrowsMove, ParentId = "5" },
             new (){ Id = "522", Text = "Spinner", Href = "/spinners", IconName = IconName.ArrowRepeat, ParentId = "5" },
             new (){ Id = "523", Text = "Tabs", Href = "/tabs", IconName = IconName.WindowPlus, ParentId = "5" },
             new (){ Id = "524", Text = "Toasts", Href = "/toasts", IconName = IconName.ExclamationTriangleFill, ParentId = "5" },
