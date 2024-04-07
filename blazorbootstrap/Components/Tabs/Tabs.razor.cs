@@ -175,7 +175,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
         var tab = tabs!.LastOrDefault(x => x.Name == tabName && !x.Disabled);
 
-        if (tab != null)
+        if (tab is not null)
             await ShowTabAsync(tab);
     }
 
@@ -187,6 +187,26 @@ public partial class Tabs : BlazorBootstrapComponentBase
             activeTab = tab;
 
         StateHasChanged(); // This is mandatory
+    }
+
+    public void RemoveTabByName(string tabName)
+    {
+        if (!tabs?.Any() ?? false) return;
+
+        var tab = tabs!.FirstOrDefault(x => x.Name == tabName);
+
+        if (tab is null) return;
+
+        tabs!.Remove(tab);
+
+        QueueAfterRenderAction(
+            async () =>
+            {
+                await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", tab.ElementId, objRef);
+
+                await SetDefaultActiveTabAsync();
+
+            }, new RenderPriority());
     }
 
     /// <summary>
