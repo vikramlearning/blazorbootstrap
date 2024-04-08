@@ -41,7 +41,7 @@
                         }
                         @if (!string.IsNullOrWhiteSpace(yesButtonText))
                         {
-                            <button class="@yesButtonColor px-4" type="button" @onclick="OnYesClick">@yesButtonText</button>
+                            <button id="bb-confirm-@ElementId" class="@yesButtonColor px-4" type="button" @onclick="OnYesClick">@yesButtonText</button>
                         }
                     </div>
                 </div>
