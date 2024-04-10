@@ -202,6 +202,11 @@ public partial class Tabs : BlazorBootstrapComponentBase
         StateHasChanged(); // This is mandatory
     }
 
+    /// <summary>
+    /// Removes the tab by index.
+    /// </summary>
+    /// <param name="tabIndex"></param>
+    /// <exception cref="IndexOutOfRangeException"></exception>
     public void RemoveTabByIndex(int tabIndex)
     {
         if (!tabs?.Any() ?? true) return;
@@ -217,6 +222,10 @@ public partial class Tabs : BlazorBootstrapComponentBase
         QueueAfterRenderAction(async () => { await ShowNextAvailableTabAsync(tabIndex); }, new RenderPriority());
     }
 
+    /// <summary>
+    /// Removes the tab by name.
+    /// </summary>
+    /// <param name="tabName"></param>
     public void RemoveTabByName(string tabName)
     {
         if (!tabs?.Any() ?? true) return;
