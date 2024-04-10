@@ -104,16 +104,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <param name="showTab">Specifies whether to display the tab after initialization.</param>
     public void InitializeRecentTab(bool showTab)
     {
-        QueueAfterRenderAction(async () =>
-        {
-            if (!tabs?.Any() ?? true) return;
-
-            if (tabs!.Count == 1)
-                await ShowFirstTabAsync();
-            else
-                await ShowLastTabAsync();
-
-        }, new RenderPriority());
+        QueueAfterRenderAction(async () => { await ShowLastTabAsync(); }, new RenderPriority());
     }
 
     /// <summary>
