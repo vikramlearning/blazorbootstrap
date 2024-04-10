@@ -27,9 +27,12 @@ Documentation and examples for using Blazor Bootstrap Tabs components.
 
 | Name | Description | Added Version |
 |:--|:--|:--|
-| InitializeRecentTab(bool showTab) | Initializes the most recently added tab, optionally displaying it.| 1.11.0 |
+| InitializeRecentTab(bool showTab) | Initializes the most recently added tab, optionally displaying it. | 1.11.0 |
+| RemoveTabByIndex(int tabIndex) | Removes the tab by index. | 2.2.0 |
+| RemoveTabByName(string tabName) | Removes the tab by name. | 2.2.0 |
 | ShowFirstTabAsync() | Selects the first tab and show its associated pane. | 1.0.0 |
 | ShowLastTabAsync() | Selects the last tab and show its associated pane. | 1.0.0 |
+| ShowRecentTab() | Shows the recently added tab. | 2.2.0 |
 | ShowTabByIndexAsync(int tabIndex) | Selects the tab by index and show its associated pane. | 1.0.0 |
 | ShowTabByNameAsync(string tabName) | Selects the tab by name and show its associated pane. | 1.0.0 |
 
@@ -556,52 +559,124 @@ If no tab was already active, then the `OnHiding` and `OnHidden` events will not
 
 ### Dynamic tabs
 
-<img src="https://i.imgur.com/fSTOpxk.png" alt="Blazor Tabs Component - Dynamic tabs" />
+<img src="https://i.imgur.com/EvFNQeB.png" alt="Blazor Tabs Component - Dynamic tabs" />
 
-```cshtml {2-12} showLineNumbers
-<Tabs @ref="tabs">
-    @foreach (var customer in customers)
-    {
-        <Tab Title="@customer.CustomerName"
-             OnClick="(args) => OnTabClick(args, customer)">
-            <Content>
-                <div class="mt-3">
-                    This is the placeholder content for the <b>@customer.CustomerName</b> tab.
-                </div>
-            </Content>
-        </Tab>
-    }
-</Tabs>
-
-@if (selectedCustomer is not null)
-{
-    <div class="mt-3">Selected customer: <b>@selectedCustomer.CustomerName</b></div>
-}
-
-<Button Color="ButtonColor.Success" Class="mt-3" @onclick="AddCustomer">Add customer</Button>
+```cshtml {} showLineNumbers
+<div class="d-flex flex-column">
+    <div>
+        <Button Color="ButtonColor.Success" Class="mb-3 float-end" Size="Size.ExtraSmall" @onclick="AddCustomer">+ Add customer</Button>
+    </div>
+    <Card>
+        <CardBody>
+            <Tabs @ref="tabsRef">
+                @foreach (var customer in customers)
+                {
+                    <Tab Title="@customer.CustomerName">
+                        <Content>
+                            <div class="mt-3">
+                                This is the placeholder content for the <b>@customer.CustomerName</b> tab.
+                            </div>
+                        </Content>
+                    </Tab>
+                }
+            </Tabs>
+        </CardBody>
+    </Card>
+</div>
 ```
 
-```cs {4,14,16} showLineNumbers
+```cs {17} showLineNumbers
 @code {
-    Tabs tabs = default!;
+    Tabs tabsRef = default!;
 
-    private List<Customer> customers = new() { new(1, "Marvin Klein"), new(2, "Vikram Reddy"), new(3, "Bandita PA"), new(4, "Daina JJ") };
+    private List<Customer> customers = default!;
 
-    private Customer selectedCustomer = default!;
-
-    protected override void OnInitialized() => selectedCustomer = customers.Last();
+    protected override void OnInitialized()
+    {
+        customers = new() { new(1, "Marvin Klein"), new(2, "Vikram Reddy"), new(3, "Bandita PA"), new(4, "Daina JJ") };
+    }
 
     private void AddCustomer()
     {
         var count = customers.Count;
         var customer = new Customer(count + 1, $"Customer {count + 1}");
         customers.Add(customer);
-        //selectedCustomer = customer; NOTE: this line is not required
-        tabs.InitializeRecentTab(showTab: true);
-    }
 
-    private void OnTabClick(TabEventArgs args, Customer customer) => selectedCustomer = customer;
+        tabsRef.ShowRecentTab();
+    }
 }
 ```
 
 [See demo here.](https://demos.blazorbootstrap.com/tabs#dynamic-tabs)
+
+### Remove dynamic tabs
+
+:::danger 
+In the following example, we are deleting tabs dynamically. Ensure that the **@key** parameter is added with unique value.
+:::
+
+<img src="https://i.imgur.com/4ItXMeA.png" alt="Blazor Tabs Component - Remove dynamic tabs" />
+
+```cshtml {10} showLineNumbers
+<div class="d-flex flex-column">
+    <div>
+        <Button Color="ButtonColor.Success" Class="mb-3 float-end" Size="Size.ExtraSmall" @onclick="AddCustomer">+ Add customer</Button>
+    </div>
+    <Card>
+        <CardBody>
+            <Tabs @ref="tabsRef">
+                @foreach (var customer in customers)
+                {
+                    <Tab @key="@customer?.GetHashCode()"
+                         Title="@customer.CustomerName"
+                         Name="@($"{customer.CustomerId}")">
+                        <Content>
+                            <div class="p-1">
+                                <div class="mt-3">
+                                    This is the placeholder content for the <b>@customer.CustomerName</b> tab.
+                                </div>
+                                <div>
+                                    <Button Color="ButtonColor.Danger" Class="mt-3" Size="Size.ExtraSmall" @onclick="() => RemoveCustomer(customer)">Remove tab</Button>
+                                </div>
+                            </div>
+                        </Content>
+                    </Tab>
+                }
+            </Tabs>
+        </CardBody>
+    </Card>
+</div>
+```
+
+```cs {19,26} showLineNumbers
+@code {
+    Tabs tabsRef = default!;
+
+    int count = 1;
+    private List<Customer> customers = default!;
+
+    protected override void OnInitialized()
+    {
+        customers = new() { new(1, "Marvin Klein"), new(2, "Vikram Reddy"), new(3, "Bandita PA"), new(4, "Daina JJ") };
+        var count = customers.Count;
+    }
+
+    private void AddCustomer()
+    {
+        count++;
+        var customer = new Customer(count, $"Customer {count}");
+        customers.Add(customer);
+
+        tabsRef.ShowRecentTab();
+    }
+
+    private void RemoveCustomer(Customer customer)
+    {
+        customers.Remove(customer);
+
+        tabsRef.RemoveTabByName(customer.CustomerId.ToString());
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/tabs#remove-dynamic-tabs)
