@@ -104,23 +104,16 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <param name="showTab">Specifies whether to display the tab after initialization.</param>
     public void InitializeRecentTab(bool showTab)
     {
-        if (!tabs?.Any() ?? false) return;
+        QueueAfterRenderAction(async () =>
+        {
+            if (!tabs?.Any() ?? true) return;
 
-        QueueAfterRenderAction(
-            async () =>
-            {
-                var tab = tabs!.LastOrDefault();
+            if (tabs!.Count == 1)
+                await ShowFirstTabAsync();
+            else
+                await ShowLastTabAsync();
 
-                if (tab is { Disabled: false })
-                {
-                    await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.initializeNewTab", tab.ElementId, objRef);
-
-                    if (showTab)
-                        await ShowTabAsync(tab);
-                }
-            },
-            new RenderPriority()
-        );
+        }, new RenderPriority());
     }
 
     /// <summary>
@@ -128,7 +121,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     public async Task ShowFirstTabAsync()
     {
-        if (!tabs?.Any() ?? false) return;
+        if (!tabs?.Any() ?? true) return;
 
         var tab = tabs!.FirstOrDefault(x => !x.Disabled);
 
@@ -141,7 +134,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     public async Task ShowLastTabAsync()
     {
-        if (!tabs?.Any() ?? false) return;
+        if (!tabs?.Any() ?? true) return;
 
         var tab = tabs!.LastOrDefault(x => !x.Disabled);
 
@@ -155,7 +148,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <param name="tabIndex">The zero-based index of the element to get or set.</param>
     public async Task ShowTabByIndexAsync(int tabIndex)
     {
-        if (!tabs?.Any() ?? false) return;
+        if (!tabs?.Any() ?? true) return;
 
         if (tabIndex < 0 || tabIndex >= tabs!.Count) throw new IndexOutOfRangeException();
 
@@ -171,7 +164,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <param name="tabName">The name of the tab to select.</param>
     public async Task ShowTabByNameAsync(string tabName)
     {
-        if (!tabs?.Any() ?? false) return;
+        if (!tabs?.Any() ?? true) return;
 
         var tab = tabs!.LastOrDefault(x => x.Name == tabName && !x.Disabled);
 
@@ -191,7 +184,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
     public void RemoveTabByName(string tabName)
     {
-        if (!tabs?.Any() ?? false) return;
+        if (!tabs?.Any() ?? true) return;
 
         var tab = tabs!.FirstOrDefault(x => x.Name == tabName);
 
@@ -199,14 +192,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
         tabs!.Remove(tab);
 
-        QueueAfterRenderAction(
-            async () =>
-            {
-                await JS.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", tab.ElementId, objRef);
-
-                await SetDefaultActiveTabAsync();
-
-            }, new RenderPriority());
+        QueueAfterRenderAction(async () => { await ShowFirstTabAsync(); }, new RenderPriority());
     }
 
     /// <summary>
@@ -214,7 +200,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     internal async Task SetDefaultActiveTabAsync()
     {
-        if (!tabs?.Any() ?? false) return;
+        if (!tabs?.Any() ?? true) return;
 
         activeTab ??= tabs!.FirstOrDefault(x => !x.Disabled)!;
 

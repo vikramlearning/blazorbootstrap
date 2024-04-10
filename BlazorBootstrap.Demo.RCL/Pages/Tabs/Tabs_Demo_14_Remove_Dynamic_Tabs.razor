@@ -10,7 +10,7 @@
                 <Tabs @ref="tabsRef">
                     @foreach (var customer in customers)
                     {
-                        <Tab Title="@customer.CustomerName"
+                        <Tab @key="customer?.GetHashCode()" Title="@customer.CustomerName"
                              Name="@($"{customer.CustomerId}")">
                             <Content>
                                 <div class="p-1">
@@ -33,7 +33,7 @@
 @code {
     Tabs tabsRef = default!;
 
-    private List<Customer> customers = new();
+    private List<Customer> customers = default!;
 
     protected override void OnInitialized()
     {
@@ -50,7 +50,7 @@
 
     private void RemoveCustomer(Customer customer)
     {
+        customers.Remove(customer);
         tabsRef.RemoveTabByName(customer.CustomerId.ToString());
-        //customers.Remove(customer);
     }
 }
