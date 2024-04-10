@@ -133,6 +133,25 @@ public partial class Tabs : BlazorBootstrapComponentBase
             await ShowTabAsync(tab);
     }
 
+    private async Task ShowNextAvailableTabAsync(int removedTabIndex)
+    {
+        if (!tabs?.Any() ?? true) return;
+
+        if (removedTabIndex < 0 || removedTabIndex > tabs!.Count) throw new IndexOutOfRangeException();
+
+        var tabIndex = 0;
+
+        if (removedTabIndex == tabs!.Count)
+            tabIndex = tabs!.Count - 1;
+        else if (removedTabIndex < tabs!.Count)
+            tabIndex = removedTabIndex;
+
+        var tab = tabs[tabIndex];
+
+        if (tab is { Disabled: false })
+            await ShowTabAsync(tab);
+    }
+
     /// <summary>
     /// Selects the tab by index and show its associated pane.
     /// </summary>
@@ -173,17 +192,34 @@ public partial class Tabs : BlazorBootstrapComponentBase
         StateHasChanged(); // This is mandatory
     }
 
-    public void RemoveTabByName(string tabName)
+    public void RemoveTabByIndex(int tabIndex)
     {
         if (!tabs?.Any() ?? true) return;
 
-        var tab = tabs!.FirstOrDefault(x => x.Name == tabName);
+        if (tabIndex < 0 || tabIndex >= tabs!.Count) throw new IndexOutOfRangeException();
+
+        var tab = tabs[tabIndex];
 
         if (tab is null) return;
 
         tabs!.Remove(tab);
 
-        QueueAfterRenderAction(async () => { await ShowFirstTabAsync(); }, new RenderPriority());
+        QueueAfterRenderAction(async () => { await ShowNextAvailableTabAsync(tabIndex); }, new RenderPriority());
+    }
+
+    public void RemoveTabByName(string tabName)
+    {
+        if (!tabs?.Any() ?? true) return;
+
+        var tabIndex = tabs!.FindIndex(x => x.Name == tabName);
+
+        if (tabIndex == -1) return;
+
+        var tab = tabs[tabIndex];
+
+        tabs!.Remove(tab);
+
+        QueueAfterRenderAction(async () => { await ShowNextAvailableTabAsync(tabIndex); }, new RenderPriority());
     }
 
     /// <summary>
