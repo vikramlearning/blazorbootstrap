@@ -37,12 +37,6 @@
 - [Creators](#creators)
 - [Copyright and license](#copyright-and-license)
 
-## Give a Star! ⭐
-
-If you like or are using this project to learn or start your solution, please give it a star. Thanks!
-
-Or if you're feeling really generous, we now support GitHub sponsorships - see the button above.
-
 ## Install
 
 Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 2.1.0`
