@@ -220,7 +220,9 @@ window.blazorBootstrap = {
             if (bodyEl.length > 0)
                 bodyEl[0].style['overflow'] = 'hidden';
 
-            document.getElementById("bb-confirm-" + elementId).focus();
+            let yesButtonEl = document.getElementById(`bb-confirm-${elementId}`);
+            if (yesButtonEl)
+                yesButtonEl.focus();
         },
         hide: (elementId) => {
             let confirmDialogEl = document.getElementById(elementId);

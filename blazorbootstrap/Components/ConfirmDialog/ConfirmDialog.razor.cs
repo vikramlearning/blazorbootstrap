@@ -44,7 +44,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     protected override void BuildStyles()
     {
         this.AddStyle("display:block", showBackdrop);
-        this.AddClass("display:none", !showBackdrop);
+        this.AddStyle("display:none", !showBackdrop);
 
         base.BuildStyles();
     }
@@ -88,10 +88,9 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         DirtyClasses();
         DirtyStyles();
-
         StateHasChanged();
 
-        Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", ElementId));
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", ElementId); }, new RenderPriority());
     }
 
     private void OnNoClick()
@@ -139,7 +138,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", ElementId));
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", ElementId); }, new RenderPriority());
 
         return task;
     }
