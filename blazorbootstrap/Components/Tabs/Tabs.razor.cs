@@ -102,7 +102,17 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// Initializes the most recently added tab, optionally displaying it.
     /// </summary>
     /// <param name="showTab">Specifies whether to display the tab after initialization.</param>
+    [Obsolete("This method is obseolete. Use `ShowRecentTabAsync` method instead.")]
     public void InitializeRecentTab(bool showTab)
+    {
+        if (showTab)
+            QueueAfterRenderAction(async () => { await ShowLastTabAsync(); }, new RenderPriority());
+    }
+
+    /// <summary>
+    /// Shows the recently added tab.
+    /// </summary>
+    public void ShowRecentTab()
     {
         QueueAfterRenderAction(async () => { await ShowLastTabAsync(); }, new RenderPriority());
     }
