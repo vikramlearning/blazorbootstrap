@@ -1,0 +1,20 @@
+﻿@page "/ribbon"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Ribbon</h1>
+<div class="lead mb-3">Documentation and examples for using the Blazor Progress component featuring support for stacked bars, animated backgrounds, and text labels.</div>
+
+@* <CarbonAds /> *@
+
+<SectionHeading Size="HeadingSize.H2" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
+<Demo Type="typeof(Ribbon_Demo_01_How_It_Works)" />
+
+@code {
+    private string pageUrl = "/ribbon";
+    private string title = "Blazor Ribbon Component";
+    private string description = "Documentation and examples for using Blazor Bootstrap custom progress bars featuring support for stacked bars, animated backgrounds, and text labels."; // TODO: update
+    private string imageUrl = "https://i.imgur.com/MK142lQ.png"; // TODO: update
+}
