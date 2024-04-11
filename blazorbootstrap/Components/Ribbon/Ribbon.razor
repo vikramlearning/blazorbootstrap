@@ -6,7 +6,7 @@
         <div id="AR1C4BUKJHQJ3" class="nav nav-underline border-bottom" role="tablist">
             <button class="nav-link active" id="AR1C4BUKJHQK9" data-bs-toggle="tab" data-bs-target="#nav-AR1C4BUKJHQK9" type="button" role="tab" aria-selected="true">Home</button>
             <button class="nav-link " id="AR1C4BUKJHQLA" data-bs-toggle="tab" data-bs-target="#nav-AR1C4BUKJHQLA" type="button" role="tab" aria-selected="false" tabindex="-1">Send / Receive</button>
-            <button class="nav-link " id="AR1C4BUKJHQLB" data-bs-toggle="tab" data-bs-target="#nav-AR1C4BUKJHQLB" type="button" role="tab" aria-selected="false" tabindex="-1">View</button>
+            <button class="nav-link " id="AR1C4BUKJHQLB" data-bs-toggle="tab" data-bs-target="#nav-AR1C4BUKJHQLB" type="button" role="tab" aria-selected="false" tabindex="-1">Folder</button>
         </div>
     </nav>
     <div class="tab-content">
@@ -17,7 +17,7 @@
                     <div class="flex-grow-1">
                         <div class="d-flex flex-row">
                             <!-- New Email -->
-                            <div class="d-flex flex-column align-items-center ribbon-tile ms-1 mt-1 p1">
+                            <div class="d-flex flex-column align-items-center ribbon-tile ms-1 mt-1 p-1">
                                 <div><Icon Class="fs-3 text-success" Name="IconName.EnvelopePlus" /></div>
                                 <div class="text-center">New Email</div>
                             </div>
@@ -52,12 +52,48 @@
         </div>
 
         <div class="tab-pane fade" id="nav-AR1C4BUKJHQLA" role="tabpanel" aria-labelledby="AR1C4BUKJHQLA">
-
-            <p class="mt-3">This is the placeholder content for the <b>Send / Receive</b> tab.</p>
+            <div class="d-flex flex-row border">
+                <!-- New -->
+                <div class="d-flex flex-column align-items-center my-1 border-end">
+                    <div class="flex-grow-1">
+                        <div class="d-flex flex-row">
+                            <!-- New Email -->
+                            <div class="d-flex flex-column align-items-center ribbon-tile ms-1 mt-1 p-1">
+                                <div><Icon Class="fs-3 text-success" Name="IconName.EnvelopePlus" /></div>
+                                <div class="text-center">Send/Receive All Folders</div>
+                            </div>
+                            <!-- New Items -->
+                            <div class="d-flex flex-column align-items-center ribbon-tile me-1 mt-1 p-1">
+                                <div><Icon Class="fs-3" Name="IconName.Calendar3Event" /></div>
+                                <div class="text-center">Update Folder</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-1">Send & Receive</div>
+                </div>
+                <!-- Delete -->
+                <div class="d-flex flex-column align-items-center my-1 border-end">
+                    <div class="flex-grow-1">
+                        <div class="d-flex flex-row">
+                            <!-- Delete -->
+                            <div class="d-flex flex-column align-items-center ribbon-tile ms-1 mt-1 p-1">
+                                <div><Icon Class="fs-3" Name="IconName.Trash" /></div>
+                                <div class="text-center">Show Progress</div>
+                            </div>
+                            <!-- Archive -->
+                            <div class="d-flex flex-column align-items-center ribbon-tile me-1 mt-1 p-1">
+                                <div><Icon Class="fs-3 text-success" Name="IconName.XSquareFill" /></div>
+                                <div class="text-center">Cancel All</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-1">Download</div>
+                </div>
+            </div>
         </div>
 
         <div class="tab-pane fade" id="nav-AR1C4BUKJHQLB" role="tabpanel" aria-labelledby="AR1C4BUKJHQLB">
-            <p class="mt-3">This is the placeholder content for the <b>View</b> tab.</p>
+            <p class="mt-3">This is the placeholder content for the <b>Folder</b> tab.</p>
         </div>
     </div>
 </div>
