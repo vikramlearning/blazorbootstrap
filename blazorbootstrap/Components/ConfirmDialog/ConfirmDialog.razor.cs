@@ -138,7 +138,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", ElementId); }, new RenderPriority());
+        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", ElementId, confirmDialogOptions.AutoFocusYesButton); }, new RenderPriority());
 
         return task;
     }

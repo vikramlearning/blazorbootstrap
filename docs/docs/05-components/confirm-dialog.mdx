@@ -379,4 +379,44 @@ You can also create a scrollable dialog that allows scroll the dialog body by up
 }
 ```
 
-[See Confirm Dialog demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+[See demo here.](https://demos.blazorbootstrap.com/confirm-dialog#vertically-centered)
+
+### Disable auto focus on the yes button
+
+:::info
+By default, auto focus on the **"Yes"** button is enabled. 
+:::
+
+To disabe the autofocus, set `AutoFocusYesButton = false` on the ConfirmDialogOptions.
+
+
+```cshtml {} showLineNumbers
+<ConfirmDialog @ref="dialog" />
+
+<Button Color="ButtonColor.Primary" @onclick="ShowDialogAsync"> Launch Confirm Dialog </Button>
+```
+
+```cshtml {} showLineNumbers
+@code {
+    private ConfirmDialog dialog = default!;
+
+    private async Task ShowDialogAsync()
+    {
+        var confirmation = await dialog.ShowAsync<LongContentDemoComponent>(
+            title: "Confirm dialog title",
+            confirmDialogOptions: new ConfirmDialogOptions { AutoFocusYesButton = false }
+        );
+
+        if (confirmation)
+        {
+            // do something
+        }
+        else
+        {
+            // do something
+        }
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/confirm-dialog#disable-auto-focus-on-the-yes-button)
