@@ -16,16 +16,8 @@
                 <div class="d-flex flex-column align-items-center my-1 border-end">
                     <div class="flex-grow-1">
                         <div class="d-flex flex-row">
-                            <!-- New Email -->
-                            <div class="d-flex flex-column align-items-center ribbon-tile ms-1 mt-1 p-1">
-                                <div><Icon Class="fs-3 text-success" Name="IconName.EnvelopePlus" /></div>
-                                <div class="text-center">New Email</div>
-                            </div>
-                            <!-- New Items -->
-                            <div class="d-flex flex-column align-items-center ribbon-tile me-1 mt-1 p-1">
-                                <div><Icon Class="fs-3" Name="IconName.Calendar3Event" /></div>
-                                <div class="text-center">Appointment</div>
-                            </div>
+                            <RibbonItem IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" Text="New Email" IsFirstItem="true" />
+                            <RibbonItem IconName="IconName.Calendar3Event" IconSize="IconSize.x3" Text="Appointment" IsLastItem="true" />
                         </div>
                     </div>
                     <div class="mb-1">New</div>
@@ -34,16 +26,8 @@
                 <div class="d-flex flex-column align-items-center my-1 border-end">
                     <div class="flex-grow-1">
                         <div class="d-flex flex-row">
-                            <!-- Delete -->
-                            <div class="d-flex flex-column align-items-center ribbon-tile ms-1 mt-1 p-1">
-                                <div><Icon Class="fs-3" Name="IconName.Trash" /></div>
-                                <div class="text-center">Delete</div>
-                            </div>
-                            <!-- Archive -->
-                            <div class="d-flex flex-column align-items-center ribbon-tile me-1 mt-1 p-1">
-                                <div><Icon Class="fs-3 text-success" Name="IconName.Archive" /></div>
-                                <div class="text-center">Archive</div>
-                            </div>
+                            <RibbonItem IconColor="IconColor.Danger" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Delete" IsFirstItem="true" />
+                            <RibbonItem IconColor="IconColor.Primary" IconName="IconName.Archive" IconSize="IconSize.x3" Text="Archive" IsLastItem="true" />
                         </div>
                     </div>
                     <div class="mb-1">Delete</div>
@@ -57,16 +41,8 @@
                 <div class="d-flex flex-column align-items-center my-1 border-end">
                     <div class="flex-grow-1">
                         <div class="d-flex flex-row">
-                            <!-- New Email -->
-                            <div class="d-flex flex-column align-items-center ribbon-tile ms-1 mt-1 p-1">
-                                <div><Icon Class="fs-3 text-success" Name="IconName.EnvelopePlus" /></div>
-                                <div class="text-center">Send/Receive All Folders</div>
-                            </div>
-                            <!-- New Items -->
-                            <div class="d-flex flex-column align-items-center ribbon-tile me-1 mt-1 p-1">
-                                <div><Icon Class="fs-3" Name="IconName.Calendar3Event" /></div>
-                                <div class="text-center">Update Folder</div>
-                            </div>
+                            <RibbonItem IconColor="IconColor.Success" IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" Text="Send/Receive All Folders" IsFirstItem="true" />
+                            <RibbonItem IconColor="IconColor.Primary" IconName="IconName.Calendar3Event" IconSize="IconSize.x3" Text="Update Folder" IsLastItem="true" />
                         </div>
                     </div>
                     <div class="mb-1">Send & Receive</div>
@@ -75,16 +51,8 @@
                 <div class="d-flex flex-column align-items-center my-1 border-end">
                     <div class="flex-grow-1">
                         <div class="d-flex flex-row">
-                            <!-- Delete -->
-                            <div class="d-flex flex-column align-items-center ribbon-tile ms-1 mt-1 p-1">
-                                <div><Icon Class="fs-3" Name="IconName.Trash" /></div>
-                                <div class="text-center">Show Progress</div>
-                            </div>
-                            <!-- Archive -->
-                            <div class="d-flex flex-column align-items-center ribbon-tile me-1 mt-1 p-1">
-                                <div><Icon Class="fs-3 text-success" Name="IconName.XSquareFill" /></div>
-                                <div class="text-center">Cancel All</div>
-                            </div>
+                            <RibbonItem IconColor="IconColor.Success" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Show Progress" IsFirstItem="true" />
+                            <RibbonItem IconColor="IconColor.Primary" IconName="IconName.XSquareFill" IconSize="IconSize.x3" Text="Cancel All" IsLastItem="true" />
                         </div>
                     </div>
                     <div class="mb-1">Download</div>

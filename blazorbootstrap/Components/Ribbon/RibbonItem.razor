@@ -1,0 +1,22 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    <div>
+        @if (!string.IsNullOrEmpty(ImgSrc))
+        {
+            <img src="@ImgSrc"
+                 width="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px"
+                 height="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px" />
+        }
+        else
+        {
+            <Icon Class="@IconCssClass"
+                  Color="@IconColor"
+                  Name="@IconName"
+                  CustomIconName="@CustomIconName"
+                  Size="@IconSize" />
+        }
+    </div>
+    <div class="text-center">@Text</div>
+</div>
