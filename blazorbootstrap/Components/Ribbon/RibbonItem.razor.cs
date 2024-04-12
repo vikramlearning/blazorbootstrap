@@ -17,7 +17,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
         this.AddClass("ms-1", IsFirstItem);
         this.AddClass("me-1", IsLastItem);
         this.AddClass("mx-1", !IsFirstItem && !IsLastItem);
-        this.AddClass("mt-1 p-1");
+        this.AddClass("p-1");
 
         base.BuildClasses();
     }
@@ -78,13 +78,13 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// Width in pixels only.
     /// </summary>
     [Parameter]
-    public double ImgWidth { get; set; } = 32;
+    public double ImgWidth { get; set; } = 28;
 
     /// <summary>
     /// Height in pixels only.
     /// </summary>
     [Parameter]
-    public double ImgHeight { get; set; } = 32;
+    public double ImgHeight { get; set; } = 28;
 
     [Parameter]
     public bool IsFirstItem { get; set; } = false;

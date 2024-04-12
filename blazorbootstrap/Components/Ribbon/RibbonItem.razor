@@ -5,7 +5,8 @@
     <div>
         @if (!string.IsNullOrEmpty(ImgSrc))
         {
-            <img src="@ImgSrc"
+            <img class="mb-2"
+                 src="@ImgSrc"
                  width="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px"
                  height="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px" />
         }
