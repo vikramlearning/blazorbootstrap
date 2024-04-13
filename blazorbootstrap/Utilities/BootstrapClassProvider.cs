@@ -25,6 +25,10 @@ public static class BootstrapClassProvider
     public static string Badge { get; } = "badge";
     public static string BadgeColor(BadgeColor color) => $"text-bg-{ToBadgeColor(color)}";
 
+    public static string Border { get; } = "border";
+    public static string BorderEnd { get; } = "border-end";
+    public static string BorderStart { get; } = "border-start";
+
     public static string Button { get; } = "btn";
     public static string ButtonActive { get; } = "active";
     public static string ButtonBlock { get; } = $"{Button}-block";

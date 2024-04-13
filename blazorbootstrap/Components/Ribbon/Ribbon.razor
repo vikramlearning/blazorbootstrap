@@ -16,15 +16,15 @@
                 <div class="d-flex flex-column align-items-center my-1 border-end">
                     <div class="flex-grow-1">
                         <div class="d-flex flex-row">
-                            @* <RibbonItem IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" Text="New Email" IsFirstItem="true" /> *@
-                            <RibbonItem ImgSrc="/_content/BlazorBootstrap.Demo.RCL/envelope-plus.png" Text="New Email" IsFirstItem="true" />
+                            <RibbonItem IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" Text="New Email" IsFirstItem="true" />
+                            @* <RibbonItem ImgSrc="/_content/BlazorBootstrap.Demo.RCL/envelope-plus.png" Text="New Email" IsFirstItem="true" /> *@
                             <RibbonItem IconName="IconName.Calendar3Event" IconSize="IconSize.x3" Text="Appointment" IsLastItem="true" />
                         </div>
                     </div>
                     <div class="mb-1">New</div>
                 </div>
                 <!-- Delete -->
-                <div class="d-flex flex-column align-items-center my-1 border-end">
+                @* <div class="d-flex flex-column align-items-center my-1 border-end">
                     <div class="flex-grow-1">
                         <div class="d-flex flex-row">
                             <RibbonItem IconColor="IconColor.Danger" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Delete" IsFirstItem="true" />
@@ -32,12 +32,16 @@
                         </div>
                     </div>
                     <div class="mb-1">Delete</div>
-                </div>
+                </div> *@
+                <RibbonItemGroup Text="Delete">
+                    <RibbonItem IconColor="IconColor.Danger" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Delete" IsFirstItem="true" />
+                    <RibbonItem IconColor="IconColor.Primary" IconName="IconName.Archive" IconSize="IconSize.x3" Text="Archive" IsLastItem="true" />
+                </RibbonItemGroup>
             </div>
         </div>
 
         <div class="tab-pane fade" id="nav-AR1C4BUKJHQLA" role="tabpanel" aria-labelledby="AR1C4BUKJHQLA">
-            <div class="d-flex flex-row border">
+            <RibbonGroup>
                 <!-- New -->
                 <div class="d-flex flex-column align-items-center my-1 border-end">
                     <div class="flex-grow-1">
@@ -58,7 +62,10 @@
                     </div>
                     <div class="mb-1">Download</div>
                 </div>
-            </div>
+            </RibbonGroup>
+            @* <div class="d-flex flex-row border">
+                
+            </div> *@
         </div>
 
         <div class="tab-pane fade" id="nav-AR1C4BUKJHQLB" role="tabpanel" aria-labelledby="AR1C4BUKJHQLB">

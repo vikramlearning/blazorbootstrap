@@ -1,0 +1,11 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+    <div class="flex-grow-1">
+        <div class="d-flex flex-row">
+            @ChildContent
+        </div>
+    </div>
+    <div class="mb-1">@Text</div>
+</div>

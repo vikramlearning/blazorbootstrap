@@ -25,7 +25,6 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     protected override void BuildStyles()
     {
         //this.AddStyle("display:block", showBackdrop);
-
         base.BuildStyles();
     }
 
