@@ -43,7 +43,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     public RenderFragment Content { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the disabled.
+    /// Gets or sets the disabled state.
     /// </summary>
     [Parameter]
     public bool Disabled { get; set; }
@@ -67,7 +67,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     public EventCallback<TabEventArgs> OnClick { get; set; }
 
     /// <summary>
-    /// Gets or sets the parent.
+    /// Gets or sets the parent ribbon.
     /// </summary>
     [CascadingParameter(Name = "Ribbon1")]
     internal Ribbon Parent { get; set; } = default!;

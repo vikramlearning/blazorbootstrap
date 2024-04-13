@@ -1,0 +1,203 @@
+---
+title: Blazor Ribbon Component
+description: Documentation and examples for using the Blazor Bootstrap Ribbon component.
+image: https://i.imgur.com/LpZVLbF.png
+
+sidebar_label: Ribbon
+sidebar_position: 20
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Progress
+
+Documentation and examples for using the Blazor Bootstrap Ribbon component.
+
+<CarbonAd />
+
+<img src="https://i.imgur.com/LpZVLbF.png" alt="Blazor Ribbon" />
+
+## Ribbon Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| | | | ✔️ | | 2.2.0 |
+
+## RibbonTab Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| | | | ✔️ | | 2.2.0 |
+
+## RibbonGroup Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| | | | ✔️ | | 2.2.0 |
+
+## RibbonItemGroup Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| | | | | | 2.2.0 |
+
+## RibbonItem Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| | | | | | 2.2.0 |
+
+## Ribbon Events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| | | 2.2.0 |
+
+## Examples
+
+### How it works
+
+In the following example, you will see a ribbon similar to the one found in Outlook.
+
+<img src="https://i.imgur.com/6liyurS.png" alt="Blazor Ribbon - How it works" />
+
+```cshtml showLineNumbers
+<Ribbon OnClick="OnRibbonItemClick">
+    <RibbonTab Title="Home" IsActive="true">
+        <Content>
+            <!-- New -->
+            <RibbonItemGroup Text="New">
+                <RibbonItem Name="NewEmail" IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" IsFirstItem="true">New<br />Email</RibbonItem>
+                <RibbonItem Name="Appointment" IconName="IconName.Calendar3Event" IconSize="IconSize.x3" Text="Appointment" IsLastItem="true" />
+            </RibbonItemGroup>
+            <!-- Delete -->
+            <RibbonItemGroup Text="Delete">
+                <RibbonItem Name="Delete" IconColor="IconColor.Danger" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Delete" IsFirstItem="true" />
+                <RibbonItem Name="Archive" IconColor="IconColor.Primary" IconName="IconName.Archive" IconSize="IconSize.x3" Text="Archive" IsLastItem="true" />
+            </RibbonItemGroup>
+        </Content>
+    </RibbonTab>
+    <RibbonTab Title="Send / Receive">
+        <Content>
+            <!-- Send & Receive -->
+            <RibbonItemGroup Text="Send & Receive">
+                <RibbonItem Name="SendReceiveAllFolders" IconColor="IconColor.Success" IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" IsFirstItem="true">Send/Receive<br />All Folders</RibbonItem>
+                <RibbonItem Name="UpdateFolder" IconColor="IconColor.Primary" IconName="IconName.Calendar3Event" IconSize="IconSize.x3" IsLastItem="true">Update<br />Folder</RibbonItem>
+            </RibbonItemGroup>
+            <!-- Download -->
+            <RibbonItemGroup Text="Download">
+                <RibbonItem Name="ShowProgress" IconColor="IconColor.Success" IconName="IconName.Trash" IconSize="IconSize.x3" IsFirstItem="true">Show<br />Progress</RibbonItem>
+                <RibbonItem Name="CancelAll" IconColor="IconColor.Primary" IconName="IconName.XSquareFill" IconSize="IconSize.x3" IsLastItem="true">Cancel<br />All</RibbonItem>
+            </RibbonItemGroup>
+        </Content>
+    </RibbonTab>
+    <RibbonTab Title="Folder">
+        <Content>
+            <!-- New -->
+            <RibbonItemGroup Text="New">
+                <RibbonItem Name="NewFolder" IconColor="IconColor.Success" IconName="IconName.FolderPlus" IconSize="IconSize.x3" IsFirstItem="true">New<br />Folder</RibbonItem>
+                <RibbonItem Name="NewSearchFolder" IconColor="IconColor.Primary" IconName="IconName.Search" IconSize="IconSize.x3" IsLastItem="true">New<br />Search Folder</RibbonItem>
+            </RibbonItemGroup>
+            <!-- Actions -->
+            <RibbonItemGroup Text="Actions">
+                <RibbonItem Name="RenameFolder" IconColor="IconColor.Success" IconName="IconName.CursorText" IconSize="IconSize.x3" IsFirstItem="true">Rename<br />Folder</RibbonItem>
+                <RibbonItem Name="CopyFolder" IconColor="IconColor.Primary" IconName="IconName.Copy" IconSize="IconSize.x3">Copy<br />Folder</RibbonItem>
+                <RibbonItem Name="MoveFolder" IconColor="IconColor.Primary" IconName="IconName.ArrowRight" IconSize="IconSize.x3">Move<br />Folder</RibbonItem>
+                <RibbonItem Name="DeleteFolder" IconColor="IconColor.Primary" IconName="IconName.FolderX" IconSize="IconSize.x3" IsLastItem="true">Delete<br />Folder</RibbonItem>
+            </RibbonItemGroup>
+        </Content>
+    </RibbonTab>
+</Ribbon>
+
+<div class="mt-2">
+    Selected ribbon item: @selectedRibbonItem
+</div>
+```
+
+```cshtml showLineNumbers
+@code {
+    string? selectedRibbonItem;
+
+    private void OnRibbonItemClick(RibbonItemEventArgs args)
+    {
+        selectedRibbonItem = args.Name;
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/ribbon#how-it-works)
+
+### Other icons
+
+In the following example, instead of icons like Bootstrap, Font Awesome, etc., we used PNG icons.
+
+<img src="https://i.imgur.com/KmWBVvz.png" alt="Blazor Ribbon - Other icons" />
+
+```cshtml {} showLineNumbers
+<Ribbon OnClick="OnRibbonItemClick">
+    <RibbonTab Title="Home">
+        <Content>
+            <!-- New -->
+            <RibbonItemGroup Text="New">
+                <RibbonItem Name="NewEmail" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/new-email.png" IsFirstItem="true">New<br />Email</RibbonItem>
+                <RibbonItem Name="Appointment" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/calendar.png" Text="Appointment" IsLastItem="true" />
+            </RibbonItemGroup>
+            <!-- Delete -->
+            <RibbonItemGroup Text="Delete">
+                <RibbonItem Name="Delete" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/bin.png" Text="Delete" IsFirstItem="true" />
+                <RibbonItem Name="Archive" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/archive.png" Text="Archive" IsLastItem="true" />
+            </RibbonItemGroup>
+        </Content>
+    </RibbonTab>
+    <RibbonTab Title="Send / Receive" IsActive="true">
+        <Content>
+            <!-- Send & Receive -->
+            <RibbonItemGroup Text="Send & Receive">
+                <RibbonItem Name="SendReceiveAllFolders" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/refresh.png" IsFirstItem="true">Send/Receive<br />All Folders</RibbonItem>
+                <RibbonItem Name="UpdateFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-sync.png" IsLastItem="true">Update<br />Folder</RibbonItem>
+            </RibbonItemGroup>
+            <!-- Download -->
+            <RibbonItemGroup Text="Download">
+                <RibbonItem Name="ShowProgress" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/loading-bar.png" IsFirstItem="true">Show<br />Progress</RibbonItem>
+                <RibbonItem Name="CancelAll" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/cancelled.png" IsLastItem="true">Cancel<br />All</RibbonItem>
+            </RibbonItemGroup>
+        </Content>
+    </RibbonTab>
+    <RibbonTab Title="Folder" IsActive="true">
+        <Content>
+            <!-- New -->
+            <RibbonItemGroup Text="New">
+                <RibbonItem Name="NewFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-add.png" IsFirstItem="true">New<br />Folder</RibbonItem>
+                <RibbonItem Name="NewSearchFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-search.png" IsLastItem="true">New<br />Search Folder</RibbonItem>
+            </RibbonItemGroup>
+            <!-- Actions -->
+            <RibbonItemGroup Text="Actions">
+                <RibbonItem Name="RenameFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-rename.png" IsFirstItem="true">Rename<br />Folder</RibbonItem>
+                <RibbonItem Name="CopyFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-copy.png">Copy<br />Folder</RibbonItem>
+                <RibbonItem Name="MoveFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-move.png">Move<br />Folder</RibbonItem>
+                <RibbonItem Name="DeleteFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-delete.png" IsLastItem="true">Delete<br />Folder</RibbonItem>
+            </RibbonItemGroup>
+        </Content>
+    </RibbonTab>
+</Ribbon>
+
+<div class="mt-2">
+    Selected ribbon item: @selectedRibbonItem
+</div>
+```
+```cshtml {} showLineNumbers
+@code {
+    string? selectedRibbonItem;
+
+    private void OnRibbonItemClick(RibbonItemEventArgs args)
+    {
+        selectedRibbonItem = args.Name;
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/ribbon#other-icons)
+
+:::note NOTE
+All the PNG icons used on this page are from Flaticon with a premium license only.
+:::

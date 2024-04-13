@@ -221,7 +221,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         if (tab is { IsActive: true, Disabled: false })
             activeTab = tab;
 
-        StateHasChanged(); // This is mandatory
+        StateHasChanged(); // This is mandatory to reflect changes in UI
     }
 
     internal async Task OnRibbonItemClick(RibbonItemEventArgs args)
@@ -231,7 +231,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Sets default active tab.
+    /// Sets the default active tab.
     /// </summary>
     internal async Task SetDefaultActiveTabAsync()
     {
@@ -294,11 +294,17 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     [Parameter]
     public bool EnableFadeEffect { get; set; }
 
+    /// <summary>
+    /// Determines whether the Ribbon is rendered vertically.
+    /// </summary>
     private bool IsVertical =>
         NavStyle == NavStyle.Vertical
         || NavStyle == NavStyle.VerticalPills
         || NavStyle == NavStyle.VerticalUnderline;
 
+    /// <summary>
+    /// CSS class applied to the parent div of the tab content when vertical.
+    /// </summary>
     private string? NavParentDivCssClass => IsVertical ? "d-flex" : default;
 
     /// <summary>
@@ -337,6 +343,9 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<RibbonEventArgs> OnShown { get; set; }
 
+    /// <summary>
+    /// CSS class applied to the tab content container.
+    /// </summary>
     private string? TabContentCssClass => IsVertical ? "tab-content flex-grow-1" : "tab-content";
 
     #endregion

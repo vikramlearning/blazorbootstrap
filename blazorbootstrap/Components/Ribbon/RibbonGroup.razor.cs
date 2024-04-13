@@ -33,7 +33,7 @@ public partial class RibbonGroup : BlazorBootstrapComponentBase
     protected override bool ShouldAutoGenerateId => true;
 
     /// <summary>
-    /// Specifies the content to be rendered inside this.
+    /// Gets or sets the content to be rendered inside this component.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
