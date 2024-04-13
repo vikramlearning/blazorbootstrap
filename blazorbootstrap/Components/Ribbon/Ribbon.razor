@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<CascadingValue Value="@(this)" IsFixed="true">
+<CascadingValue Value="this" Name="Ribbon1" IsFixed="true">
     @ChildContent
 </CascadingValue>
 
@@ -35,7 +35,9 @@
             {
                 <div class="tab-pane @(EnableFadeEffect ? "fade" : "")" id="nav-@t.ElementId" role="tabpanel" aria-labelledby="@t.ElementId">
                     <div class="d-flex flex-row border">
-                        @t.Content
+                        <CascadingValue Value="this" Name="Ribbon2" IsFixed="true">
+                            @t.Content
+                        </CascadingValue>
                     </div>
                 </div>
             }

@@ -30,6 +30,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
     {
+        // TODO: update
+
         if (disposing) tabs = null;
 
         await base.DisposeAsync(disposing);
@@ -254,6 +256,12 @@ public partial class Ribbon : BlazorBootstrapComponentBase
             await ShowTabAsync(activeTab);
     }
 
+    internal async Task OnRibbonItemClick(RibbonItemEventArgs args)
+    {
+        if (OnClick.HasDelegate)
+            await OnClick.InvokeAsync(args);
+    }
+
     private async Task OnTabClickAsync(RibbonTab tab) => await ShowTabAsync(tab);
 
     private async Task ShowTabAsync(RibbonTab tab)
@@ -297,7 +305,13 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// Get or sets the nav style.
     /// </summary>
     [Parameter]
-    public NavStyle NavStyle { get; set; } = NavStyle.Tabs;
+    public NavStyle NavStyle { get; set; } = NavStyle.Underline;
+
+    /// <summary>
+    /// This event fires when the user clicks the corresponding <see cref="RibbonItem" />.
+    /// </summary>
+    [Parameter]
+    public EventCallback<RibbonItemEventArgs> OnClick { get; set; }
 
     /// <summary>
     /// This event fires after a new tab is shown (and thus the previous active tab is hidden).

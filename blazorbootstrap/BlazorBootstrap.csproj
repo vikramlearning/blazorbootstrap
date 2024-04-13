@@ -48,4 +48,8 @@
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.26" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="EventArguments\Ribbon\" />
+	</ItemGroup>
+
 </Project>

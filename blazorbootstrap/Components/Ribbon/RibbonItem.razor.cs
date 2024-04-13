@@ -27,13 +27,16 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
+            // TOOD: update
         }
 
         await base.DisposeAsync(disposing);
     }
 
-    protected override void OnInitialized()
+    private async Task OnRibbonItemClickAsync()
     {
+        if (Parent is not null)
+            await Parent.OnRibbonItemClick(new RibbonItemEventArgs(Name!));
     }
 
     #endregion
@@ -53,7 +56,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     public string? CustomIconName { get; set; }
 
     [Parameter]
-    public IconColor IconColor {  get; set; }
+    public IconColor IconColor { get; set; }
 
     [Parameter]
     public string? IconCssClass { get; set; }
@@ -85,8 +88,17 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     [Parameter]
     public bool IsLastItem { get; set; } = false;
 
+    /// <summary>
+    /// Gets or sets the parent.
+    /// </summary>
+    [CascadingParameter(Name = "Ribbon2")]
+    internal Ribbon Parent { get; set; } = default!;
+
     [Parameter]
-    public string? Text {  get; set; }
+    public string? Name { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
 
     #endregion
 }

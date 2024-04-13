@@ -1,7 +1,13 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes">
+<div @ref="@ElementRef"
+     id="@ElementId"
+     class="@ClassNames"
+     style="@StyleNames"
+     @attributes="@Attributes"
+     @onclick="OnRibbonItemClickAsync">
+
     <div>
         @if (!string.IsNullOrEmpty(ImgSrc))
         {
@@ -27,4 +33,5 @@
     {
         <div class="text-center">@ChildContent</div>
     }
+
 </div>

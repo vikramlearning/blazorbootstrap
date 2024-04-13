@@ -25,13 +25,10 @@ public partial class RibbonItemGroup : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
+            // TODO: update
         }
 
         await base.DisposeAsync(disposing);
-    }
-
-    protected override void OnInitialized()
-    {
     }
 
     #endregion

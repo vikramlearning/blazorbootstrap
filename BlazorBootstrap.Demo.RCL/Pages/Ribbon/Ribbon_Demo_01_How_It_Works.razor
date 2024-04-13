@@ -1,15 +1,15 @@
-﻿<Ribbon EnableFadeEffect="true" NavStyle="NavStyle.Underline">
+﻿<Ribbon OnClick="OnRibbonItemClick">
     <RibbonTab Title="Home" IsActive="true">
         <Content>
             <!-- New -->
             <RibbonItemGroup Text="New">
-                <RibbonItem IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" Text="New Email" IsFirstItem="true" />
-                <RibbonItem IconName="IconName.Calendar3Event" IconSize="IconSize.x3" Text="Appointment" IsLastItem="true" />
+                <RibbonItem Name="NewEmail" IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" IsFirstItem="true">New<br />Email</RibbonItem>
+                <RibbonItem Name="Appointment" IconName="IconName.Calendar3Event" IconSize="IconSize.x3" Text="Appointment" IsLastItem="true" />
             </RibbonItemGroup>
             <!-- Delete -->
             <RibbonItemGroup Text="Delete">
-                <RibbonItem IconColor="IconColor.Danger" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Delete" IsFirstItem="true" />
-                <RibbonItem IconColor="IconColor.Primary" IconName="IconName.Archive" IconSize="IconSize.x3" Text="Archive" IsLastItem="true" />
+                <RibbonItem Name="Delete" IconColor="IconColor.Danger" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Delete" IsFirstItem="true" />
+                <RibbonItem Name="Archive" IconColor="IconColor.Primary" IconName="IconName.Archive" IconSize="IconSize.x3" Text="Archive" IsLastItem="true" />
             </RibbonItemGroup>
         </Content>
     </RibbonTab>
@@ -17,13 +17,13 @@
         <Content>
             <!-- Send & Receive -->
             <RibbonItemGroup Text="Send & Receive">
-                <RibbonItem IconColor="IconColor.Success" IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" Text="Send/Receive All Folders" IsFirstItem="true" />
-                <RibbonItem IconColor="IconColor.Primary" IconName="IconName.Calendar3Event" IconSize="IconSize.x3" Text="Update Folder" IsLastItem="true" />
+                <RibbonItem Name="SendReceiveAllFolders" IconColor="IconColor.Success" IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" IsFirstItem="true">Send/Receive<br />All Folders</RibbonItem>
+                <RibbonItem Name="UpdateFolder" IconColor="IconColor.Primary" IconName="IconName.Calendar3Event" IconSize="IconSize.x3" IsLastItem="true">Update<br />Folder</RibbonItem>
             </RibbonItemGroup>
             <!-- Download -->
             <RibbonItemGroup Text="Download">
-                <RibbonItem IconColor="IconColor.Success" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Show Progress" IsFirstItem="true" />
-                <RibbonItem IconColor="IconColor.Primary" IconName="IconName.XSquareFill" IconSize="IconSize.x3" Text="Cancel All" IsLastItem="true" />
+                <RibbonItem Name="ShowProgress" IconColor="IconColor.Success" IconName="IconName.Trash" IconSize="IconSize.x3" IsFirstItem="true">Show<br />Progress</RibbonItem>
+                <RibbonItem Name="CancelAll" IconColor="IconColor.Primary" IconName="IconName.XSquareFill" IconSize="IconSize.x3" IsLastItem="true">Cancel<br />All</RibbonItem>
             </RibbonItemGroup>
         </Content>
     </RibbonTab>
@@ -31,16 +31,29 @@
         <Content>
             <!-- New -->
             <RibbonItemGroup Text="New">
-                <RibbonItem IconColor="IconColor.Success" IconName="IconName.FolderPlus" IconSize="IconSize.x3" Text="New Folder" IsFirstItem="true" />
-                <RibbonItem IconColor="IconColor.Primary" IconName="IconName.Search" IconSize="IconSize.x3" Text="New Search Folder" IsLastItem="true" />
+                <RibbonItem Name="NewFolder" IconColor="IconColor.Success" IconName="IconName.FolderPlus" IconSize="IconSize.x3" IsFirstItem="true">New<br />Folder</RibbonItem>
+                <RibbonItem Name="NewSearchFolder" IconColor="IconColor.Primary" IconName="IconName.Search" IconSize="IconSize.x3" IsLastItem="true">New<br />Search Folder</RibbonItem>
             </RibbonItemGroup>
             <!-- Actions -->
             <RibbonItemGroup Text="Actions">
-                <RibbonItem IconColor="IconColor.Success" IconName="IconName.CursorText" IconSize="IconSize.x3" Text="Rename Folder" IsFirstItem="true" />
-                <RibbonItem IconColor="IconColor.Primary" IconName="IconName.Copy" IconSize="IconSize.x3" Text="Copy Folder" />
-                <RibbonItem IconColor="IconColor.Primary" IconName="IconName.ArrowRight" IconSize="IconSize.x3" Text="Move Folder" />
-                <RibbonItem IconColor="IconColor.Primary" IconName="IconName.FolderX" IconSize="IconSize.x3" Text="Delete Folder" IsLastItem="true" />
+                <RibbonItem Name="RenameFolder" IconColor="IconColor.Success" IconName="IconName.CursorText" IconSize="IconSize.x3" IsFirstItem="true">Rename<br />Folder</RibbonItem>
+                <RibbonItem Name="CopyFolder" IconColor="IconColor.Primary" IconName="IconName.Copy" IconSize="IconSize.x3">Copy<br />Folder</RibbonItem>
+                <RibbonItem Name="MoveFolder" IconColor="IconColor.Primary" IconName="IconName.ArrowRight" IconSize="IconSize.x3">Move<br />Folder</RibbonItem>
+                <RibbonItem Name="DeleteFolder" IconColor="IconColor.Primary" IconName="IconName.FolderX" IconSize="IconSize.x3" IsLastItem="true">Delete<br />Folder</RibbonItem>
             </RibbonItemGroup>
         </Content>
     </RibbonTab>
 </Ribbon>
+
+<div class="mt-2">
+    Selected ribbon item: @selectedRibbonItem
+</div>
+
+@code {
+    string? selectedRibbonItem;
+
+    private void OnRibbonItemClick(RibbonItemEventArgs args)
+    {
+        selectedRibbonItem = args.Name;
+    }
+}
