@@ -22,12 +22,6 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
         base.BuildClasses();
     }
 
-    protected override void BuildStyles()
-    {
-        //this.AddStyle("display:block", showBackdrop);
-        base.BuildStyles();
-    }
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
     {

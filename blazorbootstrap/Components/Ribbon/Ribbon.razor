@@ -1,75 +1,44 @@
-@namespace BlazorBootstrap
+﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div>
-    <nav>
-        <div id="AR1C4BUKJHQJ3" class="nav nav-underline border-bottom" role="tablist">
-            <button class="nav-link active" id="AR1C4BUKJHQK9" data-bs-toggle="tab" data-bs-target="#nav-AR1C4BUKJHQK9" type="button" role="tab" aria-selected="true">Home</button>
-            <button class="nav-link " id="AR1C4BUKJHQLA" data-bs-toggle="tab" data-bs-target="#nav-AR1C4BUKJHQLA" type="button" role="tab" aria-selected="false" tabindex="-1">Send / Receive</button>
-            <button class="nav-link " id="AR1C4BUKJHQLB" data-bs-toggle="tab" data-bs-target="#nav-AR1C4BUKJHQLB" type="button" role="tab" aria-selected="false" tabindex="-1">Folder</button>
-        </div>
-    </nav>
-    <div class="tab-content">
-        <div class="tab-pane fade active show" id="nav-AR1C4BUKJHQK9" role="tabpanel" aria-labelledby="AR1C4BUKJHQK9">
-            <div class="d-flex flex-row border">
-                <!-- New -->
-                <div class="d-flex flex-column align-items-center my-1 border-end">
-                    <div class="flex-grow-1">
-                        <div class="d-flex flex-row">
-                            <RibbonItem IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" Text="New Email" IsFirstItem="true" />
-                            @* <RibbonItem ImgSrc="/_content/BlazorBootstrap.Demo.RCL/envelope-plus.png" Text="New Email" IsFirstItem="true" /> *@
-                            <RibbonItem IconName="IconName.Calendar3Event" IconSize="IconSize.x3" Text="Appointment" IsLastItem="true" />
-                        </div>
-                    </div>
-                    <div class="mb-1">New</div>
-                </div>
-                <!-- Delete -->
-                @* <div class="d-flex flex-column align-items-center my-1 border-end">
-                    <div class="flex-grow-1">
-                        <div class="d-flex flex-row">
-                            <RibbonItem IconColor="IconColor.Danger" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Delete" IsFirstItem="true" />
-                            <RibbonItem IconColor="IconColor.Primary" IconName="IconName.Archive" IconSize="IconSize.x3" Text="Archive" IsLastItem="true" />
-                        </div>
-                    </div>
-                    <div class="mb-1">Delete</div>
-                </div> *@
-                <RibbonItemGroup Text="Delete">
-                    <RibbonItem IconColor="IconColor.Danger" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Delete" IsFirstItem="true" />
-                    <RibbonItem IconColor="IconColor.Primary" IconName="IconName.Archive" IconSize="IconSize.x3" Text="Archive" IsLastItem="true" />
-                </RibbonItemGroup>
+<CascadingValue Value="@(this)" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@if (tabs?.Any() ?? false)
+{
+    <div class="@NavParentDivCssClass">
+        <nav>
+            <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="tablist">
+                @foreach (var t in tabs)
+                {
+                    var tabElementId = t.ElementId;
+                    <button class="nav-link @(t.Disabled ? "disabled" : "")" id="@t.ElementId" data-bs-target="#nav-@t.ElementId" type="button" role="tab" aria-selected="false" @onclick="async () => await OnTabClickAsync(t)">
+                        @if (t.TitleTemplate != null)
+                        {
+                            @t.TitleTemplate
+                        }
+                        else if (!string.IsNullOrWhiteSpace(t.Title))
+                        {
+                            @t.Title
+                        }
+                        else
+                        {
+                            <text>No Title</text>
+                        }
+                    </button>
+                }
             </div>
-        </div>
-
-        <div class="tab-pane fade" id="nav-AR1C4BUKJHQLA" role="tabpanel" aria-labelledby="AR1C4BUKJHQLA">
-            <RibbonGroup>
-                <!-- New -->
-                <div class="d-flex flex-column align-items-center my-1 border-end">
-                    <div class="flex-grow-1">
-                        <div class="d-flex flex-row">
-                            <RibbonItem IconColor="IconColor.Success" IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" Text="Send/Receive All Folders" IsFirstItem="true" />
-                            <RibbonItem IconColor="IconColor.Primary" IconName="IconName.Calendar3Event" IconSize="IconSize.x3" Text="Update Folder" IsLastItem="true" />
-                        </div>
+        </nav>
+        <div class="@TabContentCssClass">
+            @foreach (var t in tabs)
+            {
+                <div class="tab-pane @(EnableFadeEffect ? "fade" : "")" id="nav-@t.ElementId" role="tabpanel" aria-labelledby="@t.ElementId">
+                    <div class="d-flex flex-row border">
+                        @t.Content
                     </div>
-                    <div class="mb-1">Send & Receive</div>
                 </div>
-                <!-- Delete -->
-                <div class="d-flex flex-column align-items-center my-1 border-end">
-                    <div class="flex-grow-1">
-                        <div class="d-flex flex-row">
-                            <RibbonItem IconColor="IconColor.Success" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Show Progress" IsFirstItem="true" />
-                            <RibbonItem IconColor="IconColor.Primary" IconName="IconName.XSquareFill" IconSize="IconSize.x3" Text="Cancel All" IsLastItem="true" />
-                        </div>
-                    </div>
-                    <div class="mb-1">Download</div>
-                </div>
-            </RibbonGroup>
-            @* <div class="d-flex flex-row border">
-                
-            </div> *@
-        </div>
-
-        <div class="tab-pane fade" id="nav-AR1C4BUKJHQLB" role="tabpanel" aria-labelledby="AR1C4BUKJHQLB">
-            <p class="mt-3">This is the placeholder content for the <b>Folder</b> tab.</p>
+            }
         </div>
     </div>
-</div>
+}

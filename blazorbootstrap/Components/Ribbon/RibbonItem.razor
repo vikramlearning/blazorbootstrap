@@ -5,7 +5,7 @@
     <div>
         @if (!string.IsNullOrEmpty(ImgSrc))
         {
-            <img class="mb-2"
+            <img class="my-2"
                  src="@ImgSrc"
                  width="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px"
                  height="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px" />
@@ -19,5 +19,12 @@
                   Size="@IconSize" />
         }
     </div>
-    <div class="text-center">@Text</div>
+    @if (!string.IsNullOrEmpty(Text))
+    {
+        <div class="text-center">@Text</div>
+    }
+    else
+    {
+        <div class="text-center">@ChildContent</div>
+    }
 </div>
