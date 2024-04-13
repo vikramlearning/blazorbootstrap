@@ -112,11 +112,42 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Shows the recently added tab.
+    /// Removes the tab by index.
     /// </summary>
-    public void ShowRecentTab()
+    /// <param name="tabIndex"></param>
+    /// <exception cref="IndexOutOfRangeException"></exception>
+    public void RemoveTabByIndex(int tabIndex)
     {
-        QueueAfterRenderAction(async () => { await ShowLastTabAsync(); }, new RenderPriority());
+        if (!tabs?.Any() ?? true) return;
+
+        if (tabIndex < 0 || tabIndex >= tabs!.Count) throw new IndexOutOfRangeException();
+
+        var tab = tabs[tabIndex];
+
+        if (tab is null) return;
+
+        tabs!.Remove(tab);
+
+        QueueAfterRenderAction(async () => { await ShowNextAvailableTabAsync(tabIndex); }, new RenderPriority());
+    }
+
+    /// <summary>
+    /// Removes the tab by name.
+    /// </summary>
+    /// <param name="tabName"></param>
+    public void RemoveTabByName(string tabName)
+    {
+        if (!tabs?.Any() ?? true) return;
+
+        var tabIndex = tabs!.FindIndex(x => x.Name == tabName);
+
+        if (tabIndex == -1) return;
+
+        var tab = tabs[tabIndex];
+
+        tabs!.Remove(tab);
+
+        QueueAfterRenderAction(async () => { await ShowNextAvailableTabAsync(tabIndex); }, new RenderPriority());
     }
 
     /// <summary>
@@ -145,23 +176,12 @@ public partial class Ribbon : BlazorBootstrapComponentBase
             await ShowTabAsync(tab);
     }
 
-    private async Task ShowNextAvailableTabAsync(int removedTabIndex)
+    /// <summary>
+    /// Shows the recently added tab.
+    /// </summary>
+    public void ShowRecentTab()
     {
-        if (!tabs?.Any() ?? true) return;
-
-        if (removedTabIndex < 0 || removedTabIndex > tabs!.Count) throw new IndexOutOfRangeException();
-
-        var tabIndex = 0;
-
-        if (removedTabIndex == tabs!.Count)
-            tabIndex = tabs!.Count - 1;
-        else if (removedTabIndex < tabs!.Count)
-            tabIndex = removedTabIndex;
-
-        var tab = tabs[tabIndex];
-
-        if (tab is { Disabled: false })
-            await ShowTabAsync(tab);
+        QueueAfterRenderAction(async () => { await ShowLastTabAsync(); }, new RenderPriority());
     }
 
     /// <summary>
@@ -204,43 +224,10 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         StateHasChanged(); // This is mandatory
     }
 
-    /// <summary>
-    /// Removes the tab by index.
-    /// </summary>
-    /// <param name="tabIndex"></param>
-    /// <exception cref="IndexOutOfRangeException"></exception>
-    public void RemoveTabByIndex(int tabIndex)
+    internal async Task OnRibbonItemClick(RibbonItemEventArgs args)
     {
-        if (!tabs?.Any() ?? true) return;
-
-        if (tabIndex < 0 || tabIndex >= tabs!.Count) throw new IndexOutOfRangeException();
-
-        var tab = tabs[tabIndex];
-
-        if (tab is null) return;
-
-        tabs!.Remove(tab);
-
-        QueueAfterRenderAction(async () => { await ShowNextAvailableTabAsync(tabIndex); }, new RenderPriority());
-    }
-
-    /// <summary>
-    /// Removes the tab by name.
-    /// </summary>
-    /// <param name="tabName"></param>
-    public void RemoveTabByName(string tabName)
-    {
-        if (!tabs?.Any() ?? true) return;
-
-        var tabIndex = tabs!.FindIndex(x => x.Name == tabName);
-
-        if (tabIndex == -1) return;
-
-        var tab = tabs[tabIndex];
-
-        tabs!.Remove(tab);
-
-        QueueAfterRenderAction(async () => { await ShowNextAvailableTabAsync(tabIndex); }, new RenderPriority());
+        if (OnClick.HasDelegate)
+            await OnClick.InvokeAsync(args);
     }
 
     /// <summary>
@@ -256,13 +243,26 @@ public partial class Ribbon : BlazorBootstrapComponentBase
             await ShowTabAsync(activeTab);
     }
 
-    internal async Task OnRibbonItemClick(RibbonItemEventArgs args)
-    {
-        if (OnClick.HasDelegate)
-            await OnClick.InvokeAsync(args);
-    }
-
     private async Task OnTabClickAsync(RibbonTab tab) => await ShowTabAsync(tab);
+
+    private async Task ShowNextAvailableTabAsync(int removedTabIndex)
+    {
+        if (!tabs?.Any() ?? true) return;
+
+        if (removedTabIndex < 0 || removedTabIndex > tabs!.Count) throw new IndexOutOfRangeException();
+
+        var tabIndex = 0;
+
+        if (removedTabIndex == tabs!.Count)
+            tabIndex = tabs!.Count - 1;
+        else if (removedTabIndex < tabs!.Count)
+            tabIndex = removedTabIndex;
+
+        var tab = tabs[tabIndex];
+
+        if (tab is { Disabled: false })
+            await ShowTabAsync(tab);
+    }
 
     private async Task ShowTabAsync(RibbonTab tab)
     {

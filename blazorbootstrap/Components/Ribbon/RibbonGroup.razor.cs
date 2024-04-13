@@ -2,10 +2,6 @@
 
 public partial class RibbonGroup : BlazorBootstrapComponentBase
 {
-    #region Fields and Constants
-
-    #endregion
-
     #region Methods
 
     protected override void BuildClasses()
@@ -27,10 +23,6 @@ public partial class RibbonGroup : BlazorBootstrapComponentBase
         }
 
         await base.DisposeAsync(disposing);
-    }
-
-    protected override void OnInitialized()
-    {
     }
 
     #endregion

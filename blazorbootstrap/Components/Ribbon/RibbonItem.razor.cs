@@ -2,10 +2,6 @@
 
 public partial class RibbonItem : BlazorBootstrapComponentBase
 {
-    #region Fields and Constants
-
-    #endregion
-
     #region Methods
 
     protected override void BuildClasses()
@@ -52,29 +48,15 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    [Parameter]
-    public string? CustomIconName { get; set; }
+    [Parameter] public string? CustomIconName { get; set; }
 
-    [Parameter]
-    public IconColor IconColor { get; set; }
+    [Parameter] public IconColor IconColor { get; set; }
 
-    [Parameter]
-    public string? IconCssClass { get; set; }
+    [Parameter] public string? IconCssClass { get; set; }
 
-    [Parameter]
-    public IconName IconName { get; set; }
+    [Parameter] public IconName IconName { get; set; }
 
-    [Parameter]
-    public IconSize IconSize { get; set; } = IconSize.x3;
-
-    [Parameter]
-    public string? ImgSrc { get; set; }
-
-    /// <summary>
-    /// Width in pixels only.
-    /// </summary>
-    [Parameter]
-    public double ImgWidth { get; set; } = 28;
+    [Parameter] public IconSize IconSize { get; set; } = IconSize.x3;
 
     /// <summary>
     /// Height in pixels only.
@@ -82,11 +64,19 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     [Parameter]
     public double ImgHeight { get; set; } = 28;
 
-    [Parameter]
-    public bool IsFirstItem { get; set; } = false;
+    [Parameter] public string? ImgSrc { get; set; }
 
+    /// <summary>
+    /// Width in pixels only.
+    /// </summary>
     [Parameter]
-    public bool IsLastItem { get; set; } = false;
+    public double ImgWidth { get; set; } = 28;
+
+    [Parameter] public bool IsFirstItem { get; set; } = false;
+
+    [Parameter] public bool IsLastItem { get; set; } = false;
+
+    [Parameter] public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the parent.
@@ -94,11 +84,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     [CascadingParameter(Name = "Ribbon2")]
     internal Ribbon Parent { get; set; } = default!;
 
-    [Parameter]
-    public string? Name { get; set; }
-
-    [Parameter]
-    public string? Text { get; set; }
+    [Parameter] public string? Text { get; set; }
 
     #endregion
 }

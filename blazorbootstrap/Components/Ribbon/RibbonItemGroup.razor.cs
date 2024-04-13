@@ -2,10 +2,6 @@
 
 public partial class RibbonItemGroup : BlazorBootstrapComponentBase
 {
-    #region Fields and Constants
-
-    #endregion
-
     #region Methods
 
     protected override void BuildClasses()
@@ -44,8 +40,7 @@ public partial class RibbonItemGroup : BlazorBootstrapComponentBase
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    [Parameter]
-    public string? Text { get; set; }
+    [Parameter] public string? Text { get; set; }
 
     #endregion
 }
