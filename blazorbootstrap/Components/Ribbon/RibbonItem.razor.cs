@@ -18,17 +18,6 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
         base.BuildClasses();
     }
 
-    /// <inheritdoc />
-    protected override async ValueTask DisposeAsync(bool disposing)
-    {
-        if (disposing)
-        {
-            // TOOD: update
-        }
-
-        await base.DisposeAsync(disposing);
-    }
-
     /// <summary>
     /// Triggers the OnRibbonItemClick event of the parent Ribbon component.
     /// </summary>

@@ -30,8 +30,6 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override async ValueTask DisposeAsync(bool disposing)
     {
-        // TODO: update
-
         if (disposing) tabs = null;
 
         await base.DisposeAsync(disposing);
