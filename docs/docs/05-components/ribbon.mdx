@@ -21,37 +21,78 @@ Documentation and examples for using the Blazor Bootstrap Ribbon component.
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| | | | ✔️ | | 2.2.0 |
+| ChildContent | `RenderFragment` | null | ✔️ | Specifies the content to be rendered inside this. | 2.2.0 |
+| EnableFadeEffect | bool | false | | Gets or sets the tabs fade effect. | 2.2.0 |
 
 ## RibbonTab Parameters
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| | | | ✔️ | | 2.2.0 |
+| Content | `RenderFragment` | null | ✔️ | Specifies the content to be rendered inside the tab. | 2.2.0 |
+| Disabled | bool | false | | Gets or sets the disabled state. | 2.2.0 |
+| IsActive | bool | false | | Gets or sets the active tab. | 2.2.0 |
+| Name | string | null | | Gets or sets the tab name. | 2.2.0 |
+| Title | string | null | | Gets or sets the tab title. | 2.2.0 |
+| TitleTemplate | `RenderFragment` | null | | Gets or sets the tab title template. | 2.2.0 |
 
 ## RibbonGroup Parameters
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| | | | ✔️ | | 2.2.0 |
+| ChildContent | `RenderFragment` | | ✔️ | Specifies the content to be rendered inside this. | 2.2.0 |
 
 ## RibbonItemGroup Parameters
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| | | | | | 2.2.0 |
+| ChildContent | `RenderFragment?` | null | ✔️ | Gets or sets the content to be rendered within the component. | 2.2.0 |
+| Title | `string?` | null | | Gets or sets the text content of the component. | 2.2.0 |
 
 ## RibbonItem Parameters
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| | | | | | 2.2.0 |
+| ChildContent | `RenderFragment?` | null | ✔️ | Gets or sets the content to be rendered within the component. | 2.2.0 |
+| CustomIconName | `string?` | null | | The name of a custom icon to be displayed. | 2.2.0 |
+| IconColor | `IconColor` | `IconColor.None` | | The color of the icon. | 2.2.0 |
+| IconCssClass | `string?` | null | | CSS class(es) to be applied to the icon element. | 2.2.0 |
+| IconName | `IconName` | `IconName.None` | | The built-in icon to be displayed. | 2.2.0 |
+| IconSize | `IconSize` | `IconSize.x3` | | The size of the icon. Defaults to x3. | 2.2.0 |
+| ImgHeight | double | 28 | | The height of the image in pixels. | 2.2.0 |
+| ImgSrc | `string?` | null | | The source URL of the image. | 2.2.0 |
+| ImgWidth | double | 28 | | The width of the image in pixels. | 2.2.0 |
+| IsFirstItem | bool | false | | True if this is the first item in the RibbonItemGroup. | 2.2.0 |
+| IsLastItem | bool | false | | True if this is the last item in the RibbonItemGroup. | 2.2.0 |
+| Name | `string?` | null | | The name associated with the RibbonItem. | 2.2.0 |
+| Text | `string?` | null | | The text content to be displayed inside the RibbonItem. | 2.2.0 |
+
+## Ribbon Methods
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| RemoveTabByIndex(int tabIndex) | Removes the tab by index. | 2.2.0 |
+| RemoveTabByName(string tabName) | Removes the tab by name. | 2.2.0 |
+| ShowFirstTabAsync() | Selects the first tab and show its associated pane. | 2.2.0 |
+| ShowLastTabAsync() | Selects the last tab and show its associated pane. | 2.2.0 |
+| ShowRecentTab() | Shows the recently added tab. | 2.2.0 |
+| ShowTabByIndexAsync(int tabIndex) | Selects the tab by index and show its associated pane. | 2.2.0 |
+| ShowTabByNameAsync(string tabName) | Selects the tab by name and show its associated pane. | 2.2.0 |
 
 ## Ribbon Events
 
 | Name | Description | Added Version |
 |:--|:--|:--|
-| | | 2.2.0 |
+| OnClick | This event fires when the user clicks the corresponding `RibbonItem`. | 2.2.0 |
+| OnHidden | This event fires after a new tab is shown (and thus the previous active tab is hidden). | 2.2.0 |
+| OnHiding | This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden). | 2.2.0 |
+| OnShowing | This event fires on tab show, but before the new tab has been shown. | 2.2.0 |
+| OnShown | This event fires on tab show after a tab has been shown. | 2.2.0 |
+
+## RibbonTab Callback Events
+
+| Event | Description | Added Version |
+|:--|:--|:--|
+| OnClick | This event fires when the user clicks the corresponding tab button and the tab is displayed. | 2.2.0 |
 
 ## Examples
 

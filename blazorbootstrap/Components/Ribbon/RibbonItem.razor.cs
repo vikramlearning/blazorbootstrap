@@ -94,12 +94,12 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     public double ImgWidth { get; set; } = 28;
 
     /// <summary>
-    /// True if this is the first item in the Ribbon component.
+    /// True if this is the first item in the RibbonItemGroup.
     /// </summary>
     [Parameter] public bool IsFirstItem { get; set; } = false;
 
     /// <summary>
-    /// True if this is the last item in the Ribbon component.
+    /// True if this is the last item in the RibbonItemGroup.
     /// </summary>
     [Parameter] public bool IsLastItem { get; set; } = false;
 

@@ -99,18 +99,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         var args = new RibbonEventArgs(activeTabTitle!, previousActiveTabTitle!);
         await OnShowing.InvokeAsync(args);
     }
-
-    /// <summary>
-    /// Initializes the most recently added tab, optionally displaying it.
-    /// </summary>
-    /// <param name="showTab">Specifies whether to display the tab after initialization.</param>
-    [Obsolete("This method is obseolete. Use `ShowRecentTabAsync` method instead.")]
-    public void InitializeRecentTab(bool showTab)
-    {
-        if (showTab)
-            QueueAfterRenderAction(async () => { await ShowLastTabAsync(); }, new RenderPriority());
-    }
-
+    
     /// <summary>
     /// Removes the tab by index.
     /// </summary>
@@ -310,8 +299,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <summary>
     /// Get or sets the nav style.
     /// </summary>
-    [Parameter]
-    public NavStyle NavStyle { get; set; } = NavStyle.Underline;
+    //[Parameter]
+    private NavStyle NavStyle { get; set; } = NavStyle.Underline;
 
     /// <summary>
     /// This event fires when the user clicks the corresponding <see cref="RibbonItem" />.
