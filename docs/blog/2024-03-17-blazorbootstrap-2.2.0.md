@@ -1,28 +1,30 @@
 ---
-title: Blazor Bootstrap v2.1.0
+title: Blazor Bootstrap v2.2.0
 authors:
   name: Vikram Reddy
   title: Creator
   url: https://github.com/gvreddy04
   image_url: https://avatars.githubusercontent.com/u/2337067
-tags: [v2.1.0, blazor, bootstrap, bootstrap5, blazorbootstrap, barchart, callout, currencyinput, grid, numberinput, pdfviewer, rangeinput, sidebar2, tooltip]
+tags: [v2.2.0, blazor, bootstrap, bootstrap5, blazorbootstrap, confirmdialog, pdfviewer, Ribbon, sortablelist, tabs]
 ---
 
-We are excited to release 2.1.0 with New Sidebar2 Component and Other Improvements!!!
+We are excited to release 2.2.0 with New Ribbon and SortableList Component, and Other Improvements!!!
 
-![image](https://i.imgur.com/vs8kl7G.png "Blazor Bootstrap: Sidebar2 Component")
+![image](https://i.imgur.com/LpZVLbF.png "Blazor Bootstrap: Ribbon Component")
 
 <!--truncate-->
 
 ## What's New
 
-- `Sidebar2` component
+- `Ribbon` component
+
+- `SortableList` component
 
 ## What's changed
 
-- `BarChart` component
+- `ConfirmDialog` component
 
-- `Callout` component
+- `Tabs` component
 
 - `CurrencyInput` component
 
