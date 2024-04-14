@@ -24,19 +24,11 @@ We are excited to release 2.2.0 with New Ribbon and SortableList Component, and 
 
 - `ConfirmDialog` component
 
-- `Tabs` component
-
-- `CurrencyInput` component
-
 - `Grid` component
-
-- `NumberInput` component
 
 - `PdfViewer` component
 
-- `RangeInput` component
-
-- `Tooltip` component
+- `Tabs` component
 
 - Documentation & Demos
 
