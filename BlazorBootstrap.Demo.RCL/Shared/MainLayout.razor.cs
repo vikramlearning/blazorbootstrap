@@ -60,7 +60,7 @@ public partial class MainLayout : LayoutComponentBase
             new (){ Id = "512", Text = "Modals", Href = "/modals", IconName = IconName.WindowStack, ParentId = "5" },
             new (){ Id = "513", Text = "Offcanvas", Href = "/offcanvas", IconName = IconName.LayoutSidebarReverse, ParentId = "5" },
             new (){ Id = "514", Text = "Pagination", Href = "/pagination", IconName = IconName.ThreeDots, ParentId = "5" },
-            new (){ Id = "515", Text = "Pdf Viewer", Href = "/pdf-viewer", IconName = IconName.FilePdfFill, ParentId = "5" },
+            new (){ Id = "515", Text = "PDF Viewer", Href = "/pdf-viewer", IconName = IconName.FilePdfFill, ParentId = "5" },
             new (){ Id = "516", Text = "Placeholders", Href = "/placeholders", IconName = IconName.ColumnsGap, ParentId = "5" },
             new (){ Id = "517", Text = "Preload", Href = "/preload", IconName = IconName.ArrowClockwise, ParentId = "5" },
             new (){ Id = "518", Text = "Progress", Href = "/progress", IconName = IconName.UsbC, ParentId = "5" },
