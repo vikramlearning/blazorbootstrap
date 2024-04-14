@@ -1,0 +1,37 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@ElementRef"
+     id="@ElementId"
+     class="@ClassNames"
+     style="@StyleNames"
+     @attributes="@Attributes"
+     @onclick="OnRibbonItemClickAsync">
+
+    <div>
+        @if (!string.IsNullOrEmpty(ImgSrc))
+        {
+            <img class="my-2"
+                 src="@ImgSrc"
+                 width="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px"
+                 height="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px" />
+        }
+        else
+        {
+            <Icon Class="@IconCssClass"
+                  Color="@IconColor"
+                  Name="@IconName"
+                  CustomIconName="@CustomIconName"
+                  Size="@IconSize" />
+        }
+    </div>
+    @if (!string.IsNullOrEmpty(Text))
+    {
+        <div class="text-center">@Text</div>
+    }
+    else
+    {
+        <div class="text-center">@ChildContent</div>
+    }
+
+</div>
