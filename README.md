@@ -81,7 +81,7 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Preload | [Docs](https://docs.blazorbootstrap.com/components/preload) | [Demos](https://demos.blazorbootstrap.com/preload) |
 | Progress | [Docs](https://docs.blazorbootstrap.com/components/progress) | [Demos](https://demos.blazorbootstrap.com/progress) |
 | RangeInput | [Docs](https://docs.blazorbootstrap.com/forms/range-input) | [Demos](https://demos.blazorbootstrap.com/form/range-input) |
-| Ribbon | [Docs](https://docs.blazorbootstrap.com/ribbon) | [Demos](https://demos.blazorbootstrap.com/ribbon) |
+| Ribbon | [Docs](https://docs.blazorbootstrap.com/components/ribbon) | [Demos](https://demos.blazorbootstrap.com/ribbon) |
 | Script Loader | [Docs](https://docs.blazorbootstrap.com/components/script-loader) | [Demos](https://demos.blazorbootstrap.com/script-loader) |
 | Sidebar | [Docs](https://docs.blazorbootstrap.com/components/sidebar) | [Demos](https://demos.blazorbootstrap.com/sidebar) |
 | Sidebar2 | [Docs](https://docs.blazorbootstrap.com/components/sidebar2) | [Demos](https://demos.blazorbootstrap.com/sidebar2) |
