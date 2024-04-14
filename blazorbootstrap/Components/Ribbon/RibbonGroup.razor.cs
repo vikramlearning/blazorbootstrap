@@ -14,17 +14,6 @@ public partial class RibbonGroup : BlazorBootstrapComponentBase
         base.BuildClasses();
     }
 
-    /// <inheritdoc />
-    protected override async ValueTask DisposeAsync(bool disposing)
-    {
-        if (disposing)
-        {
-            // TODO: update
-        }
-
-        await base.DisposeAsync(disposing);
-    }
-
     #endregion
 
     #region Properties, Indexers

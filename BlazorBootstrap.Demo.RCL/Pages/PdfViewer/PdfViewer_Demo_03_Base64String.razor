@@ -1,107 +1,10 @@
----
-title: Blazor PDF Viewer Component
-description: The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions.
-image: https://i.imgur.com/7Vz9Efi.png
-
-sidebar_label: PDF Viewer
-sidebar_position: 16
----
-
-import CarbonAd from '/carbon-ad.mdx'
-
-# Blazor PDF Viewer
-
-The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions.
-
-<CarbonAd />
-
-## Parameters
-
-| Name | Type | Default | Required | Description | Added Version |
-|:--|:--|:--|:--|:--|:--|
-| Orientation | `Orientation` | `Orientation.Portrait` | | Gets or sets the preferred orientation for the PDF viewer. | 2.1.0 |
-| Url | string | null | ✔️ | Gets or sets the PDF URL. | 1.11.0 |
-
-## Callback Events
-
-| Event | Description | Added Version |
-|:--|:--|:--|
-| OnDocumentLoaded | This event fires immediately after the PDF document is loaded. | 1.11.0 |
-| OnPageChanged | This event fires immediately after the page is changed. | 1.11.0 |
-
-## Examples
-
-### Basic usage
-
-<img src="https://i.imgur.com/7Vz9Efi.png" alt="Blazor Bootstrap: Blazor PDF Viewer Component - Basic usage" />
-
-```cshtml {3-6} showLineNumbers
-<p>@eventLog</p>
-
-<PdfViewer Class="mb-3"
-           Url="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf"
-           OnDocumentLoaded="OnDocumentLoaded"
-           OnPageChanged="OnPageChanged" />
-```
-
-```cshtml {2,4-5,7-8} showLineNumbers
-@code {
-    private string eventLog { get; set; } = $"Last event: ..., CurrentPage: 0, TotalPages: 0";
-
-    private async Task OnDocumentLoaded(PdfViewerEventArgs args)
-        => eventLog = $"Last event: OnDocumentLoaded, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
-
-    private async Task OnPageChanged(PdfViewerEventArgs args)
-        => eventLog = $"Last event: OnPageChanged, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
-}
-```
-
-[See demo here.](https://demos.blazorbootstrap.com/pagination#examples)
-
-### Orientation
-
-Set the `Orientation` parameter to `Orientation.Landscape` to change the default orientation from **Portrait** to **Landscape**.
-
-<img src="https://i.imgur.com/Ry4pa48.png" alt="Blazor Bootstrap: Blazor PDF Viewer Component - Orientation" />
-
-```cshtml {5} showLineNumbers
-<p>@eventLog</p>
-
-<PdfViewer Class="mb-3"
-           Url="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf"
-           Orientation="Orientation.Landscape"
-           OnDocumentLoaded="OnDocumentLoaded"
-           OnPageChanged="OnPageChanged" />
-```
-```cshtml {} showLineNumbers
-@code {
-    private string eventLog { get; set; } = $"Last event: ..., CurrentPage: 0, TotalPages: 0";
-
-    private void OnDocumentLoaded(PdfViewerEventArgs args)
-        => eventLog = $"Last event: OnDocumentLoaded, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
-
-    private void OnPageChanged(PdfViewerEventArgs args)
-        => eventLog = $"Last event: OnPageChanged, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
-}
-```
-
-[See demo here.](https://demos.blazorbootstrap.com/pagination#orientation)
-
-### Base64String
-
-Pdf Viewer component supports **base64** string as a URL.
-
-<img src="https://i.imgur.com/7Vz9Efi.png" alt="Blazor Bootstrap: Blazor PDF Viewer Component - Base64String" />
-
-```cshtml {4} showLineNumbers
 <p>@eventLog</p>
 
 <PdfViewer Class="mb-3"
            Url="@string.Format("data:application/pdf;base64,{0}", pdfBase64String)"
            OnDocumentLoaded="OnDocumentLoaded"
            OnPageChanged="OnPageChanged" />
-```
-```cshtml {8} showLineNumbers
+
 @code {
     private string eventLog { get; set; } = $"Last event: ..., CurrentPage: 0, TotalPages: 0";
     private string pdfBase64String;
@@ -118,6 +21,3 @@ Pdf Viewer component supports **base64** string as a URL.
     private void OnPageChanged(PdfViewerEventArgs args)
         => eventLog = $"Last event: OnPageChanged, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
 }
-```
-
-[See demo here.](https://demos.blazorbootstrap.com/pagination#base64-string)
