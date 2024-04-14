@@ -4,12 +4,16 @@
 
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
-<h1>Blazor Sortable List</h1>
+<h1>Blazor Sortable List <Badge Color="BadgeColor.Danger">Preview</Badge></h1>
 <div class="lead mb-3">
     The Blazor Bootstrap Sortable List component, built on top of <b>SortableJS</b>, enables drag-and-drop reordering of lists.
 </div>
 
-@* <CarbonAds /> *@
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Setup" PageUrl="@pageUrl" HashTagName="setup" />
+<div class="mb-3">Before using the <b>SortableList</b> component, include the <b>SortableJS</b> script reference in your <code>index.html/_Host.cshtml</code> file.</div>
+<CodeSnippet File="~\Pages\SortableList\SortableList_Demo_00_Setup.razor" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <div class="mb-3"></div>
