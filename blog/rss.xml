@@ -14,7 +14,7 @@
             <guid>https://docs.blazorbootstrap.com/blog/2024/03/17/blazorbootstrap-2.1.0</guid>
             <pubDate>Sun, 17 Mar 2024 00:00:00 GMT</pubDate>
             <description><![CDATA[We are excited to release 2.1.0 with New Sidebar2 Component and Other Improvements!!!]]></description>
-            <content:encoded><![CDATA[<p>We are excited to release 2.1.0 with New Sidebar2 Component and Other Improvements!!!</p><p><img loading="lazy" src="https://i.imgur.com/vs8kl7G.png" alt="image" title="Blazor Bootstrap: Sidebar2 Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's New<a href="#whats-new" class="hash-link" aria-label="Direct link to What's New" title="Direct link to What's New">​</a></h2><ul><li><code>Sidebar2</code> component</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>BarVhart</code> component</p></li><li><p><code>Callout</code> component</p></li><li><p><code>CurrencyInput</code> component</p></li><li><p><code>Grid</code> component</p></li><li><p><code>NumberInput</code> component</p></li><li><p><code>PdfViewer</code> component</p></li><li><p><code>RangeInput</code> component</p></li><li><p><code>Tooltip</code> component</p></li><li><p>Documentation &amp; Demos</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li></ul>]]></content:encoded>
+            <content:encoded><![CDATA[<p>We are excited to release 2.1.0 with New Sidebar2 Component and Other Improvements!!!</p><p><img loading="lazy" src="https://i.imgur.com/vs8kl7G.png" alt="image" title="Blazor Bootstrap: Sidebar2 Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's New<a href="#whats-new" class="hash-link" aria-label="Direct link to What's New" title="Direct link to What's New">​</a></h2><ul><li><code>Sidebar2</code> component</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>BarChart</code> component</p></li><li><p><code>Callout</code> component</p></li><li><p><code>CurrencyInput</code> component</p></li><li><p><code>Grid</code> component</p></li><li><p><code>NumberInput</code> component</p></li><li><p><code>PdfViewer</code> component</p></li><li><p><code>RangeInput</code> component</p></li><li><p><code>Tooltip</code> component</p></li><li><p>Documentation &amp; Demos</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li></ul>]]></content:encoded>
             <category>v2.1.0</category>
             <category>blazor</category>
             <category>bootstrap</category>
@@ -29,6 +29,24 @@
             <category>rangeinput</category>
             <category>sidebar2</category>
             <category>tooltip</category>
+        </item>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v2.2.0]]></title>
+            <link>https://docs.blazorbootstrap.com/blog/2024/03/17/blazorbootstrap-2.2.0</link>
+            <guid>https://docs.blazorbootstrap.com/blog/2024/03/17/blazorbootstrap-2.2.0</guid>
+            <pubDate>Sun, 17 Mar 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release 2.2.0 with New Ribbon and SortableList Component, and Other Improvements!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release 2.2.0 with New Ribbon and SortableList Component, and Other Improvements!!!</p><p><img loading="lazy" src="https://i.imgur.com/LpZVLbF.png" alt="image" title="Blazor Bootstrap: Ribbon Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's New<a href="#whats-new" class="hash-link" aria-label="Direct link to What's New" title="Direct link to What's New">​</a></h2><ul><li><p><code>Ribbon</code> component</p></li><li><p><code>SortableList</code> component</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>ConfirmDialog</code> component</p></li><li><p><code>Tabs</code> component</p></li><li><p><code>CurrencyInput</code> component</p></li><li><p><code>Grid</code> component</p></li><li><p><code>NumberInput</code> component</p></li><li><p><code>PdfViewer</code> component</p></li><li><p><code>RangeInput</code> component</p></li><li><p><code>Tooltip</code> component</p></li><li><p>Documentation &amp; Demos</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li></ul>]]></content:encoded>
+            <category>v2.2.0</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>bootstrap5</category>
+            <category>blazorbootstrap</category>
+            <category>confirmdialog</category>
+            <category>pdfviewer</category>
+            <category>Ribbon</category>
+            <category>sortablelist</category>
+            <category>tabs</category>
         </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v2.0.0]]></title>

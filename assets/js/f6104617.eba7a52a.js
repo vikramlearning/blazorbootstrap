@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblazorbootstrap=self.webpackChunkblazorbootstrap||[]).push([[98393],{68586:a=>{a.exports=JSON.parse('{"label":"sortablelist","permalink":"/blog/tags/sortablelist","allTagsPath":"/blog/tags","count":1}')}}]);
