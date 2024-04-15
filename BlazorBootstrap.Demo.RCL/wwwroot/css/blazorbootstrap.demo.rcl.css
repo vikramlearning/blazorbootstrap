@@ -18,8 +18,13 @@ h1:focus-visible {
 }
 
 .skippy {
+    color: #fff;
     background-color: #4c0bce;
 }
+
+    .skippy a {
+        color: #fff
+    }
 
 .bd-navbar {
     padding: .75rem 0;
