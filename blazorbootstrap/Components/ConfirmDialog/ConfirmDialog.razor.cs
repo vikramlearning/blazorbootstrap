@@ -88,9 +88,10 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         DirtyClasses();
         DirtyStyles();
+
         StateHasChanged();
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", ElementId); }, new RenderPriority());
+        Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", ElementId));
     }
 
     private void OnNoClick()
@@ -138,7 +139,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        QueueAfterRenderAction(async () => { await JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", ElementId, confirmDialogOptions.AutoFocusYesButton); }, new RenderPriority());
+        Task.Run(() => JS.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", ElementId));
 
         return task;
     }
