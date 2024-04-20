@@ -19,17 +19,11 @@
     <ProjectReference Include="..\blazorbootstrap\BlazorBootstrap.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Layout\" />
-    <Folder Include="Pages\Ribbon\" />
-    <Folder Include="Pages\SortableList\" />
-  </ItemGroup>
-
   <Target Name="EmbedDemos" BeforeTargets="PrepareForBuild">
     <!-- Let's embed demos sources into the assembly to show the source at runtime. -->
     <ItemGroup>
-      <EmbeddedResource Include="Pages\**\*Demo*.razor" />
-      <EmbeddedResource Include="Pages\**\*Snippet*" />
+      <EmbeddedResource Include="Components\**\*Demo*.razor" />
+      <EmbeddedResource Include="Components\**\*Snippet*" />
     </ItemGroup>
   </Target>
 
