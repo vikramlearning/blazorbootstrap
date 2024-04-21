@@ -39,7 +39,7 @@
 
 ## Install
 
-Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 2.2.0`
+Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 2.2.1`
 
 ## Install Blazor Bootstrap templates
 
