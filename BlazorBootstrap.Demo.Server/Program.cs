@@ -1,8 +1,14 @@
-using BlazorBootstrap.Demo.Server.Components;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+if (builder.Environment.IsDevelopment())
+    builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5031/") });
+else
+    builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://demos.blazorbootstrap.com/") });
+
+builder.Services.AddBlazorBootstrap();
+builder.Services.AddDemoServices();
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -21,7 +27,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.MapRazorComponents<BlazorBootstrap.Demo.Server.Components.App>()
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(typeof(BlazorBootstrap.Demo.RCL.App).Assembly); ;
 
 app.Run();
