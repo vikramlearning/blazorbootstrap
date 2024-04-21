@@ -1,4 +1,4 @@
-<Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true" AdditionalAssemblies="new []{ typeof(BlazorBootstrap.Demo.RCL.App).Assembly }">
+<Router AppAssembly="@typeof(Program).Assembly" AdditionalAssemblies="new []{ typeof(BlazorBootstrap.Demo.RCL.App).Assembly }">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(BlazorBootstrap.Demo.RCL.MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />

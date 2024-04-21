@@ -1,15 +1,11 @@
-﻿@page "/"
-@using Microsoft.AspNetCore.Components.Web
-@namespace BlazorBootstrap.Demo.Server.Pages
-@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blazor Bootstrap Demos & Examples | Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework | Blazor Bootstrap</title>
-    <base href="~/" />
+    <base href="/" />
     <link href="images/logo/128X128.png" rel="icon" type="image/png" />
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -41,12 +37,13 @@
         })(window, document, "clarity", "script", "eyusedpimp");
     </script>
 
-    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+    <HeadOutlet @rendermode="InteractiveServer" />
 </head>
-<body>
-    <component type="typeof(App)" render-mode="ServerPrerendered" />
 
-    <script src="_framework/blazor.server.js" autostart="false" asp-append-version="true"></script>
+<body>
+    <Routes @rendermode="InteractiveServer" />
+    <script src="_framework/blazor.web.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <!-- Add chart.js reference if chart components are used in your application. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -58,8 +55,6 @@
     <script src="_content/BlazorBootstrap.Demo.RCL/js/blazorbootstrap.demo.rcl.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha512-SkmBfuA2hqjzEVpmnMt/LINrjop3GKWqsuLSSB3e7iBmYK7JuWw4ldmmxwD9mdm2IRTTi0OxSAfEGvgEi0i2Kw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
-        Blazor.start();
-    </script>
 </body>
+
 </html>
