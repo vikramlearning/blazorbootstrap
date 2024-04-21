@@ -18,12 +18,12 @@ h1:focus-visible {
 }
 
 .skippy {
-    color: #fff;
-    background-color: #4c0bce;
+    color: #fff !important;
+    background-color: #4c0bce !important;
 }
 
     .skippy a {
-        color: #fff
+        color: #fff !important;
     }
 
 .bd-navbar {

@@ -13,6 +13,14 @@
     <main class="bb-scrollbar">
         <div class="content my-4 my-md-4 px-4">
             @Body
+
+            <Callout Class="text-center text-bold skippy border-0" HideHeading="true">
+                <a href="@githubUrl" class="text-decoration-none" b-09pcjsuuk4="">
+                    <i class="bi bi-star-fill" b-09pcjsuuk4=""></i>
+                    <span b-09pcjsuuk4="">If you like Blazor Bootstrap, give it a star on GitHub!</span>
+                    <i class="bi bi-star-fill" b-09pcjsuuk4=""></i>
+                </a>
+            </Callout>
         </div>
         <div class="bd-footer pt-4 pt-md-5 mt-5 pb-2 pb-md-3 bg-light">
             <div class="container px-4 px-md-3">
@@ -25,15 +33,16 @@
                         <ul class="list-unstyled small text-muted">
                             <li class="mb-2">Designed and built with all the love in the world by the <strong><a href="https://www.nuget.org/packages/Blazor.Bootstrap">Blazor Bootstrap</a></strong> team with the help of our contributors.</li>
                             <li class="mb-2">Code licensed <a href="https://github.com/vikramlearning/blazorbootstrap/blob/master/LICENSE.txt" target="_blank" rel="license noopener">Apache License 2.0</a>.</li>
-                            <li class="mb-2">Currently v2.2.0.</li>
+                            <li class="mb-2">Currently @version.</li>
                         </ul>
                     </div>
                     <div class="col-6 col-lg-2 offset-lg-1 mb-3">
                         <h5>Links</h5>
                         <ul class="list-unstyled">
                             <li class="mb-2"><a href="/">Home</a></li>
-                            <li class="mb-2"><a href="//docs.blazorbootstrap.com/getting-started/blazor-webassembly-net-8" target="_blank" rel="noopener">Docs</a></li><!--!-->
-                            <li class="mb-2"><a href="//docs.blazorbootstrap.com/blog" target="_blank" rel="noopener">Blog</a></li>
+                            <li class="mb-2"><a href="@docsUrl" target="_blank" rel="noopener">Docs</a></li><!--!-->
+                            <li class="mb-2"><a href="@blogUrl" target="_blank" rel="noopener">Blog</a></li>
+                            <li class="mb-2"><a href="@githubUrl" target="_blank" rel="noopener">GitHub</a></li>
                         </ul>
                     </div>
                     <div class="col-6 col-lg-2 mb-3">
@@ -47,9 +56,9 @@
                     <div class="col-6 col-lg-2 mb-3">
                         <h5>Community</h5>
                         <ul class="list-unstyled">
-                            <li class="mb-2"><a href="//github.com/vikramlearning/blazorbootstrap/issues">Issues</a></li><!--!-->
-                            <li class="mb-2"><a href="//github.com/vikramlearning/blazorbootstrap/discussions">Discussions</a></li><!--!-->
-                            <li class="mb-2"><a href="//stackoverflow.com/questions/tagged/blazor-bootstrap">Stack Overflow</a></li>
+                            <li class="mb-2"><a href="@githubIssuesUrl">Issues</a></li><!--!-->
+                            <li class="mb-2"><a href="@githubDiscussionsUrl">Discussions</a></li><!--!-->
+                            <li class="mb-2"><a href="@stackoverflowUrl">Stack Overflow</a></li>
                         </ul>
                     </div>
                     <div class="col-6 col-lg-2 mb-3"></div>
