@@ -133,6 +133,10 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
                                         var classList = new List<string>();
 
+                                        // default class names
+                                        if (!string.IsNullOrWhiteSpace(ClassNames))
+                                            classList.Add(ClassNames);
+
                                         // text alignment
                                         if (TextAlignment != Alignment.None)
                                             classList.Add(BootstrapClassProvider.TextAlignment(TextAlignment));
@@ -249,6 +253,10 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                                builder.OpenElement(101, "th");
 
                                var classList = new List<string>();
+
+                               // default class names
+                               if (!string.IsNullOrWhiteSpace(ClassNames))
+                                   classList.Add(ClassNames);
 
                                if (HeaderContent is null && HeaderTextAlignment != Alignment.None)
                                    classList.Add(BootstrapClassProvider.TextAlignment(HeaderTextAlignment));
