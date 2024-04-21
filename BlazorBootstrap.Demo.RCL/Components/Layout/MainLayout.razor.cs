@@ -3,6 +3,15 @@
 public partial class MainLayout : LayoutComponentBase
 {
     private string version = default!;
+    private string docsUrl = default!;
+    private string blogUrl = default!;
+    private string githubUrl = default!;
+    private string twitterUrl = default!;
+    private string linkedInUrl = default!;
+    private string githubIssuesUrl = default!;
+    private string githubDiscussionsUrl = default!;
+    private string stackoverflowUrl = default!;
+
     private Sidebar sidebar = default!;
     private IEnumerable<NavItem> navItems = default!;
 
@@ -11,6 +20,14 @@ public partial class MainLayout : LayoutComponentBase
     protected override void OnInitialized()
     {
         version = $"v{Configuration["version"]}"; // example: v0.6.1
+        docsUrl = $"{Configuration["urls:docs"]}";
+        blogUrl = $"{Configuration["urls:blog"]}";
+        githubUrl = $"{Configuration["urls:github"]}";
+        twitterUrl = $"{Configuration["urls:twitter"]}";
+        linkedInUrl = $"{Configuration["urls:linkedin"]}";
+        githubIssuesUrl = $"{Configuration["urls:github_issues"]}";
+        githubDiscussionsUrl = $"{Configuration["urls:github_discussions"]}";
+        stackoverflowUrl = $"{Configuration["urls:stackoverflow"]}";
         base.OnInitialized();
     }
 
