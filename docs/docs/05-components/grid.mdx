@@ -41,10 +41,10 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | Height | float | 320 pixels | | Gets or sets the grid height. | 1.10.3 |
 | ItemsPerPageText | string | `Items per page` | ✔️ | Gets or sets the ItemsPerPageText. | 1.9.5 |
 | PageSize | int | 10 | | Gets or sets the page size of the grid. | 1.0.0 |
-| PageSizeSelectorItems | int[] | new int[] { 10, 20, 50 } | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
+| PageSizeSelectorItems | int[] | `new int[] { 10, 20, 50 }` | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
 | PageSizeSelectorVisible | bool | false | ✔️ | Gets or sets the page size selector visible. | 1.8.0 |
 | PaginationItemsTextFormat | string | `{0} - {1} of {2} items` | ✔️ | Gets or sets the pagination items text format. | 1.8.0 |
-| RowClass | Func<TItem, string>? | | | Gets or sets the row class. | 1.6.0 |
+| RowClass | `Func<TItem, string>?` | | | Gets or sets the row class. | 1.6.0 |
 | Responsive | bool | false | | Gets or sets a value indicating whether Grid is responsive. | 1.0.0 |
 | SelectionMode | `GridSelectionMode` | | | Gets or sets the grid selection mode. | 1.8.0 |
 | SettingsProvider | `GridSettingsProviderDelegate` | | | Settings are for the grid to render. The provider should always return an instance of 'GridSettings', and 'null' is not allowed. | 1.0.0 |
@@ -76,7 +76,7 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | | ✔️ | Specifies the content to be rendered inside the grid column. | 1.0.0 |
-| ColumnClass | Func<TItem, string>? | | | Gets or sets the column class. | 1.6.0 |
+| ColumnClass | `Func<TItem, string>?` | | | Gets or sets the column class. | 1.6.0 |
 | Filterable | bool | true | | Enable or disable the filter on a specific column. The filter is enabled or disabled based on the grid `AllowFiltering` parameter. | 1.0.0 |
 | FilterOperator | enum | Assigned based on the property type. | | Gets or sets the filter operator. | 1.0.0 |
 | FilterTextboxWidth | int | | | Gets or sets the filter textbox width in pixels. | 1.0.0 |
