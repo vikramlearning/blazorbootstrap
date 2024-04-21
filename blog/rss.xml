@@ -4,10 +4,24 @@
         <title>Blazor Bootstrap Docs Blog</title>
         <link>https://docs.blazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Docs Blog</description>
-        <lastBuildDate>Sun, 14 Apr 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 21 Apr 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v2.2.1]]></title>
+            <link>https://docs.blazorbootstrap.com/blog/2024/04/21/blazorbootstrap-2.2.1</link>
+            <guid>https://docs.blazorbootstrap.com/blog/2024/04/21/blazorbootstrap-2.2.1</guid>
+            <pubDate>Sun, 21 Apr 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release version 2.2.1, which includes a Confirm Dialog, Grid updates, and demo projects upgraded to .NET 8!!!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release version 2.2.1, which includes a Confirm Dialog, Grid updates, and demo projects upgraded to .NET 8!!!</p><p><img loading="lazy" src="https://i.imgur.com/XG4Wv17.png" alt="image" title="Blazor Bootstrap: Grid Component - Column class" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>ConfirmDialog</code> component</p></li><li><p><code>Grid</code> component</p></li><li><p>Demos - Upgraded to .NET 8</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li></ul>]]></content:encoded>
+            <category>v2.2.1</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>blazorbootstrap</category>
+            <category>confirmdialog</category>
+            <category>grid</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v2.2.0]]></title>
             <link>https://docs.blazorbootstrap.com/blog/2024/04/14/blazorbootstrap-2.2.0</link>
