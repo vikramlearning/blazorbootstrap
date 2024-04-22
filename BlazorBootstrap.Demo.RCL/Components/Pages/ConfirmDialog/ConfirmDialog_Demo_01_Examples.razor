@@ -1,0 +1,24 @@
+﻿<ConfirmDialog @ref="dialog" />
+
+<Button Color="ButtonColor.Danger" @onclick="ShowConfirmationAsync"> Delete Employee </Button>
+
+@code {
+    private ConfirmDialog dialog = default!;
+
+    private async Task ShowConfirmationAsync()
+    {
+        var confirmation = await dialog.ShowAsync(
+            title: "Are you sure you want to delete this?",
+            message1: "This will delete the record. Once deleted can not be rolled back.",
+            message2: "Do you want to proceed?");
+
+        if (confirmation)
+        {
+            // do something
+        }
+        else
+        {
+            // do something
+        }
+    }
+}

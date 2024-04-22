@@ -1,0 +1,50 @@
+﻿@page "/charts/line-chart"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl"/>
+
+<h1>Blazor Line Chart</h1>
+<div class="lead mb-3">
+    A Blazor Bootstrap line chart component is a graphical representation of data that uses a series of connected points to show how the data changes over time.
+    It is a type of x-y chart, where the x-axis represents the independent variable, such as time, and the y-axis represents the dependent variable, such as the value.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H4" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites" />
+<div class="mb-3">
+    Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
+</div>
+
+<SectionHeading Size="HeadingSize.H4" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works"/>
+<div class="mb-3">
+    In the following example, a categorical 12-color palette is used.
+</div>
+<Callout Heading="TIP" Type="CalloutType.Success">
+    For data visualization, you can use the predefined palettes <code>ColorBuilder.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorBuilder.CategoricalSixColors</code> for a 6-color palette.
+    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
+</Callout>
+<Demo Type="typeof(LineChart_Demo_01_A_Examples)" Tabs="true"/>
+<div class="my-3"></div>
+<Demo Type="typeof(LineChart_Demo_01_B_Examples)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Locale" PageUrl="@pageUrl" HashTagName="locale"/>
+<div class="my-3">
+    By default, the chart is using the default locale of the platform on which it is running.
+    In the following example, you will see the chart in the <b>German</b> locale (<b>de_DE</b>).
+</div>
+<Demo Type="typeof(LineChart_Demo_02_Locale)" Tabs="true"/>
+
+<SectionHeading Size="HeadingSize.H4" Text="Add data dynamically for a specific dataset" PageUrl="@pageUrl" HashTagName="add-data-dynamically-for-a-specific-dataset"/>
+<Demo Type="typeof(LineChart_Demo_03_Dynamically_add_data)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Data labels" PageUrl="@pageUrl" HashTagName="data-labels" />
+<Demo Type="typeof(LineChart_Demo_04_Datalabels)" Tabs="true" />
+
+@code {
+    private readonly string pageUrl = "/charts/line-chart";
+    private readonly string title = "Blazor Line Chart";
+    private readonly string description = "A Blazor Bootstrap line chart component is a graphical representation of data that uses a series of connected points to show how the data changes over time. It is a type of x-y chart, where the x-axis represents the independent variable, such as time, and the y-axis represents the dependent variable, such as the value.";
+    private readonly string imageUrl = "https://i.imgur.com/8b7jH0D.png";
+}

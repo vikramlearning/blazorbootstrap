@@ -20,7 +20,7 @@ We are excited to release 2.1.0 with New Sidebar2 Component and Other Improvemen
 
 ## What's changed
 
-- `BarVhart` component
+- `BarChart` component
 
 - `Callout` component
 

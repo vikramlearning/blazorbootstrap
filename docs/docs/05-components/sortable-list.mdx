@@ -1,0 +1,616 @@
+---
+title: Blazor Sortable List Component
+description: The Blazor Bootstrap Sortable List component, built on top of SortableJS, enables drag-and-drop reordering of lists.
+image: https://i.imgur.com/bfzP8Yi.png
+
+sidebar_label: Sortable List
+sidebar_position: 24
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Sortable List (Preview)
+
+The Blazor Bootstrap Sortable List component, built on top of <b>SortableJS</b>, enables drag-and-drop reordering of lists.
+
+<CarbonAd />
+
+<img src="https://i.imgur.com/bfzP8Yi.png" alt="Blazor Sortable List" />
+
+## Setup
+
+Before using the **SortableList** component, include the **SortableJS** script reference in your `index.html/_Host.cshtml` file.
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+```
+## Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AllowSorting | bool | true | | Gets or sets a value indicating whether sorting is allowed for the list. | 2.2.0 |
+| ChildContent | `RenderFragment` |  | | Specifies the content to be rendered inside the `SortableList`. | 2.2.0 |
+| Data | `List<TItem>` | | | Gets or sets the items. | 2.2.0 |
+| DisableItem | `Func<TItem, bool>` | | | Gets or sets a delegate that determines whether an item should be disabled. | 2.2.0 |
+| DisabledItemCssClass | `string?` | | | Gets or sets the CSS class applied to disabled items. | 2.2.0 |
+| EmptyDataTemplate | `RenderFragment` | | | Specifies the template to render when there are no items to display in the list. | 2.2.0 |
+| EmptyText | string | `No records to display` | | Gets or sets the text to display when there are no records in the list. | 2.2.0 |
+| Group | `string?` | | | Gets or sets the group name associated with the list. | 2.2.0 |
+| Handle | `string?` | | | Gets or sets the CSS selector for the drag handle element. | 2.2.0 |
+| IsLoading | bool | | | Gets or sets a value indicating whether the list is currently loading. | 2.2.0 |
+| ItemTemplate | `RenderFragment<TItem>?` | | | Specifies the template used to render individual items in the list. | 2.2.0 |
+| LoadingTemplate | `RenderFragment` | | | Specifies the template to render while the list data is loading. | 2.2.0 |
+| Name | `string?` | | Gets or sets the name of the `SortableList` component. | 2.2.0 |
+| Pull | `SortableListPullMode` | | | Gets or sets the pull mode for the sortable list. | 2.2.0 |
+| Put | `SortableListPutMode` | | | Gets or sets the put mode for the sortable list. | 2.2.0 |
+
+## Methods
+
+There are no public methods available.
+
+## Callback Events
+
+| Event | Description | Added Version |
+|--|--|--|
+| OnAdd | Gets or sets an event callback that fires when an item is added to the list. | 2.2.0 |
+| OnRemove | Gets or sets an event callback that fires when an item is removed from the list. | 2.2.0 |
+| OnUpdate | Gets or sets an event callback that fires when an item is updated in the list. | 2.2.0 |
+
+## Examples
+
+### Basic usage
+
+<img src="https://i.imgur.com/6ClDwxT.png" alt="Blazor Sortable List - Basic usage" />
+
+```cshtml {} showLineNumbers
+<SortableList TItem="Employee"
+              Data="employees"
+              Context="item"
+              OnUpdate="@OnEmployeeListUpdate">
+    <ItemTemplate>
+        @item.Name
+    </ItemTemplate>
+</SortableList>
+```
+
+```cs {} showLineNumbers
+@code {
+    public List<Employee> employees = Enumerable.Range(1, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    private void OnEmployeeListUpdate(SortableListEventArgs args)
+    {
+        var itemToMove = employees[args.OldIndex];
+
+        employees.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employees.Count)
+            employees.Insert(args.NewIndex, itemToMove);
+        else
+            employees.Add(itemToMove);
+    }
+
+    public record Employee(int Id, string? Name);
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sortable-list#examples)
+
+### Shared lists
+
+To drag-and-drop an item from one list to the other and vice versa, set the **Group** parameter for all the lists. 
+Providing the same **Group** name for the lists is what links them together.
+
+In the below example, both lists use the same **Group**.
+
+<img src="https://i.imgur.com/UGbTLI0.png" alt="Blazor Sortable List - Shared lists" />
+
+```cshtml {} showLineNumbers
+<div class="row">
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Group="SharedListExample2"
+                      Name="empList1"
+                      Data="employeeList1"
+                      Context="item"
+                      OnUpdate="OnEmployeeList1Update"
+                      OnRemove="OnEmployeeList1Remove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Group="SharedListExample2"
+                      Name="empList2"
+                      Data="employeeList2"
+                      Context="item"
+                      OnUpdate="OnEmployeeList2Update"
+                      OnRemove="OnEmployeeList2Remove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    public List<Employee> employeeList1 = Enumerable.Range(1, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    public List<Employee> employeeList2 = Enumerable.Range(6, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    private void OnEmployeeList1Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList1[args.OldIndex];
+
+        employeeList1.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList1.Count)
+            employeeList1.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList1.Add(itemToMove);
+    }
+
+    private void OnEmployeeList2Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList2[args.OldIndex];
+
+        employeeList2.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList2.Count)
+            employeeList2.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList2.Add(itemToMove);
+    }
+
+    private void OnEmployeeList1Remove(SortableListEventArgs args)
+    {
+        // get the item at the old index in list 1
+        var item = employeeList1[args.OldIndex];
+
+        // add it to the new index in list 2
+        employeeList2.Insert(args.NewIndex, item);
+
+        // remove the item from the old index in list 1
+        employeeList1.Remove(employeeList1[args.OldIndex]);
+    }
+
+    private void OnEmployeeList2Remove(SortableListEventArgs args)
+    {
+        // get the item at the old index in list 2
+        var item = employeeList2[args.OldIndex];
+
+        // add it to the new index in list 1
+        employeeList1.Insert(args.NewIndex, item);
+
+        // remove the item from the old index in list 2
+        employeeList2.Remove(employeeList2[args.OldIndex]);
+    }
+
+    public record Employee(int Id, string? Name);
+}
+```
+
+In the following example, all three lists use the same group.
+
+<img src="https://i.imgur.com/4mD4uhZ.png" alt="Blazor Sortable List - Shared lists - More than two lists" />
+
+```cshtml {} showLineNumbers
+<div class="row">
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Group="SharedListExample3"
+                      Name="empList1"
+                      Data="employeeList1"
+                      Context="item"
+                      OnUpdate="OnEmployeeList1Update"
+                      OnRemove="OnEmployeeListRemove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Group="SharedListExample3"
+                      Name="empList2"
+                      Data="employeeList2"
+                      Context="item"
+                      OnUpdate="OnEmployeeList2Update"
+                      OnRemove="OnEmployeeListRemove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Group="SharedListExample3"
+                      Name="empList3"
+                      Data="employeeList3"
+                      Context="item"
+                      OnUpdate="OnEmployeeList3Update"
+                      OnRemove="OnEmployeeListRemove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    public List<Employee> employeeList1 = Enumerable.Range(10, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    public List<Employee> employeeList2 = Enumerable.Range(20, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    public List<Employee> employeeList3 = Enumerable.Range(30, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    private void OnEmployeeList1Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList1[args.OldIndex];
+
+        employeeList1.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList1.Count)
+            employeeList1.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList1.Add(itemToMove);
+    }
+
+    private void OnEmployeeList2Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList2[args.OldIndex];
+
+        employeeList2.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList2.Count)
+            employeeList2.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList2.Add(itemToMove);
+    }
+
+    private void OnEmployeeList3Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList3[args.OldIndex];
+
+        employeeList3.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList3.Count)
+            employeeList3.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList3.Add(itemToMove);
+    }
+
+    private void OnEmployeeListRemove(SortableListEventArgs args)
+    {
+        Employee? item = default!;
+
+        // get the item at the old index
+        if (args.FromListName == "empList1")
+            item = employeeList1[args.OldIndex];
+        else if (args.FromListName == "empList2")
+            item = employeeList2[args.OldIndex];
+        else
+            item = employeeList3[args.OldIndex];
+
+        // add it to the new index
+        if (args.ToListName == "empList1")
+            employeeList1.Insert(args.NewIndex, item);
+        else if (args.ToListName == "empList2")
+            employeeList2.Insert(args.NewIndex, item);
+        else
+            employeeList3.Insert(args.NewIndex, item);
+
+        // remove the item from the old index
+        if (args.FromListName == "empList1")
+            employeeList1.Remove(employeeList1[args.OldIndex]);
+        else if (args.FromListName == "empList2")
+            employeeList2.Remove(employeeList2[args.OldIndex]);
+        else
+            employeeList3.Remove(employeeList3[args.OldIndex]);
+    }
+
+    public record Employee(int Id, string? Name);
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sortable-list#shared-lists)
+
+### Cloning
+
+By setting `Pull="SortableListPullMode.Clone"`, you can enable item cloning. 
+Drag an item from one list to another to create a copy that stays in the original list.
+
+<img src="https://i.imgur.com/RSCHtNx.png" alt="Blazor Sortable List - Cloning" />
+
+```cshtml {} showLineNumbers
+<div class="row">
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Data="employeeList1"
+                      Context="item"
+                      Group="SharedListExample3"
+                      Pull="SortableListPullMode.Clone"
+                      OnUpdate="OnEmployeeList1Update"
+                      OnRemove="OnEmployeeList1Remove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Data="employeeList2"
+                      Context="item"
+                      Group="SharedListExample3"
+                      Pull="SortableListPullMode.Clone"
+                      OnUpdate="OnEmployeeList2Update"
+                      OnRemove="OnEmployeeList2Remove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    public List<Employee> employeeList1 = Enumerable.Range(10, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    public List<Employee> employeeList2 = Enumerable.Range(20, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    private void OnEmployeeList1Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList1[args.OldIndex];
+
+        employeeList1.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList1.Count)
+            employeeList1.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList1.Add(itemToMove);
+    }
+
+    private void OnEmployeeList2Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList2[args.OldIndex];
+
+        employeeList2.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList2.Count)
+            employeeList2.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList2.Add(itemToMove);
+    }
+
+    private void OnEmployeeList1Remove(SortableListEventArgs args)
+    {
+        // get the item at the old index in list 1
+        var item = employeeList1[args.OldIndex];
+
+        var clone = item with {};
+
+        // add it to the new index in list 2
+        employeeList2.Insert(args.NewIndex, clone);
+    }
+
+    private void OnEmployeeList2Remove(SortableListEventArgs args)
+    {
+        // get the item at the old index in list 2
+        var item = employeeList2[args.OldIndex];
+
+        var clone = item with { };
+
+        // add it to the new index in list 1
+        employeeList1.Insert(args.NewIndex, clone);
+    }
+
+    public record Employee(int Id, string? Name);
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sortable-list#cloning)
+
+### Disable sorting
+
+You can disable list sorting by setting `AllowSorting="false"`. In the example below, the list cannot be sorted.
+
+<img src="https://i.imgur.com/vN9EOng.png" alt="Blazor Sortable List - Disable sorting" />
+
+```cshtml {} showLineNumbers
+<SortableList TItem="Employee"
+              Data="items"
+              Context="item"
+              AllowSorting="false">
+    <ItemTemplate>
+        @item.Name
+    </ItemTemplate>
+</SortableList>
+```
+
+```cs {} showLineNumbers
+@code {
+    public List<Employee> items = Enumerable.Range(1, 5).Select(i => new Employee { Id = i, Name = $"Item {i}" }).ToList();
+
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sortable-list#disable-sorting)
+
+### Handle
+
+The **Handle** parameter specifies the CSS class that denotes the drag handle. In the example below, items can only be sorted by dragging the handle itself.
+
+<img src="https://i.imgur.com/JCNaf0i.png" alt="Blazor Sortable List - Handle" />
+
+```cshtml {} showLineNumbers
+<SortableList Class="mb-3"
+              Handle=".bb-sortable-list-handle"
+              TItem="Employee"
+              Data="employees"
+              Context="item"
+              OnUpdate="@OnEmployeeListUpdate">
+
+    <ItemTemplate>
+        <div class="d-flex justify-content-start">
+            <div class="bb-sortable-list-handle pe-2"><Icon Name="IconName.GripVertical" /></div>
+            <div>@item.Name</div>
+        </div>
+    </ItemTemplate>
+
+</SortableList>
+```
+
+```cs {} showLineNumbers
+@code {
+    public List<Employee> employees = Enumerable.Range(1, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    private void OnEmployeeListUpdate(SortableListEventArgs args)
+    {
+        var itemToMove = employees[args.OldIndex];
+
+        employees.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employees.Count)
+            employees.Insert(args.NewIndex, itemToMove);
+        else
+            employees.Add(itemToMove);
+    }
+
+    public record Employee(int Id, string? Name);
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sortable-list#handle)
+
+### Disable item
+
+Try dragging the red-backgrounded item. You won't be able to, as it's disabled using the **DisableItem** parameter.
+
+<img src="https://i.imgur.com/feeWEe3.png" alt="Blazor Sortable List - Disable item" />
+
+```cshtml {} showLineNumbers
+<SortableList TItem="Employee"
+              Data="employees"
+              Context="item" 
+              DisableItem="(emp) => emp.Id == 4" 
+              DisabledItemCssClass="list-group-item-danger border-0"
+              OnUpdate="@OnEmployeeListUpdate">
+    <ItemTemplate>
+        @item.Name
+    </ItemTemplate>
+</SortableList>
+```
+
+```cs {} showLineNumbers
+@code {
+    public List<Employee> employees = Enumerable.Range(1, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    private void OnEmployeeListUpdate(SortableListEventArgs args)
+    {
+        var itemToMove = employees[args.OldIndex];
+
+        employees.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employees.Count)
+            employees.Insert(args.NewIndex, itemToMove);
+        else
+            employees.Add(itemToMove);
+    }
+
+    public record Employee(int Id, string? Name);
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sortable-list#disable-item)
+
+### Nested sortables
+
+:::note
+Nested list sorting is not currently supported. We will add this feature in upcoming releases.
+:::
+
+### Dynamic data
+
+<img src="https://i.imgur.com/WsKIxFy.png" alt="Blazor Sortable List - Dynamic data" />
+
+```cshtml {} showLineNumbers
+<SortableList Class="mb-3"
+              TItem="Employee"
+              Data="employees"
+              Context="item"
+              IsLoading="isLoading"
+              OnUpdate="@OnEmployeeListUpdate">
+    <ItemTemplate>
+        @item.Name
+    </ItemTemplate>
+</SortableList>
+
+<Button Color="ButtonColor.Success" @onclick="LoadDataAsync"> Load data </Button>
+```
+
+```cs {} showLineNumbers
+@code {
+    public bool isLoading = false;
+    public List<Employee> employees = null!;
+
+    private async Task LoadDataAsync()
+    {
+        isLoading = true;
+        await Task.Delay(3000);
+        employees = Enumerable.Range(1, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+        isLoading = false;
+        await base.OnInitializedAsync();
+    }
+
+    private void OnEmployeeListUpdate(SortableListEventArgs args)
+    {
+        var itemToMove = employees[args.OldIndex];
+
+        employees.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employees.Count)
+            employees.Insert(args.NewIndex, itemToMove);
+        else
+            employees.Add(itemToMove);
+    }
+
+    public record Employee(int Id, string? Name);
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sortable-list#dynamic-data)
+
+### Empty data
+
+<img src="https://i.imgur.com/KHsQIxN.png" alt="Blazor Sortable List - Empty data" />
+
+```cshtml {} showLineNumbers
+<SortableList TItem="Employee"
+              Data="items"
+              Context="item">
+    <ItemTemplate>
+        @item.Name
+    </ItemTemplate>
+</SortableList>
+```
+
+```cs {} showLineNumbers
+@code {
+    public List<Employee> items = null!;
+
+    public record Employee(int Id, string? Name);
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sortable-list#empty-data)

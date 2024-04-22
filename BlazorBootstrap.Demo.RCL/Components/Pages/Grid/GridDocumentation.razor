@@ -1,0 +1,214 @@
+﻿@page "/grid"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Grid</h1>
+<div class="lead mb-3">
+    Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering" />
+<div>For filtering, <code>AllowFiltering</code> and <code>PropertyName</code> parameters are required.</div>
+<div class="mb-3">Add <code>AllowFiltering="true"</code> parameter to Grid and <code>PropertyName</code> parameter to all the GridColumns.</div>
+<Demo Type="typeof(Grid_Demo_01_A_Client_Side_Filtering)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Client side filtering with StringComparision" PageUrl="@pageUrl" HashTagName="client-side-filtering-with-string-comparision" />
+<div>In the below example, <code>StringComparision.Ordinal</code> is used on the <strong>Employee Name</strong> column to make the filter <b>case-sensitive</b>.</div>
+<Callout Type="CalloutType.Danger" Heading="IMPORTANT">
+    <div>By default, <code>StringComparison.OrdinalIgnoreCase</code> is used to compare culture-agnostic and case-insensitive string matching.</div>
+</Callout>
+<Demo Type="typeof(Grid_Demo_01_B_Client_Side_Filtering_With_StringComparision)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Client side paging" PageUrl="@pageUrl" HashTagName="client-side-paging" />
+<div>For paging, <code>AllowPaging</code> and <code>PageSize</code> parameters are required.</div>
+<div class="mb-2">Add <code>AllowPaging="true"</code> and <code>PageSize="20"</code> parameters to the Grid. <code>PageSize</code> parameter is optional.</div>
+<Callout Type="CalloutType.Info">The default page size is 10.</Callout>
+<Demo Type="typeof(Grid_Demo_02_Client_Side_Paging)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Client side sorting" PageUrl="@pageUrl" HashTagName="client-side-sorting" />
+<div>For sorting, <code>AllowSorting</code> and <code>SortKeySelector</code> parameters are required.</div>
+<div class="mb-3">Add <code>AllowSorting="true"</code> parameter to Grid and <code>SortKeySelector</code> to all the GridColumns.</div>
+<Demo Type="typeof(Grid_Demo_03_Client_Side_Sorting)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Client side filtering, paging, and sorting" PageUrl="@pageUrl" HashTagName="client-side-filtering-paging-sorting" />
+<Demo Type="typeof(Grid_Demo_04_Client_Side_Filtering_Paging_And_Sorting)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Set default filter" PageUrl="@pageUrl" HashTagName="set-default-filter" />
+<div class="mb-2">
+    <code>FilterOperator</code> and <code>FilterValue</code> parameters are required to set the default filter.
+</div>
+<Callout Type="CalloutType.Success">You can set the default filter on more than one GridColumn.</Callout>
+<div class="mb-3">The default sorting is enabled on the <b>Id</b> column in the below example.</div>
+<Demo Type="typeof(Grid_Demo_05_Set_Default_Filter)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable specific column filter" PageUrl="@pageUrl" HashTagName="disable-specific-column-filter" />
+<div class="mb-3">
+    <code>Filterable</code> parameter is required to disable the filter on a specific column. Add <code>Filterable="false"</code> parameter to GridColumn. The column filter is disabled on the <b>Id</b> column in the below example.
+</div>
+<Demo Type="typeof(Grid_Demo_06_Disable_Specific_Column_Filter)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Increase filter textbox width" PageUrl="@pageUrl" HashTagName="increase-filter-textbox-width" />
+<div class="mb-2">Add <code>FilterTextboxWidth</code> parameter to the GridColumn to increase or decrease the filter textbox width, <code>FilterTextboxWidth</code> parameter is optional.</div>
+<Callout>Filter textbox width measured in pixels.</Callout>
+<Demo Type="typeof(Grid_Demo_06_Increase_Filter_Textbox_Width)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Server side filtering, paging and sorting" PageUrl="@pageUrl" HashTagName="server-side-filtering-paging-sorting" />
+<Demo Type="typeof(Grid_Demo_07_Server_Side_Filtering_Paging_And_Sorting)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Set default sorting" PageUrl="@pageUrl" HashTagName="set-default-sorting" />
+<div><code>IsDefaultSortColumn</code> parameter is required to set the default sorting. Add <code>IsDefaultSortColumn="true"</code> parameter to the GridColumn.</div>
+<div class="mb-2">The default sort direction will be ascending. To change the default sorting of a column, add <code>SortDirection="SortDirection.Descending"</code> to the GridColumn.</div>
+<Callout Type="CalloutType.Info">If more than one GridColumn has the <strong>IsDefaultSortColumn</strong> paramter, it will pick the first column as the default sorting column.</Callout>
+<div class="mb-3">The default sorting is enabled on the <b>Employee Name</b> column in the below example, and the sort direction is <b>descending</b>.</div>
+<Demo Type="typeof(Grid_Demo_08_Default_Sorting)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable specific column sorting" PageUrl="@pageUrl" HashTagName="disable-specific-column-sorting" />
+<div>Add <code>Sortable="false"</code>parameter the GridColumn to disable the sorting. If sorting is disabled, then the <code>SortKeySelector</code> parameter is not required. The sorting is disabled on the <b>Designation</b> column in the below example.</div>
+<Demo Type="typeof(Grid_Demo_09_Disable_Specific_Column_Sorting)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Header text alignment" PageUrl="@pageUrl" HashTagName="header-text-alignment" />
+<div class="mb-3">Use the <code>HeaderTextAlignment</code> parameter to change the header column alignment. By default, <code>HeaderTextAlignment</code> is set to <code>Alignment.Start</code>. Other options you can use are <code>Alignment.Center</code> and <code>Alignment.End</code>.</div>
+<Demo Type="typeof(Grid_Demo_10_Header_Text_Alignment)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell alignment" PageUrl="@pageUrl" HashTagName="cell-alignment" />
+<div class="mb-3">Use the <code>TextAlignment</code> parameter to change the cell data alignment. By default, <code>TextAlignment</code> is set to <code>Alignment.Start</code>. Other options you can use are <code>Alignment.Center</code> and <code>Alignment.End</code>.</div>
+<Demo Type="typeof(Grid_Demo_11_Grid_Cell_Alignment)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell formating" PageUrl="@pageUrl" HashTagName="cell-formating" />
+<div class="mb-3">To format the cell data, use <code>ToString method and format strings</code>. Refer: <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types" target="_blank">How to format numbers, dates, enums, and other types in .NET</a></div>
+<Callout Type="CalloutType.Success"><strong>Example: </strong>@@context.Salary.ToString("N2").</Callout>
+<Demo Type="typeof(Grid_Demo_12_Grid_Cell_Formating)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell nowrap" PageUrl="@pageUrl" HashTagName="cell-nowrap" />
+<div class="mb-3">To prevent text from wrapping, add <code>TextNoWrap="true"</code> to the GridColumn.</div>
+<Demo Type="typeof(Grid_Demo_13_Grid_Cell_Nowrap)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Empty data" PageUrl="@pageUrl" HashTagName="empty-data" />
+<div class="mb-3">If there are no records to display in the Grid, by default, it will display the <strong>No records to display</strong> message. You can change this message by adding the <code>EmptyText</code> parameter to the Grid.</div>
+<Demo Type="typeof(Grid_Demo_15_Empty_Data)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Save and Load Grid Settings" PageUrl="@pageUrl" HashTagName="save-and-load-grid-settings" />
+<div class="mb-3">This example shows how to save/load the Grid state. The state includes the <b>page number</b>, <b>page size</b>, and <b>filters</b>.</div>
+<Callout Type="CalloutType.Danger" Heading="IMPORTANT">In version <code>0.5.1</code> and above, the Grid sorting state is not included as part of GridSettings. We will add it in the subsequent releases.</Callout>
+<Callout Type="CalloutType.Default">Browser local storage is used to persist the Grid state. Common locations exist for persisting state are <b>Server-side storage</b>, <b>URL</b>, <b>Browser storage</b>, and <b>In-memory state container service</b>.</Callout>
+<Demo Type="typeof(Grid_Demo_16_Save_And_Load_Grid_Settings)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Data parameter - Assign collection" PageUrl="@pageUrl" HashTagName="data-parameter-assign-collection" />
+<div class="mb-3">Assign a collection to the <code>Data</code> parameter to render the grid dynamically. The example below will render different department employees in the individual grid.</div>
+<Demo Type="typeof(Grid_Demo_17_A_Data_Parameter_Assign_Collection)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Data parameter - Update collection" PageUrl="@pageUrl" HashTagName="data-parameter-update-collection" />
+<div class="mb-3">You can update the collection assigned to the <code>Data</code> parameter. In the below example, the grid will render the updated collection.</div>
+<Demo Type="typeof(Grid_Demo_17_B_Data_Parameter_Update_Collection)" Tabs="true" />
+
+<Callout Type="CalloutType.Success" Heading="Important">
+    <p>
+        The <b>Add Employee</b> button click adds a new employee to the existing <b>employees</b> collection—so explicit grid refresh is required.
+    </p>
+    <p>
+        The <b>Add Employee 2</b> button click creates a shallow copy of the <b>employees</b> collection and adds a new employee.
+        This new collection is assigned to the <b>employees</b> variable. Now, the <b>employees</b> variable has a new reference. So the grid will refresh automatically. An explicit grid refresh call is not required.
+    </p>
+</Callout>
+
+<SectionHeading Size="HeadingSize.H2" Text="Conditional css class for grid row" PageUrl="@pageUrl" HashTagName="conditional-css-class-for-grid-row" />
+<div class="mb-3">In the below example, we applied <code>table-danger</code> CSS class to the row where the employee is inactive and the <code>table-success</code> CSS class to the row where the employee designation is Architect.</div>
+<Demo Type="typeof(Grid_Demo_18_Specify_Custom_Row_Class)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Conditional css class for grid column" PageUrl="@pageUrl" HashTagName="conditional-css-class-for-grid-column" />
+<div class="mb-3">In the below example, we applied <code>table-danger</code> CSS class to the Active column where the employee is inactive and the <code>table-success</code> CSS class to the Active column where the employee is active.</div>
+<Demo Type="typeof(Grid_Demo_19_Specify_Custom_Column_Class)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Column Class" PageUrl="@pageUrl" HashTagName="colum-class" />
+<div class="mb-3">In the following example, the <code>Class</code> parameter is used to apply the CSS class to an entire grid column, including the header.</div>
+<Demo Type="typeof(Grid_Demo_20_Column_Css_Class)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Custom column headers" PageUrl="@pageUrl" HashTagName="custom-column-headers" />
+<div class="mb-3">In the below example, we use <code>&lt;HeaderContent&gt;</code> and <code>&lt;ChildContent&gt;</code> tags to define custom column header and cell content. When defining header content, filters and sorting are removed from column.</div>
+<Demo Type="typeof(Grid_Demo_21_Specify_Custom_Column_Header)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Selection" PageUrl="@pageUrl" HashTagName="selection" />
+<div class="mb-3">
+    Set <code>AllowSelection="true"</code> to enable the selection on the <code>Grid</code>.
+    By default, <code>SelectionMode</code> is <b>Single</b>.
+</div>
+<Demo Type="typeof(Grid_Demo_22_Selection)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Multiple Selection" PageUrl="@pageUrl" HashTagName="multiple-selection" />
+<div class="mb-3">
+    To select multiple rows, set <code>SelectionMode="GridSelectionMode.Multiple"</code>.
+</div>
+<Demo Type="typeof(Grid_Demo_23_Multiple_Selection)" Tabs="true" />
+<Callout Type="CalloutType.Danger" Heading="Note">
+    <p>Selected items are removed from the selection if they are not rendered after paging, sorting, filtering, etc.</p>
+</Callout>
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable Selection" PageUrl="@pageUrl" HashTagName="disable-selection" />
+<div class="mb-3">
+    We can disable the header checkbox or row level checkbox based on a condition. 
+    For this, we have <code>DisableAllRowsSelection</code> and <code>DisableRowSelection</code> delegate parameters. In the below example, we disabled the header checkbox if any of the employee Id is less than 105.
+    Also, disable check the row level checkbox if the employee Id is less than 105.
+</div>
+<Demo Type="typeof(Grid_Demo_24_Disable_Selection)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Dynamic page size" PageUrl="@pageUrl" HashTagName="dynamic-page-size" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_25_Dynamic_Page_Size)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Page size selection" PageUrl="@pageUrl" HashTagName="page-size-selection" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_26_Page_Size_Selection)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Header row css class" PageUrl="@pageUrl" HashTagName="header-row-css-class" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_27_Header_Row_CSS_Class)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Filters row css class" PageUrl="@pageUrl" HashTagName="filters-row-css-class" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_28_Filters_Row_CSS_Class)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Row click event" PageUrl="@pageUrl" HashTagName="row-click-event" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_29_Row_Click)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Row double click event" PageUrl="@pageUrl" HashTagName="row-double-click-event" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_30_Row_Double_Click)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Translations" PageUrl="@pageUrl" HashTagName="translations" />
+<div class="mb-3">In the example below, you will see translations related to pagination and filters in <b>Dutch</b>.</div>
+<Demo Type="typeof(Grid_Demo_31_Translations)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Fixed header" PageUrl="@pageUrl" HashTagName="fixed-header" />
+<div class="mb-3">
+    To set the fixed header, set the <b>FixedHeader</b> parameter to <b>true</b>. The minimum height of the grid is <b>320 pixels</b>.
+    You can change the units to em, pt, px, or etc. by setting the <b>Unit</b> parameter.
+</div>
+<Demo Type="typeof(Grid_Demo_32_Fixed_Header_A)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Fixed header with filters" PageUrl="@pageUrl" HashTagName="fixed-header-with-filters" />
+<Demo Type="typeof(Grid_Demo_32_Fixed_Header_B_With_Filters)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Freeze columns" PageUrl="@pageUrl" HashTagName="freeze-columns" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_33_Freeze_Column_A_Text_Nowrap)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Freeze columns with fixed header" PageUrl="@pageUrl" HashTagName="freeze-columns-with-fixed-header" />
+<Demo Type="typeof(Grid_Demo_33_Freeze_Column_B_Fixed_Header)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Freeze columns with fixed header and filters" PageUrl="@pageUrl" HashTagName="freeze-columns-with-fixed-header-and-filters" />
+<Demo Type="typeof(Grid_Demo_33_Freeze_Column_C_Fixed_Header_With_Filters)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Auto hide paging" PageUrl="@pageUrl" HashTagName="auto-hide-paging" />
+<Demo Type="typeof(Grid_Demo_34_AutoHide_Paging)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/grid";
+    private string title = "Blazor Grid Component";
+    private string description = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}

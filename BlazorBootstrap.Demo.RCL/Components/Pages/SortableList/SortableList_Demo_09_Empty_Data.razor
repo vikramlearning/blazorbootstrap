@@ -1,0 +1,13 @@
+﻿<SortableList TItem="Employee"
+              Data="items"
+              Context="item">
+    <ItemTemplate>
+        @item.Name
+    </ItemTemplate>
+</SortableList>
+
+@code {
+    public List<Employee> items = null!;
+
+    public record Employee(int Id, string? Name);
+}

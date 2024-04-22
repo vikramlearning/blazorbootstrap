@@ -44,7 +44,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     protected override void BuildStyles()
     {
         this.AddStyle("display:block", showBackdrop);
-        this.AddClass("display:none", !showBackdrop);
+        this.AddStyle("display:none", !showBackdrop);
 
         base.BuildStyles();
     }

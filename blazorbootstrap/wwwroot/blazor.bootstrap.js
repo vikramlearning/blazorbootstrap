@@ -211,7 +211,7 @@ window.blazorBootstrap = {
         }
     },
     confirmDialog: {
-        show: (elementId) => {
+        show: (elementId, autoFocusYesButton) => {
             let confirmDialogEl = document.getElementById(elementId);
             if (confirmDialogEl != null)
                 setTimeout(() => confirmDialogEl.classList.add('show'), 90); // added delay for server
@@ -219,6 +219,13 @@ window.blazorBootstrap = {
             let bodyEl = document.getElementsByTagName('body');
             if (bodyEl.length > 0)
                 bodyEl[0].style['overflow'] = 'hidden';
+
+            if (!autoFocusYesButton)
+                return;
+
+            let yesButtonEl = document.getElementById(`bb-confirm-${elementId}`);
+            if (yesButtonEl)
+                yesButtonEl.focus();
         },
         hide: (elementId) => {
             let confirmDialogEl = document.getElementById(elementId);

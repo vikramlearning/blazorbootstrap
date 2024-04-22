@@ -1,0 +1,35 @@
+﻿@page "/pdf-viewer"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor PDF Viewer</h1>
+<div class="lead mb-3">
+    The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(PdfViewer_Demo_01_Examples)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Orientation" PageUrl="@pageUrl" HashTagName="orientation" />
+<div class="mb-3">
+    Set the <code>Orientation</code> parameter to <code>Orientation.Landscape</code> to change the default orientation from <b>Portrait</b> to <b>Landscape</b>.
+</div>
+<Demo Type="typeof(PdfViewer_Demo_02_Orientation)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Base64String" PageUrl="@pageUrl" HashTagName="base64-string" />
+<div class="mb-3">PDF Viewer component supports <b>base64</b> string as a URL.</div>
+<Callout Heading="Example">
+    Url="@@string.Format("data:application/pdf;base64,{0}", pdfBase64String)"
+</Callout>
+<Demo Type="typeof(PdfViewer_Demo_03_Base64String)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/pdf-viewer";
+    private string title = "Blazor PDF Viewer Component";
+    private string description = "The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions.";
+    private string imageUrl = "https://i.imgur.com/7Vz9Efi.png";
+}

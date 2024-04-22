@@ -1,0 +1,11 @@
+.bb-ribbon-item {
+    cursor: pointer;
+    /*width: 64px;*/
+}
+
+    .bb-ribbon-item:hover {
+        background-color: rgba(var(--bs-secondary-rgb), 0.10) !important;
+    }
+
+    .bb-ribbon-item.active {
+    }

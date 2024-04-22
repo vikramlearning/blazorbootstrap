@@ -1,0 +1,46 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<CascadingValue Value="this" Name="Ribbon1" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@if (tabs?.Any() ?? false)
+{
+    <div class="@NavParentDivCssClass">
+        <nav>
+            <div @ref="@ElementRef" id="@ElementId" class="@ClassNames" style="@StyleNames" @attributes="@Attributes" role="tablist">
+                @foreach (var t in tabs)
+                {
+                    var tabElementId = t.ElementId;
+                    <button class="nav-link @(t.Disabled ? "disabled" : "")" id="@t.ElementId" data-bs-target="#nav-@t.ElementId" type="button" role="tab" aria-selected="false" @onclick="async () => await OnTabClickAsync(t)">
+                        @if (t.TitleTemplate != null)
+                        {
+                            @t.TitleTemplate
+                        }
+                        else if (!string.IsNullOrWhiteSpace(t.Title))
+                        {
+                            @t.Title
+                        }
+                        else
+                        {
+                            <text>No Title</text>
+                        }
+                    </button>
+                }
+            </div>
+        </nav>
+        <div class="@TabContentCssClass">
+            @foreach (var t in tabs)
+            {
+                <div class="tab-pane @(EnableFadeEffect ? "fade" : "")" id="nav-@t.ElementId" role="tabpanel" aria-labelledby="@t.ElementId">
+                    <div class="d-flex flex-row border">
+                        <CascadingValue Value="this" Name="Ribbon2" IsFixed="true">
+                            @t.Content
+                        </CascadingValue>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
