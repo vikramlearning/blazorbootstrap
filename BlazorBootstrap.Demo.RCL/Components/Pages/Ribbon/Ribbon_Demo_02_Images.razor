@@ -1,0 +1,59 @@
+﻿<Ribbon OnClick="OnRibbonItemClick">
+    <RibbonTab Title="Home">
+        <Content>
+            <!-- New -->
+            <RibbonItemGroup Text="New">
+                <RibbonItem Name="NewEmail" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/new-email.png" IsFirstItem="true">New<br />Email</RibbonItem>
+                <RibbonItem Name="Appointment" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/calendar.png" Text="Appointment" IsLastItem="true" />
+            </RibbonItemGroup>
+            <!-- Delete -->
+            <RibbonItemGroup Text="Delete">
+                <RibbonItem Name="Delete" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/bin.png" Text="Delete" IsFirstItem="true" />
+                <RibbonItem Name="Archive" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/archive.png" Text="Archive" IsLastItem="true" />
+            </RibbonItemGroup>
+        </Content>
+    </RibbonTab>
+    <RibbonTab Title="Send / Receive" IsActive="true">
+        <Content>
+            <!-- Send & Receive -->
+            <RibbonItemGroup Text="Send & Receive">
+                <RibbonItem Name="SendReceiveAllFolders" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/refresh.png" IsFirstItem="true">Send/Receive<br />All Folders</RibbonItem>
+                <RibbonItem Name="UpdateFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-sync.png" IsLastItem="true">Update<br />Folder</RibbonItem>
+            </RibbonItemGroup>
+            <!-- Download -->
+            <RibbonItemGroup Text="Download">
+                <RibbonItem Name="ShowProgress" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/loading-bar.png" IsFirstItem="true">Show<br />Progress</RibbonItem>
+                <RibbonItem Name="CancelAll" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/cancelled.png" IsLastItem="true">Cancel<br />All</RibbonItem>
+            </RibbonItemGroup>
+        </Content>
+    </RibbonTab>
+    <RibbonTab Title="Folder" IsActive="true">
+        <Content>
+            <!-- New -->
+            <RibbonItemGroup Text="New">
+                <RibbonItem Name="NewFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-add.png" IsFirstItem="true">New<br />Folder</RibbonItem>
+                <RibbonItem Name="NewSearchFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-search.png" IsLastItem="true">New<br />Search Folder</RibbonItem>
+            </RibbonItemGroup>
+            <!-- Actions -->
+            <RibbonItemGroup Text="Actions">
+                <RibbonItem Name="RenameFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-rename.png" IsFirstItem="true">Rename<br />Folder</RibbonItem>
+                <RibbonItem Name="CopyFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-copy.png">Copy<br />Folder</RibbonItem>
+                <RibbonItem Name="MoveFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-move.png">Move<br />Folder</RibbonItem>
+                <RibbonItem Name="DeleteFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-delete.png" IsLastItem="true">Delete<br />Folder</RibbonItem>
+            </RibbonItemGroup>
+        </Content>
+    </RibbonTab>
+</Ribbon>
+
+<div class="mt-2">
+    Selected ribbon item: @selectedRibbonItem
+</div>
+
+@code {
+    string? selectedRibbonItem;
+
+    private void OnRibbonItemClick(RibbonItemEventArgs args)
+    {
+        selectedRibbonItem = args.Name;
+    }
+}

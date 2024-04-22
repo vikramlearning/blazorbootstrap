@@ -22,6 +22,7 @@ public static class Config
         serviceCollection.AddScoped<ToastService>();
 
         serviceCollection.AddScoped<PdfViewerJsInterop>();
+        serviceCollection.AddScoped<SortableListJsInterop>();
 
         return serviceCollection;
     }

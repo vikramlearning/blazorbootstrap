@@ -1,0 +1,57 @@
+﻿<div class="d-flex flex-column">
+    <div>
+        <Button Color="ButtonColor.Success" Class="mb-3 float-end" Size="Size.ExtraSmall" @onclick="AddCustomer">+ Add customer</Button>
+    </div>
+    <Card>
+        <CardBody>
+            <Tabs @ref="tabsRef">
+                @foreach (var customer in customers)
+                {
+                    <Tab @key="@customer?.GetHashCode()"
+                         Title="@customer.CustomerName"
+                         Name="@($"{customer.CustomerId}")">
+                        <Content>
+                            <div class="p-1">
+                                <div class="mt-3">
+                                    This is the placeholder content for the <b>@customer.CustomerName</b> tab.
+                                </div>
+                                <div>
+                                    <Button Color="ButtonColor.Danger" Class="mt-3" Size="Size.ExtraSmall" @onclick="() => RemoveCustomer(customer)">Remove tab</Button>
+                                </div>
+                            </div>
+                        </Content>
+                    </Tab>
+                }
+            </Tabs>
+        </CardBody>
+    </Card>
+</div>
+
+@code {
+    Tabs tabsRef = default!;
+
+    int count = 1;
+    private List<Customer> customers = default!;
+
+    protected override void OnInitialized()
+    {
+        customers = new() { new(1, "Marvin Klein"), new(2, "Vikram Reddy"), new(3, "Bandita PA"), new(4, "Daina JJ") };
+        var count = customers.Count;
+    }
+
+    private void AddCustomer()
+    {
+        count++;
+        var customer = new Customer(count, $"Customer {count}");
+        customers.Add(customer);
+
+        tabsRef.ShowRecentTab();
+    }
+
+    private void RemoveCustomer(Customer customer)
+    {
+        customers.Remove(customer);
+
+        tabsRef.RemoveTabByName(customer.CustomerId.ToString());
+    }
+}

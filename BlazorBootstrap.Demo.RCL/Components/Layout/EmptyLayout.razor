@@ -1,0 +1,141 @@
+﻿@namespace BlazorBootstrap.Demo.RCL
+
+@inherits LayoutComponentBase
+
+<Skippy Url="https://github.com/vikramlearning/blazorbootstrap">
+    <i class="bi bi-star-fill"></i>
+    <span>If you like Blazor Bootstrap, give it a star on GitHub!</span>
+    <i class="bi bi-star-fill"></i>
+</Skippy>
+
+<header class="navbar navbar-expand-lg navbar-dark bd-navbar sticky-top">
+    <nav class="container-xxl bd-gutter flex-wrap flex-lg-nowrap" aria-label="Main navigation">
+        <div class="d-lg-none" style="width: 1.5rem;"></div>
+
+        <a class="navbar-brand p-0 me-0 me-lg-2" href="/" aria-label="Blazor Bootstrap">
+            <img src="/images/logo/logo-white.svg" width="40" height="32" class="d-block my-1" alt="Blazor Bootstrap" />
+        </a>
+
+        <div class="d-flex">
+            <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-label="Toggle navigation">
+                <i class="bi bi-three-dots"></i>
+            </button>
+        </div>
+
+        <div class="offcanvas-lg offcanvas-end flex-grow-1" tabindex="-1" id="bdNavbar" aria-labelledby="bdNavbarOffcanvasLabel" data-bs-scroll="true">
+            <div class="offcanvas-header px-4 pb-0">
+                <h5 class="offcanvas-title text-white" id="bdNavbarOffcanvasLabel">Blazor Bootstrap</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close" data-bs-target="#bdNavbar"></button>
+            </div>
+
+            <div class="offcanvas-body p-4 pt-0 p-lg-0">
+                <hr class="d-lg-none text-white-50">
+                <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav">
+                    <li class="nav-item col-6 col-lg-auto"><a class="nav-link py-2 px-0 px-lg-2" href="/getting-started/blazor-webassembly">Demos</a></li>
+                    <li class="nav-item col-6 col-lg-auto"><a class="nav-link py-2 px-0 px-lg-2" href="@docsUrl" target="_blank" rel="noopener">Docs</a></li>
+                    <li class="nav-item col-6 col-lg-auto"><a class="nav-link py-2 px-0 px-lg-2" href="@blogUrl" target="_blank" rel="noopener">Blog</a></li>
+                    <li class="nav-item col-6 col-lg-auto"><a class="nav-link py-2 px-0 px-lg-2" href="@githubUrl" target="_blank" rel="noopener">GitHub</a></li>
+                </ul>
+
+                <hr class="d-lg-none text-white-50">
+
+                <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+                    <li class="nav-item col-6 col-lg-auto">
+                        <a class="nav-link py-2 px-0 px-lg-2" href="@githubUrl" target="_blank" rel="noopener">
+                            <i class="bi bi-github"></i>
+                            <small class="d-lg-none ms-2">GitHub</small>
+                        </a>
+                    </li>
+                    <li class="nav-item col-6 col-lg-auto">
+                        <a class="nav-link py-2 px-0 px-lg-2" href="@twitterUrl" target="_blank" rel="noopener">
+                            <i class="bi bi-twitter-x"></i>
+                            <small class="d-lg-none ms-2">Twitter</small>
+                        </a>
+                    </li>
+                    <li class="nav-item col-6 col-lg-auto">
+                        <a class="nav-link py-2 px-0 px-lg-2" href="@linkedInUrl" target="_blank" rel="noopener">
+                            <i class="bi bi-linkedin"></i>
+                            <small class="d-lg-none ms-2">LinkedIn</small>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<main>
+    @Body
+</main>
+<footer class="bd-footer py-4 py-md-5 mt-5 bg-light">
+    <div class="container py-4 py-md-5 px-4 px-md-3">
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                <a class="d-inline-flex align-items-center mb-2 link-dark text-decoration-none" href="/" aria-label="Bootstrap">
+                    <img src="/images/logo/logo-color.svg" width="40" height="32" class="d-block me-2" alt="Blazor Bootstrap" />
+                    <span class="fs-5">Blazor Bootstrap</span>
+                </a>
+                <ul class="list-unstyled small text-muted">
+                    <li class="mb-2">Designed and built with all the love in the world by the <strong><a href="https://www.nuget.org/packages/Blazor.Bootstrap">Blazor Bootstrap</a></strong> team with the help of our contributors.</li>
+                    <li class="mb-2">Code licensed <a href="https://github.com/vikramlearning/blazorbootstrap/blob/master/LICENSE.txt" target="_blank" rel="license noopener">Apache License 2.0</a>.</li>
+                    <li class="mb-2">Currently @version.</li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2 offset-lg-1 mb-3">
+                <h5>Links</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/">Home</a></li>
+                    <li class="mb-2"><a href="@docsUrl" target="_blank" rel="noopener">Docs</a></li>
+                    <li class="mb-2"><a href="@blogUrl" target="_blank" rel="noopener">Blog</a></li>
+                    <li class="mb-2"><a href="@githubUrl" target="_blank" rel="noopener">Github</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2 mb-3">
+                <h5>Guides</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/getting-started/blazor-webassembly">Getting started</a></li>
+                    <li class="mb-2"><a href="/getting-started#install-nuget-package">Install Nuget</a></li>
+                    <li class="mb-2"><a href="https://github.com/vikramlearning/blazorbootstrap-starter-templates" target="_blank">Starter templates</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2 mb-3">
+                <h5>Community</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="@githubIssuesUrl">Issues</a></li>
+                    <li class="mb-2"><a href="@githubDiscussionsUrl">Discussions</a></li>
+                    <li class="mb-2"><a href="@stackoverflowUrl">Stack Overflow</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2 mb-3">
+            </div>
+        </div>
+    </div>
+</footer>
+
+@code {
+    private string version = default!;
+    private string docsUrl = default!;
+    private string blogUrl = default!;
+    private string githubUrl = default!;
+    private string twitterUrl = default!;
+    private string linkedInUrl = default!;
+    private string githubIssuesUrl = default!;
+    private string githubDiscussionsUrl = default!;
+    private string stackoverflowUrl = default!;
+
+    [Inject] public IConfiguration Configuration { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        version = $"v{Configuration["version"]}"; // example: v0.6.1
+        docsUrl = $"{Configuration["urls:docs"]}";
+        blogUrl = $"{Configuration["urls:blog"]}";
+        githubUrl = $"{Configuration["urls:github"]}";
+        twitterUrl = $"{Configuration["urls:twitter"]}";
+        linkedInUrl = $"{Configuration["urls:linkedin"]}";
+        githubIssuesUrl = $"{Configuration["urls:github_issues"]}";
+        githubDiscussionsUrl = $"{Configuration["urls:github_discussions"]}";
+        stackoverflowUrl = $"{Configuration["urls:stackoverflow"]}";
+
+        base.OnInitialized();
+    }
+}

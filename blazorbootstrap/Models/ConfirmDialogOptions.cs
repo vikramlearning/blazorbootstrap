@@ -5,6 +5,11 @@ public class ConfirmDialogOptions
     #region Properties, Indexers
 
     /// <summary>
+    /// Determines whether to focus on the yes button or not.
+    /// </summary>
+    public bool AutoFocusYesButton {  get; set; } = true;
+
+    /// <summary>
     /// Additional CSS class for the dialog (div.modal-dialog element).
     /// </summary>
     public string? DialogCssClass { get; set; }

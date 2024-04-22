@@ -127,6 +127,23 @@ public static class EnumExtensions
             _ => string.Empty
         };
 
+    public static object ToSortableListPullMode(this SortableListPullMode mode) =>
+        mode switch
+        {
+            SortableListPullMode.True => true,
+            SortableListPullMode.False => false,
+            SortableListPullMode.Clone => "clone",
+            //SortableListPullMode.Array => "array"
+        };
+
+    public static object ToSortableListPutMode(this SortableListPutMode mode) =>
+        mode switch
+        {
+            SortableListPutMode.True => true,
+            SortableListPutMode.False => false,
+            //SortableListPullMode.Array => "array"
+        };
+
     /// <summary>
     /// Gets the spinner color.
     /// </summary>

@@ -1,0 +1,82 @@
+﻿<div class="row">
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Data="employeeList1"
+                      Context="item"
+                      Group="SharedListExample3"
+                      Pull="SortableListPullMode.Clone"
+                      OnUpdate="OnEmployeeList1Update"
+                      OnRemove="OnEmployeeList1Remove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Data="employeeList2"
+                      Context="item"
+                      Group="SharedListExample3"
+                      Pull="SortableListPullMode.Clone"
+                      OnUpdate="OnEmployeeList2Update"
+                      OnRemove="OnEmployeeList2Remove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+</div>
+
+@code {
+    public List<Employee> employeeList1 = Enumerable.Range(10, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    public List<Employee> employeeList2 = Enumerable.Range(20, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    private void OnEmployeeList1Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList1[args.OldIndex];
+
+        employeeList1.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList1.Count)
+            employeeList1.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList1.Add(itemToMove);
+    }
+
+    private void OnEmployeeList2Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList2[args.OldIndex];
+
+        employeeList2.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList2.Count)
+            employeeList2.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList2.Add(itemToMove);
+    }
+
+    private void OnEmployeeList1Remove(SortableListEventArgs args)
+    {
+        // get the item at the old index in list 1
+        var item = employeeList1[args.OldIndex];
+
+        var clone = item with {};
+
+        // add it to the new index in list 2
+        employeeList2.Insert(args.NewIndex, clone);
+    }
+
+    private void OnEmployeeList2Remove(SortableListEventArgs args)
+    {
+        // get the item at the old index in list 2
+        var item = employeeList2[args.OldIndex];
+
+        var clone = item with { };
+
+        // add it to the new index in list 1
+        employeeList1.Insert(args.NewIndex, clone);
+    }
+
+    public record Employee(int Id, string? Name);
+}

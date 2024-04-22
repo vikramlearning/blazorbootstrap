@@ -1,0 +1,101 @@
+﻿<SortableList TItem="Employee"
+              Data="employees"
+              Context="item"
+              OnAdd="(args) => OnEmployeeListAdd(args, employees)"
+              OnRemove="(args) => OnEmployeeListRemove(args, employees)">
+    <ItemTemplate>
+        @item.Name
+
+        @if (item?.Children?.Any() ?? false)
+        {
+            <SortableList TItem="Employee"
+                          Data="item.Children"
+                          Context="childItem"
+                          OnAdd="(args) => OnEmployeeListAdd(args, item.Children)"
+                          OnUpdate="(args) => OnEmployeeListUpdate(args, item.Children)"
+                          OnRemove="(args) => OnEmployeeListRemove(args, item.Children)">
+                <ItemTemplate>
+                    @childItem.Name
+                </ItemTemplate>
+            </SortableList>
+        }
+    </ItemTemplate>
+</SortableList>
+
+@code {
+    public List<Employee> employees = new List<Employee>
+    {
+        new(){ Id = 1, Name = "Employee 1"},
+        new(){ Id = 2, Name = "Employee 2", Children = new List<Employee>
+            {
+                new(){ Id = 21, Name = "Employee 21"},
+                new(){ Id = 22, Name = "Employee 22", Children= new List<Employee>
+                    {
+                        new(){ Id = 221, Name = "Employee 221"},
+                        new(){ Id = 222, Name = "Employee 222"},
+                        new(){ Id = 223, Name = "Employee 223"},
+                    }
+                },
+                new(){ Id = 23, Name = "Employee 23"},
+            }
+        },
+        new(){ Id = 3, Name = "Employee 3"},
+        new(){ Id = 4, Name = "Employee 4", Children = new List<Employee>
+            {
+                new(){ Id = 41, Name = "Employee 41"},
+                new(){ Id = 42, Name = "Employee 42"},
+                new(){ Id = 43, Name = "Employee 43"},
+            }
+        },
+        new(){ Id = 5, Name = "Employee 5"},
+    };
+
+    private void OnEmployeeListAdd(SortableListEventArgs args, List<Employee> fromList)
+    {
+        Console.WriteLine($"OnEmployeeListAdd >> OldIndex: {args.OldIndex}, NewIndex: {args.NewIndex}, Count: {fromList.Count}");
+        
+        //var itemToMove = employees[args.OldIndex];
+
+        // employees.RemoveAt(args.OldIndex);
+
+        // if (args.NewIndex < employees.Count)
+        //     employees.Insert(args.NewIndex, itemToMove);
+        // else
+        //     employees.Add(itemToMove);
+    }
+
+    private void OnEmployeeListRemove(SortableListEventArgs args, List<Employee> fromList)
+    {
+        Console.WriteLine($"OnEmployeeListRemove >> OldIndex: {args.OldIndex}, NewIndex: {args.NewIndex}, Count: {fromList.Count}");
+        
+        //var itemToMove = employees[args.OldIndex];
+
+        // employees.RemoveAt(args.OldIndex);
+
+        // if (args.NewIndex < employees.Count)
+        //     employees.Insert(args.NewIndex, itemToMove);
+        // else
+        //     employees.Add(itemToMove);
+    }
+
+    private void OnEmployeeListUpdate(SortableListEventArgs args, List<Employee> fromList)
+    {
+        Console.WriteLine($"OnEmployeeListUpdate >> OldIndex: {args.OldIndex}, NewIndex: {args.NewIndex}, Count: {fromList.Count}");
+
+        var itemToMove = fromList[args.OldIndex];
+
+        fromList.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < fromList.Count)
+            fromList.Insert(args.NewIndex, itemToMove);
+        else
+            fromList.Add(itemToMove);
+    }
+
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public List<Employee>? Children { get; set; }
+    }
+}

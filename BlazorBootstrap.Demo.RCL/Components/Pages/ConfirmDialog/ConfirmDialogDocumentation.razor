@@ -1,0 +1,74 @@
+﻿@page "/confirm-dialog"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Confirm Dialog</h1>
+<div class="lead mb-3">
+    Use Blazor Bootstrap confirm dialog component if you want the user to verify or accept something.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div class="mb-3"></div>
+<Demo Type="typeof(ConfirmDialog_Demo_01_Examples)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Dynamic component as confirm dialog" PageUrl="@pageUrl" HashTagName="dynamic-component-as-confirm-dialog" />
+<div class="mb-3">
+    Render different components dynamically within the confirm dialog without iterating through possible types or using conditional logic.
+</div>
+<div class="mb-3">
+    If dynamically-rendered components have component parameters, pass them as an <code>IDictionary</code>. The <code>string</code> is the parameter's name, and the <code>object</code> is the parameter's value.
+</div>
+<div class="mb-3">
+    In the below example, we used <a href="/toasts#global-toasts-service-for-the-application">Toast Service</a> to show the user confirmation.
+</div>
+<Demo Type="typeof(ConfirmDialog_Demo_03_Dynamic_Component_As_Confirm_Dialog)" />
+<b>EmployeeDemoComponent.razor</b>
+<Demo Type="typeof(EmployeeDemoComponent)" ShowCodeOnly="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Change buttons text and color" PageUrl="@pageUrl" HashTagName="change-buttons-text-and-color" />
+<div class="mb-3">
+    Use <code>ConfirmDialogOptions</code> to change the text and color of the button.
+</div>
+<Demo Type="typeof(ConfirmDialog_Demo_04_Change_Buttons_Text_And_Color)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Optional sizes" PageUrl="@pageUrl" HashTagName="optional-sizes" />
+<div class="mb-3">
+    Confirm dialog have three optional sizes. These sizes kick in at certain breakpoints to avoid horizontal scrollbars on narrower viewports.
+</div>
+<Demo Type="typeof(ConfirmDialog_Demo_05_Optional_Sizes)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Scrolling long content" PageUrl="@pageUrl" HashTagName="scrolling-long-content" />
+<div class="mb-3">
+    When dialogs become too long for the user's viewport or device, they scroll independent of the page itself. Try the demo below to see what we mean.
+</div>
+<Demo Type="typeof(ConfirmDialog_Demo_06_Scrolling_Long_Content_01)" Tabs="true" />
+<div class="my-3">You can also create a scrollable dialog that allows scroll the dialog body by updating <code>DialogOptions.IsScrollable="true"</code>.</div>
+<Demo Type="typeof(ConfirmDialog_Demo_06_Scrolling_Long_Content_02)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Vertically centered" PageUrl="@pageUrl" HashTagName="vertically-centered" />
+<div class="mb-3">
+    Add <code>DialogOptions.IsVerticallyCentered="true"</code> to vertically center the confirm dialog.
+</div>
+<Demo Type="typeof(ConfirmDialog_Demo_07_Vertically_Centered_01)" Tabs="true" />
+<div class="mb-3"></div>
+<Demo Type="typeof(ConfirmDialog_Demo_07_Vertically_Centered_02)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable auto focus on the yes button" PageUrl="@pageUrl" HashTagName="Disable-auto-focus-on-the-yes-button" />
+<Callout Type="CalloutType.Info" HideHeading="true">
+    By default, auto focus on the <b>"Yes"</b> button is enabled.
+</Callout>
+<div class="my-3">
+    To disabe the autofocus, set <Badge Color="BadgeColor.Light">AutoFocusYesButton = false</Badge> on the <b>ConfirmDialogOptions</b>.
+</div>
+<Demo Type="typeof(ConfirmDialog_Demo_08_Disable_AutoFocus_Yes_Button)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/confirm-dialog";
+    private string title = "Blazor Confirm Dialog Component";
+    private string description = "Use Blazor Bootstrap confirm dialog component if you want the user to verify or accept something.";
+    private string imageUrl = "https://i.imgur.com/chdLk3D.jpg";
+}

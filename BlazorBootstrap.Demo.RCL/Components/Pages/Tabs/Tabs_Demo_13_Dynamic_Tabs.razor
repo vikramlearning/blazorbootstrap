@@ -1,0 +1,41 @@
+﻿<div class="d-flex flex-column">
+    <div>
+        <Button Color="ButtonColor.Success" Class="mb-3 float-end" Size="Size.ExtraSmall" @onclick="AddCustomer">+ Add customer</Button>
+    </div>
+    <Card>
+        <CardBody>
+            <Tabs @ref="tabsRef">
+                @foreach (var customer in customers)
+                {
+                    <Tab Title="@customer.CustomerName">
+                        <Content>
+                            <div class="mt-3">
+                                This is the placeholder content for the <b>@customer.CustomerName</b> tab.
+                            </div>
+                        </Content>
+                    </Tab>
+                }
+            </Tabs>
+        </CardBody>
+    </Card>
+</div>
+
+@code {
+    Tabs tabsRef = default!;
+
+    private List<Customer> customers = default!;
+
+    protected override void OnInitialized()
+    {
+        customers = new() { new(1, "Marvin Klein"), new(2, "Vikram Reddy"), new(3, "Bandita PA"), new(4, "Daina JJ") };
+    }
+
+    private void AddCustomer()
+    {
+        var count = customers.Count;
+        var customer = new Customer(count + 1, $"Customer {count + 1}");
+        customers.Add(customer);
+
+        tabsRef.ShowRecentTab();
+    }
+}

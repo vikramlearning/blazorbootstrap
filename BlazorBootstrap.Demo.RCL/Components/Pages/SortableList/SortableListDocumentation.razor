@@ -1,0 +1,79 @@
+﻿@page "/sortable-list"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Sortable List <Badge Color="BadgeColor.Danger">Preview</Badge></h1>
+<div class="lead mb-3">
+    The Blazor Bootstrap Sortable List component, built on top of <b>SortableJS</b>, enables drag-and-drop reordering of lists.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Setup" PageUrl="@pageUrl" HashTagName="setup" />
+<div class="mb-3">Before using the <b>SortableList</b> component, include the <b>SortableJS</b> script reference in your <code>index.html/_Host.cshtml</code> file.</div>
+<CodeSnippet File="~\Pages\SortableList\SortableList_Demo_00_Setup.razor" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div class="mb-3"></div>
+<Demo Type="typeof(SortableList_Demo_01_Examples)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Shared lists" PageUrl="@pageUrl" HashTagName="shared-lists" />
+<div class="mb-3">
+    <p>To drag-and-drop an item from one list to the other and vice versa, set the <b>Group</b> parameter for all the lists. Providing the same <b>Group</b> name for the lists is what links them together.</p>
+    <p>In the below example, both lists use the same <b>Group</b>.</p>
+</div>
+<Demo Type="typeof(SortableList_Demo_02_Shared_Lists_A)" Tabs="true" />
+
+<div class="my-3">
+    In the following example, all three lists use the same group.
+</div>
+<Demo Type="typeof(SortableList_Demo_02_Shared_Lists_B_Three_Lists)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cloning" PageUrl="@pageUrl" HashTagName="cloning" />
+<div class="mb-3">
+    By setting <code>Pull="SortableListPullMode.Clone"</code>, you can enable item cloning. Drag an item from one list to another to create a copy that stays in the original list.
+</div>
+<Demo Type="typeof(SortableList_Demo_03_Cloning)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable sorting" PageUrl="@pageUrl" HashTagName="disable-sorting" />
+<div class="mb-3">
+    You can disable list sorting by setting <code>AllowSorting="false"</code>. In the example below, the list cannot be sorted.
+</div>
+<Demo Type="typeof(SortableList_Demo_04_Disable_Sorting)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Handle" PageUrl="@pageUrl" HashTagName="handle" />
+<div class="mb-3">
+    The <b>Handle</b> parameter specifies the CSS class that denotes the drag handle. In the example below, items can only be sorted by dragging the handle itself.
+</div>
+<Demo Type="typeof(SortableList_Demo_05_Handle)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable item" PageUrl="@pageUrl" HashTagName="disable-item" />
+<div class="mb-3">
+    Try dragging the red-backgrounded item. You won't be able to, as it's disabled using the <b>DisableItem</b> parameter.
+</div>
+<Demo Type="typeof(SortableList_Demo_06_Disable_Item)" Tabs="true" />
+
+
+<SectionHeading Size="HeadingSize.H2" Text="Nested sortables" PageUrl="@pageUrl" HashTagName="nested-sortables" />
+@* <div class="mb-3"></div>
+<Demo Type="typeof(SortableList_Demo_07_Nested_Sortables)" Tabs="true" /> *@
+<Callout Type="CalloutType.Warning" HideHeading="true">
+    <div>Nested list sorting is not currently supported. We will add this feature in upcoming releases.</div>
+</Callout>
+
+<SectionHeading Size="HeadingSize.H2" Text="Dynamic data" PageUrl="@pageUrl" HashTagName="dynamic-data" />
+<div class="mb-3"></div>
+<Demo Type="typeof(SortableList_Demo_08_Dynamic_Data)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Empty data" PageUrl="@pageUrl" HashTagName="empty-data" />
+<div class="mb-3"></div>
+<Demo Type="typeof(SortableList_Demo_09_Empty_Data)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/sortable-list";
+    private string title = "Blazor Sortable List Component";
+    private string description = "The Blazor Bootstrap Sortable List component, built on top of SortableJS, enables drag-and-drop reordering of lists.";
+    private string imageUrl = "https://i.imgur.com/bfzP8Yi.png";
+}

@@ -1,0 +1,73 @@
+﻿@namespace BlazorBootstrap.Demo.RCL
+
+@inherits LayoutComponentBase
+
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
+             Title="Blazor Bootstrap"
+             BadgeText="@version"
+             DataProvider="SidebarDataProvider" />
+
+    <main class="bb-scrollbar">
+        <div class="content my-4 my-md-4 px-4">
+            @Body
+
+            <Callout Class="text-center text-bold skippy border-0" HideHeading="true">
+                <a href="@githubUrl" class="text-decoration-none" b-09pcjsuuk4="">
+                    <i class="bi bi-star-fill" b-09pcjsuuk4=""></i>
+                    <span b-09pcjsuuk4="">If you like Blazor Bootstrap, give it a star on GitHub!</span>
+                    <i class="bi bi-star-fill" b-09pcjsuuk4=""></i>
+                </a>
+            </Callout>
+        </div>
+        <div class="bd-footer pt-4 pt-md-5 mt-5 pb-2 pb-md-3 bg-light">
+            <div class="container px-4 px-md-3">
+                <div class="row">
+                    <div class="col-lg-4 mb-3">
+                        <a class="d-inline-flex align-items-center mb-2 link-dark text-decoration-none" href="/" aria-label="Bootstrap">
+                            <img src="/images/logo/logo-color.svg" width="40" height="32" class="d-block me-2" alt="Blazor Bootstrap">
+                            <span class="fs-5">Blazor Bootstrap</span>
+                        </a>
+                        <ul class="list-unstyled small text-muted">
+                            <li class="mb-2">Designed and built with all the love in the world by the <strong><a href="https://www.nuget.org/packages/Blazor.Bootstrap">Blazor Bootstrap</a></strong> team with the help of our contributors.</li>
+                            <li class="mb-2">Code licensed <a href="https://github.com/vikramlearning/blazorbootstrap/blob/master/LICENSE.txt" target="_blank" rel="license noopener">Apache License 2.0</a>.</li>
+                            <li class="mb-2">Currently @version.</li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-lg-2 offset-lg-1 mb-3">
+                        <h5>Links</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><a href="/">Home</a></li>
+                            <li class="mb-2"><a href="@docsUrl" target="_blank" rel="noopener">Docs</a></li><!--!-->
+                            <li class="mb-2"><a href="@blogUrl" target="_blank" rel="noopener">Blog</a></li>
+                            <li class="mb-2"><a href="@githubUrl" target="_blank" rel="noopener">GitHub</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-lg-2 mb-3">
+                        <h5>Guides</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><a href="/getting-started/blazor-webassembly">Getting started</a></li>
+                            <li class="mb-2"><a href="/getting-started#install-nuget-package">Install Nuget</a></li>
+                            <li class="mb-2"><a href="https://github.com/vikramlearning/blazorbootstrap-starter-templates" target="_blank">Starter templates</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-lg-2 mb-3">
+                        <h5>Community</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><a href="@githubIssuesUrl">Issues</a></li><!--!-->
+                            <li class="mb-2"><a href="@githubDiscussionsUrl">Discussions</a></li><!--!-->
+                            <li class="mb-2"><a href="@stackoverflowUrl">Stack Overflow</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-lg-2 mb-3"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<Modal IsServiceModal="true" />
+<Preload LoadingText="Loading..." />
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />

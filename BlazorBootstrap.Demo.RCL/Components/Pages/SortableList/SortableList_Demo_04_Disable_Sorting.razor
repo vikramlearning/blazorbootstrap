@@ -1,0 +1,18 @@
+﻿<SortableList TItem="Employee"
+              Data="items"
+              Context="item"
+              AllowSorting="false">
+    <ItemTemplate>
+        @item.Name
+    </ItemTemplate>
+</SortableList>
+
+@code {
+    public List<Employee> items = Enumerable.Range(1, 5).Select(i => new Employee { Id = i, Name = $"Item {i}" }).ToList();
+
+    public class Employee
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+    }
+}

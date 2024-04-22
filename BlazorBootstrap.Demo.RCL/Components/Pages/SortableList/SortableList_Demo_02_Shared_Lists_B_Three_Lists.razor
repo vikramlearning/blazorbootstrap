@@ -1,0 +1,116 @@
+﻿<div class="row">
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Group="SharedListExample3"
+                      Name="empList1"
+                      Data="employeeList1"
+                      Context="item"
+                      OnUpdate="OnEmployeeList1Update"
+                      OnRemove="OnEmployeeListRemove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Group="SharedListExample3"
+                      Name="empList2"
+                      Data="employeeList2"
+                      Context="item"
+                      OnUpdate="OnEmployeeList2Update"
+                      OnRemove="OnEmployeeListRemove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+    <div class="col">
+        <SortableList TItem="Employee"
+                      Group="SharedListExample3"
+                      Name="empList3"
+                      Data="employeeList3"
+                      Context="item"
+                      OnUpdate="OnEmployeeList3Update"
+                      OnRemove="OnEmployeeListRemove">
+            <ItemTemplate>
+                @item.Name
+            </ItemTemplate>
+        </SortableList>
+    </div>
+</div>
+
+@code {
+    public List<Employee> employeeList1 = Enumerable.Range(10, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    public List<Employee> employeeList2 = Enumerable.Range(20, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    public List<Employee> employeeList3 = Enumerable.Range(30, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    private void OnEmployeeList1Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList1[args.OldIndex];
+
+        employeeList1.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList1.Count)
+            employeeList1.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList1.Add(itemToMove);
+    }
+
+    private void OnEmployeeList2Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList2[args.OldIndex];
+
+        employeeList2.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList2.Count)
+            employeeList2.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList2.Add(itemToMove);
+    }
+
+    private void OnEmployeeList3Update(SortableListEventArgs args)
+    {
+        var itemToMove = employeeList3[args.OldIndex];
+
+        employeeList3.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employeeList3.Count)
+            employeeList3.Insert(args.NewIndex, itemToMove);
+        else
+            employeeList3.Add(itemToMove);
+    }
+
+    private void OnEmployeeListRemove(SortableListEventArgs args)
+    {
+        Employee? item = default!;
+
+        // get the item at the old index
+        if (args.FromListName == "empList1")
+            item = employeeList1[args.OldIndex];
+        else if (args.FromListName == "empList2")
+            item = employeeList2[args.OldIndex];
+        else
+            item = employeeList3[args.OldIndex];
+
+        // add it to the new index
+        if (args.ToListName == "empList1")
+            employeeList1.Insert(args.NewIndex, item);
+        else if (args.ToListName == "empList2")
+            employeeList2.Insert(args.NewIndex, item);
+        else
+            employeeList3.Insert(args.NewIndex, item);
+
+        // remove the item from the old index
+        if (args.FromListName == "empList1")
+            employeeList1.Remove(employeeList1[args.OldIndex]);
+        else if (args.FromListName == "empList2")
+            employeeList2.Remove(employeeList2[args.OldIndex]);
+        else
+            employeeList3.Remove(employeeList3[args.OldIndex]);
+    }
+
+    public record Employee(int Id, string? Name);
+}

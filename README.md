@@ -39,7 +39,7 @@
 
 ## Install
 
-Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 2.1.0`
+Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 2.2.1`
 
 ## Install Blazor Bootstrap templates
 
@@ -81,9 +81,11 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Preload | [Docs](https://docs.blazorbootstrap.com/components/preload) | [Demos](https://demos.blazorbootstrap.com/preload) |
 | Progress | [Docs](https://docs.blazorbootstrap.com/components/progress) | [Demos](https://demos.blazorbootstrap.com/progress) |
 | RangeInput | [Docs](https://docs.blazorbootstrap.com/forms/range-input) | [Demos](https://demos.blazorbootstrap.com/form/range-input) |
+| Ribbon | [Docs](https://docs.blazorbootstrap.com/components/ribbon) | [Demos](https://demos.blazorbootstrap.com/ribbon) |
 | Script Loader | [Docs](https://docs.blazorbootstrap.com/components/script-loader) | [Demos](https://demos.blazorbootstrap.com/script-loader) |
 | Sidebar | [Docs](https://docs.blazorbootstrap.com/components/sidebar) | [Demos](https://demos.blazorbootstrap.com/sidebar) |
 | Sidebar2 | [Docs](https://docs.blazorbootstrap.com/components/sidebar2) | [Demos](https://demos.blazorbootstrap.com/sidebar2) |
+| Sortable List | [Docs](https://docs.blazorbootstrap.com/components/sortable-list) | [Demos](https://demos.blazorbootstrap.com/sortable-list) |
 | Spinners | [Docs](https://docs.blazorbootstrap.com/components/spinners) | [Demos](https://demos.blazorbootstrap.com/spinners) |
 | Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/form/switch) |
 | Tabs | [Docs](https://docs.blazorbootstrap.com/components/tabs) | [Demos](https://demos.blazorbootstrap.com/tabs) |
@@ -168,6 +170,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Range Input
 ![Blazor Bootstrap - Range Input](https://i.imgur.com/rWDDHaf.png "Blazor Bootstrap - Range Input")
 
+### Blazor Bootstrap - Ribbon
+![Blazor Bootstrap - Ribbon](https://i.imgur.com/LpZVLbF.png "Blazor Bootstrap - Ribbon")
+
 ### Blazor Bootstrap - Script Loader
 ![Blazor Bootstrap - Script Loader](https://i.imgur.com/sBiYPeQ.png "Blazor Bootstrap - Script Loader")
 
@@ -176,6 +181,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Sidebar2
 ![Blazor Bootstrap - Sidebar2](https://i.imgur.com/HUP7ydv.png "Blazor Bootstrap - Sidebar2")
+
+### Blazor Bootstrap - Sortable List
+![Blazor Bootstrap - Sortable List](https://i.imgur.com/bfzP8Yi.png "Blazor Bootstrap - Sortable List")
 
 ### Blazor Bootstrap - Switch
 ![Blazor Bootstrap - Switch](https://i.imgur.com/ALKzreq.png "Blazor Bootstrap - Switch")

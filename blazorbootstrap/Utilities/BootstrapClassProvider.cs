@@ -10,6 +10,12 @@ public static class BootstrapClassProvider
 
     public static string Active { get; } = "active";
 
+    public static string AlignItemsBaseline { get; } = "align-items-baseline";
+    public static string AlignItemsCenter { get; } = "align-items-center";
+    public static string AlignItemsEnd { get; } = "align-items-end";
+    public static string AlignItemsStart { get; } = "align-items-start";
+    public static string AlignItemsStretch { get; } = "align-items-stretch";
+
     public static string Alert { get; } = "alert";
     public static string AlertColor(AlertColor color) => $"{Alert}-{ToAlertColor(color)}";
     public static string AlertDismisable { get; } = "alert-dismissible";
@@ -18,6 +24,10 @@ public static class BootstrapClassProvider
 
     public static string Badge { get; } = "badge";
     public static string BadgeColor(BadgeColor color) => $"text-bg-{ToBadgeColor(color)}";
+
+    public static string Border { get; } = "border";
+    public static string BorderEnd { get; } = "border-end";
+    public static string BorderStart { get; } = "border-start";
 
     public static string Button { get; } = "btn";
     public static string ButtonActive { get; } = "active";
@@ -64,6 +74,11 @@ public static class BootstrapClassProvider
     public static string Fade { get; } = "fade";
 
     public static string FlexAlignment(Alignment alignment) => $"justify-content-{ToAlignment(alignment)}";
+
+    public static string Flex { get; } = "d-flex";
+    public static string FlexColumn { get; } = "flex-column";
+    public static string FlexInline { get; } = "d-inline-flex";
+    public static string FlexRow { get; } = "flex-row";
 
     public static string FormControl { get; } = "form-control";
 
