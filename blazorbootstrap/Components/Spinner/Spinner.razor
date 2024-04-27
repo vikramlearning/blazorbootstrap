@@ -1,0 +1,24 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+@if (Visible)
+{
+    @if (Type == SpinnerType.Dots)
+    {
+        <svg id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" width="@SpinnerSvg.Width" height="@SpinnerSvg.Height" role="status" xmlns="http://www.w3.org/2000/svg">
+            @if (!string.IsNullOrWhiteSpace(Title))
+            {
+                <title>@Title</title>
+            }
+            <circle cx="@SpinnerSvg.Circles[0].Cx" cy="@SpinnerSvg.Circles[0].Cy" r="@SpinnerSvg.Circles[0].Radius"/>
+            <circle cx="@SpinnerSvg.Circles[1].Cx" cy="@SpinnerSvg.Circles[1].Cy" r="@SpinnerSvg.Circles[1].Radius"/>
+            <circle cx="@SpinnerSvg.Circles[2].Cx" cy="@SpinnerSvg.Circles[2].Cy" r="@SpinnerSvg.Circles[2].Radius"/>
+        </svg>
+    }
+    else
+    {
+        <div id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" role="status">
+            <span class="visually-hidden">@VisuallyHiddenText</span>
+        </div>
+    }
+}

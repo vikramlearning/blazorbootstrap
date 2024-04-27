@@ -1,0 +1,43 @@
+﻿@page "/charts/pie-chart"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Pie Chart</h1>
+<div class="lead mb-3">
+    A Blazor Bootstrap pie chart component is a circular chart that shows the proportional values of different categories.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H4" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites" />
+<div class="mb-3">
+    Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
+</div>
+
+<SectionHeading Size="HeadingSize.H4" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
+<div class="mb-3">
+    In the following example, a categorical 12-color palette is used.
+</div>
+<Callout Heading="TIP" Type="CalloutType.Success">
+    For data visualization, you can use the predefined palettes <code>ColorBuilder.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorBuilder.CategoricalSixColors</code> for a 6-color palette.
+    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
+</Callout>
+<Demo Type="typeof(PieChart_Demo_01_Examples)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Data labels" PageUrl="@pageUrl" HashTagName="data-labels" />
+<Demo Type="typeof(PieChart_Demo_02_Datalabels)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Change legend position" PageUrl="@pageUrl" HashTagName="change-legend-position" />
+<div class="mb-3">
+    This sample demonstrates how to change the position of the chart legend.
+</div>
+<Demo Type="typeof(PieChart_Demo_03_Change_Legend_Position)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/charts/pie-chart";
+    private string title = "Blazor Pie Chart";
+    private string description = "A Blazor Bootstrap pie chart component is a circular chart that shows the proportional values of different categories.";
+    private string imageUrl = "https://i.imgur.com/ieBupT2.png";
+}

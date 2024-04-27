@@ -1,0 +1,215 @@
+---
+title: Blazor Spinner Component
+description: Visualize the loading state of a component or page using the Blazor Bootstrap Spinner component.
+image: https://i.imgur.com/G4wyEd6.png
+
+sidebar_label: Spinners
+sidebar_position: 25
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Sidebar
+
+Visualize the loading state of a component or page using the Blazor Bootstrap Spinner component.
+
+<CarbonAd />
+
+<img src="https://i.imgur.com/G4wyEd6.png" alt="Blazor Spinner Component" />
+
+## Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Color | `SpinnerColor` | `SpinnerColor.None` | | Gets or sets the color of the spinner. | 2.0.0 |
+| Size | `SpinnerSize` | `SpinnerSize.Medium` | | Gets or sets the size of the spinner. | 2.0.0 |
+| Title | `string?` | null | | Gets or sets the title text used as an accessibility attribute. | 2.0.0 |
+| Type | `SpinnerType` | `SpinnerType.Border` | | Gets or sets the type of the spinner. | 2.0.0 |
+| Visible | bool | true | | Gets or sets whether the spinner is visible or not. | 2.0.0 |
+| VisuallyHiddenText | `string?` | `Loading...` | | Gets or sets the visually hidden text. | 2.0.0 |
+
+## Examples
+
+### Border spinner
+
+Use the border spinners for a lightweight loading indicator.
+
+<img src="https://i.imgur.com/3pWnltO.png" alt="Blazor Spinner Component - Border spinner" />
+
+```razor {} showLineNumbers
+<Spinner />
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/spinners#border-spinner)
+
+### Colors
+
+The border spinner's border color inherits the element's color (`currentColor`). This means you can easily customize the spinner's color by changing the `Color` parameter on the standard spinner.
+
+<img src="https://i.imgur.com/G4wyEd6.png" alt="Blazor Spinner Component - Colors" />
+
+```razor {} showLineNumbers
+<Spinner Color="SpinnerColor.Primary" />
+<Spinner Color="SpinnerColor.Secondary" />
+<Spinner Color="SpinnerColor.Success" />
+<Spinner Color="SpinnerColor.Danger" />
+<Spinner Color="SpinnerColor.Warning" />
+<Spinner Color="SpinnerColor.Info" />
+<Spinner Color="SpinnerColor.Light" />
+<Spinner Color="SpinnerColor.Dark" />
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/spinners#colors)
+
+### Grow spinner
+
+If you don't fancy a border spinner, switch to the grow spinner, while it doesn't technically spin, it does repeatedly grow!
+
+<img src="https://i.imgur.com/oD6heSC.png" alt="Blazor Spinner Component - Grow spinner" />
+
+```razor {} showLineNumbers
+<Spinner Type="SpinnerType.Grow" Color="SpinnerColor.Primary" />
+<Spinner Type="SpinnerType.Grow" Color="SpinnerColor.Secondary" />
+<Spinner Type="SpinnerType.Grow" Color="SpinnerColor.Success" />
+<Spinner Type="SpinnerType.Grow" Color="SpinnerColor.Danger" />
+<Spinner Type="SpinnerType.Grow" Color="SpinnerColor.Warning" />
+<Spinner Type="SpinnerType.Grow" Color="SpinnerColor.Info" />
+<Spinner Type="SpinnerType.Grow" Color="SpinnerColor.Light" />
+<Spinner Type="SpinnerType.Grow" Color="SpinnerColor.Dark" />
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/spinners#grow-spinner)
+
+### Loading dots spinner
+
+The loading dots are a special indicator for a lightweight loading indicator.
+
+<img src="https://i.imgur.com/IjS4mjf.png" alt="Blazor Spinner Component - Loading dots spinner" />
+
+```razor {} showLineNumbers
+<Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Primary" />
+<Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Secondary" />
+<Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Success" />
+<Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Danger" />
+<Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Warning" />
+<Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Info" />
+<Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Light" />
+<Spinner Type="SpinnerType.Dots" Class="me-3" Color="SpinnerColor.Dark" />
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/spinners#loading-dots-spinner)
+
+### Alignment
+
+### Margin
+
+<img src="https://i.imgur.com/tXxMOgy.png" alt="Blazor Spinner Component - Margin" />
+
+```razor {} showLineNumbers
+<Spinner Type="SpinnerType.Border" Class="m-5" />
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/spinners#margin)
+
+### Placement
+
+### Flex
+
+<img src="https://i.imgur.com/pruHC94.png" alt="Blazor Spinner Component - Flex - Example 1" />
+
+```razor {} showLineNumbers
+<div class="d-flex justify-content-center">
+    <Spinner Type="SpinnerType.Border" />
+</div>
+```
+
+<img src="https://i.imgur.com/29OjahJ.png" alt="Blazor Spinner Component - Flex - Example 2" />
+
+```razor {} showLineNumbers
+<div class="d-flex justify-content-center">
+    <strong role="status">Loading...</strong>
+    <Spinner Type="SpinnerType.Border" Class="ms-auto" />
+</div>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/spinners#flex)
+
+### Floats
+
+<img src="https://i.imgur.com/tWpR1U3.png" alt="Blazor Spinner Component - Floats" />
+
+```razor {} showLineNumbers
+<div class="clearfix">
+    <Spinner Type="SpinnerType.Border" Class="float-end" />
+</div>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/spinners#floats)
+
+### Text align
+
+<img src="https://i.imgur.com/mQkpHWC.png" alt="Blazor Spinner Component - Text align" />
+
+```razor {} showLineNumbers
+<div class="text-center">
+    <Spinner Type="SpinnerType.Border" />
+</div>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/spinners#text-align)
+
+### Size
+
+<img src="https://i.imgur.com/z96pIaS.png" alt="Blazor Spinner Component - Size - Example 1" />
+
+```razor {} showLineNumbers
+<Spinner Type="SpinnerType.Border" Size="SpinnerSize.Small" />
+<Spinner Type="SpinnerType.Border" />
+<Spinner Type="SpinnerType.Border" Size="SpinnerSize.Large" />
+<Spinner Type="SpinnerType.Border" Size="SpinnerSize.ExtraLarge" />
+```
+
+<img src="https://i.imgur.com/L9jLnrW.png" alt="Blazor Spinner Component - Size - Example 2" />
+
+```razor {} showLineNumbers
+<Spinner Type="SpinnerType.Grow" Size="SpinnerSize.Small" />
+<Spinner Type="SpinnerType.Grow" />
+<Spinner Type="SpinnerType.Grow" Size="SpinnerSize.Large" />
+<Spinner Type="SpinnerType.Grow" Size="SpinnerSize.ExtraLarge" />
+```
+
+<img src="https://i.imgur.com/oxN1bAm.png" alt="Blazor Spinner Component - Size - Example 3" />
+
+```razor {} showLineNumbers
+<Spinner Class="me-3" Type="SpinnerType.Dots" Color="SpinnerColor.Primary" Size="SpinnerSize.Small" />
+<Spinner Class="me-3" Type="SpinnerType.Dots" Color="SpinnerColor.Secondary" />
+<Spinner Class="me-3" Type="SpinnerType.Dots" Color="SpinnerColor.Success" Size="SpinnerSize.Large" />
+<Spinner Class="me-3" Type="SpinnerType.Dots" Color="SpinnerColor.Danger" Size="SpinnerSize.ExtraLarge" />
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/spinners#size)
+
+### Visible
+
+<img src="https://i.imgur.com/mHywgxz.png" alt="Blazor Spinner Component - Visible" />
+
+```razor {} showLineNumbers
+<Spinner Class="me-3" Type="SpinnerType.Dots" Color="SpinnerColor.Primary" Visible="@visible" />
+
+<div class="b-block mt-3">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="Hide">Hide</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="Show">Show</Button>
+</div>
+```
+
+```razor {} showLineNumbers
+@code {
+    private bool visible = true;
+
+    private void Hide() => visible = false;
+
+    private void Show() => visible = true;
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/spinners#visible)

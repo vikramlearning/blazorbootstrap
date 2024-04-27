@@ -1,0 +1,58 @@
+﻿<div class="mb-3">
+    <label class="form-label">Enter int number</label>
+    <NumberInput TValue="int" @bind-Value="@amount" />
+    <div class="mt-1">Entered Number: @amount</div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter int? number</label>
+    <NumberInput TValue="int?" @bind-Value="@amount2" />
+    <div class="mt-1">Entered Number: @amount2</div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter float number</label>
+    <NumberInput TValue="float" @bind-Value="@amount3" />
+    <div class="mt-1">Entered Number: @amount3</div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter float? number</label>
+    <NumberInput TValue="float?" @bind-Value="@amount4" />
+    <div class="mt-1">Entered Number: @amount4</div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter double number</label>
+    <NumberInput TValue="double" @bind-Value="@amount5" />
+    <div class="mt-1">Entered Number: @amount5</div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter double? number</label>
+    <NumberInput TValue="double?" @bind-Value="@amount6" />
+    <div class="mt-1">Entered Number: @amount6</div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter decimal number</label>
+    <NumberInput TValue="decimal" @bind-Value="@amount7" />
+    <div class="mt-1">Entered Number: @amount7</div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Enter decimal? number</label>
+    <NumberInput TValue="decimal?" @bind-Value="@amount8" />
+    <div class="mt-1">Entered Number: @amount8</div>
+</div>
+
+@code {
+    private int amount;
+    private int? amount2;
+    private float amount3;
+    private float? amount4;
+    private double amount5;
+    private double? amount6;
+    private decimal amount7;
+    private decimal? amount8;
+}

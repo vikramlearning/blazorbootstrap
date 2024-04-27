@@ -1,0 +1,59 @@
+﻿@page "/sidebar"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Sidebar</h1>
+<div class="lead mb-3">
+    Use the Blazor Bootstrap <code>Sidebar</code> component to show consistent cross-browser, responsive and cross-device navigation links, additional information, or other content.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<Demo Type="typeof(Sidebar_Demo_01_Basic_Usage)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Two level navigation" PageUrl="@pageUrl" HashTagName="two-level-navigation" />
+<div class="mb-3">Use NavItem's <code>Id</code> and <code>ParentId</code> to set the parent-child relation.</div>
+<Demo Type="typeof(Sidebar_Demo_02_Two_level_navigation)" Tabs="true" />
+<Callout Type="CalloutType.Danger" Heading="NOTE">Currently, two levels of navigation are supported. For more than two levels, use the <b><a href="/sidebar2">Sidebar2</a></b> component.</Callout>
+
+<SectionHeading Size="HeadingSize.H2" Text="Change icons color" PageUrl="@pageUrl" HashTagName="change-icons-color" />
+<div class="mb-3">Set <code>IconColor</code> property to change the color.</div>
+<Demo Type="typeof(Sidebar_Demo_03_Change_Icons_Color)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Full layout with sidebar" PageUrl="@pageUrl" HashTagName="full-layout-with-sidebar" />
+<div class="mb-3">Replace your <b>MainLayout.razor</b> page code with the below example to have a complete layout with a sidebar.</div>
+<Demo Type="typeof(Sidebar_Demo_04_Full_layout_with_sidebar)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Toggle sidebar to show icons only" PageUrl="@pageUrl" HashTagName="toggle-sidebar-to-show-icons-only" />
+<div class="mb-3">Call <code>ToggleSidebar()</code> method to toggle the Sidebar to show the icons only.</div>
+<Demo Type="typeof(Sidebar_Demo_05_Toggle_Sidebar_to_Show_Icons_Only)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Show badge" PageUrl="@pageUrl" HashTagName="show-badge" />
+<div class="mb-3">A badge is useful when displaying the application version, environment, or other information. Use the <code>BadgeText</code> parameter to show the badge.</div>
+<Demo Type="typeof(Sidebar_Demo_06_Show_Badge)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Custom brand icon" PageUrl="@pageUrl" HashTagName="custom-brand-icon" />
+<div class="mb-3">Use the <code>CustomIconName</code> parameter to set the custom logo icon using font awesome or other icons.</div>
+<Demo Type="typeof(Sidebar_Demo_07_Custom_Brand_Icon)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Show image as brand logo" PageUrl="@pageUrl" HashTagName="show-image-as-brand-logo" />
+<div class="mb-3">Use the <code>ImageSrc</code> parameter to set the brand logo.</div>
+<Demo Type="typeof(Sidebar_Demo_08_Show_Image_as_Brand_Logo)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Customize sidebar" PageUrl="@pageUrl" HashTagName="customize-sidebar" />
+<div class="mb-3">Developers can customize the sidebar color by changing the CSS variables, as mentioned in the below example.</div>
+<Demo Type="typeof(Sidebar_Demo_09_Customize_Sidebar)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Apply custom CSS class to NavItem" PageUrl="@pageUrl" HashTagName="apply-custom-css-class-to-navitem" />
+<div class="mb-3">Set the <b>Class</b> property of a <b>NavItem</b> to apply a custom CSS class.</div>
+<Demo Type="typeof(Sidebar_Demo_10_Apply_Custom_CSS_Class_to_NavItem)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/sidebar";
+    private string title = "Blazor Sidebar Component";
+    private string description = "Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, responsive and cross-device navigation links, additional information, or other content.";
+    private string imageUrl = "https://i.imgur.com/d91Q9Zt.png";
+}

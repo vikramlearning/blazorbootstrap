@@ -1,0 +1,14 @@
+﻿<Modal @ref="modal" />
+
+<Button Color="ButtonColor.Primary" @onclick="ShowEmployeeComponent">Show Employee Component</Button>
+
+@code {
+    private Modal modal = default!;
+
+    private async Task ShowEmployeeComponent()
+    {
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("EmployeeId", 321);
+        await modal.ShowAsync<EmployeeDemoComponent1>(title: "Employee Details", parameters: parameters);
+    }
+}

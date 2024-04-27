@@ -1,0 +1,10 @@
+﻿<Tooltip Title="Click here" @onclick="OnClick" role="button">
+    <i class="bi bi-arrow-repeat text-danger"></i>
+</Tooltip>
+
+@code{
+    private void OnClick()
+    {
+        Console.WriteLine($"clicked");
+    }
+}

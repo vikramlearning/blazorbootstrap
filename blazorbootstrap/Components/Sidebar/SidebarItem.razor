@@ -1,0 +1,72 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    @if (HasChilds)
+    {
+        <NavLink class="nav-link" role="button" @onclick="ToggleNavItemGroup">
+            @if (!CollapseSidebar)
+            {
+                <span class="nav-link-icon me-3">
+                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                </span>
+            }
+            else
+            {
+                <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
+                    <span class="nav-link-icon me-3">
+                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                    </span>
+                </Tooltip>
+            }
+            <span class="nav-link-text fw-semibold expanded-only">@Text</span>
+            @if (navitemGroupExpanded)
+            {
+                <span class="nav-link-arrow float-end expanded-only">
+                    <Icon Name="IconName.ChevronDown"/>
+                </span>
+            }
+            else
+            {
+                <span class="nav-link-arrow float-end expanded-only">
+                    <Icon Name="IconName.ChevronRight"/>
+                </span>
+            }
+        </NavLink>
+    }
+    else
+    {
+        <NavLink class="nav-link" href="@Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
+            @if (!CollapseSidebar)
+            {
+                <span class="nav-link-icon me-3">
+                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                </span>
+            }
+            else
+            {
+                <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
+                    <span class="nav-link-icon me-3">
+                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                    </span>
+                </Tooltip>
+            }
+            <span class="nav-link-text expanded-only">@Text</span>
+        </NavLink>
+    }
+
+    @if (navitemGroupExpanded && HasChilds && ChildItems is not null && ChildItems.Any())
+    {
+        @foreach (var childItem in ChildItems)
+        {
+            <SidebarItem IconName="@childItem.IconName"
+                         CustomIconName="@childItem.CustomIconName"
+                         IconColor="@childItem.IconColor"
+                         Href="@childItem.Href"
+                         Text="@childItem.Text"
+                         Target="@childItem.Target"
+                         Match="@childItem.Match"
+                         Class="@childItem.Class" />
+        }
+    }
+</div>

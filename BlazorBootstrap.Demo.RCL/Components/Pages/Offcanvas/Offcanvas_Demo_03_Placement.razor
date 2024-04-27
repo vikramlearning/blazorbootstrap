@@ -1,0 +1,18 @@
+﻿<Offcanvas @ref="offcanvas" Title="Offcanvas bottom" Placement="@placement">
+    <BodyTemplate>...</BodyTemplate>
+</Offcanvas>
+
+<Button Color="ButtonColor.Primary" @onclick="() => OnShowOffcanvasClick(Placement.Top)">Show top offcanvas</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => OnShowOffcanvasClick(Placement.Start)">Show left offcanvas</Button>
+<Button Color="ButtonColor.Primary" @onclick="() => OnShowOffcanvasClick(Placement.Bottom)">Show bottom offcanvas</Button>
+
+@code {
+    private Offcanvas offcanvas = default!;
+    private Placement placement;
+
+    private async Task OnShowOffcanvasClick(Placement placement)
+    {
+        this.placement = placement;
+        await offcanvas.ShowAsync();
+    }
+}

@@ -1,0 +1,28 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<li>
+    @if (Type == ButtonType.Link)
+    {
+        <a @ref="@Element"
+           type="@buttonTypeString"
+           id="@Id"
+           class="@ClassNames" 
+           style="@StyleNames"
+           @attributes="@AdditionalAttributes">
+            @ChildContent
+        </a>
+    }
+    else
+    {
+        <button @ref="@Element"
+                type="@buttonTypeString"
+                id="@Id"
+                class="@ClassNames"
+                style="@StyleNames"
+                disabled="@Disabled"
+                @attributes="@AdditionalAttributes">
+            @ChildContent
+        </button>
+    }
+</li>

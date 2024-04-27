@@ -1,0 +1,15 @@
+﻿<Breadcrumb style="--bs-breadcrumb-divider: '>';" Items="navItems" />
+
+@code {
+    private List<BreadcrumbItem>? navItems;
+
+    protected override void OnInitialized()
+    {
+        navItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = "Home", Href ="/" },
+            new BreadcrumbItem{ Text = "Docs", Href ="/docs" },
+            new BreadcrumbItem{ Text = "Breadcrumb", IsCurrentPage = true }
+        };
+    }
+}

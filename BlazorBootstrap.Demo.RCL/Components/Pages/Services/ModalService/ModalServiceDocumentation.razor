@@ -1,0 +1,42 @@
+﻿@page "/modal-service"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Modal Service</h1>
+<div class="lead mb-3">Use Blazor Bootstrap modal service to show quick dialogs to your site for lightboxes, user notifications, or completely custom content.</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
+<Demo Type="typeof(ModalService_Demo_01_How_It_Works)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Vertically Centered" PageUrl="@pageUrl" HashTagName="vertically-centered" />
+<Demo Type="typeof(ModalService_Demo_02_Vertically_Centered_Modal)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Size" PageUrl="@pageUrl" HashTagName="size" />
+<Demo Type="typeof(ModalService_Demo_03_Size)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Change footer button color and text" PageUrl="@pageUrl" HashTagName="change-footer-button-color-and-text" />
+<Demo Type="typeof(ModalService_Demo_04_Change_Footer_Button_Color_and_Text)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Hide footer button" PageUrl="@pageUrl" HashTagName="hide-footer-button" />
+<Demo Type="typeof(ModalService_Demo_05_Hide_Footer_Button)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Callback" PageUrl="@pageUrl" HashTagName="callback" />
+<Demo Type="typeof(ModalService_Demo_06_Callback)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="How to setup" PageUrl="@pageUrl" HashTagName="how-to-setup" />
+<div class="mb-3">1. Add the <code>Modal</code> component in <code>MainLayout.razor</code> page as shown below.</div>
+<Demo Type="typeof(ModalService_Demo_100_Global_Modal_Service_For_Application_01)" ShowCodeOnly="true" />
+
+<div class="mb-3">2. Inject <code>ModalService</code>, then call the <code>ShowAsync(...)</code> method as shown below. <code>ShowAsync</code> method accepts <b>ModalOption</b> object as a parameter.</div>
+<Demo Type="typeof(ModalService_Demo_100_Global_Modal_Service_For_Application_02)" ShowCodeOnly="true" />
+
+@code {
+    private string pageUrl = "/modal-service";
+    private string title = "Blazor Modal Service";
+    private string description = "Use Blazor Bootstrap modal service to show quick dialogs to your site for lightboxes, user notifications, or completely custom content.";
+    private string imageUrl = "https://i.imgur.com/Tze7msN.png";
+}

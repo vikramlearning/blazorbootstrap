@@ -1,0 +1,63 @@
+﻿<Button @ref="saveButton1" Color="ButtonColor.Primary" Size="Size.ExtraLarge" @onclick="OnSave1Click">
+    <Icon Name="IconName.Activity"></Icon>
+</Button>
+<Button @ref="saveButton2" Color="ButtonColor.Primary" Size="Size.Large" @onclick="OnSave2Click">
+    <Icon Name="IconName.Activity"></Icon>
+</Button>
+<Button @ref="saveButton3" Color="ButtonColor.Primary" Size="Size.Medium" @onclick="OnSave3Click">
+    <Icon Name="IconName.Activity"></Icon>
+</Button>
+<Button @ref="saveButton4" Color="ButtonColor.Primary" Size="Size.Small" @onclick="OnSave4Click">
+    <Icon Name="IconName.Activity"></Icon>
+</Button>
+<Button @ref="saveButton5" Color="ButtonColor.Primary" Size="Size.ExtraSmall" @onclick="OnSave5Click">
+    <Icon Name="IconName.Activity"></Icon>
+</Button>
+@code {
+    private Button saveButton1 = default!, saveButton2 = default!, saveButton3 = default!, saveButton4 = default!, saveButton5 = default!;
+
+    private async Task OnSave1Click()
+    {
+        saveButton1.ShowLoading("Loading...");
+
+        await Task.Delay(3000); // API call
+
+        saveButton1.HideLoading();
+    }
+
+    private async Task OnSave2Click()
+    {
+        saveButton2.ShowLoading("Loading...");
+
+        await Task.Delay(3000); // API call
+
+        saveButton2.HideLoading();
+    }
+
+    private async Task OnSave3Click()
+    {
+        saveButton3.ShowLoading("Loading...");
+
+        await Task.Delay(3000); // API call
+
+        saveButton3.HideLoading();
+    }
+
+    private async Task OnSave4Click()
+    {
+        saveButton4.ShowLoading("Loading...");
+
+        await Task.Delay(3000); // API call
+
+        saveButton4.HideLoading();
+    }
+
+    private async Task OnSave5Click()
+    {
+        saveButton5.ShowLoading("Loading...");
+
+        await Task.Delay(3000); // API call
+
+        saveButton5.HideLoading();
+    }
+}

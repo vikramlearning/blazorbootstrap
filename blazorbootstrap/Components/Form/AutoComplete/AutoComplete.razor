@@ -1,0 +1,50 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+
+<div class="autocomplete">
+    <div class="input-group">
+        <input @ref="@Element"
+               type="text"
+               id="@Id"               
+               class="@ClassNames @fieldCssClasses" 
+               style="@StyleNames"
+               value="@Value"
+               placeholder="@Placeholder"
+               disabled="@Disabled"
+               autocomplete="off"
+               @attributes="@AdditionalAttributes"
+               @oninput="OnInputChangedAsync"
+               @onkeydown="OnKeyDownAsync" />
+
+        @if (inputHasValue)
+        {
+            <Button @ref="closeButton"
+                    Class="border-0 position-absolute end-0"
+                    Style="@DeleteButtonStyle"
+                    Disabled="@Disabled"
+                    @onclick="ClearInputTextAsync">
+
+                <Icon Name="IconName.XLg"></Icon>
+
+            </Button>
+        }
+        <ul @ref="list" class="dropdown-menu autocomplete-list" data-popper-placement="bottom-start">
+            @if (items is not null && items.Any())
+            {
+                foreach (var item in items)
+                {
+                    <li class="dropdown-item" @onclick="async () => await OnItemSelectedAsync(item)">@GetPropertyValue(item)</li>
+                }
+            }
+            else if (searchInProgress)
+            {
+                <li class="dropdown-item">@LoadingText</li>
+            }
+            else
+            {
+                <li class="dropdown-item">@EmptyText</li>
+            }
+        </ul>
+    </div>
+</div>

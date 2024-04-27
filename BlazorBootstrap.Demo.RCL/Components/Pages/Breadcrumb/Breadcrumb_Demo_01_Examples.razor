@@ -1,0 +1,23 @@
+﻿<Breadcrumb Items="navItems1" />
+<Breadcrumb Items="navItems2" />
+
+@code {
+    private List<BreadcrumbItem>? navItems1;
+    private List<BreadcrumbItem>? navItems2;
+
+    protected override void OnInitialized()
+    {
+        navItems1 = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = "Home", Href ="/" },
+            new BreadcrumbItem{ Text = "Breadcrumb", IsCurrentPage = true }
+        };
+
+        navItems2 = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem{ Text = "Home", Href ="/" },
+            new BreadcrumbItem{ Text = "Docs", Href ="/docs" },
+            new BreadcrumbItem{ Text = "Breadcrumb", IsCurrentPage = true }
+        };
+    }
+}

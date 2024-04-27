@@ -1,0 +1,23 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+@if (Items != null && Items.Any())
+{
+    <nav @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            @foreach (var item in Items)
+            {
+                @if (!item.IsCurrentPage)
+                {
+                    <li class="breadcrumb-item">
+                        <a href="@item.Href">@item.Text</a>
+                    </li>
+                }
+                else
+                {
+                    <li class="breadcrumb-item active" aria-current="page">@item.Text</li>
+                }
+            }
+        </ol>
+    </nav>
+}

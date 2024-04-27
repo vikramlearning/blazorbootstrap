@@ -1,0 +1,63 @@
+@page "/range-input"
+@page "/form/range-input"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Range Input</h1>
+<div class="lead mb-3">
+    Blazor Bootstrap <code>RangeInput</code> component is built around HTML input of <code>type="range"</code>.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<div class="mb-3"></div>
+<Demo Type="typeof(RangeInput_Demo_01_Basic_Usage_A)" Tabs="false" />
+<Demo Type="typeof(RangeInput_Demo_01_Basic_Usage_B)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disabled" PageUrl="@pageUrl" HashTagName="disabled" />
+<div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>RangeInput</code>.</div>
+<Demo Type="typeof(RangeInput_Demo_02_Disabled_A)" Tabs="true" />
+<div class="my-3">Also, use <code>Enable()</code> and <code>Disable()</code> methods to enable and disable the <code>RangeInput</code>.</div>
+<Callout Type="CalloutType.Danger" Heading="Danger">
+    Do not use both the <code>Disabled</code> parameter and <code>Enable()</code> &amp; <code>Disable()</code> methods.
+</Callout>
+<Demo Type="typeof(RangeInput_Demo_02_Disabled_B)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Min and max" PageUrl="@pageUrl" HashTagName="min-and-max" />
+<div class="mb-3">
+    Set the <code>Min</code> and <code>Max</code> parameters to restrict the user input between the <code>Min</code> and <code>Max</code> range.
+    By default, the minimum is 0.
+</div>
+<Callout Type="CalloutType.Warning" Heading="NOTE">
+    <p>
+        By default the maximum is 100 for <code>sbyte?</code>, <code>short?</code>, <code>int?</code>, <code>long?</code>, <code>float?</code>, <code>double?</code> and <code>decimal?</code> data types. For other data types it is 0.
+    </p>
+    <p>
+        If the user tries to specify a numeric value which is out of range, then it will override with <code>Min</code> or <code>Max</code> value based on the context. If the user input is less than the minimum value, then it will override with the <code>Min</code> value.
+        If the user input exceeds the maximum value, it will override with the <code>Max</code> value.
+    </p>
+</Callout>
+<Demo Type="typeof(RangeInput_Demo_03_Min_Max)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Step" PageUrl="@pageUrl" HashTagName="step" />
+<div class="mb-3">The <code>Step</code> parameter is a number that specifies the granularity that the value must adhere to. Only values that match the specified stepping interval are valid.</div>
+<Demo Type="typeof(RangeInput_Demo_04_Step)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Decimal values" PageUrl="@pageUrl" HashTagName="decimal-values" />
+<div class="mb-3"></div>
+<Demo Type="typeof(RangeInput_Demo_05_Decimals)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Tick marks" PageUrl="@pageUrl" HashTagName="tick-marks" />
+<div class="mb-3">
+    To add tick marks to a <code>RangeInput</code>, set the <code>TickMarks</code> parameter.
+</div>
+<Demo Type="typeof(RangeInput_Demo_06_Tick_Marks)" Tabs="true" />
+@code {
+    private string pageUrl = "/form/range-input";
+    private string title = "Blazor RangeInput Component";
+    private string description = "Blazor Bootstrap RangeInput component is built around HTML input of type=\"range\".";
+    private string imageUrl = "https://i.imgur.com/rWDDHaf.png";
+}

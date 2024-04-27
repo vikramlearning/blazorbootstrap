@@ -1,0 +1,231 @@
+---
+id: blazor-webassembly-net-6
+sidebar_label: Blazor WebAssembly (.NET 6)
+sidebar_position: 8
+title: Blazor WebAssembly (.NET 6)
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Getting started - Blazor WebAssembly (.NET 6)
+
+Get started with the Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
+
+<CarbonAd />
+
+## Install Nuget Package
+
+Looking to quickly add **Blazor Bootstrap** to your project? Use NuGet package manager.
+
+```shell
+Install-Package Blazor.Bootstrap -Version 2.2.1
+```
+
+## Add CSS references
+
+After the `<base href="/" />` tag in the **head** section of the **wwwroot/index.html** file, add the following references:
+
+```html showLineNumbers
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+<link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
+```
+
+:::note
+If you use the **Blazor WebAssembly App Empty** template (without demonstration code and Bootstrap), add the following references to the `head` section in the **wwwroot/index.html**. 
+There is a known GitHub issue [Blazor empty template doesn't load scoped CSS](https://github.com/dotnet/aspnetcore/issues/43975).
+:::
+
+```html showLineNumbers
+<link href="_content/Blazor.Bootstrap/Blazor.Bootstrap.bundle.scp.css" rel="stylesheet" />
+```
+
+## Add script references
+
+Insert the following references into the **body** section of the **wwwroot/index.html** file, immediately after the **_framework/blazor.webassembly.js** reference:
+
+``` js showLineNumbers
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<!-- Add chart.js reference if chart components are used in your application. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Add chartjs-plugin-datalabels.min.js reference if chart components with data label feature is used in your application. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Add sortable.js reference if SortableList component is used in your application. -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+```
+
+:::tip
+The **chart.js** reference is optional. Include it only when the **Chart** components are used in the application.
+:::
+
+## Register services
+
+Add Blazor Bootstrap service in the **Program.cs**
+
+```cs showLineNumbers
+builder.Services.AddBlazorBootstrap();
+```
+
+Register tag helpers in **_Imports.razor**
+
+```razor showLineNumbers
+@using BlazorBootstrap;
+```
+
+## Remove default references
+
+The default Blazor template includes demonstration code, icons, and Bootstrap. To remove these components, follow these steps:
+
+1. Delete the **bootstrap** and **open-iconic** folders from the **wwwroot** directory:
+
+   - Delete the **wwwroot/css/bootstrap** folder.
+   - Delete the **wwwroot/css/open-iconic** folder.
+
+1. Remove the following line from **wwwroot/index.html** file:
+
+   ``` html showLineNumbers
+   <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+   ```
+
+1. Remove the following line from **wwwroot/css/app.css** file:
+
+   ```css {} showLineNumbers
+   @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+   ```
+
+## Starter template
+
+[GitHub Repo: Blazor Bootstrap - Blazor WebAssembly App (.NET 6)](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
+
+<img src="https://i.imgur.com/aRV3rJm.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
+
+## Sample Code
+
+### index.html
+
+```html {9-11,26-28} showLineNumbers
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>NET6.BlazorWebAssemblyApp</title>
+    <base href="/" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
+    <link href="NET6.BlazorWebAssemblyApp.styles.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="app">Loading...</div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> <!-- Add chart.js reference if Chart components are used in the application. -->
+    <!-- Add sortable.js reference if SortableList component is used in your application. -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+</body>
+
+</html>
+```
+
+### Program.cs
+
+```cs {11} showLineNumbers
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using NET6.BlazorWebAssemblyApp;
+using BlazorBootstrap; // Add this line
+
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+builder.Services.AddBlazorBootstrap();
+
+await builder.Build().RunAsync();
+```
+
+### _Imports.razor
+
+```razor {11} showLineNumbers
+@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.AspNetCore.Components.WebAssembly.Http
+@using Microsoft.JSInterop
+@using NET6.BlazorWebAssemblyApp
+@using NET6.BlazorWebAssemblyApp.Shared
+@using BlazorBootstrap;
+```
+
+### MainLayout.razor
+
+```razor {} showLineNumbers
+@inherits LayoutComponentBase
+
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Blazor Bootstrap"
+             DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-end">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">
+                @Body
+            </div>
+        </article>
+    </main>
+
+</div>
+
+<Modal IsServiceModal="true" />
+<Preload />
+<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+
+@code {
+    private Sidebar sidebar = default!;
+    private IEnumerable<NavItem> navItems = default!;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/", IconName = IconName.HouseDoorFill, Text = "Home", Match=NavLinkMatch.All},
+            new NavItem { Id = "2", Href = "/counter", IconName = IconName.PlusSquareFill, Text = "Counter"},
+            new NavItem { Id = "3", Href = "/fetchdata", IconName = IconName.Table, Text = "Fetch Data"},
+        };
+
+        return navItems;
+    }
+}
+```

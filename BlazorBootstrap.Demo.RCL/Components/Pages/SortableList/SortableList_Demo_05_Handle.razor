@@ -1,0 +1,33 @@
+﻿<SortableList Class="mb-3"
+              Handle=".bb-sortable-list-handle"
+              TItem="Employee"
+              Data="employees"
+              Context="item"
+              OnUpdate="@OnEmployeeListUpdate">
+
+    <ItemTemplate>
+        <div class="d-flex justify-content-start">
+            <div class="bb-sortable-list-handle pe-2"><Icon Name="IconName.GripVertical" /></div>
+            <div>@item.Name</div>
+        </div>
+    </ItemTemplate>
+
+</SortableList>
+
+@code {
+    public List<Employee> employees = Enumerable.Range(1, 5).Select(i => new Employee(i, $"Employee {i}")).ToList();
+
+    private void OnEmployeeListUpdate(SortableListEventArgs args)
+    {
+        var itemToMove = employees[args.OldIndex];
+
+        employees.RemoveAt(args.OldIndex);
+
+        if (args.NewIndex < employees.Count)
+            employees.Insert(args.NewIndex, itemToMove);
+        else
+            employees.Add(itemToMove);
+    }
+
+    public record Employee(int Id, string? Name);
+}

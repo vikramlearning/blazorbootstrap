@@ -1,0 +1,699 @@
+﻿---
+title: Blazor Sidebar Component
+description: Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, responsive and cross-device navigation links, additional information, or other content.
+image: https://i.imgur.com/d91Q9Zt.png
+
+sidebar_label: Sidebar
+sidebar_position: 22
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Sidebar
+
+Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, responsive and cross-device navigation links, additional information, or other content.
+
+<CarbonAd />
+
+<img src="https://i.imgur.com/d91Q9Zt.png" alt="Blazor Sidebar" />
+
+## Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| BadgeText | string | | | Gets or sets the badge text. | 1.4.0 |
+| CustomIconName | string | | | Gets or sets the custom icon name. | 1.4.0 |
+| DataProvider | delegate | | ✔️ | DataProvider is for items to render. The provider should always return an instance of 'SidebarDataProviderResult', and 'null' is not allowed. | 1.4.0 |
+| IconName | enum | | | Gets or sets the IconName. | 1.4.0 |
+| ImageSrc | string | | | Gets or sets the logo. | 1.4.0 |
+| Title | string | | ✔️ | Gets or sets the title. | 1.4.0 |
+
+## Methods
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| RefreshDataAsync | Refresh the sidebar data. | 1.4.0 |
+| ToggleSidebar | Toggles sidebar. | 1.4.0 |
+
+## NavItem Properties
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Class | `string?` | null | | Gets or sets an additional CSS class. | 1.10.3 |
+| CustomIconName | `string?` | null | | Gets or sets the custom icon name. | 1.4.0 |
+| Href | `string?` | | ✔️ | Gets or sets the href. | 1.4.0 |
+| IconColor | `IconColor` | `IconColor.None` | | Gets or sets the icon color. | 1.4.0 |
+| IconName | `IconName` | `IconName.None` | | Gets or sets the icon name. | 1.4.0 |
+| Id | `string?` | null | | Gets or sets the Id. | 1.4.0 |
+| Match | `NavLinkMatch` | `NavLinkMatch.Prefix` | | Gets or sets the URL matching behavior. | 1.4.0 |
+| ParentId | `string?` | null | | Gets or sets the parent Id. | 1.4.0 |
+| Sequence | int | | | Gets or sets the sequence. | 1.4.0 |
+| Target | `Target` | `Target.None` | | Gets or sets the target. | 1.4.0 |
+| Text | `string?` | | ✔️ | Gets or sets the navigation link text. | 1.4.0 |
+
+## Examples
+
+### Basic usage
+
+<img src="https://i.imgur.com/q20RADm.png" alt="Blazor Sidebar - Basic usage" />
+
+```cshtml {} showLineNumbers
+<Sidebar @ref="sidebar"
+         IconName="IconName.BootstrapFill"
+         Title="Blazor Bootstrap"
+         DataProvider="SidebarDataProvider" />
+
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+            new NavItem { Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts"},
+            new NavItem { Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete"},
+            new NavItem { Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb"},
+            new NavItem { Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar"},
+        };
+        return navItems;
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#basic-usage)
+
+### Two level navigation
+
+Use NavItem's `Id` and `ParentId` to set the parent-child relation.
+
+<img src="https://i.imgur.com/YKtgDTq.png" alt="Blazor Sidebar - Two level navigation" />
+
+:::note NOTE
+At this moment, two levels of navigation are supported.
+:::
+
+```cshtml {} showLineNumbers
+<Sidebar @ref="sidebar"
+         IconName="IconName.BootstrapFill"
+         Title="Blazor Bootstrap"
+         DataProvider="SidebarDataProvider" />
+
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content" },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components" },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId="4"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms" },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#two-level-navigation)
+
+### Change icons color
+
+Set `IconColor` property to change the color.
+
+<img src="https://i.imgur.com/7wHWoqW.png" alt="Blazor Sidebar - Change icons color" />
+
+```cshtml {} showLineNumbers
+<Sidebar @ref="sidebar"
+         IconName="IconName.BootstrapFill"
+         Title="Blazor Bootstrap"
+         DataProvider="SidebarDataProvider" />
+
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content", IconColor = IconColor.Primary },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components", IconColor = IconColor.Success },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId="4"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms", IconColor = IconColor.Danger },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#change-icons-color)
+
+### Full layout with sidebar
+
+Replace your **MainLayout.razor** page code with the below example to have a complete layout with a sidebar.
+
+<img src="https://i.imgur.com/rGws0kx.png" alt="Blazor Sidebar - Full layout with sidebar" />
+
+```cshtml {} showLineNumbers
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Blazor Bootstrap"
+             DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-end">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">Page content goes here</div>
+        </article>
+    </main>
+
+</div>
+
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content", IconColor = IconColor.Primary },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components", IconColor = IconColor.Success },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId="4"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms", IconColor = IconColor.Danger },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#full-layout-with-sidebar)
+
+### Toggle sidebar to show icons only
+
+Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
+
+<img src="https://i.imgur.com/rEwfrXN.png" alt="Blazor Sidebar - Toggle sidebar to show icons only" />
+
+```cshtml {} showLineNumbers
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Blazor Bootstrap"
+             DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-between">
+            <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">Page content goes here</div>
+        </article>
+    </main>
+
+</div>
+
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content", IconColor = IconColor.Primary },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components", IconColor = IconColor.Success },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId="4"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms", IconColor = IconColor.Danger },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#toggle-sidebar-to-show-icons-only)
+
+### Show badge
+
+A badge is useful when displaying the application version, environment, or other information. Use the `BadgeText` parameter to show the badge.
+
+<img src="https://i.imgur.com/Ayaq9Gq.png" alt="Blazor Sidebar - Show badge" />
+
+```cshtml {} showLineNumbers
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Blazor Bootstrap"
+             BadgeText="v1.3.1"
+             DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-between">
+            <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">Page content goes here</div>
+        </article>
+    </main>
+
+</div>
+
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content", IconColor = IconColor.Primary },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components", IconColor = IconColor.Success },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId="4"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms", IconColor = IconColor.Danger },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#show-badge)
+
+### Custom brand icon
+
+Use the `CustomIconName` parameter to set the custom logo icon using font awesome or other icons.
+
+<img src="https://i.imgur.com/DqVvGKo.png" alt="Blazor Sidebar - Custom brand icon" />
+
+```cshtml {} showLineNumbers
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             CustomIconName="bi bi-apple"
+             Title="Blazor Bootstrap"
+             BadgeText="v1.3.1"
+             DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-between">
+            <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">Page content goes here</div>
+        </article>
+    </main>
+
+</div>
+
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content", IconColor = IconColor.Primary },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components", IconColor = IconColor.Success },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId="4"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms", IconColor = IconColor.Danger },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#custom-brand-icon)
+
+### Show image as brand logo
+
+Use the `ImageSrc` parameter to set the brand logo.
+
+<img src="https://i.imgur.com/d91Q9Zt.png" alt="Blazor Sidebar - Show image as brand logo" />
+
+```cshtml {} showLineNumbers
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-color.svg"
+             Title="Blazor Bootstrap"
+             BadgeText="v1.3.1"
+             DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-between">
+            <Icon Name="IconName.List" role="button" @onclick="ToggleSidebar" />
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">Page content goes here</div>
+        </article>
+    </main>
+
+</div>
+
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content", IconColor = IconColor.Primary },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components", IconColor = IconColor.Success },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId="4"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms", IconColor = IconColor.Danger },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+
+    private void ToggleSidebar() => sidebar.ToggleSidebar();
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#show-image-as-brand-logo)
+
+### Customize sidebar
+
+Developers can customize the sidebar color by changing the CSS variables, as mentioned in the below example.
+
+<img src="https://i.imgur.com/dY8NjDW.png" alt="Blazor Sidebar - Customize sidebar" />
+
+```cshtml {} showLineNumbers
+<div class="bb-page">
+
+    <Sidebar @ref="sidebar"
+             IconName="IconName.BootstrapFill"
+             Title="Blazor Bootstrap"
+             BadgeText="v1.3.1"
+             DataProvider="SidebarDataProvider" />
+
+    <main>
+        <div class="bb-top-row px-4 d-flex justify-content-end">
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            <div class="py-2">
+                <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="ToggleSidebarStyles">Toggle Sidebar styles</Button>
+            </div>
+        </article>
+    </main>
+     
+</div>
+
+@code {
+    Sidebar sidebar;
+    bool applyPurpleStyle = false;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content", IconColor = IconColor.Primary },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components", IconColor = IconColor.Success },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId="4"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms", IconColor = IconColor.Danger },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+
+    private void ToggleSidebarStyles() => applyPurpleStyle = !applyPurpleStyle;
+}
+
+@if (applyPurpleStyle)
+{
+    <style>
+        :root {
+            --bb-sidebar-width: 270px;
+            --bb-sidebar-collapsed-width: 50px;
+            --bb-sidebar-background-color: rgba(234, 234, 234, 1);
+            --bb-sidebar-top-row-background-color: rgba(0,0,0,0.08);
+            --bb-sidebar-top-row-border-color: rgb(194,192,192);
+            --bb-sidebar-title-text-color: rgb(0,0,0);
+            --bb-sidebar-brand-icon-color: #6f42c1;
+            --bb-sidebar-brand-image-width: 24px;
+            --bb-sidebar-brand-image-height: 24px;
+            --bb-sidebar-title-badge-text-color: rgb(255,255,255);
+            --bb-sidebar-title-badge-background-color: rgba(25,135,84,var(--bs-bg-opacity,1));
+            --bb-sidebar-navbar-toggler-icon-color: rgb(0,0,0);
+            --bb-sidebar-navbar-toggler-background-color: rgba(0,0,0,0.08);
+            --bb-sidebar-content-border-color: rgb(194,192,192);
+            --bb-sidebar-nav-item-text-color: rgba(0,0,0,0.9);
+            --bb-sidebar-nav-item-text-active-color-rgb: 0,0,0;
+            --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
+            --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
+            --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
+            --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
+        }
+    </style>
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#customize-sidebar)
+
+### Apply custom CSS class to NavItem
+
+Set the Class property of a NavItem to apply a custom CSS class.
+
+<img src="https://i.imgur.com/3Xq3aaE.png" alt="Blazor Sidebar - Apply custom CSS class to NavItem" />
+
+```cshtml {} showLineNumbers
+<Sidebar @ref="sidebar"
+         IconName="IconName.BootstrapFill"
+         Title="Blazor Bootstrap"
+         DataProvider="SidebarDataProvider" />
+```
+
+```cshtml {} showLineNumbers
+@code {
+    Sidebar sidebar;
+    IEnumerable<NavItem> navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content" },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components" },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4", Class="px-3"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4", Class="px-3"},
+            new NavItem { Id = "7", Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar", ParentId="4", Class="px-3"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms" },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+}
+```
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#apply-custom-css-class-to-navitem)

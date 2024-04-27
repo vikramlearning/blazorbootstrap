@@ -1,0 +1,31 @@
+﻿.autocomplete {
+}
+
+    .autocomplete > .input-group > input {
+        border-top-right-radius: 0.25rem !important;
+        border-bottom-right-radius: 0.25rem !important;
+        padding-right: 2.75rem !important;
+    }
+
+.autocomplete-list {
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+.autocomplete-item:focus, .autocomplete-item:hover {
+    color: #1e2125;
+    background-color: #e9ecef;
+    cursor: pointer;
+}
+
+
+.dropdown-item:focus, .dropdown-item:hover {
+    cursor: pointer;
+}
+
+.dropdown-item-highlight {
+    color: #1e2125;
+    background-color: #e9ecef;
+    cursor: pointer;
+}

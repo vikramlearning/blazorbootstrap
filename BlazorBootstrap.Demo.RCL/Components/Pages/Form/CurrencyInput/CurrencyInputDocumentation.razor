@@ -1,0 +1,89 @@
+﻿@page "/currency-input"
+@page "/form/currency-input"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Currency Input</h1>
+<div class="lead mb-3">
+    Use the Blazor Bootstrap <code>CurrencyInput</code> component to show the numbers in the user's locale format, including the currency symbol.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<div class="mb-3">By default, <code>e + -</code> are blocked. For all integral numeric types, dot <code>.</code> is blocked.</div>
+<Callout Type="CalloutType.Success">
+    The default locale is <b>en-US</b>.
+</Callout>
+<Demo Type="typeof(CurrencyInput_Demo_01_Basic_Usage)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Show currency symbols for the different locales" PageUrl="@pageUrl" HashTagName="show-currency-symbols-for-the-different-locales" />
+<Demo Type="typeof(CurrencyInput_Demo_02_Show_Currency_Symbols_for_the_Different_Locales)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Hide currency symbol" PageUrl="@pageUrl" HashTagName="hide-currency-symbol" />
+<div class="mb-3">Set <code>HideCurrencySymbol</code> parameter value to <code>true</code> to hide the currency symbol.</div>
+<Demo Type="typeof(CurrencyInput_Demo_03_Hide_Currency_Symbol)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Using fraction digits and integer digits" PageUrl="@pageUrl" HashTagName="using-fraction-digits-and-integer-digits" />
+<div class="mb-3">In the below example, formatting adds zeros to display minimum integers and fractions.</div>
+<Callout Type="CalloutType.Danger">
+    <b>MinimumFractionDigits</b> and <b>MaximumFractionDigits</b> parameters are applicable for floating-point numeric types only.
+</Callout>
+<Demo Type="typeof(CurrencyInput_Demo_04_Using_FractionDigits_and_IntegerDigits)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Wrap the number with parentheses instead of appending a minus sign" PageUrl="@pageUrl" HashTagName="wrap-the-number-with-parentheses-instead-of-appending-a-minus-sign" />
+<div class="mb-3">In many locales, accounting format means to wrap the number with parentheses instead of appending a minus sign. You can enable this formatting by setting the CurrencySign option to <code>Accounting</code>. The default value is <code>Standard</code>.</div>
+<Demo Type="typeof(CurrencyInput_Demo_05_Parentheses_Instead_of_Appending_A_Minus_Sign)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Generic type" PageUrl="@pageUrl" HashTagName="generic-type" />
+<div class="mb-3"><code>CurrencyInput</code> is a generic component. Always specify the exact type. In the below example <b>TValue</b> is set to <code>int</code>, <code>int?</code>, <code>float</code>, <code>float?</code>, <code>double</code>, <code>double?</code>, <code>decimal</code>, and <code>decimal?</code>.</div>
+<Demo Type="typeof(CurrencyInput_Demo_06_Generic_Type)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Enable min and max" PageUrl="@pageUrl" HashTagName="enable-min-and-max" />
+<div class="mb-3">Set <code>EnableMinMax="true"</code> and set the <code>Min</code> and <code>Max</code> parameters to restrict the user input between the Min and Max range.</div>
+<Callout Type="CalloutType.Warning" Heading="NOTE">
+    If the user tries to enter a number in the <b>CurrencyInput</b> field which is out of range, then it will override with Min or Max value based on the context. If the user input is less than the Min value, then it will override with the Min value.
+    If the user input exceeds the Max value, it will override with the Max value.
+</Callout>
+<Demo Type="typeof(CurrencyInput_Demo_07_Enable_Min_Max)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Text alignment" PageUrl="@pageUrl" HashTagName="text-alignment" />
+<div class="mb-3">You can change the text alignment according to your need. Use the <code>TextAlignment</code> parameter to set the alignment. In the below example, alignment is set to center and end.</div>
+<Demo Type="typeof(CurrencyInput_Demo_08_Text_Alignment)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Allow negative numbers" PageUrl="@pageUrl" HashTagName="allow-negative-numbers" />
+<div class="mb-3">By default, negative numbers are not allowed. Set the <code>AllowNegativeNumbers</code> parameter to true to allow the negative numbers.</div>
+<Demo Type="typeof(CurrencyInput_Demo_09_Allow_Negative_Numbers)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable" PageUrl="@pageUrl" HashTagName="disable" />
+<div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>CurrencyInput</code>.</div>
+<Demo Type="typeof(CurrencyInput_Demo_10_A_Disable_Number_Input)" Tabs="false" />
+<div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>CurrencyInput</code>.</div>
+<Callout Type="CalloutType.Warning" Heading="NOTE">
+    Do not use both the <b>Disabled</b> parameter and <b>Enable()</b> &amp; <b>Disable()</b> methods.
+</Callout>
+<Demo Type="typeof(CurrencyInput_Demo_10_B_Disable_Number_Input)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Validations" PageUrl="@pageUrl" HashTagName="validations" />
+<div class="mb-3">
+    Like any other blazor input components, <code>CurrencyInput</code> supports validations.
+    Add the DataAnnotations on the <code>CurrencyInput</code> component to validate the user input before submitting the form.
+    In the below example, we used <b>Required</b> and <b>Range</b> attributes.
+</div>
+<Demo Type="typeof(CurrencyInput_Demo_11_Validations)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Decimal values" PageUrl="@pageUrl" HashTagName="decimal-values" />
+<Demo Type="typeof(CurrencyInput_Demo_12_Decimals)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Events: ValueChanged" PageUrl="@pageUrl" HashTagName="event-value-changed" />
+<div class="mb-3">This event fires on every user keystroke that changes the <code>CurrencyInput</code> value.</div>
+<Demo Type="typeof(CurrencyInput_Demo_13_Events_Value_Changed)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/form/currency-input";
+    private string title = "Blazor CurrencyInput Component";
+    private string description = "Use the Blazor Bootstrap CurrencyInput component to show the numbers in the user's locale format, including the currency symbol.";
+    private string imageUrl = "https://i.imgur.com/iUNBkki.png";
+}

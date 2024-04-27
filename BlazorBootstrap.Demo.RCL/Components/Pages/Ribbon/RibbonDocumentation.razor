@@ -1,0 +1,29 @@
+﻿@page "/ribbon"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Ribbon</h1>
+<div class="lead mb-3">Documentation and examples for using the Blazor Bootstrap Ribbon component.</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
+<div class="mb-3">In the following example, you will see a ribbon similar to the one found in Outlook.</div>
+<Demo Type="typeof(Ribbon_Demo_01_How_It_Works)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Other icons" PageUrl="@pageUrl" HashTagName="other-icons" />
+<div class="mb-3">In the following example, instead of icons like Bootstrap, Font Awesome, etc., we used PNG icons.</div>
+<Demo Type="typeof(Ribbon_Demo_02_Images)" Tabs="true" />
+
+<Callout Type="CalloutType.Warning" HideHeading="true">
+    <b>NOTE:</b> All the PNG icons used on this page are from Flaticon with a premium license only.
+</Callout>
+
+@code {
+    private string pageUrl = "/ribbon";
+    private string title = "Blazor Ribbon Component";
+    private string description = "Documentation and examples for using the Blazor Bootstrap Ribbon component.";
+    private string imageUrl = "https://i.imgur.com/LpZVLbF.png";
+}

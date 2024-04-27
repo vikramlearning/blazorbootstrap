@@ -1,0 +1,33 @@
+﻿<div class="row">
+    <div class="col-5 col-md-3 text-end">Employee Id :</div>
+    <div class="col-7 col-md-9">@EmployeeId</div>
+</div>
+<div class="row">
+    <div class="col-5 col-md-3 text-end">First Name :</div>
+    <div class="col-7 col-md-9">@employee?.FirstName</div>
+</div>
+<div class="row">
+    <div class="col-5 col-md-3 text-end">Last Name :</div>
+    <div class="col-7 col-md-9">@employee?.LastName</div>
+</div>
+
+<Button class="mt-3" Color="ButtonColor.Success" Type="ButtonType.Button" @onclick="OnClickCallback">
+    Trigger a Parent component method
+</Button>
+
+@code {
+    private Employee? employee;
+
+    [Parameter] public int EmployeeId { get; set; }
+
+    [Parameter] public EventCallback<MouseEventArgs> OnClickCallback { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // get employee with {EmployeeId} from DB
+
+        employee = new Employee { FirstName = "Sagar", LastName = "Reddy" };
+
+        base.OnInitialized();
+    }
+}

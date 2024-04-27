@@ -1,0 +1,24 @@
+﻿<ConfirmDialog @ref="dialog" />
+
+<Button Color="ButtonColor.Primary" @onclick="ShowDialogAsync"> Launch Confirm Dialog </Button>
+
+@code {
+    private ConfirmDialog dialog = default!;
+
+    private async Task ShowDialogAsync()
+    {
+        var confirmation = await dialog.ShowAsync<LongContentDemoComponent>(
+            title: "Confirm dialog title",
+            confirmDialogOptions: new ConfirmDialogOptions { AutoFocusYesButton = false }
+        );
+
+        if (confirmation)
+        {
+            // do something
+        }
+        else
+        {
+            // do something
+        }
+    }
+}

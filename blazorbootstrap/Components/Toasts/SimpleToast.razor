@@ -1,0 +1,16 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<CascadingValue Value="@(this)" IsFixed="true">
+    <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+        <div class="d-flex">
+            <div class="toast-body">
+                @ToastMessage?.Message
+            </div>
+            @if (!AutoHide || ShowCloseButton)
+            {
+                <button type="button" class="btn-close @CloseButtonClass me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            }
+        </div>
+    </div>
+</CascadingValue>

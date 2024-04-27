@@ -1,0 +1,20 @@
+﻿@code {
+
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+
+    private void SaveEmployee()
+    {
+        try
+        {
+            // TODO: call the service/api to save the employee details
+
+            ToastService.Notify(new(ToastType.Success, $"Employee details saved successfully."));
+        }
+        catch(Exception ex)
+        {
+            // handle exception
+
+            ToastService.Notify(new(ToastType.Danger, $"Error: {ex.Message}."));
+        }
+    }
+}

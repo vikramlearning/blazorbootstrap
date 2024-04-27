@@ -1,0 +1,24 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<nav aria-label="Pagination links">
+    <ul id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" role="button">
+        <PaginationItem Disabled="ActivePageNumber == 1" Text="@firstLinkText" @onclick="() => SetPageNumberTo(firstPageNumber)" LinkIcon="@FirstLinkIcon" LinkText="@firstLinkText" AriaLabel="@firstLinkText"/>
+        <PaginationItem Disabled="ActivePageNumber == 1" Text="@previousLinkText" @onclick="() => SetPageNumberTo(previousPageNumber)" LinkIcon="@PreviousLinkIcon" LinkText="@previousLinkText" AriaLabel="@previousLinkText"/>
+        @if (pageFromInclusive > 1)
+        {
+            <PaginationItem @onclick="() => SetPageNumberTo(pageFromInclusive - 1)" LinkIcon="IconName.ThreeDots"/>
+        }
+        @for (var i = pageFromInclusive; i <= pageToExclusive; i++)
+        {
+            var j = i; // local scope
+            <PaginationItem Active="ActivePageNumber == i" Text="@j.ToString()" @onclick="() => SetPageNumberTo(j)"/>
+        }
+        @if (pageToExclusive < TotalPages)
+        {
+            <PaginationItem @onclick="() => SetPageNumberTo(pageToExclusive + 1)" LinkIcon="IconName.ThreeDots"/>
+        }
+        <PaginationItem Disabled="ActivePageNumber == TotalPages" Text="@nextLinkText" @onclick="() => SetPageNumberTo(nextPageNumber)" LinkIcon="@NextLinkIcon" LinkText="@nextLinkText" AriaLabel="@nextLinkText"/>
+        <PaginationItem Disabled="ActivePageNumber == TotalPages" Text="@lastLinkText" @onclick="() => SetPageNumberTo(lastPageNumber)" LinkIcon="@LastLinkIcon" LinkText="@lastLinkText" AriaLabel="@lastLinkText"/>
+    </ul>
+</nav>

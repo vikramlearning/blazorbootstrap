@@ -1,0 +1,61 @@
+name: WebApp (Blazor Server)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      prod_release:
+        description: 'Do you want to release to production?'
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up .NET 8.0.x
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+          include-prerelease: false
+
+      - name: Build
+        run: dotnet build ./BlazorBootstrap.Demo.Server/BlazorBootstrap.Demo.Server.csproj --configuration Release
+
+      - name: Publish
+        run: dotnet publish ./BlazorBootstrap.Demo.Server/BlazorBootstrap.Demo.Server.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/myapp
+
+  deploy:
+    runs-on: windows-latest
+    if:  ${{ inputs.prod_release }} 
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: .net-app
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'blazorbootstrap'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1F484B42E8E9491C82F21EED2A6E2C15 }}
+          package: .

@@ -1,0 +1,58 @@
+﻿@page "/toasts"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Toasts</h1>
+<div class="lead mb-3">Push notifications to your visitors with a toast, a lightweight and easily customizable alert message.</div>
+
+<CarbonAds />
+
+<div class="mt-3">Blazor Toasts are lightweight notifications designed to mimic the push notifications that mobile and desktop operating systems have popularized. They're built with a flexbox, making it easy to align and position.</div>
+
+<SectionHeading Size="HeadingSize.H2" Text="Things to know when using the blazor toasts component" PageUrl="@pageUrl" HashTagName="things-to-know-when-using-the-blazor-toasts-component" />
+<ul>
+    <li>Blazor Toasts will not hide automatically if you do not specify <code>AutoHide="true"</code>.</li>
+    <li>Use <a href="/toasts#global-toasts-service-for-the-application">global toasts service</a> for the application instead of page level toasts.</li>
+</ul>
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Toasts_Demo_01_Toast_With_Title)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Toast without title" PageUrl="@pageUrl" HashTagName="toast-without-title" />
+<Demo Type="typeof(Toasts_Demo_02_Toast_Without_Title)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Auto hide" PageUrl="@pageUrl" HashTagName="auto-hide" />
+<div>Add <code>AutoHide="true"</code> parameter to hide the Blazor Toasts after the delay. The default delay is 5000 milliseconds, be sure to update the delay timeout so that users have enough time to read the toast.</div>
+<Demo Type="typeof(Toasts_Demo_03_A_Auto_Hide)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Enable auto hide for individual messages" PageUrl="@pageUrl" HashTagName="enable-auto-hide-for-individual-messages" />
+<div class="mb-3">Set <code>AutoHide="true"</code> property on <code>ToastMessage</code> to hide individual Blazor Toast message after the delay. The default delay is 5000 milliseconds, be sure to update the delay timeout so that users have enough time to read the toast.</div>
+<div>In the below example, <code>AutoHide="false"</code> for <b>Danger</b> and <b>Warning</b> messages.</div>
+<Demo Type="typeof(Toasts_Demo_03_B_Auto_Hide_Individual_Messages)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Placement" PageUrl="@pageUrl" HashTagName="placement" />
+<div>Change the Blazor Toasts placement according to your need. The default placement will be top right corner. Use the <code>ToastsPlacement</code> parameter to update the Blazor Toasts placement.</div>
+<Demo Type="typeof(Toasts_Demo_04_Placement)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Stack Length" PageUrl="@pageUrl" HashTagName="stack-length" />
+<div>Blazor Toasts component shows a maximum of 5 toasts by default. If you add a new toast to the existing list, the first toast gets deleted like <b>FIFO</b> (First In First Out). Change the maximum capacity according to your need by using the <code>StackLength</code> parameter.</div>
+<div class="mt-3">In the below example, StackLength is set to 3. It shows a maximum of 3 toast messages at any time.</div>
+<Demo Type="typeof(Toasts_Demo_05_StackLength)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Global toasts service for the application" PageUrl="@pageUrl" HashTagName="global-toasts-service-for-the-application" />
+<div class="mb-3">1. Add the <code>Toasts</code> component in <code>MainLayout.razor</code> page as shown below.</div>
+<Demo Type="typeof(Toasts_Demo_06_Global_Toasts_Service_For_Application_01)" ShowCodeOnly="true" />
+<Callout Type="CalloutType.Success">
+    Set the <code>Toasts</code> component parameters as per your requirement.
+</Callout>
+<div class="mb-3">2. Inject <code>ToastService</code>, then call the <code>Notify(...)</code> method as shown below.</div>
+<Demo Type="typeof(Toasts_Demo_06_Global_Toasts_Service_For_Application_02)" ShowCodeOnly="true" />
+
+@code {
+    private string pageUrl = "/toasts";
+    private string title = "Blazor Toasts Component";
+    private string description = "Push notifications to your visitors with a toast, a lightweight and easily customizable Blazor Bootstrap alert message.";
+    private string imageUrl = "https://i.imgur.com/VRglJqU.jpg";
+}

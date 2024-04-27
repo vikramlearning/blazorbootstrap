@@ -1,0 +1,47 @@
+﻿@page "/switch"
+@page "/form/switch"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Switch</h1>
+<div class="lead mb-3">
+    Use the Blazor Bootstrap <code>Switch</code> component to show the consistent cross-browser and cross-device custom checkboxes.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<Demo Type="typeof(Switch_Demo_01_Basic_Usage)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable" PageUrl="@pageUrl" HashTagName="disable" />
+<div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>Switch</code>.</div>
+<Demo Type="typeof(Switch_Demo_02_A_Disable)" Tabs="false" />
+<div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>Switch</code>.</div>
+<Callout Type="CalloutType.Warning" Heading="NOTE">
+    Do not use both the <b>Disabled</b> parameter and <b>Enable()</b> &amp; <b>Disable()</b> methods.
+</Callout>
+<Demo Type="typeof(Switch_Demo_02_B_Disable)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Reverse" PageUrl="@pageUrl" HashTagName="reverse" />
+<div class="mb-3">
+    Put your switches on the opposite side by using the <code>Reverse</code> parameter.
+</div>
+<Demo Type="typeof(Switch_Demo_03_Reverse)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Events: ValueChanged" PageUrl="@pageUrl" HashTagName="events-value-changed" />
+<div class="mb-3">
+    This event fired when the <code>Switch</code> selection changed.
+</div>
+<Demo Type="typeof(Switch_Demo_04_Events_Value_Changed)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Form" PageUrl="@pageUrl" HashTagName="form" />
+<Demo Type="typeof(Switch_Demo_05_Form)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/form/switch";
+    private string title = "Blazor Switch Component";
+    private string description = "Create consistent cross-browser and cross-device checkboxes with our blazor switches. A switch has the markup of a custom checkbox.";
+    private string imageUrl = "https://i.imgur.com/ALKzreq.png";
+}

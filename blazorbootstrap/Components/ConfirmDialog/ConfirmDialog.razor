@@ -1,0 +1,56 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@AdditionalAttributes">
+    @if (isVisible)
+    {
+        <div class="modal-dialog @scrollable @verticallyCentered @modalSize @dialogCssClass">
+            <div class="modal-content">
+                @if (!string.IsNullOrWhiteSpace(title))
+                {
+                    <div class="modal-header @headerCssClass">
+                        <h5 class="modal-title">@title</h5>
+                        @if (dismissable)
+                        {
+                            <button type="button" class="btn-close" @onclick="OnNoClick"></button>
+                        }
+                    </div>
+                }
+                <div class="modal-body">
+                    @if (childComponent is not null)
+                    {
+                        <DynamicComponent Type="@childComponent" Parameters="@parameters" />
+                    }
+                    else
+                    {
+                        @if (!string.IsNullOrWhiteSpace(message1))
+                        {
+                            <div class="pb-2">@message1</div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(message2))
+                        {
+                            <div class="pb-2">@message2</div>
+                        }
+                    }
+                </div>
+                <div class="modal-footer border-top-0">
+                    <div class="d-grid gap-2 d-flex justify-content-md-end">
+                        @if (!string.IsNullOrWhiteSpace(noButtonText))
+                        {
+                            <button class="@noButtonColor me-md-2 px-4" type="button" @onclick="OnNoClick">@noButtonText</button>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(yesButtonText))
+                        {
+                            <button id="bb-confirm-@Id" class="@yesButtonColor px-4" type="button" @onclick="OnYesClick">@yesButtonText</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop modal-backdrop-confirmation fade show"></div>
+}

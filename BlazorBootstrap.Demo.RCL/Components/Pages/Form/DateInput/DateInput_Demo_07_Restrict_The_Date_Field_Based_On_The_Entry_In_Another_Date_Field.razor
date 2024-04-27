@@ -1,0 +1,128 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit" novalidate>
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Course Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <InputText class="form-control" @bind-Value="onlineCourseForm.CourseName" />
+            <ValidationMessage For="@(() => onlineCourseForm.CourseName)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Start Date: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <DateInput TValue="DateTime?"
+                       Value="onlineCourseForm.StartDate"
+                       ValueExpression="() => onlineCourseForm.StartDate"
+                       ValueChanged="(value) => StartDateChanged(value)" />
+            <ValidationMessage For="@(() => onlineCourseForm.StartDate)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">End Date: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <DateInput @ref="endDateInput" TValue="DateTime?"
+                       @bind-Value="onlineCourseForm.EndDate"
+                       EnableMinMax="true"
+                       Min="courseMinDate"
+                       Max="courseMaxDate"
+                       Disabled="@disableEndDate" />
+            <ValidationMessage For="@(() => onlineCourseForm.EndDate)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    DateInput<DateTime?> endDateInput = default!;
+    private bool disableEndDate = true;
+
+    private OnlineCourseForm onlineCourseForm = new();
+    private EditContext? editContext;
+
+    private DateTime? courseMinDate;
+    private DateTime? courseMaxDate;
+
+    [Inject] ToastService ToastService { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(onlineCourseForm);
+        base.OnInitialized();
+    }
+
+    private void StartDateChanged(DateTime? startDate)
+    {
+        if (startDate is null || !startDate.HasValue)
+        {
+            onlineCourseForm.StartDate = null;
+            onlineCourseForm.EndDate = null;
+            courseMinDate = null;
+            courseMaxDate = null;
+            disableEndDate = true;
+
+            return;
+        }
+
+        onlineCourseForm.StartDate = startDate;
+        onlineCourseForm.EndDate = null;
+        courseMinDate = startDate.Value;
+        courseMaxDate = startDate.Value.AddDays(5);
+        disableEndDate = false;
+    }
+
+    public void HandleValidSubmit()
+    {
+        var toastMessage = new ToastMessage
+        (
+            type: ToastType.Success,
+            iconName: IconName.Check2All,
+            title: "Success!",
+            helpText: $"{DateTime.Now.ToLocalTime()}",
+            message: "Online course schedule created."
+        );
+        ToastService.Notify(toastMessage);
+    }
+
+    private void ResetForm()
+    {
+        onlineCourseForm = new();
+        editContext = new EditContext(onlineCourseForm);
+    }
+
+    public class OnlineCourseForm
+    {
+        [Required(ErrorMessage = "Course Name required.")]
+        public string? CourseName { get; set; }
+
+        [Required(ErrorMessage = "Start Date required.")]
+        public DateTime? StartDate { get; set; }
+
+        [Required(ErrorMessage = "End Date required.")]
+        public DateTime? EndDate { get; set; }
+    }
+}

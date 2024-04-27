@@ -1,0 +1,43 @@
+@page "/sidebar2"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Sidebar2</h1>
+<div class="lead mb-3">
+    Use the Blazor Bootstrap <code>Sidebar2</code> component to display consistent, cross-browser, and responsive navigation links that support more than two nested levels.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Sidebar2_Demo_01_Basic_Usage)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="More nested levels" PageUrl="@pageUrl" HashTagName="more-nested-levels" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Sidebar2_Demo_02_More_Nested_Levels)" Tabs="true" />
+
+@* <SectionHeading Size="HeadingSize.H2" Text="Change icons color" PageUrl="@pageUrl" HashTagName="change-icons-color" />
+<div class="mb-3">Set <code>IconColor</code> property to change the color.</div>
+<Demo Type="typeof(Sidebar2_Demo_03_Change_Icons_Color)" Tabs="true" /> *@
+
+<SectionHeading Size="HeadingSize.H2" Text="Full layout with sidebar" PageUrl="@pageUrl" HashTagName="full-layout-with-sidebar" />
+<div class="mb-3">Replace your <b>MainLayout.razor</b> page code with the below example to have a complete layout with a sidebar.</div>
+<Demo Type="typeof(Sidebar2_Demo_04_Full_layout_with_sidebar)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Custom brand icon" PageUrl="@pageUrl" HashTagName="custom-brand-icon" />
+<div class="mb-3">Use the <code>CustomIconName</code> parameter to set the custom logo icon using font awesome or other icons.</div>
+<Demo Type="typeof(Sidebar2_Demo_07_Custom_Brand_Icon)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Show image as brand logo" PageUrl="@pageUrl" HashTagName="show-image-as-brand-logo" />
+<div class="mb-3">Use the <code>ImageSrc</code> parameter to set the brand logo.</div>
+<Demo Type="typeof(Sidebar2_Demo_08_Show_Image_as_Brand_Logo)" Tabs="true" />
+
+@code {
+    private string pageUrl = "sidebar2";
+    private string title = "Blazor Sidebar2 Component";
+    private string description = "Use the Blazor Bootstrap Sidebar2 component to display consistent, cross-browser, and responsive navigation links that support more than two nested levels.";
+    private string imageUrl = "https://i.imgur.com/U0l6wXo.png";
+}

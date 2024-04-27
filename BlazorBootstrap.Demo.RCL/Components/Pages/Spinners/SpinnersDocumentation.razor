@@ -1,0 +1,65 @@
+﻿@page "/spinner"
+@page "/spinners"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Spinners</h1>
+<div class="lead mb-3">
+    Visualize the loading state of a component or page using the Blazor Bootstrap Spinner component.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Border spinner" PageUrl="@pageUrl" HashTagName="border-spinner" />
+<div class="mb-3">Use the border spinners for a lightweight loading indicator.</div>
+<Demo Type="typeof(Spinners_Demo_01_Border_Spinner)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Colors" PageUrl="@pageUrl" HashTagName="colors" />
+<div class="mb-3">
+    The border spinner's border color inherits the element's color (<code>currentColor</code>). This means you can easily customize the spinner's color by changing the <code>Color</code> parameter on the standard spinner.
+</div>
+<Demo Type="typeof(Spinners_Demo_02_Colors)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Grow spinner" PageUrl="@pageUrl" HashTagName="grow-spinner" />
+<div class="mb-3">
+    If you don't fancy a border spinner, switch to the grow spinner, while it doesn't technically spin, it does repeatedly grow!
+</div>
+<Demo Type="typeof(Spinners_Demo_03_Grow_spinner_A)" />
+<Demo Type="typeof(Spinners_Demo_03_Grow_spinner_B)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Loading dots spinner" PageUrl="@pageUrl" HashTagName="loading-dots-spinner" />
+<div class="mb-3">The loading dots are a special indicator for a lightweight loading indicator.</div>
+<Demo Type="typeof(Spinners_Demo_04_Loading_dots_spinner_A)" />
+<Demo Type="typeof(Spinners_Demo_04_Loading_dots_spinner_B)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Alignment" PageUrl="@pageUrl" HashTagName="alignment" />
+<SectionHeading Size="HeadingSize.H2" Text="Margin" PageUrl="@pageUrl" HashTagName="margin" />
+<Demo Type="typeof(Spinners_Demo_05_Alignment_A_Margin)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Placement" PageUrl="@pageUrl" HashTagName="placement" />
+<SectionHeading Size="HeadingSize.H2" Text="Flex" PageUrl="@pageUrl" HashTagName="flex" />
+<Demo Type="typeof(Spinners_Demo_05_Alignment_B_Palcement_Flex_01)" />
+<Demo Type="typeof(Spinners_Demo_05_Alignment_B_Palcement_Flex_02)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Floats" PageUrl="@pageUrl" HashTagName="floats" />
+<Demo Type="typeof(Spinners_Demo_05_Alignment_C_Palcement_Floats)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Text align" PageUrl="@pageUrl" HashTagName="text-align" />
+<Demo Type="typeof(Spinners_Demo_05_Alignment_D_Palcement_Text_align)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Size" PageUrl="@pageUrl" HashTagName="size" />
+<Demo Type="typeof(Spinners_Demo_06_Size_A_Border)" />
+<Demo Type="typeof(Spinners_Demo_06_Size_B_Grow)" />
+<Demo Type="typeof(Spinners_Demo_06_Size_C_Dots)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Visible" PageUrl="@pageUrl" HashTagName="visible" />
+<Demo Type="typeof(Spinners_Demo_07_Visible)" />
+
+@code{
+    private string pageUrl = "/spinner";
+    private string title = "Blazor Spinner Component";
+    private string description = "Visualize the loading state of a component or page using the Blazor Bootstrap Spinner component.";
+    private string imageUrl = "https://i.imgur.com/G4wyEd6.png";
+}

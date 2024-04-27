@@ -1,0 +1,31 @@
+﻿@page "/callout"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Callout</h1>
+<div class="lead mb-3">
+    Blazor Bootstrap callout component provides presentation of content in a visually distinct manner. Includes a heading, icon and typically text-based content.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H4" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<Demo Type="typeof(Callout_Demo_01_Examples)" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Custom heading" PageUrl="@pageUrl" HashTagName="custom-heading" />
+<Demo Type="typeof(Callout_Demo_02_Change_Heading)" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Large text" PageUrl="@pageUrl" HashTagName="large-text" />
+<Demo Type="typeof(Callout_Demo_03_Large_Text)" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Hide heading" PageUrl="@pageUrl" HashTagName="hide-heading" />
+<Demo Type="typeof(Callout_Demo_04_Hide_Heading)" />
+
+@code {
+    private string pageUrl = "/callout";
+    private string title = "Blazor Callout Component";
+    private string description = "Blazor Bootstrap callout component provides content presentation in a visually distinct manner.";
+    private string imageUrl = "https://i.imgur.com/y2jI9ix.png";
+}

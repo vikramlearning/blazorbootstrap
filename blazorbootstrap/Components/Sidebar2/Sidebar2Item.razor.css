@@ -1,0 +1,42 @@
+.bb-sidebar2.collapsed .expanded-only {
+    display: none;
+}
+
+.bb-sidebar2.collapsed .bi.expanded-only {
+    display: none !important;
+}
+
+.bb-sidebar2 .nav-link-icon {
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
+}
+
+.bb-sidebar2 nav .nav-item ::deep a {
+    color: var(--bb-sidebar2-nav-item-text-color);
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+    .bb-sidebar2 nav .nav-item ::deep a:hover {
+        background-color: var(--bb-sidebar2-nav-item-background-hover-color);
+        color: var(--bb-sidebar2-nav-item-text-hover-color);
+    }
+
+    .bb-sidebar2 nav .nav-item ::deep a.active {
+        background-color: var(--bb-sidebar2-nav-item-background-hover-color);
+        color: var(--bb-sidebar2-nav-item-text-active-color);
+        font-weight: 600;
+    }
+
+/* MDN REFERENCE: https://developer.mozilla.org/en-US/docs/Web/CSS/:has#browser_compatibility */
+.bb-sidebar2 nav .nav-item.nav-item-group:has(.nav-link.active) {
+    background-color: var(--bb-sidebar2-nav-item-group-background-color);
+}
+
+.bb-sidebar2 nav .nav-item.nav-item-group:has(.nav-item-group.active) {
+    background-color: var(--bb-sidebar2-nav-item-group-background-color);
+}
+
+.bb-sidebar2 nav .nav-item.nav-item-group.active {
+    background-color: var(--bb-sidebar2-nav-item-group-background-color);
+}

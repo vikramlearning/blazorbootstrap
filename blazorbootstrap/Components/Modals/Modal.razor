@@ -1,0 +1,62 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" tabindex="@TabIndex">
+    <div class="modal-dialog @scrollable @verticallyCentered @modalSize @modalFullscreen @DialogCssClass">
+        <div class="modal-content">
+            @if (isVisible)
+            {
+                @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
+                {
+                    <div class="modal-header @headerCssClassInternal @HeaderCssClass">
+                        @if (!string.IsNullOrWhiteSpace(Title))
+                        {
+                            <h5 class="modal-title">@Title</h5>
+                        }
+                        else if (HeaderTemplate != null)
+                        {
+                            @HeaderTemplate
+                        }
+
+                        @if (ShowCloseButton)
+                        {
+                            <Icon Color="@closeIconColor" Name="IconName.XLg" role="button" @onclick="HideAsync"></Icon>
+                        }
+                    </div>
+                }
+
+                @if (childComponent is not null)
+                {
+                    <div class="modal-body @BodyCssClass">
+                        <DynamicComponent Type="@childComponent" Parameters="@parameters"/>
+                    </div>
+                }
+                else if (!string.IsNullOrWhiteSpace(Message))
+                {
+                    <div class="modal-body @BodyCssClass">
+                        @Message
+                    </div>
+                }
+                else if (BodyTemplate != null)
+                {
+                    <div class="modal-body @BodyCssClass">
+                        @BodyTemplate
+                    </div>
+                }
+
+                @if (FooterTemplate != null)
+                {
+                    <div class="modal-footer @FooterCssClass">
+                        @FooterTemplate
+                    </div>
+                }
+                else if (showFooterButton)
+                {
+                    <div class="modal-footer @FooterCssClass">
+                        <Button Class="@footerButtonCSSClass" Color="@footerButtonColor" data-bs-dismiss="modal" aria-label="Close">@footerButtonText</Button>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

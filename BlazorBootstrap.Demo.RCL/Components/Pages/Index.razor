@@ -1,0 +1,319 @@
+﻿@page "/"
+@layout EmptyLayout
+
+<PageTitle>Blazor Bootstrap Components Examples & Demos | Blazor Bootstrap</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<div class="bd-masthead pb-4" id="content">
+    <div class="container-xxl bd-gutter">
+        <div class="col-md-8 mx-auto text-center">
+            <a class="d-flex flex-column flex-lg-row justify-content-center align-items-center mb-4 text-dark lh-sm text-decoration-none" href="/">
+                <strong class="d-sm-inline-block p-2 me-2 mb-2 mb-lg-0 rounded-3 masthead-notice">New in @version</strong>
+                <span class="text-muted">@releaseShortDescription</span>
+            </a>
+            <img src="images/logo/logo-color.svg" width="200" height="165" alt="Blazor Bootstrap" class="d-block mx-auto mb-3">
+            <h1 class="mb-3 fw-semibold">Build fast, responsive sites with BlazorBootstrap</h1>
+            <p class="lead mb-4">
+                High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.
+            </p>
+            <p class="text-muted mb-0">
+                Currently <strong>@version</strong>
+                <span class="px-1"></span>
+                <a href="https://www.nuget.org/packages/Blazor.Bootstrap/"><img alt="Nuget" src="https://img.shields.io/nuget/v/Blazor.Bootstrap"></a>
+                <span class="px-1"></span>
+                <a href="https://www.nuget.org/packages/Blazor.Bootstrap/"><img alt="Nuget" src="https://img.shields.io/nuget/dt/Blazor.Bootstrap"></a>
+            </p>
+            <CarbonAds Class="d-flex justify-content-center mt-5" />
+        </div>
+    </div>
+</div>
+
+<div class="container bd-gutter masthead-followup mb-5">
+    <div class="col-lg-7 mb-4 mx-auto text-md-center">
+        <h2 class="mb-3 fw-semibold lh-sm">All Components</h2>
+    </div>
+
+    <div class="row g-3 mt-md-5">
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/accordion">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ChevronBarExpand" class="me-2" /> Accordion</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/alerts">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CheckCircleFill" class="me-2" /> Alerts</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/autocomplete">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursorText" class="me-2" /> Auto Complete</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/badge">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.AppIndicator" class="me-2" /> Badge</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/breadcrumb">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.SegmentedNav" class="me-2" /> Breadcrumb</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/buttons">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ToggleOn" class="me-2" /> Buttons</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/callout">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.StickyFill" class="me-2" /> Callout</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/card">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CardHeading" class="me-2" /> Card</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/charts">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.BarChartLineFill" class="me-2" /> Charts</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/collapse">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowsCollapse" class="me-2" /> Collapse</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/confirm-dialog">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.QuestionDiamondFill" class="me-2" /> Confirm Dialog <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/dropdown">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.MenuButtonWideFill" class="me-2" /> Dropdown</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/currency-input">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CurrencyDollar" class="me-2" /> Currency Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/date-input">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CalendarDate" class="me-2" /> Date Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/grid">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Grid3X2" class="me-2" /> Grid <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/icons">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.PersonSquare" class="me-2" /> Icons</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/modals">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.WindowStack" class="me-2" /> Modals</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/number-input">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursor" class="me-2" /> Number Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/offcanvas">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.LayoutSidebarReverse" class="me-2" /> Offcanvas</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/pagination">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ThreeDots" class="me-2" /> Pagination</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/pdf-viewer">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.FilePdfFill" class="me-2" /> PDF Viewer <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/placeholders">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ColumnsGap" class="me-2" /> Placeholders</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/preload">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowClockwise" class="me-2" /> Preload</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/progress">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.UsbC" class="me-2" /> Progress</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/range-input">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Sliders" class="me-2" /> Range Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/ribbon">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.WindowStack" class="me-2" /> Ribbon <Badge Color="BadgeColor.Danger">New</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/script-loader">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CodeSlash" class="me-2" /> Script Loader</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/sidebar">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.LayoutSidebarInset" class="me-2" /> Sidebar</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/sidebar2">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ListNested" class="me-2" /> Sidebar 2</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/sortable-list">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowsMove" class="me-2" /> Sortable List <Badge Color="BadgeColor.Danger">Preview</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/spinners">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowRepeat" class="me-2" /> Spinners</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/switch">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ToggleOn" class="me-2" /> Switch</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/tabs">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.WindowPlus" class="me-2" /> Tabs <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/time-input">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ClockFill" class="me-2" /> Time Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/toasts">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ExclamationTriangleFill" class="me-2" /> Toasts</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/tooltips">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ChatSquareDotsFill" class="me-2" /> Tooltips</h4>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container bd-gutter masthead-followup mb-5">
+    <div class="col-lg-7 mb-4 mx-auto text-md-center">
+        <h2 class="mb-3 fw-semibold lh-sm">Form Components</h2>
+    </div>
+
+    <div class="row g-3 mt-5">
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/autocomplete">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursorText" class="me-2" /> Auto Complete</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/currency-input">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CurrencyDollar" class="me-2" /> Currency Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/date-input">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CalendarDate" class="me-2" /> Date Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/number-input">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursor" class="me-2" /> Number Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/range-input">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Sliders" class="me-2" /> Range Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/switch">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ToggleOn" class="me-2" /> Switch</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/form/time-input">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ClockFill" class="me-2" /> Time Input</h4>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container bd-gutter masthead-followup">
+    <div class="col-lg-7 mb-4 mx-auto text-md-center">
+        <h2 class="mb-3 fw-semibold lh-sm">Data Visualization Components</h2>
+    </div>
+
+    <div class="row g-3 mt-5">
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/charts/bar-chart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.BarChartFill" class="me-2" /> Bar Chart</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/charts/doughnut-chart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CircleFill" class="me-2" /> Doughnut Chart</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/charts/line-chart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.GraphUp" class="me-2" /> Line Chart</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="/charts/pie-chart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.PieChart" class="me-2" /> Pie Chart</h4>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <Callout Class="mt-5" Type="CalloutType.Success" Heading="DO YOU KNOW?">
+        This demo website is built using the <strong><a href="https://www.nuget.org/packages/Blazor.Bootstrap">Blazor Bootstrap</a></strong> library and published on the Azure Static Web App.
+        See our source code on <a href="https://github.com/vikramlearning/blazorbootstrap">GitHub</a>.
+    </Callout>
+</div>
+
+@code {
+    private string pageUrl = "/";
+    private string title = "Blazor Bootstrap Component Library";
+    private string description = "An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.";
+    private string imageUrl = "https://i.imgur.com/HEJciCp.png";
+
+    private string version = default!;
+    private string releaseShortDescription = default!;
+
+    [Inject] public IConfiguration Configuration { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        version = $"v{Configuration["version"]}"; // example: v0.6.1
+        releaseShortDescription = Configuration["release:short_description"]!;
+
+        base.OnInitialized();
+    }
+}

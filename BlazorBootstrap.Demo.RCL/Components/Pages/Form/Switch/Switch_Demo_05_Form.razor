@@ -1,0 +1,115 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">First name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <InputText class="form-control" @bind-Value="employee.FirstName" Placeholder="Enter first name" />
+            <ValidationMessage For="@(() => employee.FirstName)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Last name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <InputText class="form-control" @bind-Value="employee.LastName" Placeholder="Enter last name" />
+            <ValidationMessage For="@(() => employee.LastName)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Active</label>
+        <div class="col-md-10">
+            <Switch Class="mt-2" @bind-Value="employee.IsActive" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2" Disabled="disableSave">Save</Button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private bool disableSave;
+    private Employee employee = new();
+    private EditContext? editContext;
+
+    [Inject] private ToastService ToastService { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        employee = new() { FirstName = "Vikram Reddy", LastName = "Gaddam", IsActive = true };
+        editContext = new EditContext(employee);
+        editContext.OnFieldChanged += HandleFieldChanged!;
+
+        base.OnInitialized();
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        disableSave = !(editContext?.Validate() ?? false);
+
+        var toastMessage = new ToastMessage
+            {
+                Title = "Save Employee Details",
+                Message = $"Employee details saved successfully.",
+                AutoHide = true,
+                Type = ToastType.Success,
+                IconName = IconName.CheckCircleFill,
+            };
+
+        ToastService.Notify(toastMessage);
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        disableSave = !(editContext?.Validate() ?? false);
+
+        var toastMessage = new ToastMessage
+            {
+                Title = "Field Changed Notification",
+                Message = $"The field \"{e.FieldIdentifier.FieldName}\" was changed.",
+                AutoHide = true,
+                Type = ToastType.Info
+            };
+
+        ToastService.Notify(toastMessage);
+    }
+
+    private void ResetForm()
+    {
+        employee = new();
+        editContext = new EditContext(employee);
+        editContext.OnFieldChanged += HandleFieldChanged!;
+    }
+
+    public class Employee
+    {
+        [Required(ErrorMessage = "First name required.")]
+        public string? FirstName { get; set; }
+
+        [Required(ErrorMessage = "Last name required.")]
+        public string? LastName { get; set; }
+
+        public bool IsActive { get; set; }
+    }
+}

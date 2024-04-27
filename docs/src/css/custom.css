@@ -1,0 +1,121 @@
+/* stylelint-disable docusaurus/copyright-header */
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #7c3aed;
+  --ifm-color-primary-dark: #6d28d9;
+  --ifm-color-primary-darker: #5b21b6;
+  --ifm-color-primary-darkest: #4c1d95;
+  --ifm-color-primary-light: #8b5cf6;
+  --ifm-color-primary-lighter: #a78bfa;
+  --ifm-color-primary-lightest: #c4b5fd;
+  --ifm-code-font-size: 95%;
+  --filter-black: invert(0%) sepia(0%) saturate(0%) hue-rotate(324deg) brightness(96%) contrast(104%);
+  /* See: https://codepen.io/sosuke/pen/Pjoqqp */
+  --filter-white: invert(100%) sepia(0%) saturate(7478%) hue-rotate(19deg) brightness(98%) contrast(105%);
+  /* See: https://codepen.io/sosuke/pen/Pjoqqp */
+}
+
+html[data-theme='light'] .navbar__brand>img {
+  filter: var(--filter-black);
+}
+
+html[data-theme='dark'] .navbar__brand>img {
+  filter: var(--filter-white);
+}
+
+html[data-theme='light'] .hero--primary svg {
+  filter: var(--filter-white);
+}
+
+html[data-theme='dark'] .hero--primary svg {
+  filter: var(--filter-black);
+}
+
+.feature-emoji {
+  font-size: 50px;
+}
+
+.hero__subsubtitle {
+  margin-bottom: 0;
+}
+
+main>section.features {
+  padding-bottom: 8rem;
+}
+
+main>section.features h2 {
+  margin-bottom: 0;
+}
+
+main>section.features .row .col {
+  margin-top: 2rem;
+}
+
+@media (max-width: 576px) {
+  header>.container>h1 {
+    font-size: 2rem;
+  }
+}
+
+.docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+html[data-theme='dark'] .docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* custom */
+.hero__title {
+  font-size: 2.1rem !important;
+}
+
+/* carbon ads */
+#carbonads {
+  position: static;
+  display: block;
+  max-width: 400px;
+  padding: 15px 15px 15px 160px;
+  margin: 2rem 0;
+  overflow: hidden;
+  font-size: .8125rem;
+  line-height: 1.4;
+  text-align: left;
+  background-color: #f8f9fa;
+}
+
+#carbonads a {
+  color: #212529;
+  text-decoration: none
+}
+
+@media (min-width: 576px) {
+  #carbonads {
+      border-radius:.5rem
+  }
+}
+
+.carbon-img {
+  float: left;
+  margin-left: -145px
+}
+
+.carbon-poweredby {
+  display: block;
+  margin-top: .75rem;
+  color: #212529 !important
+}
+
+/* webpack-dev-server-client-overlay */
+#webpack-dev-server-client-overlay {
+  display: none !important;
+}

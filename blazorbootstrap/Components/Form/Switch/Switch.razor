@@ -1,0 +1,20 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@preservewhitespace true
+
+<div class="@ClassNames" style="@StyleNames">
+    <input @ref="@Element"
+           type="checkbox"
+           id="@Id"
+           class="@BootstrapClass.FormCheckInput"
+           disabled="@Disabled"
+           checked="@Value"
+           role="switch"
+           @attributes="@AdditionalAttributes"
+           @onchange="OnChange" />
+
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <label class="form-check-label" for="@Id">@Label</label>
+    }
+</div>

@@ -1,0 +1,15 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<a id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    @if (Enum.IsDefined(typeof(IconName), LinkIcon) && LinkIcon != IconName.None)
+    {
+        <span aria-hidden="true">
+            <Icon Name="LinkIcon"/>
+        </span>
+    }
+    else
+    {
+        @Text
+    }
+</a>

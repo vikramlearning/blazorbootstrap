@@ -1,0 +1,10 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<span @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    @ChildContent
+    @if (!string.IsNullOrWhiteSpace(VisuallyHiddenText))
+    {
+        <span class="visually-hidden">@VisuallyHiddenText</span>
+    }
+</span>

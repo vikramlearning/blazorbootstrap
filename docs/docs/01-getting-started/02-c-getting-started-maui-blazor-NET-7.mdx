@@ -1,0 +1,94 @@
+---
+id: maui-blazor-net-7
+sidebar_label: MAUI Blazor Hybrid App (.NET 7)
+sidebar_position: 7
+title: MAUI Blazor Hybrid App (.NET 7)
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Getting started - MAUI Blazor Hybrid App (.NET 7)
+
+Get started with the Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.
+
+<CarbonAd />
+
+## Install Nuget Package
+
+Looking to quickly add **Blazor Bootstrap** to your project? Use NuGet package manager.
+
+```shell
+Install-Package Blazor.Bootstrap -Version 2.2.1
+```
+
+## Add CSS references
+
+After the <base href="/" /> tag in the **head** section in the **wwwroot/index.html** file, add the following references:
+
+```html showLineNumbers
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+<link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
+```
+
+## Add script references
+
+Insert the following references into the **body** section of the **wwwroot/index.html** file, immediately after the **_framework/blazor.webview.js** reference:
+
+``` js showLineNumbers
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<!-- Add chart.js reference if chart components are used in your application. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.0.1/chart.umd.js" integrity="sha512-gQhCDsnnnUfaRzD8k1L5llCCV6O9HN09zClIzzeJ8OJ9MpGmIlCxm+pdCkqTwqJ4JcjbojFr79rl2F1mzcoLMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Add chartjs-plugin-datalabels.min.js reference if chart components with data label feature is used in your application. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Add sortable.js reference if SortableList component is used in your application. -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+```
+
+:::tip
+**chart.js** reference is optional. Add when the **Chart** components are used in the application.
+:::
+
+## Register services
+
+Add Blazor Bootstrap service in the **MauiProgram.cs**
+
+```cs showLineNumbers
+builder.Services.AddBlazorBootstrap();
+```
+
+Register tag helpers in **_Imports.razor**
+
+```razor showLineNumbers
+@using BlazorBootstrap;
+```
+
+## Remove default references
+
+The default Blazor template includes demonstration code, icons, and Bootstrap. To remove these components, follow these steps:
+
+1. Delete the **bootstrap** and **open-iconic** folders from the **wwwroot** directory:
+
+   - Delete the **wwwroot/css/bootstrap** folder.
+   - Delete the **wwwroot/css/open-iconic** folder.
+
+1. Remove the following line from **wwwroot/index.html** file:
+
+   ``` html showLineNumbers
+   <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+   ```
+
+1. Remove the following line from **wwwroot/css/app.css** file:
+
+   ```css {} showLineNumbers
+   @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+   ```
+
+## Starter template
+
+TODO
+
+## Sample Code
+
+TODO

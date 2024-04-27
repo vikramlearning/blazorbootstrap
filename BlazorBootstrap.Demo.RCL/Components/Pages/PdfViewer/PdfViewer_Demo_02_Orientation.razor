@@ -1,0 +1,17 @@
+<p>@eventLog</p>
+
+<PdfViewer Class="mb-3"
+           Url="https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf"
+           Orientation="Orientation.Landscape"
+           OnDocumentLoaded="OnDocumentLoaded"
+           OnPageChanged="OnPageChanged" />
+
+@code {
+    private string eventLog { get; set; } = $"Last event: ..., CurrentPage: 0, TotalPages: 0";
+
+    private void OnDocumentLoaded(PdfViewerEventArgs args)
+        => eventLog = $"Last event: OnDocumentLoaded, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
+
+    private void OnPageChanged(PdfViewerEventArgs args)
+        => eventLog = $"Last event: OnPageChanged, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
+}

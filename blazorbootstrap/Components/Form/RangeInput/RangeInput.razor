@@ -1,0 +1,27 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TValue
+
+<input @ref="@Element"
+       type="range"
+       id="@Id"
+       class="@($"{ClassNames} {fieldCssClasses} {(showTickMarks ? "bb-form-range-input" : "")}".Trim())"
+       style="@StyleNames"
+       min="@GetInvariantNumber(Min)"
+       max="@GetInvariantNumber(Max)"
+       step="@Step.ToString(CultureInfo.InvariantCulture)"
+       value="@GetInvariantNumber(Value)"
+       list="@(showTickMarks ? $"datalist-{Id}" : "")"
+       disabled="@Disabled"
+       @attributes="@AdditionalAttributes"
+       @onchange="OnChange" />
+
+@if (showTickMarks)
+{
+    <datalist class="bb-range-data-list" id="@($"datalist-{Id}")">
+        @foreach (var item in TickMarks)
+        {
+            <option value="@item.Value" label="@item.Label"></option>
+        }
+    </datalist>
+}
