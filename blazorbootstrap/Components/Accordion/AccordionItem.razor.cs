@@ -93,8 +93,6 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     [CascadingParameter]
     internal Accordion Parent { get; set; } = default!;
 
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <summary>
     /// Gets or sets the <see cref="AccordionItem" /> title.
     /// </summary>

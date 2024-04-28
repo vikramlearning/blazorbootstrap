@@ -11,7 +11,7 @@ public readonly struct CssStyleBuilder
 
     public CssStyleBuilder(string? cssStyle)
     {
-        styleList = new();
+        styleList = new HashSet<string>();
         style = cssStyle;
     }
 
