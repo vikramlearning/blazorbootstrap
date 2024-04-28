@@ -27,12 +27,6 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.FormControl)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -202,10 +196,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
 
         // When pressing 0 first the component falls back to default value
         // We can avoid this by checking for an empty string first
-        if (e.Value is string tmp && tmp != string.Empty)
-        {
-            await SetValueAsync(oldValue, newValue);
-        }
+        if (e.Value is string tmp && tmp != string.Empty) await SetValueAsync(oldValue, newValue);
 
         this.oldValue = Value;
     }
@@ -288,6 +279,11 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.FormControl)
+            .Build();
 
     private string autoComplete => AutoComplete ? "true" : "false";
 

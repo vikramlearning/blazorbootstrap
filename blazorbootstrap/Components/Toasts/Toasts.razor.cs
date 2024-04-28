@@ -4,14 +4,6 @@ public partial class Toasts : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.ToastContainer)
-        .AddClass(BootstrapClass.PositionFixed)
-        .AddClass(Placement.ToToastsPlacementClass())
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -88,6 +80,13 @@ public partial class Toasts : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.ToastContainer)
+            .AddClass(BootstrapClass.PositionFixed)
+            .AddClass(Placement.ToToastsPlacementClass())
+            .Build();
 
     /// <summary>
     /// Auto hide the toast. Default is false.

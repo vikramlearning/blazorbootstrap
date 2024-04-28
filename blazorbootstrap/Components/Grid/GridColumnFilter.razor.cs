@@ -16,10 +16,6 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class).Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override async Task OnInitializedAsync()
     {
         filterOperators = await GetFilterOperatorsAsync(PropertyTypeName!);

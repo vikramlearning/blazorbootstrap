@@ -2,20 +2,15 @@
 
 public partial class Placeholder : BlazorBootstrapComponentBase
 {
-    #region Methods
-
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Placeholder)
-        .AddClass(Width.ToPlaceholderWidthClass())
-        .AddClass(Color.ToPlaceholderColorClass(), Color != PlaceholderColor.None)
-        .AddClass(Size.ToPlaceholderSizeClass(), Size != PlaceholderSize.None)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
-    #endregion
-
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Placeholder)
+            .AddClass(Width.ToPlaceholderWidthClass())
+            .AddClass(Color.ToPlaceholderColorClass(), Color != PlaceholderColor.None)
+            .AddClass(Size.ToPlaceholderSizeClass(), Size != PlaceholderSize.None)
+            .Build();
 
     /// <summary>
     /// Gets or sets the placeholder color. Default is <see cref="PlaceholderColor.None" />.

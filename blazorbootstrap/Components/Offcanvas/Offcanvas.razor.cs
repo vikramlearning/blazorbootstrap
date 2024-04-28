@@ -16,14 +16,6 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Offcanvas)
-        .AddClass(Placement.ToOffcanvasPlacementClass())
-        .AddClass(Size.ToOffcanvasSizeClass())
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -106,6 +98,13 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Offcanvas)
+            .AddClass(Placement.ToOffcanvasPlacementClass())
+            .AddClass(Size.ToOffcanvasSizeClass())
+            .Build();
 
     /// <summary>
     /// Additional body CSS class.

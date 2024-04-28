@@ -14,24 +14,26 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     private CancellationTokenSource cancellationTokenSource = default!;
 
     /// <summary>
-    /// A DotNetObjectReference that allows JavaScript interop with this component.
-    /// </summary>
-    private DotNetObjectReference<SortableList<TItem>>? objRef;
-
-    /// <summary>
     /// A CSS selector used to filter disabled items.
     /// </summary>
     private string filter = ".bb-sortable-list-item-disabled";
+
+    /// <summary>
+    /// A DotNetObjectReference that allows JavaScript interop with this component.
+    /// </summary>
+    private DotNetObjectReference<SortableList<TItem>>? objRef;
 
     #endregion
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass("list-group")
-        .Build();
+    /// <inheritdoc />
+    protected override async ValueTask DisposeAsyncCore(bool disposing)
+    {
+        if (disposing) Data = null!;
 
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
+        await base.DisposeAsyncCore(disposing);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -48,38 +50,35 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    /// <inheritdoc />
-    protected override async ValueTask DisposeAsyncCore(bool disposing)
-    {
-        if (disposing) Data = null!;
-
-        await base.DisposeAsyncCore(disposing);
-    }
-
     [JSInvokable]
     public async Task OnAddJS(int oldIndex, int newIndex)
     {
         if (OnAdd.HasDelegate)
-            await OnAdd.InvokeAsync(new(oldIndex, newIndex));
+            await OnAdd.InvokeAsync(new SortableListEventArgs(oldIndex, newIndex));
     }
 
     [JSInvokable]
     public async Task OnRemoveJS(int oldIndex, int newIndex, string fromListName, string toListName)
     {
         if (OnRemove.HasDelegate)
-            await OnRemove.InvokeAsync(new(oldIndex, newIndex, fromListName, toListName));
+            await OnRemove.InvokeAsync(new SortableListEventArgs(oldIndex, newIndex, fromListName, toListName));
     }
 
     [JSInvokable]
     public async Task OnUpdateJS(int oldIndex, int newIndex)
     {
         if (OnUpdate.HasDelegate)
-            await OnUpdate.InvokeAsync(new(oldIndex, newIndex));
+            await OnUpdate.InvokeAsync(new SortableListEventArgs(oldIndex, newIndex));
     }
 
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass("list-group")
+            .Build();
 
     /// <summary>
     /// Gets or sets a value indicating whether sorting is allowed for the list.
@@ -100,16 +99,16 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     public List<TItem> Data { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets a delegate that determines whether an item should be disabled.
-    /// </summary>
-    [Parameter]
-    public Func<TItem, bool> DisableItem { get; set; } = default!;
-
-    /// <summary>
     /// Gets or sets the CSS class applied to disabled items.
     /// </summary>
     [Parameter]
     public string? DisabledItemCssClass { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets a delegate that determines whether an item should be disabled.
+    /// </summary>
+    [Parameter]
+    public Func<TItem, bool> DisableItem { get; set; } = default!;
 
     /// <summary>
     /// Specifies the template to render when there are no items to display in the list.
@@ -192,7 +191,8 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Provides JavaScript interop functionality for the Sortable List.
     /// </summary>
-    [Inject] private SortableListJsInterop SortableListJsInterop { get; set; } = default!;
+    [Inject]
+    private SortableListJsInterop SortableListJsInterop { get; set; } = default!;
 
     #endregion
 }

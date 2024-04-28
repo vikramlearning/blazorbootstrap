@@ -4,14 +4,6 @@ public partial class Pagination : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Pagination)
-        .AddClass(Size.ToPaginationSizeClass(), Size != PaginationSize.None)
-        .AddClass(Alignment.ToPaginationAlignmentClass(), Alignment != Alignment.None)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     private int GetNextPageNumber()
     {
         var nextPageNumber = 1;
@@ -73,6 +65,13 @@ public partial class Pagination : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Pagination)
+            .AddClass(Size.ToPaginationSizeClass(), Size != PaginationSize.None)
+            .AddClass(Alignment.ToPaginationAlignmentClass(), Alignment != Alignment.None)
+            .Build();
 
     /// <summary>
     /// Active page number. Starts with 1.

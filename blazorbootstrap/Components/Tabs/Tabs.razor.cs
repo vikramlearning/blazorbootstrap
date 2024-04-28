@@ -20,16 +20,6 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Nav)
-        .AddClass(BootstrapClass.NavTabs, NavStyle == NavStyle.Tabs)
-        .AddClass(BootstrapClass.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills))
-        .AddClass(BootstrapClass.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline))
-        .AddClass(BootstrapClass.FlexColumn, IsVertical)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -55,7 +45,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         }
 
         // Show next available tab
-        if(removedTabIndex > -1)
+        if (removedTabIndex > -1)
         {
             await ShowNextAvailableTabAsync(removedTabIndex);
             removedTabIndex = -1;
@@ -123,10 +113,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     [Obsolete("This method is obseolete. Use `ShowRecentTabAsync` method instead.")]
     public void InitializeRecentTab(bool showTab)
     {
-        if (showTab)
-        {
-            showLastTab = true;
-        }
+        if (showTab) showLastTab = true;
     }
 
     /// <summary>
@@ -287,6 +274,15 @@ public partial class Tabs : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Nav)
+            .AddClass(BootstrapClass.NavTabs, NavStyle == NavStyle.Tabs)
+            .AddClass(BootstrapClass.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills))
+            .AddClass(BootstrapClass.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline))
+            .AddClass(BootstrapClass.FlexColumn, IsVertical)
+            .Build();
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

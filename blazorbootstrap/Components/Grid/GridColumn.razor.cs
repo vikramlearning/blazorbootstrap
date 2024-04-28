@@ -20,10 +20,6 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class).Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override async Task OnInitializedAsync()
     {
         Id = IdGenerator.GetNextId(); // Required
@@ -159,7 +155,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                                             var styleList = new List<string>();
 
                                             if (FreezeDirection == FreezeDirection.Left)
+                                            {
                                                 styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
+                                            }
                                             else
                                             {
                                                 styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
@@ -269,7 +267,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                                    var styleList = new List<string>();
 
                                    if (FreezeDirection == FreezeDirection.Left)
+                                   {
                                        styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
+                                   }
                                    else
                                    {
                                        styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
@@ -339,8 +339,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public bool IsDefaultSortColumn { get; set; } = false;
 
-    [CascadingParameter]
-    public Grid<TItem> Parent { get; set; } = default!;
+    [CascadingParameter] public Grid<TItem> Parent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the property name.

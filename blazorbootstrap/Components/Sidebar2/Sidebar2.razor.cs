@@ -20,14 +20,6 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass("bb-sidebar2")
-        .AddClass("collapsed", collapseSidebar)
-        .AddClass("expanded", !collapseSidebar)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -122,6 +114,13 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass("bb-sidebar2")
+            .AddClass("collapsed", collapseSidebar)
+            .AddClass("expanded", !collapseSidebar)
+            .Build();
+
     /// <summary>
     /// Gets or sets the badge text.
     /// </summary>
@@ -136,7 +135,7 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
 
     /// <summary>
     /// DataProvider is for items to render.
-    /// The provider should always return an instance of <see cref="Sidebar2DataProviderResult"/>, and 'null' is not allowed.
+    /// The provider should always return an instance of <see cref="Sidebar2DataProviderResult" />, and 'null' is not allowed.
     /// </summary>
     [Parameter]
     [EditorRequired]

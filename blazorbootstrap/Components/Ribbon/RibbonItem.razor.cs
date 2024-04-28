@@ -4,19 +4,6 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass("bb-ribbon-item")
-        .AddClass(BootstrapClass.Flex)
-        .AddClass(BootstrapClass.FlexColumn)
-        .AddClass(BootstrapClass.AlignItemsCenter)
-        .AddClass("ms-1", IsFirstItem)
-        .AddClass("me-1", IsLastItem)
-        .AddClass("mx-1", !IsFirstItem && !IsLastItem)
-        .AddClass("p-1")        
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <summary>
     /// Triggers the OnRibbonItemClick event of the parent Ribbon component.
     /// </summary>
@@ -30,6 +17,18 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass("bb-ribbon-item")
+            .AddClass(BootstrapClass.Flex)
+            .AddClass(BootstrapClass.FlexColumn)
+            .AddClass(BootstrapClass.AlignItemsCenter)
+            .AddClass("ms-1", IsFirstItem)
+            .AddClass("me-1", IsLastItem)
+            .AddClass("mx-1", !IsFirstItem && !IsLastItem)
+            .AddClass("p-1")
+            .Build();
+
     /// <summary>
     /// Specifies the content to be rendered inside the RibbonItem.
     /// </summary>
@@ -39,27 +38,32 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <summary>
     /// The name of a custom icon to be displayed.
     /// </summary>
-    [Parameter] public string? CustomIconName { get; set; }
+    [Parameter]
+    public string? CustomIconName { get; set; }
 
     /// <summary>
     /// The color of the icon.
     /// </summary>
-    [Parameter] public IconColor IconColor { get; set; }
+    [Parameter]
+    public IconColor IconColor { get; set; }
 
     /// <summary>
     /// CSS class(es) to be applied to the icon element.
     /// </summary>
-    [Parameter] public string? IconCssClass { get; set; }
+    [Parameter]
+    public string? IconCssClass { get; set; }
 
     /// <summary>
     /// The built-in icon to be displayed.
     /// </summary>
-    [Parameter] public IconName IconName { get; set; }
+    [Parameter]
+    public IconName IconName { get; set; }
 
     /// <summary>
     /// The size of the icon. Defaults to x3 (extra large).
     /// </summary>
-    [Parameter] public IconSize IconSize { get; set; } = IconSize.x3;
+    [Parameter]
+    public IconSize IconSize { get; set; } = IconSize.x3;
 
     /// <summary>
     /// The height of the image in pixels.
@@ -70,7 +74,8 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <summary>
     /// The source URL of the image.
     /// </summary>
-    [Parameter] public string? ImgSrc { get; set; }
+    [Parameter]
+    public string? ImgSrc { get; set; }
 
     /// <summary>
     /// The width of the image in pixels.
@@ -81,17 +86,20 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <summary>
     /// True if this is the first item in the RibbonItemGroup.
     /// </summary>
-    [Parameter] public bool IsFirstItem { get; set; } = false;
+    [Parameter]
+    public bool IsFirstItem { get; set; } = false;
 
     /// <summary>
     /// True if this is the last item in the RibbonItemGroup.
     /// </summary>
-    [Parameter] public bool IsLastItem { get; set; } = false;
+    [Parameter]
+    public bool IsLastItem { get; set; } = false;
 
     /// <summary>
     /// The name associated with the RibbonItem.
     /// </summary>
-    [Parameter] public string? Name { get; set; }
+    [Parameter]
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the parent.
@@ -102,7 +110,8 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <summary>
     /// The text content to be displayed inside the RibbonItem.
     /// </summary>
-    [Parameter] public string? Text { get; set; }
+    [Parameter]
+    public string? Text { get; set; }
 
     #endregion
 }

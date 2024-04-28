@@ -14,18 +14,6 @@ public partial class Preload : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Modal)
-        .AddClass(BootstrapClass.PageLoadingModal)
-        .AddClass(BootstrapClass.ModalFade)
-        .AddClass(BootstrapClass.Show, showBackdrop)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style)
-        .AddStyle("display:block", showBackdrop)
-        .AddStyle("display:none", !showBackdrop)
-        .Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -54,8 +42,8 @@ public partial class Preload : BlazorBootstrapComponentBase
     private void OnShow(SpinnerColor spinnerColor, string? loadingText)
     {
         this.spinnerColor = spinnerColor.ToSpinnerColorClass();
-        
-        this.showBackdrop = true;
+
+        showBackdrop = true;
 
         this.loadingText = loadingText;
 
@@ -66,6 +54,20 @@ public partial class Preload : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Modal)
+            .AddClass(BootstrapClass.PageLoadingModal)
+            .AddClass(BootstrapClass.ModalFade)
+            .AddClass(BootstrapClass.Show, showBackdrop)
+            .Build();
+
+    protected override string? StyleNames =>
+        new CssStyleBuilder(Style)
+            .AddStyle("display:block", showBackdrop)
+            .AddStyle("display:none", !showBackdrop)
+            .Build();
+
     /// <summary>
     /// Specifies the content to be rendered inside this.
     /// </summary>
@@ -73,16 +75,16 @@ public partial class Preload : BlazorBootstrapComponentBase
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="PageLoadingService" /> instance.
-    /// </summary>
-    [Inject]
-    private PreloadService PageLoadingService { get; set; } = default!;
-
-    /// <summary>
     /// Gets or sets the loading text.
     /// </summary>
     [Parameter]
     public string? LoadingText { get; set; }
+
+    /// <summary>
+    /// Gets or sets the <see cref="PageLoadingService" /> instance.
+    /// </summary>
+    [Inject]
+    private PreloadService PageLoadingService { get; set; } = default!;
 
     #endregion
 }

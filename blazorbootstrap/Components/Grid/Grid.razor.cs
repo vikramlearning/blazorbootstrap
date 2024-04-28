@@ -41,13 +41,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass("bb-table")
-        .AddClass(BootstrapClass.TableSticky, FixedHeader)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -112,18 +105,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             : columns
               .Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
               ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison));
-
-    private string GetGridParentStyle()
-    {
-        var styleAttributes = new HashSet<string>();
-
-        if (FixedHeader)
-        {
-            styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
-        }
-
-        return string.Join(";", styleAttributes);
-    }
 
     /// <summary>
     /// Refresh the grid data.
@@ -297,8 +278,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         !AllowSorting || columns == null || !columns.Any()
             ? null
             : columns?
-              .Where(column => column.CanSort() && column.IsDefaultSortColumn)?
+              .Where(column => column.CanSort() && column.IsDefaultSortColumn)
+              ?
               .SelectMany(item => item.GetSorting());
+
+    private string GetGridParentStyle()
+    {
+        var styleAttributes = new HashSet<string>();
+
+        if (FixedHeader) styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
+
+        return string.Join(";", styleAttributes);
+    }
 
     private string GetPaginationItemsText()
     {
@@ -442,7 +433,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     {
         checkboxIds ??= new Dictionary<int, string>();
         var currentLength = checkboxIds.Count;
-        var itemsCount = (items?.Count ?? 0);
+        var itemsCount = items?.Count ?? 0;
 
         if (currentLength < itemsCount)
             for (var i = currentLength; i < itemsCount; i++)
@@ -526,6 +517,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass("bb-table")
+            .AddClass(BootstrapClass.TableSticky, FixedHeader)
+            .Build();
+
     /// <summary>
     /// Gets or sets the grid delete.
     /// </summary>
@@ -567,7 +564,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public bool AllowSorting { get; set; }
 
     /// <summary>
-    /// Automatically hides the paging controls when the grid item count is less than or equal to the <see cref="PageSize" /> and this property is set to `true`.
+    /// Automatically hides the paging controls when the grid item count is less than or equal to the <see cref="PageSize" />
+    /// and this property is set to `true`.
     /// </summary>
     [Parameter]
     public bool AutoHidePaging { get; set; }
@@ -688,13 +686,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                                         builder.CloseElement(); // close: th
                                     };
 
-   /// <summary>
+    /// <summary>
     /// Gets or sets the grid height.
     /// </summary>
     [Parameter]
     public float Height { get; set; } = 320;
 
-    [Parameter] 
+    [Parameter]
     //[EditorRequired] 
     public string ItemsPerPageText { get; set; } = "Items per page"!;
 
@@ -786,13 +784,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public string? THeadCssClass { get; set; }
 
+    private int totalPages => GetTotalPagesCount();
+
     /// <summary>
     /// Gets or sets the units.
     /// </summary>
     [Parameter]
     public Unit Unit { get; set; } = Unit.Px;
-
-    private int totalPages => GetTotalPagesCount();
 
     #endregion
 }

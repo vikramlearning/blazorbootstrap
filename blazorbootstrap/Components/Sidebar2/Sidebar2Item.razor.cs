@@ -4,15 +4,6 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass("nav-item")
-        .AddClass($"nav-item-level-{Level}")
-        .AddClass("nav-item-group", HasChilds)
-        .AddClass("active", NavItemGroupExpanded)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override void OnInitialized()
     {
         if (NavLinkExtensions.ShouldExpand(NavigationManager, ChildItems!, Match))
@@ -50,6 +41,14 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass("nav-item")
+            .AddClass($"nav-item-level-{Level}")
+            .AddClass("nav-item-group", HasChilds)
+            .AddClass("active", NavItemGroupExpanded)
+            .Build();
 
     [Parameter] public IEnumerable<NavItem>? ChildItems { get; set; }
 

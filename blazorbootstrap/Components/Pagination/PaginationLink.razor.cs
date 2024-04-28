@@ -4,15 +4,9 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.PaginationLink)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override void OnParametersSet()
     {
-        if (!string.IsNullOrWhiteSpace(LinkAriaLabel)) 
+        if (!string.IsNullOrWhiteSpace(LinkAriaLabel))
             AdditionalAttributes?.Add("aria-label", LinkAriaLabel); // TODO: this is not working revisit again
 
         base.OnParametersSet();
@@ -21,6 +15,11 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.PaginationLink)
+            .Build();
 
     [Parameter] public string? LinkAriaLabel { get; set; }
 

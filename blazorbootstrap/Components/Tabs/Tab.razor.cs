@@ -4,10 +4,6 @@ public partial class Tab : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class).Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
