@@ -16,31 +16,17 @@ public partial class Button : BlazorBootstrapComponentBase
 
     private string? previousTo = default!;
 
+    private TooltipColor previousTooltipColor = default!;
+
     private string previousTooltipTitle = default!;
 
     private ButtonType previousType;
 
     private bool setButtonAttributesAgain = false;
 
-    private TooltipColor previousTooltipColor = default!;
-
     #endregion
 
     #region Methods
-
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Button)
-        .AddClass(Color.ToButtonColorClass(), Color != ButtonColor.None && !Outline)
-        .AddClass(Color.ToButtonOutlineColorClass(), Color != ButtonColor.None && Outline)
-        .AddClass(Size.ToButtonSizeClass(), Size != Size.None)
-        .AddClass(BootstrapClass.ButtonDisabled, Disabled && Type == ButtonType.Link)
-        .AddClass(BootstrapClass.ButtonActive, Active)
-        .AddClass(BootstrapClass.ButtonBlock, Block)
-        .AddClass(BootstrapClass.ButtonLoading!, Loading && LoadingTemplate is not null)
-        .AddClass(Position.ToPositionClass(), Position != Position.None)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
@@ -316,6 +302,19 @@ public partial class Button : BlazorBootstrapComponentBase
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Button)
+            .AddClass(Color.ToButtonColorClass(), Color != ButtonColor.None && !Outline)
+            .AddClass(Color.ToButtonOutlineColorClass(), Color != ButtonColor.None && Outline)
+            .AddClass(Size.ToButtonSizeClass(), Size != Size.None)
+            .AddClass(BootstrapClass.ButtonDisabled, Disabled && Type == ButtonType.Link)
+            .AddClass(BootstrapClass.ButtonActive, Active)
+            .AddClass(BootstrapClass.ButtonBlock, Block)
+            .AddClass(BootstrapClass.ButtonLoading!, Loading && LoadingTemplate is not null)
+            .AddClass(Position.ToPositionClass(), Position != Position.None)
+            .Build();
+
     /// <summary>
     /// Gets or sets the button color.
     /// </summary>
@@ -341,7 +340,7 @@ public partial class Button : BlazorBootstrapComponentBase
     public RenderFragment LoadingTemplate { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the loadgin text.
+    /// Gets or sets the loading text.
     /// <see cref="LoadingTemplate" /> takes precedence.
     /// </summary>
     [Parameter]

@@ -2,17 +2,12 @@
 
 public partial class CardGroup : BlazorBootstrapComponentBase
 {
-    #region Methods
-
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.CardGroup)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
-    #endregion
-
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.CardGroup)
+            .Build();
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

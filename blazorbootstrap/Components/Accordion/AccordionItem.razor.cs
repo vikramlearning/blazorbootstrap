@@ -12,12 +12,6 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.AccordionItem)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override void OnInitialized()
     {
         Id = IdGenerator.GetNextId(); // This is required
@@ -67,6 +61,11 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.AccordionItem)
+            .Build();
+
     private string buttonCollapsedStateCSSClass => isCollapsed ? "collapsed" : string.Empty;
 
     /// <summary>
@@ -93,6 +92,8 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// </summary>
     [CascadingParameter]
     internal Accordion Parent { get; set; } = default!;
+
+    protected string? StyleNames => new CssStyleBuilder(Style).Build();
 
     /// <summary>
     /// Gets or sets the <see cref="AccordionItem" /> title.

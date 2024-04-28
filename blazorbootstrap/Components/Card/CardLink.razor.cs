@@ -4,8 +4,6 @@ public partial class CardLink : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private bool disabled;
-
     private bool isFirstRenderComplete = false;
 
     private bool previousDisabled;
@@ -19,13 +17,6 @@ public partial class CardLink : BlazorBootstrapComponentBase
     #endregion
 
     #region Methods
-
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.CardLink)
-        .AddClass(BootstrapClass.Disabled, Disabled)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -115,6 +106,12 @@ public partial class CardLink : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.CardLink)
+            .AddClass(BootstrapClass.Disabled, Disabled)
+            .Build();
+
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
@@ -125,14 +122,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// When set to 'true', disables the component's functionality and places it in a disabled state.
     /// </summary>
     [Parameter]
-    public bool Disabled
-    {
-        get => disabled;
-        set
-        {
-            disabled = value;
-        }
-    }
+    public bool Disabled { get; set; }
 
     /// <summary>
     /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
