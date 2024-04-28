@@ -22,14 +22,6 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.DropdownItem)
-        .AddClass(BootstrapClass.Active, Active)
-        .AddClass(BootstrapClass.Disabled, Disabled)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
@@ -170,6 +162,13 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.DropdownItem)
+            .AddClass(BootstrapClass.Active, Active)
+            .AddClass(BootstrapClass.Disabled, Disabled)
+            .Build();
 
     /// <summary>
     /// When set to 'true', places the component in the active state with active styling.

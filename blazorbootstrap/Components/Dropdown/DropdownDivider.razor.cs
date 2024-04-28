@@ -2,13 +2,12 @@
 
 public partial class DropdownDivider : BlazorBootstrapComponentBase
 {
-    #region Methods
+    #region Properties, Indexers
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.DropdownDivider)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.DropdownDivider)
+            .Build();
 
     #endregion
 }

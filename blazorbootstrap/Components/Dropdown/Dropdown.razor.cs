@@ -10,13 +10,6 @@ public partial class Dropdown : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.ButtonGroup)
-        .AddClass(Direction.ToDropdownDirectionClass())
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -50,7 +43,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     {
         objRef ??= DotNetObjectReference.Create(this);
 
-        base.OnInitialized();        
+        base.OnInitialized();
     }
 
     [JSInvokable]
@@ -92,6 +85,12 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.ButtonGroup)
+            .AddClass(Direction.ToDropdownDirectionClass())
+            .Build();
 
     /// <summary>
     /// Enables or disables the auto close.
