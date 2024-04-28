@@ -4,9 +4,9 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 {
     #region Fields and Constants
 
-    private bool isAsyncDisposed = false;
+    private bool isAsyncDisposed;
 
-    private bool isDisposed = false;
+    private bool isDisposed;
 
     #endregion
 
@@ -32,17 +32,18 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <seealso cref="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable?view=net-6.0" />
     public void Dispose()
     {
-        Dispose(disposing: true);
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 
     /// <inheritdoc />
-    /// <seealso cref="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#implement-both-dispose-and-async-dispose-patterns" />
+    /// <seealso
+    ///     cref="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#implement-both-dispose-and-async-dispose-patterns" />
     public async ValueTask DisposeAsync()
     {
         await DisposeAsyncCore(true).ConfigureAwait(false);
 
-        Dispose(disposing: false);
+        Dispose(false);
         GC.SuppressFinalize(this);
     }
 
@@ -74,25 +75,19 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
         return ValueTask.CompletedTask;
     }
 
-    ~BlazorBootstrapComponentBase()
-    {
-        Dispose(false);
-    }
-
     #endregion
 
     #region Properties, Indexers
 
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object> AdditionalAttributes { get; set; } = default!;
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; } = default!;
 
-    [Parameter]
-    public string? Class { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    protected virtual string? ClassNames => new CssClassBuilder(Class).Build();
 
     public ElementReference Element { get; set; }
 
-    [Parameter]
-    public string? Id { get; set; }
+    [Parameter] public string? Id { get; set; }
 
     [Inject] protected IIdGenerator IdGenerator { get; set; } = default!;
 
@@ -100,8 +95,18 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
 
-    [Parameter]
-    public string? Style { get; set; }
+    [Parameter] public string? Style { get; set; }
+
+    protected virtual string? StyleNames => new CssStyleBuilder(Style).Build();
+
+    #endregion
+
+    #region Other
+
+    ~BlazorBootstrapComponentBase()
+    {
+        Dispose(false);
+    }
 
     #endregion
 }

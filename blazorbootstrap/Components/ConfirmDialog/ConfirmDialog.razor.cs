@@ -32,17 +32,6 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Modal)
-        .AddClass(BootstrapClass.ConfirmationModal)
-        .AddClass(BootstrapClass.ModalFade)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style)
-        .AddStyle("display:block", showBackdrop)
-        .AddStyle("display:none", !showBackdrop)
-        .Build();
-
     /// <summary>
     /// Shows confirm dialog.
     /// </summary>
@@ -131,6 +120,23 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         return task;
     }
+
+    #endregion
+
+    #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Modal)
+            .AddClass(BootstrapClass.ConfirmationModal)
+            .AddClass(BootstrapClass.ModalFade)
+            .Build();
+
+    protected override string? StyleNames =>
+        new CssStyleBuilder(Style)
+            .AddStyle("display:block", showBackdrop)
+            .AddStyle("display:none", !showBackdrop)
+            .Build();
 
     #endregion
 }

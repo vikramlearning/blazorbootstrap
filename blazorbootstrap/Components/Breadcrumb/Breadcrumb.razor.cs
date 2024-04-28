@@ -4,10 +4,6 @@ public partial class Breadcrumb : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class).Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override ValueTask DisposeAsyncCore(bool disposing)
     {
         if (disposing)

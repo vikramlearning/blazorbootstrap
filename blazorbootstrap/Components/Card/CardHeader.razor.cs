@@ -2,18 +2,13 @@
 
 public partial class CardHeader : BlazorBootstrapComponentBase
 {
-    #region Methods
-
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.CardHeader)
-        .AddClass(Color.ToCardColorClass())
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
-    #endregion
-
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.CardHeader)
+            .AddClass(Color.ToCardColorClass())
+            .Build();
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

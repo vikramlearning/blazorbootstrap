@@ -10,14 +10,6 @@ public partial class Alert : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Alert)
-        .AddClass(Color.ToAlertColorClass(), Color != AlertColor.None)
-        .AddClass(BootstrapClass.AlertDismisable, Dismissable)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -50,7 +42,7 @@ public partial class Alert : BlazorBootstrapComponentBase
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-        
+
         await base.OnInitializedAsync();
     }
 
@@ -68,6 +60,13 @@ public partial class Alert : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Alert)
+            .AddClass(Color.ToAlertColorClass(), Color != AlertColor.None)
+            .AddClass(BootstrapClass.AlertDismisable, Dismissable)
+            .Build();
 
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="Alert" />.

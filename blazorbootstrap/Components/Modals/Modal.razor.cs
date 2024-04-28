@@ -6,8 +6,6 @@ public partial class Modal : BlazorBootstrapComponentBase
 
     private Type? childComponent = default!;
 
-    private IconColor closeIconColor;
-
     private ButtonColor footerButtonColor = ButtonColor.Secondary;
 
     private string footerButtonCSSClass = string.Empty;
@@ -16,26 +14,15 @@ public partial class Modal : BlazorBootstrapComponentBase
 
     private bool isVisible;
 
-    private ModalType modalType = ModalType.Light;
-
     private DotNetObjectReference<Modal> objRef = default!;
 
     private Dictionary<string, object> parameters = default!;
 
     private bool showFooterButton = false;
 
-    private ModalSize size = ModalSize.Regular;
-
     #endregion
 
     #region Methods
-
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Modal)
-        .AddClass(BootstrapClass.ModalFade)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
 
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
@@ -128,7 +115,7 @@ public partial class Modal : BlazorBootstrapComponentBase
         if (modalOption is null)
             throw new ArgumentNullException(nameof(modalOption));
 
-        modalType = modalOption.Type;
+        ModalType = modalOption.Type;
 
         Size = modalOption.Size;
 
@@ -170,6 +157,12 @@ public partial class Modal : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Modal)
+            .AddClass(BootstrapClass.ModalFade)
+            .Build();
+
     /// <summary>
     /// Additional body CSS class.
     /// </summary>
@@ -186,14 +179,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// Gets or sets the close icon color.
     /// </summary>
     [Parameter]
-    public IconColor CloseIconColor
-    {
-        get => closeIconColor;
-        set
-        {
-            closeIconColor = value;
-        }
-    }
+    public IconColor CloseIconColor { get; set; }
 
     /// <summary>
     /// Indicates whether the modal closes when escape key is pressed.
@@ -232,7 +218,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     [Parameter]
     public string HeaderCssClass { get; set; } = default!;
 
-    private string headerCssClassInternal => modalType.ToModalHeaderColorClass();
+    private string headerCssClassInternal => ModalType.ToModalHeaderColorClass();
 
     /// <summary>
     /// Header template.
@@ -274,14 +260,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// Gets or sets the modal type.
     /// </summary>
     [Parameter]
-    public ModalType ModalType
-    {
-        get => modalType;
-        set
-        {
-            modalType = value;
-        }
-    }
+    public ModalType ModalType { get; set; } = ModalType.Light;
 
     /// <summary>
     /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to
@@ -329,14 +308,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// Size of the modal. Default is <see cref="ModalSize.Regular" />.
     /// </summary>
     [Parameter]
-    public ModalSize Size
-    {
-        get => size;
-        set
-        {
-            size = value;
-        }
-    }
+    public ModalSize Size { get; set; } = ModalSize.Regular;
 
     /// <summary>
     /// Gets or sets the tab index.

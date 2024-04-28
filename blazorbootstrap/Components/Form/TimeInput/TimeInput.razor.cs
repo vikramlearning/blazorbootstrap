@@ -27,12 +27,6 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.FormControl)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -250,6 +244,11 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.FormControl)
+            .Build();
 
     private string autoComplete => AutoComplete ? "true" : "false";
 

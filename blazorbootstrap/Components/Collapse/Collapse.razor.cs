@@ -10,13 +10,6 @@ public partial class Collapse : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Collapse)
-        .AddClass(BootstrapClass.CollapseHorizontal, Horizontal)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -83,6 +76,12 @@ public partial class Collapse : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Collapse)
+            .AddClass(BootstrapClass.CollapseHorizontal, Horizontal)
+            .Build();
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

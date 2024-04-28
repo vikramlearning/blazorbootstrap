@@ -11,7 +11,7 @@ public readonly struct CssClassBuilder
 
     public CssClassBuilder(string? cssClass)
     {
-        classList = new();
+        classList = new HashSet<string>();
         @class = cssClass;
     }
 

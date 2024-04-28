@@ -4,16 +4,6 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Button)
-        .AddClass(Color.ToButtonColorClass(), Color != ButtonColor.None)
-        .AddClass(Size.ToButtonSizeClass(), Size != Size.None)
-        .AddClass(BootstrapClass.DropdownToggle)
-        .AddClass(BootstrapClass.DropdownToggleSplit, Split)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override void OnInitialized()
     {
         AdditionalAttributes ??= new Dictionary<string, object>();
@@ -49,6 +39,15 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Button)
+            .AddClass(Color.ToButtonColorClass(), Color != ButtonColor.None)
+            .AddClass(Size.ToButtonSizeClass(), Size != Size.None)
+            .AddClass(BootstrapClass.DropdownToggle)
+            .AddClass(BootstrapClass.DropdownToggleSplit, Split)
+            .Build();
 
     /// <summary>
     /// Enables or disables the auto close.
@@ -86,8 +85,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     [CascadingParameter(Name = "Size")]
     public Size Size { get; set; } = Size.None;
 
-    [CascadingParameter(Name = "Split")]
-    public bool Split { get; set; }
+    [CascadingParameter(Name = "Split")] public bool Split { get; set; }
 
     /// <summary>
     /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.

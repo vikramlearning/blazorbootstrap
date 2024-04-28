@@ -20,14 +20,6 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass("bb-sidebar")
-        .AddClass("collapsed", collapseSidebar)
-        .AddClass("expanded", !collapseSidebar)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -120,6 +112,13 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass("bb-sidebar")
+            .AddClass("collapsed", collapseSidebar)
+            .AddClass("expanded", !collapseSidebar)
+            .Build();
 
     /// <summary>
     /// Gets or sets the badge text.

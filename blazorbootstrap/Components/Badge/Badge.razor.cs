@@ -2,21 +2,6 @@
 
 public partial class Badge : BlazorBootstrapComponentBase
 {
-    #region Methods
-
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Badge)
-        .AddClass(Color.ToBadgeColorClass(), Color != BadgeColor.None)
-        .AddClass(IndicatorType.ToBadgeIndicatorClass(), IndicatorType != BadgeIndicatorType.None)
-        .AddClass(Position.ToPositionClass(), Position != Position.None)
-        .AddClass(Placement.ToBadgePlacementClass(), Placement != BadgePlacement.None)
-        .AddClass("p-2", ChildContent is null)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
-    #endregion
-
     #region Properties, Indexers
 
     /// <summary>
@@ -24,6 +9,16 @@ public partial class Badge : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Badge)
+            .AddClass(Color.ToBadgeColorClass(), Color != BadgeColor.None)
+            .AddClass(IndicatorType.ToBadgeIndicatorClass(), IndicatorType != BadgeIndicatorType.None)
+            .AddClass(Position.ToPositionClass(), Position != Position.None)
+            .AddClass(Placement.ToBadgePlacementClass(), Placement != BadgePlacement.None)
+            .AddClass("p-2", ChildContent is null)
+            .Build();
 
     /// <summary>
     /// Gets or sets the badge color.

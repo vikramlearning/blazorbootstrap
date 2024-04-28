@@ -20,16 +20,6 @@ public partial class Ribbon : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Nav)
-        .AddClass(BootstrapClass.NavTabs, NavStyle == NavStyle.Tabs)
-        .AddClass(BootstrapClass.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills))
-        .AddClass(BootstrapClass.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline))
-        .AddClass(BootstrapClass.FlexColumn, IsVertical)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -115,7 +105,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         var args = new RibbonEventArgs(activeTabTitle!, previousActiveTabTitle!);
         await OnShowing.InvokeAsync(args);
     }
-    
+
     /// <summary>
     /// Removes the tab by index.
     /// </summary>
@@ -280,6 +270,15 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Nav)
+            .AddClass(BootstrapClass.NavTabs, NavStyle == NavStyle.Tabs)
+            .AddClass(BootstrapClass.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills))
+            .AddClass(BootstrapClass.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline))
+            .AddClass(BootstrapClass.FlexColumn, IsVertical)
+            .Build();
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

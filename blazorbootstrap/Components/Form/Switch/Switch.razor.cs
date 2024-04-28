@@ -12,14 +12,6 @@ public partial class Switch : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.FormCheck)
-        .AddClass(BootstrapClass.FormSwitch)
-        .AddClass(BootstrapClass.FormCheckReverse, Reverse)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override async Task OnInitializedAsync()
     {
         oldValue = Value;
@@ -72,6 +64,13 @@ public partial class Switch : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.FormCheck)
+            .AddClass(BootstrapClass.FormSwitch)
+            .AddClass(BootstrapClass.FormCheckReverse, Reverse)
+            .Build();
 
     /// <summary>
     /// Gets or sets the disabled.

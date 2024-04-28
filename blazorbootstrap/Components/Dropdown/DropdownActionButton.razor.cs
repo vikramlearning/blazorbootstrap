@@ -4,14 +4,6 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Button)
-        .AddClass(Color.ToButtonColorClass(), Color != ButtonColor.None)
-        .AddClass(Size.ToButtonSizeClass(), Size != Size.None)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override void OnInitialized()
     {
         AdditionalAttributes ??= new Dictionary<string, object>();
@@ -25,6 +17,13 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Button)
+            .AddClass(Color.ToButtonColorClass(), Color != ButtonColor.None)
+            .AddClass(Size.ToButtonSizeClass(), Size != Size.None)
+            .Build();
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
@@ -48,7 +47,7 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     /// Gets or sets the size of the <see cref="DropdownActionButton" />.
     /// </summary>
     [CascadingParameter(Name = "Size")]
-    public Size Size {  get; set; } = Size.None;
+    public Size Size { get; set; } = Size.None;
 
     /// <summary>
     /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.

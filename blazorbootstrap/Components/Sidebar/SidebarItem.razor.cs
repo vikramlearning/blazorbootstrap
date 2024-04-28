@@ -10,14 +10,6 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass("nav-item")
-        .AddClass("nav-item-group", HasChilds)
-        .AddClass("active", navitemGroupExpanded)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override void OnParametersSet()
     {
         if (!HasChilds || !(ChildItems?.Any() ?? false))
@@ -42,6 +34,13 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass("nav-item")
+            .AddClass("nav-item-group", HasChilds)
+            .AddClass("active", navitemGroupExpanded)
+            .Build();
 
     [Parameter] public IEnumerable<NavItem>? ChildItems { get; set; }
 

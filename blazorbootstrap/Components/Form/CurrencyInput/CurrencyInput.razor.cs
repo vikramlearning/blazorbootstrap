@@ -16,13 +16,6 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.FormControl)
-        .AddClass(TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -400,6 +393,12 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.FormControl)
+            .AddClass(TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None)
+            .Build();
 
     /// <summary>
     /// Allows negative numbers. By default, negative numbers are not allowed.

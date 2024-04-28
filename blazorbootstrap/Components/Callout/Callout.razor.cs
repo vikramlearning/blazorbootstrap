@@ -4,27 +4,20 @@ public partial class Callout : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Callout)
-        .AddClass(Type.ToCalloutTypeClass())
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     private string GetHeading()
     {
         if (!string.IsNullOrWhiteSpace(Heading))
             return Heading;
 
         return Type switch
-        {
-            CalloutType.Default => "NOTE",
-            CalloutType.Info => "INFO",
-            CalloutType.Warning => "WARNING",
-            CalloutType.Danger => "DANGER",
-            CalloutType.Tip or CalloutType.Success => "TIP",
-            _ => ""
-        };
+               {
+                   CalloutType.Default => "NOTE",
+                   CalloutType.Info => "INFO",
+                   CalloutType.Warning => "WARNING",
+                   CalloutType.Danger => "DANGER",
+                   CalloutType.Tip or CalloutType.Success => "TIP",
+                   _ => ""
+               };
     }
 
     private IconName GetIconName() =>
@@ -49,6 +42,12 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Callout)
+            .AddClass(Type.ToCalloutTypeClass())
+            .Build();
 
     private string heading => GetHeading();
 

@@ -10,14 +10,6 @@ public partial class Progress : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Progress)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style)
-        .AddStyle($"height:{height.ToString(CultureInfo.InvariantCulture)}px", height >= 0)
-        .Build();
-
     protected override void OnInitialized()
     {
         height = Height;
@@ -28,6 +20,16 @@ public partial class Progress : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Progress)
+            .Build();
+
+    protected override string? StyleNames =>
+        new CssStyleBuilder(Style)
+            .AddStyle($"height:{height.ToString(CultureInfo.InvariantCulture)}px", height >= 0)
+            .Build();
 
     /// <summary>
     /// Specifies the content to be rendered inside this <see cref="Progress" />.

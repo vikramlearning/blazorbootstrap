@@ -2,17 +2,12 @@
 
 public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
 {
-    #region Methods
-
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.FlexColumn)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
-    #endregion
-
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.FlexColumn)
+            .Build();
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 

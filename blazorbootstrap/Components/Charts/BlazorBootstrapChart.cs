@@ -10,10 +10,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class).Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     //public async Task Stop() { }
 
     //public async Task ToBase64Image() { }
@@ -96,19 +92,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
                 await JSRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), _data, chartOptions);
         }
     }
-    
-    private string GetChartContainerSizeAsStyle()
-    {
-        var style = "";
-
-        if (Width > 0)
-            style += $"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};";
-
-        if (Height > 0)
-            style += $"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()};";
-
-        return style;
-    }
 
     protected string GetChartType() =>
         chartType switch
@@ -123,6 +106,19 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             ChartType.Scatter => "scatter",
             _ => "line" // default
         };
+
+    private string GetChartContainerSizeAsStyle()
+    {
+        var style = "";
+
+        if (Width > 0)
+            style += $"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};";
+
+        if (Height > 0)
+            style += $"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()};";
+
+        return style;
+    }
 
     private object GetChartDataObject(ChartData chartData)
     {
@@ -149,6 +145,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     #endregion
 
     #region Properties, Indexers
+
+    internal string ContainerStyle => GetChartContainerSizeAsStyle();
 
     /// <summary>
     /// Gets or sets chart container height.
@@ -181,8 +179,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// </summary>
     [Parameter]
     public Unit WidthUnit { get; set; } = Unit.Px;
-
-    internal string ContainerStyle => GetChartContainerSizeAsStyle();
 
     #endregion
 }

@@ -16,13 +16,6 @@ public partial class Toast : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Toast)
-        .AddClass(BackgroundColor.White.ToBackgroundClass())
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -37,7 +30,7 @@ public partial class Toast : BlazorBootstrapComponentBase
             {
                 // do nothing
             }
-            
+
             objRef?.Dispose();
         }
 
@@ -154,6 +147,12 @@ public partial class Toast : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Toast)
+            .AddClass(BackgroundColor.White.ToBackgroundClass())
+            .Build();
 
     /// <summary>
     /// Automatically hide the toast after the delay.

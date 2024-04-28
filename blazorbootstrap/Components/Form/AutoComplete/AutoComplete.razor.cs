@@ -24,19 +24,13 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.FormControl)
-        .AddClass(Size.ToAutoCompleteSizeClass())
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
         if (disposing)
         {
             cancellationTokenSource?.Dispose();
+
             try
             {
                 if (IsRenderComplete)
@@ -292,6 +286,12 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.FormControl)
+            .AddClass(Size.ToAutoCompleteSizeClass())
+            .Build();
+
     /// <summary>
     /// DataProvider is for items to render.
     /// The provider should always return an instance of 'AutoCompleteDataProviderResult', and 'null' is not allowed.
@@ -299,6 +299,18 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     [EditorRequired]
     public AutoCompleteDataProviderDelegate<TItem> DataProvider { get; set; } = null!;
+
+    /// <summary>
+    /// Gets all Style attributes for the autocomplete delete button.
+    /// </summary>
+    private string DeleteButtonStyle =>
+        Size switch
+        {
+            AutoCompleteSize.Small => "z-index: 100; top: -2px;",
+            AutoCompleteSize.Default => "z-index: 100; top: 2px;",
+            AutoCompleteSize.Large => "z-index: 100; top: 7px;",
+            _ => "z-index: 100;"
+        };
 
     /// <summary>
     /// Gets or sets the disabled.
@@ -315,17 +327,6 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     public string EmptyText { get; set; } = "No records found.";
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
-
-    /// <summary>
-    /// Gets all Style attributes for the autocomplete delete button.
-    /// </summary>
-    private string DeleteButtonStyle => Size switch
-    {
-        AutoCompleteSize.Small => "z-index: 100; top: -2px;",
-        AutoCompleteSize.Default => "z-index: 100; top: 2px;",
-        AutoCompleteSize.Large => "z-index: 100; top: 7px;",
-        _ => "z-index: 100;",
-    };
 
     /// <summary>
     /// Gets or sets the loading text.

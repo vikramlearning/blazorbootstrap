@@ -2,19 +2,14 @@
 
 public partial class Card : BlazorBootstrapComponentBase
 {
-    #region Methods
-
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Card)
-        .AddClass(TextAlignment.ToTextAlignmentClass())
-        .AddClass(Color.ToCardColorClass())
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
-    #endregion
-
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Card)
+            .AddClass(TextAlignment.ToTextAlignmentClass())
+            .AddClass(Color.ToCardColorClass())
+            .Build();
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

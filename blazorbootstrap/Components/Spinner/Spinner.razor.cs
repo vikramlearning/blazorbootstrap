@@ -1,18 +1,8 @@
-﻿using System.Drawing;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Spinner : BlazorBootstrapComponentBase
 {
     #region Methods
-
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(Type.ToSpinnerTypeClass())
-        .AddClass(Color.ToSpinnerColorClass())
-        .AddClass($"{Type.ToSpinnerTypeClass()}-{Size.ToSpinnerSizeClass()}", Type is (SpinnerType.Border or SpinnerType.Grow))
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
 
     protected override void OnInitialized()
     {
@@ -65,6 +55,13 @@ public partial class Spinner : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(Type.ToSpinnerTypeClass())
+            .AddClass(Color.ToSpinnerColorClass())
+            .AddClass($"{Type.ToSpinnerTypeClass()}-{Size.ToSpinnerSizeClass()}", Type is (SpinnerType.Border or SpinnerType.Grow))
+            .Build();
 
     /// <summary>
     /// Gets or sets the color of the spinner.

@@ -4,14 +4,6 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.PaginationItem)
-        .AddClass(BootstrapClass.PaginationItemActive, Active)
-        .AddClass(BootstrapClass.PaginationItemDisabled, Disabled)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     protected override void OnParametersSet()
     {
         if (Active)
@@ -24,11 +16,18 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.PaginationItem)
+            .AddClass(BootstrapClass.PaginationItemActive, Active)
+            .AddClass(BootstrapClass.PaginationItemDisabled, Disabled)
+            .Build();
+
     /// <summary>
     /// Indicate the currently active page.
     /// </summary>
     [Parameter]
-    public bool Active {  get; set; }
+    public bool Active { get; set; }
 
     [Parameter] public string? AriaLabel { get; set; }
 

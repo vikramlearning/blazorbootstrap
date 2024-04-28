@@ -10,13 +10,6 @@ public partial class Accordion : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Accordion)
-        .AddClass(BootstrapClass.AccordionFlush, Flush)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -192,6 +185,12 @@ public partial class Accordion : BlazorBootstrapComponentBase
     [Parameter]
     [EditorRequired]
     public RenderFragment ChildContent { get; set; } = default!;
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Accordion)
+            .AddClass(BootstrapClass.AccordionFlush, Flush)
+            .Build();
 
     /// <summary>
     /// Gets or sets the flush.

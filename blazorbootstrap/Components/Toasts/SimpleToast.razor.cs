@@ -10,14 +10,6 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
 
     #region Methods
 
-    protected string? ClassNames => new CssClassBuilder(Class)
-        .AddClass(BootstrapClass.Toast)
-        .AddClass(ToastMessage!.Type.ToToastTextColorClass(), ToastMessage is not null)
-        .AddClass(ToastMessage!.Type.ToToastBackgroundColorClass(), ToastMessage is not null)
-        .Build();
-
-    protected string? StyleNames => new CssStyleBuilder(Style).Build();
-
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -70,6 +62,13 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        new CssClassBuilder(Class)
+            .AddClass(BootstrapClass.Toast)
+            .AddClass(ToastMessage!.Type.ToToastTextColorClass(), ToastMessage is not null)
+            .AddClass(ToastMessage!.Type.ToToastBackgroundColorClass(), ToastMessage is not null)
+            .Build();
 
     /// <summary>
     /// Auto hide the toast. Default is false.
