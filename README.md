@@ -1,6 +1,6 @@
 ﻿<p align="center">
   <a href="https://getblazorbootstrap.com/">
-    <img src="https://github.com/vikramlearning/blazorbootstrap/blob/master/BlazorBootstrap.Demo.WebAssembly/wwwroot/images/logo/logo-color.svg" alt="Blazor Bootstrap logo" width="200" height="200">
+    <img src="https://github.com/vikramlearning/blazorbootstrap/blob/main/BlazorBootstrap.Demo.WebAssembly/wwwroot/images/logo/logo-color.svg" alt="Blazor Bootstrap logo" width="200" height="200">
   </a>
 </p>
 
@@ -203,4 +203,4 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ## Copyright and license
 
-Code and documentation copyright 2024 [Blazor Bootstrap](https://docs.blazorbootstrap.com/) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/master/LICENSE.txt).
+Code and documentation copyright 2024 [Blazor Bootstrap](https://docs.blazorbootstrap.com/) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt).
