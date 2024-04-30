@@ -58,14 +58,22 @@
                             <small class="d-lg-none ms-2">LinkedIn</small>
                         </a>
                     </li>
+                    <li class="nav-item col-6 col-lg-auto">
+                        <a class="nav-link py-2 px-0 px-lg-2" href="@openCollectiveUrl" target="_blank" rel="noopener">
+                            <i class="bi bi-opencollective"></i>
+                            <small class="d-lg-none ms-2">Open Collective</small>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 </header>
+
 <main>
     @Body
 </main>
+
 <footer class="bd-footer py-4 py-md-5 mt-5 bg-light">
     <div class="container py-4 py-md-5 px-4 px-md-3">
         <div class="row">
@@ -118,6 +126,7 @@
     private string githubUrl = default!;
     private string twitterUrl = default!;
     private string linkedInUrl = default!;
+    private string openCollectiveUrl = default!;
     private string githubIssuesUrl = default!;
     private string githubDiscussionsUrl = default!;
     private string stackoverflowUrl = default!;
@@ -132,6 +141,7 @@
         githubUrl = $"{Configuration["urls:github"]}";
         twitterUrl = $"{Configuration["urls:twitter"]}";
         linkedInUrl = $"{Configuration["urls:linkedin"]}";
+        openCollectiveUrl = $"{Configuration["urls:opencollective"]}";
         githubIssuesUrl = $"{Configuration["urls:github_issues"]}";
         githubDiscussionsUrl = $"{Configuration["urls:github_discussions"]}";
         stackoverflowUrl = $"{Configuration["urls:stackoverflow"]}";
