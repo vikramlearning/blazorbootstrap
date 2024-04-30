@@ -97,6 +97,16 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
             if (filterOperator == FilterOperator.None)
                 FilterOperator = filterOperator = FilterOperator.Equals;
         }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameEnum)
+        {
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.In;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameGuid)
+        {
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.Equals;
+        }
     }
 
     internal void SetFilterOperator(FilterOperator filterOperator) => FilterOperator = this.filterOperator = filterOperator;
