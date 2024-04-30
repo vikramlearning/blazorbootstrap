@@ -21,6 +21,8 @@
 
 [![NuGet](https://img.shields.io/nuget/vpre/blazor.bootstrap)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
 [![NuGet](https://img.shields.io/nuget/dt/blazor.bootstrap.svg)](https://www.nuget.org/packages/blazor.bootstrap/absoluteLatest)
+[![Backers on Open Collective](https://img.shields.io/opencollective/backers/blazorbootstrap?logo=opencollective&logoColor=fff)](#backers)
+[![Sponsors on Open Collective](https://img.shields.io/opencollective/sponsors/blazorbootstrap?logo=opencollective&logoColor=fff)](#sponsors)
 
 ## Docs & Demos
 
@@ -200,6 +202,29 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ## Creators
 
 **Vikram Reddy**
+
+- <https://twitter.com/gvreddy04>
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/blazorbootstrap#sponsor)]
+
+[![OC sponsor 0](https://opencollective.com/blazorbootstrap/sponsor/0/avatar.svg)](https://opencollective.com/blazorbootstrap/sponsor/0/website)
+[![OC sponsor 1](https://opencollective.com/blazorbootstrap/sponsor/1/avatar.svg)](https://opencollective.com/blazorbootstrap/sponsor/1/website)
+[![OC sponsor 2](https://opencollective.com/blazorbootstrap/sponsor/2/avatar.svg)](https://opencollective.com/blazorbootstrap/sponsor/2/website)
+[![OC sponsor 3](https://opencollective.com/blazorbootstrap/sponsor/3/avatar.svg)](https://opencollective.com/blazorbootstrap/sponsor/3/website)
+[![OC sponsor 4](https://opencollective.com/blazorbootstrap/sponsor/4/avatar.svg)](https://opencollective.com/blazorbootstrap/sponsor/4/website)
+[![OC sponsor 5](https://opencollective.com/blazorbootstrap/sponsor/5/avatar.svg)](https://opencollective.com/blazorbootstrap/sponsor/5/website)
+[![OC sponsor 6](https://opencollective.com/blazorbootstrap/sponsor/6/avatar.svg)](https://opencollective.com/blazorbootstrap/sponsor/6/website)
+[![OC sponsor 7](https://opencollective.com/blazorbootstrap/sponsor/7/avatar.svg)](https://opencollective.com/blazorbootstrap/sponsor/7/website)
+[![OC sponsor 8](https://opencollective.com/blazorbootstrap/sponsor/8/avatar.svg)](https://opencollective.com/blazorbootstrap/sponsor/8/website)
+[![OC sponsor 9](https://opencollective.com/blazorbootstrap/sponsor/9/avatar.svg)](https://opencollective.com/blazorbootstrap/sponsor/9/website)
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/blazorbootstrap#backer)]
+
+[![Backers](https://opencollective.com/blazorbootstrap/backers.svg?width=890)](https://opencollective.com/blazorbootstrap#backers)
 
 ## Copyright and license
 
