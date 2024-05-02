@@ -97,6 +97,16 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
             if (filterOperator == FilterOperator.None)
                 FilterOperator = filterOperator = FilterOperator.Equals;
         }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameEnum)
+        {
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.In;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameGuid)
+        {
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.Equals;
+        }
     }
 
     internal void SetFilterOperator(FilterOperator filterOperator) => FilterOperator = this.filterOperator = filterOperator;
@@ -125,55 +135,55 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     internal RenderFragment<TItem> CellTemplate =>
         cellTemplate ??= rowData => builder =>
-                                    {
-                                        builder.OpenElement(100, "td");
+        {
+            builder.OpenElement(100, "td");
 
-                                        var classList = new List<string>();
+            var classList = new List<string>();
 
-                                        // default class names
-                                        if (!string.IsNullOrWhiteSpace(ClassNames))
-                                            classList.Add(ClassNames);
+            // default class names
+            if (!string.IsNullOrWhiteSpace(ClassNames))
+                classList.Add(ClassNames);
 
-                                        // text alignment
-                                        if (TextAlignment != Alignment.None)
-                                            classList.Add(TextAlignment.ToTextAlignmentClass());
+            // text alignment
+            if (TextAlignment != Alignment.None)
+                classList.Add(TextAlignment.ToTextAlignmentClass());
 
-                                        // text nowrap
-                                        if (TextNoWrap)
-                                            classList.Add(BootstrapClass.TextNoWrap);
+            // text nowrap
+            if (TextNoWrap)
+                classList.Add(BootstrapClass.TextNoWrap);
 
-                                        // custom column class
-                                        var columnClass = ColumnClass?.Invoke(rowData) ?? "";
+            // custom column class
+            var columnClass = ColumnClass?.Invoke(rowData) ?? "";
 
-                                        if (!string.IsNullOrWhiteSpace(columnClass))
-                                            classList.Add(columnClass);
+            if (!string.IsNullOrWhiteSpace(columnClass))
+                classList.Add(columnClass);
 
-                                        if (Freeze)
-                                        {
-                                            classList.Add("freeze-column");
+            if (Freeze)
+            {
+                classList.Add("freeze-column");
 
-                                            var styleList = new List<string>();
+                var styleList = new List<string>();
 
-                                            if (FreezeDirection == FreezeDirection.Left)
-                                            {
-                                                styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
-                                            }
-                                            else
-                                            {
-                                                styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
+                if (FreezeDirection == FreezeDirection.Left)
+                {
+                    styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
+                }
+                else
+                {
+                    styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
 
-                                                classList.Add("freeze-column-right");
-                                            }
+                    classList.Add("freeze-column-right");
+                }
 
-                                            builder.AddAttribute(101, "style", string.Join(";", styleList));
-                                        }
+                builder.AddAttribute(101, "style", string.Join(";", styleList));
+            }
 
-                                        if (classList.Any())
-                                            builder.AddAttribute(102, "class", string.Join(" ", classList));
+            if (classList.Any())
+                builder.AddAttribute(102, "class", string.Join(" ", classList));
 
-                                        builder.AddContent(103, ChildContent, rowData);
-                                        builder.CloseElement();
-                                    };
+            builder.AddContent(103, ChildContent, rowData);
+            builder.CloseElement();
+        };
 
     /// <summary>
     /// Specifies the content to be rendered inside the grid column.
@@ -247,79 +257,79 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     internal RenderFragment HeaderTemplate =>
         headerTemplate ??= builder =>
-                           {
-                               // th > span "title", span > i "icon"
-                               builder.OpenElement(101, "th");
+        {
+            // th > span "title", span > i "icon"
+            builder.OpenElement(101, "th");
 
-                               var classList = new List<string>();
+            var classList = new List<string>();
 
-                               // default class names
-                               if (!string.IsNullOrWhiteSpace(ClassNames))
-                                   classList.Add(ClassNames);
+            // default class names
+            if (!string.IsNullOrWhiteSpace(ClassNames))
+                classList.Add(ClassNames);
 
-                               if (HeaderContent is null && HeaderTextAlignment != Alignment.None)
-                                   classList.Add(HeaderTextAlignment.ToTextAlignmentClass());
+            if (HeaderContent is null && HeaderTextAlignment != Alignment.None)
+                classList.Add(HeaderTextAlignment.ToTextAlignmentClass());
 
-                               if (Freeze)
-                               {
-                                   classList.Add("freeze-column");
+            if (Freeze)
+            {
+                classList.Add("freeze-column");
 
-                                   var styleList = new List<string>();
+                var styleList = new List<string>();
 
-                                   if (FreezeDirection == FreezeDirection.Left)
-                                   {
-                                       styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
-                                   }
-                                   else
-                                   {
-                                       styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
+                if (FreezeDirection == FreezeDirection.Left)
+                {
+                    styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
+                }
+                else
+                {
+                    styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Parent.Unit.ToCssString()}");
 
-                                       classList.Add("freeze-column-right");
-                                   }
+                    classList.Add("freeze-column-right");
+                }
 
-                                   builder.AddAttribute(102, "style", string.Join(";", styleList));
-                               }
+                builder.AddAttribute(102, "style", string.Join(";", styleList));
+            }
 
-                               builder.AddAttribute(103, "class", string.Join(" ", classList));
+            builder.AddAttribute(103, "class", string.Join(" ", classList));
 
-                               if (HeaderContent is null)
-                               {
-                                   if (CanSort())
-                                   {
-                                       builder.AddAttribute(104, "role", "button");
-                                       builder.AddAttribute(105, "onclick", async () => await OnSortClickAsync());
-                                   }
+            if (HeaderContent is null)
+            {
+                if (CanSort())
+                {
+                    builder.AddAttribute(104, "role", "button");
+                    builder.AddAttribute(105, "onclick", async () => await OnSortClickAsync());
+                }
 
-                                   builder.OpenElement(106, "span"); // open: span
-                                   builder.AddAttribute(107, "class", "me-2");
-                                   builder.AddContent(108, HeaderText);
-                                   builder.CloseElement(); // close: span
+                builder.OpenElement(106, "span"); // open: span
+                builder.AddAttribute(107, "class", "me-2");
+                builder.AddContent(108, HeaderText);
+                builder.CloseElement(); // close: span
 
-                                   if (CanSort())
-                                   {
-                                       builder.OpenElement(109, "span"); // open: span
-                                       builder.OpenElement(110, "i"); // open: i
+                if (CanSort())
+                {
+                    builder.OpenElement(109, "span"); // open: span
+                    builder.OpenElement(110, "i"); // open: i
 
-                                       var sortIcon = "bi bi-arrow-down-up"; // default icon
+                    var sortIcon = "bi bi-arrow-down-up"; // default icon
 
-                                       if (currentSortDirection is not SortDirection.None and SortDirection.Ascending)
-                                           sortIcon = "bi bi-sort-alpha-down";
-                                       else if (currentSortDirection is not SortDirection.None and SortDirection.Descending)
-                                           sortIcon = "bi bi-sort-alpha-down-alt";
+                    if (currentSortDirection is not SortDirection.None and SortDirection.Ascending)
+                        sortIcon = "bi bi-sort-alpha-down";
+                    else if (currentSortDirection is not SortDirection.None and SortDirection.Descending)
+                        sortIcon = "bi bi-sort-alpha-down-alt";
 
-                                       builder.AddAttribute(111, "class", sortIcon);
-                                       builder.CloseElement(); // close: i
-                                       builder.CloseElement(); // close: span
-                                   }
-                               }
-                               else
-                               {
-                                   // If headercontent is used, filters and sorting wont be added.
-                                   builder.AddContent(112, HeaderContent);
-                               }
+                    builder.AddAttribute(111, "class", sortIcon);
+                    builder.CloseElement(); // close: i
+                    builder.CloseElement(); // close: span
+                }
+            }
+            else
+            {
+                // If headercontent is used, filters and sorting wont be added.
+                builder.AddContent(112, HeaderContent);
+            }
 
-                               builder.CloseElement(); // close: th
-                           };
+            builder.CloseElement(); // close: th
+        };
 
     /// <summary>
     /// Gets or sets the table column header.

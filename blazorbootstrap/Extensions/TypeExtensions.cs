@@ -18,7 +18,9 @@ public static class TypeExtensions
         if (type is null || string.IsNullOrWhiteSpace(propertyName))
             return string.Empty;
 
-        var propertyTypeName = type.GetProperty(propertyName)?.PropertyType?.ToString();
+        var propType = type.GetProperty(propertyName)?.PropertyType;
+        
+        var propertyTypeName = propType?.ToString();
 
         if (string.IsNullOrWhiteSpace(propertyTypeName))
             return string.Empty;

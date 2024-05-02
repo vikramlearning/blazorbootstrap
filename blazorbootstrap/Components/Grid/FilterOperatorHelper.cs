@@ -21,6 +21,22 @@ public static class FilterOperatorHelper
                                               new FilterOperatorInfo("<=", "Less than or equals", FilterOperator.LessThanOrEquals),
                                               new FilterOperatorInfo(">", "Greater than", FilterOperator.GreaterThan),
                                               new FilterOperatorInfo(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals),
+                                              new FilterOperatorInfo("[..]", "Between", FilterOperator.Between),
+                                              new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
+                                          };
+
+        return result;
+    }
+
+    public static IEnumerable<FilterOperatorInfo> GetEnumFilterOperators()
+    {
+        List<FilterOperatorInfo> result = new()
+                                          {
+                                              new FilterOperatorInfo("*a*", "Contains", FilterOperator.Contains),
+                                              new FilterOperatorInfo("!*a*", "Does not contain", FilterOperator.DoesNotContain),
+                                              new FilterOperatorInfo("=", "Equals", FilterOperator.Equals),
+                                              new FilterOperatorInfo("!=", "Not equals", FilterOperator.NotEquals),
+                                              new FilterOperatorInfo("in", "In", FilterOperator.In),
                                               new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
                                           };
 
@@ -37,7 +53,7 @@ public static class FilterOperatorHelper
 
         foreach (var filter in defaultFilters)
         {
-            var filterTranslation = filtersTranslations.FirstOrDefault(X => X.FilterOperator == filter.FilterOperator);
+            var filterTranslation = filtersTranslations.FirstOrDefault(x => x.FilterOperator == filter.FilterOperator);
 
             if (filterTranslation is null)
                 filters.Add(filter);
@@ -68,7 +84,23 @@ public static class FilterOperatorHelper
 
         if (propertyTypeName == StringConstants.PropertyTypeNameBoolean) return GetBooleanFilterOperators();
 
+        if (propertyTypeName == StringConstants.PropertyTypeNameEnum) return GetEnumFilterOperators();
+
+        if (propertyTypeName == StringConstants.PropertyTypeNameGuid) return GetGuidFilterOperators();
+
         return new List<FilterOperatorInfo>();
+    }
+
+    public static IEnumerable<FilterOperatorInfo> GetGuidFilterOperators()
+    {
+        List<FilterOperatorInfo> result = new()
+                                          {
+                                              new FilterOperatorInfo("*a*", "Contains", FilterOperator.Contains), 
+                                              new FilterOperatorInfo("=", "Equals", FilterOperator.Equals), 
+                                              new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
+                                          };
+
+        return result;
     }
 
     public static IEnumerable<FilterOperatorInfo> GetNumberFilterOperators()
@@ -81,6 +113,7 @@ public static class FilterOperatorHelper
                                               new FilterOperatorInfo("<=", "Less than or equals", FilterOperator.LessThanOrEquals),
                                               new FilterOperatorInfo(">", "Greater than", FilterOperator.GreaterThan),
                                               new FilterOperatorInfo(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals),
+                                              new FilterOperatorInfo("[..]", "Between", FilterOperator.Between),
                                               new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
                                           };
 
@@ -92,7 +125,7 @@ public static class FilterOperatorHelper
         List<FilterOperatorInfo> result = new()
                                           {
                                               new FilterOperatorInfo("*a*", "Contains", FilterOperator.Contains),
-                                              //result.Add(new("!*a*", "Does not contain", FilterOperator.DoesNotContain));
+                                              new FilterOperatorInfo("!*a*", "Does not contain", FilterOperator.DoesNotContain),
                                               new FilterOperatorInfo("a**", "Starts with", FilterOperator.StartsWith),
                                               new FilterOperatorInfo("**a", "Ends with", FilterOperator.EndsWith),
                                               //result.Add(new("=''", "Is empty", FilterOperator.IsEmpty));

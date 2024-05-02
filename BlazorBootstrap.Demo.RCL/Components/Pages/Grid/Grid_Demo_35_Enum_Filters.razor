@@ -1,0 +1,71 @@
+﻿<Grid @ref="grid"
+      TItem="User"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="UsersDataProvider"
+      AllowFiltering="true"
+      Responsive="true">
+
+    <GridColumn TItem="User" HeaderText="Id" PropertyName="Id">
+        @context.Id
+    </GridColumn>
+    <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name">
+        @context.Name
+    </GridColumn>
+    <GridColumn TItem="User" HeaderText="DOJ" PropertyName="DOJ">
+        @context.DOB
+    </GridColumn>
+    <GridColumn TItem="User" HeaderText="Status" PropertyName="Status">
+        @context.Status
+    </GridColumn>
+
+</Grid>
+
+@code {
+    BlazorBootstrap.Grid<User> grid = default!;
+    private IEnumerable<User> users = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task<GridDataProviderResult<User>> UsersDataProvider(GridDataProviderRequest<User> request)
+    {
+        if (users is null) // pull employees only one time for client-side filtering, sorting, and paging
+            users = GetUsers(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(users));
+    }
+
+    private IEnumerable<User> GetUsers()
+    {
+        return new List<User>
+        {
+            new User { Id = 107, Name = "Alice", DOB = new DateOnly(1998, 11, 17), Status = UserStatus.Registered },
+            new User { Id = null, Name = "Bob", DOB = new DateOnly(1985, 1, 5), Status = UserStatus.Registered },
+            new User { Id = 106, Name = "John", DOB = new DateOnly(1995, 4, 17), Status = UserStatus.Registered },
+            new User { Id = 104, Name = "Pop", DOB = new DateOnly(1985, 6, 8), Status = UserStatus.Registered },
+            new User { Id = 105, Name = "Ronald", DOB = new DateOnly(1991, 8, 23), Status = UserStatus.Registered },
+            new User { Id = 102, Name = "Line", DOB = new DateOnly(1977, 1, 12), Status = UserStatus.Registered },
+            new User { Id = 101, Name = "Daniel", DOB = new DateOnly(1977, 1, 12), Status = UserStatus.Registered },
+            new User { Id = 108, Name = "Zayne", DOB = new DateOnly(1991, 1, 1), Status = UserStatus.Registered },
+            new User { Id = 109, Name = "Isha", DOB = null, Status = UserStatus.Registered },
+            new User { Id = 110, Name = "Vijay", DOB = new DateOnly(1990, 7, 1), Status = UserStatus.Registered },
+        };
+    }
+
+    public record class User
+    {
+        public int? Id { get; set; }
+        public string? Name { get; set; }
+        public DateOnly? DOB { get; set; }
+        public UserStatus Status { get; set; }
+    }
+
+    public enum UserStatus
+    {
+        Registered,
+        VerificationPending,
+        Verified
+    }
+}
