@@ -56,6 +56,7 @@
                                                       FiltersTranslationProvider="GridFiltersTranslationProviderAsync"
                                                       FixedHeader="@FixedHeader"
                                                       GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
+                                                      PropertyType="@column.GetPropertyType()"
                                                       PropertyTypeName="@column.GetPropertyTypeName()"
                                                       Unit="@Unit" />
                                 }
