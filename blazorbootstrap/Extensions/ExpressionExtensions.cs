@@ -308,7 +308,7 @@ public static class ExpressionExtensions
     {
         ConstantExpression? value = null;
 
-        if(propertyType is not null && propertyType.IsEnum)
+        if (propertyType is not null && propertyType.IsEnum)
         {
             _ = Enum.TryParse(propertyType, filterItem.Value, out object filterValue);
             value = Expression.Constant(filterValue);
@@ -335,6 +335,36 @@ public static class ExpressionExtensions
 
     #endregion Enum
 
+    #region Guid
+
+    public static ConstantExpression GetGuidConstantExpression<TItem>(FilterItem filterItem, string propertyTypeName)
+    {
+        ConstantExpression? value = null;
+
+        _ = Guid.TryParse(filterItem.Value, out Guid filterValue);
+        value = Expression.Constant(filterValue);
+
+        return value!;
+    }
+
+    public static Expression<Func<TItem, bool>> GetGuidEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.Equal(property, GetGuidConstantExpression<TItem>(filterItem, propertyTypeName));
+
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetGuidNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.NotEqual(property, GetGuidConstantExpression<TItem>(filterItem, propertyTypeName));
+
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    #endregion Guid
+
     public static Expression<Func<TItem, bool>>? GetExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyType = typeof(TItem).GetPropertyType(filterItem.PropertyName);
@@ -347,56 +377,65 @@ public static class ExpressionExtensions
                                 or StringConstants.PropertyTypeNameDecimal
                                 or StringConstants.PropertyTypeNameDouble)
             return filterItem.Operator switch
-                   {
-                       FilterOperator.Equals => GetNumberEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.NotEquals => GetNumberNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.LessThan => GetNumberLessThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.LessThanOrEquals => GetNumberLessThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.GreaterThan => GetNumberGreaterThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.GreaterThanOrEquals => GetNumberGreaterThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       _ => GetNumberEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName)
-                   };
+            {
+                FilterOperator.Equals => GetNumberEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.NotEquals => GetNumberNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.LessThan => GetNumberLessThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.LessThanOrEquals => GetNumberLessThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.GreaterThan => GetNumberGreaterThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.GreaterThanOrEquals => GetNumberGreaterThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                _ => GetNumberEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName)
+            };
 
         if (propertyTypeName is StringConstants.PropertyTypeNameString
                                 or StringConstants.PropertyTypeNameChar)
             return filterItem.Operator switch
-                   {
-                       FilterOperator.Contains => GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem),
-                       FilterOperator.StartsWith => GetStringStartsWithExpressionDelegate<TItem>(parameterExpression, filterItem),
-                       FilterOperator.EndsWith => GetStringEndsWithExpressionDelegate<TItem>(parameterExpression, filterItem),
-                       FilterOperator.Equals => GetStringEqualsExpressionDelegate<TItem>(parameterExpression, filterItem),
-                       FilterOperator.NotEquals => GetStringNotEqualsExpressionDelegate<TItem>(parameterExpression, filterItem),
-                       _ => GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem)
-                   };
+            {
+                FilterOperator.Contains => GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem),
+                FilterOperator.StartsWith => GetStringStartsWithExpressionDelegate<TItem>(parameterExpression, filterItem),
+                FilterOperator.EndsWith => GetStringEndsWithExpressionDelegate<TItem>(parameterExpression, filterItem),
+                FilterOperator.Equals => GetStringEqualsExpressionDelegate<TItem>(parameterExpression, filterItem),
+                FilterOperator.NotEquals => GetStringNotEqualsExpressionDelegate<TItem>(parameterExpression, filterItem),
+                _ => GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem)
+            };
 
         if (propertyTypeName is StringConstants.PropertyTypeNameDateOnly
                                 or StringConstants.PropertyTypeNameDateTime)
             return filterItem.Operator switch
-                   {
-                       FilterOperator.Equals => GetDateEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.NotEquals => GetDateNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.LessThan => GetDateLessThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.LessThanOrEquals => GetDateLessThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.GreaterThan => GetDateGreaterThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.GreaterThanOrEquals => GetDateGreaterThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       _ => GetDateEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName)
-                   };
+            {
+                FilterOperator.Equals => GetDateEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.NotEquals => GetDateNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.LessThan => GetDateLessThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.LessThanOrEquals => GetDateLessThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.GreaterThan => GetDateGreaterThanExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.GreaterThanOrEquals => GetDateGreaterThanOrEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                _ => GetDateEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName)
+            };
 
         if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
             return filterItem.Operator switch
-                   {
-                       FilterOperator.Equals => GetBooleanEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       FilterOperator.NotEquals => GetBooleanNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                       _ => GetBooleanEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName)
-                   };
+            {
+                FilterOperator.Equals => GetBooleanEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.NotEquals => GetBooleanNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                _ => GetBooleanEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName)
+            };
 
         // Enum
         if (propertyTypeName == StringConstants.PropertyTypeNameEnum)
             return filterItem.Operator switch
             {
-                FilterOperator.Equals => GetEnumEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType, propertyTypeName),
-                FilterOperator.NotEquals => GetEnumNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType, propertyTypeName),
-                _ => GetEnumEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType, propertyTypeName)
+                FilterOperator.Equals => GetEnumEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType!, propertyTypeName),
+                FilterOperator.NotEquals => GetEnumNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType!, propertyTypeName),
+                _ => GetEnumEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType!, propertyTypeName)
+            };
+
+        // Guid
+        if (propertyTypeName == StringConstants.PropertyTypeNameGuid)
+            return filterItem.Operator switch
+            {
+                FilterOperator.Equals => GetGuidEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                FilterOperator.NotEquals => GetGuidNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
+                _ => GetGuidEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName)
             };
 
         return null;

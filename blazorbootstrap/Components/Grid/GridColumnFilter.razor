@@ -76,7 +76,7 @@
             </DropdownMenu>
         </Dropdown>
     }
-    else // string
+    else // guid or string
     {
         <input class="form-control" style="@filterStyle" type="text" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
     }
