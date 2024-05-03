@@ -16,6 +16,8 @@ public static class ExpressionExtensions
         return Expression.Lambda<Func<TItem, bool>>(body, parameterExpression);
     }
 
+    #region Boolean
+
     public static ConstantExpression GetBooleanConstantExpression(FilterItem filterItem, string propertyTypeName)
     {
         ConstantExpression? value = null;
@@ -44,6 +46,10 @@ public static class ExpressionExtensions
 
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
+
+    #endregion Boolean
+
+    #region Date
 
     public static ConstantExpression GetDateConstantExpression(FilterItem filterItem, string propertyTypeName)
     {
@@ -294,8 +300,44 @@ public static class ExpressionExtensions
         return Expression.Lambda<Func<TItem, bool>>(nonNullComparisonExpression, parameterExpression);
     }
 
+    #endregion Date
+
+    #region Enum
+
+    public static ConstantExpression GetEnumConstantExpression<TItem>(FilterItem filterItem, Type propertyType, string propertyTypeName)
+    {
+        ConstantExpression? value = null;
+
+        if(propertyType is not null && propertyType.IsEnum)
+        {
+            _ = Enum.TryParse(propertyType, filterItem.Value, out object filterValue);
+            value = Expression.Constant(filterValue);
+        }
+
+        return value!;
+    }
+
+    public static Expression<Func<TItem, bool>> GetEnumEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, Type propertyType, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.Equal(property, GetEnumConstantExpression<TItem>(filterItem, propertyType, propertyTypeName));
+
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetEnumNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, Type propertyType, string propertyTypeName)
+    {
+        var property = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var expression = Expression.NotEqual(property, GetEnumConstantExpression<TItem>(filterItem, propertyType, propertyTypeName));
+
+        return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
+    }
+
+    #endregion Enum
+
     public static Expression<Func<TItem, bool>>? GetExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
+        var propertyType = typeof(TItem).GetPropertyType(filterItem.PropertyName);
         var propertyTypeName = typeof(TItem).GetPropertyTypeName(filterItem.PropertyName);
 
         if (propertyTypeName is StringConstants.PropertyTypeNameInt16
@@ -348,8 +390,19 @@ public static class ExpressionExtensions
                        _ => GetBooleanEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName)
                    };
 
+        // Enum
+        if (propertyTypeName == StringConstants.PropertyTypeNameEnum)
+            return filterItem.Operator switch
+            {
+                FilterOperator.Equals => GetEnumEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType, propertyTypeName),
+                FilterOperator.NotEquals => GetEnumNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType, propertyTypeName),
+                _ => GetEnumEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType, propertyTypeName)
+            };
+
         return null;
     }
+
+    #region Number
 
     public static ConstantExpression GetNumberConstantExpression(FilterItem filterItem, string propertyTypeName)
     {
@@ -560,6 +613,10 @@ public static class ExpressionExtensions
         return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
 
+    #endregion Number
+
+    #region String
+
     public static Expression<Func<TItem, bool>> GetStringContainsExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
@@ -655,6 +712,8 @@ public static class ExpressionExtensions
 
         return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }
+
+    #endregion String
 
     public static bool IsNullableType(this Type type) => Nullable.GetUnderlyingType(type) != null;
 

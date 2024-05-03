@@ -18,7 +18,24 @@ public static class TypeExtensions
         if (type is null || string.IsNullOrWhiteSpace(propertyName))
             return string.Empty;
 
-        var propertyTypeName = type.GetProperty(propertyName)?.PropertyType?.ToString();
+        var propertyType = type.GetProperty(propertyName)?.PropertyType;
+        if (propertyType is null)
+            return string.Empty;
+
+        var propertyTypeName = propertyType?.ToString();
+
+        //if(propertyTypeName is null) // Nullable type scenario
+        //{
+        //    var props = type.GetProperties();
+        //    if(props.Length > 0)
+        //    {
+        //        var propertyInfo = props?.FirstOrDefault(x=>x.Name == propertyName);
+        //        if (propertyInfo is null)
+        //            throw new InvalidDataException($"PropertyName `{propertyName}` is invalid.");
+
+        //        propertyTypeName = Nullable.GetUnderlyingType(propertyInfo.PropertyType)?.FullName;
+        //    }
+        //}
 
         if (string.IsNullOrWhiteSpace(propertyTypeName))
             return string.Empty;
@@ -56,7 +73,24 @@ public static class TypeExtensions
         if (propertyTypeName.Contains(StringConstants.PropertyTypeNameBoolean, StringComparison.InvariantCulture))
             return StringConstants.PropertyTypeNameBoolean;
 
+        if (propertyType!.IsEnum)
+            return StringConstants.PropertyTypeNameEnum;
+
         return string.Empty;
+    }
+
+    /// <summary>
+    /// Get property type.
+    /// </summary>
+    /// <param name="type"></param>
+    /// <param name="propertyName"></param>
+    /// <returns>Type?</returns>
+    public static Type? GetPropertyType(this Type type, string propertyName)
+    {
+        if (type is null || string.IsNullOrWhiteSpace(propertyName))
+            return null;
+
+        return type.GetProperty(propertyName)?.PropertyType;
     }
 
     #endregion

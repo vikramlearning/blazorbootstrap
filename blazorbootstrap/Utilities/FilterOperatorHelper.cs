@@ -27,6 +27,18 @@ public static class FilterOperatorHelper
         return result;
     }
 
+    public static IEnumerable<FilterOperatorInfo> GetEnumFilterOperators()
+    {
+        List<FilterOperatorInfo> result = new()
+                                          {
+                                              new FilterOperatorInfo("=", "Equals", FilterOperator.Equals),
+                                              new FilterOperatorInfo("!=", "Not equals", FilterOperator.NotEquals),
+                                              new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
+                                          };
+
+        return result;
+    }
+
     public static IEnumerable<FilterOperatorInfo> GetFilterOperators(string propertyTypeName, IEnumerable<FilterOperatorInfo> filtersTranslations)
     {
         if (filtersTranslations is null || !filtersTranslations.Any())
@@ -67,6 +79,8 @@ public static class FilterOperatorHelper
             return GetDateFilterOperators();
 
         if (propertyTypeName == StringConstants.PropertyTypeNameBoolean) return GetBooleanFilterOperators();
+
+        if (propertyTypeName == StringConstants.PropertyTypeNameEnum) return GetEnumFilterOperators();
 
         return new List<FilterOperatorInfo>();
     }

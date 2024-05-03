@@ -60,6 +60,11 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
             if (filterOperator is FilterOperator.None or FilterOperator.Clear)
                 filterOperator = FilterOperator.Equals;
         }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum)
+        {
+            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
+                filterOperator = FilterOperator.Equals;
+        }
     }
 
     private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync(string propertyTypeName)
@@ -97,6 +102,14 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
             await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
     }
 
+    private async Task OnEnumFilterValueChangedAsync(object enumValue)
+    {
+        filterValue = enumValue?.ToString();
+
+        if (GridColumnFilterChanged.HasDelegate)
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
+    }
+
     private async Task OnFilterValueChangedAsync(ChangeEventArgs args)
     {
         filterValue = args?.Value?.ToString();
@@ -121,6 +134,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
                                      or StringConstants.PropertyTypeNameDateTime)
             selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
         else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
     }
 
     #endregion
@@ -167,6 +181,12 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public string? PropertyTypeName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the filter property name.
+    /// </summary>
+    [Parameter]
+    public Type? PropertyType { get; set; }
 
     /// <summary>
     /// Gets or sets the units.

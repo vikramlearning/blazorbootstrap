@@ -6,13 +6,13 @@
         @if (string.IsNullOrWhiteSpace(filterValue))
         {
             <span class="me-2">
-                <Icon Name="IconName.Funnel"/>
+                <Icon Name="IconName.Funnel" />
             </span>
         }
         else
         {
             <span class="me-2">
-                <Icon Name="IconName.FunnelFill"/>
+                <Icon Name="IconName.FunnelFill" />
             </span>
         }
         <span>@selectedFilterSymbol</span>
@@ -32,28 +32,52 @@
     </ul>
 
     @if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
-         || PropertyTypeName == StringConstants.PropertyTypeNameInt32
-         || PropertyTypeName == StringConstants.PropertyTypeNameInt64
-         || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
-         || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
-         || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
+    || PropertyTypeName == StringConstants.PropertyTypeNameInt32
+    || PropertyTypeName == StringConstants.PropertyTypeNameInt64
+    || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
+    || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
+    || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
     {
         <input class="form-control" style="@filterStyle" type="number" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))">
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly)
     {
-        <input class="form-control" style="@filterStyle" type="date" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))"/>
+        <input class="form-control" style="@filterStyle" type="date" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
     {
-        <input class="form-control" style="@filterStyle" type="datetime-local" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))"/>
+        <input class="form-control" style="@filterStyle" type="datetime-local" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
     {
-        <input class="form-check-input" type="checkbox" value="@filterValue" @onchange="@(async args => await OnFilterValueChangedAsync(args))"/>
+        <input class="form-check-input" type="checkbox" value="@filterValue" @onchange="@(async args => await OnFilterValueChangedAsync(args))" />
+    }
+    else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum)
+    {
+        <Dropdown>
+            <DropdownToggleButton Class="px-1" Color="ButtonColor.Light">
+                @if (string.IsNullOrWhiteSpace(filterValue))
+                {
+                    <span class="px-2">Select</span>
+                }
+                else
+                {
+                    <span class="px-2">@filterValue</span>
+                }
+            </DropdownToggleButton>
+            <DropdownMenu>
+                @if (PropertyType is not null)
+                {
+                    @foreach (var item in Enum.GetValues(PropertyType!))
+                    {
+                        <DropdownItem @onclick="@(async () => await OnEnumFilterValueChangedAsync(item))">@item</DropdownItem>
+                    }
+                }
+            </DropdownMenu>
+        </Dropdown>
     }
     else // string
     {
-        <input class="form-control" style="@filterStyle" type="text" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))"/>
+        <input class="form-control" style="@filterStyle" type="text" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
     }
 </div>

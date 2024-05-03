@@ -46,6 +46,8 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     internal string GetFilterValue() => filterValue;
 
+    internal Type GetPropertyType() => typeof(TItem).GetPropertyType(PropertyName)!;
+
     internal string GetPropertyTypeName() => typeof(TItem).GetPropertyTypeName(PropertyName);
 
     internal IEnumerable<SortingItem<TItem>> GetSorting()
@@ -93,6 +95,11 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                 FilterOperator = filterOperator = FilterOperator.Equals;
         }
         else if (propertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            if (filterOperator == FilterOperator.None)
+                FilterOperator = filterOperator = FilterOperator.Equals;
+        }
+        else if (propertyTypeName == StringConstants.PropertyTypeNameEnum)
         {
             if (filterOperator == FilterOperator.None)
                 FilterOperator = filterOperator = FilterOperator.Equals;
