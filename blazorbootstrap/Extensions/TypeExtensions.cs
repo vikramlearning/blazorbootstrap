@@ -76,6 +76,9 @@ public static class TypeExtensions
         if (propertyType!.IsEnum)
             return StringConstants.PropertyTypeNameEnum;
 
+        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameGuid, StringComparison.InvariantCulture))
+            return StringConstants.PropertyTypeNameGuid;
+
         return string.Empty;
     }
 

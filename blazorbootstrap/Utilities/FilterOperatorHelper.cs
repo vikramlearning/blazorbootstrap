@@ -82,7 +82,21 @@ public static class FilterOperatorHelper
 
         if (propertyTypeName == StringConstants.PropertyTypeNameEnum) return GetEnumFilterOperators();
 
+        if (propertyTypeName == StringConstants.PropertyTypeNameGuid) return GetEnumFilterOperators();
+
         return new List<FilterOperatorInfo>();
+    }
+
+    public static IEnumerable<FilterOperatorInfo> GetGuidFilterOperators()
+    {
+        List<FilterOperatorInfo> result = new()
+                                          {
+                                              new FilterOperatorInfo("=", "Equals", FilterOperator.Equals),
+                                              new FilterOperatorInfo("!=", "Not equals", FilterOperator.NotEquals),
+                                              new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
+                                          };
+
+        return result;
     }
 
     public static IEnumerable<FilterOperatorInfo> GetNumberFilterOperators()

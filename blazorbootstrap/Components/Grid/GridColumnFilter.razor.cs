@@ -65,6 +65,11 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
             if (filterOperator is FilterOperator.None or FilterOperator.Clear)
                 filterOperator = FilterOperator.Equals;
         }
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameGuid)
+        {
+            if (filterOperator is FilterOperator.None or FilterOperator.Clear)
+                filterOperator = FilterOperator.Equals;
+        }
     }
 
     private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync(string propertyTypeName)
@@ -135,6 +140,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
             selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
         else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
         else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
+        else if (PropertyTypeName == StringConstants.PropertyTypeNameGuid) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
     }
 
     #endregion
