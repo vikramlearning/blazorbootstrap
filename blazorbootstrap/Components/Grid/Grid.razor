@@ -66,30 +66,39 @@
                 }
             </thead>
             <tbody>
-                @if (requestInProgress) //|| totalCount == null
+                @{
+                    var columnCount = AllowSelection ? columns.Count + 1 : columns.Count;
+                }
+                @if (requestInProgress) //|| totalCount is null
                 {
-                    // show placeholders
-                    @for (var i = 0; i < 5; i++)
+                    @if (LoadingTemplate is null)
                     {
-                        <tr>
-                            @for (var j = 0; j < columns.Count; j++)
-                            {
-                                <td class="placeholder-glow">
-                                    <span class="placeholder col-12"></span>
-                                </td>
-                            }
-                        </tr>
+                        // show placeholders
+                        @for (var i = 0; i < 5; i++)
+                        {
+                            <tr>
+                                @for (var j = 0; j < columnCount; j++)
+                                {
+                                    <td class="placeholder-glow">
+                                        <span class="placeholder col-12"></span>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <div class="my-3">
+                            @LoadingTemplate
+                        </div>
                     }
                 }
                 else if (totalCount == 0)
                 {
                     // show empty
                     <tr>
-                        @{
-                            var columnCount = AllowSelection ? columns.Count + 1 : columns.Count;
-                        }
                         <td colspan="@columnCount">
-                            @if (EmptyDataTemplate == null)
+                            @if (EmptyDataTemplate is null)
                             {
                                 <div class="text-center text-secondary my-5">
                                     <div class="fs-3">
@@ -109,7 +118,7 @@
                 }
                 else if (totalCount > 0)
                 {
-                    if (items != null)
+                    if (items is not null)
                     {
                         var rowIndex = 0;
                         foreach (var item in items)

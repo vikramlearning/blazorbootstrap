@@ -71,7 +71,7 @@
 
     private bool DisableAllRowsSelectionHandler(IEnumerable<Employee1> employees)
     {
-        return employees.Any(x => x.Id < 105); // disable selection if EmployeeId < 105
+        return employees?.Any(x => x.Id < 105) ?? false; // disable selection if EmployeeId < 105
     }
 
     private bool DisableRowSelectionHandler(Employee1 emp)

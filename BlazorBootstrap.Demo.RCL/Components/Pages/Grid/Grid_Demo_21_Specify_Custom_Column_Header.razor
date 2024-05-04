@@ -35,8 +35,8 @@
 
     private bool IsAllChecked
     {
-        get => employees.All(e => e.IsActive);
-        set => Array.ForEach(employees.ToArray(), e => e.IsActive = value);
+        get => employees?.All(e => e.IsActive) ?? false;
+        set => Array.ForEach(employees?.ToArray()!, e => e.IsActive = value);
     }
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
