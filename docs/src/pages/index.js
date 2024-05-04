@@ -31,8 +31,8 @@ export default function Home() {
     const { siteConfig } = useDocusaurusContext();
     // return (
     //     <Layout
-    //         title={`Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework`}
-    //         description="Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS framework.">
+    //         title={`Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks`}
+    //         description="Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.">
     //         <HomepageHeader />
     //         <main>
     //             <HomepageFeatures />
