@@ -392,6 +392,7 @@ public static class ExpressionExtensions
             return filterItem.Operator switch
             {
                 FilterOperator.Contains => GetStringContainsExpressionDelegate<TItem>(parameterExpression, filterItem),
+                FilterOperator.DoesNotContain => GetStringDoesNotContainExpressionDelegate<TItem>(parameterExpression, filterItem),
                 FilterOperator.StartsWith => GetStringStartsWithExpressionDelegate<TItem>(parameterExpression, filterItem),
                 FilterOperator.EndsWith => GetStringEndsWithExpressionDelegate<TItem>(parameterExpression, filterItem),
                 FilterOperator.Equals => GetStringEqualsExpressionDelegate<TItem>(parameterExpression, filterItem),
@@ -671,6 +672,28 @@ public static class ExpressionExtensions
 
         // Combine null check and contains expression using AndAlso
         var finalExpression = Expression.AndAlso(nullCheckExpression, containsExpression);
+
+        return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
+    }
+
+    public static Expression<Func<TItem, bool>> GetStringDoesNotContainExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
+    {
+        var propertyExp = Expression.Property(parameterExpression, filterItem.PropertyName);
+        var someValue = Expression.Constant(filterItem.Value, typeof(string));
+        var comparisonExpression = Expression.Constant(filterItem.StringComparison);
+
+        // Handle null check
+        var nullCheckExpression = Expression.NotEqual(propertyExp, Expression.Constant(null, typeof(string)));
+
+        // Create method call expression for Contains method
+        var methodInfo = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) });
+        var containsExpression = Expression.Call(propertyExp, methodInfo!, someValue, comparisonExpression);
+        
+        // "not contains" expression
+        var notContainsExpression = Expression.Not(containsExpression);
+        
+        // Combine null check and contains expression using AndAlso
+        var finalExpression = Expression.AndAlso(nullCheckExpression, notContainsExpression);
 
         return Expression.Lambda<Func<TItem, bool>>(finalExpression, parameterExpression);
     }

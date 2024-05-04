@@ -13,6 +13,11 @@ public enum StringFilterOperator
     Contains,
 
     /// <summary>
+    /// Satisfied if the current value does not contain the specified value.
+    /// </summary>
+    DoesNotContain,
+
+    /// <summary>
     /// Satisfied if the current value starts with the specified value.
     /// </summary>
     StartsWith,

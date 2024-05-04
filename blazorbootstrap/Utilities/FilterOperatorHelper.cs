@@ -120,7 +120,7 @@ public static class FilterOperatorHelper
         List<FilterOperatorInfo> result = new()
                                           {
                                               new FilterOperatorInfo("*a*", "Contains", FilterOperator.Contains),
-                                              //result.Add(new("!*a*", "Does not contain", FilterOperator.DoesNotContain));
+                                              new FilterOperatorInfo("!*a*", "Does not contain", FilterOperator.DoesNotContain),
                                               new FilterOperatorInfo("a**", "Starts with", FilterOperator.StartsWith),
                                               new FilterOperatorInfo("**a", "Ends with", FilterOperator.EndsWith),
                                               //result.Add(new("=''", "Is empty", FilterOperator.IsEmpty));
