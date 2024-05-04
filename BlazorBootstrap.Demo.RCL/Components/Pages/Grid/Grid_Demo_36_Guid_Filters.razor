@@ -5,19 +5,19 @@
        AllowFiltering="true"
        Responsive="true">
 
-    <GridColumn TItem="User" HeaderText="Oid" PropertyName="Oid">
+    <GridColumn TItem="User" HeaderText="Oid" PropertyName="Oid" FilterTextboxWidth="240">
         @context.Oid
     </GridColumn>
-    <GridColumn TItem="User" HeaderText="Id" PropertyName="Id">
+    <GridColumn TItem="User" HeaderText="Id" PropertyName="Id" FilterTextboxWidth="70">
         @context.Id
     </GridColumn>
-    <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name">
+    <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name" FilterTextboxWidth="100">
         @context.Name
     </GridColumn>
     <GridColumn TItem="User" HeaderText="DOB" PropertyName="DOB">
         @context.DOB
     </GridColumn>
-    <GridColumn TItem="User" HeaderText="Status" PropertyName="Status">
+    <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
         @context.Status
     </GridColumn>
 

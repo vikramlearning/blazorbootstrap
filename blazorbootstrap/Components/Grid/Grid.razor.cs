@@ -144,6 +144,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         requestInProgress = true;
 
+        await InvokeAsync(StateHasChanged); // chnage the state to show the loading
+
+        await Task.Delay(300);
+
         if (firstRender)
             await LoadGridSettingsAsync();
 
@@ -695,6 +699,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     //[EditorRequired] 
     public string ItemsPerPageText { get; set; } = "Items per page"!;
+
+    /// <summary>
+    /// Template to render when the grid is loading.
+    /// </summary>
+    public RenderFragment LoadingTemplate { get; set; } = default!;
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.
