@@ -172,6 +172,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         {
             StringFilterOperator.Equals => FilterOperator.Equals,
             StringFilterOperator.Contains => FilterOperator.Contains,
+            StringFilterOperator.DoesNotContain => FilterOperator.DoesNotContain,
             StringFilterOperator.StartsWith => FilterOperator.StartsWith,
             StringFilterOperator.EndsWith => FilterOperator.EndsWith,
             _ => FilterOperator.Contains

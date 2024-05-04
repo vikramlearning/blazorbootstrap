@@ -23,20 +23,6 @@ public static class TypeExtensions
             return string.Empty;
 
         var propertyTypeName = propertyType?.ToString();
-
-        //if(propertyTypeName is null) // Nullable type scenario
-        //{
-        //    var props = type.GetProperties();
-        //    if(props.Length > 0)
-        //    {
-        //        var propertyInfo = props?.FirstOrDefault(x=>x.Name == propertyName);
-        //        if (propertyInfo is null)
-        //            throw new InvalidDataException($"PropertyName `{propertyName}` is invalid.");
-
-        //        propertyTypeName = Nullable.GetUnderlyingType(propertyInfo.PropertyType)?.FullName;
-        //    }
-        //}
-
         if (string.IsNullOrWhiteSpace(propertyTypeName))
             return string.Empty;
 
