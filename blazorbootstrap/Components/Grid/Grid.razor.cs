@@ -144,9 +144,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         requestInProgress = true;
 
-        await InvokeAsync(StateHasChanged); // chnage the state to show the loading
-
-        await Task.Delay(300);
+        // TODO: validate the below two lines - `Save and Load Grid Settings` functionality impacted
+        //await InvokeAsync(StateHasChanged); // trigger the state changed to show the loading
+        //await Task.Delay(300);
 
         if (firstRender)
             await LoadGridSettingsAsync();
