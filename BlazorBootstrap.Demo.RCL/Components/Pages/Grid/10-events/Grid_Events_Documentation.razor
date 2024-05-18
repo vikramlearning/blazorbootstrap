@@ -1,5 +1,4 @@
-﻿@page "/grid/docs"
-@layout GridMainLayout
+﻿@page "/grid/events"
 
 <PageTitle>@title</PageTitle>
 
@@ -11,6 +10,14 @@
 </div>
 
 <CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Row click event" PageUrl="@pageUrl" HashTagName="row-click-event" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_29_Row_Click)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Row double click event" PageUrl="@pageUrl" HashTagName="row-double-click-event" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_30_Row_Double_Click)" Tabs="true" />
 
 @code {
     private string pageUrl = "/grid";

@@ -1,5 +1,4 @@
-﻿@page "/grid/docs"
-@layout GridMainLayout
+﻿@page "/grid/translations"
 
 <PageTitle>@title</PageTitle>
 
@@ -11,6 +10,10 @@
 </div>
 
 <CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Translations" PageUrl="@pageUrl" HashTagName="translations" />
+<div class="mb-3">In the example below, you will see translations related to pagination and filters in <b>Dutch</b>.</div>
+<Demo Type="typeof(Grid_Demo_31_Translations)" Tabs="true" />
 
 @code {
     private string pageUrl = "/grid";

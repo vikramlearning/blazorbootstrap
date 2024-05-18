@@ -1,0 +1,27 @@
+﻿@page "/grid/alignment"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Grid</h1>
+<div class="lead mb-3">
+    Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Header text alignment" PageUrl="@pageUrl" HashTagName="header-text-alignment" />
+<div class="mb-3">Use the <code>HeaderTextAlignment</code> parameter to change the header column alignment. By default, <code>HeaderTextAlignment</code> is set to <code>Alignment.Start</code>. Other options you can use are <code>Alignment.Center</code> and <code>Alignment.End</code>.</div>
+<Demo Type="typeof(Grid_Demo_10_Header_Text_Alignment)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell alignment" PageUrl="@pageUrl" HashTagName="cell-alignment" />
+<div class="mb-3">Use the <code>TextAlignment</code> parameter to change the cell data alignment. By default, <code>TextAlignment</code> is set to <code>Alignment.Start</code>. Other options you can use are <code>Alignment.Center</code> and <code>Alignment.End</code>.</div>
+<Demo Type="typeof(Grid_Demo_11_Grid_Cell_Alignment)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/grid";
+    private string title = "Blazor Grid Component";
+    private string description = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}

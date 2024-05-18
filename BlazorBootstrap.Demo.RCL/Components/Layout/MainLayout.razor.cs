@@ -36,7 +36,27 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "508", Text = "Collapse", Href = "/collapse", IconName = IconName.ArrowsCollapse, ParentId = "5" },
             new (){ Id = "509", Text = "Confirm Dialog", Href = "/confirm-dialog", IconName = IconName.QuestionDiamondFill, ParentId = "5" },
             new (){ Id = "510", Text = "Dropdown", Href = "/dropdown", IconName = IconName.MenuButtonWideFill, ParentId = "5" },
-            new (){ Id = "511", Text = "Grid", Href = "/grid", IconName = IconName.Grid, ParentId = "5" },
+
+            #region Grid
+
+            new (){ Id = "511", Text = "Grid", IconName = IconName.Grid, ParentId = "5" },
+            new (){ Id = "51101", Text = "Overview", Href = "/grid/overview", IconName = IconName.Grid, ParentId = "511" },
+            new (){ Id = "51102", Text = "Data Binding", Href = "/grid/data-binding", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51103", Text = "Filters", Href = "/grid/filters", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51104", Text = "Paging", Href = "/grid/paging", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51105", Text = "Sorting", Href = "/grid/sorting", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51106", Text = "Selection", Href = "/grid/selection", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51107", Text = "Alignment", Href = "/grid/alignment", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51108", Text = "Grid Settings", Href = "/grid/settings", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51109", Text = "Custom CSS Class", Href = "/grid/custom-css-class", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51110", Text = "Events", Href = "/grid/events", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51111", Text = "Translations", Href = "/grid/translations", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51112", Text = "Fixed Header", Href = "/grid/fixed-header", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51113", Text = "Freeze Columns", Href = "/grid/freeze-columns", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+            new (){ Id = "51114", Text = "Other", Href = "/grid/other", IconName = IconName.LayoutTextWindowReverse, ParentId = "511" },
+
+            #endregion Grid
+
             new (){ Id = "512", Text = "Modals", Href = "/modals", IconName = IconName.WindowStack, ParentId = "5" },
             new (){ Id = "513", Text = "Offcanvas", Href = "/offcanvas", IconName = IconName.LayoutSidebarReverse, ParentId = "5" },
             new (){ Id = "514", Text = "Pagination", Href = "/pagination", IconName = IconName.ThreeDots, ParentId = "5" },

@@ -1,0 +1,46 @@
+﻿@page "/grid/other"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Grid</h1>
+<div class="lead mb-3">
+    Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell formating" PageUrl="@pageUrl" HashTagName="cell-formating" />
+<div class="mb-3">To format the cell data, use <code>ToString method and format strings</code>. Refer: <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types" target="_blank">How to format numbers, dates, enums, and other types in .NET</a></div>
+<Callout Type="CalloutType.Success"><strong>Example: </strong>@@context.Salary.ToString("N2").</Callout>
+<Demo Type="typeof(Grid_Demo_12_Grid_Cell_Formating)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell nowrap" PageUrl="@pageUrl" HashTagName="cell-nowrap" />
+<div class="mb-3">To prevent text from wrapping, add <code>TextNoWrap="true"</code> to the GridColumn.</div>
+<Demo Type="typeof(Grid_Demo_13_Grid_Cell_Nowrap)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Empty data" PageUrl="@pageUrl" HashTagName="empty-data" />
+<div class="mb-3">If there are no records to display in the Grid, by default, it will display the <strong>No records to display</strong> message. You can change this message by adding the <code>EmptyText</code> parameter to the Grid.</div>
+<Demo Type="typeof(Grid_Demo_15_Empty_Data)" Tabs="true" />
+
+<Callout Type="CalloutType.Success" Heading="Important">
+    <p>
+        The <b>Add Employee</b> button click adds a new employee to the existing <b>employees</b> collection—so explicit grid refresh is required.
+    </p>
+    <p>
+        The <b>Add Employee 2</b> button click creates a shallow copy of the <b>employees</b> collection and adds a new employee.
+        This new collection is assigned to the <b>employees</b> variable. Now, the <b>employees</b> variable has a new reference. So the grid will refresh automatically. An explicit grid refresh call is not required.
+    </p>
+</Callout>
+
+<SectionHeading Size="HeadingSize.H2" Text="Custom column headers" PageUrl="@pageUrl" HashTagName="custom-column-headers" />
+<div class="mb-3">In the below example, we use <code>&lt;HeaderContent&gt;</code> and <code>&lt;ChildContent&gt;</code> tags to define custom column header and cell content. When defining header content, filters and sorting are removed from column.</div>
+<Demo Type="typeof(Grid_Demo_21_Specify_Custom_Column_Header)" Tabs="true" />
+
+@code {
+    private string pageUrl = "/grid";
+    private string title = "Blazor Grid Component";
+    private string description = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}
