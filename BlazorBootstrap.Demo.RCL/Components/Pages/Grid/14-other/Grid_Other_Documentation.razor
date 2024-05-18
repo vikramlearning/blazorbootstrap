@@ -1,0 +1,35 @@
+﻿@attribute [Route(pageUrl)]
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>@heading</h1>
+<div class="lead mb-3">@description</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell formating" PageUrl="@pageUrl" HashTagName="cell-formating" />
+<div class="mb-3">To format the cell data, use <code>ToString method and format strings</code>. Refer: <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types" target="_blank">How to format numbers, dates, enums, and other types in .NET</a></div>
+<Callout Type="CalloutType.Success"><strong>Example: </strong>@@context.Salary.ToString("N2").</Callout>
+<Demo Type="typeof(Grid_Demo_12_Grid_Cell_Formating)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Cell nowrap" PageUrl="@pageUrl" HashTagName="cell-nowrap" />
+<div class="mb-3">To prevent text from wrapping, add <code>TextNoWrap="true"</code> to the GridColumn.</div>
+<Demo Type="typeof(Grid_Demo_13_Grid_Cell_Nowrap)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Empty data" PageUrl="@pageUrl" HashTagName="empty-data" />
+<div class="mb-3">If there are no records to display in the Grid, by default, it will display the <strong>No records to display</strong> message. You can change this message by adding the <code>EmptyText</code> parameter to the Grid.</div>
+<Demo Type="typeof(Grid_Demo_15_Empty_Data)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Custom column headers" PageUrl="@pageUrl" HashTagName="custom-column-headers" />
+<div class="mb-3">In the below example, we use <code>&lt;HeaderContent&gt;</code> and <code>&lt;ChildContent&gt;</code> tags to define custom column header and cell content. When defining header content, filters and sorting are removed from column.</div>
+<Demo Type="typeof(Grid_Demo_21_Specify_Custom_Column_Header)" Tabs="true" />
+
+@code {
+    private const string pageUrl = "/grid/other";
+    private const string title = "Blazor Grid Component - Other examples";
+    private const string heading = "Blazor Grid - Other examples";
+    private const string description = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}

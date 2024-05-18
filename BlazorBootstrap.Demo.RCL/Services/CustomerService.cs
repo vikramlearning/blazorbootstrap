@@ -43,7 +43,11 @@ public class CustomerService : ICustomerService
         }
 
         // apply sorting then paging
-        if (sortKey == "CustomerId")
+        if (string.IsNullOrEmpty(sortKey) || sortDirection == SortDirection.None)
+        {
+            return new(customers.Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
+        }
+        else if (sortKey == "CustomerId")
         {
             if (sortDirection == SortDirection.Ascending)
                 return new(customers.OrderBy(e => e.CustomerId).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
@@ -92,10 +96,8 @@ public class CustomerService : ICustomerService
             else if (sortDirection == SortDirection.Descending)
                 return new(customers.OrderByDescending(e => e.Country).Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
         }
-        else if (string.IsNullOrEmpty(sortKey))
-        {
+        else
             return new(customers.Skip((pageNumber - 1) * pageSize).Take(pageSize), customers.Count());
-        }
 
         return new(customers, customers.Count());
     }

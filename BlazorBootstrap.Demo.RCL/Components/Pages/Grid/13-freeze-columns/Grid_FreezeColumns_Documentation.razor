@@ -1,0 +1,28 @@
+﻿@attribute [Route(pageUrl)]
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>@heading</h1>
+<div class="lead mb-3">@description</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Freeze columns" PageUrl="@pageUrl" HashTagName="freeze-columns" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Grid_Demo_33_Freeze_Column_A_Text_Nowrap)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Freeze columns with fixed header" PageUrl="@pageUrl" HashTagName="freeze-columns-with-fixed-header" />
+<Demo Type="typeof(Grid_Demo_33_Freeze_Column_B_Fixed_Header)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Freeze columns with fixed header and filters" PageUrl="@pageUrl" HashTagName="freeze-columns-with-fixed-header-and-filters" />
+<Demo Type="typeof(Grid_Demo_33_Freeze_Column_C_Fixed_Header_With_Filters)" Tabs="true" />
+
+@code {
+    private const string pageUrl = "/grid/freeze-columns";
+    private const string title = "Blazor Grid Component - Freeze columns";
+    private const string heading = "Blazor Grid - Freeze columns";
+    private const string description = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}

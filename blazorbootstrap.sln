@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.Demo.RCL", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.Demo.WebAssembly", "BlazorBootstrap.Demo.WebAssembly\BlazorBootstrap.Demo.WebAssembly.csproj", "{710E0A10-0567-495D-AA48-A99293D2EA62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorBootstrap.Demo.Server", "BlazorBootstrap.Demo.Server\BlazorBootstrap.Demo.Server.csproj", "{B133D9CF-EC94-416B-A4A6-6E2BD8DAF0C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorBootstrap.Demo.Server", "BlazorBootstrap.Demo.Server\BlazorBootstrap.Demo.Server.csproj", "{B133D9CF-EC94-416B-A4A6-6E2BD8DAF0C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
