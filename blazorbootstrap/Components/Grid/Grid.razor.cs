@@ -696,6 +696,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public float Height { get; set; } = 320;
 
+    /// <summary>
+    /// Gets or sets the items per page text.
+    /// </summary>
     [Parameter]
     //[EditorRequired] 
     public string ItemsPerPageText { get; set; } = "Items per page"!;
@@ -720,7 +723,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public EventCallback<GridRowEventArgs<TItem>> OnRowDoubleClick { get; set; }
 
     /// <summary>
-    /// Gets or sets the page size of the grid.
+    /// Gets or sets the page size.
     /// </summary>
     [Parameter]
     public int PageSize { get; set; } = 10;

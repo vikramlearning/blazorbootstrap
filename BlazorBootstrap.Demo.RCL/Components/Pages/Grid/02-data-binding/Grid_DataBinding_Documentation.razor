@@ -1,13 +1,11 @@
-﻿@page "/grid/data-binding"
+﻿@attribute [Route(pageUrl)]
 
 <PageTitle>@title</PageTitle>
 
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
-<h1>Blazor Grid</h1>
-<div class="lead mb-3">
-    Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
-</div>
+<h1>@heading</h1>
+<div class="lead mb-3">@description</div>
 
 <CarbonAds />
 
@@ -17,11 +15,21 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Data parameter - Update collection" PageUrl="@pageUrl" HashTagName="data-parameter-update-collection" />
 <div class="mb-3">You can update the collection assigned to the <code>Data</code> parameter. In the below example, the grid will render the updated collection.</div>
+<Callout Type="CalloutType.Success" Heading="Important">
+    <p>
+        The <b>Add Employee</b> button click adds a new employee to the existing <b>employees</b> collection—so explicit grid refresh is required.
+    </p>
+    <p>
+        The <b>Add Employee 2</b> button click creates a shallow copy of the <b>employees</b> collection and adds a new employee.
+        This new collection is assigned to the <b>employees</b> variable. Now, the <b>employees</b> variable has a new reference. So the grid will refresh automatically. An explicit grid refresh call is not required.
+    </p>
+</Callout>
 <Demo Type="typeof(Grid_Demo_17_B_Data_Parameter_Update_Collection)" Tabs="true" />
 
 @code {
-    private string pageUrl = "/grid";
-    private string title = "Blazor Grid Component";
-    private string description = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
-    private string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+    private const string pageUrl = "/grid/data-binding";
+    private const string title = "Blazor Grid Component - Data binding";
+    private const string heading = "Blazor Grid - Data binding";
+    private const string description = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
 }

@@ -1,13 +1,11 @@
-﻿@page "/grid/fixed-header"
+﻿@attribute [Route(pageUrl)]
 
 <PageTitle>@title</PageTitle>
 
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
-<h1>Blazor Grid</h1>
-<div class="lead mb-3">
-    Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging & sorting.
-</div>
+<h1>@heading</h1>
+<div class="lead mb-3">@description</div>
 
 <CarbonAds />
 
@@ -22,8 +20,9 @@
 <Demo Type="typeof(Grid_Demo_32_Fixed_Header_B_With_Filters)" Tabs="true" />
 
 @code {
-    private string pageUrl = "/grid";
-    private string title = "Blazor Grid Component";
-    private string description = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
-    private string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+    private const string pageUrl = "/grid/fixed-header";
+    private const string title = "Blazor Grid Component - Fixed header";
+    private const string heading = "Blazor Grid - Fixed header";
+    private const string description = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
 }
