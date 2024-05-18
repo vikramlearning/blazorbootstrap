@@ -218,7 +218,9 @@ public partial class Modal : BlazorBootstrapComponentBase
     [Parameter]
     public string HeaderCssClass { get; set; } = default!;
 
-    private string headerCssClassInternal => ModalType.ToModalHeaderColorClass();
+    // Modal close "X" button with bootstrap 5.3.3 #714
+    // Review this fix after bootstrap 5.3.4 or 5.4 release.
+    private string headerCssClassInternal => $"justify-content-between {ModalType.ToModalHeaderColorClass()}";
 
     /// <summary>
     /// Header template.
