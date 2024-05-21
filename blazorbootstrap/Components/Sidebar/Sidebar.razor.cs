@@ -161,5 +161,8 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     [EditorRequired]
     public string? Title { get; set; } = default!;
 
+    [Parameter]
+    public string? Href { get; set; }
+
     #endregion
 }
