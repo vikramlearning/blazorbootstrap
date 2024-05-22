@@ -150,6 +150,15 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     public Sidebar2DataProviderDelegate? DataProvider { get; set; } = default!;
 
     /// <summary>
+    /// Gets or sets the Href.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public string? Href { get; set; }
+
+    /// <summary>
     /// Gets or sets the IconName.
     /// </summary>
     /// <remarks>

@@ -1,6 +1,6 @@
 ﻿<div class="bb-page">
 
-    <Sidebar @ref="sidebar"
+    <Sidebar Href="/"
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
              DataProvider="SidebarDataProvider" />
@@ -19,7 +19,6 @@
 </div>
 
 @code {
-    Sidebar sidebar = default!;
     IEnumerable<NavItem>? navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
