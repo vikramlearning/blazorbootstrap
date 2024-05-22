@@ -149,6 +149,15 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     public SidebarDataProviderDelegate? DataProvider { get; set; } = default!;
 
     /// <summary>
+    /// Gets or sets the Href.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public string? Href { get; set; }
+
+    /// <summary>
     /// Gets or sets the IconName.
     /// </summary>
     /// <remarks>
@@ -177,9 +186,6 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     [Parameter]
     [EditorRequired]
     public string? Title { get; set; } = default!;
-
-    [Parameter]
-    public string? Href { get; set; }
 
     #endregion
 }

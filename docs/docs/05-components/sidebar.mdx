@@ -24,6 +24,7 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 | BadgeText | `string?` | null | | Gets or sets the badge text. | 1.4.0 |
 | CustomIconName | `string?` |  null | | Gets or sets the custom icon name. | 1.4.0 |
 | DataProvider | `SidebarDataProviderDelegate` | null | ✔️ | Gets or sets the data provider. | 1.4.0 |
+| Href | `string?` | null | | Gets or sets the Href. | 3.0.0 |
 | IconName | `IconName` | `IconName.None` | | Gets or sets the IconName. | 1.4.0 |
 | ImageSrc | `string?` | null | | Gets or sets the sidebar logo. | 1.4.0 |
 | Title | `string?` | null | ✔️ | Gets or sets the sidebar title. | 1.4.0 |
@@ -58,13 +59,12 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 <img src="https://i.imgur.com/q20RADm.png" alt="Blazor Sidebar - Basic usage" />
 
 ```cshtml {} showLineNumbers
-<Sidebar @ref="sidebar"
+<Sidebar Href="/"
          IconName="IconName.BootstrapFill"
          Title="Blazor Bootstrap"
          DataProvider="SidebarDataProvider" />
 
 @code {
-    Sidebar sidebar;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -103,13 +103,12 @@ At this moment, two levels of navigation are supported.
 :::
 
 ```cshtml {} showLineNumbers
-<Sidebar @ref="sidebar"
+<Sidebar Href="/"
          IconName="IconName.BootstrapFill"
          Title="Blazor Bootstrap"
          DataProvider="SidebarDataProvider" />
 
 @code {
-    Sidebar sidebar;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -155,13 +154,12 @@ Set `IconColor` property to change the color.
 <img src="https://i.imgur.com/7wHWoqW.png" alt="Blazor Sidebar - Change icons color" />
 
 ```cshtml {} showLineNumbers
-<Sidebar @ref="sidebar"
+<Sidebar Href="/"
          IconName="IconName.BootstrapFill"
          Title="Blazor Bootstrap"
          DataProvider="SidebarDataProvider" />
 
 @code {
-    Sidebar sidebar;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -209,7 +207,7 @@ Replace your **MainLayout.razor** page code with the below example to have a com
 ```cshtml {} showLineNumbers
 <div class="bb-page">
 
-    <Sidebar @ref="sidebar"
+    <Sidebar Href="/"
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
              DataProvider="SidebarDataProvider" />
@@ -227,7 +225,6 @@ Replace your **MainLayout.razor** page code with the below example to have a com
 </div>
 
 @code {
-    Sidebar sidebar;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -276,6 +273,7 @@ Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
 <div class="bb-page">
 
     <Sidebar @ref="sidebar"
+             Href="/"
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
              DataProvider="SidebarDataProvider" />
@@ -294,7 +292,7 @@ Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
 </div>
 
 @code {
-    Sidebar sidebar;
+    Sidebar sidebar = default!;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -345,6 +343,7 @@ A badge is useful when displaying the application version, environment, or other
 <div class="bb-page">
 
     <Sidebar @ref="sidebar"
+             Href="/"
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
              BadgeText="v1.3.1"
@@ -364,7 +363,7 @@ A badge is useful when displaying the application version, environment, or other
 </div>
 
 @code {
-    Sidebar sidebar;
+    Sidebar sidebar = default!;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -415,6 +414,7 @@ Use the `CustomIconName` parameter to set the custom logo icon using font awesom
 <div class="bb-page">
 
     <Sidebar @ref="sidebar"
+             Href="/"
              CustomIconName="bi bi-apple"
              Title="Blazor Bootstrap"
              BadgeText="v1.3.1"
@@ -434,7 +434,7 @@ Use the `CustomIconName` parameter to set the custom logo icon using font awesom
 </div>
 
 @code {
-    Sidebar sidebar;
+    Sidebar sidebar = default!;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -484,7 +484,7 @@ Use the `ImageSrc` parameter to set the brand logo.
 ```cshtml {} showLineNumbers
 <div class="bb-page">
 
-    <Sidebar @ref="sidebar"
+    <Sidebar Href="/"
              ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-color.svg"
              Title="Blazor Bootstrap"
              BadgeText="v1.3.1"
@@ -504,7 +504,6 @@ Use the `ImageSrc` parameter to set the brand logo.
 </div>
 
 @code {
-    Sidebar sidebar;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -554,7 +553,7 @@ Developers can customize the sidebar color by changing the CSS variables, as men
 ```cshtml {} showLineNumbers
 <div class="bb-page">
 
-    <Sidebar @ref="sidebar"
+    <Sidebar Href="/"
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
              BadgeText="v1.3.1"
@@ -575,7 +574,6 @@ Developers can customize the sidebar color by changing the CSS variables, as men
 </div>
 
 @code {
-    Sidebar sidebar;
     bool applyPurpleStyle = false;
     IEnumerable<NavItem> navItems;
 
@@ -652,7 +650,7 @@ Set the Class property of a NavItem to apply a custom CSS class.
 <img src="https://i.imgur.com/3Xq3aaE.png" alt="Blazor Sidebar - Apply custom CSS class to NavItem" />
 
 ```cshtml {} showLineNumbers
-<Sidebar @ref="sidebar"
+<Sidebar Href="/"
          IconName="IconName.BootstrapFill"
          Title="Blazor Bootstrap"
          DataProvider="SidebarDataProvider" />
@@ -660,7 +658,6 @@ Set the Class property of a NavItem to apply a custom CSS class.
 
 ```cshtml {} showLineNumbers
 @code {
-    Sidebar sidebar;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)

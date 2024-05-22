@@ -1,6 +1,6 @@
 ﻿<div class="bb-page">
 
-    <Sidebar @ref="sidebar"
+    <Sidebar Href="/"
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
              BadgeText="v1.3.1"
@@ -21,7 +21,6 @@
 </div>
 
 @code {
-    Sidebar sidebar = default!;
     bool applyPurpleStyle = false;
     IEnumerable<NavItem>? navItems;
 

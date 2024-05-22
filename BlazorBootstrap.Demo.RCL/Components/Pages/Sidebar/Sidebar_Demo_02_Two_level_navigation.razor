@@ -1,10 +1,9 @@
-﻿<Sidebar @ref="sidebar"
+﻿<Sidebar Href="/"
          IconName="IconName.BootstrapFill"
          Title="Blazor Bootstrap"
          DataProvider="SidebarDataProvider" />
 
 @code {
-    Sidebar sidebar = default!;
     IEnumerable<NavItem>? navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)

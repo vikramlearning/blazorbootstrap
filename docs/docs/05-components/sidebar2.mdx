@@ -24,6 +24,7 @@ Use the Blazor Bootstrap Sidebar2 component to display consistent, cross-browser
 | BadgeText | `string?` | null | | Gets or sets the badge text. | 2.1.0 |
 | CustomIconName | `string?` | null | | Gets or sets the custom icon name. | 2.1.0 |
 | DataProvider | `Sidebar2DataProviderDelegate?` | | ✔️ | Gets or sets the data provider. | 2.1.0 |
+| Href | `string?` | null | | Gets or sets the Href. | 3.0.0 |
 | IconName | `IconName` | `IconName.None` | | Gets or sets the IconName. | 2.1.0 |
 | ImageSrc | `string?` | null | | Gets or sets the logo. | 2.1.0 |
 | Title | `string?` | null | ✔️ | Gets or sets the title. | 2.1.0 |
@@ -59,7 +60,8 @@ Use the Blazor Bootstrap Sidebar2 component to display consistent, cross-browser
 <img src="https://i.imgur.com/RXzpGzf.png" alt="Blazor Sidebar2 - Basic usage" />
 
 ```cshtml {} showLineNumbers
-<Sidebar2 IconName="IconName.BootstrapFill"
+<Sidebar2 Href="/"
+          IconName="IconName.BootstrapFill"
           Title="Blazor Bootstrap"
           BadgeText="v2.1.0"
           DataProvider="Sidebar2DataProvider" />
@@ -117,7 +119,8 @@ Use NavItem's `Id` and `ParentId` to set the parent-child relation.
 <img src="https://i.imgur.com/lMRoKx9.png" alt="Blazor Sidebar2 - More nested levels" />
 
 ```cshtml {} showLineNumbers
-<Sidebar2 IconName="IconName.BootstrapFill"
+<Sidebar2 Href="/"
+          IconName="IconName.BootstrapFill"
           Title="Blazor Bootstrap"
           BadgeText="v2.1.0"
           DataProvider="Sidebar2DataProvider" />
@@ -184,7 +187,8 @@ Replace your **MainLayout.razor** page code with the below example to have a com
 ```cshtml {} showLineNumbers
 <div class="bb-page">
 
-    <Sidebar2 IconName="IconName.BootstrapFill"
+    <Sidebar2 Href="/"
+              IconName="IconName.BootstrapFill"
               Title="Blazor Bootstrap"
               BadgeText="v2.1.0"
               DataProvider="Sidebar2DataProvider" />
@@ -263,7 +267,8 @@ Use the `CustomIconName` parameter to set the custom logo icon using font awesom
 ```cshtml {} showLineNumbers
 <div class="bb-page">
 
-    <Sidebar2 CustomIconName="bi bi-apple"
+    <Sidebar2 Href="/"
+              CustomIconName="bi bi-apple"
               Title="Blazor Bootstrap"
               BadgeText="v2.1.0"
               DataProvider="Sidebar2DataProvider" />
@@ -342,7 +347,8 @@ Use the `ImageSrc` parameter to set the brand logo.
 ```cshtml {} showLineNumbers
 <div class="bb-page">
 
-    <Sidebar2 ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
+    <Sidebar2 Href="/"
+              ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
               Title="Blazor Bootstrap"
               BadgeText="v2.1.0"
               DataProvider="Sidebar2DataProvider" />
