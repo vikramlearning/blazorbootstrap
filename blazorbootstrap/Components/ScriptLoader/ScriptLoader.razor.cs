@@ -94,7 +94,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     public string? ScriptId { get; set; }
 
     /// <summary>
-    /// Specifies the URI of the external script to load.
+    /// Gets or sets the URI of the external script to load.
     /// </summary>
     [Parameter]
     [EditorRequired]

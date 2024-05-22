@@ -1,12 +1,10 @@
 ﻿namespace BlazorBootstrap;
 
-public enum CalloutType
+public enum CalloutColor
 {
-    Default = 0,
+    Default,
     Danger,
     Warning,
     Info,
-    [Obsolete("This enum value is obsolete. Use `Success` instead.")]
-    Tip,
     Success
 }

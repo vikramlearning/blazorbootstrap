@@ -17,27 +17,28 @@ Use Blazor Bootstrap modal component to add dialogs to your site for lightboxes,
 
 ## Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
-|--|--|--|--|--|--|
-| BodyCssClass | string | Additional body CSS class. | | | 1.0.0 |
-| BodyTemplate | RenderFragment | Body template. | ✔️ | | 1.0.0 |
-| ChildContent | RenderFragment | Gets or sets the content to be rendered within the component. | | | 1.0.0 |
-| CloseOnEscape | bool | Indicates whether the modal closes when escape key is pressed. | | true | 1.0.0 |
-| DialogCssClass | string | Additional CSS class for the dialog (div.modal-dialog element). | | | 1.0.0 |
-| FooterCssClass | string | Footer css class. | | | 1.0.0 |
-| FooterTemplate | RenderFragment | Footer template. | ✔️ | | 1.0.0 |
-| Fullscreen | `ModalFullscreen` | Fullscreen behavior of the modal. | | `ModalFullscreen.Disabled` | 1.0.0 |
-| HeaderTemplate | RenderFragment | Header template. | ✔️ | | 1.0.0 |
-| HeaderCssClass | string | Additional header CSS class. | | | 1.0.0 |
-| IsScrollable | bool | Allows modal body scroll. | | false | 1.0.0 |
-| IsServiceModal | bool | Indicates whether the modal is related to a modal service or not. | | false | 1.9.4 |
-| IsVerticallyCentered | bool | Shows the modal vertically in the center. | | false | 1.0.0 |
-| ModalType | `ModalType` | Gets or sets the modal type. | | `ModalType.Light` | 1.9.5 |
-| Size | `ModalSize` | Size of the modal. | | `ModalSize.Regular` | 1.0.0 |
-| ShowCloseButton | bool | Indicates whether the modal shows close button in header. | | true | 1.0.0 |
-| TabIndex | int | Gets or sets the tab index. | | -1 | 1.6.0 |
-| Title | string | | ✔️ | | 1.0.0 |
-| UseStaticBackdrop | bool | Indicates whether the modal uses a static backdrop. | | false | 1.0.0 |
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| BodyCssClass | string | null | | Gets or sets the body CSS class. | 1.0.0 |
+| BodyTemplate | RenderFragment | null | | Gets or sets the body template. | 1.0.0 |
+| CloseIconColor | `IconColor` | `IconColor.None` | | Gets or sets the close icon color. | 1.0.0 |
+| CloseOnEscape | bool | true | | Indicates whether the modal closes when escape key is pressed. | 1.0.0 |
+| DialogCssClass | string | null | | Gets or sets the modal dialog (div.modal-dialog) CSS class. | 1.0.0 |
+| FooterCssClass | string | null | | Gets or sets the footer CSS class. | 1.0.0 |
+| FooterTemplate | RenderFragment | null | | Gets or sets the footer template. | 1.0.0 |
+| Fullscreen | `ModalFullscreen` | `ModalFullscreen.Disabled` | | Gets or sets the fullscreen behavior of the modal. | 1.0.0 |
+| HeaderCssClass | string | null | | Gets or sets the header CSS class. | 1.0.0 |
+| HeaderTemplate | RenderFragment | null | | Gets or sets the header template. | 1.0.0 |
+| IsScrollable | bool | false | | If true, scroll will be enabled on the modal body. | 1.0.0 |
+| IsServiceModal | bool | false | | Indicates whether the modal is related to a modal service or not. | 1.9.4 |
+| IsVerticallyCentered | bool | false | | If true, shows the modal vertically in the center. | 1.0.0 |
+| Message| string | null | | Gets or sets the message. | 1.0.0 |
+| ModalType | `ModalType` | `ModalType.Light` | | Gets or sets the modal type. | 1.9.5 |
+| ShowCloseButton | bool | true | | If true, close button will be visible in the modal header. | 1.0.0 |
+| Size | `ModalSize` | `ModalSize.Regular` | | Gets or sets the modal size. | 1.0.0 |
+| TabIndex | int | -1 | | Gets or sets the tab index. | 1.6.0 |
+| Title | string | null | | Gets or sets the modal header title. | 1.0.0 |
+| UseStaticBackdrop | bool | false | | Indicates whether the modal uses a static backdrop. | 1.0.0 |
 
 ## Methods
 

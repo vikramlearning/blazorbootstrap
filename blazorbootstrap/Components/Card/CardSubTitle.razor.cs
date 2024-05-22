@@ -16,8 +16,11 @@ public partial class CardSubTitle : BlazorBootstrapComponentBase
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the heading size.
+    /// Gets or sets the card sub title size.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="HeadingSize.H6" />.
+    /// </remarks>
     [Parameter]
     public HeadingSize Size { get; set; } = HeadingSize.H6;
 

@@ -1,8 +1,5 @@
 ﻿namespace BlazorBootstrap;
 
-/// <summary>
-/// Defines the direction of an <see cref="Dropdown" /> element.
-/// </summary>
 public enum DropdownDirection
 {
     /// <summary>

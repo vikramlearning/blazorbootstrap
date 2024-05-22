@@ -1,19 +1,20 @@
 ﻿<div class="d-flex gap-2">
-    <Dropdown Direction="DropdownDirection.Dropend">
-        <DropdownToggleButton Color="ButtonColor.Secondary">Dropend</DropdownToggleButton>
+    <Dropdown Color="DropdownColor.Secondary" Direction="DropdownDirection.Dropend">
+        <DropdownToggleButton>Dropend</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Direction="DropdownDirection.Dropend" Split="true">
-        <DropdownActionButton Color="ButtonColor.Secondary">Split dropend</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Secondary" />
+
+    <Dropdown Color="DropdownColor.Secondary" Direction="DropdownDirection.Dropend" Split="true">
+        <DropdownActionButton>Split dropend</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
 </div>

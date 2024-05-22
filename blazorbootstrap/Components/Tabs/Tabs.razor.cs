@@ -220,7 +220,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     {
         tabs!.Add(tab);
 
-        if (tab is { IsActive: true, Disabled: false })
+        if (tab is { Active: true, Disabled: false })
             activeTab = tab;
 
         StateHasChanged(); // This is mandatory
@@ -287,12 +287,18 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the tabs fade effect.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool EnableFadeEffect { get; set; }
 
@@ -306,6 +312,9 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <summary>
     /// Get or sets the nav style.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="NavStyle.Tabs" />.
+    /// </remarks>
     [Parameter]
     public NavStyle NavStyle { get; set; } = NavStyle.Tabs;
 

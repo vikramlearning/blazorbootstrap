@@ -150,10 +150,11 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     /// <summary>
     /// Gets or sets chart container height.
-    /// </summary>
-    /// <remarks>
     /// The default unit of measure is <see cref="Unit.Px" />.
     /// To change the unit of measure see <see cref="HeightUnit" />.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
     /// </remarks>
     [Parameter]
     public int? Height { get; set; }
@@ -161,15 +162,19 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// <summary>
     /// Gets or sets chart container height unit of measure.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Unit.Px" />.
+    /// </remarks>
     [Parameter]
     public Unit HeightUnit { get; set; } = Unit.Px;
 
     /// <summary>
     /// Get or sets chart container width.
-    /// </summary>
-    /// <remarks>
     /// The default unit of measure is <see cref="Unit.Px" />.
     /// To change the unit of measure see <see cref="WidthUnit" />.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
     /// </remarks>
     [Parameter]
     public int? Width { get; set; }
@@ -177,6 +182,9 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// <summary>
     /// Gets or sets chart container width unit of measure.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Unit.Px" />.
+    /// </remarks>
     [Parameter]
     public Unit WidthUnit { get; set; } = Unit.Px;
 

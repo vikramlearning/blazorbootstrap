@@ -21,8 +21,11 @@ public partial class RibbonItemGroup : BlazorBootstrapComponentBase
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the text content of the component.
+    /// Gets or sets the text.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? Text { get; set; }
 

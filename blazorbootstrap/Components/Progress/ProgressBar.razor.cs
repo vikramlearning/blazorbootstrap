@@ -94,6 +94,9 @@ public partial class ProgressBar
     /// <summary>
     /// Gets or sets the progress color.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="ProgressColor.None" />.
+    /// </remarks>
     [Parameter]
     public ProgressColor Color
     {
@@ -108,12 +111,18 @@ public partial class ProgressBar
     /// <summary>
     /// Gets or sets the progress bar label.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string Label { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the progress bar type.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="ProgressType.Default" />.
+    /// </remarks>
     [Parameter]
     public ProgressType Type
     {
@@ -128,6 +137,9 @@ public partial class ProgressBar
     /// <summary>
     /// Get or sets the progress bar width.
     /// </summary>
+    /// <remarks>
+    /// Default value is 0.
+    /// </remarks>
     [Parameter]
     public double Width
     {

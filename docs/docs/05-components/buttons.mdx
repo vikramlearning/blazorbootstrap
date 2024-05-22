@@ -17,33 +17,33 @@ Use Blazor Bootstrap button styles for actions in forms, dialogs, and more with 
 
 ## Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Active | bool | When set to `true`, places the component in the active state with active styling. | | false | 1.0.0 |
-| Block | bool | Makes the button to span the full width of a parent. | | false | 1.0.0 |
-| ChildContent | RenderFragment | Gets or sets the content to be rendered within the component. | | | 1.0.0 |
-| Color | `ButtonColor` | Gets or sets the button color. | ✔️ | | 1.0.0 |
-| Disabled | bool | When set to `true`, disables the component's functionality and places it in a disabled state. | | false | 1.0.0 |
-| Loading | bool | Shows the loading spinner or a `LoadingTemplate`. | | false | 1.0.0 |
-| LoadingTemplate | RenderFragment | Gets or sets the component loading template. | | | 1.0.0 |
-| LoadingText | string | Gets or sets the loadgin text. | | `Loading...` | 1.0.0 |
-| Outline | bool | Makes the button to have the outlines. | | false | 1.0.0 |
-| Position | `Position` | Gets or sets the position. | | | 1.7.0 |
-| Size | `Size` | Changes the size of a button. | | | 1.0.0 |
-| TabIndex | int? | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | | 1.0.0 |
-| Target | `Target` | The target attribute specifies where to open the linked document for a `ButtonType.Link`. | | `Target.None` | 1.0.0 |
-| To | string | Denotes the target route of the `ButtonType.Link` button. | | | 1.0.0 |
-| TooltipPlacement | `TooltipPlacement` | Tooltip placement | | `TooltipPlacement.Top` | 1.0.0 |
-| TooltipTitle | string | Displays informative text when users hover, focus, or tap an element. | | | 1.0.0 |
-| TooltipColor | `TooltipColor` | Gets or sets the tooltip color. | | `TooltipColor.None` | 1.10.0 |
-| Type | `ButtonType` | Defines the button type. | | `ButtonType.Button` | 1.0.0 |
+| Active | bool | false | | Gets or sets the button active state. | 1.0.0 |
+| Block | bool | false | | Gets or sets the block level button. | 1.0.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.0.0 |
+| Color | `ButtonColor` | `ButtonColor.None` | | Gets or sets the button color. | 1.0.0 |
+| Disabled | bool | false | | Gets or sets the button disabled state. | 1.0.0 |
+| Loading | bool | false | | If true, shows the loading spinner or a `LoadingTemplate`. | 1.0.0 |
+| LoadingTemplate | RenderFragment | null | | Gets or sets the button loading template. | 1.0.0 |
+| LoadingText | string | `Loading...` | | Gets or sets the loading text. `LoadingTemplate` takes precedence. | 1.0.0 |
+| Outline | bool | false | | Gets or sets the button outline. | 1.0.0 |
+| Position | `Position` | `Position.None` | | Gets or sets the position. | 1.7.0 |
+| Size | `Size` | `ButtonSize.None` | | Gets or sets the button size. | 1.0.0 |
+| TabIndex | int? | null | | Gets or sets the button tab index. | 1.0.0 |
+| Target | `Target` | `Target.None` | | Gets or sets the link button target. | 1.0.0 |
+| To | `string?` | null | | Gets or sets the link button href attribute. | 1.0.0 |
+| TooltipColor | `TooltipColor` | `TooltipColor.None` | | Gets or sets the button tooltip color. | 1.10.0 |
+| TooltipPlacement | `TooltipPlacement` | `TooltipPlacement.Top` | Gets or sets the button tooltip placement. | 1.0.0 |
+| TooltipTitle | string | null | | Gets or sets the button tooltip title. | 1.0.0 |
+| Type | `ButtonType` | `ButtonType.Button` | | Gets or sets the button type. | 1.0.0 |
 
 ## Methods
 
-| Name | Description |
-|--|--|
-| ShowLoading | Shows the loading state and disables the button. |
-| HideLoading | Hides the loading state and enables the button. |
+| Name | Description | Added Version |
+|--|--|--|
+| HideLoading | Hides the loading state and enables the button. | 1.0.0 |
+| ShowLoading | Shows the loading state and disables the button. | 1.0.0 |
 
 ## Examples
 

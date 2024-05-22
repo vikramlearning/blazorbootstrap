@@ -1,8 +1,5 @@
 ﻿namespace BlazorBootstrap;
 
-/// <summary>
-/// Specifies the comparison operator of a filter.
-/// </summary>
 public enum FilterOperator
 {
     None,

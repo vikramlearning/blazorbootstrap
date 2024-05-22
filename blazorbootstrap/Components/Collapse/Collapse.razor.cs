@@ -86,13 +86,19 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     [EditorRequired]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the horizontal.
+    /// Gets or sets the horizontal collapsing.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Horizontal { get; set; }
 
@@ -133,6 +139,9 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// <summary>
     /// Toggles the collapsible element on invocation.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Toggle { get; set; } = false;
 

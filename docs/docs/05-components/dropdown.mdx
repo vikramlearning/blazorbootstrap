@@ -20,56 +20,56 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 ## Dropdown Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| AutoClose | bool | Enables or disables the auto close. | | true | 1.10.0 |
-| AutoCloseBehavior | `DropdownAutoCloseBehavior` | Gets or sets the auto close behavior of the dropdown. | | `DropdownAutoCloseBehavior.Both` | 1.10.0 |
-| ChildContent | RenderFragment | Gets or sets the content to be rendered within the component. | | | 1.10.0 |
-| Direction | `DropdownDirection` | Gets or sets the direction of the dropdown menu. | | `DropdownDirection.Dropdown` | 1.10.0 |
-| Disabled | bool | Gets or sets whether the dropdown menu is disabled. | | false | 1.10.3 |
-| Size | `Size` | Gets or sets the size of the dropdown. | | `Size.None` | 1.10.3 |
-| Split | bool | Gets or sets the toggle button split behavior. | | false | 1.10.0 |
+| AutoClose | bool | true | | If true, enables the auto close. | 1.10.0 |
+| AutoCloseBehavior | `DropdownAutoCloseBehavior` | `DropdownAutoCloseBehavior.Both` | | Gets or sets the auto close behavior of the dropdown. | 1.10.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.10.0 |
+| Color | `DropdownColor` | `DropdownColor.None` | | Gets or sets the dropdown color. | 3.0.0 |
+| Direction | `DropdownDirection` | `DropdownDirection.Dropdown` | | Gets or sets the direction of the dropdown menu. | 1.10.0 |
+| Disabled | bool | false | | If true, dropdown will be disabled. | 1.10.3 |
+| Size | `DropdownSize` | `DropdownSize.None` | | Gets or sets the size of the dropdown. | 1.10.3 |
+| Split | bool | false | | Gets or sets the toggle button split behavior. | 1.10.0 |
 
 ## DropdownToggleButton Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| ChildContent | RenderFragment | Gets or sets the content to be rendered within the component. | | | 1.10.0 |
-| Color | `ButtonColor` | Gets or sets the button color. | | | 1.10.0 |
-| TabIndex | `int?` | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | | 1.10.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.10.0 |
+| TabIndex | `int?` | null | | Gets or sets the dropdown toggle button tab index. | 1.10.0 |
 
 ## DropdownActionButton Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| ChildContent | RenderFragment | Gets or sets the content to be rendered within the component. | | | 1.10.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.10.0 |
 | Color | `ButtonColor` | Gets or sets the button color. | | | 1.10.0 |
 | TabIndex | `int?` | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | | 1.10.0 |
 
 ## DropdownMenu Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| ChildContent | RenderFragment | Gets or sets the content to be rendered within the component. | | | 1.10.0 |
-| Position | `DropdownMenuPosition` | Gets or sets the dropdown menu position. | | | 1.10.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.10.0 |
+| Position | `DropdownMenuPosition` | `DropdownMenuPosition.Start` | | Gets or sets the dropdown menu position. | 1.10.0 |
 
 ## DropdownHeader Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| ChildContent | RenderFragment | Gets or sets the content to be rendered within the component. | | | 1.10.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.10.0 |
 
 ## DropdownItem Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Active | bool | When set to 'true', places the component in the active state with active styling. | | | 1.10.0 |
-| ChildContent | RenderFragment | Gets or sets the content to be rendered within the component. | | | 1.10.0 |
-| Disabled | bool | When set to 'true', disables the component's functionality and places it in a disabled state. | | | 1.10.0 |
-| TabIndex | `int?` | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | | 1.10.0 |
-| Target | `Target` | The target attribute specifies where to open the linked document. | | `Target.None` | 1.10.0 |
-| To | `string?` | Denotes the target route of the link button. | | | 1.10.0 |
-| Type | `ButtonType` | Defines the button type. | | `ButtonType.Button` | 1.10.0 |
+| Active | bool | false | | Gets or sets the dropdown item active state. | 1.10.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.10.0 |
+| Disabled | bool | false | | If true, dropdown item will be disabled. | 1.10.0 |
+| TabIndex | `int?` | null | | Gets or sets the dropdown item tab index. | 1.10.0 |
+| Target | `Target` | `Target.None` | | Gets or sets the target of dropdown item (if the type is link). | 1.10.0 |
+| To | `string?` | null | | Get or sets the link href attribute (if the type is link). | 1.10.0 |
+| Type | `DropdownItemType` | `DropdownItemType.Button` | Gets or sets the dropdown item type. | 1.10.0 |
 
 ## Dropdown Methods
 

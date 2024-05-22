@@ -89,38 +89,56 @@ public partial class Toasts : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Auto hide the toast. Default is false.
+    /// Gets or sets the auto hide state.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AutoHide { get; set; }
 
     /// <summary>
-    /// Delay hiding the toast (ms). Default is 5000 milli seconds.
+    /// Gets or sets the delay in milliseconds before hiding the toast.
     /// </summary>
+    /// <remarks>
+    /// Default value is 5000.
+    /// </remarks>
     [Parameter]
     public int Delay { get; set; } = 5000;
 
     /// <summary>
-    /// List of all the toasts.
+    /// Gets or sets the toast messages.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public List<ToastMessage>? Messages { get; set; } = default!;
 
     /// <summary>
-    /// Specifies the toasts placement. Default is top right.
+    /// Gets or sets the toast placement.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="ToastsPlacement.TopRight" />.
+    /// </remarks>
     [Parameter]
     public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
 
     /// <summary>
-    /// Show the close button.
+    /// If true, shows the close button.
     /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
     [Parameter]
     public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
-    /// Specifies the toast container maximum capacity. Default is 5.
+    /// Gets or sets the toast container maximum capacity.
     /// </summary>
+    /// <remarks>
+    /// Default value is 5.
+    /// </remarks>
     [Parameter]
     public int StackLength { get; set; } = 5;
 

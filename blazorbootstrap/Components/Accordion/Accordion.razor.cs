@@ -172,20 +172,6 @@ public partial class Accordion : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
-    /// <summary>
-    /// Gets or sets the AlwaysOpen.
-    /// It makes accordion items stay open when another item is opened.
-    /// </summary>
-    [Parameter]
-    public bool AlwaysOpen { get; set; }
-
-    /// <summary>
-    /// Gets or sets the content to be rendered within the component.
-    /// </summary>
-    [Parameter]
-    [EditorRequired]
-    public RenderFragment ChildContent { get; set; } = default!;
-
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Accordion)
@@ -193,9 +179,30 @@ public partial class Accordion : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Gets or sets the flush.
-    /// Removes borders and rounded corners to render accordions edge-to-edge with their parent container.
+    /// If true, accordion items stay open when another item is opened.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [Parameter]
+    public bool AlwaysOpen { get; set; }
+
+    /// <summary>
+    /// Gets or sets the content to be rendered within the component.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    [EditorRequired]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    /// <summary>
+    /// If true, removes borders and rounded corners to render accordions edge-to-edge with their parent container.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Flush { get; set; }
 

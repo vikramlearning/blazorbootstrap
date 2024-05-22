@@ -1,8 +1,5 @@
 ﻿namespace BlazorBootstrap;
 
-/// <summary>
-/// Specifies the available styles for navigation elements.
-/// </summary>
 public enum NavStyle
 {
     /// <summary>

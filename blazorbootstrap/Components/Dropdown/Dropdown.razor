@@ -3,12 +3,14 @@
 
 <CascadingValue IsFixed="true" Value="@AutoClose" Name="AutoClose">
     <CascadingValue IsFixed="true" Value="@AutoCloseBehavior" Name="AutoCloseBehavior">
-        <CascadingValue IsFixed="true" Value="@Disabled" Name="Disabled">
-            <CascadingValue IsFixed="true" Value="@Size" Name="Size">
-                <CascadingValue IsFixed="true" Value="@Split" Name="Split">
-                    <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-                        @ChildContent
-                    </div>
+        <CascadingValue IsFixed="true" Value="@Color" Name="Color">
+            <CascadingValue IsFixed="true" Value="@Disabled" Name="Disabled">
+                <CascadingValue IsFixed="true" Value="@Size" Name="Size">
+                    <CascadingValue IsFixed="true" Value="@Split" Name="Split">
+                        <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+                            @ChildContent
+                        </div>
+                    </CascadingValue>
                 </CascadingValue>
             </CascadingValue>
         </CascadingValue>

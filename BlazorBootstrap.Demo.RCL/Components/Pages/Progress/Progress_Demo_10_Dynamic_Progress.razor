@@ -3,9 +3,9 @@
     <ProgressBar Width="@width" Label="@label" Type="progressType" Color="progressColor" />
 </Progress>
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="IncreaseProgressBar">Increase by 10%</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="DecreaseProgressBar">Decrease by 10%</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="ResetProgressBar">Reset</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="IncreaseProgressBar">Increase by 10%</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="DecreaseProgressBar">Decrease by 10%</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="ResetProgressBar">Reset</Button>
 
 @code {
     private double width = 10;

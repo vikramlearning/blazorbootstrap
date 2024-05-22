@@ -216,8 +216,11 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the preferred orientation for the PDF viewer.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Orientation.Portrait" />.
+    /// </remarks>
     [Parameter]
-    public Orientation Orientation { get; set; }
+    public Orientation Orientation { get; set; } = Orientation.Portrait;
 
     /// <summary>
     /// Provides JavaScript interop functionality for the PDF viewer.
@@ -227,7 +230,11 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the URL of the PDF document to be displayed.
+    /// PDF Viewer component supports base64 string as a URL.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? Url { get; set; }
 

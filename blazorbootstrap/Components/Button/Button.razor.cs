@@ -162,7 +162,7 @@ public partial class Button : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
-    protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder => { builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-{(Size == Size.None ? Size.Medium : Size).ToSizeClass()}\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}"); };
+    protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder => { builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-{(Size == ButtonSize.None ? ButtonSize.Medium : Size).ToButtonSpinnerSizeClass()}\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}"); };
 
     private void SetAttributes()
     {
@@ -282,32 +282,12 @@ public partial class Button : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
-    /// <summary>
-    /// When set to 'true', places the component in the active state with active styling.
-    /// </summary>
-    [Parameter]
-    public bool Active { get; set; }
-
-    /// <summary>
-    /// Makes the button to span the full width of a parent.
-    /// </summary>
-    [Parameter]
-    public bool Block { get; set; }
-
-    private string buttonTypeString => Type.ToButtonTypeString()!;
-
-    /// <summary>
-    /// Gets or sets the content to be rendered within the component.
-    /// </summary>
-    [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
-
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Button)
             .AddClass(Color.ToButtonColorClass(), Color != ButtonColor.None && !Outline)
             .AddClass(Color.ToButtonOutlineColorClass(), Color != ButtonColor.None && Outline)
-            .AddClass(Size.ToButtonSizeClass(), Size != Size.None)
+            .AddClass(Size.ToButtonSizeClass(), Size != ButtonSize.None)
             .AddClass(BootstrapClass.ButtonDisabled, Disabled && Type == ButtonType.Link)
             .AddClass(BootstrapClass.ButtonActive, Active)
             .AddClass(BootstrapClass.ButtonBlock, Block)
@@ -316,26 +296,67 @@ public partial class Button : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
+    /// Gets or sets the button active state.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [Parameter]
+    public bool Active { get; set; }
+
+    /// <summary>
+    /// Gets or sets the block level button.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [Parameter]
+    public bool Block { get; set; }
+
+    private string buttonTypeString => Type.ToButtonTypeString()!;
+
+    /// <summary>
+    /// Gets or sets the content to be rendered within the component.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    /// <summary>
     /// Gets or sets the button color.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="ButtonColor.None" />.
+    /// </remarks>
     [Parameter]
     public ButtonColor Color { get; set; } = ButtonColor.None;
 
     /// <summary>
-    /// When set to 'true', disables the component's functionality and places it in a disabled state.
+    /// Gets or sets the button disabled state.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// Shows the loading spinner or a <see cref="LoadingTemplate" />.
+    /// If true, shows the loading spinner or a <see cref="LoadingTemplate" />.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Loading { get; set; }
 
     /// <summary>
-    /// Gets or sets the component loading template.
+    /// Gets or sets the button loading template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment LoadingTemplate { get; set; } = default!;
 
@@ -343,12 +364,18 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Gets or sets the loading text.
     /// <see cref="LoadingTemplate" /> takes precedence.
     /// </summary>
+    /// <remarks>
+    /// Default value is 'Loading...'.
+    /// </remarks>
     [Parameter]
     public string LoadingText { get; set; } = "Loading...";
 
     /// <summary>
-    /// Makes the button to have the outlines.
+    /// Gets or sets the button outline.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Outline { get; set; }
 
@@ -356,54 +383,81 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Gets or sets the position.
     /// Use <see cref="Position" /> to modify a <see cref="Badge" /> and position it in the corner of a link or button.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Position.None" />.
+    /// </remarks>
     [Parameter]
-    public Position Position { get; set; }
+    public Position Position { get; set; } = Position.None;
 
     /// <summary>
-    /// Changes the size of a button.
+    /// Gets or sets the button size.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="ButtonSize.None" />.
+    /// </remarks>
     [Parameter]
-    public Size Size { get; set; } = Size.None;
+    public ButtonSize Size { get; set; } = ButtonSize.None;
 
     /// <summary>
-    /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
+    /// Gets or sets the button tab index.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }
 
     /// <summary>
-    /// The target attribute specifies where to open the linked document for a <see cref="ButtonType.Link" />.
+    /// Gets or sets the link button target.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Target.None" />
+    /// </remarks>
     [Parameter]
     public Target Target { get; set; } = Target.None;
 
     /// <summary>
-    /// Denotes the target route of the <see cref="ButtonType.Link" /> button.
+    /// Gets or sets the link button href attribute.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? To { get; set; }
 
     /// <summary>
-    /// Gets or sets the tooltip color.
+    /// Gets or sets the button tooltip color.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="TooltipColor.None" />.
+    /// </remarks>
     [Parameter]
-    public TooltipColor TooltipColor { get; set; }
+    public TooltipColor TooltipColor { get; set; } = TooltipColor.None;
 
     /// <summary>
-    /// Tooltip placement
+    /// Gets or sets the button tooltip placement.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="TooltipPlacement.Top" />.
+    /// </remarks>
     [Parameter]
     public TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
 
     /// <summary>
-    /// Displays informative text when users hover, focus, or tap an element.
+    /// Gets or sets the button tooltip title.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string TooltipTitle { get; set; } = default!;
 
     /// <summary>
-    /// Defines the button type.
+    /// Gets or sets the button type.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="ButtonType.Button" />.
+    /// </remarks>
     [Parameter]
     public ButtonType Type { get; set; } = ButtonType.Button;
 
@@ -411,6 +465,4 @@ public partial class Button : BlazorBootstrapComponentBase
 
     // TODO: Review
     // - Disable text wrapping: https://getbootstrap.com/docs/5.1/components/buttons/#disable-text-wrapping
-    // - Toggle states: https://getbootstrap.com/docs/5.1/components/buttons/#toggle-states
-    // - IDispose
 }

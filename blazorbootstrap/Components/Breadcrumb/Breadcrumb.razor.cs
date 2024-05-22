@@ -40,8 +40,11 @@ public partial class Breadcrumb : BlazorBootstrapComponentBase
     [Inject] private BreadcrumbService BreadcrumbService { get; set; } = default!;
 
     /// <summary>
-    /// List of all the items.
+    /// Gets or sets the items.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public List<BreadcrumbItem> Items { get; set; } = default!;
 

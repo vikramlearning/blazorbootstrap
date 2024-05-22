@@ -83,24 +83,36 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets a value indicating whether sorting is allowed for the list.
     /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
     [Parameter]
     public bool AllowSorting { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the items.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public List<TItem> Data { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the CSS class applied to disabled items.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? DisabledItemCssClass { get; set; } = default!;
 
@@ -111,50 +123,74 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     public Func<TItem, bool> DisableItem { get; set; } = default!;
 
     /// <summary>
-    /// Specifies the template to render when there are no items to display in the list.
+    /// Gets or sets the empty data template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment EmptyDataTemplate { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the text to display when there are no records in the list.
     /// </summary>
+    /// <remarks>
+    /// Default value is `No records to display`.
+    /// </remarks>
     [Parameter]
     public string EmptyText { get; set; } = "No records to display";
 
     /// <summary>
     /// Gets or sets the group name associated with the list.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? Group { get; set; }
 
     /// <summary>
     /// Gets or sets the CSS selector for the drag handle element.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? Handle { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the list is currently loading.
+    /// Gets or sets the loading state.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool IsLoading { get; set; }
 
     /// <summary>
-    /// Specifies the template used to render individual items in the list.
+    /// Gets or sets the template used to render individual items in the list.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment<TItem>? ItemTemplate { get; set; }
 
     /// <summary>
-    /// Specifies the template to render while the list data is loading.
+    /// Gets or sets the loading template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment LoadingTemplate { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the name of the <see cref="SortableList{TItem}" /> component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? Name { get; set; }
 
@@ -179,14 +215,20 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the pull mode for the sortable list.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="SortableListPullMode.True" />.
+    /// </remarks>
     [Parameter]
-    public SortableListPullMode Pull { get; set; }
+    public SortableListPullMode Pull { get; set; } = SortableListPullMode.True;
 
     /// <summary>
     /// Gets or sets the put mode for the sortable list.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="SortableListPutMode.True" />.
+    /// </remarks>
     [Parameter]
-    public SortableListPutMode Put { get; set; }
+    public SortableListPutMode Put { get; set; } = SortableListPutMode.True;
 
     /// <summary>
     /// Provides JavaScript interop functionality for the Sortable List.

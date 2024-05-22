@@ -107,52 +107,74 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Additional body CSS class.
+    /// Gets or sets the body CSS class.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string BodyCssClass { get; set; } = default!;
 
     /// <summary>
-    /// Body content.
+    /// Gets or sets the body template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment BodyTemplate { get; set; } = default!;
 
     /// <summary>
-    /// Indicates whether the offcanvas closes when escape key is pressed.
-    /// Default value is true.
+    /// If true, offcanvas closes when escape key is pressed.
     /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
     [Parameter]
     public bool CloseOnEscape { get; set; } = true;
 
     /// <summary>
-    /// Additional footer CSS class.
+    /// Gets or sets the footer CSS class.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string FooterCssClass { get; set; } = default!;
 
     /// <summary>
-    /// Footer content.
+    /// Gets or sets the footer template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment FooterTemplate { get; set; } = default!;
 
     /// <summary>
-    /// Additional header CSS class.
+    /// Gets or sets the header CSS class.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string HeaderCssClass { get; set; } = default!;
 
     /// <summary>
-    /// Content for the header.
+    /// Gets or sets the header template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment HeaderTemplate { get; set; } = default!;
 
     /// <summary>
-    /// Indicates whether body (page) scrolling is allowed while offcanvas is open.
-    /// Default value is false.
+    /// Indicates whether body scrolling is allowed while offcanvas is open.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool IsScrollable { get; set; }
 
@@ -183,49 +205,66 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     public EventCallback OnShown { get; set; }
 
     /// <summary>
-    /// Specifies the placement.
-    /// By default, offcanvas is placed on the right of the viewport.
+    /// Gets or sets the offcanvas placement.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Placement.End" />.
+    /// </remarks>
     [Parameter]
     public Placement Placement { get; set; } = Placement.End;
 
     /// <summary>
-    /// Indicates whether the modal shows close button in header.
-    /// Default value is true.
-    /// Use <see cref="CloseButtonIcon" /> to change shape of the button.
+    /// If true, modal shows close button in the header.
     /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
     [Parameter]
     public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
-    /// Size of the offcanvas. Default is <see cref="OffcanvasSize.Regular" />.
+    /// Gets or sets the offcanvas size.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="OffcanvasSize.Regular" />.
+    /// </remarks>
     [Parameter]
     public OffcanvasSize Size { get; set; } = OffcanvasSize.Regular;
 
     /// <summary>
     /// Gets or sets the tab index.
     /// </summary>
+    /// <remarks>
+    /// Default value is -1.
+    /// </remarks>
     [Parameter]
     public int TabIndex { get; set; } = -1;
 
     /// <summary>
-    /// Text for the title in header.
+    /// Gets or sets the offcanvas title.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string Title { get; set; } = default!;
 
     [Obsolete("Use `UseStaticBackdrop` parameter.")]
     /// <summary>
     /// Indicates whether to apply a backdrop on body while offcanvas is open.
-    /// Default value is true.
     /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
     [Parameter]
     public bool UseBackdrop { get; set; } = true;
 
     /// <summary>
     /// When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool UseStaticBackdrop { get; set; }
 

@@ -119,26 +119,38 @@ public partial class CardLink : BlazorBootstrapComponentBase
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// When set to 'true', disables the component's functionality and places it in a disabled state.
+    /// If true, disables the card link.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
+    /// Gets or sets the card link tab index.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }
 
     /// <summary>
-    /// The target attribute specifies where to open the linked document for a <see cref="CardLink" />.
+    /// Gets or sets the card link target.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Target.None" />.
+    /// </remarks>
     [Parameter]
     public Target Target { get; set; } = Target.None;
 
     /// <summary>
-    /// Gets or sets the target route.
+    /// Gets or sets the link href attribute.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? To { get; set; }
 

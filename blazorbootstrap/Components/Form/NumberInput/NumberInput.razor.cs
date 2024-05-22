@@ -352,22 +352,31 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Allows negative numbers. By default, negative numbers are not allowed.
+    /// If true, allows negative numbers.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AllowNegativeNumbers { get; set; }
 
     private string autoComplete => AutoComplete ? "true" : "false";
 
     /// <summary>
-    /// Indicates whether the NumberInput can complete the values automatically by the browser.
+    /// If true, NumberInput can complete the values automatically by the browser.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AutoComplete { get; set; }
 
     /// <summary>
-    /// Gets or sets the disabled.
+    /// Gets or sets the disabled state .
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -377,6 +386,9 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Determines whether to restrict the user input to Min and Max range.
     /// If true, restricts the user input between the Min and Max range. Else accepts the user input.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool EnableMinMax { get; set; }
 
@@ -385,6 +397,9 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the locale. Default locale is 'en-US'.
     /// </summary>
+    /// <remarks>
+    /// Default value is 'en-US'.
+    /// </remarks>
     [Parameter]
     //[EditorRequired]
     public string Locale { get; set; } = "en-US";
@@ -406,20 +421,29 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets the step.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public double? Step { get; set; }
 
     /// <summary>
     /// Gets or sets the text alignment.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Alignment.None" />.
+    /// </remarks>
     [Parameter]
-    public Alignment TextAlignment { get; set; }
+    public Alignment TextAlignment { get; set; } = Alignment.None;
 
     /// <summary>
     /// Gets or sets the value.

@@ -14,7 +14,14 @@ public class RibbonEventArgs : EventArgs
 
     #region Properties, Indexers
 
+    /// <summary>
+    /// Gets the active tab title.
+    /// </summary>
     public string ActiveTabTitle { get; }
+
+    /// <summary>
+    /// Gets the previous active tab title.
+    /// </summary>
     public string PreviousActiveTabTitle { get; }
 
     #endregion

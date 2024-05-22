@@ -17,11 +17,11 @@ Documentation and examples for using Blazor Bootstrap Tabs components.
 
 ## Tabs Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| ChildContent | RenderFragment | Gets or sets the content to be rendered within the component. | | | 1.0.0 |
-| EnableFadeEffect | bool | Gets or sets the tabs fade effect. | | false | 1.0.0 |
-| NavStyle | `NavStyle` | Get or sets the nav style. | | `NavStyle.Tabs` | 1.0.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.0.0 |
+| EnableFadeEffect | bool | false | | Gets or sets the tabs fade effect. | 1.0.0 |
+| NavStyle | `NavStyle` | `NavStyle.Tabs` | | Get or sets the nav style. | 1.0.0 |
 
 ## Tabs Methods
 
@@ -47,14 +47,14 @@ Documentation and examples for using Blazor Bootstrap Tabs components.
 
 ## Tab Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
-|:--|:--|:--|-:-|:--|:--|
-| Content | RenderFragment | Specifies the content to be rendered inside the tab. | ✔️ | | 1.0.0 |
-| Disabled | bool | Gets or sets the disabled. | | false | 1.0.0 |
-| IsActive | bool | Gets or sets the active tab. | | false | 1.0.0 |
-| Name | string | Gets or sets the tab name. | | | 1.0.0 |
-| Title | string | Gets or sets the tab title. | | | 1.0.0 |
-| TitleTemplate | RenderFragment | Gets or sets the tab title template. | | | 1.0.0 |
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Active | bool | false | | Gets or sets the active state. | 1.0.0 |
+| Content | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.0.0 |
+| Disabled | bool | false | | Gets or sets the disabled state. | 1.0.0 |
+| Name | string | null | | Gets or sets the tab name. | 1.0.0 |
+| Title | string | null | | Gets or sets the tab title. | 1.0.0 |
+| TitleTemplate | RenderFragment | null | | Gets or sets the tab title template. | 1.0.0 |
 
 :::info Note
 Either **Title** or **TitleTemplate** is required.

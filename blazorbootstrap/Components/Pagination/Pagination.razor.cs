@@ -74,66 +74,93 @@ public partial class Pagination : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Active page number. Starts with 1.
+    /// Gets or sets the active page number.
     /// </summary>
+    /// <remarks>
+    /// Default value is 1.
+    /// </remarks>
     [Parameter]
     public int ActivePageNumber { get; set; } = 1;
 
     /// <summary>
     /// Gets or sets the pagination alignment.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Alignment.None" />.
+    /// </remarks>
     [Parameter]
     public Alignment Alignment { get; set; } = Alignment.None;
 
     /// <summary>
     /// Gets or sets the maximum page links to be displayed.
     /// </summary>
+    /// <remarks>
+    /// Default value is 5.
+    /// </remarks>
     [Parameter]
     public int DisplayPages { get; set; } = 5;
 
     /// <summary>
-    /// Gets or sets first link icon.
+    /// Gets or sets the first link icon.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="IconName.None" />.
+    /// </remarks>
     [Parameter]
-    public IconName FirstLinkIcon { get; set; }
+    public IconName FirstLinkIcon { get; set; } = IconName.None;
 
     private string firstLinkText => string.IsNullOrWhiteSpace(FirstLinkText) ? "First" : FirstLinkText;
 
     /// <summary>
-    /// Gets or sets first link text. 'FirstLinkText' is ignored if 'FirstLinkIcon' is specified.
+    /// Gets or sets the first link text. 'FirstLinkText' is ignored if 'FirstLinkIcon' is specified.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? FirstLinkText { get; set; }
 
     private int firstPageNumber => 1;
 
     /// <summary>
-    /// Gets or sets last link icon.
+    /// Gets or sets the last link icon.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="IconName.None" />.
+    /// </remarks>
     [Parameter]
-    public IconName LastLinkIcon { get; set; }
+    public IconName LastLinkIcon { get; set; } = IconName.None;
 
     private string lastLinkText => string.IsNullOrWhiteSpace(LastLinkText) ? "Last" : LastLinkText;
 
     /// <summary>
-    /// Gets or sets last link text. 'LastLinkText' is ignored if 'LastLinkIcon' is specified.
+    /// Gets or sets the last link text. 'LastLinkText' is ignored if 'LastLinkIcon' is specified.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? LastLinkText { get; set; }
 
     private int lastPageNumber => TotalPages == 0 ? 1 : TotalPages;
 
     /// <summary>
-    /// Gets or sets next link icon.
+    /// Gets or sets the next link icon.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="IconName.None" />.
+    /// </remarks>
     [Parameter]
-    public IconName NextLinkIcon { get; set; }
+    public IconName NextLinkIcon { get; set; } = IconName.None;
 
     private string nextLinkText => string.IsNullOrWhiteSpace(NextLinkText) ? "Next" : NextLinkText;
 
     /// <summary>
-    /// Gets or sets next link text. 'NextLinkText' is ignored if 'NextLinkIcon' is specified.
+    /// Gets or sets the next link text. 'NextLinkText' is ignored if 'NextLinkIcon' is specified.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? NextLinkText { get; set; }
 
@@ -150,16 +177,22 @@ public partial class Pagination : BlazorBootstrapComponentBase
     private int pageToExclusive => GetPageToExclusive();
 
     /// <summary>
-    /// Gets or sets previous link icon.
+    /// Gets or sets the previous link icon.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="IconName.None" />.
+    /// </remarks>
     [Parameter]
-    public IconName PreviousLinkIcon { get; set; }
+    public IconName PreviousLinkIcon { get; set; } = IconName.None;
 
     private string previousLinkText => string.IsNullOrWhiteSpace(PreviousLinkText) ? "Previous" : PreviousLinkText;
 
     /// <summary>
-    /// Gets or sets previous link text. 'PreviousLinkText' is ignored if 'PreviousLinkIcon' is specified.
+    /// Gets or sets the previous link text. 'PreviousLinkText' is ignored if 'PreviousLinkIcon' is specified.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? PreviousLinkText { get; set; }
 
@@ -168,12 +201,18 @@ public partial class Pagination : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the pagination size.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="PaginationSize.None" />.
+    /// </remarks>
     [Parameter]
     public PaginationSize Size { get; set; } = PaginationSize.None;
 
     /// <summary>
-    /// Total pages of data items.
+    /// Gets or sets the total pages.
     /// </summary>
+    /// <remarks>
+    /// Default value is 0.
+    /// </remarks>
     [Parameter]
     public int TotalPages { get; set; }
 

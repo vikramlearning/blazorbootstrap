@@ -401,24 +401,40 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Allows negative numbers. By default, negative numbers are not allowed.
+    /// If true, allows negative numbers.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AllowNegativeNumbers { get; set; }
 
     private string autoComplete => AutoComplete ? "true" : "false";
 
     /// <summary>
-    /// Indicates whether the NumberInput can complete the values automatically by the browser.
+    /// If true, CurrencyInput can complete the values automatically by the browser.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AutoComplete { get; set; }
 
-    [Parameter] public CurrencySign CurrencySign { get; set; }
+    /// <summary>
+    /// Gets or sets the currency sign.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CurrencySign.Standard" />.
+    /// </remarks>
+    [Parameter]
+    public CurrencySign CurrencySign { get; set; } = CurrencySign.Standard;
 
     /// <summary>
-    /// Gets or sets the disabled.
+    /// Gets or sets the disabled state.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -428,6 +444,9 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Determines whether to restrict the user input to Min and Max range.
     /// If true, restricts the user input between the Min and Max range. Else accepts the user input.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool EnableMinMax { get; set; }
 
@@ -436,12 +455,18 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// <summary>
     /// Determines whether to hide the currency symbol are not.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool HideCurrencySymbol { get; set; }
 
     /// <summary>
-    /// Gets or sets the locale. Default locale is 'en-US'.
+    /// Gets or sets the locale.
     /// </summary>
+    /// <remarks>
+    /// Default value is 'en-US'.
+    /// </remarks>
     [Parameter]
     //[EditorRequired]
     public string Locale { get; set; } = "en-US";
@@ -456,6 +481,9 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// <summary>
     /// The maximum number of fraction digits to use.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public byte? MaximumFractionDigits { get; set; }
 
@@ -469,28 +497,39 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// <summary>
     /// The minimum number of fraction digits to use.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public byte? MinimumFractionDigits { get; set; }
 
     /// <summary>
     /// The minimum number of integer digits to use. A value with a smaller number of integer digits than this number will be
     /// left-padded with zeros (to the specified length) when formatted.
-    /// The default is 1.
     /// </summary>
+    /// <remarks>
+    /// Default value is 1.
+    /// </remarks>
     [Parameter]
     public byte MinimumIntegerDigits { get; set; } = 1;
 
     /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets the text alignment.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Alignment.None" />.
+    /// </remarks>
     [Parameter]
-    public Alignment TextAlignment { get; set; }
+    public Alignment TextAlignment { get; set; } = Alignment.None;
 
     /// <summary>
     /// Gets or sets the value.

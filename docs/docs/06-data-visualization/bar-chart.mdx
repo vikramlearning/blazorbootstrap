@@ -20,19 +20,23 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 
 ## Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Height | int | Gets or sets chart height. | | | 1.0.0 |
-| Width | int | Gets or sets chart width. | | | 1.0.0 |
+| Height | `int?` | null | | Gets or sets chart container height. | 1.0.0 |
+| HeightUnit | `Unit` | `Unit.Px` | | Gets or sets chart container height unit of measure. | 1.0.0 |
+| Width | `int?` | null | | Gets or sets chart container width. | 1.0.0 |
+| WidthUnit | `Unit` | `Unit.Px` | | Gets or sets chart container width unit of measure. | 1.0.0 |
 
 ## Methods
 
 | Name | Return type | Description | Added Version |
 |:--|:--|:--|:--|
-| AddDataAsync | `ChartData` | Adds data to bar chart. | 1.10.0 |
-| AddDatasetAsync | `ChartData` | Adds dataset to bar chart. | 1.10.0 |
-| InitializeAsync | Task | Initialize Bar Chart. | 1.0.0 |
-| UpdateAsync | Task | Update Bar Chart. | 1.0.0 |
+| AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) | `Task<ChartData>` | Adds data to chart. | 1.10.0 |
+| AddDataAsync(ChartData chartData, string dataLabel, `List<IChartDatasetData>` data) | `Task<ChartData>` | Adds dataset to chart. | 1.10.0 |
+| AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) | `Task<ChartData>` | Adds dataset to chart. | 1.10.0 || InitializeAsync | Task | Initialize Bar Chart. | 1.0.0 |
+| InitializeAsync(ChartData chartData, IChartOptions chartOptions, `string[]?` plugins = null) | Task | Initialize the chat. | 1.0.0 |
+| ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px) | Task | Resize the chart. | 1.0.0 |
+| UpdateAsync(ChartData chartData, IChartOptions chartOptions) | Task | Update the chart. | 1.0.0 |
 
 ## ChartData Members
 

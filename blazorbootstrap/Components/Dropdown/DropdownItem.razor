@@ -2,10 +2,9 @@
 @inherits BlazorBootstrapComponentBase
 
 <li>
-    @if (Type == ButtonType.Link)
+    @if (Type == DropdownItemType.Link)
     {
         <a @ref="@Element"
-           type="@buttonTypeString"
            id="@Id"
            class="@ClassNames" 
            style="@StyleNames"
@@ -16,7 +15,7 @@
     else
     {
         <button @ref="@Element"
-                type="@buttonTypeString"
+                type="button"
                 id="@Id"
                 class="@ClassNames"
                 style="@StyleNames"

@@ -18,16 +18,16 @@ Blazor Bootstrap autocomplete component is a textbox that offers the users sugge
 ## Parameters
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| DataProvider | delegate | null | ✔️ | DataProvider is for items to render. The provider should always return an instance of `AutoCompleteDataProviderResult`, and null is not allowed. | 0.4.0 |
-| Disabled | bool | false | | Is AutoComplete disabled. | 0.4.0 |
-| EmptyText | string | `No records found.` | ✔️ | Gets or sets the empty text. | 1.10.2 |
-| LoadingText | string | `Loading...` | ✔️ | Gets or sets the loading text. | 1.10.2 |
-| Placeholder | string | null | | AutoComplete placeholder. | 0.4.0 |
-| PropertyName | string | null | ✔️ | AutoComplete data text property name. | 0.4.0 |
-| Size | enum | `AutoCompleteSize.Default` | | Use `AutoCompleteSize.Default` or `AutoCompleteSize.Large` or `AutoCompleteSize.Small` | 0.4.0 |
-| StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Specifies the culture, case, and sort rules to be used. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 0.4.1 |
-| StringFilterOperator | enum | `StringFilterOperator.Contains` | | Use `StringFilterOperator.Equals` or `StringFilterOperator.Contains` or `StringFilterOperator.StartsWith` or `StringFilterOperator.EndsWith` | 0.4.1 |
-| Value | string | null | ✔️ | AutoComplete value. | 0.4.0 |
+| DataProvider | `AutoCompleteDataProviderDelegate<TItem>` | null | ✔️ | Gets or sets the data provider. | 0.4.0 |
+| Disabled | bool | false | | Gets or sets the disabled state. | 0.4.0 |
+| EmptyText | string | `No records found.` | | Gets or sets the empty text. | 1.10.2 |
+| LoadingText | string | `Loading...` | | Gets or sets the loading text. | 1.10.2 |
+| Placeholder | string | null | | Gets or sets the placeholder. | 0.4.0 |
+| PropertyName | string | null | ✔️ | Gets or sets the property name. | 0.4.0 |
+| Size | `AutoCompleteSize` | `AutoCompleteSize.Default` | | Gets or sets the autocomplete size. | 0.4.0 |
+| StringComparison | `StringComparison` | `StringComparison.OrdinalIgnoreCase` | | Gets or sets the StringComparison. | 0.4.1 |
+| StringFilterOperator | `StringFilterOperator` | `StringFilterOperator.Contains` | | Gets or sets the string filter operator. | 0.4.1 |
+| Value | string | null | | Gets or sets the value. | 0.4.0 |
 | ValueExpression | expression | null | | AutoComplete value expression. | 0.4.0 |
 
 ## Methods

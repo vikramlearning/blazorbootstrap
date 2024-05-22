@@ -30,73 +30,103 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Specifies the content to be rendered inside the RibbonItem.
+    /// Gets or sets the content to be rendered within the component.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// The name of a custom icon to be displayed.
+    /// Gets or sets the custom icon name.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? CustomIconName { get; set; }
 
     /// <summary>
-    /// The color of the icon.
+    /// Gets or sets the icon color.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="IconColor.None" />.
+    /// </remarks>
     [Parameter]
-    public IconColor IconColor { get; set; }
+    public IconColor IconColor { get; set; } = IconColor.None;
 
     /// <summary>
-    /// CSS class(es) to be applied to the icon element.
+    /// Gets or sets the icon CSS class.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? IconCssClass { get; set; }
 
     /// <summary>
-    /// The built-in icon to be displayed.
+    /// Gets or sets the icon name.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="IconName.None" />.
+    /// </remarks>
     [Parameter]
-    public IconName IconName { get; set; }
+    public IconName IconName { get; set; } = IconName.None;
 
     /// <summary>
-    /// The size of the icon. Defaults to x3 (extra large).
+    /// Gets or sets the icon size.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="IconSize.x3" />.
+    /// </remarks>
     [Parameter]
     public IconSize IconSize { get; set; } = IconSize.x3;
 
     /// <summary>
-    /// The height of the image in pixels.
+    /// Gets or sets the image hieght. The height of the image in pixels.
     /// </summary>
+    /// <remarks>
+    /// Default value is 28.
+    /// </remarks>
     [Parameter]
     public double ImgHeight { get; set; } = 28;
 
     /// <summary>
-    /// The source URL of the image.
+    /// Gets or sets the image source.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? ImgSrc { get; set; }
 
     /// <summary>
-    /// The width of the image in pixels.
+    /// Gets or sets the image width. The width of the image in pixels.
     /// </summary>
+    /// <remarks>
+    /// Default value is 28.
+    /// </remarks>
     [Parameter]
     public double ImgWidth { get; set; } = 28;
 
     /// <summary>
-    /// True if this is the first item in the RibbonItemGroup.
+    /// Gets or sets the first item in the RibbonItemGroup.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool IsFirstItem { get; set; } = false;
 
     /// <summary>
-    /// True if this is the last item in the RibbonItemGroup.
+    /// Gets or sets the last item in the RibbonItemGroup.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool IsLastItem { get; set; } = false;
 
     /// <summary>
-    /// The name associated with the RibbonItem.
+    /// Gets or sets the RibbonItem name.
     /// </summary>
     [Parameter]
     public string? Name { get; set; }
@@ -108,7 +138,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     internal Ribbon Parent { get; set; } = default!;
 
     /// <summary>
-    /// The text content to be displayed inside the RibbonItem.
+    /// Gets or sets the text to be displayed inside the RibbonItem.
     /// </summary>
     [Parameter]
     public string? Text { get; set; }

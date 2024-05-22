@@ -1,8 +1,5 @@
 ﻿namespace BlazorBootstrap;
 
-/// <summary>
-/// Represents a unit of measurement for CSS properties.
-/// </summary>
 public enum Unit
 {
     /// <summary>
