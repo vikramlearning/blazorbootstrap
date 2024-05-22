@@ -27,14 +27,14 @@ Blazor Toasts are lightweight notifications designed to mimic the push notificat
 
 ## Toasts Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
+| Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| AutoHide | bool | Auto hide the toast. | | `false` | 1.0.0 |
-| Delay | int | Delay hiding the toast (milli seconds). | | 5000 | 1.0.0 |
-| Messages | `List<ToastMessage>` | List of all the toasts. | ✔️ | | 1.0.0 |
-| Placement | `ToastsPlacement` | Specifies the toasts placement. | | `ToastsPlacement.TopRight` | 1.0.0 |
-| ShowCloseButton | bool | Show close button. | | `true` | 1.0.0 |
-| StackLength | int | Specifies the toast container maximum capacity. | | 5 | 1.0.0 |
+| AutoHide | bool | false | | Gets or sets the auto hide state. | 1.0.0 |
+| Delay | int | 5000 | | Gets or sets the delay in milliseconds before hiding the toast. | 1.0.0 |
+| Messages | `List<ToastMessage>` | null | ✔️ | Gets or sets the toast messages. | 1.0.0 |
+| Placement | `ToastsPlacement` | `ToastsPlacement.TopRight` | | Gets or sets the toast placement. | 1.0.0 |
+| ShowCloseButton | bool | true | | If true, shows the close button. | 1.0.0 |
+| StackLength | int | 5 | | Gets or sets the toast container maximum capacity. | 1.0.0 |
 
 ## ToastMessage Properties
 

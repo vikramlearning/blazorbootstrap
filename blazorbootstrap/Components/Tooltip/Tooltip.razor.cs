@@ -82,30 +82,49 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
-    [Parameter] public TooltipColor Color { get; set; }
+    /// <summary>
+    /// Gets or sets the tooltip color.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="TooltipColor.None" />.
+    /// </remarks>
+    [Parameter]
+    public TooltipColor Color { get; set; } = TooltipColor.None;
 
     private string colorClass => Color.ToTooltipColorClass()!;
 
     /// <summary>
     /// Gets or sets a value indicating whether to display the content as HTML instead of text.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool IsHtml { get; set; }
 
     private string placement => Placement.ToTooltipPlacementName();
 
     /// <summary>
-    /// Specifies the tooltip placement. Default is top right.
+    /// Gets or sets the tooltip placement.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="TooltipPlacement.Top" />.
+    /// </remarks>
     [Parameter]
     public TooltipPlacement Placement { get; set; } = TooltipPlacement.Top;
 
     /// <summary>
     /// Displays informative text when users hover, focus, or tap an element.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     [EditorRequired]
     public string Title { get; set; } = default!;

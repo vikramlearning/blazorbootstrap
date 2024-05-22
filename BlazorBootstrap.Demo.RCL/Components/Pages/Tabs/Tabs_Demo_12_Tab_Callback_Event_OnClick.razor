@@ -2,7 +2,7 @@
     @foreach (var customer in customers)
     {
         <Tab Title="@customer.CustomerName"
-             IsActive="selectedCustomer.CustomerId == customer.CustomerId"
+             Active="selectedCustomer.CustomerId == customer.CustomerId"
              OnClick="(args) => OnTabClick(args, customer)">
             <Content>
                 <div class="mt-3">

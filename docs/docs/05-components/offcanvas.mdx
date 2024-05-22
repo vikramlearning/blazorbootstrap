@@ -17,22 +17,22 @@ Build hidden sidebars into your project for navigation, shopping carts, and more
 
 ## Parameters
 
-| Name | Type | Description | Required | Default | Added Version |
-|--|--|--|--|--|--|
-| BodyCssClass | string | Additional body CSS class. | | | 1.0.0 |
-| BodyTemplate | RenderFragment | Body content. | ✔️ | | 1.0.0 |
-| CloseOnEscape | bool | Indicates whether the offcanvas closes when escape key is pressed. | | true | 1.0.0 |
-| FooterCssClass | string | Additional footer CSS class. | | | 1.0.0 |
-| FooterTemplate | RenderFragment | Footer content. | | | 1.0.0 |
-| HeaderCssClass | string | Additional header CSS class. | | | 1.0.0 |
-| HeaderTemplate | RenderFragment | Content for the header. | | | 1.0.0 |
-| IsScrollable | bool | Indicates whether body (page) scrolling is allowed while offcanvas is open. | | false | 1.0.0 |
-| Placement | `Placement` | Gets or sets the offcanvas placement. By default, offcanvas is placed on the right of the viewport. | | `Placement.End` | 1.0.0 |
-| ShowCloseButton | bool | Indicates whether the modal shows close button in header. | | true | 1.0.0 |
-| Size | `OffcanvasSize` | Size of the offcanvas. | | `OffcanvasSize.Regular` | 1.0.0 |
-| TabIndex | int | Gets or sets the tab index. | | -1 | 1.6.0 |
-| Title | string | Text for the title in header. | ✔️ | | 1.0.0 |
-| UseStaticBackdrop | bool | When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it. | | false | 1.8.0 |
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| BodyCssClass | string | null | | Gets or sets the body CSS class. | 1.0.0 |
+| BodyTemplate | RenderFragment | null | | Gets or sets the body template. | 1.0.0 |
+| CloseOnEscape | bool | true | | If true, offcanvas closes when escape key is pressed. | 1.0.0 |
+| FooterCssClass | string | null | | Gets or sets the footer CSS class. | 1.0.0 |
+| FooterTemplate | RenderFragment | null | | Gets or sets the footer template. | 1.0.0 |
+| HeaderCssClass | string | null | | Gets or sets the header CSS class. | 1.0.0 |
+| HeaderTemplate | RenderFragment | null | | Gets or sets the header template. | 1.0.0 |
+| IsScrollable | bool | false | | Indicates whether body (page) scrolling is allowed while offcanvas is open. | 1.0.0 |
+| Placement | `Placement` | `Placement.End` | | Gets or sets the offcanvas placement. | 1.0.0 |
+| ShowCloseButton | bool | true | | If true, modal shows close button in the header. | 1.0.0 |
+| Size | `OffcanvasSize` | `OffcanvasSize.Regular` | | Gets or sets the offcanvas size. | 1.0.0 |
+| TabIndex | int | -1 | | Gets or sets the tab index. | 1.6.0 |
+| Title | string | null | | Gets or sets the offcanvas title. | 1.0.0 |
+| UseStaticBackdrop | bool | false | | When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it. | 1.8.0 |
 
 ## Methods
 

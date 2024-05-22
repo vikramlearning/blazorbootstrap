@@ -14,8 +14,14 @@ public class ToastEventArgs : EventArgs
 
     #region Properties, Indexers
 
+    /// <summary>
+    /// Gets the elementId.
+    /// </summary>
     public string ElementId { get; set; }
 
+    /// <summary>
+    /// Gets the toast Id.
+    /// </summary>
     public Guid ToastId { get; set; }
 
     #endregion

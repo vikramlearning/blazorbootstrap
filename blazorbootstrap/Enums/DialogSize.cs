@@ -1,8 +1,5 @@
 ﻿namespace BlazorBootstrap;
 
-/// <summary>
-/// Defines the size of an <see cref="ConfirmDialog" /> element.
-/// </summary>
 public enum DialogSize
 {
     /// <summary>

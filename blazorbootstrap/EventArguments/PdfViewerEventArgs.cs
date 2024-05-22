@@ -14,8 +14,14 @@ public class PdfViewerEventArgs
 
     #region Properties, Indexers
 
+    /// <summary>
+    /// Gets the current page number.
+    /// </summary>
     public int CurrentPage { get; }
 
+    /// <summary>
+    /// Gets the total pages count.
+    /// </summary>
     public int TotalPages { get; }
 
     #endregion

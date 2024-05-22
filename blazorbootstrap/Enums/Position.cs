@@ -1,8 +1,5 @@
 ﻿namespace BlazorBootstrap;
 
-/// <summary>
-/// Defines the position of an element.
-/// </summary>
 public enum Position
 {
     /// <summary>

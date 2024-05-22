@@ -43,53 +43,74 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Button)
-            .AddClass(Color.ToButtonColorClass(), Color != ButtonColor.None)
-            .AddClass(Size.ToButtonSizeClass(), Size != Size.None)
+            .AddClass(Color.ToDropdownButtonColorClass(), Color != DropdownColor.None)
+            .AddClass(Size.ToDropdownButtonSizeClass(), Size != DropdownSize.None)
             .AddClass(BootstrapClass.DropdownToggle)
             .AddClass(BootstrapClass.DropdownToggleSplit, Split)
             .Build();
 
     /// <summary>
-    /// Enables or disables the auto close.
+    /// If true, enables the auto close.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [CascadingParameter(Name = "AutoClose")]
     public bool AutoClose { get; set; }
 
     /// <summary>
     /// Gets or sets the auto close behavior of the dropdown.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="DropdownAutoCloseBehavior.Inside" />.
+    /// </remarks>
     [CascadingParameter(Name = "AutoCloseBehavior")]
-    public DropdownAutoCloseBehavior AutoCloseBehavior { get; set; }
+    public DropdownAutoCloseBehavior AutoCloseBehavior { get; set; } = DropdownAutoCloseBehavior.Inside;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the button color.
+    /// Gets or sets the dropdown toggle button color.
     /// </summary>
-    [Parameter]
-    public ButtonColor Color { get; set; } = ButtonColor.None;
+    /// <remarks>
+    /// Default value is <see cref="DropdownColor.None" />.
+    /// </remarks>
+    [CascadingParameter(Name = "Color")]
+    public DropdownColor Color { get; set; } = DropdownColor.None;
 
     /// <summary>
     /// Gets or sets the disabled.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [CascadingParameter(Name = "Disabled")]
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the size of the <see cref="DropdownToggleButton" />.
+    /// Gets or sets the dropdown action button size.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="DropdownSize.None" />.
+    /// </remarks>
     [CascadingParameter(Name = "Size")]
-    public Size Size { get; set; } = Size.None;
+    public DropdownSize Size { get; set; } = DropdownSize.None;
 
     [CascadingParameter(Name = "Split")] public bool Split { get; set; }
 
     /// <summary>
-    /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
+    /// Gets or sets the dropdown toggle button tab index.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-internal class StringConstants
+internal static class StringConstants
 {
     #region Fields and Constants
 
@@ -17,8 +17,6 @@ internal class StringConstants
     public const string PropertyTypeNameBoolean = "Boolean";
     public const string PropertyTypeNameEnum = "Enum";
     public const string PropertyTypeNameGuid = "Guid";
-
-    public const string DataBootstrapToggle = "data-bs-toggle";
 
     #endregion
 }

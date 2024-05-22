@@ -17,28 +17,27 @@ Use Blazor Bootstrap pagination component to indicate a series of related conten
 
 ## Parameters
 
-| Name | Type | Description | Required | Default |
-|--|--|--|--|--|
-| ActivePageNumber | int | Active page number. Starts with 1. | | 1 |
-| Alignment | `Alignment` | Gets or sets the pagination alignment. | | `Alignment.None` |
-| DisplayPages | int | Gets or sets the maximum page links to be displayed. | | 5 |
-| FirstLinkIcon | `IconName` | Gets or sets first link icon. | | |
-| FirstLinkText | string | Gets or sets first link text. `FirstLinkText` is ignored if `FirstLinkIcon` is specified. | | First |
-| LastLinkIcon | `IconName` | Gets or sets last link icon. | | |
-| LastLinkText | string | Gets or sets last link text. `LastLinkText` is ignored if `LastLinkIcon` is specified. | | Last |
-| NextLinkIcon | `IconName` | Gets or sets next link icon. | | |
-| NextLinkText | string | Gets or sets next link text. `NextLinkText` is ignored if `NextLinkIcon` is specified. | | Next |
-| PreviousLinkIcon | `IconName` | Gets or sets previous link icon. | | |
-| PreviousLinkText | string | Gets or sets previous link text. `PreviousLinkText` is ignored if `PreviousLinkIcon` is specified. | | Previous |
-| Size | `PaginationSize` | Gets or sets the pagination size. | | |
-| TotalPages | int | Total pages of data items. | | |
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ActivePageNumber | int | 1 | | Gets or sets the active page number. | 1.0.0 |
+| Alignment | `Alignment` | `Alignment.None` | | Gets or sets the pagination alignment. | 1.0.0 |
+| DisplayPages | int | 5 | | Gets or sets the maximum page links to be displayed. | 1.0.0 |
+| FirstLinkIcon | `IconName` | `IconName.None` | | Gets or sets the first link icon. | 1.0.0 |
+| FirstLinkText | string | null | | Gets or sets the first link text. 'FirstLinkText' is ignored if 'FirstLinkIcon' is specified. | 1.0.0 |
+| LastLinkIcon | `IconName` | `IconName.None` | | Gets or sets the last link icon. | 1.0.0 |
+| LastLinkText | string | null | | Gets or sets the last link text. 'LastLinkText' is ignored if 'LastLinkIcon' is specified. | 1.0.0 |
+| NextLinkIcon | `IconName` | `IconName.None` | | Gets or sets the next link icon. | 1.0.0 |
+| NextLinkText | string | null | | Gets or sets the next link text. 'NextLinkText' is ignored if 'NextLinkIcon' is specified. | 1.0.0 |
+| PreviousLinkIcon | `IconName` | `IconName.None` | | Gets or sets the previous link icon. | 1.0.0 |
+| PreviousLinkText | string | null | | Gets or sets the previous link text. 'PreviousLinkText' is ignored if 'PreviousLinkIcon' is specified. | 1.0.0 |
+| Size | `PaginationSize` | `PaginationSize.None` | | Gets or sets the pagination size. | 1.0.0 |
+| TotalPages | int | 0 | | Gets or sets the total pages. | 1.0.0 |
 
 ## Callback Events
 
 | Event | Description | 
 |--|--|
 | PageChanged | This event fires immediately when the page number is changed. |
-
 
 ## Examples
 

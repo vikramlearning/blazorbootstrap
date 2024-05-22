@@ -14,7 +14,7 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage" />
 <div class="mb-3">By default, <code>e + -</code> are blocked. For all integral numeric types, dot <code>.</code> is blocked.</div>
-<Callout Type="CalloutType.Success">
+<Callout Color="CalloutColor.Success">
     The default locale is <b>en-US</b>.
 </Callout>
 <Demo Type="typeof(CurrencyInput_Demo_01_Basic_Usage)" Tabs="true" />
@@ -28,7 +28,7 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Using fraction digits and integer digits" PageUrl="@pageUrl" HashTagName="using-fraction-digits-and-integer-digits" />
 <div class="mb-3">In the below example, formatting adds zeros to display minimum integers and fractions.</div>
-<Callout Type="CalloutType.Danger">
+<Callout Type="CalloutColor.Danger">
     <b>MinimumFractionDigits</b> and <b>MaximumFractionDigits</b> parameters are applicable for floating-point numeric types only.
 </Callout>
 <Demo Type="typeof(CurrencyInput_Demo_04_Using_FractionDigits_and_IntegerDigits)" Tabs="true" />
@@ -43,7 +43,7 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Enable min and max" PageUrl="@pageUrl" HashTagName="enable-min-and-max" />
 <div class="mb-3">Set <code>EnableMinMax="true"</code> and set the <code>Min</code> and <code>Max</code> parameters to restrict the user input between the Min and Max range.</div>
-<Callout Type="CalloutType.Warning" Heading="NOTE">
+<Callout Type="CalloutColor.Warning" Heading="NOTE">
     If the user tries to enter a number in the <b>CurrencyInput</b> field which is out of range, then it will override with Min or Max value based on the context. If the user input is less than the Min value, then it will override with the Min value.
     If the user input exceeds the Max value, it will override with the Max value.
 </Callout>
@@ -61,7 +61,7 @@
 <div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>CurrencyInput</code>.</div>
 <Demo Type="typeof(CurrencyInput_Demo_10_A_Disable_Number_Input)" Tabs="false" />
 <div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>CurrencyInput</code>.</div>
-<Callout Type="CalloutType.Warning" Heading="NOTE">
+<Callout Type="CalloutColor.Warning" Heading="NOTE">
     Do not use both the <b>Disabled</b> parameter and <b>Enable()</b> &amp; <b>Disable()</b> methods.
 </Callout>
 <Demo Type="typeof(CurrencyInput_Demo_10_B_Disable_Number_Input)" Tabs="false" />

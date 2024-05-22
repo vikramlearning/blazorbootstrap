@@ -69,7 +69,7 @@ public partial class Preload : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Specifies the content to be rendered inside this.
+    /// Gets or sets the content to be rendered within the component.
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }

@@ -21,9 +21,9 @@ Build vertically collapsing accordions in combination with our Collapse componen
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
+| AlwaysOpen | bool | false | | If true, accordion items stay open when another item is opened. | 1.7.0 |
 | ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.7.0 |
-| Flush | bool | false | | Removes borders and rounded corners to render accordions edge-to-edge with their parent container. | 1.7.0 |
-| AlwaysOpen | bool | false | | It makes accordion items stay open when another item is opened. | 1.7.0 |
+| Flush | bool | false | | If true, removes borders and rounded corners to render accordions edge-to-edge with their parent container. | 1.7.0 |
 
 ## Accordion Methods
 
@@ -44,20 +44,20 @@ Build vertically collapsing accordions in combination with our Collapse componen
 
 | Name | Description | Added Version |
 |:--|:--|:--|
+| OnHidden | This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete). | 1.7.0 |
+| OnHiding | This event is fired immediately when the hide method has been called. | 1.7.0 |
 | OnShowing | This event fires immediately when the show method is called. | 1.7.0 |
 | OnShown | This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to complete). | 1.7.0 |
-| OnHiding | This event is fired immediately when the hide method has been called. | 1.7.0 |
-| OnHidden | This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete). | 1.7.0 |
 
 ## AccordionItem Parameters
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Content | RenderFragment | null | ✔️ | Specifies the content to be rendered inside the `AccordionItem`. | 1.7.0 |
-| IsActive | bool | false | | Gets or sets the active `AccordionItem`. | 1.7.0 |
+| Active | bool | false | | Gets or sets the active state. | 1.7.0 |
+| Content | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.7.0 |
 | Name | string | null | | Gets or sets the name. | 1.7.0 |
-| Title | string | null | | Gets or sets the `AccordionItem` title. | 1.7.0 |
-| TitleTemplate | RenderFragment | null | | Gets or sets the `AccordionItem` title template. | 1.7.0 |
+| Title | string | null | | Gets or sets the title. | 1.7.0 |
+| TitleTemplate | RenderFragment | null | | Gets or sets the title template. | 1.7.0 |
 
 ## Examples
 
@@ -153,7 +153,7 @@ Set the `Flush` parameter to `true` to remove borders and rounded corners to ren
 
 ### Set default active accordion item
 
-Set the `IsActive` parameter to `true` to keep the accordion item open by default.
+Set the `Active` parameter to `true` to keep the accordion item open by default.
 
 <img src="https://i.imgur.com/FkbNpZN.png" alt="Blazor Bootstrap: Accordion Component - Set default active accordion item" />
 
@@ -164,7 +164,7 @@ Set the `IsActive` parameter to `true` to keep the accordion item open by defaul
             <b>This is the first item's accordion body.</b> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
         </Content>
     </AccordionItem>
-    <AccordionItem Title="Accordion Item #2" IsActive="true">
+    <AccordionItem Title="Accordion Item #2" Active="true">
         <Content>
             <b>This is the second item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
         </Content>

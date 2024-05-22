@@ -16,7 +16,7 @@
     The <code>Accordion</code> component uses the <code>Collapse</code> component internally to make it collapsible.
 </div>
 
-<Callout Type="CalloutType.Info">
+<Callout Color="CalloutColor.Info">
     The animation effect of this component is dependent on the <code>prefers-reduced-motion</code> media query. <br />
     See the <a href="https://getbootstrap.com/docs/5.3/getting-started/accessibility/#reduced-motion" target="_blank">reduced motion section of our accessibility documentation</a>.
 </Callout>
@@ -41,7 +41,7 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Set default active accordion item" PageUrl="@pageUrl" HashTagName="set-default-active-accordion-item" />
 <div class="mb-3">
-    Set the <code>IsActive</code> parameter to <code>true</code> to keep the accordion item open by default.
+    Set the <code>Active</code> parameter to <code>true</code> to keep the accordion item open by default.
 </div>
 <Demo Type="typeof(Accordion_Demo_04_Set_Default_Active)" Tabs="true" />
 
@@ -97,7 +97,7 @@
             </tr>
         </tbody>
     </table>
-    <Callout Type="CalloutType.Info">
+    <Callout Type="CalloutColor.Info">
         If no accordion item is active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
     </Callout>
 </div>

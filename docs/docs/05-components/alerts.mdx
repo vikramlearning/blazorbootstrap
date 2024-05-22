@@ -17,24 +17,24 @@ Provide contextual feedback messages for typical user actions with the handful o
 
 ## Parameters
 
-| Name | Type | Description | Required | Default |
-|--|--|--|--|--|
-| ChildContent | RenderFragment | Gets or sets the content to be rendered within the component. | | |
-| Color | `AlertColor` | Gets or sets the alert color. | | `AlertColor.None` |
-| Dismissable | bool | Enables the alert to be closed by placing the padding for close button. | | false |
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | `RenderFragment?` | ✔️ | Gets or sets the content to be rendered within the component. | 1.0.0 |
+| Color | `AlertColor` | `AlertColor.None` | | Gets or sets the alert color. | 1.0.0 |
+| Dismissable | bool | false | | If true, shows an inline close button. | 1.0.0 |
 
 ## Methods
 
-| Name | Description |
-|--|--|
-| CloseAsync | Closes an alert by removing it from the DOM. |
+| Name | Description | Added Version |
+|--|--|--|
+| CloseAsync | Closes an alert by removing it from the DOM. | 1.0.0 |
 
 ## Callback Events
 
-| Name | Description |
-|--|--|
-| OnClose | Fires immediately when the `close` instance method is called. |
-| OnClosed | Fired when the alert has been closed and CSS transitions have completed. |
+| Name | Description | Added Version |
+|--|--|--|
+| OnClose | Fires immediately when the `close` instance method is called. | 1.0.0 |
+| OnClosed | Fired when the alert has been closed and CSS transitions have completed. | 1.0.0 |
 
 ## Examples
 

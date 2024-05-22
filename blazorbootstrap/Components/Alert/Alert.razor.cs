@@ -69,20 +69,29 @@ public partial class Alert : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="Alert" />.
+    /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the alert color.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="AlertColor.None" />.
+    /// </remarks>
     [Parameter]
     public AlertColor Color { get; set; } = AlertColor.None;
 
     /// <summary>
-    /// Enables the alert to be closed by placing the padding for close button.
+    /// If true, shows an inline close button.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Dismissable { get; set; }
 

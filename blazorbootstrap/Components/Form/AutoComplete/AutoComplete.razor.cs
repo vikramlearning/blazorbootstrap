@@ -77,8 +77,8 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         {
             isDropdownShown = false;
 
-            if (AdditionalAttributes is not null && AdditionalAttributes.TryGetValue(StringConstants.DataBootstrapToggle, out _))
-                AdditionalAttributes.Remove(StringConstants.DataBootstrapToggle);
+            if (AdditionalAttributes is not null && AdditionalAttributes.TryGetValue(BootstrapAttributes.DataBootstrapToggle, out _))
+                AdditionalAttributes.Remove(BootstrapAttributes.DataBootstrapToggle);
 
             StateHasChanged();
         }
@@ -195,8 +195,8 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     {
         isDropdownShown = false;
 
-        if (AdditionalAttributes is not null && AdditionalAttributes.TryGetValue(StringConstants.DataBootstrapToggle, out _))
-            AdditionalAttributes.Remove(StringConstants.DataBootstrapToggle);
+        if (AdditionalAttributes is not null && AdditionalAttributes.TryGetValue(BootstrapAttributes.DataBootstrapToggle, out _))
+            AdditionalAttributes.Remove(BootstrapAttributes.DataBootstrapToggle);
 
         await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", Element);
     }
@@ -277,8 +277,8 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     {
         isDropdownShown = true;
 
-        if (AdditionalAttributes is not null && !AdditionalAttributes.TryGetValue(StringConstants.DataBootstrapToggle, out _))
-            AdditionalAttributes.Add(StringConstants.DataBootstrapToggle, "dropdown");
+        if (AdditionalAttributes is not null && !AdditionalAttributes.TryGetValue(BootstrapAttributes.DataBootstrapToggle, out _))
+            AdditionalAttributes.Add(BootstrapAttributes.DataBootstrapToggle, "dropdown");
 
         await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.show", Element);
     }
@@ -294,9 +294,11 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// DataProvider is for items to render.
-    /// The provider should always return an instance of 'AutoCompleteDataProviderResult', and 'null' is not allowed.
+    /// Gets or sets the data provider.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     [EditorRequired]
     public AutoCompleteDataProviderDelegate<TItem> DataProvider { get; set; } = null!;
@@ -314,8 +316,11 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         };
 
     /// <summary>
-    /// Gets or sets the disabled.
+    /// Gets or sets the disabled state.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -324,6 +329,9 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the empty text.
     /// </summary>
+    /// <remarks>
+    /// Default value is 'No records found.'.
+    /// </remarks>
     [Parameter]
     public string EmptyText { get; set; } = "No records found.";
 
@@ -332,6 +340,9 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the loading text.
     /// </summary>
+    /// <remarks>
+    /// Default value is 'Loading...'.
+    /// </remarks>
     [Parameter]
     public string LoadingText { get; set; } = "Loading...";
 
@@ -344,12 +355,18 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets the property name.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     [EditorRequired]
     public string PropertyName { get; set; } = null!;
@@ -362,22 +379,38 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the autocomplete size.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="AutoCompleteSize.Default" />.
+    /// </remarks>
     [Parameter]
-    public AutoCompleteSize Size { get; set; }
+    public AutoCompleteSize Size { get; set; } = AutoCompleteSize.Default;
 
     /// <summary>
     /// Gets or sets the StringComparison.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="StringComparison.OrdinalIgnoreCase" />.
+    /// </remarks>
     [Parameter]
     public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
 
     /// <summary>
     /// Gets or sets the string filter operator.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="StringFilterOperator.Contains" />.
+    /// </remarks>
     [Parameter]
     public StringFilterOperator StringFilterOperator { get; set; } = StringFilterOperator.Contains;
 
-    [Parameter] public string Value { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public string Value { get; set; } = default!;
 
     /// <summary>
     /// This is event fires on every user keystroke that changes the textbox value.

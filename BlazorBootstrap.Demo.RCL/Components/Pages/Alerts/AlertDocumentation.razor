@@ -13,28 +13,32 @@
 <div class="mb-3">Alerts are available for any length of text, as well as an optional close button. For proper styling, use one of the eight colors.</div>
 <Demo Type="typeof(Alert_Demo_01_Examples)" Tabs="true" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Link color" PageUrl="@pageUrl" HashTagName="link-color" />
+<div class="mb-3">Use the <code>alert-link</code> css class to quickly provide matching colored links within any alert.</div>
+<Demo Type="typeof(Alert_Demo_02_Link_Color)" Tabs="true" />
+
 <SectionHeading Size="HeadingSize.H2" Text="Additional Content" PageUrl="@pageUrl" HashTagName="additional-content" />
 <div class="mb-3">Alerts can also contain additional HTML elements like headings, paragraphs and dividers.</div>
-<Demo Type="typeof(Alert_Demo_02_Additional_Content)" Tabs="false" />
+<Demo Type="typeof(Alert_Demo_03_Additional_Content)" Tabs="false" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Icons" PageUrl="@pageUrl" HashTagName="icons" />
 <div class="mb-3">Similarly, you can use Bootstrap Icons to create alerts with icons.</div>
-<Demo Type="typeof(Alert_Demo_03_Icons)" Tabs="true" />
+<Demo Type="typeof(Alert_Demo_04_Icons)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Dismissing" PageUrl="@pageUrl" HashTagName="dismissing" />
 <div class="mb-3">1. Using the <code>Dismissable="true"</code>, it’s possible to dismiss any alert inline.</div>
-<Demo Type="typeof(Alert_Demo_04_Dismissing_A)" Tabs="true" />
+<Demo Type="typeof(Alert_Demo_05_Dismissing_A)" Tabs="true" />
 
 <div class="my-3">2. Manually we can close an alert with button click.</div>
-<Demo Type="typeof(Alert_Demo_04_Dismissing_B)" Tabs="true" />
+<Demo Type="typeof(Alert_Demo_05_Dismissing_B)" Tabs="true" />
 
-<Callout Color="CalloutType.Warning">
+<Callout Color="CalloutColor.Warning">
     When an alert is dismissed, the element is completely removed from the page structure. If a keyboard user dismisses the alert using the close button, their focus will suddenly be lost and, depending on the browser, reset to the start of the page/document.
     For this reason, we recommend subscribing to the <code>OnClosed</code> callback event and programmatically sets focus to the most appropriate location on the page.
 </Callout>
 
 <SectionHeading Size="HeadingSize.H2" Text="Switch alert type dynamically" PageUrl="@pageUrl" HashTagName="switch-alert-type-dynamically" />
-<Demo Type="typeof(Alert_Demo_05_Switch_Alert_Type_Dynamically)" Tabs="true" />
+<Demo Type="typeof(Alert_Demo_06_Switch_Alert_Type_Dynamically)" Tabs="true" />
 
 @code{
     private string pageUrl = "/alerts";

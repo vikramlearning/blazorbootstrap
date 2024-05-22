@@ -34,27 +34,39 @@ public partial class Tab : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     /// <summary>
-    /// Specifies the content to be rendered inside the tab.
+    /// Gets or sets the active state.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [Parameter]
+    public bool Active { get; set; }
+
+    /// <summary>
+    /// Gets or sets the content to be rendered within the component.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     [EditorRequired]
     public RenderFragment Content { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the disabled.
+    /// Gets or sets the disabled state.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the active tab.
-    /// </summary>
-    [Parameter]
-    public bool IsActive { get; set; }
-
-    /// <summary>
     /// Gets or sets the tab name.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string Name { get; set; } = default!;
 
@@ -73,12 +85,18 @@ public partial class Tab : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the tab title.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string Title { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the tab title template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment TitleTemplate { get; set; } = default!;
 

@@ -19,8 +19,11 @@ public partial class CardHeader : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the card header color.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CardColor.None" />.
+    /// </remarks>
     [Parameter]
-    public CardColor Color { get; set; }
+    public CardColor Color { get; set; } = CardColor.None;
 
     #endregion
 }

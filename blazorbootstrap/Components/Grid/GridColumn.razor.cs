@@ -190,6 +190,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Specifies the content to be rendered inside the grid column.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment<TItem> ChildContent { get; set; } = default!;
 
@@ -200,63 +203,93 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     public Func<TItem, string>? ColumnClass { get; set; }
 
     /// <summary>
-    /// Enable or disable the filter on a specific column.
+    /// If true, filter is enabled.
     /// The filter is enabled or disabled based on the grid `AllowFiltering` parameter.
     /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
     [Parameter]
     public bool Filterable { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the filter operator.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="FilterOperator.None" />.
+    /// </remarks>
     [Parameter]
-    public FilterOperator FilterOperator { get; set; }
+    public FilterOperator FilterOperator { get; set; } = FilterOperator.None;
 
     /// <summary>
     /// Gets or sets the filter textbox width in pixels.
     /// </summary>
+    /// <remarks>
+    /// Default value is 0.
+    /// </remarks>
     [Parameter]
     public int FilterTextboxWidth { get; set; }
 
     /// <summary>
     /// Gets or sets the filter value.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string FilterValue { get; set; } = default!;
 
     /// <summary>
     /// Indicates whether the column is frozen.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Freeze { get; set; }
 
     /// <summary>
     /// Gets or sets the freeze direction of the column.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="FreezeDirection.Left" />.
+    /// </remarks>
     [Parameter]
-    public FreezeDirection FreezeDirection { get; set; }
+    public FreezeDirection FreezeDirection { get; set; } = FreezeDirection.Left;
 
     /// <summary>
     /// Gets or sets the horizontal position of the column from left. It has no effect on non-positioned columns.
     /// </summary>
+    /// <remarks>
+    /// Default value is 0.
+    /// </remarks>
     [Parameter]
     public double FreezeLeftPosition { get; set; }
 
     /// <summary>
     /// Gets or sets the horizontal position of the column from right. It has no effect on non-positioned columns.
     /// </summary>
+    /// <remarks>
+    /// Default value is 0.
+    /// </remarks>
     [Parameter]
     public double FreezeRightPosition { get; set; }
 
     /// <summary>
-    /// Specifies the content to be rendered inside the grid column header.
+    /// Gets or sets the header content.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment HeaderContent { get; set; } = default!;
 
     /// <summary>
-    /// Header template.
+    /// Gets or sets the header template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     internal RenderFragment HeaderTemplate =>
         headerTemplate ??= builder =>
                            {
@@ -334,20 +367,29 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                            };
 
     /// <summary>
-    /// Gets or sets the table column header.
+    /// Gets or sets the table column header text.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string HeaderText { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the header text alignment.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Alignment.Start" />.
+    /// </remarks>
     [Parameter]
-    public Alignment HeaderTextAlignment { get; set; }
+    public Alignment HeaderTextAlignment { get; set; } = Alignment.Start;
 
     /// <summary>
     /// Gets or sets the default sort column.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool IsDefaultSortColumn { get; set; } = false;
 
@@ -357,6 +399,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the property name.
     /// This is required when `AllowFiltering` is true.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string PropertyName { get; set; } = default!;
 
@@ -364,12 +409,18 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Enable or disable the sorting on a specific column.
     /// The sorting is enabled or disabled based on the `AllowSorting` parameter on the grid.
     /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
     [Parameter]
     public bool Sortable { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the default sort direction of a column.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="SortDirection.None" />.
+    /// </remarks>
     [Parameter]
     public SortDirection SortDirection { get; set; } = SortDirection.None;
 
@@ -384,24 +435,36 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// This value will be passed to the backend/API for sorting.
     /// And this property is ignored for the client-side sorting.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string SortString { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the StringComparison.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="StringComparison.OrdinalIgnoreCase" />.
+    /// </remarks>
     [Parameter]
     public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
 
     /// <summary>
     /// Gets or sets the text alignment.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Alignment.Start" />.
+    /// </remarks>
     [Parameter]
-    public Alignment TextAlignment { get; set; }
+    public Alignment TextAlignment { get; set; } = Alignment.Start;
 
     /// <summary>
     /// Gets or sets text nowrap.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool TextNoWrap { get; set; }
 

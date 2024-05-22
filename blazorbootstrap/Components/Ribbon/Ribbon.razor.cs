@@ -210,7 +210,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     {
         tabs!.Add(tab);
 
-        if (tab is { IsActive: true, Disabled: false })
+        if (tab is { Active: true, Disabled: false })
             activeTab = tab;
 
         StateHasChanged(); // This is mandatory to reflect changes in UI
@@ -289,11 +289,14 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the tabs fade effect.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool EnableFadeEffect { get; set; }
 
     /// <summary>
-    /// Determines whether the Ribbon is rendered vertically.
+    /// If true, Ribbon will be rendered vertically.
     /// </summary>
     private bool IsVertical =>
         NavStyle == NavStyle.Vertical
@@ -308,6 +311,9 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <summary>
     /// Get or sets the nav style.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="NavStyle.Underline" />.
+    /// </remarks>
     //[Parameter]
     private NavStyle NavStyle { get; set; } = NavStyle.Underline;
 

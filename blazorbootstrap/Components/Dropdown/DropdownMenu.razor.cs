@@ -19,8 +19,11 @@ public partial class DropdownMenu : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the dropdown menu position.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="DropdownMenuPosition.Start" />.
+    /// </remarks>
     [Parameter]
-    public DropdownMenuPosition Position { get; set; }
+    public DropdownMenuPosition Position { get; set; } = DropdownMenuPosition.Start;
 
     #endregion
 }

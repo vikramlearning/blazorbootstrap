@@ -155,14 +155,20 @@ public partial class Toast : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Automatically hide the toast after the delay.
+    /// Gets or sets the auto hide state.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AutoHide { get; set; }
 
     /// <summary>
-    /// Delay in milliseconds before hiding the toast.
+    /// Gets or sets the delay in milliseconds before hiding the toast.
     /// </summary>
+    /// <remarks>
+    /// Default value is 5000.
+    /// </remarks>
     [Parameter]
     public int Delay { get; set; } = 5000;
 
@@ -185,8 +191,11 @@ public partial class Toast : BlazorBootstrapComponentBase
     private ProgressColor progressColor => GetProgressColor();
 
     /// <summary>
-    /// Show the close button.
+    /// If true, shows the close button.
     /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
     [Parameter]
     public bool ShowCloseButton { get; set; } = true;
 
@@ -202,7 +211,14 @@ public partial class Toast : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<ToastEventArgs> Shown { get; set; }
 
-    [Parameter] public ToastMessage ToastMessage { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets the toast message.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public ToastMessage ToastMessage { get; set; } = default!;
 
     #endregion
 }

@@ -32,14 +32,20 @@ public partial class Progress : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Specifies the content to be rendered inside this <see cref="Progress" />.
+    /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Gets or sets the height of the Progress. Height is measured in pixels, and the default height is 16 pixels.
+    /// Gets or sets the height of the Progress. Height is measured in pixels.
     /// </summary>
+    /// <remarks>
+    /// Default value is 16.
+    /// </remarks>
     [Parameter]
     public double Height { get; set; } = 16;
 

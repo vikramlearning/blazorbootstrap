@@ -14,7 +14,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
 
     private Target previousTarget;
 
-    private ButtonType previousType;
+    private DropdownItemType previousType;
 
     private bool setButtonAttributesAgain = false;
 
@@ -97,7 +97,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
             AdditionalAttributes.Remove("aria-current");
 
         // 'a' tag
-        if (Type == ButtonType.Link)
+        if (Type == DropdownItemType.Link)
         {
             if (!AdditionalAttributes.TryGetValue("role", out _))
                 AdditionalAttributes.Add("role", "button");
@@ -132,7 +132,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
                     AdditionalAttributes.Remove("tabindex");
             }
         }
-        else // button, submit
+        else // button
         {
             if (AdditionalAttributes.TryGetValue("role", out _))
                 AdditionalAttributes.Remove("role");
@@ -171,48 +171,67 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// When set to 'true', places the component in the active state with active styling.
+    /// Gets or sets the dropdown item active state.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Active { get; set; }
-
-    private string buttonTypeString => Type.ToButtonTypeString()!;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// When set to 'true', disables the component's functionality and places it in a disabled state.
+    /// If true, dropdown item will be disabled.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
+    /// Gets or sets the dropdown item tab index.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }
 
     /// <summary>
-    /// The target attribute specifies where to open the linked document for a <see cref="ButtonType.Link" />.
+    /// Gets or sets the target of dropdown item (if the type is link).
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Target.None" />.
+    /// </remarks>
     [Parameter]
     public Target Target { get; set; } = Target.None;
 
     /// <summary>
-    /// Denotes the target route of the <see cref="ButtonType.Link" /> button.
+    /// Get or sets the link href attribute (if the type is link).
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? To { get; set; }
 
     /// <summary>
-    /// Defines the button type.
+    /// Gets or sets the dropdown item type.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="DropdownItemType.Button" />.
+    /// </remarks>
     [Parameter]
-    public ButtonType Type { get; set; } = ButtonType.Button;
+    public DropdownItemType Type { get; set; } = DropdownItemType.Button;
 
     #endregion
 }

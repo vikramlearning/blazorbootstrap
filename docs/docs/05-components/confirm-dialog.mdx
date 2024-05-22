@@ -21,23 +21,23 @@ Use Blazor Bootstrap confirm dialog component if you want the user to verify or 
 
 | Name | Return Type | Description | Added Version |
 |:--|:--|:--|:--|
-| ShowAsync(string title, string message1, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. | 1.1.0 |
-| ShowAsync(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. | 1.1.0 |
-| ShowAsync<T\>(string title, Dictionary<string, object> parametres = null, ConfirmDialogOptions confirmDialogOptions = null) | Task<bool\> | Shows confirm dialog. T is component. | 1.1.0 |
+| ShowAsync(string title, string message1, ConfirmDialogOptions confirmDialogOptions = null) | `Task<bool>` | Shows confirm dialog. | 1.1.0 |
+| ShowAsync(string title, string message1, string message2, ConfirmDialogOptions confirmDialogOptions = null) | `Task<bool>` | Shows confirm dialog. | 1.1.0 |
+| ShowAsync<T\>(string title, Dictionary<string, object> parametres = null, ConfirmDialogOptions confirmDialogOptions = null) | `Task<bool>` | Shows confirm dialog. T is component. | 1.1.0 |
 
 ## ConfirmDialogOptions Properties
 
 | Name | Type | Default | Description | Added Version |
 |:--|:--|:--|:--|:--|
-| DialogCssClass | string | | Additional CSS class for the dialog (div.modal-dialog element). | 1.1.0 |
-| Dismissable | bool | | Adds a dismissable close button to the confirm dialog. | 1.1.0 |
-| HeaderCssClass | string | | Additional header CSS class (div.modal-header element). | 1.1.0 |
-| IsScrollable | bool | | Allows confirm dialog body to be scrollable. | 1.1.0 |
-| IsVerticallyCentered | bool | | Shows the confirm dialog vertically in the center of the page. | 1.1.0 |
-| NoButtonColor | ButtonColor | | Gets or sets the 'No' button color. | 1.1.0 |
+| DialogCssClass | string | null | Additional CSS class for the dialog (div.modal-dialog element). | 1.1.0 |
+| Dismissable | bool | false | Adds a dismissable close button to the confirm dialog. | 1.1.0 |
+| HeaderCssClass | string | null | Additional header CSS class (div.modal-header element). | 1.1.0 |
+| IsScrollable | bool | false | Allows confirm dialog body to be scrollable. | 1.1.0 |
+| IsVerticallyCentered | bool | false | Shows the confirm dialog vertically in the center of the page. | 1.1.0 |
+| NoButtonColor | `ButtonColor` | `ButtonColor.Secondary` | Gets or sets the 'No' button color. | 1.1.0 |
 | NoButtonText | string | No | Gets or sets the 'No' button text. | 1.1.0 |
-| Size | DialogSize | ModalSize.Regular | Size of the modal. | 1.1.0 | 
-| YesButtonColor | ButtonColor | ButtonColor.Primary | Gets or sets the 'Yes' button color. | 1.1.0 |
+| Size | `DialogSize` | `ModalSize.Regular` | Size of the modal. | 1.1.0 | 
+| YesButtonColor | `ButtonColor` | `ButtonColor.Primary` | Gets or sets the 'Yes' button color. | 1.1.0 |
 | YesButtonText | string | Yes | Gets or sets the 'Yes' button text. | 1.1.0 |
 
 ## Examples

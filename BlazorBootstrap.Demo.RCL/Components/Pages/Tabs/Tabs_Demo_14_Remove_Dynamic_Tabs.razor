@@ -1,6 +1,6 @@
 ﻿<div class="d-flex flex-column">
     <div>
-        <Button Color="ButtonColor.Success" Class="mb-3 float-end" Size="Size.ExtraSmall" @onclick="AddCustomer">+ Add customer</Button>
+        <Button Color="ButtonColor.Success" Class="mb-3 float-end" Size="ButtonSize.ExtraSmall" @onclick="AddCustomer">+ Add customer</Button>
     </div>
     <Card>
         <CardBody>
@@ -16,7 +16,7 @@
                                     This is the placeholder content for the <b>@customer.CustomerName</b> tab.
                                 </div>
                                 <div>
-                                    <Button Color="ButtonColor.Danger" Class="mt-3" Size="Size.ExtraSmall" @onclick="() => RemoveCustomer(customer)">Remove tab</Button>
+                                    <Button Color="ButtonColor.Danger" Class="mt-3" Size="ButtonSize.ExtraSmall" @onclick="() => RemoveCustomer(customer)">Remove tab</Button>
                                 </div>
                             </div>
                         </Content>

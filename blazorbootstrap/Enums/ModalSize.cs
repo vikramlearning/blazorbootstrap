@@ -1,8 +1,5 @@
 ﻿namespace BlazorBootstrap;
 
-/// <summary>
-/// Defines the size of an <see cref="Modal" /> element.
-/// </summary>
 public enum ModalSize
 {
     /// <summary>

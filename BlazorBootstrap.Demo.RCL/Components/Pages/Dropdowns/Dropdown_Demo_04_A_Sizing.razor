@@ -1,19 +1,20 @@
 ﻿<div class="d-flex gap-2 mb-4">
-    <Dropdown Size="Size.Large">
-        <DropdownToggleButton Color="ButtonColor.Secondary">Large button</DropdownToggleButton>
+    <Dropdown Color="DropdownColor.Secondary" Size="DropdownSize.Large">
+        <DropdownToggleButton>Large button</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem Size="Size.Large" To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Size="Size.Large" Split="true">
-        <DropdownActionButton Color="ButtonColor.Secondary">Large split button</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Secondary" />
+
+    <Dropdown Color="DropdownColor.Secondary" Split="true" Size="DropdownSize.Large">
+        <DropdownActionButton>Large split button</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
 </div>

@@ -1,8 +1,5 @@
 ﻿namespace BlazorBootstrap;
 
-/// <summary>
-/// Defines the placement of an element.
-/// </summary>
 public enum TooltipPlacement
 {
     /// <summary>

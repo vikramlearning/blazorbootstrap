@@ -93,32 +93,56 @@ public partial class Dropdown : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Enables or disables the auto close.
+    /// If true, enables the auto close.
     /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
     [Parameter]
     public bool AutoClose { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the auto close behavior of the dropdown.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="DropdownAutoCloseBehavior.Both" />.
+    /// </remarks>
     [Parameter]
     public DropdownAutoCloseBehavior AutoCloseBehavior { get; set; } = DropdownAutoCloseBehavior.Both;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
+    /// Gets or sets the dropdown color.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="DropdownColor.None" />.
+    /// </remarks>
+    [Parameter]
+    public DropdownColor Color { get; set; } = DropdownColor.None;
+
+    /// <summary>
     /// Gets or sets the direction of the dropdown menu.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="DropdownDirection.Dropdown" />.
+    /// </remarks>
     [Parameter]
     public DropdownDirection Direction { get; set; } = DropdownDirection.Dropdown;
 
     /// <summary>
-    /// Gets or sets whether the dropdown menu is disabled.
+    /// If true, dropdown will be disabled.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -148,14 +172,20 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     public EventCallback OnShown { get; set; }
 
     /// <summary>
-    /// Gets or sets the size of the <see cref="Dropdown" />.
+    /// Gets or sets the dropdown size.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="DropdownSize.None" />.
+    /// </remarks>
     [Parameter]
-    public Size Size { get; set; }
+    public DropdownSize Size { get; set; } = DropdownSize.None;
 
     /// <summary>
     /// Gets or sets the toggle button split behavior.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Split { get; set; }
 

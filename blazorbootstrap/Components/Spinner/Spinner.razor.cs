@@ -66,12 +66,18 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the color of the spinner.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="SpinnerColor.None" />.
+    /// </remarks>
     [Parameter]
     public SpinnerColor Color { get; set; } = SpinnerColor.None;
 
     /// <summary>
     /// Gets or sets the size of the spinner.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="SpinnerSize.Medium" />.
+    /// </remarks>
     [Parameter]
     public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
 
@@ -83,24 +89,36 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the title text used as an accessibility attribute.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? Title { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the spinner.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="SpinnerType.Border" />.
+    /// </remarks>
     [Parameter]
     public SpinnerType Type { get; set; } = SpinnerType.Border;
 
     /// <summary>
     /// Gets or sets whether the spinner is visible or not.
     /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
     [Parameter]
     public bool Visible { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the visually hidden text.
     /// </summary>
+    /// <remarks>
+    /// Default value is 'Loading...'.
+    /// </remarks>
     [Parameter]
     public string? VisuallyHiddenText { get; set; } = "Loading...";
 

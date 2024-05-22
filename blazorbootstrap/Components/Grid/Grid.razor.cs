@@ -540,30 +540,45 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the grid filtering.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AllowFiltering { get; set; }
 
     /// <summary>
     /// Gets or sets the grid paging.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AllowPaging { get; set; }
 
     /// <summary>
     /// Gets or sets the allow row click.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AllowRowClick { get; set; }
 
     /// <summary>
     /// Gets or sets the grid selection.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AllowSelection { get; set; }
 
     /// <summary>
     /// Gets or sets the grid sorting.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AllowSorting { get; set; }
 
@@ -571,18 +586,27 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Automatically hides the paging controls when the grid item count is less than or equal to the <see cref="PageSize" />
     /// and this property is set to `true`.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool AutoHidePaging { get; set; }
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the grid data.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public IEnumerable<TItem> Data { get; set; } = default!;
 
@@ -590,6 +614,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// DataProvider is for items to render.
     /// The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public GridDataProviderDelegate<TItem> DataProvider { get; set; } = default!;
 
@@ -606,32 +633,47 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public Func<TItem, bool>? DisableRowSelection { get; set; }
 
     /// <summary>
-    /// Template to render when there are no rows to display.
+    /// Gets or sets the empty data template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     public RenderFragment EmptyDataTemplate { get; set; } = default!;
 
     /// <summary>
+    /// Gets or sets the empty text.
     /// Shows text on no records.
     /// </summary>
+    /// <remarks>
+    /// Default value is 'No records to display'.
+    /// </remarks>
     [Parameter]
     public string EmptyText { get; set; } = "No records to display";
 
     /// <summary>
     /// Gets or sets the filters row css class.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string FiltersRowCssClass { get; set; } = default!;
 
     /// <summary>
-    /// Filters transalation is for grid filters to render.
-    /// The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed.
+    /// Gets or sets the filters translation provider.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public GridFiltersTranslationDelegate FiltersTranslationProvider { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the grid fixed header.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool FixedHeader { get; set; }
 
@@ -646,6 +688,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the header row css class but not the thead tag class.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string HeaderRowCssClass { get; set; } = default!;
 
@@ -693,19 +738,28 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the grid height.
     /// </summary>
+    /// <remarks>
+    /// Default value is 320 <see cref="Unit.Px" />.
+    /// </remarks>
     [Parameter]
     public float Height { get; set; } = 320;
 
     /// <summary>
     /// Gets or sets the items per page text.
     /// </summary>
+    /// <remarks>
+    /// Default value is 'Items per page'.
+    /// </remarks>
     [Parameter]
     //[EditorRequired] 
     public string ItemsPerPageText { get; set; } = "Items per page"!;
 
     /// <summary>
-    /// Template to render when the grid is loading.
+    /// Gets or sets the loading template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     public RenderFragment LoadingTemplate { get; set; } = default!;
 
     /// <summary>
@@ -725,12 +779,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the page size.
     /// </summary>
+    /// <remarks>
+    /// Default value is 10.
+    /// </remarks>
     [Parameter]
     public int PageSize { get; set; } = 10;
 
     /// <summary>
     /// Gets or sets the page size selector items.
     /// </summary>
+    /// <remarks>
+    /// Default value is '{ 10, 20, 50 }'.
+    /// </remarks>
     [Parameter]
     //[EditorRequired]
     public int[] PageSizeSelectorItems { get; set; } = { 10, 20, 50 };
@@ -738,6 +798,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the page size selector visible.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool PageSizeSelectorVisible { get; set; }
 
@@ -745,6 +808,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the pagination alignment.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Alignment.Start" />.
+    /// </remarks>
     [Parameter]
     public Alignment PaginationAlignment { get; set; } = Alignment.Start;
 
@@ -753,6 +819,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the pagination items text format.
     /// </summary>
+    /// <remarks>
+    /// Default value is '{0} - {1} of {2} items'.
+    /// </remarks>
     [Parameter]
     //[EditorRequired]
     public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items"!;
@@ -760,6 +829,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets a value indicating whether Grid is responsive.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Responsive { get; set; }
 
@@ -780,6 +852,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the grid selection mode.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="GridSelectionMode.Single" />.
+    /// </remarks>
     [Parameter]
     public GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.Single;
 
@@ -787,12 +862,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Settings is for grid to render.
     /// The provider should always return an instance of 'GridSettings', and 'null' is not allowed.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the thead css class.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? THeadCssClass { get; set; }
 
@@ -801,6 +882,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the units.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Unit.Px" />.
+    /// </remarks>
     [Parameter]
     public Unit Unit { get; set; } = Unit.Px;
 

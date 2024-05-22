@@ -27,27 +27,27 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | AllowSelection | bool | false | | Gets or sets the grid selection. | 1.8.0 |
 | AllowSorting | bool | false | | Gets or sets the grid sorting. | 1.0.0 |
 | AutoHidePaging | bool | false | | Automatically hides the paging controls when the grid item count is less than or equal to the `PageSize` and this property is set to `true`. | 1.10.5 |
-| ChildContent | RenderFragment | | ✔️ | Gets or sets the content to be rendered within the component. | 1.0.0 |
-| Data | `IEnumerable<TItem>` | | | Gets or sets the grid data. | 1.4.3 |
-| DataProvider | `GridDataProviderDelegate<TItem>` | | | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | 1.0.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.0.0 |
+| Data | `IEnumerable<TItem>` | null | | Gets or sets the grid data. | 1.4.3 |
+| DataProvider | `GridDataProviderDelegate<TItem>` | null | | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | 1.0.0 |
 | DisableAllRowsSelection | `Func<IEnumerable<TItem>, bool>?` | | | Enable or disable the header checkbox selection. | 1.8.0 |
 | DisableRowSelection | `Func<TItem, bool>?` | | | Enable or disable the row level checkbox selection. | 1.8.0 |
-| EmptyDataTemplate | RenderFragment | | ✔️ | Template to render when there are no rows to display. | 1.0.0 |
-| EmptyText | string | No records to display | | Shows text on no records. | 1.0.0 |
-| FiltersRowCssClass | string | | | Gets or sets the filters row css class. | 1.9.2 |
-| FiltersTranslationProvider | `GridFiltersTranslationDelegate` | | | Filters transalation is for grid filters to render. The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed. | 1.10.0 |
+| EmptyDataTemplate | RenderFragment | null | ✔️ | Template to render when there are no rows to display. | 1.0.0 |
+| EmptyText | string | `No records to display` | | Shows text on no records. | 1.0.0 |
+| FiltersRowCssClass | string | null | | Gets or sets the filters row css class. | 1.9.2 |
+| FiltersTranslationProvider | `GridFiltersTranslationDelegate` | null | | Filters transalation is for grid filters to render. The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed. | 1.10.0 |
 | FixedHeader | bool | false | | Gets or sets the grid fixed header. | 1.10.3 |
-| HeaderRowCssClass | string | | | Gets or sets the header row css class but not the thead tag class. | 1.9.2 |
+| HeaderRowCssClass | string | null | | Gets or sets the header row css class but not the thead tag class. | 1.9.2 |
 | Height | float | 320 pixels | | Gets or sets the grid height. | 1.10.3 |
-| ItemsPerPageText | string | `Items per page` | ✔️ | Gets or sets the ItemsPerPageText. | 1.9.5 |
-| PageSize | int | 10 | | Gets or sets the page size of the grid. | 1.0.0 |
-| PageSizeSelectorItems | int[] | `new int[] { 10, 20, 50 }` | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
-| PageSizeSelectorVisible | bool | false | ✔️ | Gets or sets the page size selector visible. | 1.8.0 |
+| ItemsPerPageText | string | `Items per page` | ✔️ | Gets or sets the items per page text. | 1.9.5 |
+| PageSize | int | 10 | | Gets or sets the page size. | 1.0.0 |
+| PageSizeSelectorItems | `int[]` | `new int[] { 10, 20, 50 }` | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
+| PageSizeSelectorVisible | bool | false | | Gets or sets the page size selector visible. | 1.8.0 |
 | PaginationItemsTextFormat | string | `{0} - {1} of {2} items` | ✔️ | Gets or sets the pagination items text format. | 1.8.0 |
-| RowClass | `Func<TItem, string>?` | | | Gets or sets the row class. | 1.6.0 |
 | Responsive | bool | false | | Gets or sets a value indicating whether Grid is responsive. | 1.0.0 |
-| SelectionMode | `GridSelectionMode` | | | Gets or sets the grid selection mode. | 1.8.0 |
-| SettingsProvider | `GridSettingsProviderDelegate` | | | Settings are for the grid to render. The provider should always return an instance of 'GridSettings', and 'null' is not allowed. | 1.0.0 |
+| RowClass | `Func<TItem, string>?` | | | Gets or sets the row class. | 1.6.0 |
+| SelectionMode | `GridSelectionMode` | `GridSelectionMode.Single` | | Gets or sets the grid selection mode. | 1.8.0 |
+| SettingsProvider | `GridSettingsProviderDelegate` | null | | Settings are for the grid to render. The provider should always return an instance of 'GridSettings', and 'null' is not allowed. | 1.0.0 |
 | THeadCssClass | `string?` | null | | Gets or sets the thead css class. | 1.10.3 | 
 | Unit | `Unit` | `Unit.px` | | Gets or sets the units. | 1.10.3 |
 
@@ -75,26 +75,26 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| ChildContent | RenderFragment | | ✔️ | Gets or sets the content to be rendered within the component. | 1.0.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.0.0 |
 | ColumnClass | `Func<TItem, string>?` | | | Gets or sets the column class. | 1.6.0 |
-| Filterable | bool | true | | Enable or disable the filter on a specific column. The filter is enabled or disabled based on the grid `AllowFiltering` parameter. | 1.0.0 |
-| FilterOperator | enum | Assigned based on the property type. | | Gets or sets the filter operator. | 1.0.0 |
-| FilterTextboxWidth | int | | | Gets or sets the filter textbox width in pixels. | 1.0.0 |
-| FilterValue | string | | | Gets or sets the filter value. | 1.0.0 |
+| Filterable | bool | true | | If true, filter is enabled. The filter is enabled or disabled based on the grid `AllowFiltering` parameter. | 1.0.0 |
+| FilterOperator | `FilterOperator` | `FilterOperator.None` | | Gets or sets the filter operator. | 1.0.0 |
+| FilterTextboxWidth | int | 0 | | Gets or sets the filter textbox width in pixels. | 1.0.0 |
+| FilterValue | string | null | | Gets or sets the filter value. | 1.0.0 |
 | Freeze | bool | false | | Indicates whether the column is frozen. | 1.10.4 |
 | FreezeDirection | `FreezeDirection` | `FreezeDirection.Left` | | Gets or sets the freeze direction of the column. | 1.10.4 |
 | FreezeLeftPosition | double | 0 | | Gets or sets the horizontal position of the column from left. It has no effect on non-positioned columns. | 1.10.4 | 
 | FreezeRightPosition | double | 0 | | Gets or sets the horizontal position of the column from right. It has no effect on non-positioned columns. | 1.10.4 |
-| HeaderContent | RenderFragment | | | Specifies the content to be rendered inside the grid column header. | 1.7.3 |
-| HeaderText | string | | ✔️ | Gets or sets the table column header. | 1.0.0 |
+| HeaderContent | RenderFragment | null | | Gets or sets the header content. | 1.7.3 |
+| HeaderText | string | null | | Gets or sets the table column header text. | 1.0.0 |
 | HeaderTextAlignment | enum | `Alignment.Start` | | Gets or sets the header text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
 | IsDefaultSortColumn | bool | false | | Gets or sets the default sort column. | 1.0.0 |
-| PropertyName | string | | | Gets or sets the property name. This is required when `AllowFiltering` is true. | 1.0.0 |
-| Sortable | bool | false | | Enable or disable the sorting on a specific column. The sorting is enabled or disabled based on the grid `AllowSorting` parameter. | 1.0.0 |
-| SortDirection | enum | `SortDirection.None` | | Gets or sets the default sort direction of a column. Use `SortDirection.Ascending` or `SortDirection.Descending` | 1.0.0 |
+| PropertyName | string | null | | Gets or sets the property name. This is required when `AllowFiltering` is true. | 1.0.0 |
+| Sortable | bool | true | | Enable or disable the sorting on a specific column. The sorting is enabled or disabled based on the grid `AllowSorting` parameter. | 1.0.0 |
+| SortDirection | `SortDirection` | `SortDirection.None` | | Gets or sets the default sort direction of a column. Use `SortDirection.Ascending` or `SortDirection.Descending` | 1.0.0 |
 | SortKeySelector | `Expression<Func<TItem, IComparable>>` | | | Expression used for sorting. | 1.0.0 |
-| SortString | string | | | Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting. | 1.0.0 |
-| StringComparison | enum | `StringComparison.OrdinalIgnoreCase` | | Gets or sets the StringComparison. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 1.0.0 |
+| SortString | string | null | | Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting. | 1.0.0 |
+| StringComparison | `StringComparison` | `StringComparison.OrdinalIgnoreCase` | | Gets or sets the StringComparison. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 1.0.0 |
 | TextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
 | TextNoWrap | bool | false | | Gets or sets text nowrap. | 1.0.0 |
 

@@ -124,19 +124,27 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the badge text.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? BadgeText { get; set; }
 
     /// <summary>
     /// Gets or sets the custom icon name.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? CustomIconName { get; set; }
 
     /// <summary>
-    /// DataProvider is for items to render.
-    /// The provider should always return an instance of <see cref="Sidebar2DataProviderResult" />, and 'null' is not allowed.
+    /// Gets or sets the data provider.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     [EditorRequired]
     public Sidebar2DataProviderDelegate? DataProvider { get; set; } = default!;
@@ -144,20 +152,29 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the IconName.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="IconName.None" />.
+    /// </remarks>
     [Parameter]
     public IconName IconName { get; set; }
 
     /// <summary>
-    /// Gets or sets the logo.
+    /// Gets or sets the sidebar logo.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? ImageSrc { get; set; }
 
     private string? navMenuCssClass => GetNavMenuCssClass();
 
     /// <summary>
-    /// Gets or sets the title.
+    /// Gets or sets the sidebar title.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     [EditorRequired]
     public string? Title { get; set; } = default!;

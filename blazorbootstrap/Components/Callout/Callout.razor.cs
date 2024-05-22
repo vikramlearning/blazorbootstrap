@@ -9,25 +9,25 @@ public partial class Callout : BlazorBootstrapComponentBase
         if (!string.IsNullOrWhiteSpace(Heading))
             return Heading;
 
-        return Type switch
+        return Color switch
                {
-                   CalloutType.Default => "NOTE",
-                   CalloutType.Info => "INFO",
-                   CalloutType.Warning => "WARNING",
-                   CalloutType.Danger => "DANGER",
-                   CalloutType.Tip or CalloutType.Success => "TIP",
+                   CalloutColor.Default => "NOTE",
+                   CalloutColor.Info => "INFO",
+                   CalloutColor.Warning => "WARNING",
+                   CalloutColor.Danger => "DANGER",
+                   CalloutColor.Success => "TIP",
                    _ => ""
                };
     }
 
     private IconName GetIconName() =>
-        Type switch
+        Color switch
         {
-            CalloutType.Default => IconName.InfoCircleFill,
-            CalloutType.Info => IconName.InfoCircleFill,
-            CalloutType.Warning => IconName.ExclamationTriangleFill,
-            CalloutType.Danger => IconName.Fire,
-            CalloutType.Tip or CalloutType.Success => IconName.Lightbulb,
+            CalloutColor.Default => IconName.InfoCircleFill,
+            CalloutColor.Info => IconName.InfoCircleFill,
+            CalloutColor.Warning => IconName.ExclamationTriangleFill,
+            CalloutColor.Danger => IconName.Fire,
+            CalloutColor.Success => IconName.Lightbulb,
             _ => IconName.InfoCircleFill
         };
 
@@ -35,41 +35,53 @@ public partial class Callout : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
-    private string CalloutHeadingCssClass => BootstrapClass.CalloutHeading;
-
-    /// <summary>
-    /// Specifies the content to be rendered inside this.
-    /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Callout)
-            .AddClass(Type.ToCalloutTypeClass())
+            .AddClass(Color.ToCalloutColorClass())
             .Build();
+
+    private string CalloutHeadingCssClass => BootstrapClass.CalloutHeading;
+
+    /// <summary>
+    /// Gets or sets the content to be rendered within the component.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callout color.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CalloutColor.Default" />.
+    /// </remarks>
+    [Parameter]
+    public CalloutColor Color { get; set; } = CalloutColor.Default;
 
     private string heading => GetHeading();
 
     /// <summary>
     /// Gets or sets the callout heading.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? Heading { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether to hide the callout heading.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool HideHeading { get; set; }
 
     private IconName iconName => GetIconName();
-
-    /// <summary>
-    /// Gets or sets the callout color.
-    /// </summary>
-    [Parameter]
-    public CalloutType Type { get; set; } = CalloutType.Default;
 
     #endregion
 }

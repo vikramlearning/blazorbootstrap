@@ -132,8 +132,4 @@ public partial class LineChart : BlazorBootstrapChart
     }
 
     #endregion
-
-    #region Properties, Indexers
-
-    #endregion
 }

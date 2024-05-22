@@ -85,6 +85,14 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         return FilterOperatorHelper.GetFilterOperators(PropertyTypeName!, filters!);
     }
 
+    private async Task OnEnumFilterValueChangedAsync(object enumValue)
+    {
+        filterValue = enumValue?.ToString();
+
+        if (GridColumnFilterChanged.HasDelegate)
+            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
+    }
+
     private async Task OnFilterOperatorChangedAsync(FilterOperatorInfo filterOperatorInfo)
     {
         if (filterOperatorInfo.FilterOperator == FilterOperator.Clear)
@@ -102,14 +110,6 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         }
 
         SetSelectedFilterSymbol();
-
-        if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
-    }
-
-    private async Task OnEnumFilterValueChangedAsync(object enumValue)
-    {
-        filterValue = enumValue?.ToString();
 
         if (GridColumnFilterChanged.HasDelegate)
             await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
@@ -165,6 +165,9 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets filter value.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string? FilterValue { get; set; }
 
@@ -186,13 +189,16 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     /// Gets or sets the filter property name.
     /// </summary>
     [Parameter]
-    public string? PropertyTypeName { get; set; }
+    public Type? PropertyType { get; set; }
 
     /// <summary>
     /// Gets or sets the filter property name.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
-    public Type? PropertyType { get; set; }
+    public string? PropertyTypeName { get; set; }
 
     /// <summary>
     /// Gets or sets the units.

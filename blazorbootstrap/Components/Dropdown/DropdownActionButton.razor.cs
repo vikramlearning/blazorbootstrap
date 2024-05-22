@@ -21,8 +21,8 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Button)
-            .AddClass(Color.ToButtonColorClass(), Color != ButtonColor.None)
-            .AddClass(Size.ToButtonSizeClass(), Size != Size.None)
+            .AddClass(Color.ToDropdownButtonColorClass(), Color != DropdownColor.None)
+            .AddClass(Size.ToDropdownButtonSizeClass(), Size != DropdownSize.None)
             .Build();
 
     /// <summary>
@@ -32,26 +32,38 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the button color.
+    /// Gets or sets the dropdown action button color.
     /// </summary>
-    [Parameter]
-    public ButtonColor Color { get; set; } = ButtonColor.None;
+    /// <remarks>
+    /// Default value is <see cref="DropdownColor.None" />.
+    /// </remarks>
+    [CascadingParameter(Name = "Color")]
+    public DropdownColor Color { get; set; } = DropdownColor.None;
 
     /// <summary>
     /// Gets or sets the disabled.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [CascadingParameter(Name = "Disabled")]
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the size of the <see cref="DropdownActionButton" />.
+    /// Gets or sets the dropdown action button size.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="DropdownSize.None" />.
+    /// </remarks>
     [CascadingParameter(Name = "Size")]
-    public Size Size { get; set; } = Size.None;
+    public DropdownSize Size { get; set; } = DropdownSize.None;
 
     /// <summary>
-    /// If defined, indicates that its element can be focused and can participates in sequential keyboard navigation.
+    /// Gets or sets the dropdown action button tab index.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }
 

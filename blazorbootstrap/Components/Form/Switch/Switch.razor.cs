@@ -73,8 +73,11 @@ public partial class Switch : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// Gets or sets the disabled.
+    /// Gets or sets the disabled state.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -85,6 +88,9 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string Label { get; set; } = default!;
 
@@ -93,12 +99,18 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <summary>
     /// Determines whether to put the switch on the opposite side.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Reverse { get; set; }
 
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
     [Parameter]
     public bool Value { get; set; }
 

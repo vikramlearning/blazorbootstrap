@@ -29,20 +29,20 @@ Before using the **SortableList** component, include the **SortableJS** script r
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | AllowSorting | bool | true | | Gets or sets a value indicating whether sorting is allowed for the list. | 2.2.0 |
-| ChildContent | `RenderFragment` |  | | Gets or sets the content to be rendered within the component. | 2.2.0 |
-| Data | `List<TItem>` | | | Gets or sets the items. | 2.2.0 |
+| ChildContent | `RenderFragment` | null | ✔️ | Gets or sets the content to be rendered within the component. | 2.2.0 |
+| Data | `List<TItem>` | null | | Gets or sets the items. | 2.2.0 |
+| DisabledItemCssClass | `string?` | null | | Gets or sets the CSS class applied to disabled items. | 2.2.0 |
 | DisableItem | `Func<TItem, bool>` | | | Gets or sets a delegate that determines whether an item should be disabled. | 2.2.0 |
-| DisabledItemCssClass | `string?` | | | Gets or sets the CSS class applied to disabled items. | 2.2.0 |
-| EmptyDataTemplate | `RenderFragment` | | | Specifies the template to render when there are no items to display in the list. | 2.2.0 |
+| EmptyDataTemplate | `RenderFragment` | null | | Specifies the template to render when there are no items to display in the list. | 2.2.0 |
 | EmptyText | string | `No records to display` | | Gets or sets the text to display when there are no records in the list. | 2.2.0 |
-| Group | `string?` | | | Gets or sets the group name associated with the list. | 2.2.0 |
-| Handle | `string?` | | | Gets or sets the CSS selector for the drag handle element. | 2.2.0 |
-| IsLoading | bool | | | Gets or sets a value indicating whether the list is currently loading. | 2.2.0 |
-| ItemTemplate | `RenderFragment<TItem>?` | | | Specifies the template used to render individual items in the list. | 2.2.0 |
-| LoadingTemplate | `RenderFragment` | | | Specifies the template to render while the list data is loading. | 2.2.0 |
-| Name | `string?` | | Gets or sets the name of the `SortableList` component. | 2.2.0 |
-| Pull | `SortableListPullMode` | | | Gets or sets the pull mode for the sortable list. | 2.2.0 |
-| Put | `SortableListPutMode` | | | Gets or sets the put mode for the sortable list. | 2.2.0 |
+| Group | `string?` | null | | Gets or sets the group name associated with the list. | 2.2.0 |
+| Handle | `string?` | null | | Gets or sets the CSS selector for the drag handle element. | 2.2.0 |
+| IsLoading | bool | false | | Gets or sets a value indicating whether the list is currently loading. | 2.2.0 |
+| ItemTemplate | `RenderFragment<TItem>?` | null | | Gets or sets the template used to render individual items in the list. | 2.2.0 |
+| LoadingTemplate | `RenderFragment` | null | | Gets or sets the loading template. | 2.2.0 |
+| Name | `string?` | null | | Gets or sets the name of the `SortableList` component. | 2.2.0 |
+| Pull | `SortableListPullMode` | `SortableListPullMode.True` | | Gets or sets the pull mode for the sortable list. | 2.2.0 |
+| Put | `SortableListPutMode` | `SortableListPutMode.True` | | Gets or sets the put mode for the sortable list. | 2.2.0 |
 
 ## Methods
 

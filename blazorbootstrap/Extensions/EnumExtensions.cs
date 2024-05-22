@@ -9,8 +9,8 @@ public static class EnumExtensions
 {
     #region Methods
 
-    public static string ToAlertColorClass(this AlertColor color) =>
-        color switch
+    public static string ToAlertColorClass(this AlertColor alertColor) =>
+        alertColor switch
         {
             AlertColor.Primary => "alert-primary",
             AlertColor.Secondary => "alert-secondary",
@@ -23,8 +23,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToAutoCompleteSizeClass(this AutoCompleteSize size) =>
-        size switch
+    public static string ToAutoCompleteSizeClass(this AutoCompleteSize autoCompleteSize) =>
+        autoCompleteSize switch
         {
             AutoCompleteSize.Large => "form-control-lg",
             AutoCompleteSize.Small => "form-control-sm",
@@ -65,8 +65,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToBadgeColorClass(this BadgeColor color) =>
-        color switch
+    public static string ToBadgeColorClass(this BadgeColor badgeColor) =>
+        badgeColor switch
         {
             BadgeColor.Primary => "text-bg-primary",
             BadgeColor.Secondary => "text-bg-secondary",
@@ -79,8 +79,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToBadgeIndicatorClass(this BadgeIndicatorType indicatorType) =>
-        indicatorType switch
+    public static string ToBadgeIndicatorClass(this BadgeIndicatorType badgeIndicatorType) =>
+        badgeIndicatorType switch
         {
             BadgeIndicatorType.RoundedPill => "rounded-pill",
             BadgeIndicatorType.RoundedCircle => "rounded-circle",
@@ -117,8 +117,23 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToButtonOutlineColorClass(this ButtonColor color) =>
-        color switch
+    public static string ToDropdownButtonColorClass(this DropdownColor dropdownColor) =>
+        dropdownColor switch
+        {
+            DropdownColor.Primary => "btn-primary",
+            DropdownColor.Secondary => "btn-secondary",
+            DropdownColor.Success => "btn-success",
+            DropdownColor.Danger => "btn-danger",
+            DropdownColor.Warning => "btn-warning",
+            DropdownColor.Info => "btn-info",
+            DropdownColor.Light => "btn-light",
+            DropdownColor.Dark => "btn-dark",
+            DropdownColor.Link => "btn-link",
+            _ => ""
+        };
+
+    public static string ToButtonOutlineColorClass(this ButtonColor buttonColor) =>
+        buttonColor switch
         {
             ButtonColor.Primary => "btn-outline-primary",
             ButtonColor.Secondary => "btn-outline-secondary",
@@ -132,22 +147,26 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToButtonSizeClass(this Size size) =>
-        size switch
+    public static string ToButtonSizeClass(this ButtonSize buttonSize) =>
+        buttonSize switch
         {
-            Size.ExtraSmall => "btn-xs",
-            Size.Small => "btn-sm",
-            Size.Medium => "btn-md",
-            Size.Large => "btn-lg",
-            Size.ExtraLarge => "btn-xl",
+            ButtonSize.ExtraSmall => "btn-xs",
+            ButtonSize.Small => "btn-sm",
+            ButtonSize.Medium => "btn-md",
+            ButtonSize.Large => "btn-lg",
+            ButtonSize.ExtraLarge => "btn-xl",
             _ => ""
         };
 
-    public static string ToButtonTagName(this ButtonType buttonType) =>
-        buttonType switch
+    public static string ToButtonSpinnerSizeClass(this ButtonSize buttonSize) =>
+        buttonSize switch
         {
-            ButtonType.Link => "a",
-            _ => "button"
+            ButtonSize.ExtraSmall => "xs",
+            ButtonSize.Small => "sm",
+            ButtonSize.Medium => "md",
+            ButtonSize.Large => "lg",
+            ButtonSize.ExtraLarge => "xl",
+            _ => ""
         };
 
     public static string ToButtonTypeString(this ButtonType buttonType) =>
@@ -159,19 +178,19 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToCalloutTypeClass(this CalloutType type) =>
-        type switch
+    public static string ToCalloutColorClass(this CalloutColor calloutColor) =>
+        calloutColor switch
         {
-            CalloutType.Default => "",
-            CalloutType.Danger => $"bb-callout-danger",
-            CalloutType.Warning => $"bb-callout-warning",
-            CalloutType.Info => $"bb-callout-info",
-            CalloutType.Tip or CalloutType.Success => $"bb-callout-success",
+            CalloutColor.Default => "",
+            CalloutColor.Danger => $"bb-callout-danger",
+            CalloutColor.Warning => $"bb-callout-warning",
+            CalloutColor.Info => $"bb-callout-info",
+            CalloutColor.Success => $"bb-callout-success",
             _ => ""
         };
 
-    public static string ToCardColorClass(this CardColor color) =>
-        color switch
+    public static string ToCardColorClass(this CardColor cardColor) =>
+        cardColor switch
         {
             CardColor.Primary => "text-bg-primary",
             CardColor.Secondary => "text-bg-secondary",
@@ -184,8 +203,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToCssString(this Unit value) =>
-        value switch
+    public static string ToCssString(this Unit unit) =>
+        unit switch
         {
             Unit.Em => "em",
             Unit.Percentage => "%",
@@ -199,8 +218,8 @@ public static class EnumExtensions
             _ => string.Empty
         };
 
-    public static string ToDialogSizeClass(this DialogSize size) =>
-        size switch
+    public static string ToDialogSizeClass(this DialogSize dialogSize) =>
+        dialogSize switch
         {
             DialogSize.Regular => "",
             DialogSize.Small => "modal-sm",
@@ -209,8 +228,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToDropdownDirectionClass(this DropdownDirection direction) =>
-        direction switch
+    public static string ToDropdownDirectionClass(this DropdownDirection dropdownDirection) =>
+        dropdownDirection switch
         {
             DropdownDirection.Dropdown => "dropdown",
             DropdownDirection.DropdownCentered => "dropdown dropdown-center",
@@ -221,28 +240,24 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToDropdownMenuPositionClass(this DropdownMenuPosition position) =>
-        position switch
+    public static string ToDropdownMenuPositionClass(this DropdownMenuPosition dropdownMenuPosition) =>
+        dropdownMenuPosition switch
         {
             DropdownMenuPosition.Start => "dropdown-menu-start",
             DropdownMenuPosition.End => "dropdown-menu-end",
             _ => ""
         };
 
-    public static string ToHeadingSizeClass(this HeadingSize headingSize) =>
-        headingSize switch
+    public static string ToDropdownButtonSizeClass(this DropdownSize dropdownSize) =>
+        dropdownSize switch
         {
-            HeadingSize.H1 => "h1",
-            HeadingSize.H2 => "h2",
-            HeadingSize.H3 => "h3",
-            HeadingSize.H4 => "h4",
-            HeadingSize.H5 => "h5",
-            HeadingSize.H6 => "h6",
+            DropdownSize.Small => "btn-sm",
+            DropdownSize.Large => "btn-lg",
             _ => ""
         };
 
-    public static string ToIconColorClass(this IconColor color) =>
-        color switch
+    public static string ToIconColorClass(this IconColor iconColor) =>
+        iconColor switch
         {
             IconColor.Primary => "text-primary",
             IconColor.Secondary => "text-secondary",
@@ -258,8 +273,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToModalFullscreenClass(this ModalFullscreen fullscreen) =>
-        fullscreen switch
+    public static string ToModalFullscreenClass(this ModalFullscreen modalFullscreen) =>
+        modalFullscreen switch
         {
             ModalFullscreen.Disabled => "",
             ModalFullscreen.Always => "modal-fullscreen",
@@ -285,8 +300,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToModalSizeClass(this ModalSize size) =>
-        size switch
+    public static string ToModalSizeClass(this ModalSize modalSize) =>
+        modalSize switch
         {
             ModalSize.Regular => "",
             ModalSize.Small => "modal-sm",
@@ -304,8 +319,8 @@ public static class EnumExtensions
             _ => "offcanvas-bottom"
         };
 
-    public static string ToOffcanvasSizeClass(this OffcanvasSize size) =>
-        size switch
+    public static string ToOffcanvasSizeClass(this OffcanvasSize offcanvasSize) =>
+        offcanvasSize switch
         {
             OffcanvasSize.Regular => "",
             OffcanvasSize.Small => "bb-offcanvas-sm",
@@ -322,24 +337,24 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToPaginationSizeClass(this PaginationSize size) =>
-        size switch
+    public static string ToPaginationSizeClass(this PaginationSize paginationSize) =>
+        paginationSize switch
         {
             PaginationSize.Small => "pagination-sm",
             PaginationSize.Large => "pagination-lg",
             _ => ""
         };
 
-    public static string ToPlaceholderAnimationClass(this PlaceholderAnimation animation) =>
-        animation switch
+    public static string ToPlaceholderAnimationClass(this PlaceholderAnimation placeholderAnimation) =>
+        placeholderAnimation switch
         {
             PlaceholderAnimation.Glow => "placeholder-glow",
             PlaceholderAnimation.Wave => "placeholder-wave",
             _ => ""
         };
 
-    public static string ToPlaceholderColorClass(this PlaceholderColor color) =>
-        color switch
+    public static string ToPlaceholderColorClass(this PlaceholderColor placeholderColor) =>
+        placeholderColor switch
         {
             PlaceholderColor.Primary => "bg-primary",
             PlaceholderColor.Secondary => "bg-secondary",
@@ -352,8 +367,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToPlaceholderSizeClass(this PlaceholderSize size) =>
-        size switch
+    public static string ToPlaceholderSizeClass(this PlaceholderSize placeholderSize) =>
+        placeholderSize switch
         {
             PlaceholderSize.ExtraSmall => "placeholder-xs",
             PlaceholderSize.Small => "placeholder-sm",
@@ -361,8 +376,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToPlaceholderWidthClass(this PlaceholderWidth width) =>
-        width switch
+    public static string ToPlaceholderWidthClass(this PlaceholderWidth placeholderWidth) =>
+        placeholderWidth switch
         {
             PlaceholderWidth.Col1 => "col-1",
             PlaceholderWidth.Col2 => "col-2",
@@ -390,8 +405,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToProgressColorClass(this ProgressColor color) =>
-        color switch
+    public static string ToProgressColorClass(this ProgressColor progressColor) =>
+        progressColor switch
         {
             ProgressColor.Primary => "bg-primary",
             ProgressColor.Secondary => "bg-secondary",
@@ -403,19 +418,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToSizeClass(this Size size) =>
-        size switch
-        {
-            Size.ExtraSmall => "xs",
-            Size.Small => "sm",
-            Size.Medium => "md",
-            Size.Large => "lg",
-            Size.ExtraLarge => "xl",
-            _ => ""
-        };
-
-    public static object ToSortableListPullMode(this SortableListPullMode mode) =>
-        mode switch
+    public static object ToSortableListPullMode(this SortableListPullMode sortableListPullMode) =>
+        sortableListPullMode switch
         {
             SortableListPullMode.True => true,
             SortableListPullMode.False => false,
@@ -423,16 +427,16 @@ public static class EnumExtensions
             //SortableListPullMode.Array => "array"
         };
 
-    public static object ToSortableListPutMode(this SortableListPutMode mode) =>
-        mode switch
+    public static object ToSortableListPutMode(this SortableListPutMode sortableListPutMode) =>
+        sortableListPutMode switch
         {
             SortableListPutMode.True => true,
             SortableListPutMode.False => false,
             //SortableListPullMode.Array => "array"
         };
 
-    public static string ToSpinnerColorClass(this SpinnerColor color) =>
-        color switch
+    public static string ToSpinnerColorClass(this SpinnerColor spinnerColor) =>
+        spinnerColor switch
         {
             SpinnerColor.Primary => "text-primary",
             SpinnerColor.Secondary => "text-secondary",
@@ -445,8 +449,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToSpinnerSizeClass(this SpinnerSize size) =>
-        size switch
+    public static string ToSpinnerSizeClass(this SpinnerSize spinnerSize) =>
+        spinnerSize switch
         {
             SpinnerSize.Small => "sm",
             SpinnerSize.Medium => "md",
@@ -455,8 +459,8 @@ public static class EnumExtensions
             _ => "md"
         };
 
-    public static string ToSpinnerTypeClass(this SpinnerType type) =>
-        type switch
+    public static string ToSpinnerTypeClass(this SpinnerType spinnerType) =>
+        spinnerType switch
         {
             SpinnerType.Border => "spinner-border",
             SpinnerType.Grow => "spinner-grow",
@@ -483,8 +487,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string ToTextColorClass(this TextColor color) =>
-        color switch
+    public static string ToTextColorClass(this TextColor textColor) =>
+        textColor switch
         {
             TextColor.Primary => "text-primary",
             TextColor.Secondary => "text-secondary",
@@ -500,8 +504,8 @@ public static class EnumExtensions
             _ => ""
         };
 
-    public static string? ToTooltipColorClass(this TooltipColor color) =>
-        color switch
+    public static string? ToTooltipColorClass(this TooltipColor tooltipColor) =>
+        tooltipColor switch
         {
             TooltipColor.Primary => "bb-tooltip-primary",
             TooltipColor.Secondary => "bb-tooltip-tooltip-secondary",

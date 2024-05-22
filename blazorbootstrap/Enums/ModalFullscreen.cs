@@ -1,8 +1,5 @@
 ﻿namespace BlazorBootstrap;
 
-/// <summary>
-/// Defines the fullscreen of an <see cref="Modal" /> element.
-/// </summary>
 public enum ModalFullscreen
 {
     /// <summary>

@@ -66,24 +66,33 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
             .AddClass(BootstrapClass.AccordionItem)
             .Build();
 
+    /// <summary>
+    /// Gets or sets the active state.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [Parameter]
+    public bool Active { get; set; }
+
     private string buttonCollapsedStateCSSClass => isCollapsed ? "collapsed" : string.Empty;
 
     /// <summary>
-    /// Specifies the content to be rendered inside the <see cref="AccordionItem" />.
+    /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     [EditorRequired]
     public RenderFragment Content { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the active <see cref="AccordionItem" />.
-    /// </summary>
-    [Parameter]
-    public bool IsActive { get; set; }
-
-    /// <summary>
     /// Gets or sets the name.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string Name { get; set; } = default!;
 
@@ -94,14 +103,20 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     internal Accordion Parent { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the <see cref="AccordionItem" /> title.
+    /// Gets or sets the title.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public string Title { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the <see cref="AccordionItem" /> title template.
+    /// Gets or sets the title template.
     /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
     [Parameter]
     public RenderFragment TitleTemplate { get; set; } = default!;
 
