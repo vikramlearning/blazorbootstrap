@@ -148,6 +148,26 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     /// <summary>
+    /// Gets or sets the filter button color.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="ButtonColor.Light" />.
+    /// </remarks>
+    [Parameter]
+    public ButtonColor FilterButtonColor { get; set; } = ButtonColor.Light;
+
+    /// <summary>
+    /// Gets or sets the filter button CSS class.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public string? FilterButtonCSSClass { get; set; }
+
+    private string filterButtonColorString => FilterButtonColor.ToButtonColorClass();
+
+    /// <summary>
     /// Gets or sets filter operator.
     /// </summary>
     [Parameter]

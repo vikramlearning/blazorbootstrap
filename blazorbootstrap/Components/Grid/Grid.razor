@@ -50,10 +50,12 @@
                             <th class="@string.Join(" ", columnClassList)" style="@string.Join(";", columnStyleList)">
                                 @if (column.Filterable)
                                 {
-                                    <GridColumnFilter FilterOperator="@column.FilterOperator"
+                                    <GridColumnFilter FilterButtonColor="@column.FilterButtonColor"
+                                                      FilterButtonCSSClass="@column.FilterButtonCSSClass"
+                                                      FilterOperator="@column.FilterOperator"
                                                       FilterValue="@column.FilterValue"
                                                       FilterWidth="@column.FilterTextboxWidth"
-                                                      FiltersTranslationProvider="GridFiltersTranslationProviderAsync"
+                                                      FiltersTranslationProvider="GridFiltersTranslationProviderAsync!"
                                                       FixedHeader="@FixedHeader"
                                                       GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
                                                       PropertyType="@column.GetPropertyType()"
