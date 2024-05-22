@@ -272,7 +272,8 @@ Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
 ```cshtml {} showLineNumbers
 <div class="bb-page">
 
-    <Sidebar Href="/"
+    <Sidebar @ref="sidebar"
+             Href="/"
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
              DataProvider="SidebarDataProvider" />
@@ -291,6 +292,7 @@ Call `ToggleSidebar()` method to toggle the Sidebar to show the icons only.
 </div>
 
 @code {
+    Sidebar sidebar = default!;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -340,7 +342,8 @@ A badge is useful when displaying the application version, environment, or other
 ```cshtml {} showLineNumbers
 <div class="bb-page">
 
-    <Sidebar Href="/"
+    <Sidebar @ref="sidebar"
+             Href="/"
              IconName="IconName.BootstrapFill"
              Title="Blazor Bootstrap"
              BadgeText="v1.3.1"
@@ -360,6 +363,7 @@ A badge is useful when displaying the application version, environment, or other
 </div>
 
 @code {
+    Sidebar sidebar = default!;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
@@ -409,7 +413,8 @@ Use the `CustomIconName` parameter to set the custom logo icon using font awesom
 ```cshtml {} showLineNumbers
 <div class="bb-page">
 
-    <Sidebar Href="/"
+    <Sidebar @ref="sidebar"
+             Href="/"
              CustomIconName="bi bi-apple"
              Title="Blazor Bootstrap"
              BadgeText="v1.3.1"
@@ -429,6 +434,7 @@ Use the `CustomIconName` parameter to set the custom logo icon using font awesom
 </div>
 
 @code {
+    Sidebar sidebar = default!;
     IEnumerable<NavItem> navItems;
 
     private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
