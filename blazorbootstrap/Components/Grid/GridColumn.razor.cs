@@ -213,6 +213,24 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     public bool Filterable { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the filter button color.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="ButtonColor.Light" />.
+    /// </remarks>
+    [Parameter]
+    public ButtonColor FilterButtonColor { get; set; } = ButtonColor.Light;
+
+    /// <summary>
+    /// Gets or sets the filter button CSS class.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public string? FilterButtonCSSClass { get; set; }
+
+    /// <summary>
     /// Gets or sets the filter operator.
     /// </summary>
     /// <remarks>
