@@ -29,7 +29,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     }
 
     /// <inheritdoc />
-    /// <seealso cref="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable?view=net-6.0" />
+    /// <seealso href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable?view=net-6.0" />
     public void Dispose()
     {
         Dispose(true);
@@ -38,7 +38,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 
     /// <inheritdoc />
     /// <seealso
-    ///     cref="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#implement-both-dispose-and-async-dispose-patterns" />
+    ///     href="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#implement-both-dispose-and-async-dispose-patterns" />
     public async ValueTask DisposeAsync()
     {
         await DisposeAsyncCore(true).ConfigureAwait(false);

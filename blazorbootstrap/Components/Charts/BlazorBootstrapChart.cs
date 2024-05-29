@@ -18,7 +18,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     public virtual async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) => await Task.FromResult(chartData);
 
-    public virtual async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, List<IChartDatasetData> data) => await Task.FromResult(chartData);
+    public virtual async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data) => await Task.FromResult(chartData);
 
     public virtual async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) => await Task.FromResult(chartData);
 

@@ -189,7 +189,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// If true, dropdown item will be disabled.
+    /// If <see langword="true" />, dropdown item will be disabled.
     /// </summary>
     /// <remarks>
     /// Default value is false.

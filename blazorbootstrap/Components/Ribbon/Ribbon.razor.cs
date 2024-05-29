@@ -296,7 +296,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     public bool EnableFadeEffect { get; set; }
 
     /// <summary>
-    /// If true, Ribbon will be rendered vertically.
+    /// If <see langword="true" />, Ribbon will be rendered vertically.
     /// </summary>
     private bool IsVertical =>
         NavStyle == NavStyle.Vertical

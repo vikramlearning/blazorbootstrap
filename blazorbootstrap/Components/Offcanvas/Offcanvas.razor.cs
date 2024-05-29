@@ -125,7 +125,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     public RenderFragment BodyTemplate { get; set; } = default!;
 
     /// <summary>
-    /// If true, offcanvas closes when escape key is pressed.
+    /// If <see langword="true" />, offcanvas closes when escape key is pressed.
     /// </summary>
     /// <remarks>
     /// Default value is true.
@@ -214,7 +214,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     public Placement Placement { get; set; } = Placement.End;
 
     /// <summary>
-    /// If true, modal shows close button in the header.
+    /// If <see langword="true" />, modal shows close button in the header.
     /// </summary>
     /// <remarks>
     /// Default value is true.

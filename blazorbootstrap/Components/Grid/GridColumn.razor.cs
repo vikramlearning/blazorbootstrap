@@ -203,7 +203,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     public Func<TItem, string>? ColumnClass { get; set; }
 
     /// <summary>
-    /// If true, filter is enabled.
+    /// If <see langword="true" />, filter is enabled.
     /// The filter is enabled or disabled based on the grid `AllowFiltering` parameter.
     /// </summary>
     /// <remarks>

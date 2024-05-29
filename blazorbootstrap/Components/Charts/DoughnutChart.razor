@@ -2,5 +2,5 @@
 @inherits BlazorBootstrapChart
 
 <div style="@ContainerStyle">
-    <canvas @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes"></canvas>
+    <canvas @ref="@Element" id="@Id" width="@(Width ?? 300)" height="@(Height ?? 150)" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes"></canvas>
 </div>

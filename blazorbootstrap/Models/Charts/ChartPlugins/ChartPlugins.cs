@@ -11,12 +11,19 @@ public class ChartPlugins
 
     /// <summary>
     /// The chart title defines text to draw at the top of the chart.
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/title.html"/> 
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTitle? Title { get; set; } = new();
 
+    /// <summary>
+    /// Tooltip for the element.
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/tooltip.html"/>
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTooltip? Tooltip { get; set; }
+    
+
 
     #endregion
 }
@@ -28,7 +35,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// Alignment of the legend. Default values is 'center'. Other possible values 'start' and 'end'.
     /// </summary>
-    public string? Align { get; set; } = "center";
+    public string Align { get; set; } = "center";
 
     /// <summary>
     /// Is the legend shown? Default value is 'true'.
@@ -36,16 +43,152 @@ public class ChartPluginsLegend
     public bool Display { get; set; } = true;
 
     /// <summary>
+    /// If <see langword="true" />, Marks that this box should take the full width/height of the canvas (moving other boxes). This is unlikely to need to be changed in day-to-day use.
+    /// </summary>
+    public bool FullSize { get; set; } = true;
+
+    /// <summary>
+    /// Label settings for the legend.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ChartPluginsLegendLabels? Labels { get; set; }
+
+    /// <summary>
+    /// Maximum height of the legend, in pixels.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? MaxHeight { get; set; }
+
+    /// <summary>
+    /// Maximum width of the legend, in pixels.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? MaxWidth { get; set; }
+
+    /// <summary>
     /// Position of the legend. Default value is 'top'. Other possible value is 'bottom'.
     /// </summary>
-    public string? Position { get; set; } = "top";
+    public string Position { get; set; } = "top";
+
+    /// <summary>
+    /// If <see langword="true" />, the Legend will show datasets in reverse order.
+    /// </summary>
+    public bool Reverse { get; set; } = false;
+
+    /// <summary>
+    /// If <see langword="true" />, for rendering of the legends will go from right to left.
+    /// </summary>
+    public bool Rtl { get; set; } = false;
+
+    /// <summary>
+    /// This will force the text direction 'rtl' or 'ltr' on the canvas for rendering the legend, regardless of the css specified on the canvas
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? TextDirection { get; set; }
+    
+    /// <summary>
+    /// Title object
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ChartPluginsLegendTitle? Title { get; set; }
 
     #endregion
 }
 
+
+
+public class ChartPluginsLegendTitle
+{
+    /// <summary>
+    /// Color of the legend. Default value is 'black'.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Color { get; set; }
+
+    /// <summary>
+    /// Is the legend title displayed.
+    /// </summary>
+    public bool Display { get; set; } = true;
+
+    /// <summary>
+    /// Padding around the title.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Padding { get; set; }
+    
+    /// <summary>
+    /// The string title
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Text { get; set; }
+}
+
+/// <summary>
+/// The chart label settings
+/// <see href="https://www.chartjs.org/docs/latest/configuration/legend.html#legend-label-configuration" />
+/// </summary>
+public class ChartPluginsLegendLabels
+{
+    /// <summary>
+    /// Width of coloured box.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? BoxWidth { get; set; }
+
+    /// <summary>
+    /// Height of the coloured box
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? BoxHeight { get; set; }
+
+    /// <summary>
+    /// Override the borderRadius to use.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? BorderRadius { get; set; }
+    
+    /// <summary>
+    /// Color of label and the strikethrough.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Color { get; set; }
+    
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ChartFont? Font { get; set; }
+    
+    /// <summary>
+    /// Padding between rows of colored boxes.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Padding { get; set; }
+
+    /// <summary>
+    /// If specified, this style of point is used for the legend. Only used if <see cref="UsePointStyle"/>> is true.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? PointStyle { get; set; }
+
+    /// <summary>
+    /// If <see cref="UsePointStyle"/> is <see langword="true" />, the width of the point style used for the legend.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? PointStyleWidth { get; set; }
+    
+    /// <summary>
+    /// Label borderRadius will match corresponding <see cref="BorderRadius"/>.
+    /// </summary>
+    public bool UseBorderRadius { get; set; } = false;
+
+    /// <summary>
+    /// If <see langword="true"/>, Label style will match corresponding point style (size is based on pointStyleWidth or the minimum value between <see cref="BoxWidth"/> and <see cref="Font"/> -> Size).
+    /// </summary>
+    public bool UsePointStyle { get; set; } = false;
+
+}
+
 /// <summary>
 /// The chart title defines text to draw at the top of the chart.
-/// <see cref="https://www.chartjs.org/docs/latest/configuration/title.html" />
+/// <see href="https://www.chartjs.org/docs/latest/configuration/title.html" />
 /// </summary>
 public class ChartPluginsTitle
 {
@@ -56,20 +199,20 @@ public class ChartPluginsTitle
     /// Options are: 'start', 'center', and 'end'
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Align { get; set; } = "center";
-
+    public string? Align { get; set; }
     /// <summary>
     /// Color of text.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Color { get; set; } = "black";
+    public string? Color { get; set; }
 
     /// <summary>
     /// Is the title shown?
     /// </summary>
     public bool Display { get; set; }
 
-    public ChartFont? Font { get; set; } = new();
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ChartFont? Font { get; set; }
 
     //fullSize
     //padding
@@ -83,7 +226,7 @@ public class ChartPluginsTitle
 
 /// <summary>
 /// Tooltip for bubble, doughnut, pie, polar area, and scatter charts
-/// <see cref="https://www.chartjs.org/docs/latest/configuration/tooltip.html" />
+/// <see href="https://www.chartjs.org/docs/latest/configuration/tooltip.html" />
 /// </summary>
 public class ChartPluginsTooltip
 {
@@ -123,7 +266,7 @@ public class ChartPluginsTooltip
     public int CaretSize { get; set; } = 5;
 
     /// <summary>
-    /// If true, color boxes are shown in the tooltip.
+    /// If <see langword="true" />, color boxes are shown in the tooltip.
     /// </summary>
     public bool DisplayColors { get; set; } = true;
 
@@ -190,7 +333,7 @@ public class ChartPluginsTooltip
 }
 
 /// <summary>
-///     <see cref="https://www.chartjs.org/docs/latest/general/fonts.html" />
+///     <see href="https://www.chartjs.org/docs/latest/general/fonts.html" />
 /// </summary>
 public class ChartPluginsTooltipFont
 {
@@ -205,7 +348,7 @@ public class ChartPluginsTooltipFont
 
     /// <summary>
     /// Height of an individual line of text
-    /// <see cref="https://developer.mozilla.org/en-US/docs/Web/CSS/line-height" />
+    /// <see href="https://developer.mozilla.org/en-US/docs/Web/CSS/line-height" />
     /// </summary>
     public double LineHeight { get; set; } = 1.2;
 
@@ -223,7 +366,7 @@ public class ChartPluginsTooltipFont
 
     /// <summary>
     /// Default font weight (boldness).
-    /// <see cref="https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight" />
+    /// <see href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight" />
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Weight { get; set; } = "bold";

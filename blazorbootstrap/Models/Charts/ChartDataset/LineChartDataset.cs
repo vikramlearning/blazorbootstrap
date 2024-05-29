@@ -34,7 +34,7 @@ public class LineChartDataset : ChartDataset
     /// Hover line dash.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int>? HoverBorderDash { get; set; }
+    public IReadOnlyCollection<int>? HoverBorderDash { get; set; }
 
     /// <summary>
     /// The label for the dataset which appears in the legend and tooltips.
@@ -46,67 +46,67 @@ public class LineChartDataset : ChartDataset
     /// The fill color for points.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string> PointBackgroundColor { get; set; } = new() { "rgba(0, 0, 0, 0.1)" };
+    public IReadOnlyCollection<string> PointBackgroundColor { get; set; } = new[] { "rgba(0, 0, 0, 0.1)" };
 
     /// <summary>
     /// The border color for points.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string> PointBorderColor { get; set; } = new() { "rgba(0, 0, 0, 0.1)" };
+    public IReadOnlyCollection<string> PointBorderColor { get; set; } = new[] { "rgba(0, 0, 0, 0.1)" };
 
     /// <summary>
     /// The width of the point border in pixels.
     /// </summary>
-    public List<double> PointBorderWidth { get; set; } = new() { 1 };
+    public IReadOnlyCollection<double> PointBorderWidth { get; set; } = new[] { 1d };
 
     /// <summary>
     /// The pixel size of the non-displayed point that reacts to mouse events.
     /// </summary>
-    public List<double> PointHitRadius { get; set; } = new() { 1 };
+    public IReadOnlyCollection<double> PointHitRadius { get; set; } = new[] { 1d };
 
     /// <summary>
     /// Point background color when hovered.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? PointHoverBackgroundColor { get; set; }
+    public IReadOnlyCollection<string>? PointHoverBackgroundColor { get; set; }
 
     /// <summary>
     /// Point border color when hovered.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? PointHoverBorderColor { get; set; }
+    public IReadOnlyCollection<string>? PointHoverBorderColor { get; set; }
 
     /// <summary>
     /// Border width of point when hovered.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double> PointHoverBorderWidth { get; set; } = new() { 1 };
+    public IReadOnlyCollection<double> PointHoverBorderWidth { get; set; } = new[] { 1d };
 
     /// <summary>
     /// The radius of the point when hovered.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int> PointHoverRadius { get; set; } = new() { 1 }; // Default: 4
+    public IReadOnlyCollection<int> PointHoverRadius { get; set; } = new[] { 1 }; // Default: 4
 
     /// <summary>
     /// The radius of the point shape. If set to 0, the point is not rendered.
     /// Default: 3
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int> PointRadius { get; set; } = new() { 1 }; // Default: 3
+    public IReadOnlyCollection<int> PointRadius { get; set; } = new[] { 1 }; // Default: 3
 
     /// <summary>
     /// The rotation of the point in degrees.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int> PointRotation { get; set; } = new() { 0 };
+    public IReadOnlyCollection<int> PointRotation { get; set; } = new[] { 0 };
 
     /// <summary>
     /// Style of the point.
     /// Use 'circle', 'cross', 'crossRot', 'dash', 'line', 'rect', 'rectRounded', 'rectRot', 'star', and 'triangle' to style
     /// the point.
     /// </summary>
-    public List<string> PointStyle { get; set; } = new() { "circle" };
+    public IReadOnlyCollection<string> PointStyle { get; set; } = new[] { "circle" };
 
     // Segment
     // https://www.chartjs.org/docs/latest/api/interfaces/LineControllerDatasetOptions.html#segment
@@ -117,7 +117,7 @@ public class LineChartDataset : ChartDataset
     public bool ShowLine { get; set; } = true;
 
     /// <summary>
-    /// If true, lines will be drawn between points with no or null data.
+    /// If <see langword="true" />, lines will be drawn between points with no or null data.
     /// If false, points with null data will create a break in the line.
     /// Can also be a number specifying the maximum gap length to span.
     /// The unit of the value depends on the scale used.
@@ -125,7 +125,7 @@ public class LineChartDataset : ChartDataset
     public bool SpanGaps { get; set; }
 
     /// <summary>
-    /// true to show the line as a stepped line (tension will be ignored).
+    /// <see langword="true" /> to show the line as a stepped line (tension will be ignored).
     /// </summary>
     public bool Stepped { get; set; }
 

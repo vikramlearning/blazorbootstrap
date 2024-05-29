@@ -258,7 +258,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     public RenderFragment HeaderTemplate { get; set; } = default!;
 
     /// <summary>
-    /// If true, scroll will be enabled on the modal body.
+    /// If <see langword="true" />, scroll will be enabled on the modal body.
     /// </summary>
     /// <remarks>
     /// Default value is false.
@@ -276,7 +276,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     public bool IsServiceModal { get; set; }
 
     /// <summary>
-    /// If true, shows the modal vertically in the center.
+    /// If <see langword="true" />, shows the modal vertically in the center.
     /// </summary>
     /// <remarks>
     /// Default value is false.
@@ -344,7 +344,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     private string scrollable => IsScrollable ? "modal-dialog-scrollable" : "";
 
     /// <summary>
-    /// If true, close button will be visible in the modal header.
+    /// If <see langword="true" />, close button will be visible in the modal header.
     /// </summary>
     /// <remarks>
     /// Default value is true.

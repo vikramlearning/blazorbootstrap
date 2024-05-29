@@ -119,7 +119,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// If true, disables the card link.
+    /// If <see langword="true" />, disables the card link.
     /// </summary>
     /// <remarks>
     /// Default value is false.
