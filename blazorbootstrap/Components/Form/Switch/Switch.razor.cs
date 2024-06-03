@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Use the Blazor Bootstrap <see cref="Switch"/>> component to show the consistent cross-browser and cross-device custom checkboxes.
+/// </summary>
 public partial class Switch : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -12,6 +15,7 @@ public partial class Switch : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         oldValue = Value;
@@ -23,6 +27,7 @@ public partial class Switch : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (oldValue != Value)
@@ -51,7 +56,9 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <param name="args"></param>
     private async Task OnChange(ChangeEventArgs args)
     {
-        bool.TryParse(args.Value?.ToString(), out var newValue);
+        if (!bool.TryParse(args.Value?.ToString(), out var newValue))
+            return;
+        
         Value = newValue;
 
         await ValueChanged.InvokeAsync(Value);
@@ -65,6 +72,7 @@ public partial class Switch : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.FormCheck)
@@ -76,31 +84,29 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string FieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string Label { get; set; } = default!;
-
-    private string reverse => Reverse ? BootstrapClass.FormCheckReverse : "";
 
     /// <summary>
     /// Determines whether to put the switch on the opposite side.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Reverse { get; set; }
@@ -109,7 +115,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// Gets or sets the value.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Value { get; set; }

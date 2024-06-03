@@ -41,7 +41,7 @@
 </div>
 
 @code {
-    private IEnumerable<Employee1> employees = default!;
+    private IReadOnlyCollection<Employee1> employees = default!;
 
     private HashSet<Employee1> selectedEmployees = new();
 
@@ -53,7 +53,7 @@
         return await Task.FromResult(request.ApplyTo(employees));
     }
 
-    private IEnumerable<Employee1> GetEmployees()
+    private IReadOnlyCollection<Employee1> GetEmployees()
     {
         return new List<Employee1>
         {

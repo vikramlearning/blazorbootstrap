@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Sidebars are vertical navigation menus that are typically positioned on the left or right side of a page. <br/>
+/// They are based on the <see href="https://getbootstrap.com/docs/5.0/examples/sidebars/">Bootstrap Sidebars example</see>
+/// </summary>
 public partial class Sidebar2 : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -20,17 +24,18 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", Id, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", Id, objRef);
 
-            var width = await JSRuntime.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
+            var width = await JsRuntime.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
 
-            bsWindowResize(width);
+            BsWindowResize(width);
 
-            await RefreshDataAsync(firstRender);
+            await RefreshDataAsync();
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -45,34 +50,26 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public void bsWindowResize(int width)
+    [JSInvokable("bsWindowResize")]
+    public void BsWindowResize(int width)
     {
-        if (width < 641) // mobile
-            isMobile = true;
-        else
-            isMobile = false;
+        isMobile = width < 641; // mobile
     }
 
     /// <summary>
     /// Refresh the sidebar data.
     /// </summary>
     /// <returns>Task</returns>
-    public async Task RefreshDataAsync(bool firstRender = false)
+    public async Task RefreshDataAsync()
     {
         if (requestInProgress)
             return;
 
         requestInProgress = true;
 
-        if (DataProvider != null)
-        {
-            var request = new Sidebar2DataProviderRequest();
-            var result = await DataProvider.Invoke(request);
-
+            var result = await DataProvider.Invoke();
             items = result != null ? result.Data : new List<NavItem>();
-        }
-
+        
         requestInProgress = false;
 
         await InvokeAsync(StateHasChanged);
@@ -125,7 +122,7 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     /// Gets or sets the badge text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? BadgeText { get; set; }
@@ -134,7 +131,7 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     /// Gets or sets the custom icon name.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? CustomIconName { get; set; }
@@ -143,17 +140,17 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     /// Gets or sets the data provider.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public Sidebar2DataProviderDelegate? DataProvider { get; set; } = default!;
+    public Sidebar2DataProviderDelegate DataProvider { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the Href.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Href { get; set; }
@@ -171,18 +168,18 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     /// Gets or sets the sidebar logo.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? ImageSrc { get; set; }
 
-    private string? navMenuCssClass => GetNavMenuCssClass();
+    private string? NavMenuCssClass => GetNavMenuCssClass();
 
     /// <summary>
     /// Gets or sets the sidebar title.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]

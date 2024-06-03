@@ -33,12 +33,12 @@ public readonly struct CssStyleBuilder
 
     public string? Build()
     {
-        var styleNames = string.IsNullOrWhiteSpace(style) ? styleList : styleList.Union(new[] { style });
+        var styleNames = string.IsNullOrWhiteSpace(style) ? styleList : styleList.Union(new[] { style }).ToHashSet();
 
         if (!styleNames.Any())
             return null;
 
-        return string.Join(";", styleNames);
+        return string.Join(';', styleNames);
     }
 
     public override string? ToString() => Build();

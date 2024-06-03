@@ -13,7 +13,7 @@ public class AutoCompleteDataProviderResult<TItem>
     /// The total item count in the source (for pagination and infinite scroll).
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     public int? TotalCount { get; init; }
 

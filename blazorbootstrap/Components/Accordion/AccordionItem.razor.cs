@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents an item within an <see cref="Accordion"/>.
+/// </summary>
 public partial class AccordionItem : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -11,21 +14,23 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     #endregion
 
     #region Methods
-
+    
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         Id = IdGenerator.GetNextId(); // This is required
         Parent.Add(this);
     }
-
+    
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (TitleTemplate is not null && !string.IsNullOrWhiteSpace(Title)) throw new InvalidOperationException($"{nameof(AccordionItem)} requires one of {nameof(TitleTemplate)} or {nameof(Title)}, but both were specified.");
     }
 
-    internal async Task HideAsync() => await collapse.HideAsync();
+    internal ValueTask HideAsync() => collapse.HideAsync();
 
-    internal async Task ShowAsync() => await collapse.ShowAsync();
+    internal ValueTask ShowAsync() => collapse.ShowAsync();
 
     private async Task OnCollapseHiddenAsync()
     {
@@ -55,12 +60,13 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
             await Parent.OnShown.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
-    private async Task ToggleAsync() => await collapse.ToggleAsync();
+    private ValueTask ToggleAsync() => collapse.ToggleAsync();
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.AccordionItem)
@@ -70,18 +76,18 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// Gets or sets the active state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Active { get; set; }
 
-    private string buttonCollapsedStateCSSClass => isCollapsed ? "collapsed" : string.Empty;
+    private string ButtonCollapsedStateCssClass => isCollapsed ? "collapsed" : string.Empty;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
@@ -91,7 +97,7 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// Gets or sets the name.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string Name { get; set; } = default!;
@@ -106,7 +112,7 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// Gets or sets the title.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string Title { get; set; } = default!;
@@ -115,10 +121,10 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// Gets or sets the title template.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment TitleTemplate { get; set; } = default!;
+    public RenderFragment? TitleTemplate { get; set; } = default!;
 
     #endregion
 }

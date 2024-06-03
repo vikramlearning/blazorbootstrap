@@ -25,7 +25,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
     /// Gets or sets the link aria-label attribute.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? LinkAriaLabel { get; set; }
@@ -43,7 +43,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
     /// Gets or sets the link text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? LinkText { get; set; }
@@ -52,7 +52,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
     /// Gets or sets the text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Text { get; set; }

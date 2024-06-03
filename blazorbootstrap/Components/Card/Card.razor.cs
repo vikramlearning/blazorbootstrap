@@ -1,9 +1,14 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Bootstrap's cards provide a flexible and extensible content container with multiple variants and options. <br/>
+/// This component is based on the <see href="https://getbootstrap.com/docs/5.0/components/card/">Bootstrap Card</see> component.
+/// </summary>
 public partial class Card : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers
-
+    
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Card)
@@ -15,7 +20,7 @@ public partial class Card : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;

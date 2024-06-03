@@ -1,5 +1,12 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Blazor Bootstrap <see cref="DateInput{T}"/> component is constructed using an HTML input of type="date" which limits user input based on pre-defined parameters.
+/// This component enables users to input a date using a text box with validation or a special date picker interface.
+/// </summary>
+/// <typeparam name="TValue">Date type to insert: <see cref="DateTime"/>, <see cref="DateOnly"/> and their <see cref="Nullable{T}"/>> variants are supported.</typeparam>
+/// <exception cref="InvalidOperationException">Thrown if <typeparamref name="TValue"/> isn't of type <see cref="DateTime"/>. <see cref="DateOnly"/> or their <see cref="Nullable{T}"/>> alternatives.</exception>
+/// <exception cref="InvalidOperationException">Thrown if <see cref="Min"/> is larger than <see cref="Max"/> and <see cref="EnableMinMax"/> is <see langword="true" /></exception>
 public partial class DateInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -27,6 +34,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -65,6 +73,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         max = Max;
@@ -86,12 +95,11 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
         AdditionalAttributes ??= new Dictionary<string, object>();
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
-
-        Disabled = Disabled;
-
+        
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (EnableMinMax && !min!.Equals(Min))
@@ -125,7 +133,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// </summary>
     public void Enable() => Disabled = false;
 
-    private string GetFormattedValue(object value)
+    private string GetFormattedValue(object? value)
     {
         var formattedDate = "";
 
@@ -155,12 +163,12 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Determines where the left input is greater than the right input.
+    /// Determines where the <paramref name="left"/> input is greater than the <paramref name="right"/> input.
     /// </summary>
-    /// <param name="left"></param>
-    /// <param name="right"></param>
-    /// <returns>bool</returns>
-    private bool IsLeftGreaterThanRight(object left, object right)
+    /// <param name="left">Left hand object</param>
+    /// <param name="right">Right hand object</param>
+    /// <returns><see langword="true" /> if <paramref name="left"/> is greater than <paramref name="right"/>.</returns>
+    private static bool IsLeftGreaterThanRight(object? left, object? right)
     {
         if (left is null || right is null)
             return false;
@@ -230,14 +238,14 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
         formattedValue = GetFormattedValue(Value!);
 
         if (oldValue!.Equals(Value))
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dateInput.setValue", Id, formattedValue);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.dateInput.setValue", Id, formattedValue);
 
         await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
     }
 
-    private bool TryParseValue(object value, out TValue newValue)
+    private static bool TryParseValue(object value, out TValue newValue)
     {
         try
         {
@@ -280,18 +288,17 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.FormControl)
             .Build();
 
-    private string autoComplete => AutoComplete ? "true" : "false";
-
     /// <summary>
     /// If <see langword="true" />, DateInput can complete the values automatically by the browser.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AutoComplete { get; set; }
@@ -300,7 +307,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
@@ -312,12 +319,12 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// If <see langword="true" />, restricts the user input between the Min and Max range. Else accepts the user input.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool EnableMinMax { get; set; }
 
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string FieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
     /// Gets or sets the max.
@@ -337,7 +344,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the placeholder.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Placeholder { get; set; }

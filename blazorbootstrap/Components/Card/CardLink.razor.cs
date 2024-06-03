@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// This component represents a link within a <see cref="Card"/>.
+/// </summary>
 public partial class CardLink : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -18,6 +21,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
@@ -26,6 +30,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
         base.OnAfterRender(firstRender);
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         previousDisabled = Disabled;
@@ -37,6 +42,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (isFirstRenderComplete)
@@ -106,6 +112,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.CardLink)
@@ -122,7 +129,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// If <see langword="true" />, disables the card link.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
@@ -131,7 +138,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// Gets or sets the card link tab index.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }
@@ -149,7 +156,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// Gets or sets the link href attribute.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? To { get; set; }

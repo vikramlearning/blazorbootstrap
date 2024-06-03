@@ -30,6 +30,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
         base.OnAfterRender(firstRender);
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         AdditionalAttributes ??= new Dictionary<string, object>();
@@ -45,6 +46,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (isFirstRenderComplete)
@@ -93,7 +95,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
 
         if (Active && !AdditionalAttributes.TryGetValue("aria-current", out _))
             AdditionalAttributes.Add("aria-current", "true");
-        else if (!Active && AdditionalAttributes.TryGetValue("aria-current", out _))
+        else if (!Active)
             AdditionalAttributes.Remove("aria-current");
 
         // 'a' tag
@@ -123,28 +125,20 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
             }
             else
             {
-                if (AdditionalAttributes.TryGetValue("aria-disabled", out _))
-                    AdditionalAttributes.Remove("aria-disabled");
+                AdditionalAttributes.Remove("aria-disabled", out _);
 
                 if (TabIndex is not null && !AdditionalAttributes.TryGetValue("tabindex", out _))
                     AdditionalAttributes.Add("tabindex", TabIndex);
-                else if (TabIndex is null && AdditionalAttributes.TryGetValue("tabindex", out _))
+                else if (TabIndex is null)
                     AdditionalAttributes.Remove("tabindex");
             }
         }
         else // button
         {
-            if (AdditionalAttributes.TryGetValue("role", out _))
-                AdditionalAttributes.Remove("role");
-
-            if (AdditionalAttributes.TryGetValue("href", out _))
-                AdditionalAttributes.Remove("href");
-
-            if (AdditionalAttributes.TryGetValue("target", out _))
-                AdditionalAttributes.Remove("target");
-
-            if (AdditionalAttributes.TryGetValue("aria-disabled", out _))
-                AdditionalAttributes.Remove("aria-disabled");
+            AdditionalAttributes.Remove("role", out _);
+            AdditionalAttributes.Remove("href", out _);
+            AdditionalAttributes.Remove("target", out _);
+            AdditionalAttributes.Remove("aria-disabled", out _);
 
             // NOTE: This is handled in .razor page - #182
             //if (this.Disabled && !Attributes.TryGetValue("disabled", out _))
@@ -154,7 +148,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
 
             if (TabIndex is not null && !AdditionalAttributes.TryGetValue("tabindex", out _))
                 AdditionalAttributes.Add("tabindex", TabIndex);
-            else if (TabIndex is null && AdditionalAttributes.TryGetValue("tabindex", out _))
+            else if (TabIndex is null)
                 AdditionalAttributes.Remove("tabindex");
         }
     }
@@ -162,7 +156,8 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
+    
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.DropdownItem)
@@ -174,7 +169,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// Gets or sets the dropdown item active state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Active { get; set; }
@@ -183,7 +178,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
@@ -192,7 +187,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// If <see langword="true" />, dropdown item will be disabled.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
@@ -201,13 +196,13 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// Gets or sets the dropdown item tab index.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }
 
     /// <summary>
-    /// Gets or sets the target of dropdown item (if the type is link).
+    /// Gets or sets the target of dropdown item (if <see cref="Type"/> is <see cref="DropdownItemType.Link"/>).
     /// </summary>
     /// <remarks>
     /// Default value is <see cref="Target.None" />.
@@ -216,10 +211,10 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     public Target Target { get; set; } = Target.None;
 
     /// <summary>
-    /// Get or sets the link href attribute (if the type is link).
+    /// Get or sets the link href attribute (if <see cref="Type"/> is <see cref="DropdownItemType.Link"/>).
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? To { get; set; }

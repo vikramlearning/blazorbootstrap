@@ -1,22 +1,26 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// Represents a Blazor component that provides a range input for numeric values.
+/// Represents a Blazor component that provides a range input for numeric values. <br/>
+/// See <see href="https://getbootstrap.com/docs/5.0/forms/range/">Bootstrap Range Input</see> for more information.
 /// </summary>
 /// <typeparam name="TValue">The type of the numeric value.</typeparam>
 /// <remarks>
-/// Supported types for TValue: sbyte, sbyte?, short, short?, int, int?, long, long?, float, float?, double, double?,
-/// decimal, decimal?
+/// Supported types for <typeparamref name="TValue"/> are: <see langword="sbyte"/>, <see langword="sbyte?"/>, <see langword="short"/>, <see langword="short?"/>,
+/// <see langword="int"/>, <see langword="int?"/>, <see langword="long"/>, <see langword="long?"/>, <see langword="float"/>, <see langword="float?"/>,
+/// <see langword="double"/>, <see langword="double?"/>, <see langword="decimal"/> or <see langword="decimal?"/>
 /// </remarks>
+/// <exception cref="InvalidOperationException">Thrown if <typeparamref name="TValue"/> isn't a number or is an unsigned number, which is illegal.</exception>
+/// <exception cref="InvalidOperationException">Thrown if <see cref="Min"/> is larger than <see cref="Max"/></exception>
 public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
     private FieldIdentifier fieldIdentifier;
 
-    private sbyte max = 100;
+    private const sbyte DefaultMax = 100;
 
-    private sbyte min = 0;
+    private const sbyte DefaultMin = 0;
 
     private DotNetObjectReference<RangeInput<TValue>> objRef = default!;
 
@@ -24,11 +28,12 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.rangeInput.initialize", Id, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.rangeInput.initialize", Id, objRef);
 
             var currentValue = Value; // object
 
@@ -47,6 +52,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -80,8 +86,8 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public async Task bsOnInput(object? newValue)
+    [JSInvokable("bsOnInput")]
+    public async Task BsOnInput(object? newValue)
     {
         SetValue(newValue?.ToString());
         await HandleChangeAsync();
@@ -97,18 +103,16 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// </summary>
     public void Enable() => Disabled = false;
 
-    private string GetInvariantNumber(TValue value)
+    private static string GetInvariantNumber(TValue? value)
     {
-        if (value is null) return string.Empty;
-
-        if (value is float floatValue) return floatValue.ToString(CultureInfo.InvariantCulture);
-
-        if (value is double doubleValue) return doubleValue.ToString(CultureInfo.InvariantCulture);
-
-        if (value is decimal decimalValue) return decimalValue.ToString(CultureInfo.InvariantCulture);
-
-        // All numbers without decimal places work fine by default
-        return value?.ToString() ?? string.Empty;
+        return value switch
+        {
+            null => string.Empty,
+            float floatValue => floatValue.ToString(CultureInfo.InvariantCulture),
+            double doubleValue => doubleValue.ToString(CultureInfo.InvariantCulture),
+            decimal decimalValue => decimalValue.ToString(CultureInfo.InvariantCulture),
+            _ => value?.ToString() ?? string.Empty
+        };
     }
 
     private async Task HandleChangeAsync()
@@ -118,12 +122,12 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Determines where the left input is greater than the right input.
+    /// Determines where the <paramref name="left"/>> input is greater than the <paramref name="right"/>> input.
     /// </summary>
     /// <param name="left"></param>
     /// <param name="right"></param>
-    /// <returns>bool</returns>
-    private bool IsLeftGreaterThanRight(TValue left, TValue right)
+    /// <returns><see langword="true"/> if <paramref name="left"/> is larger than <paramref name="right"/></returns>
+    private static bool IsLeftGreaterThanRight(TValue left, TValue right)
     {
         // sbyte
         if (typeof(TValue) == typeof(sbyte))
@@ -140,7 +144,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             var l = left as sbyte?;
             var r = right as sbyte?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // short / int16
 
@@ -158,7 +162,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             var l = left as short?;
             var r = right as short?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // int
 
@@ -176,7 +180,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             var l = left as int?;
             var r = right as int?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // long
 
@@ -194,7 +198,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             var l = left as long?;
             var r = right as long?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // float / single
 
@@ -212,7 +216,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             var l = left as float?;
             var r = right as float?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // double
 
@@ -230,7 +234,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             var l = left as double?;
             var r = right as double?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // decimal
 
@@ -248,10 +252,10 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             var l = left as decimal?;
             var r = right as decimal?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
-
-        return false;
+        
+        throw new InvalidOperationException($"{typeof(TValue)} is not supported.");
     }
 
     private async Task OnChange(ChangeEventArgs e)
@@ -271,11 +275,8 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             || typeof(TValue) == typeof(double?)
             || typeof(TValue) == typeof(decimal?))
         {
-            if (Min is null)
-                Min = TryParseValue(min, out var _min) ? _min : _min;
-
-            if (Max is null)
-                Max = TryParseValue(max, out var _max) ? _max : _max;
+            Min ??= ParseValue(DefaultMin);
+            Max ??= ParseValue(DefaultMax);
         }
     }
 
@@ -291,7 +292,15 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
             Value = value;
     }
 
-    private bool TryParseValue(object value, out TValue newValue)
+    private static TValue ParseValue(object? value)
+    {
+               if (value is null || !TryParseValue(value, out var newValue))
+                              return default!;
+               
+               return newValue;
+                         }
+
+    private static bool TryParseValue(object value, out TValue newValue)
     {
         try
         {
@@ -368,6 +377,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.FormRange)
@@ -377,14 +387,14 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string FieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
     /// Gets or sets the maximum value of the range input.
@@ -398,7 +408,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     [Parameter]
     public TValue Min { get; set; } = default!;
 
-    private bool showTickMarks => TickMarks?.Any() ?? false;
+    private bool ShowTickMarks => TickMarks?.Any() ?? false;
 
     /// <summary>
     /// Gets or sets the step value of the range input.
@@ -413,7 +423,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the tick marks.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public IEnumerable<TickMark> TickMarks { get; set; } = default!;

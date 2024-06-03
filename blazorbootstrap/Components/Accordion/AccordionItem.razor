@@ -3,7 +3,7 @@
 
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
     <h2 class="accordion-header">
-        <button class="accordion-button @buttonCollapsedStateCSSClass" type="button" @onclick="ToggleAsync">
+        <button class="accordion-button @ButtonCollapsedStateCssClass" type="button" @onclick="(async() => await ToggleAsync())">
             @if (TitleTemplate is not null)
             {
                 @TitleTemplate

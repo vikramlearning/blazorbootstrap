@@ -4,7 +4,7 @@
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
     @if (HasChilds)
     {
-        <NavLink class="nav-link" style="@navLinkStyle" role="button" @onclick="ToggleNavItemGroup">
+        <NavLink class="nav-link" style="@NavLinkStyle" role="button" @onclick="ToggleNavItemGroup">
             @{
                 var navLinkArrowCssClass = "";
                 if (Level == 0 && NavItemGroupExpanded)
@@ -32,14 +32,14 @@
     }
     else
     {
-        <NavLink class="nav-link" style="@navLinkStyle" href="@Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
+        <NavLink class="nav-link" style="@NavLinkStyle" href="@Href" target="@TargetString" Match="@Match" @onclick="AutoHideNavMenu">
             @{
                 var navLinkArrowCssClass = "ps-2";
                 if (Level == 0)
                     navLinkArrowCssClass = "";
             }
             <span class="nav-link-icon @navLinkArrowCssClass">
-                <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+                <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
             </span>
 
             @{

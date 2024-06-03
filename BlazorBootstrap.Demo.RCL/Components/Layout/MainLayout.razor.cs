@@ -2,9 +2,9 @@
 
 public partial class MainLayout : MainLayoutBase
 {
-    internal override IEnumerable<NavItem> GetNavItems()
+    internal override IReadOnlyCollection<NavItem> GetNavItems()
     {
-        navItems ??= new List<NavItem>
+        NavItems ??= new List<NavItem>
         {
             new (){ Id = "1", Text = "Getting Started", Href = "/getting-started", IconName = IconName.HouseDoorFill },
 
@@ -84,6 +84,6 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "700", Text = "Modal Service", Href = "/modal-service", IconName = IconName.WindowStack, ParentId = "7" },
         };
 
-        return navItems;
+        return NavItems;
     }
 }

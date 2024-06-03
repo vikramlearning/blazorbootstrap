@@ -268,7 +268,7 @@ public class ChartAxesGrid
     public bool Display { get; set; } = true;
 
     /// <summary>
-    /// If <see langword="true" />, draw lines on the chart area inside the axis lines. This is useful when there are multiple axes and you need to control which grid lines are drawn.
+    /// If <see langword="true" />, draw lines on the chart area inside the axis lines. This is useful when there are multiple axes, and you need to control which grid lines are drawn.
     /// </summary>
     public bool DrawOnChartArea { get; set; } = true;
 
@@ -283,7 +283,7 @@ public class ChartAxesGrid
     public int LineWidth { get; set; } = 1;
 
     /// <summary>
-    /// If <see langword="true" />, grid lines will be shifted to be between labels. This is set to true for a bar chart by default.
+    /// If <see langword="true" />, grid lines will be shifted to be between labels. This is set to  <see langword="true" /> for a bar chart by default.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Offset { get; set; } = false;

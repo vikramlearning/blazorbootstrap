@@ -1,14 +1,18 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions. <br/>
+/// The <see cref="Url"/> element can contain a URL or a base64 string of type "application/pdf".
+/// </summary>
 public partial class PdfViewer : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private int defaultZoomLevel = 8;
+    private const int DefaultZoomLevel = 8;
 
-    private int maxZoomLevel = 17;
+    private const int MaxZoomLevel = 17;
 
-    private int minZoomLevel = 1;
+    private const int MinZoomLevel = 1;
 
     private DotNetObjectReference<PdfViewer>? objRef;
 
@@ -85,9 +89,9 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             OnPageChanged.InvokeAsync(new PdfViewerEventArgs(pageNumber, pagesCount));
     }
 
-    private async Task FirstPageAsync() => await PdfViewerJsInterop.FirstPageAsync(objRef!, Id!);
+    private Task FirstPageAsync() => PdfViewerJsInterop.FirstPageAsync(objRef!, Id!);
 
-    private int GetZoomPercentage(int zoomLevel) =>
+    private static int GetZoomPercentage(int zoomLevel) =>
         zoomLevel switch
         {
             1 => 25,
@@ -110,28 +114,28 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             _ => 100
         };
 
-    private async Task LastPageAsync() => await PdfViewerJsInterop.LastPageAsync(objRef!, Id!);
+    private Task LastPageAsync() => PdfViewerJsInterop.LastPageAsync(objRef!, Id!);
 
-    private async Task NextPageAsync() => await PdfViewerJsInterop.NextPageAsync(objRef!, Id!);
+    private Task NextPageAsync() => PdfViewerJsInterop.NextPageAsync(objRef!, Id!);
 
-    private async Task PageNumberChangedAsync(int value)
+    private Task PageNumberChangedAsync(int value)
     {
         if (value < 1 || value > pagesCount)
             pageNumber = 1;
         else
             pageNumber = value;
 
-        await PdfViewerJsInterop.GotoPageAsync(objRef!, Id!, pageNumber);
+        return PdfViewerJsInterop.GotoPageAsync(objRef!, Id!, pageNumber);
     }
 
-    private async Task PreviousPageAsync() => await PdfViewerJsInterop.PreviousPageAsync(objRef!, Id!);
+    private Task PreviousPageAsync() => PdfViewerJsInterop.PreviousPageAsync(objRef!, Id!);
 
-    private async Task PrintAsync() => await PdfViewerJsInterop.PrintAsync(objRef!, Id!, Url!);
+    private Task PrintAsync() => PdfViewerJsInterop.PrintAsync(objRef!, Id!, Url!);
 
     private async Task ResetZoomAsync()
     {
-        zoomLevel = defaultZoomLevel;
-        var zp = GetZoomPercentage(defaultZoomLevel);
+        zoomLevel = DefaultZoomLevel;
+        var zp = GetZoomPercentage(DefaultZoomLevel);
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
         await PdfViewerJsInterop.ZoomInOutAsync(objRef!, Id!, scale);
@@ -175,7 +179,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private async Task ZoomInAsync()
     {
-        if (zoomLevel == maxZoomLevel)
+        if (zoomLevel == MaxZoomLevel)
             return;
 
         zoomLevel += 1;
@@ -187,7 +191,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private async Task ZoomOutAsync()
     {
-        if (zoomLevel == minZoomLevel)
+        if (zoomLevel == MinZoomLevel)
             return;
 
         zoomLevel -= 1;
@@ -233,7 +237,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     /// PDF Viewer component supports base64 string as a URL.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Url { get; set; }

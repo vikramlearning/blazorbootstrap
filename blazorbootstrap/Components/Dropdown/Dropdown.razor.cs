@@ -1,5 +1,10 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Dropdowns are toggleable, contextual overlays for displaying lists of links and more. <br/>
+/// They are toggled by clicking, not by hovering; this is an intentional design decision by bootstrap. <br/>
+/// For more information, visit <see href="https://getbootstrap.com/docs/5.0/components/dropdowns/"/>.
+/// </summary>
 public partial class Dropdown : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -18,7 +23,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.dispose", Id);
+                    await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -30,15 +35,17 @@ public partial class Dropdown : BlazorBootstrapComponentBase
 
         await base.DisposeAsyncCore(disposing);
     }
-
+    
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.initialize", Id, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.initialize", Id, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
-
+    
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -46,46 +53,47 @@ public partial class Dropdown : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
-    [JSInvokable]
-    public async Task bsHiddenDropdown() => await OnHidden.InvokeAsync();
+    [JSInvokable("bsHiddenDropdown")]
+    public Task BsHiddenDropdown() => OnHidden.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsHideDropdown() => await OnHiding.InvokeAsync();
+    [JSInvokable("bsHideDropdown")]
+    public Task BsHideDropdown() => OnHiding.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsShowDropdown() => await OnShowing.InvokeAsync();
+    [JSInvokable("bsShowDropdown")]
+    public Task BsShowDropdown() => OnShowing.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsShownDropdown() => await OnShown.InvokeAsync();
+    [JSInvokable("bsShownDropdown")]
+    public Task BsShownDropdown() => OnShown.InvokeAsync();
 
     /// <summary>
     /// Hides the dropdown menu of a given navbar or tabbed navigation.
     /// </summary>
     /// <returns></returns>
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.hide", Id);
+    public ValueTask HideAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.hide", Id);
 
     /// <summary>
     /// Shows the dropdown menu of a given navbar or tabbed navigation.
     /// </summary>
     /// <returns></returns>
-    public async Task ShowAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.show", Id);
+    public ValueTask ShowAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.show", Id);
 
     /// <summary>
     /// Toggles the dropdown menu of a given navbar or tabbed navigation.
     /// </summary>
     /// <returns></returns>
-    public async Task ToggleAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.toggle", Id);
+    public ValueTask ToggleAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.toggle", Id);
 
     /// <summary>
     /// Updates the position of an element’s dropdown.
     /// </summary>
     /// <returns></returns>
-    public async Task UpdateAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.update", Id);
+    public ValueTask UpdateAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.update", Id);
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.ButtonGroup)
@@ -96,7 +104,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// If <see langword="true" />, enables the auto close.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     [Parameter]
     public bool AutoClose { get; set; } = true;
@@ -114,7 +122,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
@@ -141,13 +149,13 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// If <see langword="true" />, dropdown will be disabled.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// This event is fired when an dropdown element has been hidden from the user (will wait for CSS transitions to complete).
+    /// This event is fired when a dropdown element has been hidden from the user (will wait for CSS transitions to complete).
     /// </summary>
     [Parameter]
     public EventCallback OnHidden { get; set; }
@@ -184,7 +192,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// Gets or sets the toggle button split behavior.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Split { get; set; }

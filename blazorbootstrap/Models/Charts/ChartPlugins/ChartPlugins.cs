@@ -22,8 +22,6 @@ public class ChartPlugins
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTooltip? Tooltip { get; set; }
-    
-
 
     #endregion
 }
@@ -33,7 +31,7 @@ public class ChartPluginsLegend
     #region Properties, Indexers
 
     /// <summary>
-    /// Alignment of the legend. Default values is 'center'. Other possible values 'start' and 'end'.
+    /// Alignment of the legend. Default values is 'center'. Other possible values are 'start' and 'end'.
     /// </summary>
     public string Align { get; set; } = "center";
 
@@ -100,7 +98,7 @@ public class ChartPluginsLegend
 public class ChartPluginsLegendTitle
 {
     /// <summary>
-    /// Color of the legend. Default value is 'black'.
+    /// Color of the legend. Default value is <see cref="Color.Black"/>
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Color { get; set; }
@@ -163,7 +161,7 @@ public class ChartPluginsLegendLabels
     public int? Padding { get; set; }
 
     /// <summary>
-    /// If specified, this style of point is used for the legend. Only used if <see cref="UsePointStyle"/>> is true.
+    /// If specified, this style of point is used for the legend. Only used if <see cref="UsePointStyle"/> is <see langword="true" />.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? PointStyle { get; set; }

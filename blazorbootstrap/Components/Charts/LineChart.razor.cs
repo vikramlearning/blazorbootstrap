@@ -1,25 +1,30 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// A line chart is a way of plotting data points on a line. Often, it is used to show trend data, or the comparison of two data sets. <br/>
+/// For more information, visit <see href="https://www.chartjs.org/docs/latest/charts/line.html"/>
+/// </summary>
 public partial class LineChart : BlazorBootstrapChart
 {
     #region Constructors
 
     public LineChart()
     {
-        chartType = ChartType.Line;
+        ChartType = ChartType.Line;
     }
 
     #endregion
 
     #region Methods
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets cannot be null", nameof(chartData));
 
         if (data is null)
             throw new ArgumentNullException(nameof(data));
@@ -29,11 +34,12 @@ public partial class LineChart : BlazorBootstrapChart
                 if (data is LineChartDatasetData lineChartDatasetData)
                     lineChartDataset.Data?.Add(lineChartDatasetData.Data);
 
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.addDatasetData", Id, dataLabel, data);
+        await JsRuntime.InvokeVoidAsync("window.blazorChart.line.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data)
     {
         if (chartData is null)
@@ -74,11 +80,12 @@ public partial class LineChart : BlazorBootstrapChart
                     lineChartDataset.Data?.Add(lineChartDatasetData.Data);
             }
 
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.addDatasetsData", Id, dataLabel, data?.Select(x => (LineChartDatasetData)x));
+        await JsRuntime.InvokeVoidAsync("window.blazorChart.line.addDatasetsData", Id, dataLabel, data?.Select(x => (LineChartDatasetData)x));
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions)
     {
         if (chartData is null)
@@ -90,16 +97,17 @@ public partial class LineChart : BlazorBootstrapChart
         if (chartDataset is null)
             throw new ArgumentNullException(nameof(chartDataset));
 
-        if (chartDataset is LineChartDataset)
+        if (chartDataset is LineChartDataset lineChartDataset)
         {
-            chartData.Datasets.Add(chartDataset);
-            await JSRuntime.InvokeVoidAsync("window.blazorChart.line.addDataset", Id, (LineChartDataset)chartDataset);
+            chartData.Datasets.Add(lineChartDataset);
+            await JsRuntime.InvokeVoidAsync("window.blazorChart.line.addDataset", Id, lineChartDataset);
         }
 
         return chartData;
     }
 
-    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
+    /// <inheritdoc />
+    public override async Task InitializeAsync(ChartData? chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
@@ -112,10 +120,11 @@ public partial class LineChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins);
+        await JsRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins);
     }
 
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
+    /// <inheritdoc />
+    public override async Task UpdateAsync(ChartData? chartData, IChartOptions chartOptions)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
@@ -128,7 +137,7 @@ public partial class LineChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+        await JsRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
     }
 
     #endregion

@@ -42,16 +42,16 @@ public class BarChartDataset : ChartDataset
     //https://www.chartjs.org/docs/latest/api/interfaces/BarControllerDatasetOptions.html#minbarlength
 
     /// <summary>
-    /// The ID of the x axis to plot this dataset on.
+    /// The ID of the x-axis to plot this dataset on.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? XAxisID { get; set; }
+    public string? XAxisId { get; set; }
 
     /// <summary>
-    /// The ID of the y axis to plot this dataset on.
+    /// The ID of the y-axis to plot this dataset on.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? YAxisID { get; set; }
+    public string? YAxisId { get; set; }
 
     #endregion
 }

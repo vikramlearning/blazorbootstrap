@@ -33,12 +33,12 @@ public readonly struct CssClassBuilder
 
     public string? Build()
     {
-        var classNames = string.IsNullOrWhiteSpace(@class) ? classList : classList.Union(new[] { @class });
+        var classNames = string.IsNullOrWhiteSpace(@class) ? classList : classList.Union(new[] { @class }).ToHashSet();
 
         if (!classNames.Any())
             return null;
 
-        return string.Join(" ", classNames);
+        return string.Join(' ', classNames);
     }
 
     public override string? ToString() => Build();

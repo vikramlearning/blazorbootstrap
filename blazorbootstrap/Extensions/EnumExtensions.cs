@@ -425,15 +425,11 @@ public static class EnumExtensions
             SortableListPullMode.False => false,
             SortableListPullMode.Clone => "clone",
             //SortableListPullMode.Array => "array"
+            _ => throw new ArgumentOutOfRangeException(nameof(sortableListPullMode), sortableListPullMode, "Invalid SortableListPullMode value supplied")
         };
 
     public static object ToSortableListPutMode(this SortableListPutMode sortableListPutMode) =>
-        sortableListPutMode switch
-        {
-            SortableListPutMode.True => true,
-            SortableListPutMode.False => false,
-            //SortableListPullMode.Array => "array"
-        };
+        sortableListPutMode == SortableListPutMode.True;
 
     public static string ToSpinnerColorClass(this SpinnerColor spinnerColor) =>
         spinnerColor switch

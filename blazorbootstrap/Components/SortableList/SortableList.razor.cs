@@ -9,14 +9,9 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     #region Fields and Constants
 
     /// <summary>
-    /// A cancellation token source for managing asynchronous operations.
-    /// </summary>
-    private CancellationTokenSource cancellationTokenSource = default!;
-
-    /// <summary>
     /// A CSS selector used to filter disabled items.
     /// </summary>
-    private string filter = ".bb-sortable-list-item-disabled";
+    private readonly string filter = ".bb-sortable-list-item-disabled";
 
     /// <summary>
     /// A DotNetObjectReference that allows JavaScript interop with this component.
@@ -84,7 +79,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets a value indicating whether sorting is allowed for the list.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     [Parameter]
     public bool AllowSorting { get; set; } = true;
@@ -93,7 +88,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
@@ -102,16 +97,16 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the items.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public List<TItem> Data { get; set; } = default!;
+    public IReadOnlyCollection<TItem> Data { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the CSS class applied to disabled items.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is  <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? DisabledItemCssClass { get; set; } = default!;
@@ -126,7 +121,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the empty data template.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment EmptyDataTemplate { get; set; } = default!;
@@ -144,7 +139,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the group name associated with the list.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Group { get; set; }
@@ -153,7 +148,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the CSS selector for the drag handle element.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Handle { get; set; }
@@ -162,7 +157,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the loading state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool IsLoading { get; set; }
@@ -171,7 +166,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the template used to render individual items in the list.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment<TItem>? ItemTemplate { get; set; }
@@ -180,7 +175,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the loading template.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment LoadingTemplate { get; set; } = default!;
@@ -189,7 +184,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the name of the <see cref="SortableList{TItem}" /> component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Name { get; set; }

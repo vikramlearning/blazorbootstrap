@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Runtime.CompilerServices;
+
+namespace BlazorBootstrap;
 
 public static class BootstrapIconProvider
 {
@@ -7,6 +9,7 @@ public static class BootstrapIconProvider
     /// <summary>
     /// The prefix for all Bootstrap icons.
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Icon()
     {
         return "bi";
@@ -17,6 +20,7 @@ public static class BootstrapIconProvider
     /// </summary>
     /// <param name="iconName">The icon name.</param>
     /// <returns>The CSS class for the icon.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Icon(IconName iconName)
     {
         return $"{Icon()}-{ToIconName(iconName)}";
@@ -26,18 +30,20 @@ public static class BootstrapIconProvider
     /// Returns the CSS class for the specified icon size.
     /// </summary>
     /// <param name="iconSize">The icon size.</param>
-    /// <returns>The CSS class for the icon size, or null if the size is not supported.</returns>
+    /// <returns>The CSS class for the icon size, or <see langword="null" /> if the size is not supported.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string? IconSize(IconSize iconSize)
     {
         return iconSize switch
                {
+                   BlazorBootstrap.IconSize.None => null,
                    BlazorBootstrap.IconSize.x1 => "fs-1",
                    BlazorBootstrap.IconSize.x2 => "fs-2",
                    BlazorBootstrap.IconSize.x3 => "fs-3",
                    BlazorBootstrap.IconSize.x4 => "fs-4",
                    BlazorBootstrap.IconSize.x5 => "fs-5",
                    BlazorBootstrap.IconSize.x6 => "fs-6",
-                   _ => null
+                   _ => throw new NotImplementedException()
                };
     }
 
@@ -69,7 +75,7 @@ public static class BootstrapIconProvider
                    IconName.AlphabetUppercase => "alphabet-uppercase",
                    IconName.Alt => "alt",
                    IconName.Amazon => "amazon",
-                   IconName.AMD => "amd",
+                   IconName.Amd => "amd",
                    IconName.Android => "android",
                    IconName.Android2 => "android2",
                    IconName.App => "app",
@@ -480,14 +486,14 @@ public static class BootstrapIconProvider
                    IconName.Cassette => "cassette",
                    IconName.CassetteFill => "cassette-fill",
                    IconName.Cast => "cast",
-                   IconName.CCCircle => "cc-circle",
-                   IconName.CCCircleFill => "cc-circle-fill",
+                   IconName.CcCircle => "cc-circle",
+                   IconName.CcCircleFill => "cc-circle-fill",
                    IconName.CCircle => "c-circle",
                    IconName.CCircleFill => "c-circle-fill",
                    IconName.CCircleSquare => "c-square",
                    IconName.CCircleSquareFill => "c-square-fill",
-                   IconName.CCSquare => "cc-square",
-                   IconName.CCSquareFill => "cc-square-fill",
+                   IconName.CcSquare => "cc-square",
+                   IconName.CcSquareFill => "cc-square-fill",
                    IconName.Chat => "chat",
                    IconName.ChatDots => "chat-dots",
                    IconName.ChatDotsFill => "chat-dots-fill",
@@ -854,10 +860,10 @@ public static class BootstrapIconProvider
                    IconName.EraserFill => "eraser-fill",
                    IconName.Escape => "escape",
                    IconName.Ethernet => "ethernet",
-                   IconName.EVFront => "ev-front",
-                   IconName.EVFrontFill => "ev-front-fill",
-                   IconName.EVStation => "ev-station",
-                   IconName.EVStationFill => "ev-station-fill",
+                   IconName.EvFront => "ev-front",
+                   IconName.EvFrontFill => "ev-front-fill",
+                   IconName.EvStation => "ev-station",
+                   IconName.EvStationFill => "ev-station-fill",
                    IconName.Exclamation => "exclamation",
                    IconName.ExclamationCircle => "exclamation-circle",
                    IconName.ExclamationCircleFill => "exclamation-circle-fill",
@@ -1032,7 +1038,7 @@ public static class BootstrapIconProvider
                    IconName.FileTypeJson => "filetype-json",
                    IconName.FileTypeJsx => "filetype-jsx",
                    IconName.FileTypeKey => "filetype-key",
-                   IconName.FileTypeM4p => "filetype-m4p",
+                   IconName.FileTypeM4P => "filetype-m4p",
                    IconName.FileTypeMd => "filetype-md",
                    IconName.FileTypeMdx => "filetype-mdx",
                    IconName.FileTypeMov => "filetype-mov",
@@ -1901,7 +1907,7 @@ public static class BootstrapIconProvider
                    IconName.TelephonePlusFill => "telephone-plus-fill",
                    IconName.TelephoneX => "telephone-x",
                    IconName.TelephoneXFill => "telephone-x-fill",
-                   IconName.TencentQQ => "tencent-qq",
+                   IconName.TencentQq => "tencent-qq",
                    IconName.Terminal => "terminal",
                    IconName.TerminalDash => "terminal-dash",
                    IconName.TerminalFill => "terminal-fill",

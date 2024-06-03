@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents the size of an <see cref="IconName"/>
+/// </summary>
 public enum IconSize
 {
     /// <summary>

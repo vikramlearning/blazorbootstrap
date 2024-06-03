@@ -39,7 +39,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// Gets or sets the custom icon name.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? CustomIconName { get; set; }
@@ -57,7 +57,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// Gets or sets the icon CSS class.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? IconCssClass { get; set; }
@@ -75,7 +75,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// Gets or sets the icon size.
     /// </summary>
     /// <remarks>
-    /// Default value is <see cref="IconSize.x3" />.
+    /// Default value is <see cref="BlazorBootstrap.IconSize.x3" />.
     /// </remarks>
     [Parameter]
     public IconSize IconSize { get; set; } = IconSize.x3;
@@ -93,7 +93,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// Gets or sets the image source.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? ImgSrc { get; set; }
@@ -111,7 +111,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// Gets or sets the first item in the RibbonItemGroup.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool IsFirstItem { get; set; } = false;
@@ -120,7 +120,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// Gets or sets the last item in the RibbonItemGroup.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool IsLastItem { get; set; } = false;

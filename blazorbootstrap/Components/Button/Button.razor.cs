@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Use Blazor Bootstrap button styles for actions in forms, dialogs, and more with support for multiple sizes, states, etc. <br/>
+/// This component is based on the <see href="https://getbootstrap.com/docs/5.0/components/buttons/">Bootstrap Button</see> component.
+/// </summary>
 public partial class Button : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -34,7 +38,7 @@ public partial class Button : BlazorBootstrapComponentBase
         if (disposing && !string.IsNullOrWhiteSpace(TooltipTitle) && IsRenderComplete)
             try
             {
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
             }
             catch (JSDisconnectedException)
             {
@@ -44,6 +48,7 @@ public partial class Button : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -51,12 +56,13 @@ public partial class Button : BlazorBootstrapComponentBase
             isFirstRenderComplete = true;
 
             if (!string.IsNullOrWhiteSpace(TooltipTitle))
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", Element);
+                await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", Element);
         }
 
         await base.OnAfterRenderAsync(firstRender);
     }
-
+    
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         previousDisabled = Disabled;
@@ -75,6 +81,7 @@ public partial class Button : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (isFirstRenderComplete)
@@ -127,12 +134,12 @@ public partial class Button : BlazorBootstrapComponentBase
             // NOTE: do not change the below sequence
             if (Disabled)
             {
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
             }
             else if (previousTooltipTitle != TooltipTitle || previousTooltipColor != TooltipColor)
             {
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element);
+                await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element);
             }
 
             previousTooltipTitle = TooltipTitle;
@@ -147,7 +154,9 @@ public partial class Button : BlazorBootstrapComponentBase
     {
         Loading = false;
         Disabled = false;
+#if NET6_0
         StateHasChanged();
+        #endif
     }
 
     /// <summary>
@@ -159,7 +168,9 @@ public partial class Button : BlazorBootstrapComponentBase
         LoadingText = text;
         Loading = true;
         Disabled = true;
+#if NET6_0
         StateHasChanged();
+#endif
     }
 
     protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder => { builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-{(Size == ButtonSize.None ? ButtonSize.Medium : Size).ToButtonSpinnerSizeClass()}\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}"); };
@@ -170,7 +181,7 @@ public partial class Button : BlazorBootstrapComponentBase
 
         if (Active && !AdditionalAttributes.TryGetValue("aria-pressed", out _))
             AdditionalAttributes.Add("aria-pressed", "true");
-        else if (!Active && AdditionalAttributes.TryGetValue("aria-pressed", out _))
+        else if (!Active)
             AdditionalAttributes.Remove("aria-pressed");
 
         // 'a' tag
@@ -193,40 +204,25 @@ public partial class Button : BlazorBootstrapComponentBase
 
             if (Disabled)
             {
-                if (AdditionalAttributes.TryGetValue("aria-disabled", out _))
-                    AdditionalAttributes["aria-disabled"] = "true";
-                else
-                    AdditionalAttributes.Add("aria-disabled", "true");
-
-                if (AdditionalAttributes.TryGetValue("tabindex", out _))
-                    AdditionalAttributes["tabindex"] = -1;
-                else
-                    AdditionalAttributes.Add("tabindex", -1);
+                AdditionalAttributes["aria-disabled"] = "true";
+                AdditionalAttributes["tabindex"] = -1;
             }
             else
             {
-                if (AdditionalAttributes.TryGetValue("aria-disabled", out _))
-                    AdditionalAttributes.Remove("aria-disabled");
+                AdditionalAttributes.Remove("aria-disabled");
 
                 if (TabIndex is not null && !AdditionalAttributes.TryGetValue("tabindex", out _))
                     AdditionalAttributes.Add("tabindex", TabIndex);
-                else if (TabIndex is null && AdditionalAttributes.TryGetValue("tabindex", out _))
+                else if (TabIndex is null)
                     AdditionalAttributes.Remove("tabindex");
             }
         }
         else // button, submit
         {
-            if (AdditionalAttributes.TryGetValue("role", out _))
-                AdditionalAttributes.Remove("role");
-
-            if (AdditionalAttributes.TryGetValue("href", out _))
-                AdditionalAttributes.Remove("href");
-
-            if (AdditionalAttributes.TryGetValue("target", out _))
-                AdditionalAttributes.Remove("target");
-
-            if (AdditionalAttributes.TryGetValue("aria-disabled", out _))
-                AdditionalAttributes.Remove("aria-disabled");
+            AdditionalAttributes.Remove("role");
+            AdditionalAttributes.Remove("href");
+            AdditionalAttributes.Remove("target");
+            AdditionalAttributes.Remove("aria-disabled");
 
             // NOTE: This is handled in .razor page - #182
             //if (this.Disabled && !Attributes.TryGetValue("disabled", out _))
@@ -236,7 +232,7 @@ public partial class Button : BlazorBootstrapComponentBase
 
             if (TabIndex is not null && !AdditionalAttributes.TryGetValue("tabindex", out _))
                 AdditionalAttributes.Add("tabindex", TabIndex);
-            else if (TabIndex is null && AdditionalAttributes.TryGetValue("tabindex", out _))
+            else if (TabIndex is null)
                 AdditionalAttributes.Remove("tabindex");
         }
 
@@ -251,30 +247,17 @@ public partial class Button : BlazorBootstrapComponentBase
             if (!AdditionalAttributes.TryGetValue("data-bs-placement", out _))
                 AdditionalAttributes.Add("data-bs-placement", TooltipPlacement.ToTooltipPlacementName());
 
-            if (AdditionalAttributes.TryGetValue("title", out _))
-                AdditionalAttributes["title"] = TooltipTitle;
-            else
-                AdditionalAttributes.Add("title", TooltipTitle);
+            AdditionalAttributes["title"] = TooltipTitle;
 
-            if (AdditionalAttributes.TryGetValue("data-bs-custom-class", out _))
-                AdditionalAttributes["data-bs-custom-class"] = TooltipColor.ToTooltipColorClass()!;
-            else
-                AdditionalAttributes.Add("data-bs-custom-class", TooltipColor.ToTooltipColorClass()!);
+            AdditionalAttributes["data-bs-custom-class"] = TooltipColor.ToTooltipColorClass()!;
         }
         // button disabled (or) tooltip text empty
         else
         {
-            if (AdditionalAttributes.TryGetValue("data-bs-toggle", out _))
-                AdditionalAttributes.Remove("data-bs-toggle");
-
-            if (AdditionalAttributes.TryGetValue("data-bs-placement", out _))
-                AdditionalAttributes.Remove("data-bs-placement");
-
-            if (AdditionalAttributes.TryGetValue("title", out _))
-                AdditionalAttributes.Remove("title");
-
-            if (AdditionalAttributes.TryGetValue("data-bs-custom-class", out _))
-                AdditionalAttributes.Remove("data-bs-custom-class");
+            AdditionalAttributes.Remove("data-bs-toggle");
+            AdditionalAttributes.Remove("data-bs-placement");
+                            AdditionalAttributes.Remove("title");
+            AdditionalAttributes.Remove("data-bs-custom-class", out _);
         }
     }
 
@@ -282,6 +265,7 @@ public partial class Button : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Button)
@@ -299,7 +283,7 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Gets or sets the button active state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Active { get; set; }
@@ -308,18 +292,18 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Gets or sets the block level button.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Block { get; set; }
 
-    private string buttonTypeString => Type.ToButtonTypeString()!;
+    private string ButtonTypeString => Type.ToButtonTypeString()!;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
@@ -337,7 +321,7 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Gets or sets the button disabled state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
@@ -346,7 +330,7 @@ public partial class Button : BlazorBootstrapComponentBase
     /// If <see langword="true" />, shows the loading spinner or a <see cref="LoadingTemplate" />.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Loading { get; set; }
@@ -355,10 +339,10 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Gets or sets the button loading template.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment LoadingTemplate { get; set; } = default!;
+    public RenderFragment? LoadingTemplate { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the loading text.
@@ -374,7 +358,7 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Gets or sets the button outline.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Outline { get; set; }
@@ -402,7 +386,7 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Gets or sets the button tab index.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }
@@ -420,7 +404,7 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Gets or sets the link button href attribute.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? To { get; set; }
@@ -447,7 +431,7 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Gets or sets the button tooltip title.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string TooltipTitle { get; set; } = default!;

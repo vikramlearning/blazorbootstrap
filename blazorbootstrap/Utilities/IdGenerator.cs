@@ -26,12 +26,12 @@ public sealed class IdGenerator : IIdGenerator
 
     // Base32 encoding - in ascii sort order for easy text based sorting
     // Ref: https://stackoverflow.com/a/37271406
-    private static readonly char[] encode32Chars = "ABCDEFGHIJKLMNOPQRSTUV0123456789".ToCharArray();
+    private static readonly char[] Encode32Chars = "ABCDEFGHIJKLMNOPQRSTUV0123456789".ToCharArray();
 
     /// <summary>
     /// The last generated ID.
     /// </summary>
-    private static long lastId = DateTime.UtcNow.Ticks;
+    private static long _lastId = DateTime.UtcNow.Ticks;
 
     #endregion
 
@@ -41,13 +41,13 @@ public sealed class IdGenerator : IIdGenerator
     /// Generates a base32-encoded ID.
     /// </summary>
     /// <returns>The base32-encoded ID.</returns>
-    public string GetNextId() => GenerateId(Interlocked.Increment(ref lastId));
+    public string GetNextId() => GenerateId(Interlocked.Increment(ref _lastId));
 
     private static string GenerateId(long id)
     {
         return string.Create(13, id, (buffer, value) =>
         {
-            char[] encode32Chars = IdGenerator.encode32Chars;
+            char[] encode32Chars = IdGenerator.Encode32Chars;
 
             buffer[12] = encode32Chars[value & 31];
             buffer[11] = encode32Chars[(value >> 5) & 31];

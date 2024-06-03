@@ -46,7 +46,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// Gets or sets the child items.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public IEnumerable<NavItem>? ChildItems { get; set; }
@@ -57,7 +57,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// Gets or sets the custom icon name.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? CustomIconName { get; set; }
@@ -66,7 +66,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// Gets or sets the has child items state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool HasChilds { get; set; }
@@ -75,7 +75,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// Gets or sets the link href attribute.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Href { get; set; }
@@ -89,7 +89,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     [Parameter]
     public IconColor IconColor { get; set; } = IconColor.None;
 
-    private string iconColorCssClass => IconColor.ToIconColorClass();
+    private string IconColorCssClass => IconColor.ToIconColorClass();
 
     /// <summary>
     /// Gets or sets the icon name.
@@ -126,13 +126,13 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     [Parameter]
     public Target Target { get; set; } = Target.None;
 
-    private string targetString => Target.ToTargetString()!;
+    private string TargetString => Target.ToTargetString()!;
 
     /// <summary>
     /// Gets or sets the sidebar item text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Text { get; set; }

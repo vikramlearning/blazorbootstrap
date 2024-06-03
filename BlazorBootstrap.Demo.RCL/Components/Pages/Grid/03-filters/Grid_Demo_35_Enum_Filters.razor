@@ -1,5 +1,4 @@
-﻿﻿<Grid @ref="grid"
-       TItem="User"
+﻿﻿<Grid TItem="User"
        Class="table table-hover table-bordered table-striped"
        DataProvider="UsersDataProvider"
        AllowFiltering="true"
@@ -21,8 +20,7 @@
 </Grid>
 
 @code {
-    BlazorBootstrap.Grid<User> grid = default!;
-    private IEnumerable<User> users = default!;
+    private IReadOnlyCollection<User> users = default!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -37,7 +35,7 @@
         return await Task.FromResult(request.ApplyTo(users));
     }
 
-    private IEnumerable<User> GetUsers()
+    private IReadOnlyCollection<User> GetUsers()
     {
         return new List<User>
         {

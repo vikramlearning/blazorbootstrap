@@ -41,10 +41,10 @@
 @code{
     Tabs tabs = default!;
 
-    private async Task ShowFirstTabAsync() => await tabs.ShowFirstTabAsync();
-    private async Task ShowSecondTabAsync() => await tabs.ShowTabByIndexAsync(1);
-    private async Task ShowThirdTabAsync() => await tabs.ShowTabByIndexAsync(2);
-    private async Task ShowProductsTabAsync() => await tabs.ShowTabByNameAsync("Products");
-    private async Task ShowFaqsAsync() => await tabs.ShowTabByNameAsync("FAQ");
-    private async Task ShowLastTabAsync() => await tabs.ShowLastTabAsync();
+    private Task ShowFirstTabAsync() => tabs.ShowFirstTabAsync();
+    private Task ShowSecondTabAsync() => tabs.ShowTabByIndexAsync(1);
+    private Task ShowThirdTabAsync() => tabs.ShowTabByIndexAsync(2);
+    private Task ShowProductsTabAsync() => tabs.ShowTabByNameAsync("Products");
+    private Task ShowFaqsAsync() => tabs.ShowTabByNameAsync("FAQ");
+    private Task ShowLastTabAsync() => tabs.ShowLastTabAsync();
 }

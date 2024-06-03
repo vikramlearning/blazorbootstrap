@@ -3,4 +3,4 @@
 /// <summary>
 /// Data provider (delegate).
 /// </summary>
-public delegate Task<SidebarDataProviderResult> SidebarDataProviderDelegate(SidebarDataProviderRequest request);
+public delegate Task<SidebarDataProviderResult?> SidebarDataProviderDelegate();

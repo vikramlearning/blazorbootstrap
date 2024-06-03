@@ -2,55 +2,49 @@
 
 public class MainLayoutBase : LayoutComponentBase
 {
-    private string version = default!;
-    private string docsUrl = default!;
-    private string blogUrl = default!;
-    private string githubUrl = default!;
-    private string twitterUrl = default!;
-    private string linkedInUrl = default!;
-    private string openCollectiveUrl = default!;
-    private string githubIssuesUrl = default!;
-    private string githubDiscussionsUrl = default!;
-    private string stackoverflowUrl = default!;
-
     internal Sidebar2 sidebar2 = default!;
-    internal IEnumerable<NavItem> navItems = default!;
+    internal IReadOnlyCollection<NavItem>? NavItems;
 
     [Inject] public IConfiguration Configuration { get; set; } = default!;
 
     protected override void OnInitialized()
     {
-        version = $"v{Configuration["version"]}"; // example: v0.6.1
-        docsUrl = $"{Configuration["urls:docs"]}";
-        blogUrl = $"{Configuration["urls:blog"]}";
-        githubUrl = $"{Configuration["urls:github"]}";
-        twitterUrl = $"{Configuration["urls:twitter"]}";
-        linkedInUrl = $"{Configuration["urls:linkedin"]}";
-        openCollectiveUrl = $"{Configuration["urls:opencollective"]}";
-        githubIssuesUrl = $"{Configuration["urls:github_issues"]}";
-        githubDiscussionsUrl = $"{Configuration["urls:github_discussions"]}";
-        stackoverflowUrl = $"{Configuration["urls:stackoverflow"]}";
+        Version = $"v{Configuration["version"]}"; // example: v0.6.1
+        DocsUrl = $"{Configuration["urls:docs"]}";
+        BlogUrl = $"{Configuration["urls:blog"]}";
+        GithubUrl = $"{Configuration["urls:github"]}";
+        TwitterUrl = $"{Configuration["urls:twitter"]}";
+        LinkedInUrl = $"{Configuration["urls:linkedin"]}";
+        OpenCollectiveUrl = $"{Configuration["urls:opencollective"]}";
+        GithubIssuesUrl = $"{Configuration["urls:github_issues"]}";
+        GithubDiscussionsUrl = $"{Configuration["urls:github_discussions"]}";
+        StackoverflowUrl = $"{Configuration["urls:stackoverflow"]}";
         base.OnInitialized();
     }
 
-    internal virtual async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
+    internal virtual Task<Sidebar2DataProviderResult> Sidebar2DataProvider()
     {
-        if (navItems is null)
-            navItems = GetNavItems();
-
-        return await Task.FromResult(request.ApplyTo(navItems));
+        return Task.FromResult(Sidebar2DataProviderRequest.ApplyTo(NavItems));
     }
-
     internal virtual IEnumerable<NavItem> GetNavItems() => new List<NavItem>();
 
-    public string Version => version;
-    public string DocsUrl => docsUrl;
-    public string BlogUrl => blogUrl;
-    public string GithubUrl => githubUrl;
-    public string TwitterUrl => twitterUrl;
-    public string LinkedInUrl => linkedInUrl;
-    public string OpenCollectiveUrl => openCollectiveUrl;
-    public string GithubIssuesUrl => githubIssuesUrl;
-    public string GithubDiscussionsUrl => githubDiscussionsUrl;
-    public string StackoverflowUrl => stackoverflowUrl;
+    public string Version { get; private set; } = default!;
+
+    public string DocsUrl { get; private set; } = default!;
+
+    public string BlogUrl { get; private set; } = default!;
+
+    public string GithubUrl { get; private set; } = default!;
+
+    public string TwitterUrl { get; private set; } = default!;
+
+    public string LinkedInUrl { get; private set; } = default!;
+
+    public string OpenCollectiveUrl { get; private set; } = default!;
+
+    public string GithubIssuesUrl { get; private set; } = default!;
+
+    public string GithubDiscussionsUrl { get; private set; } = default!;
+
+    public string StackoverflowUrl { get; private set; } = default!;
 }

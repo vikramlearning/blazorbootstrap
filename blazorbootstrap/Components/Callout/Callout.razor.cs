@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Blazor Bootstrap callout component provides content presentation in a visually distinct manner. <br/> 
+/// </summary>
 public partial class Callout : BlazorBootstrapComponentBase
 {
     #region Methods
@@ -35,19 +38,18 @@ public partial class Callout : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Callout)
             .AddClass(Color.ToCalloutColorClass())
             .Build();
 
-    private string CalloutHeadingCssClass => BootstrapClass.CalloutHeading;
-
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -61,13 +63,11 @@ public partial class Callout : BlazorBootstrapComponentBase
     [Parameter]
     public CalloutColor Color { get; set; } = CalloutColor.Default;
 
-    private string heading => GetHeading();
-
     /// <summary>
     /// Gets or sets the callout heading.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Heading { get; set; }
@@ -76,12 +76,10 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// Gets or sets a value indicating whether to hide the callout heading.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool HideHeading { get; set; }
-
-    private IconName iconName => GetIconName();
 
     #endregion
 }

@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Use Blazor Bootstrap loading placeholders for your components or pages to indicate something may still be loading.
+/// </summary>
 public partial class Placeholder : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers

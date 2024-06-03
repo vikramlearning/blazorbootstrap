@@ -4,6 +4,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
 {
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         AdditionalAttributes ??= new Dictionary<string, object>();
@@ -40,6 +41,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Button)
@@ -53,7 +55,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     /// If <see langword="true" />, enables the auto close.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [CascadingParameter(Name = "AutoClose")]
     public bool AutoClose { get; set; }
@@ -71,7 +73,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
@@ -89,7 +91,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     /// Gets or sets the disabled.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [CascadingParameter(Name = "Disabled")]
     public bool Disabled { get; set; }
@@ -109,7 +111,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     /// Gets or sets the dropdown toggle button tab index.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }

@@ -1,5 +1,10 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. <br/>
+/// It supports client-side and server-side filtering.
+/// </summary>
+/// <typeparam name="TItem">The type that contains the value of the input component</typeparam>
 public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -34,7 +39,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", Element); // NOTE: Always pass ElementRef
+                    await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", Element); // NOTE: Always pass ElementRef
             }
             catch (JSDisconnectedException)
             {
@@ -47,14 +52,16 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", Element, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", Element, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -70,8 +77,8 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public void bsHiddenAutocomplete()
+    [JSInvokable("bsHiddenAutocomplete")]
+    public void BsHiddenAutocomplete()
     {
         if (isDropdownShown)
         {
@@ -84,14 +91,14 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         }
     }
 
-    [JSInvokable]
-    public void bsHideAutocomplete() { }
+    [JSInvokable("bsHideAutocomplete")]
+    public void BsHideAutocomplete() { }
 
-    [JSInvokable]
-    public void bsShowAutocomplete() { }
+    [JSInvokable("bsShowAutocomplete")]
+    public void BsShowAutocomplete() { }
 
-    [JSInvokable]
-    public void bsShownAutocomplete() { }
+    [JSInvokable("bsShownAutocomplete")]
+    public void BsShownAutocomplete() { }
 
     /// <summary>
     /// Disables autocomplete.
@@ -107,12 +114,12 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Refresh the autocomplete data.
     /// </summary>
     /// <returns>Task</returns>
-    public async Task RefreshDataAsync() => await FilterDataAsync();
+    public Task RefreshDataAsync() => FilterDataAsync();
 
     /// <summary>
     /// Resets the autocomplete selection.
     /// </summary>
-    public async Task ResetAsync() => await ClearInputTextAsync();
+    public Task ResetAsync() => ClearInputTextAsync();
 
     /// <summary>
     /// Clears the input test value.
@@ -198,7 +205,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         if (AdditionalAttributes is not null && AdditionalAttributes.TryGetValue(BootstrapAttributes.DataBootstrapToggle, out _))
             AdditionalAttributes.Remove(BootstrapAttributes.DataBootstrapToggle);
 
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", Element);
+        await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", Element);
     }
 
     private async Task OnInputChangedAsync(ChangeEventArgs args)
@@ -258,7 +265,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         var key = args.Code is not null ? args.Code : args.Key;
 
         if (key is "ArrowDown" or "ArrowUp" or "Home" or "End")
-            selectedIndex = await JSRuntime.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key, selectedIndex);
+            selectedIndex = await JsRuntime.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key, selectedIndex);
         else if (key == "Enter")
             if (selectedIndex >= 0 && selectedIndex <= items!.Count() - 1)
                 await OnItemSelectedAsync(items!.ElementAt(selectedIndex));
@@ -280,13 +287,14 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         if (AdditionalAttributes is not null && !AdditionalAttributes.TryGetValue(BootstrapAttributes.DataBootstrapToggle, out _))
             AdditionalAttributes.Add(BootstrapAttributes.DataBootstrapToggle, "dropdown");
 
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.show", Element);
+        await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.show", Element);
     }
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.FormControl)
@@ -297,7 +305,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the data provider.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
@@ -319,7 +327,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
@@ -335,7 +343,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public string EmptyText { get; set; } = "No records found.";
 
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string FieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
     /// Gets or sets the loading text.
@@ -356,7 +364,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the placeholder.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Placeholder { get; set; }
@@ -365,7 +373,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the property name.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
@@ -407,7 +415,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the value.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string Value { get; set; } = default!;

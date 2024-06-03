@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Build vertically collapsing accordions in combination with our <see cref="Collapse"/>> component. <br/>
+/// The accordion is based on the <see href="https://getbootstrap.com/docs/5.0/components/accordion/">Bootstrap Accordion</see> component. 
+/// </summary>
 public partial class Accordion : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -117,7 +121,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Shows all <see cref="AccordionItem" /> instances if AlwaysOpen is true.
+    /// Shows all <see cref="AccordionItem" /> instances if <see cref="AlwaysOpen"/>> is <see langword="true" />.
     /// </summary>
     public async Task ShowAllAccordionItemsAsync()
     {
@@ -161,17 +165,15 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// <param name="accordionItem">The AccordionItem to add.</param>
     internal void Add(AccordionItem accordionItem)
     {
-        if (items is null)
-            items = new List<AccordionItem>();
-
-        if (accordionItem is not null)
-            items.Add(accordionItem);
+        items ??= new List<AccordionItem>();
+        items.Add(accordionItem);
     }
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Accordion)
@@ -182,7 +184,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// If <see langword="true" />, accordion items stay open when another item is opened.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AlwaysOpen { get; set; }
@@ -191,7 +193,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
@@ -201,7 +203,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// If <see langword="true" />, removes borders and rounded corners to render accordions edge-to-edge with their parent container.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Flush { get; set; }

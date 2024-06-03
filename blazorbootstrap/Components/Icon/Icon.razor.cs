@@ -1,9 +1,16 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Blazor Bootstrap icon component will display an icon from any icon font. <br/>
+/// Use the parameter <see cref="Name"/> to specify the Bootstrap icon name. The values from <see cref="IconName"/>
+/// are derived from the <see href="https://icons.getbootstrap.com/">official Bootstrap icons set.</see> <br/>
+/// Alternatively, one may set the <see cref="CustomIconName"/> parameter to specify custom icons of your own, like the ones from `fontawesome`. <br/>
+/// </summary>
 public partial class Icon : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapIconProvider.Icon(), string.IsNullOrWhiteSpace(CustomIconName))
@@ -27,7 +34,7 @@ public partial class Icon : BlazorBootstrapComponentBase
     /// Specify custom icons of your own, like `fontawesome`. Example: `fas fa-alarm-clock`.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? CustomIconName { get; set; }

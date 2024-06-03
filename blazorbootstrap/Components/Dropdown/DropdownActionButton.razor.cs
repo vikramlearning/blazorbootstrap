@@ -4,6 +4,7 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
 {
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         AdditionalAttributes ??= new Dictionary<string, object>();
@@ -17,7 +18,8 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
+    
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Button)
@@ -44,7 +46,7 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     /// Gets or sets the disabled.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [CascadingParameter(Name = "Disabled")]
     public bool Disabled { get; set; }
@@ -62,7 +64,7 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     /// Gets or sets the dropdown action button tab index.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }

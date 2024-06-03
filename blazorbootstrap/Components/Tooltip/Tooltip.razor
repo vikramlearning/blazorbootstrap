@@ -6,8 +6,8 @@
       class="@ClassNames" 
       style="@StyleNames"
       data-bs-toggle="tooltip"
-      data-bs-placement="@placement"
-      data-bs-custom-class="@colorClass"
+      data-bs-placement="@(Placement.ToTooltipPlacementName())"
+      data-bs-custom-class="@(Color.ToTooltipColorClass())"
       data-bs-html="@(IsHtml ? "true" : "false")"
       title="@Title"
       @attributes="@AdditionalAttributes">

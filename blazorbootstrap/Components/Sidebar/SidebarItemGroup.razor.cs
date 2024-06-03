@@ -15,7 +15,7 @@ public partial class SidebarItemGroup : BlazorBootstrapComponentBase
     /// Gets or sets the nav items.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public IEnumerable<NavItem>? NavItems { get; set; }

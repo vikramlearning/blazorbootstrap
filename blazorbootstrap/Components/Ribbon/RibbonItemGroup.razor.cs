@@ -24,7 +24,7 @@ public partial class RibbonItemGroup : BlazorBootstrapComponentBase
     /// Gets or sets the text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Text { get; set; }

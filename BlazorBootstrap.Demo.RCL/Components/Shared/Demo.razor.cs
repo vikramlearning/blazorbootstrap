@@ -97,7 +97,7 @@ public partial class Demo : ComponentBase
         StateHasChanged();
     }
 
-    private async Task CopyToClipboardAsync() => await JS.InvokeVoidAsync("copyToClipboard", codeSnippet, objRef);
+    private ValueTask CopyToClipboardAsync() => JS.InvokeVoidAsync("copyToClipboard", codeSnippet, objRef);
 
     #endregion
 

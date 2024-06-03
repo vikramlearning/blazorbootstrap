@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// A modal dialog to display if you want the user to verify or accept something. 
+/// </summary>
 public partial class ConfirmDialog : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -71,7 +74,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(() => JSRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", Id));
+        Task.Run(() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", Id));
     }
 
     private void OnNoClick()
@@ -116,7 +119,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(() => JSRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
+        Task.Run(() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
 
         return task;
     }
@@ -125,6 +128,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.Modal)
@@ -132,10 +136,10 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
             .AddClass(BootstrapClass.ModalFade)
             .Build();
 
+    /// <inheritdoc />
     protected override string? StyleNames =>
         new CssStyleBuilder(Style)
-            .AddStyle("display:block", showBackdrop)
-            .AddStyle("display:none", !showBackdrop)
+            .AddStyle(showBackdrop ? "display:block" : "display:none")
             .Build();
 
     #endregion

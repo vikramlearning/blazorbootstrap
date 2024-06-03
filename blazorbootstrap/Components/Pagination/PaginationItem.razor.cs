@@ -27,7 +27,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// Gets or sets the pagination item active state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Active { get; set; }
@@ -36,7 +36,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// Gets or sets the pagination item aria-label attribute.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? AriaLabel { get; set; }
@@ -45,7 +45,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// Gets or sets the pagination item disable state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
@@ -63,7 +63,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// Gets or sets the link text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? LinkText { get; set; }
@@ -72,7 +72,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// Gets or sets the text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Text { get; set; }

@@ -8,14 +8,14 @@
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                    <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                        <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                     </span>
                 </Tooltip>
             }
@@ -36,18 +36,18 @@
     }
     else
     {
-        <NavLink class="nav-link" href="@Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
+        <NavLink class="nav-link" href="@Href" target="@TargetString" Match="@Match" @onclick="AutoHideNavMenu">
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                    <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                        <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                     </span>
                 </Tooltip>
             }

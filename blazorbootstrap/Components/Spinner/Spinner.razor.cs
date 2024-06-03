@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Visualize the loading state of a component or page using the Blazor Bootstrap Spinner component. <br/>
+/// For more information, visit the <see href="https://getbootstrap.com/docs/5.0/components/spinners/">Bootstrap Spinner</see> documentation.
+/// </summary>
 public partial class Spinner : BlazorBootstrapComponentBase
 {
     #region Methods
@@ -25,7 +29,7 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// Calculates width, height, and circles information for the spinner SVG.
     /// </summary>
     /// <returns>A tuple containing width, height, and a list of spinner circles.</returns>
-    private (int Width, int Height, List<SpinnerCircle> Circles) GetSpinnerSvgInfo()
+    private (int Width, int Height, IReadOnlyList<SpinnerCircle> Circles) GetSpinnerSvgInfo()
     {
         // Calculate radius based on Size
         var radius = 4; // default: SpinnerSize.Medium
@@ -84,13 +88,13 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets the width, height, and circles information for the spinner SVG.
     /// </summary>
-    private (int Width, int Height, List<SpinnerCircle> Circles) SpinnerSvg => GetSpinnerSvgInfo();
+    private (int Width, int Height, IReadOnlyList<SpinnerCircle> Circles) SpinnerSvg => GetSpinnerSvgInfo();
 
     /// <summary>
     /// Gets or sets the title text used as an accessibility attribute.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Title { get; set; }
@@ -108,7 +112,7 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// Gets or sets whether the spinner is visible or not.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     [Parameter]
     public bool Visible { get; set; } = true;

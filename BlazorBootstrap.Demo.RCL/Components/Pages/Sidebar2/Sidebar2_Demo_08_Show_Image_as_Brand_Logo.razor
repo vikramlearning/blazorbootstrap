@@ -19,19 +19,19 @@
 </div>
 
 @code {
-    IEnumerable<NavItem>? navItems;
+    IReadOnlyCollection<NavItem>? navItems;
 
-    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
+    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider()
     {
         if (navItems is null)
             navItems = GetNavItems();
 
         await Task.Delay(2000);
 
-        return await Task.FromResult(request.ApplyTo(navItems));
+        return await Task.FromResult(Sidebar2DataProviderRequest.ApplyTo(navItems));
     }
 
-    private IEnumerable<NavItem> GetNavItems()
+    private IReadOnlyCollection<NavItem> GetNavItems()
     {
         navItems = new List<NavItem>
         {

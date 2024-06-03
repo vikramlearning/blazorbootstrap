@@ -38,15 +38,15 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task PositionTopAsync() => await UpdatePositionAsync("top");
-    private async Task PositionRightAsync() => await UpdatePositionAsync("right");
-    private async Task PositionBottomAsync() => await UpdatePositionAsync("bottom");
-    private async Task PositionLeftAsync() => await UpdatePositionAsync("left");
+    private Task PositionTopAsync() => UpdatePositionAsync("top");
+    private Task PositionRightAsync() => UpdatePositionAsync("right");
+    private Task PositionBottomAsync() => UpdatePositionAsync("bottom");
+    private Task PositionLeftAsync() => UpdatePositionAsync("left");
 
-    private async Task UpdatePositionAsync(string position)
+    private Task UpdatePositionAsync(string position)
     {
         pieChartOptions.Plugins.Legend.Position = position;
-        await pieChart.UpdateAsync(chartData, pieChartOptions);
+        return pieChart.UpdateAsync(chartData, pieChartOptions);
     }
 
     #region Data Preparation

@@ -11,7 +11,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
         {
             try
             {
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", Id);
+                await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -36,7 +36,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// Gets or sets the active state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Active { get; set; }
@@ -45,7 +45,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
@@ -55,7 +55,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
@@ -64,7 +64,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// Gets or sets the tab name.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string Name { get; set; } = default!;
@@ -85,7 +85,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// Gets or sets the tab title.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string Title { get; set; } = default!;

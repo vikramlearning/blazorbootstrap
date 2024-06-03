@@ -8,7 +8,7 @@ public class LineChartDataset : ChartDataset
     /// Line dash.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int>? BorderDash { get; set; }
+    public IReadOnlyCollection<int>? BorderDash { get; set; }
 
     /// <summary>
     /// Line dash offset.
@@ -139,13 +139,13 @@ public class LineChartDataset : ChartDataset
     /// The ID of the x axis to plot this dataset on.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? XAxisID { get; set; }
+    public string? XAxisId { get; set; }
 
     /// <summary>
     /// The ID of the y axis to plot this dataset on.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? YAxisID { get; set; }
+    public string? YAxisId { get; set; }
 
     #endregion
 }

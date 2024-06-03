@@ -10,7 +10,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <summary>
     /// The default content type for scripts.
     /// </summary>
-    private const string type = "text/javascript";
+    private const string Type = "text/javascript";
 
     /// <summary>
     /// A reference to this component instance for use in JavaScript calls.
@@ -24,7 +24,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, ScriptId, Source, type, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, ScriptId, Source, Type, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }

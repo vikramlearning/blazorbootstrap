@@ -1,3 +1,3 @@
 ﻿namespace BlazorBootstrap;
 
-public record ChartRGBA(int R, int G, int B, double A);
+public record ChartRgba(int R, int G, int B, double A);

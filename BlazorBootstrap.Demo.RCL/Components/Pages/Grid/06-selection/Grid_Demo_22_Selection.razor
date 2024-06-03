@@ -38,21 +38,21 @@
 </div>
 
 @code {
-    private IEnumerable<Employee1> employees = default!;
+    private IReadOnlyCollection<Employee1> employees = default!;
 
     private HashSet<Employee1> selectedEmployees = new();
 
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> result)
     {
         Console.WriteLine("EmployeesDataProvider called...");
 
         if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
             employees = GetEmployees(); // call a service or an API to pull the employees
 
-        return await Task.FromResult(request.ApplyTo(employees));
+        return await Task.FromResult(result.ApplyTo(employees));
     }
 
-    private IEnumerable<Employee1> GetEmployees()
+    private IReadOnlyCollection<Employee1> GetEmployees()
     {
         return new List<Employee1>
         {

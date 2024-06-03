@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Indicate the loading state of a page with Blazor Bootstrap preload component.
+/// </summary>
 public partial class Preload : BlazorBootstrapComponentBase
 {
     #region Fields and Constants

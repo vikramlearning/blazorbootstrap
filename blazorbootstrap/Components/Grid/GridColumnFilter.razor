@@ -2,7 +2,7 @@
 @inherits BlazorBootstrapComponentBase
 
 <div class="d-flex">
-    <button type="button" class="btn @filterButtonColorString me-1 d-flex dropdown-toggle bb-grid-filter @FilterButtonCSSClass" data-bs-toggle="dropdown" aria-expanded="false">
+    <button type="button" class="btn @(FilterButtonColor.ToButtonColorClass()) me-1 d-flex dropdown-toggle bb-grid-filter @FilterButtonCssClass" data-bs-toggle="dropdown" aria-expanded="false">
         @if (string.IsNullOrWhiteSpace(filterValue))
         {
             <span class="me-2">
@@ -23,7 +23,7 @@
             foreach (var item in filterOperators)
             {
                 <li class="mx-1 rounded-3">
-                    <div class="dropdown-item p-1" role="button" @onclick="async () => await OnFilterOperatorChangedAsync(item)">
+                    <div class="dropdown-item p-1" role="button" @onclick="(async()=>await OnFilterOperatorChangedAsync(item))">
                         <span class="filter-symbol">@item.Symbol</span> <span>@item.Text</span>
                     </div>
                 </li>
@@ -38,24 +38,24 @@
     || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
     || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
     {
-        <input class="form-control" style="@filterStyle" type="number" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))">
+        <input class="form-control" style="@FilterStyle" type="number" value="@filterValue" @oninput="OnFilterValueChangedAsync">
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly)
     {
-        <input class="form-control" style="@filterStyle" type="date" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
+        <input class="form-control" style="@FilterStyle" type="date" value="@filterValue" @oninput="OnFilterValueChangedAsync" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
     {
-        <input class="form-control" style="@filterStyle" type="datetime-local" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
+        <input class="form-control" style="@FilterStyle" type="datetime-local" value="@filterValue" @oninput="OnFilterValueChangedAsync" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
     {
-        <input class="form-check-input" type="checkbox" value="@filterValue" @onchange="@(async args => await OnFilterValueChangedAsync(args))" />
+        <input class="form-check-input" type="checkbox" value="@filterValue" @onchange="OnFilterValueChangedAsync" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum)
     {
         <Dropdown>
-            <DropdownToggleButton Class="px-1" Style="@filterStyle" Color="ButtonColor.Light">
+            <DropdownToggleButton Class="px-1" Style="@FilterStyle" Color="ButtonColor.Light">
                 @if (string.IsNullOrWhiteSpace(filterValue))
                 {
                     <span class="px-2">Select</span>
@@ -70,7 +70,7 @@
                 {
                     @foreach (var item in Enum.GetValues(PropertyType!))
                     {
-                        <DropdownItem @onclick="@(async () => await OnEnumFilterValueChangedAsync(item))">@item</DropdownItem>
+                        <DropdownItem @onclick="OnEnumFilterValueChangedAsync">@item</DropdownItem>
                     }
                 }
             </DropdownMenu>
@@ -78,6 +78,6 @@
     }
     else // guid or string
     {
-        <input class="form-control" style="@filterStyle" type="text" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
+        <input class="form-control" style="@FilterStyle" type="text" value="@filterValue" @oninput="OnFilterValueChangedAsync" />
     }
 </div>

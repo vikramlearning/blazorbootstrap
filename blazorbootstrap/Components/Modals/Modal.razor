@@ -2,13 +2,13 @@
 @inherits BlazorBootstrapComponentBase
 
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" tabindex="@TabIndex">
-    <div class="modal-dialog @scrollable @verticallyCentered @modalSize @modalFullscreen @DialogCssClass">
+    <div class="modal-dialog @Scrollable @VerticallyCentered @ModalSize @ModalFullscreen @DialogCssClass">
         <div class="modal-content">
             @if (isVisible)
             {
                 @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
                 {
-                    <div class="modal-header @headerCssClassInternal @HeaderCssClass">
+                    <div class="modal-header @HeaderCssClassInternal @HeaderCssClass">
                         @if (!string.IsNullOrWhiteSpace(Title))
                         {
                             <h5 class="modal-title">@Title</h5>
@@ -20,7 +20,7 @@
 
                         @if (ShowCloseButton)
                         {
-                            <Icon Color="@CloseIconColor" Name="IconName.XLg" role="button" @onclick="HideAsync"></Icon>
+                            <Icon Color="@CloseIconColor" Name="IconName.XLg" role="button" @onclick="(async() => await HideAsync())"></Icon>
                         }
                     </div>
                 }
@@ -53,7 +53,7 @@
                 else if (showFooterButton)
                 {
                     <div class="modal-footer @FooterCssClass">
-                        <Button Class="@footerButtonCSSClass" Color="@footerButtonColor" data-bs-dismiss="modal" aria-label="Close">@footerButtonText</Button>
+                        <Button Class="@footerButtonCssClass" Color="@footerButtonColor" data-bs-dismiss="modal" aria-label="Close">@footerButtonText</Button>
                     </div>
                 }
             }

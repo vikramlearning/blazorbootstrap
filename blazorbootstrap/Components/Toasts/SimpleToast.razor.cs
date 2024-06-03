@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Push notifications to your visitors with a toast, a lightweight and easily customizable alert message. <br/>
+/// For more information, visit the <see href="https://getbootstrap.com/docs/5.0/components/toasts/">Bootstrap Toasts</see> documentation.
+/// </summary>
 public partial class SimpleToast : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -15,7 +19,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", Id);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", Id);
             objRef?.Dispose();
         }
 
@@ -37,27 +41,27 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, Id!));
+    [JSInvokable("bsHiddenToast")]
+    public Task BsHiddenToast() => Hidden.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, Id!));
 
-    [JSInvokable]
-    public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, Id!));
+    [JSInvokable("bsHideToast")]
+    public Task BsHideToast() => Hiding.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, Id!));
 
-    [JSInvokable]
-    public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, Id!));
+    [JSInvokable("bsShownToast")]
+    public Task BsShownToast() => Shown.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, Id!));
 
-    [JSInvokable]
-    public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, Id!));
+    [JSInvokable("bsShowToast")]
+    public Task BsShowToast() => Showing.InvokeAsync(new ToastEventArgs(ToastMessage!.Id, Id!));
 
     /// <summary>
     /// Hides an element’s toast.
     /// </summary>
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", Id);
+    public ValueTask HideAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", Id);
 
     /// <summary>
     /// Reveals an element’s toast.
     /// </summary>
-    public async Task ShowAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.show", Id, AutoHide, Delay, objRef);
+    public ValueTask ShowAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.show", Id, AutoHide, Delay, objRef);
 
     #endregion
 
@@ -74,7 +78,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     /// Gets or sets the auto hide state.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     [Parameter]
     public bool AutoHide { get; set; } = true;
@@ -106,7 +110,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     /// If <see langword="true" />, shows the close button.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     [Parameter]
     public bool ShowCloseButton { get; set; } = true;
@@ -127,7 +131,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     /// Gets or sets the toast message.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public ToastMessage? ToastMessage { get; set; }

@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a tooltip that appears when the user hovers over an element that has the tooltip encased in it. <br/>
+/// For more information, visit the <see href="https://getbootstrap.com/docs/5.0/components/tooltips/">Bootstrap Tooltips</see> documentation.
+/// </summary>
 public partial class Tooltip : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -21,7 +25,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                    await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
             }
             catch (JSDisconnectedException)
             {
@@ -38,7 +42,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", Element);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", Element);
 
             isFirstRenderComplete = true;
         }
@@ -65,14 +69,14 @@ public partial class Tooltip : BlazorBootstrapComponentBase
                 title = Title;
                 color = Color;
 
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element);
+                await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element);
             }
     }
 
     public async Task ShowAsync()
     {
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.show", Element);
+        await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.show", Element);
     }
 
     #endregion
@@ -83,7 +87,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
@@ -97,18 +101,14 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     [Parameter]
     public TooltipColor Color { get; set; } = TooltipColor.None;
 
-    private string colorClass => Color.ToTooltipColorClass()!;
-
     /// <summary>
     /// Gets or sets a value indicating whether to display the content as HTML instead of text.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool IsHtml { get; set; }
-
-    private string placement => Placement.ToTooltipPlacementName();
 
     /// <summary>
     /// Gets or sets the tooltip placement.
@@ -123,7 +123,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     /// Displays informative text when users hover, focus, or tap an element.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]

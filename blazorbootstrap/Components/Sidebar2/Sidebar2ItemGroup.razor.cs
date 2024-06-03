@@ -4,6 +4,7 @@ public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.FlexColumn)
@@ -26,7 +27,7 @@ public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
     /// Gets or sets the nav items.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public IEnumerable<NavItem>? NavItems { get; set; }

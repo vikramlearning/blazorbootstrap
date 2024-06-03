@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Push notifications to your visitors with a toast, a lightweight and easily customizable alert message. <br/>
+/// For more information, visit the <see href="https://getbootstrap.com/docs/5.0/components/toasts/">Bootstrap Toasts</see> documentation.
+/// </summary>
 public partial class Toasts : BlazorBootstrapComponentBase
 {
     #region Methods
@@ -26,7 +30,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
-    private void OnNotify(ToastMessage toastMessage)
+    private void OnNotify(ToastMessage? toastMessage)
     {
         if (toastMessage is null)
             return;
@@ -40,7 +44,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
 
     private void OnToastHiddenAsync(ToastEventArgs args)
     {
-        if (Messages is null || !Messages.Any())
+        if (Messages is null || Messages.Count == 0)
             return;
 
         var message = Messages.FirstOrDefault(x => x.Id == args.ToastId);
@@ -51,7 +55,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
 
     private async Task OnToastShownAsync(ToastEventArgs args)
     {
-        if (Messages is null || !Messages.Any())
+        if (Messages is null || Messages.Count == 0)
             return;
 
         Messages.ForEach(
@@ -72,7 +76,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
                     Messages.Remove(message);
 
                 if (string.IsNullOrWhiteSpace(message!.ElementId))
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
+                    await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
             }
         }
     }
@@ -92,7 +96,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// Gets or sets the auto hide state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AutoHide { get; set; }
@@ -110,7 +114,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// Gets or sets the toast messages.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public List<ToastMessage>? Messages { get; set; } = default!;
@@ -128,7 +132,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// If <see langword="true" />, shows the close button.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     [Parameter]
     public bool ShowCloseButton { get; set; } = true;

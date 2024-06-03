@@ -8,9 +8,9 @@
 
 @if (columns.Any())
 {
-    <div class="@responsiveCssClass" style="@gridParentStyle" onscroll="@OnScroll">
+    <div class="@ResponsiveCssClass" style="@GetGridParentStyle()" onscroll="@OnScroll">
         <table @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-            <thead class="@THeadCssClass">
+            <thead class="@TableHeaderCssClass">
                 <tr class="@(FixedHeader ? BootstrapClass.TextNoWrap : "") @HeaderRowCssClass">
                     @if (AllowSelection)
                     {
@@ -51,13 +51,13 @@
                                 @if (column.Filterable)
                                 {
                                     <GridColumnFilter FilterButtonColor="@column.FilterButtonColor"
-                                                      FilterButtonCSSClass="@column.FilterButtonCSSClass"
+                                                      FilterButtonCssClass="@column.FilterButtonCssClass"
                                                       FilterOperator="@column.FilterOperator"
                                                       FilterValue="@column.FilterValue"
                                                       FilterWidth="@column.FilterTextboxWidth"
                                                       FiltersTranslationProvider="GridFiltersTranslationProviderAsync!"
                                                       FixedHeader="@FixedHeader"
-                                                      GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
+                                                      GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args)"
                                                       PropertyType="@column.GetPropertyType()"
                                                       PropertyTypeName="@column.GetPropertyTypeName()"
                                                       Unit="@Unit" />
@@ -145,11 +145,11 @@
         </table>
     </div>
 
-    @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0 && (!AutoHidePaging || (AutoHidePaging && totalCount.Value > pageSize)))
+    @if (AllowPaging && totalCount > 0 && (!AutoHidePaging || (AutoHidePaging && totalCount.Value > pageSize)))
     {
         <div class="d-flex justify-content-between align-middle mt-2">
-            <Pagination ActivePageNumber="@gridCurrentState.PageIndex"
-                        TotalPages="@totalPages"
+            <Pagination ActivePageNumber="@GridCurrentState.PageIndex"
+                        TotalPages="@GetTotalPagesCount()"
                         PageChanged="OnPageChangedAsync"
                         FirstLinkIcon="IconName.ChevronDoubleLeft"
                         PreviousLinkIcon="IconName.ChevronLeft"
@@ -162,7 +162,7 @@
                 <div>
                     <div class="d-flex justify-content-center align-middle">
                         <div>
-                            <InputSelect class="form-select" role="button" TValue="int" Value="@pageSize" ValueExpression="() => pageSize" ValueChanged="async (value) => await OnPageSizeChangedAsync(value)">
+                            <InputSelect class="form-select" role="button" TValue="int" Value="@pageSize" ValueExpression="() => pageSize" ValueChanged="OnPageSizeChangedAsync">
                                 @foreach (var i in PageSizeSelectorItems)
                                 {
                                     <option value="@i">@i</option>
@@ -175,7 +175,7 @@
             }
 
             <div class="bb-grid-pagination-text">
-                @paginationItemsText
+                @GetPaginationItemsText()
             </div>
         </div>
     }

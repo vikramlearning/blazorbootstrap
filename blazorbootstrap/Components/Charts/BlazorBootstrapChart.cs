@@ -1,10 +1,10 @@
 ﻿namespace BlazorBootstrap;
 
-public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, IAsyncDisposable
+public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, IAsyncDisposable
 {
     #region Fields and Constants
 
-    internal ChartType chartType;
+    internal ChartType ChartType;
 
     #endregion
 
@@ -16,11 +16,31 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     //public async Task ToBase64Image(string type, double quality) { }
 
-    public virtual async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) => await Task.FromResult(chartData);
+    /// <summary>
+    /// Adds data to the chart.
+    /// </summary>
+    /// <param name="chartData">Data to add to the chart</param>
+    /// <param name="dataLabel">Name of the label</param>
+    /// <param name="data">Data for front-end population</param>
+    /// <returns></returns>
+    public virtual Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) => Task.FromResult(chartData);
 
-    public virtual async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data) => await Task.FromResult(chartData);
 
-    public virtual async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) => await Task.FromResult(chartData);
+    /// <summary>
+    /// Adds data to the chart.
+    /// </summary>
+    /// <param name="chartData">Data to add to the chart</param>
+    /// <param name="dataLabel">Name of the label</param>
+    /// <param name="data">Data for front-end population</param>
+    public virtual Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data) => Task.FromResult(chartData);
+
+    /// <summary>
+    /// Adds data to the chart.
+    /// </summary>
+    /// <param name="chartData">Data to add to the chart</param>
+    /// <param name="chartDataset">Data for front-end population</param>
+    /// <param name="chartOptions">Frontend options for chart behavior and styling</param>
+    public virtual Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) => Task.FromResult(chartData);
 
     /// <inheritdoc />
     public new virtual void Dispose() => Dispose(true);
@@ -35,23 +55,29 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     //public async Task Clear() { }
 
     /// <summary>
-    /// Initialize Bar Chart.
+    /// Initializes the Chart.
     /// </summary>
-    /// <param name="chartData"></param>
-    /// <param name="chartOptions"></param>
-    /// <param name="plugins"></param>
+    /// <param name="chartData">Data to populate the chart with</param>
+    /// <param name="chartOptions">Options for behavior and styling of the chart</param>
+    /// <param name="plugins">Plugins usage (in JS)</param>
     public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
-        if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
+        if (chartData?.Datasets != null && chartData.Datasets.Any())
         {
-            var _data = GetChartDataObject(chartData);
+            var data = GetChartDataObject(chartData);
 
-            if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins);
-            else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), _data, (LineChartOptions)chartOptions, plugins);
-            else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.initialize", Id, GetChartType(), _data, chartOptions, plugins);
+            switch (ChartType)
+            {
+                case ChartType.Bar:
+                    await JsRuntime.InvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), data, (BarChartOptions)chartOptions, plugins);
+                    break;
+                case ChartType.Line:
+                    await JsRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins);
+                    break;
+                default:
+                    await JsRuntime.InvokeVoidAsync("window.blazorChart.initialize", Id, GetChartType(), data, chartOptions, plugins);
+                    break;
+            }
         }
     }
 
@@ -70,31 +96,37 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     {
         var widthWithUnit = $"width:{width.ToString(CultureInfo.InvariantCulture)}{widthUnit.ToCssString()}";
         var heightWithUnit = $"height:{height.ToString(CultureInfo.InvariantCulture)}{heightUnit.ToCssString()}";
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.resize", Id, widthWithUnit, heightWithUnit);
+        await JsRuntime.InvokeVoidAsync("window.blazorChart.resize", Id, widthWithUnit, heightWithUnit);
     }
 
     /// <summary>
-    /// Update chart.
+    /// Updates the chart with new data.
     /// </summary>
-    /// <param name="chartData"></param>
-    /// <param name="chartOptions"></param>
-    public virtual async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
+    /// <param name="chartData">Data to populate the chart with. If left empty, no update will be invoked.</param>
+    /// <param name="chartOptions">Options for chart behavior and styling</param>
+    public virtual async Task UpdateAsync(ChartData? chartData, IChartOptions chartOptions)
     {
-        if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
+        if (chartData?.Datasets != null && chartData.Datasets.Any())
         {
-            var _data = GetChartDataObject(chartData);
+            var data = GetChartDataObject(chartData);
 
-            if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), _data, (BarChartOptions)chartOptions);
-            else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), _data, (LineChartOptions)chartOptions);
-            else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), _data, chartOptions);
+            switch (ChartType)
+            {
+                case ChartType.Bar:
+                    await JsRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
+                    break;
+                case ChartType.Line:
+                    await JsRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+                    break;
+                default:
+                    await JsRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions);
+                    break;
+            }
         }
     }
 
     protected string GetChartType() =>
-        chartType switch
+        ChartType switch
         {
             ChartType.Bar => "bar",
             ChartType.Bubble => "bubble",
@@ -120,22 +152,21 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
         return style;
     }
 
-    private object GetChartDataObject(ChartData chartData)
+    private static object GetChartDataObject(ChartData chartData)
     {
-        var datasets = new List<object>();
+        var datasets = new List<IChartDataset>();
 
         if (chartData?.Datasets?.Any() ?? false)
             foreach (var dataset in chartData.Datasets)
-                if (dataset is BarChartDataset)
-                    datasets.Add((BarChartDataset)dataset);
-                else if (dataset is BubbleChartDataset)
-                    datasets.Add((BubbleChartDataset)dataset);
-                else if (dataset is DoughnutChartDataset)
-                    datasets.Add((DoughnutChartDataset)dataset);
-                else if (dataset is LineChartDataset)
-                    datasets.Add((LineChartDataset)dataset);
-                else if (dataset is PieChartDataset)
-                    datasets.Add((PieChartDataset)dataset);
+                switch (dataset)
+                {
+                    case BarChartDataset barChartDataset: datasets.Add(barChartDataset); break;
+                    case BubbleChartDataset bubbleChartDataset: datasets.Add(bubbleChartDataset); break;
+                    case DoughnutChartDataset doughnutChartDataset: datasets.Add(doughnutChartDataset); break;
+                    case LineChartDataset lineChartDataset: datasets.Add(lineChartDataset); break;
+                    case PieChartDataset pieChartDataset: datasets.Add(pieChartDataset); break;
+                    default: throw new NotImplementedException();
+                }
 
         var data = new { chartData?.Labels, Datasets = datasets };
 
@@ -154,7 +185,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// To change the unit of measure see <see cref="HeightUnit" />.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public int? Height { get; set; }
@@ -174,7 +205,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// To change the unit of measure see <see cref="WidthUnit" />.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public int? Width { get; set; }

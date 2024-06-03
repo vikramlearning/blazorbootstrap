@@ -10,7 +10,7 @@
     </BodyTemplate>
 
     <FooterTemplate>
-        <Button Color="ButtonColor.Primary" @onclick="OnHideOffcanvasClick">Hide Offcanvas</Button>
+        <Button Color="ButtonColor.Primary" @onclick="(async() => await OnHideOffcanvasClick())">Hide Offcanvas</Button>
     </FooterTemplate>
 
 </Offcanvas>
@@ -19,10 +19,10 @@
 
 @code {
     private Offcanvas offcanvas = default!;
-    private async Task OnShowOffcanvasClick() => await offcanvas.ShowAsync();
-    private async Task OnHideOffcanvasClick() => await offcanvas.HideAsync();
-    private async Task OnOffcanvasShowingAsync() => await Task.Run(() => { Console.WriteLine("Event: Showing"); });
-    private async Task OnOffcanvasShownAsync() => await Task.Run(() => { Console.WriteLine("Event: Shown"); });
-    private async Task OnOffcanvasHidingAsync() => await Task.Run(() => { Console.WriteLine("Event: Hiding"); });
-    private async Task OnOffcanvasHiddenAsync() => await Task.Run(() => { Console.WriteLine("Event: Hidden"); });
+    private Task OnShowOffcanvasClick() => offcanvas.ShowAsync();
+    private ValueTask OnHideOffcanvasClick() => offcanvas.HideAsync();
+    private Task OnOffcanvasShowingAsync() => Task.Run(() => { Console.WriteLine("Event: Showing"); });
+    private Task OnOffcanvasShownAsync() => Task.Run(() => { Console.WriteLine("Event: Shown"); });
+    private Task OnOffcanvasHidingAsync() => Task.Run(() => { Console.WriteLine("Event: Hiding"); });
+    private Task OnOffcanvasHiddenAsync() => Task.Run(() => { Console.WriteLine("Event: Hidden"); });
 }
