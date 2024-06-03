@@ -18,7 +18,7 @@ public partial class SidebarItemGroup : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public IEnumerable<NavItem>? NavItems { get; set; }
+    public IReadOnlyCollection<NavItem>? NavItems { get; set; }
 
     #endregion
 }

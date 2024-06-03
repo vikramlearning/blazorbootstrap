@@ -426,7 +426,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public IEnumerable<TickMark> TickMarks { get; set; } = default!;
+    public IReadOnlyCollection<TickMark> TickMarks { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the value of the range input.

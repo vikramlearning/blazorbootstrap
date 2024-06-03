@@ -6,7 +6,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
 
     private FilterOperator filterOperator;
 
-    private IEnumerable<FilterOperatorInfo>? filterOperators;
+    private IReadOnlyCollection<FilterOperatorInfo>? filterOperators;
 
     private string? filterValue;
 
@@ -74,7 +74,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         }
     }
 
-    private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync()
+    private async Task<IReadOnlyCollection<FilterOperatorInfo>> GetFilterOperatorsAsync()
     {
         if (FiltersTranslationProvider is null)
             return FilterOperatorHelper.GetFilterOperators(PropertyTypeName!);

@@ -7,7 +7,7 @@ public class AutoCompleteDataProviderResult<TItem>
     /// <summary>
     /// The provided items by the request.
     /// </summary>
-    public IEnumerable<TItem>? Data { get; init; }
+    public IReadOnlyCollection<TItem> Data { get; init; } = default!;
 
     /// <summary>
     /// The total item count in the source (for pagination and infinite scroll).

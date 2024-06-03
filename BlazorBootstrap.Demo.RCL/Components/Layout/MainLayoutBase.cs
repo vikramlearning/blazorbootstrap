@@ -26,7 +26,7 @@ public class MainLayoutBase : LayoutComponentBase
     {
         return Task.FromResult(Sidebar2DataProviderRequest.ApplyTo(NavItems));
     }
-    internal virtual IEnumerable<NavItem> GetNavItems() => new List<NavItem>();
+    internal virtual IReadOnlyCollection<NavItem> GetNavItems() => new List<NavItem>();
 
     public string Version { get; private set; } = default!;
 

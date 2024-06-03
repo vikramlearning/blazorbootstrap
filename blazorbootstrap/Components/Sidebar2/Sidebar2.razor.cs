@@ -14,7 +14,7 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
 
     private bool isMobile = false;
 
-    private IEnumerable<NavItem>? items = null;
+    private IReadOnlyCollection<NavItem>? items = null;
 
     private DotNetObjectReference<Sidebar2> objRef = default!;
 

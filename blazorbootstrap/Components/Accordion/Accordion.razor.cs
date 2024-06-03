@@ -121,7 +121,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Shows all <see cref="AccordionItem" /> instances if <see cref="AlwaysOpen"/>> is <see langword="true" />.
+    /// Shows all <see cref="AccordionItem" /> instances if <see cref="AlwaysOpen"/> is <see langword="true" />.
     /// </summary>
     public async Task ShowAllAccordionItemsAsync()
     {

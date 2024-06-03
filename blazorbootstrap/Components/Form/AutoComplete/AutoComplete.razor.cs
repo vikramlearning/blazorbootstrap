@@ -16,7 +16,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     private bool inputHasValue;
     private bool isDropdownShown;
-    private IEnumerable<TItem>? items = null;
+    private IReadOnlyCollection<TItem>? items = null;
     private ElementReference list; // ul element reference
 
     private DotNetObjectReference<AutoComplete<TItem>> objRef = default!;
@@ -128,7 +128,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     {
         selectedItem = default;
         selectedIndex = -1;
-        items = Enumerable.Empty<TItem>();
+        items = Array.Empty<TItem>();
         Value = string.Empty;
         await ValueChanged.InvokeAsync(Value);
 
@@ -164,7 +164,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
             }
             else
             {
-                items = Enumerable.Empty<TItem>();
+                items = Array.Empty<TItem>();
                 totalCount = 0;
             }
         }
@@ -246,7 +246,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     {
         selectedItem = item;
         selectedIndex = -1;
-        items = Enumerable.Empty<TItem>();
+        items = Array.Empty<TItem>();
         Value = GetPropertyValue(item)!;
         await ValueChanged.InvokeAsync(Value);
 
@@ -309,7 +309,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public AutoCompleteDataProviderDelegate<TItem> DataProvider { get; set; } = null!;
+    public AutoCompleteDataProviderDelegate<TItem>? DataProvider { get; set; } = null!;
 
     /// <summary>
     /// Gets all Style attributes for the autocomplete delete button.

@@ -69,7 +69,7 @@
         };
     }
 
-    private bool DisableAllRowsSelectionHandler(IEnumerable<Employee1> employees)
+    private bool DisableAllRowsSelectionHandler(IReadOnlyCollection<Employee1> employees)
     {
         return employees?.Any(x => x.Id < 105) ?? false; // disable selection if EmployeeId < 105
     }

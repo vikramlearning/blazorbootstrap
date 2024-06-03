@@ -8,14 +8,14 @@ public class Sidebar2DataProviderRequest
     {
         if (data is null)
         {
-            return new Sidebar2DataProviderResult { Data = Enumerable.Empty<NavItem>() };
+            return new Sidebar2DataProviderResult { Data = Array.Empty<NavItem>() };
         }
 
         var result = new List<NavItem>();
         var parentNavItems = data.Where(x => string.IsNullOrWhiteSpace(x.ParentId))?.OrderBy(x => x.Sequence)?.ToList();
 
         if (parentNavItems == null || parentNavItems.Count == 0)
-            return new Sidebar2DataProviderResult { Data = Enumerable.Empty<NavItem>() };
+            return new Sidebar2DataProviderResult { Data = Array.Empty<NavItem>() };
 
         result.AddRange(parentNavItems!);
 

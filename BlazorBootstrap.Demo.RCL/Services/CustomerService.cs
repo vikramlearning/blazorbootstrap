@@ -20,9 +20,9 @@ public class CustomerService : ICustomerService
         return customers.Where(lambda!.Compile()).OrderBy(customer => customer.CustomerName).ToArray();
     }
 
-    public async Task<Tuple<IReadOnlyCollection<Customer2>, int>> GetCustomersAsync(IEnumerable<FilterItem> filters, int pageNumber, int pageSize, string sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
+    public async Task<Tuple<IReadOnlyCollection<Customer2>, int>> GetCustomersAsync(IReadOnlyCollection<FilterItem> filters, int pageNumber, int pageSize, string sortKey, SortDirection sortDirection, CancellationToken cancellationToken = default)
     {
-        var customers = await _httpClient.GetFromJsonAsync<IEnumerable<Customer2>>("sample-data/customer/customer.json", cancellationToken);
+        var customers = await _httpClient.GetFromJsonAsync<IReadOnlyCollection<Customer2>>("sample-data/customer/customer.json", cancellationToken);
         if (customers is null)
             return new(Array.Empty<Customer2>(), 0);
 
@@ -39,7 +39,7 @@ public class CustomerService : ICustomerService
                 else
                     lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<Customer2>(parameterExpression, filter)!);
             }
-            customers = customers.Where(lambda!.Compile());
+            customers = customers.Where(lambda!.Compile()).ToArray();
         }
 
         // apply sorting then paging

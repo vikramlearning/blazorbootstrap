@@ -110,7 +110,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Get filters.
     /// </summary>
-    /// <returns>IEnumerable</returns>
+    /// <returns><see cref="IReadOnlyCollection{T}"/></returns>
     public IReadOnlyCollection<FilterItem>? GetFilters() =>
         !AllowFiltering || !columns.Any()
             ? null
@@ -624,7 +624,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Enable or disable the header checkbox selection.
     /// </summary>
     [Parameter]
-    public Func<IEnumerable<TItem>, bool>? DisableAllRowsSelection { get; set; }
+    public Func<IReadOnlyCollection<TItem>, bool>? DisableAllRowsSelection { get; set; }
 
     /// <summary>
     /// Enable or disable the row level checkbox selection.

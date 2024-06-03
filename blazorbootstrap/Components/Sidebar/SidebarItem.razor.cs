@@ -49,7 +49,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public IEnumerable<NavItem>? ChildItems { get; set; }
+    public IReadOnlyCollection<NavItem>? ChildItems { get; set; }
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 

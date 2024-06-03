@@ -256,7 +256,7 @@ public partial class Button : BlazorBootstrapComponentBase
         {
             AdditionalAttributes.Remove("data-bs-toggle");
             AdditionalAttributes.Remove("data-bs-placement");
-                            AdditionalAttributes.Remove("title");
+            AdditionalAttributes.Remove("title");
             AdditionalAttributes.Remove("data-bs-custom-class", out _);
         }
     }
