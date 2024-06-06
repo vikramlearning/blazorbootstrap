@@ -21,6 +21,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -29,6 +30,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -36,6 +38,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (string.IsNullOrWhiteSpace(Source))
@@ -48,7 +51,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// Handles a script error event from JavaScript.
     /// </summary>
     /// <param name="errorMessage">The error message.</param>
-    [JSInvokable]
+    [JSInvokable("onErrorJS")]
     public void OnErrorJS(string errorMessage)
     {
         if (OnError.HasDelegate)
@@ -58,7 +61,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <summary>
     /// Handles a script load event from JavaScript.
     /// </summary>
-    [JSInvokable]
+    [JSInvokable("onLoadJS")]
     public void OnLoadJS()
     {
         if (OnLoad.HasDelegate)

@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
+
 #pragma warning disable CS8629 // Nullable value type may be null.
 
 namespace BlazorBootstrap;
 
 /// <summary>
 /// Generates a bootstrap CSS file based on <see href="https://github.com/twbs/bootstrap/blob/main/dist/css/bootstrap.css"/> <br/>
-/// This method is created so users don't have to install nodejs to create their own Bootstrap.css variants or need to do difficult overridings of variables.
+/// This method is created so users don't have to install Node.JS to create their own Bootstrap.css variants or need to do difficult overriding of variables.
 /// </summary>
 public static class CssGenerator
 {
@@ -37,7 +31,7 @@ public static class CssGenerator
   --bs-green: {settings.GreenColor.Value.ToHexString()};
   --bs-teal: {settings.TealColor.Value.ToHexString()};
   --bs-cyan: {settings.CyanColor.Value.ToHexString()};
-  --bs-black: {settings.CyanColor.Value.ToHexString()};
+  --bs-black: {settings.BlackColor.Value.ToHexString()};
   --bs-white: {settings.WhiteColor.Value.ToHexString()};
   --bs-gray: {settings.GrayColor.Value.ToHexString()};
   --bs-gray-dark: {settings.GrayDarkColor.Value.ToHexString()};
@@ -87,7 +81,7 @@ public static class CssGenerator
   --bs-success-border-subtle: {settings.Light.SuccessBorderSubtleColor.Value.ToHexString()};
   --bs-info-border-subtle: {settings.Light.InfoBorderSubtleColor.Value.ToHexString()};
   --bs-warning-border-subtle: {settings.Light.WarningBorderSubtleColor.Value.ToHexString()};
-  --bs-danger-border-subtle: {settings.Light.DangerBgSubtleColor.Value.ToHexString()};
+  --bs-danger-border-subtle: {settings.Light.DangerBorderSubtleColor.Value.ToHexString()};
   --bs-light-border-subtle: {settings.Light.LightBorderSubtleColor.Value.ToHexString()};
   --bs-dark-border-subtle: {settings.Light.DarkBorderSubtleColor.Value.ToHexString()};
   --bs-white-rgb: {settings.WhiteColor.Value.ToRgbStringValues()};
@@ -99,10 +93,10 @@ public static class CssGenerator
   --bs-body-font-size: {settings.BodyFontSize};
   --bs-body-font-weight: {settings.BodyFontWeight};
   --bs-body-line-height: {settings.BodyLineHeight};
-  --bs-body-color: {settings.Light.BodyColor.Value.ToHexString()};
-  --bs-body-color-rgb: {settings.Light.BodyColor.Value.ToRgbStringValues()};
-  --bs-body-bg:  {settings.Light.BodyBackground.Value.ToHexString()};
-  --bs-body-bg-rgb: {settings.Light.BodyBackground.Value.ToRgbStringValues()};
+  --bs-body-color: {settings.Light.BodyTextColor.Value.ToHexString()};
+  --bs-body-color-rgb: {settings.Light.BodyTextColor.Value.ToRgbStringValues()};
+  --bs-body-bg:  {settings.Light.BodyBgColor.Value.ToHexString()};
+  --bs-body-bg-rgb: {settings.Light.BodyBgColor.Value.ToRgbStringValues()};
   --bs-emphasis-color: {settings.Light.EmphasisColor.Value.ToHexString()};
   --bs-emphasis-color-rgb: {settings.Light.EmphasisColor.Value.ToRgbStringValues()};
   --bs-secondary-color: {settings.Light.SecondaryColor.Value.ToRgbaString()};
@@ -120,12 +114,12 @@ public static class CssGenerator
   --bs-link-hover-color: {settings.Light.LinkHoverColor.Value.ToHexString()};
   --bs-link-hover-color-rgb: {settings.Light.LinkHoverColor.Value.ToRgbStringValues()};
   --bs-code-color: {settings.Light.CodeColor.Value.ToHexString()};
-  --bs-highlight-color: {settings.Dark.Light.Value.ToHexString()};
-  --bs-highlight-bg: {settings.Dark.Light.Value.ToHexString()};
+  --bs-highlight-color: {settings.Light.HighlightColor.Value.ToHexString()};
+  --bs-highlight-bg: {settings.Light.HighlightBackgroundColor.Value.ToHexString()};
   --bs-border-width: {settings.BorderWidth};
   --bs-border-style: {settings.BorderStyle};
-  --bs-border-color: {settings.Light.HighlightColor.Value.ToHexString()};
-  --bs-border-color-translucent: rgba(0, 0, 0, 0.175);
+  --bs-border-color: {settings.Light.BorderColor.Value.ToHexString()};
+  --bs-border-color-translucent: {settings.Light.BorderColorTranslucent.Value.ToHexString()};
   --bs-border-radius: {settings.BorderRadius};
   --bs-border-radius-sm: {settings.BorderRadiusSm};
   --bs-border-radius-lg: {settings.BorderRadiusLg};
@@ -137,21 +131,21 @@ public static class CssGenerator
   --bs-box-shadow-sm: {settings.BoxShadowSm};
   --bs-box-shadow-lg: {settings.BoxShadowLg};
   --bs-box-shadow-inset: {settings.BoxShadowInset};
-  --bs-focus-ring-width: 0.25rem;
-  --bs-focus-ring-opacity: 0.25;
-  --bs-focus-ring-color: rgba(30, 115, 190, 0.25);
-  --bs-form-valid-color: #008000;
-  --bs-form-valid-border-color: #008000;
+  --bs-focus-ring-width: {settings.FocusRingWidth};
+  --bs-focus-ring-opacity: {settings.FocusRingOpacity};
+  --bs-focus-ring-color: {settings.FocusRingColor};
+  --bs-form-valid-color: {settings.Light.FormValidColor.Value.ToHexString()};
+  --bs-form-valid-border-color: {settings.Light.FormValidBorderColor.Value.ToHexString()};
   --bs-form-invalid-color: {settings.Light.FormInvalidColor.Value.ToHexString()};
   --bs-form-invalid-border-color: {settings.Light.FormInvalidBorderColor.Value.ToHexString()};
 }}
 
 [data-bs-theme=dark] {{
   color-scheme: dark;
-  --bs-body-color: {settings.Dark.BodyColor.Value.ToHexString()};
-  --bs-body-color-rgb: {settings.Dark.BodyColor.Value.ToRgbStringValues()};
-  --bs-body-bg:  {settings.Dark.BodyBackground.Value.ToHexString()};
-  --bs-body-bg-rgb: {settings.Dark.BodyBackground.Value.ToRgbStringValues()};
+  --bs-body-color: {settings.Dark.BodyTextColor.Value.ToHexString()};
+  --bs-body-color-rgb: {settings.Dark.BodyTextColor.Value.ToRgbStringValues()};
+  --bs-body-bg:  {settings.Dark.BodyBgColor.Value.ToHexString()};
+  --bs-body-bg-rgb: {settings.Dark.BodyBgColor.Value.ToRgbStringValues()};
   --bs-emphasis-color: {settings.Dark.EmphasisColor.Value.ToHexString()};
   --bs-emphasis-color-rgb: {settings.Dark.EmphasisColor.Value.ToRgbStringValues()}; 
   --bs-secondary-color: {settings.Dark.SecondaryColor.Value.ToRgbaString()};
@@ -183,7 +177,7 @@ public static class CssGenerator
   --bs-success-border-subtle: {settings.Dark.SuccessBorderSubtleColor.Value.ToHexString()};
   --bs-info-border-subtle: {settings.Dark.InfoBorderSubtleColor.Value.ToHexString()};
   --bs-warning-border-subtle: {settings.Dark.WarningBorderSubtleColor.Value.ToHexString()};
-  --bs-danger-border-subtle: {settings.Dark.DangerBgSubtleColor.Value.ToHexString()};
+  --bs-danger-border-subtle: {settings.Dark.DangerBorderSubtleColor.Value.ToHexString()};
   --bs-light-border-subtle: {settings.Dark.LightBorderSubtleColor.Value.ToHexString()};
   --bs-dark-border-subtle: {settings.Dark.DarkBorderSubtleColor.Value.ToHexString()};
   --bs-link-color: {settings.Dark.LinkColor.Value.ToHexString()};
@@ -194,10 +188,10 @@ public static class CssGenerator
   --bs-code-color: {settings.Dark.CodeColor.Value.ToHexString()};
   --bs-highlight-color: {settings.Dark.HighlightColor.Value.ToHexString()};
   --bs-highlight-bg: {settings.Dark.HighlightBackgroundColor.Value.ToHexString()};
-  --bs-border-color: #495057;
-  --bs-border-color-translucent: rgba(255, 255, 255, 0.15);
-  --bs-form-valid-color: #66b366;
-  --bs-form-valid-border-color: #66b366;
+  --bs-border-color: {settings.Dark.BorderColor.Value.ToHexString()};
+  --bs-border-color-translucent: {settings.Dark.BorderColorTranslucent.Value.ToHexString()};
+  --bs-form-valid-color: {settings.Dark.FormValidColor.Value.ToHexString()};
+  --bs-form-valid-border-color: {settings.Dark.FormValidBorderColor.Value.ToHexString()};
   --bs-form-invalid-color: {settings.Dark.FormInvalidColor.Value.ToHexString()};
   --bs-form-invalid-border-color: {settings.Dark.FormInvalidBorderColor.Value.ToHexString()};
 }}
@@ -2049,7 +2043,7 @@ progress {{
 
 .table-dark {{
   --bs-table-color: #fff;
-  --bs-table-bg: #212529;
+  --bs-table-bg: var(--bs-dark);
   --bs-table-border-color: #4d5154;
   --bs-table-striped-bg: #2c3034;
   --bs-table-striped-color: #fff;
@@ -2909,38 +2903,39 @@ textarea.form-control-lg {{
 }}
 
 .btn {{
-  --bs-btn-padding-x: 0.75rem;
-  --bs-btn-padding-y: 0.375rem;
-  --bs-btn-font-family: ;
-  --bs-btn-font-size: 1rem;
-  --bs-btn-font-weight: 400;
-  --bs-btn-line-height: 1.5;
-  --bs-btn-color: var(--bs-body-color);
-  --bs-btn-bg: transparent;
-  --bs-btn-border-width: var(--bs-border-width);
-  --bs-btn-border-color: transparent;
-  --bs-btn-border-radius: var(--bs-border-radius);
-  --bs-btn-hover-border-color: transparent;
+  --bs-btn-padding-x: {settings.BtnPaddingX};
+  --bs-btn-padding-y: {settings.BtnPaddingY};
+  --bs-btn-font-family: {settings.BtnFontFamily};
+  --bs-btn-font-size: {settings.BtnFontSize};
+  --bs-btn-font-weight: {settings.BtnFontWeight};
+  --bs-btn-line-height: {settings.BtnLineHeight};
+  --bs-btn-color: {settings.Light.ButtonTextColor.Value.ToRgbaString()};
+  --bs-btn-bg: {settings.Light.ButtonBackgroundColor.Value.ToRgbaString()};
+  --bs-btn-border-width: {settings.BtnBorderWidth};
+  --bs-btn-border-color: {settings.Light.ButtonBorderColor.Value.ToRgbaString()};
+  --bs-btn-border-radius: {settings.BtnBorderRadius};
+  --bs-btn-hover-border-color: {settings.Light.ButtonHoverBorderColor.Value.ToRgbaString()};
   --bs-btn-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.075);
   --bs-btn-disabled-opacity: 0.65;
   --bs-btn-focus-box-shadow: 0 0 0 0.25rem rgba(var(--bs-btn-focus-shadow-rgb), .5);
-  display: inline-block;
+  display:  {settings.BtnDisplay};
   padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
   font-family: var(--bs-btn-font-family);
   font-size: var(--bs-btn-font-size);
   font-weight: var(--bs-btn-font-weight);
   line-height: var(--bs-btn-line-height);
   color: var(--bs-btn-color);
-  text-align: center;
+  text-align: {settings.BtnTextAlign};
   text-decoration: none;
   vertical-align: middle;
   cursor: pointer;
   user-select: none;
-  border: var(--bs-btn-border-width) solid var(--bs-btn-border-color);
+  border: var(--bs-btn-border-width) {settings.BtnBorderStyle} var(--bs-btn-border-color);
   border-radius: var(--bs-btn-border-radius);
   background-color: var(--bs-btn-bg);
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }}
+
 @media (prefers-reduced-motion: reduce) {{
   .btn {{
     transition: none;
@@ -3090,26 +3085,26 @@ textarea.form-control-lg {{
 }}
 
 .btn-light {{
-  --bs-btn-color: #000;
-  --bs-btn-bg: #f8f9fa;
+  --bs-btn-color: var(--bs-black);
+  --bs-btn-bg: var(--bs-light);
   --bs-btn-border-color: #f8f9fa;
-  --bs-btn-hover-color: #000;
+  --bs-btn-hover-color: var(--bs-black);
   --bs-btn-hover-bg: #d3d4d5;
   --bs-btn-hover-border-color: #c6c7c8;
   --bs-btn-focus-shadow-rgb: 211, 212, 213;
-  --bs-btn-active-color: #000;
+  --bs-btn-active-color: var(--bs-black);
   --bs-btn-active-bg: #c6c7c8;
   --bs-btn-active-border-color: #babbbc;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #000;
+  --bs-btn-disabled-color: var(--bs-black);
   --bs-btn-disabled-bg: #f8f9fa;
   --bs-btn-disabled-border-color: #f8f9fa;
 }}
 
 .btn-dark {{
   --bs-btn-color: #fff;
-  --bs-btn-bg: #212529;
-  --bs-btn-border-color: #212529;
+  --bs-btn-bg: var(--bs-dark);
+  --bs-btn-border-color: var(--bs-dark);
   --bs-btn-hover-color: #fff;
   --bs-btn-hover-bg: #424649;
   --bs-btn-hover-border-color: #373b3e;
@@ -3119,8 +3114,8 @@ textarea.form-control-lg {{
   --bs-btn-active-border-color: #373b3e;
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: #212529;
-  --bs-btn-disabled-border-color: #212529;
+  --bs-btn-disabled-bg: var(--bs-dark);
+  --bs-btn-disabled-border-color: var(--bs-dark);
 }}
 
 .btn-outline-primary {{
@@ -3243,19 +3238,19 @@ textarea.form-control-lg {{
 }}
 
 .btn-outline-dark {{
-  --bs-btn-color: #212529;
-  --bs-btn-border-color: #212529;
+  --bs-btn-color: var(--bs-dark);
+  --bs-btn-border-color: var(--bs-dark);
   --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #212529;
-  --bs-btn-hover-border-color: #212529;
+  --bs-btn-hover-bg: var(--bs-dark);
+  --bs-btn-hover-border-color: var(--bs-dark);
   --bs-btn-focus-shadow-rgb: 33, 37, 41;
   --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #212529;
-  --bs-btn-active-border-color: #212529;
+  --bs-btn-active-bg: var(--bs-dark);
+  --bs-btn-active-border-color: var(--bs-dark);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #212529;
+  --bs-btn-disabled-color: var(--bs-dark);
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #212529;
+  --bs-btn-disabled-border-color: var(--bs-dark);
   --bs-gradient: none;
 }}
 
@@ -4312,37 +4307,48 @@ textarea.form-control-lg {{
 }}
 
 .card {{
-  --bs-card-spacer-y: 1rem;
-  --bs-card-spacer-x: 1rem;
-  --bs-card-title-spacer-y: 0.5rem;
-  --bs-card-title-color: ;
-  --bs-card-subtitle-color: ;
+  --bs-card-spacer-y: {settings.CardSpacerY};
+  --bs-card-spacer-x: {settings.CardSpacerX};
+  --bs-card-title-spacer-y: {settings.CardTitleSpacerY};
+  --bs-card-title-color: {(settings.Light.CardTitleColor?.ToHexString() ?? "")};
+  --bs-card-subtitle-color: {(settings.Light.CardSubTitleColor?.ToHexString() ?? "")};
   --bs-card-border-width: var(--bs-border-width);
-  --bs-card-border-color: var(--bs-border-color-translucent);
+  --bs-card-border-color: {(settings.Light.CardBorderColor?.ToHexString() ?? "")};
   --bs-card-border-radius: var(--bs-border-radius);
-  --bs-card-box-shadow: ;
-  --bs-card-inner-border-radius: calc(var(--bs-border-radius) - (var(--bs-border-width)));
-  --bs-card-cap-padding-y: 0.5rem;
-  --bs-card-cap-padding-x: 1rem;
-  --bs-card-cap-bg: rgba(var(--bs-body-color-rgb), 0.03);
-  --bs-card-cap-color: ;
-  --bs-card-height: ;
-  --bs-card-color: ;
-  --bs-card-bg: var(--bs-body-bg);
-  --bs-card-img-overlay-padding: 1rem;
-  --bs-card-group-margin: 0.75rem;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+  --bs-card-box-shadow: {settings.CardBoxShadow};
+  --bs-card-inner-border-radius: {settings.CardInnerBorderRadius};
+  --bs-card-cap-padding-y: {settings.CardCapPaddingY};
+  --bs-card-cap-padding-x: {settings.CardCapPaddingX};
+  --bs-card-cap-bg: {settings.Light.CardCapBgColor.Value.ToHexString()};
+  --bs-card-cap-color:  {(settings.Light.CardCapTextColor?.ToHexString() ?? "")};
+  --bs-card-height: {settings.CardHeight};
+  --bs-card-color:  {(settings.Light.CardTextColor?.ToHexString() ?? "")};
+  --bs-card-bg: {settings.Light.CardBgColor.Value.ToHexString()};
+  --bs-card-img-overlay-padding: {settings.CardImgOverlayPadding};
+  --bs-card-group-margin: {settings.CardGroupMargin};
+  position: {settings.CardPosition};
+  display: {settings.CardDisplay};
+  flex-direction: {settings.CardFlexDirection};
+  min-width: {settings.CardMinWidth};
   height: var(--bs-card-height);
   color: var(--bs-body-color);
-  word-wrap: break-word;
+  word-wrap: {settings.CardWordWrap};
   background-color: var(--bs-card-bg);
-  background-clip: border-box;
-  border: var(--bs-card-border-width) solid var(--bs-card-border-color);
+  background-clip: {settings.CardBackgroundClip};
+  outline: var(--bs-card-border-width) {settings.CardBorderStyle} var(--bs-card-border-color);
   border-radius: var(--bs-card-border-radius);
 }}
+
+[data-bs-theme=dark] .card {{
+  --bs-card-border-color: {(settings.Dark.CardBorderColor?.ToHexString() ?? "")};
+  --bs-card-title-color: {(settings.Dark.CardTitleColor?.ToHexString() ?? "")}
+  --bs-card-subtitle-color: {(settings.Dark.CardSubTitleColor?.ToHexString() ?? "")};
+  --bs-card-cap-bg: {settings.Dark.CardCapBgColor.Value.ToHexString()};
+  --bs-card-cap-color:  {(settings.Dark.CardCapTextColor?.ToHexString() ?? "")};
+  --bs-card-color:  {(settings.Dark.CardTextColor?.ToHexString() ?? "")};
+  --bs-card-bg: {settings.Dark.CardBgColor.Value.ToHexString()};
+}}
+
 .card > hr {{
   margin-right: 0;
   margin-left: 0;
@@ -4396,7 +4402,7 @@ textarea.form-control-lg {{
   margin-bottom: 0;
   color: var(--bs-card-cap-color);
   background-color: var(--bs-card-cap-bg);
-  border-bottom: var(--bs-card-border-width) solid var(--bs-card-border-color);
+  border-bottom: var(--bs-card-border-width) {settings.CardBorderStyle} var(--bs-card-border-color);
 }}
 .card-header:first-child {{
   border-radius: var(--bs-card-inner-border-radius) var(--bs-card-inner-border-radius) 0 0;
@@ -4406,7 +4412,7 @@ textarea.form-control-lg {{
   padding: var(--bs-card-cap-padding-y) var(--bs-card-cap-padding-x);
   color: var(--bs-card-cap-color);
   background-color: var(--bs-card-cap-bg);
-  border-top: var(--bs-card-border-width) solid var(--bs-card-border-color);
+  border-top: var(--bs-card-border-width) {settings.CardBorderStyle} var(--bs-card-border-color);
 }}
 .card-footer:last-child {{
   border-radius: 0 0 var(--bs-card-inner-border-radius) var(--bs-card-inner-border-radius);

@@ -22,6 +22,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         Id = IdGenerator.GetNextId(); // This is required

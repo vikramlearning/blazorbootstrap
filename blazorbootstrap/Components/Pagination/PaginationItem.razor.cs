@@ -4,6 +4,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
 {
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (Active)

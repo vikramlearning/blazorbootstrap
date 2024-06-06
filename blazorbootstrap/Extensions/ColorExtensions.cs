@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Runtime.CompilerServices;
+
+namespace BlazorBootstrap;
 
 public static class ColorExtensions
 {
@@ -9,7 +11,7 @@ public static class ColorExtensions
     /// </summary>
     /// <param name="hex"></param>
     /// <returns>Converts #RRGGBB string to <see cref='Color' />.</returns>
-    public static Color ToColor(this string hex) => ColorTranslator.FromHtml(hex);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Color ToColor(this string hex) => ColorTranslator.FromHtml(hex);
 
     /// <summary>
     /// Converts System.Drawing.Color to #RRGGBBAA format string.
@@ -17,7 +19,7 @@ public static class ColorExtensions
     /// </summary>
     /// <param name="c"></param>
     /// <returns>#RRGGBBAA format string</returns>
-    public static string ToHexaString(this Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}";
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToHexaString(this Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}{c.A:X2}";
 
     /// <summary>
     /// Converts System.Drawing.Color to #RRGGBB format string.
@@ -25,7 +27,7 @@ public static class ColorExtensions
     /// </summary>
     /// <param name="c"></param>
     /// <returns>#RRGGBB format string</returns>
-    public static string ToHexString(this Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToHexString(this Color c) => $"#{c.R:X2}{c.G:X2}{c.B:X2}";
 
     /// <summary>
     /// Converts System.Drawing.Color to RGBA(R, G, B, A) format string.
@@ -34,7 +36,7 @@ public static class ColorExtensions
     /// <param name="c">System.Drawing.Color</param>
     /// <param name="alpha">The alpha parameter is a number between 0.0 (fully transparent) and 1.0 (fully opaque).</param>
     /// <returns>RGBA(R, G, B, A) format string</returns>
-    public static string ToRgbaString(this Color c, double alpha) => $"RGBA({c.R}, {c.G}, {c.B}, {alpha})";
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToRgbaString(this Color c, double alpha) => $"RGBA({c.R}, {c.G}, {c.B}, {alpha})";
 
     /// <summary>
     /// Converts System.Drawing.Color to RGBA(R, G, B, A) format string.
@@ -42,7 +44,7 @@ public static class ColorExtensions
     /// </summary>
     /// <param name="c">System.Drawing.Color</param>
     /// <returns>RGBA(R, G, B, A) format string</returns>
-    public static string ToRgbaString(this Color c) => $"RGBA({c.R}, {c.G}, {c.B}, {c.A})";
+[MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToRgbaString(this Color c) => $"RGBA({c.R}, {c.G}, {c.B}, {c.A})";
 
     /// <summary>
     /// Converts System.Drawing.Color to RGB(R, G, B) format string.
@@ -50,7 +52,7 @@ public static class ColorExtensions
     /// </summary>
     /// <param name="c"></param>
     /// <returns>RGB(R, G, B) format string</returns>
-    public static string ToRgbString(this Color c) => $"RGB({c.R}, {c.G}, {c.B})";
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToRgbString(this Color c) => $"RGB({c.R}, {c.G}, {c.B})";
 
 
     /// <summary>
@@ -59,7 +61,7 @@ public static class ColorExtensions
     /// </summary>
     /// <param name="c"></param>
     /// <returns>RGB(R, G, B) format string</returns>
-    public static string ToRgbStringValues(this Color c) => $"{c.R}, {c.G}, {c.B}";
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToRgbStringValues(this Color c) => $"{c.R}, {c.G}, {c.B}";
 
     /// <summary>
     /// Mixes two colors.
@@ -68,6 +70,7 @@ public static class ColorExtensions
     /// <param name="c2">Color 2</param>
     /// <param name="weight">Weight (between 0 and 1, in favor of <paramref name="c2"/>)</param>
     /// <returns>Mixed color</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Color Mix(this Color c1, Color c2, double weight = 0.5)
     {
                var w = weight;
@@ -85,7 +88,7 @@ public static class ColorExtensions
     /// <param name="c">Color to lighten</param>
     /// <param name="weight">Weight (1 means it will be fully white)</param>
     /// <returns>Lightened color</returns>
-    public static Color TintColor(this Color c, double weight = 0.5) => c.Mix(Color.White, weight);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Color TintColor(this Color c, double weight = 0.5) => c.Mix(Color.White, weight);
 
     /// <summary>
     /// Shades a color towards <see cref="Color.Black"/>
@@ -93,6 +96,6 @@ public static class ColorExtensions
     /// <param name="c">Color to lighten</param>
     /// <param name="weight">Weight (1 means it will be fully black)</param>
     /// <returns></returns>
-    public static Color ShadeColor(this Color c, double weight = 0.5) => c.Mix(Color.Black, weight);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Color ShadeColor(this Color c, double weight = 0.5) => c.Mix(Color.Black, weight);
     #endregion
 }

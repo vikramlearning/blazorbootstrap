@@ -22,6 +22,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)

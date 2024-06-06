@@ -30,6 +30,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -38,6 +39,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -45,21 +47,21 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
+    [JSInvokable("onAddJs")]
     public async Task OnAddJS(int oldIndex, int newIndex)
     {
         if (OnAdd.HasDelegate)
             await OnAdd.InvokeAsync(new SortableListEventArgs(oldIndex, newIndex));
     }
 
-    [JSInvokable]
+    [JSInvokable("onRemoveJS")]
     public async Task OnRemoveJS(int oldIndex, int newIndex, string fromListName, string toListName)
     {
         if (OnRemove.HasDelegate)
             await OnRemove.InvokeAsync(new SortableListEventArgs(oldIndex, newIndex, fromListName, toListName));
     }
 
-    [JSInvokable]
+    [JSInvokable("onUpdateJS")]
     public async Task OnUpdateJS(int oldIndex, int newIndex)
     {
         if (OnUpdate.HasDelegate)

@@ -50,6 +50,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);

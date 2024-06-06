@@ -41,5 +41,6 @@ public readonly struct CssClassBuilder
         return string.Join(' ', classNames);
     }
 
+    /// <inheritdoc />
     public override string? ToString() => Build();
 }

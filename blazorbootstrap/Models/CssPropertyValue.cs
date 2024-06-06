@@ -14,7 +14,9 @@ public readonly struct CssPropertyValue
     [FieldOffset(4)]
     internal readonly byte Unit;
     [FieldOffset(5)]
-    internal readonly bool IsInteger; 
+    internal readonly bool IsInteger;
+    [FieldOffset(6)]
+    internal readonly byte cssStyle;
 
     /// <summary>
     /// Default constructor
@@ -28,14 +30,111 @@ public readonly struct CssPropertyValue
         Unit = unit;
 
         IsInteger = isInteger || IsNumberAWholeNumber(value);
+        cssStyle = 0;
     }
 
-    /// <inheritdoc />
-    public override string ToString() => $"{Value.ToString(IsInteger ? "G0" : "G5", CultureInfo.InvariantCulture)}{CssNumberTypeToUnit[Unit]}";
+    private CssPropertyValue(CssStyleEnum cssStyle)
+    {
+               Value = 0;
+                      Unit = 0;
+                             IsInteger = false;
+                                    this.cssStyle = (byte)cssStyle;
+                                       }
 
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        if (cssStyle != 0)
+        {
+            return CssStyleEnumToString[(CssStyleEnum)cssStyle];
+        }
+
+        return $"{Value.ToString(IsInteger ? "G0" : "G5", CultureInfo.InvariantCulture)}{CssNumberTypeToUnit[Unit]}";
+    }
+
+    /// <summary>
+    /// Converts <see cref="CssPropertyValue"/> to a value string, or an empty string if null.
+    /// </summary>
+    public static implicit operator string(CssPropertyValue? value) => value?.ToString() ?? "";
+    /// <summary>
+    /// Converts <see cref="CssPropertyValue"/> to a CSS value string.
+    /// </summary> 
     public static implicit operator string(CssPropertyValue value) => value.ToString();
+    /// <summary>
+    /// Generates a raw CSS number value from input.
+    /// </summary>
     public static implicit operator CssPropertyValue(float value) => new(value, NumberUnit, false);
+    /// <summary>
+    /// Generates a raw CSS number value from input.
+    /// </summary>
     public static implicit operator CssPropertyValue(int value) => new(value, NumberUnit, true);
+    /// <summary>
+    /// Sets a default/pre-set CSS value from input.
+    /// </summary>
+    public static implicit operator CssPropertyValue(CssStyleEnum value) => new(value);
+
+    private static readonly Dictionary<CssStyleEnum, string> CssStyleEnumToString = new()
+    {
+        {CssStyleEnum.Absolute, "absolute"},
+        {CssStyleEnum.After, "after"},
+        {CssStyleEnum.Auto, "auto"},
+        {CssStyleEnum.AutoPhrase, "auto-phrase"},
+        {CssStyleEnum.Before, "before"},
+        {CssStyleEnum.Block, "block"},
+        {CssStyleEnum.BorderBox, "border-box"},
+        {CssStyleEnum.BreakAll, "break-all"},
+        {CssStyleEnum.BreakWord, "break-word"},
+        {CssStyleEnum.ContentBox, "content-box"},
+        {CssStyleEnum.Column, "column"},
+        {CssStyleEnum.ColumnReverse, "column-reverse"},
+        {CssStyleEnum.Dashed, "dashed"},
+        {CssStyleEnum.Dotted, "dotted"},
+        {CssStyleEnum.Double, "double"},
+        {CssStyleEnum.Fixed, "fixed"},
+        {CssStyleEnum.Flex, "flex"},
+        {CssStyleEnum.FlowRoot, "flow-root"},
+        {CssStyleEnum.Grid, "grid"},
+        {CssStyleEnum.Groove, "groove"},
+        {CssStyleEnum.Inherit, "inherit"},
+        {CssStyleEnum.Initial, "initial"},
+        {CssStyleEnum.Inline, "inline"},
+        {CssStyleEnum.InlineBlock, "inline-block"},
+        {CssStyleEnum.InlineFlex, "inline-flex"},
+        {CssStyleEnum.InlineGrid, "inline-grid"},
+        {CssStyleEnum.InlineTable, "inline-table"},
+        {CssStyleEnum.Inset, "inset"},
+        {CssStyleEnum.KeepAll, "keep-all"},
+        {CssStyleEnum.LineThrough, "line-through"},
+        {CssStyleEnum.ListItem, "list-item"},
+        {CssStyleEnum.None, "none"},
+        {CssStyleEnum.Normal, "normal"},
+        {CssStyleEnum.NotApplied, ""},
+        {CssStyleEnum.Outset, "outset"},
+        {CssStyleEnum.Overline, "overline"},
+        {CssStyleEnum.Relative, "relative"},
+        {CssStyleEnum.Revert, "revert"},
+        {CssStyleEnum.RevertLayer, "revert-layer"},
+        {CssStyleEnum.Ridge, "ridge"},
+        {CssStyleEnum.Row, "row"},
+        {CssStyleEnum.RowReverse, "row-reverse"},
+        {CssStyleEnum.Solid, "solid"},
+        {CssStyleEnum.Static, "static"},
+        {CssStyleEnum.Sticky, "sticky"},
+        {CssStyleEnum.Table, "table"},
+        {CssStyleEnum.TableRow, "table-row"},
+        {CssStyleEnum.Text, "text"},
+        {CssStyleEnum.Underline, "underline"},
+        {CssStyleEnum.Unset, "unset"},
+        {CssStyleEnum.Left, "left"},
+        {CssStyleEnum.Right, "right"},
+        {CssStyleEnum.Center, "center"},
+        {CssStyleEnum.Justify, "justify"},
+        {CssStyleEnum.JustifyAll, "justify-all"},
+        {CssStyleEnum.MatchParent, "match-parent"},
+        {CssStyleEnum.Start, "start"},
+        {CssStyleEnum.End, "end"},
+
+                                                            }; 
 
     /// <summary>
     /// Angle value

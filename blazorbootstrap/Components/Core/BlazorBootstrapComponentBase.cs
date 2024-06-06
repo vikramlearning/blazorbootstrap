@@ -108,6 +108,10 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 
     [Inject] protected IIdGenerator IdGenerator { get; set; } = default!;
 
+    /// <summary>
+    /// Determines if the element had been rendered for the first time (assigned true in <see cref="OnAfterRenderAsync(bool)"/>). <br/>
+    /// This is useful for Javascript interop, to ensure the element is rendered before attempting to interact with it.
+    /// </summary>
     protected bool IsRenderComplete { get; private set; }
 
     /// <summary>

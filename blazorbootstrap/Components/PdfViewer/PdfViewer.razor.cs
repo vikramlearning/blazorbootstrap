@@ -33,6 +33,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -41,6 +42,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -50,6 +52,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (IsRenderComplete)
@@ -64,7 +67,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public void DocumentLoaded(PdfViewerModel pdfViewerModel)
+    public void DocumentLoaded(PdfViewerModel? pdfViewerModel)
     {
         if (pdfViewerModel is null) return;
 
@@ -78,7 +81,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public void SetPdfViewerMetaData(PdfViewerModel pdfViewerModel)
+    public void SetPdfViewerMetaData(PdfViewerModel? pdfViewerModel)
     {
         if (pdfViewerModel is null) return;
 

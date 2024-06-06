@@ -32,6 +32,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

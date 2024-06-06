@@ -26,6 +26,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

@@ -238,7 +238,7 @@ public class ChartAxesBorder
     public int? Width { get; set; }
 
     /// <summary>
-    /// z-index of the border layer. Values <= 0 are drawn under datasets, > 0 on top.
+    /// z-index of the border layer. Values smaller or equal to 0 are drawn under datasets, larger than 0 on top.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Z { get; set; }
@@ -320,7 +320,7 @@ public class ChartAxesGrid
     public int? TickWidth { get; set; }
 
     /// <summary>
-    /// z-index of the gridline layer. Values <= 0 are drawn under datasets, > 0 on top.
+    /// z-index of the gridline layer. Values smaller or equal to 0 are drawn under datasets, above 0 on top.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Z { get; set; }

@@ -4,6 +4,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
 {
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (!string.IsNullOrWhiteSpace(LinkAriaLabel))

@@ -233,10 +233,10 @@ public static class EnumExtensions
         {
             DropdownDirection.Dropdown => "dropdown",
             DropdownDirection.DropdownCentered => "dropdown dropdown-center",
-            DropdownDirection.Dropend => "dropend",
-            DropdownDirection.Dropup => "dropup",
-            DropdownDirection.DropupCentered => "dropup dropup-center",
-            DropdownDirection.Dropstart => "dropstart",
+            DropdownDirection.DropEnd => "dropend",
+            DropdownDirection.DropUp => "dropup",
+            DropdownDirection.DropUpCentered => "dropup dropup-center",
+            DropdownDirection.DropStart => "dropstart",
             _ => ""
         };
 

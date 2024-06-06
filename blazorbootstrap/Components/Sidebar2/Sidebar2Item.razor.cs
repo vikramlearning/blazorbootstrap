@@ -4,6 +4,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
 {
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         if (NavLinkExtensions.ShouldExpand(NavigationManager, ChildItems!, Match))

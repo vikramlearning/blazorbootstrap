@@ -10,6 +10,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (!HasChilds || !(ChildItems?.Any() ?? false))

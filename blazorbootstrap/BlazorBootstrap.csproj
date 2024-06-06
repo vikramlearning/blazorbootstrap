@@ -15,8 +15,9 @@
     <Authors>Vikram Reddy</Authors>
     <!--<Company>your_company</Company>-->
     <Copyright>Copyright © 2024 Blazor Bootstrap</Copyright>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+	  <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <OutputType>Library</OutputType>

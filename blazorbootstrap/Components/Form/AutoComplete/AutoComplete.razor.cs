@@ -160,7 +160,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
             if (result is not null)
             {
                 items = result.Data;
-                totalCount = result.TotalCount ?? result.Data!.Count();
+                totalCount = result.TotalCount ?? result.Data?.Count ?? 0;
             }
             else
             {

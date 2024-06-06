@@ -29,6 +29,7 @@ public partial class Preload : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         PageLoadingService.OnShow += OnShow;

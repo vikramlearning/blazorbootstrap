@@ -3,7 +3,7 @@
 namespace BlazorBootstrap;
 
 /// <summary>
-/// Use Blazor Bootstrap grid component to display tabular data from the data source. It supports client-side and server-side paging & sorting.
+/// Use Blazor Bootstrap grid component to display tabular data from the data source. It supports client-side and server-side paging and sorting.
 /// </summary>
 /// <typeparam name="TItem">Data model to apply to the grid.</typeparam>
 public partial class Grid<TItem> : BlazorBootstrapComponentBase

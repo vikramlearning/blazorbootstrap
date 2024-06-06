@@ -365,36 +365,12 @@ public sealed class BootstrapCssSettings
     public CssPropertyValue? BorderWidth { get; set; }
 
     /// <summary>
-    /// Default Bootstrap --bs-border-width-*
-    /// </summary>
-    /// <remarks>
-    /// Default value is 1: 1px, 2: 2px, 3: 3px, 4: 4px, 5: 5px
-    /// </remarks>
-    public Dictionary<int,CssPropertyValue>? BorderWidths { get; set; }
-
-    /// <summary>
     /// Default Bootstrap --bs-border-style
     /// </summary>
     /// <remarks>
     /// Default value is <see cref="CssStyleEnum.Solid"/>
     /// </remarks>
     public CssStyleEnum? BorderStyle { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-border-color
-    /// </summary>
-    /// <remarks>
-    /// Default value is derived from <see cref="Gray300Color"/>
-    /// </remarks>
-    public Color? BorderColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-border-color-translucent
-    /// </summary>
-    /// <remarks>
-    /// Default value is derived from <see cref="BlackColor"/> at 17.5% opacity
-    /// </remarks>
-    public Color? BorderColorTranslucent { get; set; }
 
     /// <summary>
     /// Default Bootstrap --bs-border-radius
@@ -540,6 +516,269 @@ public sealed class BootstrapCssSettings
 
     #endregion
 
+    #region Button
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-padding-x
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0.75rem
+    /// </remarks>
+    public CssPropertyValue? BtnPaddingX { get; set; }
+    /// <summary>
+    /// Default Bootstrap --bs-btn-padding-y
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0.375rem
+    /// </remarks>
+    public CssPropertyValue? BtnPaddingY { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-font-family
+    /// </summary>
+    /// <remarks>
+    /// By default, this property is not set.
+    /// </remarks>
+    public string? BtnFontFamily { get; set; }
+    
+    /// <summary>
+    /// Default Bootstrap --bs-btn-font-size
+    /// </summary>
+    /// <remarks>
+    /// Default value is 1rem
+    /// </remarks>
+    public CssPropertyValue? BtnFontSize { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-font-weight
+    /// </summary>
+    /// <remarks>
+    /// Default value is 400
+    /// </remarks>
+    public CssPropertyValue? BtnFontWeight { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-line-height
+    /// </summary>
+    /// <remarks>
+    /// Default value is 1.5
+    /// </remarks>
+    public CssPropertyValue? BtnLineHeight { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-border-width 
+    /// </summary>
+    /// <remarks>
+    /// Default value is derived from <see cref="BorderWidth"/>
+    /// </remarks>
+    public CssPropertyValue? BtnBorderWidth { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-border-radius
+    /// </summary>
+    /// <remarks>
+    /// Default value is derived from <see cref="BorderRadius"/>
+    /// </remarks>
+    public CssPropertyValue? BtnBorderRadius { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-border-style
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CssStyleEnum.Solid" />
+    /// </remarks>
+    public CssStyleEnum? BtnBorderStyle { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-box-shadow
+    /// </summary>
+    /// <remarks>
+    /// Default value is inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.075);
+    /// </remarks>
+    public string? BtnBoxShadow { get; set; }
+    /// <summary>
+    /// Default Bootstrap --bs-btn-focus-box-shadow
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0 0 0 0.25rem rgba(var(--bs-btn-focus-shadow-rgb), .5);
+    /// </remarks>
+    public string? BtnFocusBoxShadow { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap .btn display property
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CssStyleEnum.InlineBlock"/>
+    /// </remarks>
+    public CssPropertyValue? BtnDisplay { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap .btn text-align property
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CssStyleEnum.Center"/>
+    /// </remarks>
+    public CssStyleEnum? BtnTextAlign { get; set; }
+
+    #endregion
+
+    #region Card
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-spacer-x
+    /// </summary>
+    /// <remarks>
+    /// Default value is 1rem
+    /// </remarks>
+    public CssPropertyValue? CardSpacerX { get; set; }
+    
+    /// <summary>
+    /// Default Bootstrap --bs-card-spacer-y
+    /// </summary>
+    /// <remarks>
+    /// Default value is 1rem
+    /// </remarks>
+    public CssPropertyValue? CardSpacerY { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-title-spacer-y
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0.5rem
+    /// </remarks>
+    public CssPropertyValue? CardTitleSpacerY { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-border-width
+    /// </summary>
+    /// <remarks>
+    /// Default value derived from <see cref="BorderWidth"/>
+    /// </remarks>
+    public CssPropertyValue? CardBorderWidth { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-border-radius
+    /// </summary>
+    /// <remarks>
+    /// Default value derived from <see cref="BorderRadius"/>
+    /// </remarks>
+    public CssPropertyValue? CardBorderRadius { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap .card border-style property
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CssStyleEnum.Solid"/>
+    /// </remarks>
+    public CssPropertyValue? CardBorderStyle { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-box-shadow
+    /// </summary>
+    /// <remarks>
+    /// Default value is to leave it empty.
+    /// </remarks>
+    public string? CardBoxShadow { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-inner-border-radius
+    /// </summary>
+    /// <remarks>
+    /// Default value is derived from <see cref="BorderRadius"/> subtracted by <see cref="BorderWidth"/>
+    /// </remarks>
+    public CssPropertyValue? CardInnerBorderRadius { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-cap-padding-x
+    /// </summary>
+    /// <remarks>
+    /// Default value is 1rem
+    /// </remarks>
+    public CssPropertyValue? CardCapPaddingX { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-cap-padding-y
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0.5rem;
+    /// </remarks>
+    public CssPropertyValue? CardCapPaddingY { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-height
+    /// </summary>
+    /// <remarks>
+    /// Default value is to leave it empty.
+    /// </remarks>
+    public CssPropertyValue? CardHeight { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-img-overlay-padding
+    /// </summary>
+    /// <remarks>
+    /// Default value is 1rem
+    /// </remarks>
+    public CssPropertyValue? CardImgOverlayPadding { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-img-overlay-border-radius
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0.75rem 
+    /// </remarks>
+    public CssPropertyValue? CardGroupMargin { get; set; }
+
+    /// <summary>
+    /// Default value for .card position property
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CssStyleEnum.Relative"/>
+    /// </remarks>
+    public CssPropertyValue? CardPosition { get; set; }
+
+    /// <summary>
+    /// Default value for .card display property
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CssStyleEnum.Flex"/>
+    /// </remarks>
+    public CssPropertyValue? CardDisplay { get; set; }
+
+    /// <summary>
+    /// Default value for .card flex-direction property. <br/>
+    /// Will be applied to the card if <see cref="CardDisplay"/> is set to <see cref="CssStyleEnum.Flex"/>
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CssStyleEnum.Column"/>
+    /// </remarks>
+    public CssPropertyValue? CardFlexDirection { get; set; }
+
+    /// <summary>
+    /// Default value for .card min-width property.
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0
+    /// </remarks>
+    public CssPropertyValue? CardMinWidth { get; set; }
+
+    /// <summary>
+    /// Default value for .card word-wrap property.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CssStyleEnum.BreakWord"/>
+    /// </remarks>
+    public CssPropertyValue? CardWordWrap { get; set; }
+
+    /// <summary>
+    /// Default value for .card background-clip property.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="CssStyleEnum.BorderBox"/>
+    /// </remarks>
+    public CssPropertyValue? CardBackgroundClip { get; set; }
+
+    #endregion
+
     #region Containers
 
     /// <summary>
@@ -597,9 +836,36 @@ public sealed class BootstrapCssSettings
 
     #endregion
 
+    #region :Focus
+ 
+    /// <summary>
+    /// Default Bootstrap --bs-focus-ring-width
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0.25rem
+    /// </remarks>
+    public CssPropertyValue? FocusRingWidth { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-focus-ring-opacity
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0.25
+    /// </remarks>
+    public CssPropertyValue? FocusRingOpacity { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-focus-ring-color
+    /// </summary>
+    /// <remarks>
+    /// Default value is derived from <see cref="PrimaryColor"/> on 25% opacity
+    /// </remarks>
+    public Color? FocusRingColor { get; set; }
+
+    #endregion
+
     #region Links
-
-
+    
     /// <summary>
     /// Default Bootstrap --bs-link-decoration 
     /// </summary>
@@ -684,14 +950,6 @@ public sealed class BootstrapCssSettings
     #endregion
 
     /// <summary>
-    /// Default value for --bs-emphasis-color
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="BlackColor"/>
-    /// </remarks>
-    public Color? EmphasisColor { get; set; }
-
-    /// <summary>
     /// Default Bootstrap --bs-gradient value
     /// </summary>
     /// <remarks>
@@ -708,19 +966,11 @@ public sealed class BootstrapCssSettings
     /// </remarks>
     public CssPropertyValue? GutterWidth { get; set; }
 
-    /// <summary>
-    /// Default Bootstrap --bs-paragraph-margin-bottom 
-    /// </summary>
-    /// <remarks>
-    /// Default value is 1rem
-    /// </remarks>
-    public CssPropertyValue? ParagraphMarginBottom { get; set; }
-
 
     /// <summary>
     /// Parses a user supplied settings class and sets the default values if not provided.
     /// </summary>
-    /// <returns>The same settings class instance, now with the lacking fields supplied.</returns>
+    /// <returns>The same settings class instance, now with the lacking fields supplied with their default values.</returns>
     internal BootstrapCssSettings Parse()
  {
         // Default colors
@@ -809,34 +1059,21 @@ public sealed class BootstrapCssSettings
         Dark.WarningBgSubtleColor ??= Color.FromArgb(48, 48, 7);
 
         // body
-        Light.BodyBackground ??= WhiteColor;
-        Dark.BodyBackground ??= Gray900Color;
-        Light.BodyColor ??= Gray900Color;
-        Dark.BodyColor ??= Gray300Color;
-        EmphasisColor ??= BlackColor;
+        Light.BodyBgColor ??= WhiteColor;
+        Dark.BodyBgColor ??= Gray900Color;
+        Light.BodyTextColor ??= Gray900Color;
+        Dark.BodyTextColor ??= Gray300Color;
         BodyFontFamily ??= "var(--bs-font-sans-serif)";
         BodyFontSize ??= CssPropertyValue.Rem(1);
         BodyFontWeight ??= 400;
         BodyLineHeight ??= CssPropertyValue.RawNumber(1.5f);
-        Light.BodySecondaryBackgroundColor ??= Gray200Color;
-        Light.BodySecondaryColor ??= Color.FromArgb(192, Light.BodyColor.Value);
-        Light.BodyTertiaryBackgroundColor ??= Gray100Color;
-        Light.BodyTertiaryColor ??= Color.FromArgb(128, Light.BodyColor.Value);
-        Light.BodyEmphasisColor ??= BlackColor;
-
         // borders
         BorderWidth ??= CssPropertyValue.Pixels(1);
-        BorderWidths ??= new Dictionary<int, CssPropertyValue>
-        {
-                       { 1, CssPropertyValue.Pixels(1) },
-                                  { 2, CssPropertyValue.Pixels(2) },
-                                             { 3, CssPropertyValue.Pixels(3) },
-                                                        { 4, CssPropertyValue.Pixels(4) },
-                                                                   { 5, CssPropertyValue.Pixels(5) }
-                                                                          };
         BorderStyle ??= CssStyleEnum.Solid;
-        BorderColor ??= Gray300Color;
-        BorderColorTranslucent ??= Color.FromArgb((int)(256f * 0.175f), BlackColor.Value);
+        Light.BorderColor ??= Gray300Color;
+        Dark.BorderColor ??= Gray700Color;
+        Light.BorderColorTranslucent ??= Color.FromArgb((int)(256f * 0.175f), BlackColor.Value);
+        Dark.BorderColorTranslucent ??= Color.FromArgb((int)(256f * 0.175f), WhiteColor.Value);
         BorderRadius ??= CssPropertyValue.Rem(0.375f);
         BorderRadiusSm ??= CssPropertyValue.Rem(0.25f);
         BorderRadiusLg ??= CssPropertyValue.Rem(0.5f);
@@ -861,7 +1098,7 @@ public sealed class BootstrapCssSettings
         Light.SuccessBorderSubtleColor ??= SuccessColor.Value.TintColor(0.6);
         Dark.SuccessBorderSubtleColor ??= Color.FromArgb(0, 77, 0);
         Light.WarningBorderSubtleColor ??= WarningColor.Value.TintColor(0.6);
-        Dark.WarningBgSubtleColor ??= Color.FromArgb(143, 143, 20);
+        Dark.WarningBorderSubtleColor ??= Color.FromArgb(143, 143, 20);
 
         // box-shadow
         BoxShadow ??= $"0 .5rem 1rem rgba({BlackColor.Value.ToRgbStringValues()}, 0.15)";
@@ -877,9 +1114,58 @@ public sealed class BootstrapCssSettings
         BreakPointLg ??= CssPropertyValue.Pixels(992);
         BreakPointXl ??= CssPropertyValue.Pixels(1200);
         BreakPointXxl ??= CssPropertyValue.Pixels(1400);
-        
+
+        // Buttons
+        BtnPaddingX ??= CssPropertyValue.Rem(0.75f);
+        BtnPaddingY ??= CssPropertyValue.Rem(0.375f);
+        BtnFontSize ??= CssPropertyValue.Rem(1);
+        BtnFontWeight ??= 400;
+        BtnLineHeight ??= CssPropertyValue.RawNumber(1.5f);
+        BtnBorderWidth ??= BorderWidth;
+        BtnBorderRadius ??= BorderRadius;
+        BtnBorderStyle ??= CssStyleEnum.Solid;
+        BtnBoxShadow ??= "inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.075)";
+        BtnFocusBoxShadow ??= "0 0 0 0.25rem rgba(var(--bs-btn-focus-shadow-rgb), .5)";
+        BtnDisplay ??= CssStyleEnum.InlineBlock;
+        BtnTextAlign ??= CssStyleEnum.Center;
+        Light.ButtonTextColor ??= Light.BodyTextColor;
+        Dark.ButtonTextColor ??= Dark.BodyTextColor;
+        Light.ButtonBorderColor ??= Color.Transparent;
+        Dark.ButtonBorderColor ??= Color.Transparent;
+        Light.ButtonBackgroundColor ??= Color.Transparent;
+        Dark.ButtonBackgroundColor ??= Color.Transparent;
+        Light.ButtonHoverBorderColor ??= Color.Transparent;
+        Dark.ButtonHoverBorderColor ??= Color.Transparent;
+
+
+        // Cards
+        CardSpacerX ??= CssPropertyValue.Rem(1);
+        CardSpacerY ??= CssPropertyValue.Rem(1);
+        CardTitleSpacerY ??= CssPropertyValue.Rem(0.5f);
+        CardBorderWidth ??= BorderWidth;
+        CardBorderRadius ??= BorderRadius;
+        CardBorderStyle ??= CssStyleEnum.Solid;
+        CardBoxShadow ??= "";
+        CardInnerBorderRadius ??= BorderRadius.Value.Value - BorderWidth.Value.Value;
+        CardCapPaddingX ??= CssPropertyValue.Rem(1);
+        CardCapPaddingY ??= CssPropertyValue.Rem(0.5f); 
+        CardImgOverlayPadding ??= CssPropertyValue.Rem(1);
+        CardGroupMargin ??= CssPropertyValue.Rem(0.5f);
+        CardPosition ??= CssStyleEnum.Relative;
+        CardDisplay ??= CssStyleEnum.Flex;
+        CardFlexDirection ??= CssStyleEnum.Column;
+        CardMinWidth ??= CssPropertyValue.Pixels(0);
+        CardWordWrap ??= CssStyleEnum.BreakWord;
+        CardBackgroundClip ??= CssStyleEnum.BorderBox;
+        Light.CardBorderColor ??= Light.BorderColorTranslucent;
+        Dark.CardBorderColor ??= Dark.BorderColorTranslucent;
+        Light.CardCapBgColor ??= Color.FromArgb(8, Light.BodyTextColor.Value);
+        Dark.CardCapBgColor ??= Color.FromArgb(8, Dark.BodyTextColor.Value);
+        Light.CardBgColor ??= Light.BodyBgColor.Value;
+        Dark.CardBgColor ??= Dark.BodyBgColor.Value;
+
         // Containers
-ContainerMaxWidthSm ??= CssPropertyValue.Pixels(540);
+        ContainerMaxWidthSm ??= CssPropertyValue.Pixels(540);
         ContainerMaxWidthMd ??= CssPropertyValue.Pixels(720);
         ContainerMaxWidthLg ??= CssPropertyValue.Pixels(960);
         ContainerMaxWidthXl ??= CssPropertyValue.Pixels(1140);
@@ -891,7 +1177,17 @@ ContainerMaxWidthSm ??= CssPropertyValue.Pixels(540);
         Light.CodeColor ??= PinkColor;
 Dark.CodeColor ??= Color.FromArgb(230, 133, 181);
 
+        // Focus
+        FocusRingWidth ??= CssPropertyValue.Rem(0.25f);
+        FocusRingOpacity ??= CssPropertyValue.RawNumber(0.25f);
+        FocusRingColor ??= Color.FromArgb(64, PrimaryColor.Value);
+        
         // Forms
+        Light.FormValidColor ??= GreenColor;
+        Dark.FormValidColor ??= Color.FromArgb(102, 179, 102);
+        Light.FormValidBorderColor ??= GreenColor;
+        Dark.FormValidBorderColor ??= Color.FromArgb(102, 179, 102);
+        
         Light.FormInvalidColor ??= RedColor;
         Dark.FormInvalidColor ??= Color.FromArgb(253, 102, 106);
         Light.FormInvalidBorderColor ??= RedColor;
@@ -926,8 +1222,7 @@ Dark.CodeColor ??= Color.FromArgb(230, 133, 181);
         IconLinkIconTransition ??= "0.2s ease-in-out transform";
         IconLinkIconTransform ??= "translate3d(.25em, 0, 0)";
         
-
-
+     
         return this;
     }
 }
@@ -1055,7 +1350,22 @@ public sealed class BootstrapCssSettingsColorTheme
     #endregion
 
     #region Default Bootstrap Border colors
+    
+    /// <summary>
+    /// Default Bootstrap --bs-border-color
+    /// </summary>
+    /// <remarks>
+    /// Default value for light mode is derived from <see cref="BootstrapCssSettings.Gray300Color"/>
+    /// </remarks>
+    public Color? BorderColor { get; set; }
 
+    /// <summary>
+    /// Default Bootstrap --bs-border-color-translucent
+    /// </summary>
+    /// <remarks>
+    /// Default value for light mode is derived from <see cref="BootstrapCssSettings.BlackColor"/> at 17.5% opacity
+    /// </remarks>
+    public Color? BorderColorTranslucent { get; set; }
 
     #region subtle colors
 
@@ -1207,7 +1517,7 @@ public sealed class BootstrapCssSettingsColorTheme
     /// <remarks>
     /// Default value for light mode is <see cref="BootstrapCssSettings.WhiteColor"/>
     /// </remarks>
-    public Color? BodyBackground { get; set; }
+    public Color? BodyBgColor { get; set; }
 
     /// <summary>
     /// Default value for --bs-body-color
@@ -1215,52 +1525,129 @@ public sealed class BootstrapCssSettingsColorTheme
     /// <remarks>
     /// Default value for light mode is <see cref="BootstrapCssSettings.Gray900Color"/>
     /// </remarks>
-    public Color? BodyColor { get; set; }
+    public Color? BodyTextColor { get; set; }
+
+    #endregion
+
+    #region Button
 
     /// <summary>
-    /// Default Bootstrap --bs-body-secondary-bg-color
+    /// Default Bootstrap --bs-btn-color
     /// </summary>
     /// <remarks>
-    /// Default value for light mode is derived from <see cref="BootstrapCssSettings.Gray200Color"/>
+    /// Default value is derived from <see cref="BodyTextColor"/>
     /// </remarks>
-    public Color? BodySecondaryBackgroundColor { get; set; }
+    public Color? ButtonTextColor { get; set; }
 
     /// <summary>
-    /// Default Bootstrap --bs-body-secondary-color
+    /// Default Bootstrap --bs-btn-border-color
     /// </summary>
     /// <remarks>
-    /// Default value for light mode is derived from <see cref="BodyColor"/> at 75% opacity
+    /// Default value is transparent.
     /// </remarks>
-    public Color? BodySecondaryColor { get; set; }
+    public Color? ButtonBorderColor { get; set; }
 
     /// <summary>
-    /// Default Bootstrap --bs-body-tertiary-bg-color
+    /// Default Bootstrap --bs-btn-hover-border-color
     /// </summary>
     /// <remarks>
-    /// Default value for light mode is derived from <see cref="BootstrapCssSettings.Gray100Color"/>
+    /// Default value is transparent.
     /// </remarks>
-    public Color? BodyTertiaryBackgroundColor { get; set; }
+    public Color? ButtonHoverBorderColor { get; set; }
+    
+    /// <summary>
+    /// Default Bootstrap --bs-btn-bg-color
+    /// </summary>
+    /// <remarks>
+    /// Default value is transparent.
+    /// </remarks>
+    public Color? ButtonBackgroundColor { get; set; }
+
+    #endregion
+
+    #region Card
 
     /// <summary>
-    /// Default Bootstrap --bs-body-tertiary-color
+    /// Default Bootstrap --bs-card-title-color
     /// </summary>
     /// <remarks>
-    /// Default value for light mode is derived from <see cref="BodyColor"/> at 50% opacity
+    /// The default value is to leave it empty. <br />
+    /// Will be applied to <see cref="CardTitle"/> unless <see cref="Card.Color"/> has been specified.
     /// </remarks>
-    public Color? BodyTertiaryColor { get; set; }
+    public Color? CardTitleColor { get; set; }
 
     /// <summary>
-    /// Default Bootstrap --bs-body-emphasis-color
+    /// Default Bootstrap --bs-card-subtitle-color
     /// </summary>
     /// <remarks>
-    /// Default value is derived from <see cref="BootstrapCssSettings.BlackColor"/>
+    /// The default value is to leave it empty. <br/>
     /// </remarks>
-    public Color? BodyEmphasisColor { get; set; }
+    public Color? CardSubTitleColor { get; set; }
 
+    /// <summary>
+    /// Default Bootstrap --bs-card-border-color
+    /// </summary>
+    /// <remarks>
+    /// The default value is derived from <see cref="BorderColorTranslucent" /> <br/>
+    /// Will be applied to <see cref="Card"/> unless <see cref="Card.Color"/> has been specified.
+    /// </remarks>
+    public Color? CardBorderColor { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-cap-bg-color
+    /// </summary>
+    /// <remarks>
+    /// The default color is derived from <see cref="BodyTextColor"/> at 3% opacity. <br/>
+    /// Will be applied to <see cref="CardHeader"/>, unless <see cref="Card.Color"/> has been specified.
+    /// </remarks>
+    public Color? CardCapBgColor { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-cap-color
+    /// </summary>
+    /// <remarks>
+    /// The default value is to leave it empty. <br/>
+    /// Will be applied to <see cref="CardHeader"/>, unless <see cref="Card.Color"/> has been specified.
+    /// </remarks>
+    public Color? CardCapTextColor { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-color
+    /// </summary>
+    /// <remarks>
+    /// The default value is to leave it empty. <br/>
+    /// Will be applied to <see cref="Card"/> unless <see cref="Card.Color"/> has been specified.
+    /// </remarks>
+    public Color? CardTextColor { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-card-bg
+    /// </summary>
+    /// <remarks>
+    /// The default value is derived from <see cref="BodyBgColor" /> <br/>
+    /// Will be applied to <see cref="Card"/> unless <see cref="Card.Color"/> has been specified.
+    /// </remarks>
+    public Color? CardBgColor { get; set; }
 
     #endregion
 
     #region Forms
+
+    /// <summary>
+    /// Default Bootstrap --bs-form-valid-color text color.
+    /// </summary>
+    /// <remarks>
+    /// The default value for light mode will be derived from <see cref="BootstrapCssSettings.GreenColor"/>
+    /// </remarks>
+    public Color? FormValidColor { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-form-valid-border-color text color.
+    /// </summary>
+    /// <remarks>
+    /// The default value for light mode will be derived from <see cref="BootstrapCssSettings.GreenColor"/>
+    /// </remarks>
+    public Color? FormValidBorderColor { get; set; }
 
 
     /// <summary>
@@ -1281,8 +1668,7 @@ public sealed class BootstrapCssSettingsColorTheme
 
 
     #endregion
-
-
+    
     #region Links
 
     /// <summary>
@@ -1302,8 +1688,7 @@ public sealed class BootstrapCssSettingsColorTheme
     public Color? LinkHoverColor { get; set; }
 
     #endregion
-
-
+    
     /// <summary>
     /// Default Bootstrap --bs-code-color.
     /// </summary>

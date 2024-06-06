@@ -8,6 +8,7 @@ public partial class Spinner : BlazorBootstrapComponentBase
 {
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         AdditionalAttributes ??= new Dictionary<string, object>();

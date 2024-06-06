@@ -4,6 +4,7 @@ public partial class RibbonItemGroup : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass("bb-ribbon-item-group")

@@ -52,16 +52,16 @@ public partial class Collapse : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
+    [JSInvokable("bsHiddenCollapse")]
     public Task BsHiddenCollapse() => OnHidden.InvokeAsync();
 
-    [JSInvokable]
+    [JSInvokable("bsHideCollapse")]
     public Task BsHideCollapse() => OnHiding.InvokeAsync();
 
-    [JSInvokable]
+    [JSInvokable("bsShowCollapse")]
     public Task BsShowCollapse() => OnShowing.InvokeAsync();
 
-    [JSInvokable]
+    [JSInvokable("bsShownCollapse")]
     public Task BsShownCollapse() => OnShown.InvokeAsync();
 
     /// <summary>

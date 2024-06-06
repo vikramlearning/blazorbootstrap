@@ -4,6 +4,7 @@ public partial class SidebarItemGroup : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         new CssClassBuilder(Class)
             .AddClass(BootstrapClass.FlexColumn)

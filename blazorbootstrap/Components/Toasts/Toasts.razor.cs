@@ -22,6 +22,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         if (ToastService is not null)
