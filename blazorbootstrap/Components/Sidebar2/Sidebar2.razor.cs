@@ -153,10 +153,10 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     /// Gets or sets the Href.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see cref="string.Empty" />.
     /// </remarks>
     [Parameter]
-    public string? Href { get; set; }
+    public string? Href { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the IconName.
