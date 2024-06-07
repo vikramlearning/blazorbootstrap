@@ -1,4 +1,4 @@
-﻿<BarChart @ref="barChart" Height="300" Class="mb-4" />
+﻿<BarChart @ref="barChart" Width="500" Height="300" />
 
 @code {
     private BarChart barChart = default!;
@@ -19,20 +19,15 @@
             };
         datasets.Add(dataset1);
 
-        chartData = new ChartData { 
-            Labels = labels, 
-            Datasets = datasets };
+        chartData = new ChartData { Labels = labels, Datasets = datasets };
 
         barChartOptions = new BarChartOptions();
         barChartOptions.Responsive = true;
         barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
         barChartOptions.IndexAxis = "y";
 
-        barChartOptions.Scales.X!.Title!.Text = "Visitors";
-        barChartOptions.Scales.X.Title.Display = true;
-
-        barChartOptions.Scales.Y!.Title!.Text = "Browser";
-        barChartOptions.Scales.Y.Title.Display = true;
+        barChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "Visitors", Display = true };
+        barChartOptions.Scales.Y!.Title = new ChartAxesTitle { Text = "Browser", Display = true };
 
         barChartOptions.Plugins.Legend.Display = false;
     }

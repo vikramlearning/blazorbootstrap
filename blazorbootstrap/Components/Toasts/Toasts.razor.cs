@@ -125,7 +125,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
     public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
 
     /// <summary>
-    /// If true, shows the close button.
+    /// If <see langword="true" />, shows the close button.
     /// </summary>
     /// <remarks>
     /// Default value is true.

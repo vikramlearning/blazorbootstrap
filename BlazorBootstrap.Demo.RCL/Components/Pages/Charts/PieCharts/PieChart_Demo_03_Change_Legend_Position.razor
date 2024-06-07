@@ -1,9 +1,11 @@
-﻿<PieChart @ref="pieChart" Width="500" Class="mb-5" />
+﻿<PieChart @ref="pieChart" Width="500" />
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="PositionTopAsync"> Position: top </Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="PositionRightAsync"> Position: right </Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="PositionBottomAsync"> Position: bottom </Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="PositionLeftAsync"> Position: left </Button>
+<div class="mt-5">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="PositionTopAsync"> Position: top </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="PositionRightAsync"> Position: right </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="PositionBottomAsync"> Position: bottom </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="PositionLeftAsync"> Position: left </Button>
+</div>
 
 @code {
     private PieChart pieChart = default!;

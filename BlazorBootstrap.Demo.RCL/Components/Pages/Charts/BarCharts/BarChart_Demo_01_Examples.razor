@@ -1,10 +1,12 @@
-﻿<BarChart @ref="barChart" Width="400" Height="200" Class="mb-4" />
+﻿<BarChart @ref="barChart" Width="500" Height="300" />
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()">Add Data</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowHorizontalBarChartAsync()">Horizontal Bar Chart</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowVerticalBarChartAsync()">Vertical Bar Chart</Button>
+<div class="mt-5">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()">Add Data</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowHorizontalBarChartAsync()">Horizontal Bar Chart</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowVerticalBarChartAsync()">Vertical Bar Chart</Button>
+</div>
 
 @code {
     private BarChart barChart = default!;

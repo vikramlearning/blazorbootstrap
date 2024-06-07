@@ -1,7 +1,9 @@
-﻿<LineChart @ref="lineChart" Width="800" Class="mb-4"/>
+﻿<LineChart @ref="lineChart" Width="800" />
 
-<Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="ButtonSize.Small" @onclick="UpdateIndiaNextOverRunsAsync"> India Next Over </Button>
-<Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="ButtonSize.Small" @onclick="UpdateEnglandNextOverRunsAsync"> England Next Over </Button>
+<div class="mt-5">
+    <Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="ButtonSize.Small" @onclick="UpdateIndiaNextOverRunsAsync"> India Next Over </Button>
+    <Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="ButtonSize.Small" @onclick="UpdateEnglandNextOverRunsAsync"> England Next Over </Button>
+</div>
 
 @code {
     private LineChart lineChart = default!;
@@ -87,17 +89,12 @@
 
         options.Interaction.Mode = InteractionMode.Index;
 
-        options.Plugins.Title!.Text = "WORM";
-        options.Plugins.Title.Display = true;
-        options.Plugins.Title!.Font!.Size = 20;
+        options.Plugins.Title = new ChartPluginsTitle { Text = "WORM", Display = true, Font = new ChartFont { Size = 20 } };
 
         options.Responsive = true;
 
-        options.Scales.X!.Title!.Text = "Overs";
-        options.Scales.X.Title.Display = true;
-
-        options.Scales.Y!.Title!.Text = "Runs";
-        options.Scales.Y.Title.Display = true;
+        options.Scales.X!.Title = new ChartAxesTitle { Text = "Overs", Display = true };
+        options.Scales.Y!.Title = new ChartAxesTitle { Text = "Runs", Display = true };
         options.Scales.Y.SuggestedMax = 150;
 
         return options;

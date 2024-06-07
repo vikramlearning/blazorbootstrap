@@ -191,7 +191,7 @@ public partial class Toast : BlazorBootstrapComponentBase
     private ProgressColor progressColor => GetProgressColor();
 
     /// <summary>
-    /// If true, shows the close button.
+    /// If <see langword="true" />, shows the close button.
     /// </summary>
     /// <remarks>
     /// Default value is true.

@@ -13,6 +13,7 @@ This project wouldn't be possible without the incredible contributions of many t
 * **[Bootstrap](https://getbootstrap.com/):** :stars: License: [MIT license](https://github.com/twbs/bootstrap#MIT-1-ov-file)
 * **[Chatjs](https://www.chartjs.org/):** :heart: License: [MIT license](https://github.com/chartjs/Chart.js#MIT-1-ov-file)
 * **[PDF.js](https://mozilla.github.io/pdf.js/):** :book: License:  [Apache-2.0 license](https://github.com/mozilla/pdf.js#Apache-2.0-1-ov-file)
+* **[SortableJS](https://github.com/SortableJS/Sortable):** :arrow_up_down: License: [MIT license](https://github.com/SortableJS/Sortable?tab=MIT-1-ov-file#readme)
 
 ## Design & Assets
 
@@ -27,10 +28,6 @@ This project wouldn't be possible without the incredible contributions of many t
 * **[JetBrains](https://www.jetbrains.com/):** :brain: [Open Source Support](https://www.jetbrains.com/community/opensource/#support)
 * **[BrowserStack](https://www.browserstack.com/):** :globe: [Open Source Support](https://www.browserstack.com/open-source)
 * **[SonarQube](https://www.sonarqube.org/):** :shield: [Open Source Support](https://www.sonarsource.com/solutions/commitment-to-open-source/)
-
-## Inspiration
-
-* **Blazorise:** Served as a source of inspiration and learning. We acknowledge and appreciate the inspiration we received from Blazorise, specifically their stylebuilder and classbuilder logic. While our project initially included references to these(stylebuilder and classbuilder) under the MIT License, with changes in licensing, we have recently removed these references in our continued commitment to be Open Source.
 
 ## Beyond Recognition
 

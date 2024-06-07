@@ -34,16 +34,16 @@ public partial class LineChart : BlazorBootstrapChart
         return chartData;
     }
 
-    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, List<IChartDatasetData> data)
+    public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets must not be null", nameof(chartData));
 
         if (chartData.Labels is null)
-            throw new ArgumentNullException(nameof(chartData.Labels));
+            throw new ArgumentException("chartData.Labels must not be null", nameof(chartData));
 
         if (dataLabel is null)
             throw new ArgumentNullException(nameof(dataLabel));
@@ -55,7 +55,7 @@ public partial class LineChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(data));
 
         if (!data.Any())
-            throw new Exception($"{nameof(data)} cannot be empty.");
+            throw new ArgumentException($"{nameof(data)} cannot be empty.", nameof(data));
 
         if (chartData.Datasets.Count != data.Count)
             throw new InvalidDataException("The chart dataset count and the new data points count do not match.");
@@ -85,7 +85,7 @@ public partial class LineChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets must not be null", nameof(chartData));
 
         if (chartDataset is null)
             throw new ArgumentNullException(nameof(chartDataset));
@@ -105,7 +105,7 @@ public partial class LineChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets must not be null", nameof(chartData));
 
         if (chartOptions is null)
             throw new ArgumentNullException(nameof(chartOptions));
@@ -121,7 +121,7 @@ public partial class LineChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets must not be null", nameof(chartData));
 
         if (chartOptions is null)
             throw new ArgumentNullException(nameof(chartOptions));

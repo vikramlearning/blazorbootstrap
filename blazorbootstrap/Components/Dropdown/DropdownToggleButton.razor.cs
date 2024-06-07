@@ -50,7 +50,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// If true, enables the auto close.
+    /// If <see langword="true" />, enables the auto close.
     /// </summary>
     /// <remarks>
     /// Default value is false.

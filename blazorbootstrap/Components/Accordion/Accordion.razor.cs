@@ -179,7 +179,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// If true, accordion items stay open when another item is opened.
+    /// If <see langword="true" />, accordion items stay open when another item is opened.
     /// </summary>
     /// <remarks>
     /// Default value is false.
@@ -198,7 +198,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// If true, removes borders and rounded corners to render accordions edge-to-edge with their parent container.
+    /// If <see langword="true" />, removes borders and rounded corners to render accordions edge-to-edge with their parent container.
     /// </summary>
     /// <remarks>
     /// Default value is false.

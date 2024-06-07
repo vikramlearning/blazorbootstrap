@@ -401,7 +401,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// If true, allows negative numbers.
+    /// If <see langword="true" />, allows negative numbers.
     /// </summary>
     /// <remarks>
     /// Default value is false.
@@ -412,7 +412,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     private string autoComplete => AutoComplete ? "true" : "false";
 
     /// <summary>
-    /// If true, CurrencyInput can complete the values automatically by the browser.
+    /// If <see langword="true" />, CurrencyInput can complete the values automatically by the browser.
     /// </summary>
     /// <remarks>
     /// Default value is false.
@@ -442,7 +442,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Determines whether to restrict the user input to Min and Max range.
-    /// If true, restricts the user input between the Min and Max range. Else accepts the user input.
+    /// If <see langword="true" />, restricts the user input between the Min and Max range. Else accepts the user input.
     /// </summary>
     /// <remarks>
     /// Default value is false.
