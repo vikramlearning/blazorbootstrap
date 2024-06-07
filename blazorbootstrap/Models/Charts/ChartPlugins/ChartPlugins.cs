@@ -35,7 +35,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// Alignment of the legend. Default values is 'center'. Other possible values 'start' and 'end'.
     /// </summary>
-    public string Align { get; set; } = "center";
+    public string? Align { get; set; } = "center";
 
     /// <summary>
     /// Is the legend shown? Default value is 'true'.
@@ -94,8 +94,6 @@ public class ChartPluginsLegend
 
     #endregion
 }
-
-
 
 public class ChartPluginsLegendTitle
 {
@@ -199,12 +197,12 @@ public class ChartPluginsTitle
     /// Options are: 'start', 'center', and 'end'
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Align { get; set; }
+    public string? Align { get; set; } = "center";
     /// <summary>
     /// Color of text.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Color { get; set; }
+    public string? Color { get; set; } = "black";
 
     /// <summary>
     /// Is the title shown?

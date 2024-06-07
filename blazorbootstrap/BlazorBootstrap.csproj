@@ -26,7 +26,6 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>https://github.com/vikramlearning/blazorbootstrap/releases</PackageReleaseNotes>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 
   </PropertyGroup>
 

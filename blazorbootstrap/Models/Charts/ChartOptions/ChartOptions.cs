@@ -198,14 +198,12 @@ public class ChartAxes
     #endregion
 }
 
-
 /// <summary>
 /// Define options for the border that run perpendicular to the axis.
 /// <see href="https://www.chartjs.org/docs/latest/axes/styling.html" />
 /// </summary>
 public class ChartAxesBorder
 {
-
     /// <summary>
     ///  The color of the border line.
     /// </summary>
@@ -217,7 +215,7 @@ public class ChartAxesBorder
     /// <see href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash" />
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IReadOnlyCollection<int>? Dash { get; set; }
+    public List<int>? Dash { get; set; }
 
     /// <summary>
     /// Offset for line dashes.
@@ -292,7 +290,7 @@ public class ChartAxesGrid
     /// Length and spacing of the tick mark line. 
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IReadOnlyCollection<int>? TickBorderDash { get; set; }
+    public List<int>? TickBorderDash { get; set; }
 
     /// <summary>
     /// Offset for the line dash of the tick mark. 

@@ -1,4 +1,4 @@
-﻿<LineChart @ref="lineChart" Width="800" Class="mb-4" />
+﻿<LineChart @ref="lineChart" Width="800" />
 
 @code {
     private LineChart lineChart = default!;
@@ -73,11 +73,8 @@
         lineChartOptions.Responsive = true;
         lineChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index };
 
-        lineChartOptions.Scales.X!.Title!.Text = "2019";
-        lineChartOptions.Scales.X.Title.Display = true;
-
-        lineChartOptions.Scales.Y!.Title!.Text = "Visitors";
-        lineChartOptions.Scales.Y.Title.Display = true;
+        lineChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "2019", Display = true };
+        lineChartOptions.Scales.Y!.Title = new ChartAxesTitle { Text = "Visitors", Display = true };
 
         lineChartOptions.Plugins.Title!.Text = "Operating system";
         lineChartOptions.Plugins.Title.Display = true;

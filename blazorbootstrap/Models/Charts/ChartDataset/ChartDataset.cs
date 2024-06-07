@@ -25,13 +25,13 @@ public class ChartDataset : IChartDataset
     /// Get or sets the BorderColor.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IReadOnlyCollection<string>? BorderColor { get; set; }
+    public List<string>? BorderColor { get; set; }
 
     /// <summary>
     /// Get or sets the BorderWidth.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IReadOnlyCollection<double>? BorderWidth { get; set; }
+    public List<double>? BorderWidth { get; set; }
 
     /// <summary>
     /// How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside
@@ -55,19 +55,19 @@ public class ChartDataset : IChartDataset
     /// Get or sets the HoverBackgroundColor.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IReadOnlyCollection<string>? HoverBackgroundColor { get; set; }
+    public List<string>? HoverBackgroundColor { get; set; }
 
     /// <summary>
     /// Get or sets the HoverBorderColor.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IReadOnlyCollection<string>? HoverBorderColor { get; set; }
+    public List<string>? HoverBorderColor { get; set; }
 
     /// <summary>
     /// Get or sets the HoverBorderWidth.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IReadOnlyCollection<double>? HoverBorderWidth { get; set; }
+    public List<double>? HoverBorderWidth { get; set; }
 
     /// <summary>
     /// Get unique object id.
