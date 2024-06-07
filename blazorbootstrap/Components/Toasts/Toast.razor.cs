@@ -82,16 +82,16 @@ public partial class Toast : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
+    [JSInvokable("bsHiddenToast")]
     public Task BsHiddenToast() => Hidden.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
 
-    [JSInvokable]
+    [JSInvokable("bsHideToast")]
     public Task BsHideToast() => Hiding.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
 
-    [JSInvokable]
+    [JSInvokable("bsShownToast")]
     public Task BsShownToast() => Shown.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
 
-    [JSInvokable]
+    [JSInvokable("bsShowToast")]
     public Task BsShowToast() => Showing.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
 
     /// <summary>

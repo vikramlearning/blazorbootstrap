@@ -52,10 +52,10 @@ public partial class Alert : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
+    [JSInvokable("bsCloseAlert")]
     public Task BsCloseAlert() => OnClose.InvokeAsync();
 
-    [JSInvokable]
+    [JSInvokable("bsClosedAlert")]
     public Task BsClosedAlert() => OnClosed.InvokeAsync();
 
     /// <summary>
