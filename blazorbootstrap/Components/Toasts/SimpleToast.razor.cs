@@ -103,7 +103,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     public EventCallback<ToastEventArgs> Hiding { get; set; }
 
     /// <summary>
-    /// If true, shows the close button.
+    /// If <see langword="true" />, shows the close button.
     /// </summary>
     /// <remarks>
     /// Default value is true.

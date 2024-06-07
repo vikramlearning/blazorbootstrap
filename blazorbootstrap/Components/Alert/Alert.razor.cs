@@ -87,7 +87,7 @@ public partial class Alert : BlazorBootstrapComponentBase
     public AlertColor Color { get; set; } = AlertColor.None;
 
     /// <summary>
-    /// If true, shows an inline close button.
+    /// If <see langword="true" />, shows an inline close button.
     /// </summary>
     /// <remarks>
     /// Default value is false.

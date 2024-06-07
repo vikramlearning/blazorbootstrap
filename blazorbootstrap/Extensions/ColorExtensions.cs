@@ -13,7 +13,7 @@ public static class ColorExtensions
 
     /// <summary>
     /// Converts System.Drawing.Color to #RRGGBBAA format string.
-    /// <see cref="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
     /// </summary>
     /// <param name="c"></param>
     /// <returns>#RRGGBBAA format string</returns>
@@ -21,7 +21,7 @@ public static class ColorExtensions
 
     /// <summary>
     /// Converts System.Drawing.Color to #RRGGBB format string.
-    /// <see cref="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
     /// </summary>
     /// <param name="c"></param>
     /// <returns>#RRGGBB format string</returns>
@@ -29,7 +29,7 @@ public static class ColorExtensions
 
     /// <summary>
     /// Converts System.Drawing.Color to RGBA(R, G, B, A) format string.
-    /// <see cref="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
     /// </summary>
     /// <param name="c">System.Drawing.Color</param>
     /// <param name="alpha">The alpha parameter is a number between 0.0 (fully transparent) and 1.0 (fully opaque).</param>
@@ -38,7 +38,7 @@ public static class ColorExtensions
 
     /// <summary>
     /// Converts System.Drawing.Color to RGB(R, G, B) format string.
-    /// <see cref="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
     /// </summary>
     /// <param name="c"></param>
     /// <returns>RGB(R, G, B) format string</returns>

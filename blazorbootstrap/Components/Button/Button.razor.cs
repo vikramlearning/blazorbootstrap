@@ -343,7 +343,7 @@ public partial class Button : BlazorBootstrapComponentBase
     public bool Disabled { get; set; }
 
     /// <summary>
-    /// If true, shows the loading spinner or a <see cref="LoadingTemplate" />.
+    /// If <see langword="true" />, shows the loading spinner or a <see cref="LoadingTemplate" />.
     /// </summary>
     /// <remarks>
     /// Default value is false.

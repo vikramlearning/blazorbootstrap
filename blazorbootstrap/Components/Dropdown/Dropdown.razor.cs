@@ -93,7 +93,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
             .Build();
 
     /// <summary>
-    /// If true, enables the auto close.
+    /// If <see langword="true" />, enables the auto close.
     /// </summary>
     /// <remarks>
     /// Default value is true.
@@ -138,7 +138,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     public DropdownDirection Direction { get; set; } = DropdownDirection.Dropdown;
 
     /// <summary>
-    /// If true, dropdown will be disabled.
+    /// If <see langword="true" />, dropdown will be disabled.
     /// </summary>
     /// <remarks>
     /// Default value is false.

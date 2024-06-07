@@ -117,7 +117,7 @@ public class LineChartDataset : ChartDataset
     public bool ShowLine { get; set; } = true;
 
     /// <summary>
-    /// If true, lines will be drawn between points with no or null data.
+    /// If <see langword="true" />, lines will be drawn between points with no or null data.
     /// If false, points with null data will create a break in the line.
     /// Can also be a number specifying the maximum gap length to span.
     /// The unit of the value depends on the scale used.
@@ -125,7 +125,7 @@ public class LineChartDataset : ChartDataset
     public bool SpanGaps { get; set; }
 
     /// <summary>
-    /// true to show the line as a stepped line (tension will be ignored).
+    /// <see langword="true" /> to show the line as a stepped line (tension will be ignored).
     /// </summary>
     public bool Stepped { get; set; }
 

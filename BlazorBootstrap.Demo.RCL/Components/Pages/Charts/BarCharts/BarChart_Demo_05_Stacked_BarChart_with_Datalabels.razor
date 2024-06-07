@@ -1,4 +1,4 @@
-﻿<BarChart @ref="barChart" Height="300" Class="mb-4" />
+﻿<BarChart @ref="barChart" Width="500" Height="300" />
 
 @code {
     private BarChart barChart = default!;
@@ -53,11 +53,8 @@
         barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
         barChartOptions.IndexAxis = "y";
 
-        barChartOptions.Scales.X!.Title!.Text = "Visitors";
-        barChartOptions.Scales.X.Title.Display = true;
-
-        barChartOptions.Scales.Y!.Title!.Text = "Browser";
-        barChartOptions.Scales.Y.Title.Display = true;
+        barChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "Visitors", Display = true };
+        barChartOptions.Scales.Y!.Title = new ChartAxesTitle { Text = "Browser", Display = true };
 
         barChartOptions.Scales.X.Stacked = true;
         barChartOptions.Scales.Y.Stacked = true;
