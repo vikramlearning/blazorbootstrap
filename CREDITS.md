@@ -13,6 +13,7 @@ This project wouldn't be possible without the incredible contributions of many t
 * **[Bootstrap](https://getbootstrap.com/):** :stars: License: [MIT license](https://github.com/twbs/bootstrap#MIT-1-ov-file)
 * **[Chatjs](https://www.chartjs.org/):** :heart: License: [MIT license](https://github.com/chartjs/Chart.js#MIT-1-ov-file)
 * **[PDF.js](https://mozilla.github.io/pdf.js/):** :book: License:  [Apache-2.0 license](https://github.com/mozilla/pdf.js#Apache-2.0-1-ov-file)
+* **[SortableJS](https://github.com/SortableJS/Sortable):** :arrow_up_down: License: [MIT license](https://github.com/SortableJS/Sortable?tab=MIT-1-ov-file#readme)
 
 ## Design & Assets
 
