@@ -28,10 +28,6 @@ This project wouldn't be possible without the incredible contributions of many t
 * **[BrowserStack](https://www.browserstack.com/):** :globe: [Open Source Support](https://www.browserstack.com/open-source)
 * **[SonarQube](https://www.sonarqube.org/):** :shield: [Open Source Support](https://www.sonarsource.com/solutions/commitment-to-open-source/)
 
-## Inspiration
-
-* **Blazorise:** Served as a source of inspiration and learning. We acknowledge and appreciate the inspiration we received from Blazorise, specifically their stylebuilder and classbuilder logic. While our project initially included references to these(stylebuilder and classbuilder) under the MIT License, with changes in licensing, we have recently removed these references in our continued commitment to be Open Source.
-
 ## Beyond Recognition
 
 We encourage you to explore these projects further and contribute your own expertise. Remember, open source thrives on participation and collaboration. Let's keep building the future, together!
