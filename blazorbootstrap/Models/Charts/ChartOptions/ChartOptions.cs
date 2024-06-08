@@ -494,6 +494,7 @@ public class ChartAxesTitle
     /// Alignment of the title.
     /// Options are: 'start', 'center', and 'end'
     /// </summary>
+    [JsonPropertyName("align")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Alignment { get; private set; }
 
