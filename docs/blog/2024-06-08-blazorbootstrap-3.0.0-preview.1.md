@@ -1,5 +1,5 @@
 ---
-title: Blazor Bootstrap v3.0.0
+title: Blazor Bootstrap v3.0.0-preview.1
 authors:
   name: Vikram Reddy
   title: Creator
@@ -8,13 +8,16 @@ authors:
 tags: [v3.0.0, blazor, bootstrap, blazorbootstrap, accordion, button, callout, dropdown, grid, modal, ribbon, tab, sidebar, sidebar2]
 ---
 
-We are excited to release version 3.0.0, which includes a Grid, Modal, Sidebar, Sidebar2 updates, and other improvements!!!
+We are excited to release version v3.0.0-preview.1, which includes a Grid, Modal, Sidebar, Sidebar2 updates, and other improvements!!!
 
 ![image](https://i.imgur.com/XG4Wv17.png "Blazor Bootstrap: Grid Component - Column class")
 
 <!--truncate-->
 
 ## What's changed
+
+- `Chart` components
+  - Tick Configuration support added
 
 - `Grid` component
   - New parameter **FilterButtonColor** added to change the filter button color.

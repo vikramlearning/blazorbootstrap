@@ -1,0 +1,120 @@
+﻿<LineChart @ref="lineChart" Width="500" Height="200" />
+
+<div class="mt-5">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ChangeTicksAlignmentToStart()"> Alignment: start </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ChangeTicksAlignmentToCenter()"> Alignment: center (default) </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ChangeTicksAlignmentToEnd()"> Alignment: end </Button>
+</div>
+
+@code {
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
+
+    private int datasetsCount;
+    private int labelsCount;
+
+    private Random random = new();
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
+        lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+
+        // set ticks color
+        lineChartOptions.Scales.X!.Ticks = new ChartAxesTicks { Color = "red" };
+        lineChartOptions.Scales.Y!.Ticks = new ChartAxesTicks { Color = ColorUtility.CategoricalTwelveColors[4] };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task ChangeTicksAlignmentToStart()
+    {
+        lineChartOptions.Scales.X!.Ticks!.TicksAlignment = TicksAlignment.Start;
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    private async Task ChangeTicksAlignmentToCenter()
+    {
+        lineChartOptions.Scales.X!.Ticks!.TicksAlignment = TicksAlignment.Center;
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    private async Task ChangeTicksAlignmentToEnd()
+    {
+        lineChartOptions.Scales.X!.Ticks!.TicksAlignment = TicksAlignment.End;
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    #region Data Preparation
+
+    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
+    {
+        var datasets = new List<IChartDataset>();
+
+        for (var index = 0; index < numberOfDatasets; index++)
+        {
+            datasets.Add(GetRandomLineChartDataset());
+        }
+
+        return datasets;
+    }
+
+    private LineChartDataset GetRandomLineChartDataset()
+    {
+        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
+
+        datasetsCount += 1;
+
+        return new LineChartDataset
+            {
+                Label = $"Team {datasetsCount}",
+                Data = GetRandomData(),
+                BackgroundColor = new List<string> { c.ToRgbString() },
+                BorderColor = new List<string> { c.ToRgbString() },
+                BorderWidth = new List<double> { 2 },
+                HoverBorderWidth = new List<double> { 4 },
+                PointBackgroundColor = new List<string> { c.ToRgbString() },
+                PointRadius = new List<int> { 0 }, // hide points
+                PointHoverRadius = new List<int> { 4 }
+            };
+    }
+
+    private List<double> GetRandomData()
+    {
+        var data = new List<double>();
+        for (var index = 0; index < labelsCount; index++)
+        {
+            data.Add(random.Next(200));
+        }
+
+        return data;
+    }
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel()
+    {
+        labelsCount += 1;
+        return $"Day {labelsCount}";
+    }
+
+    #endregion Data Preparation
+
+}
