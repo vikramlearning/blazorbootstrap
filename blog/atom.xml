@@ -2,11 +2,37 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://docs.blazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Docs Blog</title>
-    <updated>2024-04-21T00:00:00.000Z</updated>
+    <updated>2024-06-08T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://docs.blazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Docs Blog</subtitle>
     <icon>https://docs.blazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v3.0.0-preview.1]]></title>
+        <id>https://docs.blazorbootstrap.com/blog/2024/06/08/blazorbootstrap-3.0.0-preview.1</id>
+        <link href="https://docs.blazorbootstrap.com/blog/2024/06/08/blazorbootstrap-3.0.0-preview.1"/>
+        <updated>2024-06-08T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release version v3.0.0-preview.1, which includes a Charts, Grid, Modal, Sidebar, Sidebar2 updates, and other improvements!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release version v3.0.0-preview.1, which includes a Charts, Grid, Modal, Sidebar, Sidebar2 updates, and other improvements!!!</p><p><img loading="lazy" src="https://i.imgur.com/XG4Wv17.png" alt="image" title="Blazor Bootstrap: Grid Component - Column class" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>Chart</code> components</p><ul><li>Tick configuration support added</li><li>Grid configuration support added</li></ul></li><li><p><code>Grid</code> component</p><ul><li>New parameter <strong>FilterButtonColor</strong> added to change the filter button color.</li><li>New parameter <strong>FilterButtonCSSClass</strong> added to apply custom CSS classes.</li><li>Grid filters - Supports <code>DoesNotContain</code> filter.</li><li>Grid filters - <strong>Enum</strong> support added.</li><li>Grid filters - <strong>Guid</strong> support added.</li></ul></li><li><p><code>Modal</code> component</p><ul><li>Bootstrtap 5.3.3 fixes: Modal close button alignment issue fixed. </li></ul></li><li><p><code>Sidebar</code> component</p><ul><li><strong>Href</strong> parameter added.</li></ul></li><li><p><code>Sidebar2</code> component</p><ul><li><strong>Href</strong> parameter added.</li></ul></li><li><p>BlazorBootstrtap component library targets .NET 6 and .NET 8 frameworks.</p></li><li><p>Demos &amp; Docs updated.</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="breaking-changes">Breaking changes<a href="#breaking-changes" class="hash-link" aria-label="Direct link to Breaking changes" title="Direct link to Breaking changes">​</a></h2><ul><li><p><code>AccordionItem</code></p><ul><li><strong>IsActive</strong> parameter renamed to <strong>Active</strong>.</li></ul></li><li><p><code>Button</code></p><ul><li><strong>Size</strong>'s parameter data type changed from <strong>Size</strong> to <strong>ButtonSize</strong>.</li></ul></li><li><p><code>Callout</code></p><ul><li><strong>Type</strong> parameter changed to <strong>Color</strong>.</li></ul></li><li><p><code>Dropdown</code></p><ul><li>Set the dropdown color on <code>Dropdown</code> component only instead of setting on the <code>DropdownActionButton</code> and <code>DropdownToggleButton</code>.</li><li><strong>Size</strong>'s parameter data type changed from <strong>Size</strong> to <strong>DropdownSize</strong>.</li></ul></li><li><p><code>DropdownActionButton</code></p><ul><li><strong>Color</strong> parameter removed.</li></ul></li><li><p><code>DropdownToggleButton</code></p><ul><li><strong>Color</strong> parameter removed.</li></ul></li><li><p><code>DropdownItem</code></p><ul><li><strong>Type</strong>'s parameter data type changed from <strong>ButtonType</strong> to <strong>DropdownItemType</strong>.</li></ul></li><li><p><code>RibbonTab</code></p><ul><li><strong>IsActive</strong> parameter renamed to <strong>Active</strong>.</li></ul></li><li><p><code>Tab</code></p><ul><li><strong>IsActive</strong> parameter renamed to <strong>Active</strong>.</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v3.0.0" term="v3.0.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="accordion" term="accordion"/>
+        <category label="button" term="button"/>
+        <category label="callout" term="callout"/>
+        <category label="dropdown" term="dropdown"/>
+        <category label="grid" term="grid"/>
+        <category label="modal" term="modal"/>
+        <category label="ribbon" term="ribbon"/>
+        <category label="tab" term="tab"/>
+        <category label="sidebar" term="sidebar"/>
+        <category label="sidebar2" term="sidebar2"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v2.2.1]]></title>
         <id>https://docs.blazorbootstrap.com/blog/2024/04/21/blazorbootstrap-2.2.1</id>
