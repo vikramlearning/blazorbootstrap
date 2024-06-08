@@ -288,10 +288,9 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.FormControl)
-            .AddClass(Size.ToAutoCompleteSizeClass())
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.FormControl, true),
+            (Size.ToAutoCompleteSizeClass(), true));
 
     /// <summary>
     /// Gets or sets the data provider.

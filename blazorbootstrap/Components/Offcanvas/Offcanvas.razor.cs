@@ -100,11 +100,10 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Offcanvas)
-            .AddClass(Placement.ToOffcanvasPlacementClass())
-            .AddClass(Size.ToOffcanvasSizeClass())
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Offcanvas, true),
+            (Placement.ToOffcanvasPlacementClass(), true),
+            (Size.ToOffcanvasSizeClass(), true));
 
     /// <summary>
     /// Gets or sets the body CSS class.

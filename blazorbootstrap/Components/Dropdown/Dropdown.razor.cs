@@ -87,10 +87,9 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.ButtonGroup)
-            .AddClass(Direction.ToDropdownDirectionClass())
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.ButtonGroup, true),
+            (Direction.ToDropdownDirectionClass(), true));
 
     /// <summary>
     /// If <see langword="true" />, enables the auto close.

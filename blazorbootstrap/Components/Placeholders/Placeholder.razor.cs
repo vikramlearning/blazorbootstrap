@@ -5,12 +5,11 @@ public partial class Placeholder : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Placeholder)
-            .AddClass(Width.ToPlaceholderWidthClass())
-            .AddClass(Color.ToPlaceholderColorClass(), Color != PlaceholderColor.None)
-            .AddClass(Size.ToPlaceholderSizeClass(), Size != PlaceholderSize.None)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Placeholder, true),
+            (Width.ToPlaceholderWidthClass(), true),
+            (Color.ToPlaceholderColorClass(), Color != PlaceholderColor.None),
+            (Size.ToPlaceholderSizeClass(), Size != PlaceholderSize.None));
 
     /// <summary>
     /// Gets or sets the placeholder color.

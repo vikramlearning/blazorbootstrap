@@ -173,10 +173,9 @@ public partial class Accordion : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Accordion)
-            .AddClass(BootstrapClass.AccordionFlush, Flush)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Accordion, true),
+            (BootstrapClass.AccordionFlush, Flush));
 
     /// <summary>
     /// If <see langword="true" />, accordion items stay open when another item is opened.

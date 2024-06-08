@@ -164,11 +164,10 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.DropdownItem)
-            .AddClass(BootstrapClass.Active, Active)
-            .AddClass(BootstrapClass.Disabled, Disabled)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.DropdownItem, true),
+            (BootstrapClass.Active, Active),
+            (BootstrapClass.Disabled, Disabled));
 
     /// <summary>
     /// Gets or sets the dropdown item active state.

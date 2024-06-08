@@ -78,10 +78,9 @@ public partial class Collapse : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Collapse)
-            .AddClass(BootstrapClass.CollapseHorizontal, Horizontal)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Collapse, true),
+            (BootstrapClass.CollapseHorizontal, Horizontal));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

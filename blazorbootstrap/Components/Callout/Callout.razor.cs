@@ -36,10 +36,9 @@ public partial class Callout : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Callout)
-            .AddClass(Color.ToCalloutColorClass())
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Callout, true),
+            (Color.ToCalloutColorClass(), true));
 
     private string CalloutHeadingCssClass => BootstrapClass.CalloutHeading;
 

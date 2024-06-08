@@ -36,11 +36,10 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass("nav-item")
-            .AddClass("nav-item-group", HasChilds)
-            .AddClass("active", navitemGroupExpanded)
-            .Build();
+        BuildClassNames(Class,
+            ("nav-item", true),
+            ("nav-item-group", HasChilds),
+            ("active", navitemGroupExpanded));
 
     /// <summary>
     /// Gets or sets the child items.

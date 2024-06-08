@@ -75,14 +75,14 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync(string propertyTypeName)
     {
         if (FiltersTranslationProvider is null)
-            return FilterOperatorHelper.GetFilterOperators(PropertyTypeName!);
+            return FilterOperatorUtility.GetFilterOperators(PropertyTypeName!);
 
         var filters = await FiltersTranslationProvider.Invoke();
 
         if (!(filters?.Any() ?? false))
-            return FilterOperatorHelper.GetFilterOperators(PropertyTypeName!);
+            return FilterOperatorUtility.GetFilterOperators(PropertyTypeName!);
 
-        return FilterOperatorHelper.GetFilterOperators(PropertyTypeName!, filters!);
+        return FilterOperatorUtility.GetFilterOperators(PropertyTypeName!, filters!);
     }
 
     private async Task OnEnumFilterValueChangedAsync(object enumValue)

@@ -55,18 +55,16 @@ public partial class Preload : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Modal)
-            .AddClass(BootstrapClass.PageLoadingModal)
-            .AddClass(BootstrapClass.ModalFade)
-            .AddClass(BootstrapClass.Show, showBackdrop)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Modal, true),
+            (BootstrapClass.PageLoadingModal, true),
+            (BootstrapClass.ModalFade, true),
+            (BootstrapClass.Show, showBackdrop));
 
     protected override string? StyleNames =>
-        new CssStyleBuilder(Style)
-            .AddStyle("display:block", showBackdrop)
-            .AddStyle("display:none", !showBackdrop)
-            .Build();
+        BuildStyleNames(Style,
+            ("display:block", showBackdrop),
+            ("display:none", !showBackdrop));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
