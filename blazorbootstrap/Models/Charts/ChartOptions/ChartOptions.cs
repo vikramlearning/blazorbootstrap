@@ -58,9 +58,7 @@ public class Interaction
 
     #region Constructors
 
-#pragma warning disable CS8618
     public Interaction()
-#pragma warning restore CS8618
     {
         Mode = InteractionMode.Nearest;
     }
