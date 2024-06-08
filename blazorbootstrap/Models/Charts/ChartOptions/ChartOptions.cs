@@ -58,9 +58,7 @@ public class Interaction
 
     #region Constructors
 
-#pragma warning disable CS8618
     public Interaction()
-#pragma warning restore CS8618
     {
         Mode = InteractionMode.Nearest;
     }
@@ -71,15 +69,15 @@ public class Interaction
 
     private void SetMode(InteractionMode interactionMode) =>
         ChartInteractionMode = interactionMode switch
-        {
-            InteractionMode.Dataset => "dataset",
-            InteractionMode.Index => "index",
-            InteractionMode.Nearest => "nearest",
-            InteractionMode.Point => "point",
-            InteractionMode.X => "x",
-            InteractionMode.Y => "y",
-            _ => ""
-        };
+                               {
+                                   InteractionMode.Dataset => "dataset",
+                                   InteractionMode.Index => "index",
+                                   InteractionMode.Nearest => "nearest",
+                                   InteractionMode.Point => "point",
+                                   InteractionMode.X => "x",
+                                   InteractionMode.Y => "y",
+                                   _ => ""
+                               };
 
     #endregion
 
@@ -130,7 +128,6 @@ public class Scales
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartAxes? X { get; set; } = new();
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartAxes? Y { get; set; } = new();
-    
 
     #endregion
 }
@@ -138,7 +135,7 @@ public class Scales
 public class ChartAxes
 {
     #region Properties, Indexers
-    
+
     // Stacked
     public bool BeginAtZero { get; set; } = true;
 
@@ -149,7 +146,7 @@ public class ChartAxes
     public ChartAxesBorder? Border { get; set; }
 
     /// <summary>
-    /// Grid settings
+    /// Gets or sets the grid configuration.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartAxesGrid? Grid { get; set; }
@@ -187,11 +184,14 @@ public class ChartAxes
     public double? SuggestedMin { get; set; }
 
     /// <summary>
-    /// Tick settings
+    /// Gets or sets the tick configuration.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartAxesTicks? Ticks { get; set; }
 
+    /// <summary>
+    /// Gets or sets the title configuration.
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartAxesTitle? Title { get; set; }
 
@@ -204,8 +204,10 @@ public class ChartAxes
 /// </summary>
 public class ChartAxesBorder
 {
+    #region Properties, Indexers
+
     /// <summary>
-    ///  The color of the border line.
+    /// The color of the border line.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Color { get; set; }
@@ -240,22 +242,26 @@ public class ChartAxesBorder
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Z { get; set; }
+
+    #endregion
 }
 
 /// <summary>
-///  Defines options for the grid lines that run perpendicular to the axis.
+/// Defines options for the grid lines that run perpendicular to the axis.
 /// <see href="https://www.chartjs.org/docs/latest/samples/scale-options/grid.html" />
 /// </summary>
 public class ChartAxesGrid
 {
+    #region Properties, Indexers
+
     /// <summary>
     /// If <see langword="true" />, gridlines are circular (on radar and polar area charts only).
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Circular { get; set; }
-    
+
     /// <summary>
-    ///  Color of the grid axis lines. Here one can write a CSS method or even a JavaScript method for a dynamic color.
+    /// Color of the grid axis lines. Here one can write a CSS method or even a JavaScript method for a dynamic color.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Color { get; set; }
@@ -266,7 +272,8 @@ public class ChartAxesGrid
     public bool Display { get; set; } = true;
 
     /// <summary>
-    /// If <see langword="true" />, draw lines on the chart area inside the axis lines. This is useful when there are multiple axes and you need to control which grid lines are drawn.
+    /// If <see langword="true" />, draw lines on the chart area inside the axis lines. This is useful when there are multiple
+    /// axes and you need to control which grid lines are drawn.
     /// </summary>
     public bool DrawOnChartArea { get; set; } = true;
 
@@ -281,19 +288,20 @@ public class ChartAxesGrid
     public int LineWidth { get; set; } = 1;
 
     /// <summary>
-    /// If <see langword="true" />, grid lines will be shifted to be between labels. This is set to true for a bar chart by default.
+    /// If <see langword="true" />, grid lines will be shifted to be between labels. This is set to true for a bar chart by
+    /// default.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Offset { get; set; } = false;
 
     /// <summary>
-    /// Length and spacing of the tick mark line. 
+    /// Length and spacing of the tick mark line.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<int>? TickBorderDash { get; set; }
 
     /// <summary>
-    /// Offset for the line dash of the tick mark. 
+    /// Offset for the line dash of the tick mark.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? TickBorderDashOffset { get; set; }
@@ -310,7 +318,6 @@ public class ChartAxesGrid
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? TickLength { get; set; }
 
-
     /// <summary>
     /// Width of the tick mark in pixels.
     /// </summary>
@@ -322,6 +329,22 @@ public class ChartAxesGrid
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Z { get; set; }
+
+    #endregion
+}
+
+public enum TicksAlignment
+{
+    Center, // default
+    Start,
+    End
+}
+
+public enum TitleAlignment
+{
+    Center, // default
+    Start,
+    End
 }
 
 /// <summary>
@@ -330,6 +353,31 @@ public class ChartAxesGrid
 /// </summary>
 public class ChartAxesTicks
 {
+    #region Fields and Constants
+
+    private TicksAlignment ticksAlignment;
+
+    #endregion
+
+    #region Methods
+
+    private void SetTicksAlignment(TicksAlignment interactionMode) =>
+        Alignment = interactionMode switch
+                    {
+                        TicksAlignment.Center => "center",
+                        TicksAlignment.Start => "start",
+                        TicksAlignment.End => "end",
+                        _ => null
+                    };
+
+    #endregion
+
+    #region Properties, Indexers
+
+    [JsonPropertyName("align")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Alignment { get; private set; }
+
     /// <summary>
     /// Color of label backdrops
     /// </summary>
@@ -341,7 +389,7 @@ public class ChartAxesTicks
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? BackdropPadding { get; set; }
-    
+
     /// <summary>
     /// Color of ticks
     /// </summary>
@@ -382,6 +430,19 @@ public class ChartAxesTicks
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? TextStrokeWidth { get; set; }
+
+    [JsonIgnore]
+    public TicksAlignment TicksAlignment
+    {
+        get => ticksAlignment;
+        set
+        {
+            ticksAlignment = value;
+            SetTicksAlignment(value);
+        }
+    }
+
+    #endregion
 }
 
 /// <summary>
@@ -389,10 +450,15 @@ public class ChartAxesTicks
 /// </summary>
 public class ChartAxesTicksMajor
 {
+    #region Properties, Indexers
+
     /// <summary>
-    /// If <see langword="true" />, major ticks are generated. A major tick will affect autoskipping and major will be defined on ticks in the scriptable options context.
+    /// If <see langword="true" />, major ticks are generated. A major tick will affect auto skipping and major will be defined
+    /// on ticks in the scriptable options context.
     /// </summary>
     public bool Enabled { get; set; } = false;
+
+    #endregion
 }
 
 /// <summary>
@@ -401,14 +467,34 @@ public class ChartAxesTicksMajor
 /// </summary>
 public class ChartAxesTitle
 {
+    #region Fields and Constants
+
+    private TitleAlignment titleAlignment;
+
+    #endregion
+
+    #region Methods
+
+    private void SetTitleAlignment(TitleAlignment interactionMode) =>
+        Alignment = interactionMode switch
+                    {
+                        TitleAlignment.Center => "center", // default
+                        TitleAlignment.Start => "start",
+                        TitleAlignment.End => "end",
+                        _ => null
+                    };
+
+    #endregion
+
     #region Properties, Indexers
 
     /// <summary>
     /// Alignment of the title.
     /// Options are: 'start', 'center', and 'end'
     /// </summary>
+    [JsonPropertyName("align")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Align { get; set; } = "center";
+    public string? Alignment { get; private set; }
 
     /// <summary>
     /// Color of text.
@@ -428,6 +514,17 @@ public class ChartAxesTitle
     //position
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Text { get; set; }
+
+    [JsonIgnore]
+    public TitleAlignment TitleAlignment
+    {
+        get => titleAlignment;
+        set
+        {
+            titleAlignment = value;
+            SetTitleAlignment(value);
+        }
+    }
 
     #endregion
 }
