@@ -276,13 +276,12 @@ public partial class Tabs : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Nav)
-            .AddClass(BootstrapClass.NavTabs, NavStyle == NavStyle.Tabs)
-            .AddClass(BootstrapClass.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills))
-            .AddClass(BootstrapClass.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline))
-            .AddClass(BootstrapClass.FlexColumn, IsVertical)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Nav, true),
+            (BootstrapClass.NavTabs, NavStyle == NavStyle.Tabs),
+            (BootstrapClass.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills)),
+            (BootstrapClass.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline)),
+            (BootstrapClass.FlexColumn, IsVertical));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

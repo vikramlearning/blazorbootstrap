@@ -115,11 +115,10 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass("bb-sidebar2")
-            .AddClass("collapsed", collapseSidebar)
-            .AddClass("expanded", !collapseSidebar)
-            .Build();
+        BuildClassNames(Class,
+            ("bb-sidebar2", true),
+            ("collapsed", collapseSidebar),
+            ("expanded", !collapseSidebar));
 
     /// <summary>
     /// Gets or sets the badge text.

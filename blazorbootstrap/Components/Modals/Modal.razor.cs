@@ -158,10 +158,9 @@ public partial class Modal : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Modal)
-            .AddClass(BootstrapClass.ModalFade)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Modal, true),
+            (BootstrapClass.ModalFade, true));
 
     /// <summary>
     /// Gets or sets the body CSS class.

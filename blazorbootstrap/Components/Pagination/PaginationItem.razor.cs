@@ -17,11 +17,10 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.PaginationItem)
-            .AddClass(BootstrapClass.PaginationItemActive, Active)
-            .AddClass(BootstrapClass.PaginationItemDisabled, Disabled)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.PaginationItem, true),
+            (BootstrapClass.PaginationItemActive, Active),
+            (BootstrapClass.PaginationItemDisabled, Disabled));
 
     /// <summary>
     /// Gets or sets the pagination item active state.

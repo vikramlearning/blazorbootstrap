@@ -82,11 +82,10 @@ public partial class Toasts : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.ToastContainer)
-            .AddClass(BootstrapClass.PositionFixed)
-            .AddClass(Placement.ToToastsPlacementClass())
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.ToastContainer, true),
+            (BootstrapClass.PositionFixed, true),
+            (Placement.ToToastsPlacementClass(), true));
 
     /// <summary>
     /// Gets or sets the auto hide state.

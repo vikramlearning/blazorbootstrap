@@ -54,7 +54,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     protected override void OnInitialized()
     {
-        headerCheckboxId = IdGenerator.GetNextId();
+        headerCheckboxId = IdUtility.GetNextId();
 
         pageSize = PageSize;
 
@@ -441,7 +441,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (currentLength < itemsCount)
             for (var i = currentLength; i < itemsCount; i++)
-                checkboxIds[i] = IdGenerator.GetNextId();
+                checkboxIds[i] = IdUtility.GetNextId();
     }
 
     /// <summary>
@@ -506,7 +506,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
             if (column != null)
             {
-                var allowedFilterOperators = FilterOperatorHelper.GetFilterOperators(column.GetPropertyTypeName());
+                var allowedFilterOperators = FilterOperatorUtility.GetFilterOperators(column.GetPropertyTypeName());
 
                 if (allowedFilterOperators != null && allowedFilterOperators.Any(x => x.FilterOperator == item.Operator))
                 {
@@ -522,10 +522,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass("bb-table")
-            .AddClass(BootstrapClass.TableSticky, FixedHeader)
-            .Build();
+        BuildClassNames(Class,
+            ("bb-table", true),
+            (BootstrapClass.TableSticky, FixedHeader));
 
     /// <summary>
     /// Gets or sets the grid delete.

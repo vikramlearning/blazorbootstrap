@@ -1,26 +1,11 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// An interface that generates unique IDs.
-/// </summary>
-public interface IIdGenerator
-{
-    #region Methods
-
-    /// <summary>
-    /// Gets the next unique ID.
-    /// </summary>
-    string GetNextId();
-
-    #endregion
-}
-
-/// <summary>
 /// Generates efficient base32-encoded IDs.
 /// <see href="https://github.com/dotnet/aspnetcore/blob/main/src/Servers/Kestrel/shared/CorrelationIdGenerator.cs" />
 /// <see href="https://github.com/dotnet/orleans/blob/main/src/Orleans.Core/Networking/Shared/CorrelationIdGenerator.cs" />
 /// </summary>
-public sealed class IdGenerator : IIdGenerator
+public static class IdUtility
 {
     #region Fields and Constants
 
@@ -41,13 +26,13 @@ public sealed class IdGenerator : IIdGenerator
     /// Generates a base32-encoded ID.
     /// </summary>
     /// <returns>The base32-encoded ID.</returns>
-    public string GetNextId() => GenerateId(Interlocked.Increment(ref lastId));
+    public static string GetNextId() => GenerateId(Interlocked.Increment(ref lastId));
 
     private static string GenerateId(long id)
     {
         return string.Create(13, id, (buffer, value) =>
         {
-            char[] encode32Chars = IdGenerator.encode32Chars;
+            char[] encode32Chars = IdUtility.encode32Chars;
 
             buffer[12] = encode32Chars[value & 31];
             buffer[11] = encode32Chars[(value >> 5) & 31];

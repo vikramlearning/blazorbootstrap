@@ -18,7 +18,7 @@
 
     protected override void OnInitialized()
     {
-        backgroundColors = ColorBuilder.CategoricalTwelveColors;
+        backgroundColors = ColorUtility.CategoricalTwelveColors;
         chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(3) };
 
         pieChartOptions = new();

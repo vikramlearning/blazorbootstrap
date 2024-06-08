@@ -78,18 +78,16 @@ public partial class ProgressBar
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.ProgressBar)
-            .AddClass(BootstrapClass.ProgressBarStriped, type is ProgressType.Striped or ProgressType.StripedAndAnimated)
-            .AddClass(BootstrapClass.ProgressBarAnimated, type == ProgressType.StripedAndAnimated)
-            .AddClass(color.ToProgressColorClass(), color != ProgressColor.None)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.ProgressBar, true),
+            (BootstrapClass.ProgressBarStriped, type is ProgressType.Striped or ProgressType.StripedAndAnimated),
+            (BootstrapClass.ProgressBarAnimated, type == ProgressType.StripedAndAnimated),
+            (color.ToProgressColorClass(), color != ProgressColor.None));
 
     protected override string? StyleNames =>
-        new CssStyleBuilder(Style)
+        BuildStyleNames(Style,
             // FIX: Toast progressbar not showing: https://github.com/vikramlearning/blazorbootstrap/issues/155
-            .AddStyle($"width:{width.ToString(CultureInfo.InvariantCulture)}%", width is >= 0 and <= 100)
-            .Build();
+            ($"width:{width.ToString(CultureInfo.InvariantCulture)}%", width is >= 0 and <= 100));
 
     /// <summary>
     /// Gets or sets the progress color.

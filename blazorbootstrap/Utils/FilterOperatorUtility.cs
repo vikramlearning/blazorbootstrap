@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public static class FilterOperatorHelper
+public static class FilterOperatorUtility
 {
     #region Methods
 

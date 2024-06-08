@@ -107,10 +107,9 @@ public partial class CardLink : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.CardLink)
-            .AddClass(BootstrapClass.Disabled, Disabled)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.CardLink, true),
+            (BootstrapClass.Disabled, Disabled));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

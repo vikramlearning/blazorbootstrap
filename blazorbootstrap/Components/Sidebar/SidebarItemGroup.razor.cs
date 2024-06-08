@@ -5,9 +5,7 @@ public partial class SidebarItemGroup : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.FlexColumn)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.FlexColumn, true));
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 

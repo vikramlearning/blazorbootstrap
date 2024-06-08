@@ -369,9 +369,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.FormRange)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.FormRange, true));
 
     /// <summary>
     /// Gets or sets the disabled state.

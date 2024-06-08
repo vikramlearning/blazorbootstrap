@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public static class ColorBuilder
+public static class ColorUtility
 {
     #region Properties, Indexers
 

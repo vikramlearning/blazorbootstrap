@@ -18,16 +18,15 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass("bb-ribbon-item")
-            .AddClass(BootstrapClass.Flex)
-            .AddClass(BootstrapClass.FlexColumn)
-            .AddClass(BootstrapClass.AlignItemsCenter)
-            .AddClass("ms-1", IsFirstItem)
-            .AddClass("me-1", IsLastItem)
-            .AddClass("mx-1", !IsFirstItem && !IsLastItem)
-            .AddClass("p-1")
-            .Build();
+        BuildClassNames(Class,
+            ("bb-ribbon-item", true),
+            (BootstrapClass.Flex, true),
+            (BootstrapClass.FlexColumn, true),
+            (BootstrapClass.AlignItemsCenter, true),
+            ("ms-1", IsFirstItem),
+            ("me-1", IsLastItem),
+            ("mx-1", !IsFirstItem && !IsLastItem),
+            ("p-1", true));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

@@ -246,9 +246,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.FormControl)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.FormControl, true));
 
     private string autoComplete => AutoComplete ? "true" : "false";
 

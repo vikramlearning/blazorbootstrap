@@ -22,7 +22,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        Id = IdGenerator.GetNextId(); // Required
+        Id = IdUtility.GetNextId(); // Required
 
         filterOperator = FilterOperator;
         filterValue = FilterValue;

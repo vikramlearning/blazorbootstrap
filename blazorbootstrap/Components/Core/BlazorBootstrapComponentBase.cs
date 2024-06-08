@@ -23,13 +23,53 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        Id ??= IdGenerator.GetNextId();
+        Id ??= IdUtility.GetNextId();
 
         base.OnInitialized();
     }
 
+    public static string BuildClassNames(string? userDefinedCssClass, params (string? cssClass, bool when)[] cssClassList)
+    {
+        var list = new HashSet<string>();
+
+        if (cssClassList is not null && cssClassList.Any())
+            foreach (var (cssClass, when) in cssClassList)
+            {
+                if (!string.IsNullOrWhiteSpace(cssClass) && when)
+                    list.Add(cssClass);
+            }
+
+        if (!string.IsNullOrWhiteSpace(userDefinedCssClass))
+            list.Add(userDefinedCssClass.Trim());
+
+        if (list.Any())
+            return string.Join(" ", list);
+        else
+            return string.Empty;
+    }
+
+    public static string BuildStyleNames(string? userDefinedCssStyle, params (string? cssStyle, bool when)[] cssStyleList)
+    {
+        var list = new HashSet<string>();
+
+        if (cssStyleList is not null && cssStyleList.Any())
+            foreach (var (cssStyle, when) in cssStyleList)
+            {
+                if (!string.IsNullOrWhiteSpace(cssStyle) && when)
+                    list.Add(cssStyle);
+            }
+
+        if (!string.IsNullOrWhiteSpace(userDefinedCssStyle))
+            list.Add(userDefinedCssStyle.Trim());
+
+        if (list.Any())
+            return string.Join(';', list);
+        else
+            return string.Empty;
+    }
+
     /// <inheritdoc />
-    /// <seealso href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable?view=net-6.0" />
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable?view=net-6.0" />
     public void Dispose()
     {
         Dispose(true);
@@ -37,8 +77,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     }
 
     /// <inheritdoc />
-    /// <seealso
-    ///     href="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#implement-both-dispose-and-async-dispose-patterns" />
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-disposeasync#implement-both-dispose-and-async-dispose-patterns" />
     public async ValueTask DisposeAsync()
     {
         await DisposeAsyncCore(true).ConfigureAwait(false);
@@ -83,13 +122,11 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 
     [Parameter] public string? Class { get; set; }
 
-    protected virtual string? ClassNames => new CssClassBuilder(Class).Build();
+    protected virtual string? ClassNames => Class;
 
     public ElementReference Element { get; set; }
 
     [Parameter] public string? Id { get; set; }
-
-    [Inject] protected IIdGenerator IdGenerator { get; set; } = default!;
 
     protected bool IsRenderComplete { get; private set; }
 
@@ -97,7 +134,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 
     [Parameter] public string? Style { get; set; }
 
-    protected virtual string? StyleNames => new CssStyleBuilder(Style).Build();
+    protected virtual string? StyleNames => Style;
 
     #endregion
 

@@ -5,9 +5,7 @@ public partial class PlaceholderContainer : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(Animation.ToPlaceholderAnimationClass())
-            .Build();
+        BuildClassNames(Class, (Animation.ToPlaceholderAnimationClass(), true));
 
     /// <summary>
     /// Gets or sets the placeholder animation.

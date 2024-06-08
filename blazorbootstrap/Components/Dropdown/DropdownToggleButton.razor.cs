@@ -41,13 +41,12 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Button)
-            .AddClass(Color.ToDropdownButtonColorClass(), Color != DropdownColor.None)
-            .AddClass(Size.ToDropdownButtonSizeClass(), Size != DropdownSize.None)
-            .AddClass(BootstrapClass.DropdownToggle)
-            .AddClass(BootstrapClass.DropdownToggleSplit, Split)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Button, true),
+            (Color.ToDropdownButtonColorClass(), Color != DropdownColor.None),
+            (Size.ToDropdownButtonSizeClass(), Size != DropdownSize.None),
+            (BootstrapClass.DropdownToggle, true),
+            (BootstrapClass.DropdownToggleSplit, Split));
 
     /// <summary>
     /// If <see langword="true" />, enables the auto close.

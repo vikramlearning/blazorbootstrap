@@ -19,11 +19,10 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Button)
-            .AddClass(Color.ToDropdownButtonColorClass(), Color != DropdownColor.None)
-            .AddClass(Size.ToDropdownButtonSizeClass(), Size != DropdownSize.None)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Button, true),
+            (Color.ToDropdownButtonColorClass(), Color != DropdownColor.None),
+            (Size.ToDropdownButtonSizeClass(), Size != DropdownSize.None));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
