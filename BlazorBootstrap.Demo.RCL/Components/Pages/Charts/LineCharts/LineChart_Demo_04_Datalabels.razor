@@ -1,4 +1,4 @@
-﻿<LineChart @ref="lineChart" Width="800" Class="mb-4" />
+﻿<LineChart @ref="lineChart" Width="800" />
 
 @code {
     private LineChart lineChart = default!;
@@ -7,7 +7,7 @@
 
     protected override void OnInitialized()
     {
-        var colors = ColorBuilder.CategoricalTwelveColors;
+        var colors = ColorUtility.CategoricalTwelveColors;
 
         var labels = new List<string> { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
         var datasets = new List<IChartDataset>();

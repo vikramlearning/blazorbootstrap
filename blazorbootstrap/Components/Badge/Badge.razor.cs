@@ -10,14 +10,13 @@ public partial class Badge : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Badge)
-            .AddClass(Color.ToBadgeColorClass(), Color != BadgeColor.None)
-            .AddClass(IndicatorType.ToBadgeIndicatorClass(), IndicatorType != BadgeIndicatorType.None)
-            .AddClass(Position.ToPositionClass(), Position != Position.None)
-            .AddClass(Placement.ToBadgePlacementClass(), Placement != BadgePlacement.None)
-            .AddClass("p-2", ChildContent is null)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Badge, true),
+            (Color.ToBadgeColorClass(), Color != BadgeColor.None),
+            (IndicatorType.ToBadgeIndicatorClass(), IndicatorType != BadgeIndicatorType.None),
+            (Position.ToPositionClass(), Position != Position.None),
+            (Placement.ToBadgePlacementClass(), Placement != BadgePlacement.None),
+            ("p-2", ChildContent is null));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

@@ -10,9 +10,7 @@ public partial class CardFooter : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.CardFooter)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.CardFooter, true));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

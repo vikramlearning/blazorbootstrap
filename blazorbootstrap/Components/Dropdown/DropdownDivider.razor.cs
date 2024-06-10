@@ -9,9 +9,7 @@ public partial class DropdownDivider : BlazorBootstrapComponentBase
     
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.DropdownDivider)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.DropdownDivider, true));
 
     #endregion
 }

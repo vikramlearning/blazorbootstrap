@@ -6,10 +6,9 @@ public partial class DropdownMenu : BlazorBootstrapComponentBase
     
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.DropdownMenu)
-            .AddClass(Position.ToDropdownMenuPositionClass())
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.DropdownMenu, true),
+            (Position.ToDropdownMenuPositionClass(), true));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

@@ -2,7 +2,7 @@
 
 namespace BlazorBootstrap;
 
-public static class BootstrapIconProvider
+public static class BootstrapIconUtility
 {
     #region Methods
 

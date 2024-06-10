@@ -1,4 +1,4 @@
-﻿<BarChart @ref="barChart" Height="300" Class="mb-4" />
+﻿<BarChart @ref="barChart" Width="500" Height="300" />
 
 @code {
     private BarChart barChart = default!;
@@ -13,8 +13,8 @@
         var dataset1 = new BarChartDataset()
             {
                 Data = new List<double> { 55000, 15000, 18000, 21000 },
-                BackgroundColor = new List<string> { ColorBuilder.CategoricalTwelveColors[0] },
-                BorderColor = new List<string> { ColorBuilder.CategoricalTwelveColors[0] },
+                BackgroundColor = new List<string> { ColorUtility.CategoricalTwelveColors[0] },
+                BorderColor = new List<string> { ColorUtility.CategoricalTwelveColors[0] },
                 BorderWidth = new List<double> { 0 },
             };
         datasets.Add(dataset1);

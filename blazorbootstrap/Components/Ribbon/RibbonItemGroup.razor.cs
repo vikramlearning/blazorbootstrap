@@ -6,14 +6,13 @@ public partial class RibbonItemGroup : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass("bb-ribbon-item-group")
-            .AddClass(BootstrapClass.Flex)
-            .AddClass(BootstrapClass.FlexColumn)
-            .AddClass(BootstrapClass.AlignItemsCenter)
-            .AddClass("my-1")
-            .AddClass(BootstrapClass.BorderEnd)
-            .Build();
+        BuildClassNames(Class,
+            ("bb-ribbon-item-group", true),
+            (BootstrapClass.Flex, true),
+            (BootstrapClass.FlexColumn, true),
+            (BootstrapClass.AlignItemsCenter, true),
+            ("my-1", true),
+            (BootstrapClass.BorderEnd, true));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

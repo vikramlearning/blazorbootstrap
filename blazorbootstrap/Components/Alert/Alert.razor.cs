@@ -69,11 +69,10 @@ public partial class Alert : BlazorBootstrapComponentBase
     
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Alert)
-            .AddClass(Color.ToAlertColorClass(), Color != AlertColor.None)
-            .AddClass(BootstrapClass.AlertDismisable, Dismissable)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Alert, true),
+            (Color.ToAlertColorClass(), Color != AlertColor.None),
+            (BootstrapClass.AlertDismisable, Dismissable));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

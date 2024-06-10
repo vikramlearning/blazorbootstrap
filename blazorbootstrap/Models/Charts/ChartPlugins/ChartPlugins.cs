@@ -22,6 +22,8 @@ public class ChartPlugins
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTooltip? Tooltip { get; set; }
+    
+
 
     #endregion
 }
@@ -197,7 +199,7 @@ public class ChartPluginsTitle
     /// Options are: 'start', 'center', and 'end'
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Align { get; set; }
+    public string? Align { get; set; } = "center";
     /// <summary>
     /// Color of text.
     /// </summary>

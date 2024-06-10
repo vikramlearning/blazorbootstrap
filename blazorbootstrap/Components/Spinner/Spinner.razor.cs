@@ -62,11 +62,10 @@ public partial class Spinner : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(Type.ToSpinnerTypeClass())
-            .AddClass(Color.ToSpinnerColorClass())
-            .AddClass($"{Type.ToSpinnerTypeClass()}-{Size.ToSpinnerSizeClass()}", Type is (SpinnerType.Border or SpinnerType.Grow))
-            .Build();
+        BuildClassNames(Class,
+            (Type.ToSpinnerTypeClass(), true),
+            (Color.ToSpinnerColorClass(), true),
+            ($"{Type.ToSpinnerTypeClass()}-{Size.ToSpinnerSizeClass()}", Type is (SpinnerType.Border or SpinnerType.Grow)));
 
     /// <summary>
     /// Gets or sets the color of the spinner.

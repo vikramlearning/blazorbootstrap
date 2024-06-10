@@ -18,7 +18,7 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        Id = IdGenerator.GetNextId(); // This is required
+        Id = IdUtility.GetNextId(); // This is required
         Parent.Add(this);
     }
     
@@ -66,11 +66,8 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.AccordionItem)
-            .Build();
+    protected override string? ClassNames => 
+        BuildClassNames(Class, (BootstrapClass.AccordionItem, true));
 
     /// <summary>
     /// Gets or sets the active state.

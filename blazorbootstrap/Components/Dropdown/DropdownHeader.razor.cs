@@ -6,9 +6,7 @@ public partial class DropdownHeader : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.DropdownHeader)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.DropdownHeader, true));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

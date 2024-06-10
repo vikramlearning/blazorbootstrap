@@ -72,11 +72,10 @@ public partial class Pagination : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Pagination)
-            .AddClass(Size.ToPaginationSizeClass(), Size != PaginationSize.None)
-            .AddClass(Alignment.ToPaginationAlignmentClass(), Alignment != Alignment.None)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Pagination, true),
+            (Size.ToPaginationSizeClass(), Size != PaginationSize.None),
+            (Alignment.ToPaginationAlignmentClass(), Alignment != Alignment.None));
 
     /// <summary>
     /// Gets or sets the active page number.

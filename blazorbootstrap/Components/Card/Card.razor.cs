@@ -10,11 +10,10 @@ public partial class Card : BlazorBootstrapComponentBase
     
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Card)
-            .AddClass(TextAlignment.ToTextAlignmentClass())
-            .AddClass(Color.ToCardColorClass())
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Card, true),
+            (TextAlignment.ToTextAlignmentClass(), true),
+            (Color.ToCardColorClass(), true));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

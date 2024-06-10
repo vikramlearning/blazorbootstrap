@@ -18,9 +18,49 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        Id ??= IdGenerator.GetNextId();
+        Id ??= IdUtility.GetNextId();
 
         base.OnInitialized();
+    }
+
+    public static string BuildClassNames(string? userDefinedCssClass, params (string? cssClass, bool when)[] cssClassList)
+    {
+        var list = new HashSet<string>();
+
+        if (cssClassList is not null && cssClassList.Any())
+            foreach (var (cssClass, when) in cssClassList)
+            {
+                if (!string.IsNullOrWhiteSpace(cssClass) && when)
+                    list.Add(cssClass);
+            }
+
+        if (!string.IsNullOrWhiteSpace(userDefinedCssClass))
+            list.Add(userDefinedCssClass.Trim());
+
+        if (list.Any())
+            return string.Join(" ", list);
+        else
+            return string.Empty;
+    }
+
+    public static string BuildStyleNames(string? userDefinedCssStyle, params (string? cssStyle, bool when)[] cssStyleList)
+    {
+        var list = new HashSet<string>();
+
+        if (cssStyleList is not null && cssStyleList.Any())
+            foreach (var (cssStyle, when) in cssStyleList)
+            {
+                if (!string.IsNullOrWhiteSpace(cssStyle) && when)
+                    list.Add(cssStyle);
+            }
+
+        if (!string.IsNullOrWhiteSpace(userDefinedCssStyle))
+            list.Add(userDefinedCssStyle.Trim());
+
+        if (list.Any())
+            return string.Join(';', list);
+        else
+            return string.Empty;
     }
 
     /// <inheritdoc />

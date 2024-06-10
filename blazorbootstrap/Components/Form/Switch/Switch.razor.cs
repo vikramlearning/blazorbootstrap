@@ -74,11 +74,10 @@ public partial class Switch : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.FormCheck)
-            .AddClass(BootstrapClass.FormSwitch)
-            .AddClass(BootstrapClass.FormCheckReverse, Reverse)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.FormCheck, true),
+            (BootstrapClass.FormSwitch, true),
+            (BootstrapClass.FormCheckReverse, Reverse));
 
     /// <summary>
     /// Gets or sets the disabled state.

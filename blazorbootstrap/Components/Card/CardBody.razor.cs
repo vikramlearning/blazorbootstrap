@@ -9,9 +9,7 @@ public partial class CardBody : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.CardBody)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.CardBody, true));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

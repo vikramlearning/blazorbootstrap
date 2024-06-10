@@ -40,10 +40,9 @@ public partial class Callout : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Callout)
-            .AddClass(Color.ToCalloutColorClass())
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Callout, true),
+            (Color.ToCalloutColorClass(), true));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

@@ -69,11 +69,10 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Toast)
-            .AddClass(ToastMessage!.Type.ToToastTextColorClass(), ToastMessage is not null)
-            .AddClass(ToastMessage!.Type.ToToastBackgroundColorClass(), ToastMessage is not null)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Toast, true),
+            (ToastMessage!.Type.ToToastTextColorClass(), ToastMessage is not null),
+            (ToastMessage!.Type.ToToastBackgroundColorClass(), ToastMessage is not null));
 
     /// <summary>
     /// Gets or sets the auto hide state.

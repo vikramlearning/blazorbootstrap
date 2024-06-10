@@ -115,11 +115,10 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass("bb-sidebar")
-            .AddClass("collapsed", collapseSidebar)
-            .AddClass("expanded", !collapseSidebar)
-            .Build();
+        BuildClassNames(Class,
+            ("bb-sidebar", true),
+            ("collapsed", collapseSidebar),
+            ("expanded", !collapseSidebar));
 
     /// <summary>
     /// Gets or sets the badge text.
@@ -156,7 +155,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public string? Href { get; set; }
+    public string? Href { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the IconName.

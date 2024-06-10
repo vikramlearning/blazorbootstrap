@@ -290,9 +290,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.FormControl)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.FormControl, true));
 
     /// <summary>
     /// If <see langword="true" />, DateInput can complete the values automatically by the browser.

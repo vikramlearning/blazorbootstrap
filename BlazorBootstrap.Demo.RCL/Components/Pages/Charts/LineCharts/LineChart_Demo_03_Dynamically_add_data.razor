@@ -1,7 +1,9 @@
-﻿<LineChart @ref="lineChart" Width="800" Class="mb-4"/>
+﻿<LineChart @ref="lineChart" Width="800" />
 
-<Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="ButtonSize.Small" @onclick="UpdateIndiaNextOverRunsAsync"> India Next Over </Button>
-<Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="ButtonSize.Small" @onclick="UpdateEnglandNextOverRunsAsync"> England Next Over </Button>
+<div class="mt-5">
+    <Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="ButtonSize.Small" @onclick="UpdateIndiaNextOverRunsAsync"> India Next Over </Button>
+    <Button Color="ButtonColor.Primary" Type="ButtonType.Button" Size="ButtonSize.Small" @onclick="UpdateEnglandNextOverRunsAsync"> England Next Over </Button>
+</div>
 
 @code {
     private LineChart lineChart = default!;

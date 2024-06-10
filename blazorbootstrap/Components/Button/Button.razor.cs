@@ -267,17 +267,16 @@ public partial class Button : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Button)
-            .AddClass(Color.ToButtonColorClass(), Color != ButtonColor.None && !Outline)
-            .AddClass(Color.ToButtonOutlineColorClass(), Color != ButtonColor.None && Outline)
-            .AddClass(Size.ToButtonSizeClass(), Size != ButtonSize.None)
-            .AddClass(BootstrapClass.ButtonDisabled, Disabled && Type == ButtonType.Link)
-            .AddClass(BootstrapClass.ButtonActive, Active)
-            .AddClass(BootstrapClass.ButtonBlock, Block)
-            .AddClass(BootstrapClass.ButtonLoading!, Loading && LoadingTemplate is not null)
-            .AddClass(Position.ToPositionClass(), Position != Position.None)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Button, true),
+            (Color.ToButtonColorClass(), Color != ButtonColor.None && !Outline),
+            (Color.ToButtonOutlineColorClass(), Color != ButtonColor.None && Outline),
+            (Size.ToButtonSizeClass(), Size != ButtonSize.None),
+            (BootstrapClass.ButtonDisabled, Disabled && Type == ButtonType.Link),
+            (BootstrapClass.ButtonActive, Active),
+            (BootstrapClass.ButtonBlock, Block),
+            (BootstrapClass.ButtonLoading!, Loading && LoadingTemplate is not null),
+            (Position.ToPositionClass(), Position != Position.None));
 
     /// <summary>
     /// Gets or sets the button active state.

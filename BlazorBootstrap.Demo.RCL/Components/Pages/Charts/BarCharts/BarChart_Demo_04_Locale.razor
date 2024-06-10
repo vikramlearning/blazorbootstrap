@@ -1,4 +1,4 @@
-﻿<BarChart @ref="barChart" Height="300" Class="mb-4" />
+﻿<BarChart @ref="barChart" Width="500" Height="300" />
 
 @code {
     private BarChart barChart = default!;
@@ -7,7 +7,7 @@
 
     protected override void OnInitialized()
     {
-        var colors = ColorBuilder.CategoricalTwelveColors;
+        var colors = ColorUtility.CategoricalTwelveColors;
 
         var labels = new List<string> { "Chrome", "Firefox", "Safari", "Edge" };
         var datasets = new List<IChartDataset>();
@@ -42,11 +42,7 @@
             };
         datasets.Add(dataset3);
 
-        chartData = new ChartData
-            {
-                Labels = labels,
-                Datasets = datasets
-            };
+        chartData = new ChartData { Labels = labels, Datasets = datasets };
 
         barChartOptions = new();
         barChartOptions.Locale = "de-DE";

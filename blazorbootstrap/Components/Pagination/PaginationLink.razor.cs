@@ -18,9 +18,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.PaginationLink)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.PaginationLink, true));
 
     /// <summary>
     /// Gets or sets the link aria-label attribute.

@@ -25,7 +25,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        Id = IdGenerator.GetNextId(); // This is required
+        Id = IdUtility.GetNextId(); // This is required
         Parent.AddTab(this);
     }
 

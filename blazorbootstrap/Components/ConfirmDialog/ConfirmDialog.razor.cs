@@ -130,17 +130,16 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Modal)
-            .AddClass(BootstrapClass.ConfirmationModal)
-            .AddClass(BootstrapClass.ModalFade)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.Modal, true),
+            (BootstrapClass.ConfirmationModal, true),
+            (BootstrapClass.ModalFade, true));
 
     /// <inheritdoc />
     protected override string? StyleNames =>
-        new CssStyleBuilder(Style)
-            .AddStyle(showBackdrop ? "display:block" : "display:none")
-            .Build();
+        BuildStyleNames(Style,
+            ("display:block", showBackdrop),
+            ("display:none", !showBackdrop));
 
     #endregion
 }

@@ -408,10 +408,9 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.FormControl)
-            .AddClass(TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None)
-            .Build();
+        BuildClassNames(Class,
+            (BootstrapClass.FormControl, true),
+            (TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None));
 
     /// <summary>
     /// If <see langword="true" />, allows negative numbers.

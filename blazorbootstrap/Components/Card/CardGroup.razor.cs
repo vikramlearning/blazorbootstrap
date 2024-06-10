@@ -6,9 +6,7 @@ public partial class CardGroup : BlazorBootstrapComponentBase
 
     /// <inheritdoc />
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.CardGroup)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.CardGroup, true));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

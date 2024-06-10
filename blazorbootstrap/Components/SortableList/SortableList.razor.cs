@@ -73,9 +73,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass("list-group")
-            .Build();
+        BuildClassNames(Class, ("list-group", true));
 
     /// <summary>
     /// Gets or sets a value indicating whether sorting is allowed for the list.

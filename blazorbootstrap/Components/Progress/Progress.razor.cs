@@ -26,14 +26,10 @@ public partial class Progress : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        new CssClassBuilder(Class)
-            .AddClass(BootstrapClass.Progress)
-            .Build();
+        BuildClassNames(Class, (BootstrapClass.Progress, true));
 
     protected override string? StyleNames =>
-        new CssStyleBuilder(Style)
-            .AddStyle($"height:{height.ToString(CultureInfo.InvariantCulture)}px", height >= 0)
-            .Build();
+        BuildStyleNames(Style, ($"height:{height.ToString(CultureInfo.InvariantCulture)}px", height >= 0));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
