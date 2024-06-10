@@ -51,7 +51,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// Handles a script error event from JavaScript.
     /// </summary>
     /// <param name="errorMessage">The error message.</param>
-    [JSInvokable("onErrorJS")]
+    [JSInvokable("OnErrorJS")]
     public void OnErrorJS(string errorMessage)
     {
         if (OnError.HasDelegate)
@@ -61,7 +61,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <summary>
     /// Handles a script load event from JavaScript.
     /// </summary>
-    [JSInvokable("onLoadJS")]
+    [JSInvokable("OnLoadJS")]
     public void OnLoadJS()
     {
         if (OnLoad.HasDelegate)

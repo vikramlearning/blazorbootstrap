@@ -14,6 +14,7 @@ public partial class MainLayout : MainLayoutBase
 
             new (){ Id = "3", Text = "Content", IconName = IconName.BodyText, IconColor = IconColor.Primary },
             new (){ Id = "300", Text = "Icons", Href = "/icons", IconName = IconName.PersonSquare, ParentId = "3" },
+            new (){ Id = "301", Text = "CSS Generator", Href = "/customcss", IconName = IconName.WrenchAdjustableCircle, ParentId = "3" },
 
             new (){ Id = "4", Text = "Forms", IconName = IconName.InputCursorText, IconColor = IconColor.Success },
             new (){ Id = "400", Text = "Auto Complete", Href = "/autocomplete", IconName = IconName.InputCursorText, ParentId = "4" },

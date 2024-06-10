@@ -1,5 +1,4 @@
-﻿
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
 /// Contains settings for the Bootstrap CSS based on <see href="https://github.com/twbs/bootstrap/blob/main/dist/css/bootstrap.css" />. <br/>
@@ -230,6 +229,9 @@ public sealed class BootstrapCssSettings
     /// </remarks>
     public Color? PrimaryColor { get; set; }
 
+    internal IReadOnlyDictionary<int, Color> PrimaryColors { get; set; } = default!;
+
+
     /// <summary>
     /// Default Bootstrap --bs-secondary color.
     /// </summary>
@@ -238,7 +240,8 @@ public sealed class BootstrapCssSettings
     /// </remarks>
     public Color? SecondaryColor { get; set; }
 
-
+    internal IReadOnlyDictionary<int, Color> SecondaryColors { get; set; } = default!;
+    
     /// <summary>
     /// Default Bootstrap --bs-danger color. 
     /// </summary>
@@ -246,6 +249,8 @@ public sealed class BootstrapCssSettings
     /// Default value derived from <see cref="RedColor"/>
     /// </remarks>
     public Color? DangerColor { get; set; }
+
+    internal IReadOnlyDictionary<int, Color> DangerColors { get; set; } = default!;
 
 
     /// <summary>
@@ -256,6 +261,8 @@ public sealed class BootstrapCssSettings
     /// </remarks>
     public Color? DarkColor { get; set; }
 
+    internal IReadOnlyDictionary<int, Color> DarkColors { get; set; } = default!;
+
     /// <summary>
     /// Default Bootstrap --bs-info color.
     /// </summary>
@@ -263,6 +270,8 @@ public sealed class BootstrapCssSettings
     /// Default value derived from <see cref="CyanColor"/>
     /// </remarks>
     public Color? InfoColor { get; set; }
+
+    internal IReadOnlyDictionary<int, Color> InfoColors { get; set; } = default!;
 
     /// <summary>
     /// Default Bootstrap --bs-light color.
@@ -272,6 +281,8 @@ public sealed class BootstrapCssSettings
     /// </remarks>
     public Color? LightColor { get; set; }
 
+    internal IReadOnlyDictionary<int, Color> LightColors { get; set; } = default!;
+
     /// <summary>
     /// Default Bootstrap --bs-success color. 
     /// </summary>
@@ -280,6 +291,8 @@ public sealed class BootstrapCssSettings
     /// </remarks>
     public Color? SuccessColor { get; set; }
 
+    internal IReadOnlyDictionary<int, Color> SuccessColors { get; set; } = default!;
+
     /// <summary>
     /// Default Bootstrap --bs-warning color.
     /// </summary>
@@ -287,6 +300,8 @@ public sealed class BootstrapCssSettings
     /// Default value derived from <see cref="YellowColor"/>
     /// </remarks>
     public Color? WarningColor { get; set; }
+
+    internal IReadOnlyDictionary<int, Color> WarningColors { get; set; } = default!;
 
     #endregion
 
@@ -317,8 +332,9 @@ public sealed class BootstrapCssSettings
 
     #endregion
 
+
     #region Body
-    
+
     /// <summary>
     /// Default value for --bs-body-font-family
     /// </summary>
@@ -779,63 +795,6 @@ public sealed class BootstrapCssSettings
 
     #endregion
 
-    #region Containers
-
-    /// <summary>
-    /// Define the maximum width of `.container` for different screen sizes. <br/>
-    /// This property is for the sm breakpoint. (Small screens)
-    /// </summary>
-    /// <remarks>
-    /// Default value is 540px
-    /// </remarks>
-    public CssPropertyValue? ContainerMaxWidthSm { get; set; }
-
-    /// <summary>
-    /// Define the maximum width of `.container` for different screen sizes. <br/>
-    /// This property is for the md breakpoint. (Medium screens)
-    /// </summary>
-    /// <remarks>
-    /// Default value is 720px
-    /// </remarks>
-    public CssPropertyValue? ContainerMaxWidthMd { get; set; }
-
-    /// <summary>
-    /// Define the maximum width of `.container` for different screen sizes. <br/>
-    /// This property is for the lg breakpoint. (Large screens)
-    /// </summary>
-    /// <remarks>
-    /// Default value is 960px
-    /// </remarks>
-    public CssPropertyValue? ContainerMaxWidthLg { get; set; }
-
-    /// <summary>
-    /// Define the maximum width of `.container` for different screen sizes. <br/>
-    /// This property is for the xl breakpoint. (Extra large screens)
-    /// </summary>
-    /// <remarks>
-    /// Default value is 1140px
-    /// </remarks>
-    public CssPropertyValue? ContainerMaxWidthXl { get; set; }
-
-    /// <summary>
-    /// Define the maximum width of `.container` for different screen sizes. <br/>
-    /// This property is for the xxl breakpoint. (Extra, extra large screens)
-    /// </summary>
-    /// <remarks>
-    /// Default value is 1320px
-    /// </remarks>
-    public CssPropertyValue? ContainerMaxWidthXxl { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-container-padding-x 
-    /// </summary>
-    /// <remarks>
-    /// Default value is derived from <see cref="GutterWidth"/>
-    /// </remarks>
-    public CssPropertyValue? ContainerPaddingX { get; set; }
-
-    #endregion
-
     #region :Focus
  
     /// <summary>
@@ -883,22 +842,6 @@ public sealed class BootstrapCssSettings
     public CssPropertyValue? LinkShadePercentage { get; set; }
 
     /// <summary>
-    /// Default Bootstrap --bs-link-hover-decoration
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="CssStyleEnum.Null"/> 
-    /// </remarks>
-    public CssStyleEnum? LinkHoverDecoration { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-stretched-link-pseudo-element
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="CssStyleEnum.After"/>
-    /// </remarks>
-    public CssStyleEnum? StretchedLinkPseudoElement { get; set; }
-
-    /// <summary>
     /// Default Bootstrap --bs-stretched-link-z-index
     /// </summary>
     /// <remarks>
@@ -923,28 +866,50 @@ public sealed class BootstrapCssSettings
     public CssPropertyValue? IconLinkUnderlineOffset { get; set; }
 
     /// <summary>
-    /// Default Bootstrap --bs-icon-link-icon-size
+    /// Default Bootstrap --bs-icon-link-size
     /// </summary>
     /// <remarks>
     /// Default value is 1em
     /// </remarks>
-    public CssPropertyValue? IconLinkIconSize { get; set; }
+    public CssPropertyValue? IconLinkSize { get; set; }
 
     /// <summary>
-    /// Default Bootstrap --bs-icon-link-icon-transition
+    /// Default Bootstrap --bs-icon-link-transition
     /// </summary>
     /// <remarks>
     /// Default value is "0.2s ease-in-out transform"
     /// </remarks>
-    public string? IconLinkIconTransition { get; set; }
+    public string? IconLinkTransition { get; set; }
 
     /// <summary>
-    /// Default Bootstrap --bs-icon-link-icon-transform
+    /// Default Bootstrap --bs-icon-link-transform
     /// </summary>
     /// <remarks>
     /// Default value is "translate3d(.25em, 0, 0)"
     /// </remarks>
-    public string? IconLinkIconTransform { get; set; }
+    public string? IconLinkTransform { get; set; }
+
+
+    #endregion
+
+
+    #region Texts
+
+    /// <summary>
+    /// To be applied on the background-color of .text-bg-* components.
+    /// </summary>
+    /// <remarks>
+    /// Default values are derived from the default colors, multiplied by the opacity set in this property.
+    /// </remarks>
+    public CssColorSet TextBackgroundColors { get; set; } = new();
+
+    /// <summary>
+    /// To be applied to the text color of .text-bg-* components.
+    /// </summary>
+    /// <remarks>
+    /// Default values are derived from the default colors, multiplied by the opacity set in this property.
+    /// </remarks>
+    public CssColorSet TextBackgroundTextColors { get; set; } = new();
 
 
     #endregion
@@ -956,16 +921,7 @@ public sealed class BootstrapCssSettings
     /// The default value is "linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));"
     /// </remarks>
     public string? Gradient { get; set; }
-
-
-    /// <summary>
-    /// Default Gutter Width for Bootstrap --bs-gutter-width
-    /// </summary>
-    /// <remarks>
-    /// Default value is 1.5rem
-    /// </remarks>
-    public CssPropertyValue? GutterWidth { get; set; }
-
+    
 
     /// <summary>
     /// Parses a user supplied settings class and sets the default values if not provided.
@@ -1000,34 +956,119 @@ public sealed class BootstrapCssSettings
         YellowColor ??= Color.FromArgb(238, 238, 34);
         WhiteColor ??= Color.White;
 
-        // text (emphasis)
-        Light.DangerTextEmphasisColor ??= Color.FromArgb(100, 0, 3);
-        Dark.DangerTextEmphasisColor ??=  Color.FromArgb(253, 102, 106);
-        Light.DarkTextEmphasisColor ??= Gray700Color;
-        Dark.DarkTextEmphasisColor ??= Gray300Color;
-        Light.PrimaryTextEmphasisColor ??= Color.FromArgb(12, 46, 76);
-        Dark.PrimaryTextEmphasisColor ??= Color.FromArgb(120, 171, 216);
-        Light.SecondaryTextEmphasisColor ??= Color.FromArgb(43, 47, 50);
-        Dark.SecondaryTextEmphasisColor ??= Gray600Color;
-        Light.SuccessTextEmphasisColor ??= Color.FromArgb(0, 51, 0);
-        Dark.SuccessTextEmphasisColor ??= Color.FromArgb(102, 179, 102);
-        Light.InfoTextEmphasisColor ??= Color.FromArgb(5, 81, 96);
-        Dark.InfoTextEmphasisColor ??= Color.FromArgb(110, 223, 246);
-        Light.LightTextEmphasisColor ??= Gray700Color;
-        Dark.LightTextEmphasisColor ??= Gray300Color;
-        Light.WarningTextEmphasisColor ??= Color.FromArgb(95, 95, 14);
-        Dark.WarningTextEmphasisColor ??= Color.FromArgb(245, 245, 122);
-
         // Colors based on events
         PrimaryColor ??= Color.FromArgb(30, 115, 190);
+        PrimaryColors = new Dictionary<int, Color>()
+        {
+            { 100, PrimaryColor.Value.TintColor(0.8D)},
+            { 200, PrimaryColor.Value.TintColor(0.6D)},
+            { 300, PrimaryColor.Value.TintColor(0.4D)},
+            { 400, PrimaryColor.Value.TintColor(0.2D)},
+            { 500, PrimaryColor.Value },
+            { 600, PrimaryColor.Value.ShadeColor(0.2D)},
+            { 700, PrimaryColor.Value.ShadeColor(0.4D)},
+            { 800, PrimaryColor.Value.ShadeColor(0.6D)},
+            { 900, PrimaryColor.Value.ShadeColor(0.8D)}
+        };
+
         SecondaryColor ??= Gray600Color;
-        DangerColor ??= RedColor;
-        DarkColor ??= Gray900Color;
-        InfoColor ??= CyanColor;
-        LightColor ??= Gray100Color;
-        SuccessColor ??= GreenColor;
-        WarningColor ??= YellowColor;
+        SecondaryColors = new Dictionary<int, Color>()
+        {
+            { 100, SecondaryColor.Value.TintColor(0.8D)},
+            { 200, SecondaryColor.Value.TintColor(0.6D)},
+            { 300, SecondaryColor.Value.TintColor(0.4D)},
+            { 400, SecondaryColor.Value.TintColor(0.2D)},
+            { 500, SecondaryColor.Value },
+            { 600, SecondaryColor.Value.ShadeColor(0.2D)},
+            { 700, SecondaryColor.Value.ShadeColor(0.4D)},
+            { 800, SecondaryColor.Value.ShadeColor(0.6D)},
+            { 900, SecondaryColor.Value.ShadeColor(0.8D)}
+        };
         
+        DangerColor ??= RedColor;
+        DangerColors = new Dictionary<int, Color>()
+        {
+            { 100, DangerColor.Value.TintColor(0.8D)},
+            { 200, DangerColor.Value.TintColor(0.6D)},
+            { 300, DangerColor.Value.TintColor(0.4D)},
+            { 400, DangerColor.Value.TintColor(0.2D)},
+            { 500, DangerColor.Value },
+            { 600, DangerColor.Value.ShadeColor(0.2D)},
+            { 700, DangerColor.Value.ShadeColor(0.4D)},
+            { 800, DangerColor.Value.ShadeColor(0.6D)},
+            { 900, DangerColor.Value.ShadeColor(0.8D)}
+        };
+        
+        DarkColor ??= Gray900Color;
+        DarkColors = new Dictionary<int, Color>()
+        {
+            { 100, DarkColor.Value.TintColor(0.8D)},
+            { 200, DarkColor.Value.TintColor(0.6D)},
+            { 300, DarkColor.Value.TintColor(0.4D)},
+            { 400, DarkColor.Value.TintColor(0.2D)},
+            { 500, DarkColor.Value },
+            { 600, DarkColor.Value.ShadeColor(0.2D)},
+            { 700, DarkColor.Value.ShadeColor(0.4D)},
+            { 800, DarkColor.Value.ShadeColor(0.6D)},
+            { 900, DarkColor.Value.ShadeColor(0.8D)}
+        };
+
+        InfoColor ??= CyanColor;
+        InfoColors = new Dictionary<int, Color>()
+        {
+            { 100, InfoColor.Value.TintColor(0.8D)},
+            { 200, InfoColor.Value.TintColor(0.6D)},
+            { 300, InfoColor.Value.TintColor(0.4D)},
+            { 400, InfoColor.Value.TintColor(0.2D)},
+            { 500, InfoColor.Value },
+            { 600, InfoColor.Value.ShadeColor(0.2D)},
+            { 700, InfoColor.Value.ShadeColor(0.4D)},
+            { 800, InfoColor.Value.ShadeColor(0.6D)},
+            { 900, InfoColor.Value.ShadeColor(0.8D)}
+        };
+
+        LightColor ??= Gray100Color;
+        LightColors = new Dictionary<int, Color>()
+        {
+            { 100, LightColor.Value.TintColor(0.8D)},
+            { 200, LightColor.Value.TintColor(0.6D)},
+            { 300, LightColor.Value.TintColor(0.4D)},
+            { 400, LightColor.Value.TintColor(0.2D)},
+            { 500, LightColor.Value },
+            { 600, LightColor.Value.ShadeColor(0.2D)},
+            { 700, LightColor.Value.ShadeColor(0.4D)},
+            { 800, LightColor.Value.ShadeColor(0.6D)},
+            { 900, LightColor.Value.ShadeColor(0.8D)}
+        };
+
+        SuccessColor ??= GreenColor;
+        SuccessColors = new Dictionary<int, Color>()
+        {
+            { 100, SuccessColor.Value.TintColor(0.8D)},
+            { 200, SuccessColor.Value.TintColor(0.6D)},
+            { 300, SuccessColor.Value.TintColor(0.4D)},
+            { 400, SuccessColor.Value.TintColor(0.2D)},
+            { 500, SuccessColor.Value },
+            { 600, SuccessColor.Value.ShadeColor(0.2D)},
+            { 700, SuccessColor.Value.ShadeColor(0.4D)},
+            { 800, SuccessColor.Value.ShadeColor(0.6D)},
+            { 900, SuccessColor.Value.ShadeColor(0.8D)}
+        };
+
+        WarningColor ??= YellowColor;
+        WarningColors = new Dictionary<int, Color>()
+        {
+            { 100, WarningColor.Value.TintColor(0.8D)},
+            { 200, WarningColor.Value.TintColor(0.6D)},
+            { 300, WarningColor.Value.TintColor(0.4D)},
+            { 400, WarningColor.Value.TintColor(0.2D)},
+            { 500, WarningColor.Value },
+            { 600, WarningColor.Value.ShadeColor(0.2D)},
+            { 700, WarningColor.Value.ShadeColor(0.4D)},
+            { 800, WarningColor.Value.ShadeColor(0.6D)},
+            { 900, WarningColor.Value.ShadeColor(0.8D)}
+        };
+
         // Default page colors
         Light.EmphasisColor ??= BlackColor;
         Dark.EmphasisColor ??= WhiteColor;
@@ -1041,22 +1082,24 @@ public sealed class BootstrapCssSettings
         Dark.TertiaryColor ??= Color.FromArgb(128, Gray800Color.Value);
 
         // bg (subtle)
-        Light.PrimaryBgSubtleColor ??= PrimaryColor.Value.TintColor(0.8);
-        Dark.PrimaryBgSubtleColor ??= Color.FromArgb(6, 23, 38);
-        Light.SecondaryBgSubtleColor ??= SecondaryColor.Value.TintColor(0.8);
-        Dark.SecondaryBgSubtleColor ??= Color.FromArgb(22, 23, 25);
-        Light.DangerBgSubtleColor ??= DangerColor.Value.TintColor(0.8);
-        Dark.DangerBgSubtleColor ??= Color.FromArgb(50, 0, 1);
-        Light.DarkBgSubtleColor ??= Gray400Color;
-        Dark.DarkBgSubtleColor ??= Color.FromArgb(26, 29, 32);
-        Light.LightBgSubtleColor ??= Gray100Color.Value.TintColor(0.8);
-        Dark.LightBgSubtleColor ??= Gray800Color;
-        Light.InfoBgSubtleColor ??= InfoColor.Value.TintColor(0.8);
-        Dark.InfoBgSubtleColor ??= Color.FromArgb(3, 40, 48);
-        Light.SuccessBgSubtleColor ??= SuccessColor.Value.TintColor(0.8);
-        Dark.SuccessBgSubtleColor ??= Color.FromArgb(0, 26, 0);
-        Light.WarningBgSubtleColor ??= WarningColor.Value.TintColor(0.8);
-        Dark.WarningBgSubtleColor ??= Color.FromArgb(48, 48, 7);
+        Light.BgSubtleColors.Opacity ??= 255;
+        Dark.BgSubtleColors.Opacity ??= 255;
+        Light.BgSubtleColors.Primary ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, PrimaryColors[900]);
+        Dark.BgSubtleColors.Primary ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, PrimaryColors[100]);
+        Light.BgSubtleColors.Secondary ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, PrimaryColors[900]);
+        Dark.BgSubtleColors.Secondary ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, SecondaryColors[100]);
+        Light.BgSubtleColors.Danger ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, DangerColors[900]);
+        Dark.BgSubtleColors.Danger ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, DangerColors[100]);
+        Light.BgSubtleColors.Dark ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, DarkColors[900]);
+        Dark.BgSubtleColors.Dark ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, DarkColors[100]);
+        Light.BgSubtleColors.Light ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, LightColors[900]);
+        Dark.BgSubtleColors.Light ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, LightColors[100]);
+        Light.BgSubtleColors.Info ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, InfoColors[900]);
+        Dark.BgSubtleColors.Info ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, InfoColors[100]);
+        Light.BgSubtleColors.Success ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, SuccessColors[900]);
+        Dark.BgSubtleColors.Success ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, SuccessColors[100]);
+        Light.BgSubtleColors.Warning ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, WarningColors[900]);
+        Dark.BgSubtleColors.Warning ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, WarningColors[100]);
 
         // body
         Light.BodyBgColor ??= WhiteColor;
@@ -1072,7 +1115,7 @@ public sealed class BootstrapCssSettings
         BorderStyle ??= CssStyleEnum.Solid;
         Light.BorderColor ??= Gray300Color;
         Dark.BorderColor ??= Gray700Color;
-        Light.BorderColorTranslucent ??= Color.FromArgb((int)(256f * 0.175f), BlackColor.Value);
+        Light.BorderColorTranslucent ??= Color.FromArgb(45, BlackColor.Value);
         Dark.BorderColorTranslucent ??= Color.FromArgb((int)(256f * 0.175f), WhiteColor.Value);
         BorderRadius ??= CssPropertyValue.Rem(0.375f);
         BorderRadiusSm ??= CssPropertyValue.Rem(0.25f);
@@ -1083,22 +1126,24 @@ public sealed class BootstrapCssSettings
 
 
         // border colors (subtle)
-        Light.PrimaryBorderSubtleColor ??= PrimaryColor.Value.TintColor(0.6);
-        Dark.PrimaryBorderSubtleColor ??= Color.FromArgb(18, 69, 114);
-        Light.SecondaryBorderSubtleColor ??= SecondaryColor.Value.TintColor(0.6);
-        Dark.SecondaryBorderSubtleColor ??= Color.FromArgb(65, 70, 75);
-        Light.DangerBorderSubtleColor ??= DangerColor.Value.TintColor(0.6);
-        Dark.DangerBorderSubtleColor ??= Color.FromArgb(151, 0, 4);
-        Light.DarkBorderSubtleColor ??= Gray500Color;
-        Dark.DarkBorderSubtleColor ??= Gray800Color;
-        Light.LightBorderSubtleColor ??= Gray100Color;
-        Dark.LightBorderSubtleColor ??= Gray700Color;
-        Light.InfoBorderSubtleColor ??= InfoColor.Value.TintColor(0.6);
-        Dark.InfoBorderSubtleColor ??= Color.FromArgb(087990);
-        Light.SuccessBorderSubtleColor ??= SuccessColor.Value.TintColor(0.6);
-        Dark.SuccessBorderSubtleColor ??= Color.FromArgb(0, 77, 0);
-        Light.WarningBorderSubtleColor ??= WarningColor.Value.TintColor(0.6);
-        Dark.WarningBorderSubtleColor ??= Color.FromArgb(143, 143, 20);
+        Light.BorderSubtleColors.Opacity ??= 255;
+        Dark.BorderSubtleColors.Opacity ??= 255;
+        Light.BorderSubtleColors.Primary ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, PrimaryColors[200]);
+        Dark.BorderSubtleColors.Primary ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, WarningColors[800]);
+        Light.BorderSubtleColors.Secondary ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, SecondaryColors[200]);
+        Dark.BorderSubtleColors.Secondary ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, WarningColors[800]);
+        Light.BorderSubtleColors.Danger ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, DangerColors[200]);
+        Dark.BorderSubtleColors.Danger ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, WarningColors[800]);
+        Light.BorderSubtleColors.Dark ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, DarkColors[200]);
+        Dark.BorderSubtleColors.Dark ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, DarkColors[800]);
+        Light.BorderSubtleColors.Light ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, LightColors[200]);
+        Dark.BorderSubtleColors.Light ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, LightColors[800]);
+        Light.BorderSubtleColors.Info ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, InfoColors[200]);
+        Dark.BorderSubtleColors.Info ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, InfoColors[800]);
+        Light.BorderSubtleColors.Success ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, SuccessColors[200]);
+        Dark.BorderSubtleColors.Success ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, SuccessColors[800]);
+        Light.BorderSubtleColors.Warning ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, WarningColors[200]);
+        Dark.BorderSubtleColors.Warning ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, WarningColors[800]);
 
         // box-shadow
         BoxShadow ??= $"0 .5rem 1rem rgba({BlackColor.Value.ToRgbStringValues()}, 0.15)";
@@ -1164,15 +1209,6 @@ public sealed class BootstrapCssSettings
         Light.CardBgColor ??= Light.BodyBgColor.Value;
         Dark.CardBgColor ??= Dark.BodyBgColor.Value;
 
-        // Containers
-        ContainerMaxWidthSm ??= CssPropertyValue.Pixels(540);
-        ContainerMaxWidthMd ??= CssPropertyValue.Pixels(720);
-        ContainerMaxWidthLg ??= CssPropertyValue.Pixels(960);
-        ContainerMaxWidthXl ??= CssPropertyValue.Pixels(1140);
-        ContainerMaxWidthXxl ??= CssPropertyValue.Pixels(1320);
-        GutterWidth ??= CssPropertyValue.Rem(1.5f);
-        ContainerPaddingX ??= GutterWidth;
-
         // code
         Light.CodeColor ??= PinkColor;
 Dark.CodeColor ??= Color.FromArgb(230, 133, 181);
@@ -1213,16 +1249,55 @@ Dark.CodeColor ??= Color.FromArgb(230, 133, 181);
         LinkShadePercentage ??= CssPropertyValue.Percentage(20);
         Light.LinkHoverColor ??= Light.LinkColor.Value.ShadeColor(LinkShadePercentage.Value.Value * 0.01f);
         Dark.LinkHoverColor ??= Dark.LinkColor.Value.TintColor(LinkShadePercentage.Value.Value * 0.01f);
-        LinkHoverDecoration ??= CssStyleEnum.Null;
-        StretchedLinkPseudoElement ??= CssStyleEnum.After;
-        StretchedLinkZIndex ??= 1;
+        
+          StretchedLinkZIndex ??= 1;
         IconLinkGap ??= CssPropertyValue.Pixels(0.375f);
         IconLinkUnderlineOffset ??= CssPropertyValue.Rem(0.25f);
-        IconLinkIconSize ??= CssPropertyValue.Rem(1);
-        IconLinkIconTransition ??= "0.2s ease-in-out transform";
-        IconLinkIconTransform ??= "translate3d(.25em, 0, 0)";
-        
-     
+        IconLinkSize ??= CssPropertyValue.Rem(1);
+        IconLinkTransition ??= "0.2s ease-in-out transform";
+        IconLinkTransform ??= "translate3d(.25em, 0, 0)";
+
+        // texts
+        TextBackgroundColors.Opacity ??= 255;
+        TextBackgroundColors.Primary ??= Color.FromArgb(TextBackgroundColors.Opacity.Value, PrimaryColor.Value);
+        TextBackgroundColors.Secondary ??= Color.FromArgb(TextBackgroundColors.Opacity.Value, SecondaryColor.Value);
+        TextBackgroundColors.Success ??= Color.FromArgb(TextBackgroundColors.Opacity.Value, SuccessColor.Value);
+        TextBackgroundColors.Danger ??= Color.FromArgb(TextBackgroundColors.Opacity.Value, DangerColor.Value);
+        TextBackgroundColors.Dark ??= Color.FromArgb(TextBackgroundColors.Opacity.Value, DarkColor.Value);
+        TextBackgroundColors.Light ??= Color.FromArgb(TextBackgroundColors.Opacity.Value, LightColor.Value);
+        TextBackgroundColors.Info ??= Color.FromArgb(TextBackgroundColors.Opacity.Value, InfoColor.Value);
+        TextBackgroundColors.Warning ??= Color.FromArgb(TextBackgroundColors.Opacity.Value, WarningColor.Value);
+
+        TextBackgroundTextColors.Opacity ??= 255;
+        TextBackgroundTextColors.Primary ??= Color.FromArgb(TextBackgroundTextColors.Opacity.Value, WhiteColor.Value);
+        TextBackgroundTextColors.Secondary ??= Color.FromArgb(TextBackgroundTextColors.Opacity.Value, WhiteColor.Value);
+        TextBackgroundTextColors.Success ??= Color.FromArgb(TextBackgroundTextColors.Opacity.Value, WhiteColor.Value);
+        TextBackgroundTextColors.Danger ??= Color.FromArgb(TextBackgroundTextColors.Opacity.Value, BlackColor.Value);
+        TextBackgroundTextColors.Dark ??= Color.FromArgb(TextBackgroundTextColors.Opacity.Value, WhiteColor.Value);
+        TextBackgroundTextColors.Light ??= Color.FromArgb(TextBackgroundTextColors.Opacity.Value, BlackColor.Value);
+        TextBackgroundTextColors.Info ??= Color.FromArgb(TextBackgroundTextColors.Opacity.Value, WhiteColor.Value);
+        TextBackgroundTextColors.Warning ??= Color.FromArgb(TextBackgroundTextColors.Opacity.Value, BlackColor.Value);
+
+        // text (emphasis)
+        Light.TextEmphasisColors.Opacity ??= 255;
+        Dark.TextEmphasisColors.Opacity ??= 255;
+        Light.TextEmphasisColors.Danger ??= Color.FromArgb(Light.TextEmphasisColors.Opacity.Value, DangerColors[700]);
+        Dark.TextEmphasisColors.Danger ??= Color.FromArgb(Dark.TextEmphasisColors.Opacity.Value, DangerColors[300]);
+        Light.TextEmphasisColors.Dark ??= Color.FromArgb(Light.TextEmphasisColors.Opacity.Value, DarkColors[700]);
+        Dark.TextEmphasisColors.Dark ??= Color.FromArgb(Dark.TextEmphasisColors.Opacity.Value, DarkColors[300]);
+        Light.TextEmphasisColors.Info ??= Color.FromArgb(Light.TextEmphasisColors.Opacity.Value, InfoColors[700]);
+        Dark.TextEmphasisColors.Info ??= Color.FromArgb(Dark.TextEmphasisColors.Opacity.Value, InfoColors[300]);
+        Light.TextEmphasisColors.Light ??= Color.FromArgb(Light.TextEmphasisColors.Opacity.Value, Gray700Color.Value);
+        Dark.TextEmphasisColors.Light ??= Color.FromArgb(Dark.TextEmphasisColors.Opacity.Value, Gray300Color.Value);
+        Light.TextEmphasisColors.Primary ??= Color.FromArgb(Light.TextEmphasisColors.Opacity.Value, PrimaryColors[700]);
+        Dark.TextEmphasisColors.Primary ??= Color.FromArgb(Dark.TextEmphasisColors.Opacity.Value, PrimaryColors[300]);
+        Light.TextEmphasisColors.Secondary ??= Color.FromArgb(Light.TextEmphasisColors.Opacity.Value, SecondaryColors[700]);
+        Dark.TextEmphasisColors.Secondary ??= Color.FromArgb(Dark.TextEmphasisColors.Opacity.Value, SecondaryColors[300]);
+        Light.TextEmphasisColors.Success ??= Color.FromArgb(Light.TextEmphasisColors.Opacity.Value, SuccessColors[700]);
+        Dark.TextEmphasisColors.Success ??= Color.FromArgb(Dark.TextEmphasisColors.Opacity.Value, SuccessColors[300]);
+        Light.TextEmphasisColors.Warning ??= Color.FromArgb(Light.TextEmphasisColors.Opacity.Value, WarningColors[700]);
+        Dark.TextEmphasisColors.Warning ??= Color.FromArgb(Dark.TextEmphasisColors.Opacity.Value, WarningColors[300]);
+
         return this;
     }
 }
@@ -1278,74 +1353,13 @@ public sealed class BootstrapCssSettingsColorTheme
 
     #region Default Bootstrap Background colors
 
-    #region subtle
-
     /// <summary>
-    /// Default Bootstrap --bs-primary-bg-subtle color. 
+    /// Default bootstrap --bs-*-bg-subtle colors.
     /// </summary>
     /// <remarks>
-    /// Default is 80% lighter than <see cref="BootstrapCssSettings.PrimaryColor"/>
+    /// Default values are in the 100/900 ranges than the original color, with the provided opacity.
     /// </remarks>
-    public Color? PrimaryBgSubtleColor { get; set; }
-
-
-    /// <summary>
-    /// Default Bootstrap --bs-secondary-bg-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default is 80% lighter than <see cref="BootstrapCssSettings.SecondaryColor"/>
-    /// </remarks>
-    public Color? SecondaryBgSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-danger-bg-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default is 80% lighter than <see cref="BootstrapCssSettings.DangerColor"/>
-    /// </remarks>
-    public Color? DangerBgSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-dark-bg-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default is <see cref="BootstrapCssSettings.Gray400Color"/>
-    /// </remarks>
-    public Color? DarkBgSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-light-bg-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default is 80% lighter than <see cref="BootstrapCssSettings.Gray100Color"/>
-    /// </remarks>
-    public Color? LightBgSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-info-bg-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default is 80% lighter than <see cref="BootstrapCssSettings.InfoColor"/>
-    /// </remarks>
-    public Color? InfoBgSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-success-bg-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default is 80% lighter than <see cref="BootstrapCssSettings.SuccessColor"/>
-    /// </remarks>
-    public Color? SuccessBgSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-warning-bg-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default is 80% lighter than <see cref="BootstrapCssSettings.WarningColor"/>
-    /// </remarks>
-    public Color? WarningBgSubtleColor { get; set; }
-
-    #endregion
+    public CssColorSet BgSubtleColors { get; set; } = new();
 
     #endregion
 
@@ -1370,71 +1384,15 @@ public sealed class BootstrapCssSettingsColorTheme
     #region subtle colors
 
     /// <summary>
-    /// Default Bootstrap --bs-primary-border-subtle color. 
+    /// Default Bootstrap --bs-*-border-subtle color.
     /// </summary>
     /// <remarks>
-    /// Default value for light mode is  80% lighter than <see cref="BootstrapCssSettings.PrimaryColor"/>
+    /// Default values in the 200/800 ranges than the original color, with the provided opacity.
     /// </remarks>
-    public Color? PrimaryBorderSubtleColor { get; set; }
+    public CssColorSet BorderSubtleColors { get; set; } = new();
 
-    /// <summary>
-    /// Default Bootstrap --bs-secondary-border-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is  60% lighter than <see cref="BootstrapCssSettings.SecondaryColor"/>
-    /// </remarks>
-    public Color? SecondaryBorderSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-danger-border-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is  60% lighter than <see cref="BootstrapCssSettings.DangerColor"/>
-    /// </remarks>
-    public Color? DangerBorderSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-dark-border-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is  <see cref="BootstrapCssSettings.Gray500Color"/>
-    /// </remarks>
-    public Color? DarkBorderSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-light-border-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is  <see cref="BootstrapCssSettings.Gray100Color"/>
-    /// </remarks>
-    public Color? LightBorderSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-info-border-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is 60% lighter than <see cref="BootstrapCssSettings.InfoColor"/>
-    /// </remarks>
-    public Color? InfoBorderSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-success-border-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is 60% lighter than <see cref="BootstrapCssSettings.SuccessColor"/>
-    /// </remarks>
-    public Color? SuccessBorderSubtleColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-warning-border-subtle color. 
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is 60% lighter than <see cref="BootstrapCssSettings.WarningColor"/>
-    /// </remarks>
-    public Color? WarningBorderSubtleColor { get; set; }
-    
     #endregion
-    
+
     #endregion
 
     #region Default Bootstrap Text colors
@@ -1442,68 +1400,12 @@ public sealed class BootstrapCssSettingsColorTheme
     #region Emphasis
 
     /// <summary>
-    /// Default Bootstrap --bs-danger-text-emphasis color.
+    /// Default Bootstrap --bs-*-text-emphasis colors
     /// </summary>
     /// <remarks>
-    /// Default value for light mode is RGB(100, 0, 3), hex #640003
+    /// Default values are the original colors multiplied by the provided opacity value.
     /// </remarks>
-    public Color? DangerTextEmphasisColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-dark-text-emphasis color.
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode will be derived from <see cref="BootstrapCssSettings.Gray700Color"/>
-    /// </remarks>
-    public Color? DarkTextEmphasisColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-info-text-emphasis color.
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is RGB(5, 81, 96), hex #055160
-    /// </remarks>
-    public Color? InfoTextEmphasisColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-light-text-emphasis color.
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode will be derived from <see cref="BootstrapCssSettings.Gray700Color"/>
-    /// </remarks>
-    public Color? LightTextEmphasisColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-primary-text-emphasis color.
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is RGB(12, 46, 76), hex #0c2e4c
-    /// </remarks>
-    public Color? PrimaryTextEmphasisColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-secondary-text-emphasis color.
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is RGB(43, 47, 50), hex #2b2f32
-    /// </remarks>
-    public Color? SecondaryTextEmphasisColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-success-text-emphasis color.
-    /// </summary>
-    /// <remarks>
-    /// Default value  for light mode is RGB(0, 51, 0), hex #003300
-    /// </remarks>
-    public Color? SuccessTextEmphasisColor { get; set; }
-
-    /// <summary>
-    /// Default Bootstrap --bs-warning-text-emphasis color.
-    /// </summary>
-    /// <remarks>
-    /// Default value for light mode is RGB(95, 95, 14), hex #5f5f0e
-    /// </remarks>
-    public Color? WarningTextEmphasisColor { get; set; }
+    public CssColorSet TextEmphasisColors { get; set; } = new();
 
     #endregion
 
@@ -1688,7 +1590,7 @@ public sealed class BootstrapCssSettingsColorTheme
     public Color? LinkHoverColor { get; set; }
 
     #endregion
-    
+
     /// <summary>
     /// Default Bootstrap --bs-code-color.
     /// </summary>

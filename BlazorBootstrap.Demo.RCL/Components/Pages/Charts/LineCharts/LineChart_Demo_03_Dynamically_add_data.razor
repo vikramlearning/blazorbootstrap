@@ -87,18 +87,27 @@
 
         options.Interaction.Mode = InteractionMode.Index;
 
-        options.Plugins.Title!.Text = "WORM";
-        options.Plugins.Title.Display = true;
-        options.Plugins.Title!.Font!.Size = 20;
+        options.Plugins.Title = new ChartPluginsTitle()
+        {
+            Text = "WORM",
+            Display = true,
+            Font = new ChartFont() { Size = 20 }
+        }; 
 
         options.Responsive = true;
-
-        options.Scales.X!.Title!.Text = "Overs";
-        options.Scales.X.Title.Display = true;
-
-        options.Scales.Y!.Title!.Text = "Runs";
-        options.Scales.Y.Title.Display = true;
-        options.Scales.Y.SuggestedMax = 150;
+        
+        options.Scales = new Scales
+        {
+            X = new ChartAxes()
+            {
+                Title = new ChartAxesTitle() { Text = "Over", Display = true }
+            },
+            Y = new ChartAxes()
+            {
+                Title = new ChartAxesTitle() { Text = "Runs", Display = true },
+                SuggestedMax = 150
+            },
+        };
 
         return options;
     }

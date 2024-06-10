@@ -17,41 +17,40 @@ public static class CssGenerator
  */
  @charset ""UTF-8"";";
     
-    private static string? _cssCache;
     private static string Generate(BootstrapCssSettings settings) => @$"
 :root,
 [data-bs-theme=light] {{
-  --bs-blue: {settings.BlueColor.Value.ToHexString()};
-  --bs-indigo: {settings.IndigoColor.Value.ToHexString()};
-  --bs-purple: {settings.PurpleColor.Value.ToHexString()};
-  --bs-pink: {settings.PinkColor.Value.ToHexString()};
-  --bs-red: {settings.RedColor.Value.ToHexString()};
-  --bs-orange: {settings.OrangeColor.Value.ToHexString()};
-  --bs-yellow: {settings.YellowColor.Value.ToHexString()};
-  --bs-green: {settings.GreenColor.Value.ToHexString()};
-  --bs-teal: {settings.TealColor.Value.ToHexString()};
-  --bs-cyan: {settings.CyanColor.Value.ToHexString()};
-  --bs-black: {settings.BlackColor.Value.ToHexString()};
-  --bs-white: {settings.WhiteColor.Value.ToHexString()};
-  --bs-gray: {settings.GrayColor.Value.ToHexString()};
-  --bs-gray-dark: {settings.GrayDarkColor.Value.ToHexString()};
-  --bs-gray-100: {settings.Gray100Color.Value.ToHexString()};
-  --bs-gray-200: {settings.Gray200Color.Value.ToHexString()};
-  --bs-gray-300: {settings.Gray300Color.Value.ToHexString()};
-  --bs-gray-400: {settings.Gray400Color.Value.ToHexString()};
-  --bs-gray-500: {settings.Gray500Color.Value.ToHexString()};
-  --bs-gray-600: {settings.Gray600Color.Value.ToHexString()};
-  --bs-gray-700: {settings.Gray700Color.Value.ToHexString()};
-  --bs-gray-800: {settings.Gray800Color.Value.ToHexString()};
-  --bs-gray-900: {settings.Gray900Color.Value.ToHexString()};
-  --bs-primary: {settings.PrimaryColor.Value.ToHexString()};
-  --bs-secondary: {settings.SecondaryColor.Value.ToHexString()};
-  --bs-success: {settings.SuccessColor.Value.ToHexString()};
-  --bs-info: {settings.InfoColor.Value.ToHexString()};
-  --bs-warning: {settings.WarningColor.Value.ToHexString()};
-  --bs-danger: {settings.DangerColor.Value.ToHexString()};
-  --bs-light: {settings.LightColor.Value.ToHexString()};
-  --bs-dark: {settings.DarkColor.Value.ToHexString()};
+  --bs-blue: {settings.BlueColor.ToHexString()};
+  --bs-indigo: {settings.IndigoColor.ToHexString()};
+  --bs-purple: {settings.PurpleColor.ToHexString()};
+  --bs-pink: {settings.PinkColor.ToHexString()};
+  --bs-red: {settings.RedColor.ToHexString()};
+  --bs-orange: {settings.OrangeColor.ToHexString()};
+  --bs-yellow: {settings.YellowColor.ToHexString()};
+  --bs-green: {settings.GreenColor.ToHexString()};
+  --bs-teal: {settings.TealColor.ToHexString()};
+  --bs-cyan: {settings.CyanColor.ToHexString()};
+  --bs-black: {settings.BlackColor.ToHexString()};
+  --bs-white: {settings.WhiteColor.ToHexString()};
+  --bs-gray: {settings.GrayColor.ToHexString()};
+  --bs-gray-dark: {settings.GrayDarkColor.ToHexString()};
+  --bs-gray-100: {settings.Gray100Color.ToHexString()};
+  --bs-gray-200: {settings.Gray200Color.ToHexString()};
+  --bs-gray-300: {settings.Gray300Color.ToHexString()};
+  --bs-gray-400: {settings.Gray400Color.ToHexString()};
+  --bs-gray-500: {settings.Gray500Color.ToHexString()};
+  --bs-gray-600: {settings.Gray600Color.ToHexString()};
+  --bs-gray-700: {settings.Gray700Color.ToHexString()};
+  --bs-gray-800: {settings.Gray800Color.ToHexString()};
+  --bs-gray-900: {settings.Gray900Color.ToHexString()};
+  --bs-primary: {settings.PrimaryColor.ToHexString()};
+  --bs-secondary: {settings.SecondaryColor.ToHexString()};
+  --bs-success: {settings.SuccessColor.ToHexString()};
+  --bs-info: {settings.InfoColor.ToHexString()};
+  --bs-warning: {settings.WarningColor.ToHexString()};
+  --bs-danger: {settings.DangerColor.ToHexString()};
+  --bs-light: {settings.LightColor.ToHexString()};
+  --bs-dark: {settings.DarkColor.ToHexString()};
   --bs-primary-rgb: {settings.PrimaryColor.Value.ToRgbStringValues()};
   --bs-secondary-rgb: {settings.SecondaryColor.Value.ToRgbStringValues()};
   --bs-success-rgb: {settings.SuccessColor.Value.ToRgbStringValues()};
@@ -60,30 +59,30 @@ public static class CssGenerator
   --bs-danger-rgb: {settings.DangerColor.Value.ToRgbStringValues()};
   --bs-light-rgb: {settings.LightColor.Value.ToRgbStringValues()};
   --bs-dark-rgb: {settings.DarkColor.Value.ToRgbStringValues()};
-  --bs-primary-text-emphasis: {settings.Light.PrimaryTextEmphasisColor.Value.ToHexString()};
-  --bs-secondary-text-emphasis: {settings.Light.SecondaryTextEmphasisColor.Value.ToHexString()};
-  --bs-success-text-emphasis: {settings.Light.SuccessTextEmphasisColor.Value.ToHexString()};
-  --bs-info-text-emphasis: {settings.Light.InfoTextEmphasisColor.Value.ToHexString()};
-  --bs-warning-text-emphasis: {settings.Light.WarningTextEmphasisColor.Value.ToHexString()};
-  --bs-danger-text-emphasis: {settings.Light.DangerTextEmphasisColor.Value.ToHexString()};
-  --bs-light-text-emphasis: {settings.Light.LightTextEmphasisColor.Value.ToHexString()};
-  --bs-dark-text-emphasis: {settings.Light.DarkTextEmphasisColor.Value.ToHexString()};
-  --bs-primary-bg-subtle: {settings.Light.PrimaryBgSubtleColor.Value.ToHexString()};
-  --bs-secondary-bg-subtle: {settings.Light.SecondaryBgSubtleColor.Value.ToHexString()};
-  --bs-success-bg-subtle: {settings.Light.SuccessBgSubtleColor.Value.ToHexString()};
-  --bs-info-bg-subtle: {settings.Light.InfoBgSubtleColor.Value.ToHexString()};
-  --bs-warning-bg-subtle: {settings.Light.WarningBgSubtleColor.Value.ToHexString()};
-  --bs-danger-bg-subtle: {settings.Light.DangerBgSubtleColor.Value.ToHexString()};
-  --bs-light-bg-subtle: {settings.Light.LightBgSubtleColor.Value.ToHexString()};
-  --bs-dark-bg-subtle: {settings.Light.DarkBgSubtleColor.Value.ToHexString()};
-  --bs-primary-border-subtle: {settings.Light.PrimaryBorderSubtleColor.Value.ToHexString()};
-  --bs-secondary-border-subtle: {settings.Light.SecondaryBorderSubtleColor.Value.ToHexString()};
-  --bs-success-border-subtle: {settings.Light.SuccessBorderSubtleColor.Value.ToHexString()};
-  --bs-info-border-subtle: {settings.Light.InfoBorderSubtleColor.Value.ToHexString()};
-  --bs-warning-border-subtle: {settings.Light.WarningBorderSubtleColor.Value.ToHexString()};
-  --bs-danger-border-subtle: {settings.Light.DangerBorderSubtleColor.Value.ToHexString()};
-  --bs-light-border-subtle: {settings.Light.LightBorderSubtleColor.Value.ToHexString()};
-  --bs-dark-border-subtle: {settings.Light.DarkBorderSubtleColor.Value.ToHexString()};
+  --bs-primary-text-emphasis: {settings.Light.TextEmphasisColors.Primary.ToHexString()};
+  --bs-secondary-text-emphasis: {settings.Light.TextEmphasisColors.Secondary.ToHexString()};
+  --bs-success-text-emphasis: {settings.Light.TextEmphasisColors.Success.ToHexString()};
+  --bs-info-text-emphasis: {settings.Light.TextEmphasisColors.Info.ToHexString()};
+  --bs-warning-text-emphasis: {settings.Light.TextEmphasisColors.Warning.ToHexString()};
+  --bs-danger-text-emphasis: {settings.Light.TextEmphasisColors.Danger.ToHexString()};
+  --bs-light-text-emphasis: {settings.Light.TextEmphasisColors.Light.ToHexString()};
+  --bs-dark-text-emphasis: {settings.Light.TextEmphasisColors.Dark.ToHexString()};
+  --bs-primary-bg-subtle: {settings.Light.BgSubtleColors.Primary.ToHexString()};
+  --bs-secondary-bg-subtle: {settings.Light.BgSubtleColors.Secondary.ToHexString()};
+  --bs-success-bg-subtle: {settings.Light.BgSubtleColors.Success.ToHexString()};
+  --bs-info-bg-subtle: {settings.Light.BgSubtleColors.Info.ToHexString()};
+  --bs-warning-bg-subtle: {settings.Light.BgSubtleColors.Warning.ToHexString()};
+  --bs-danger-bg-subtle: {settings.Light.BgSubtleColors.Danger.ToHexString()};
+  --bs-light-bg-subtle: {settings.Light.BgSubtleColors.Light.ToHexString()};
+  --bs-dark-bg-subtle: {settings.Light.BgSubtleColors.Dark.ToHexString()};
+  --bs-primary-border-subtle: {settings.Light.BorderSubtleColors.Primary.ToHexString()};
+  --bs-secondary-border-subtle: {settings.Light.BorderSubtleColors.Secondary.ToHexString()};
+  --bs-success-border-subtle: {settings.Light.BorderSubtleColors.Success.ToHexString()};
+  --bs-info-border-subtle: {settings.Light.BorderSubtleColors.Info.ToHexString()};
+  --bs-warning-border-subtle: {settings.Light.BorderSubtleColors.Warning.ToHexString()};
+  --bs-danger-border-subtle: {settings.Light.BorderSubtleColors.Danger.ToHexString()};
+  --bs-light-border-subtle: {settings.Light.BorderSubtleColors.Light.ToHexString()};
+  --bs-dark-border-subtle: {settings.Light.BorderSubtleColors.Dark.ToHexString()};
   --bs-white-rgb: {settings.WhiteColor.Value.ToRgbStringValues()};
   --bs-black-rgb: {settings.BlackColor.Value.ToRgbStringValues()};
   --bs-font-sans-serif: {settings.FontSansSerif};
@@ -93,33 +92,33 @@ public static class CssGenerator
   --bs-body-font-size: {settings.BodyFontSize};
   --bs-body-font-weight: {settings.BodyFontWeight};
   --bs-body-line-height: {settings.BodyLineHeight};
-  --bs-body-color: {settings.Light.BodyTextColor.Value.ToHexString()};
+  --bs-body-color: {settings.Light.BodyTextColor.ToHexString()};
   --bs-body-color-rgb: {settings.Light.BodyTextColor.Value.ToRgbStringValues()};
-  --bs-body-bg:  {settings.Light.BodyBgColor.Value.ToHexString()};
+  --bs-body-bg:  {settings.Light.BodyBgColor.ToHexString()};
   --bs-body-bg-rgb: {settings.Light.BodyBgColor.Value.ToRgbStringValues()};
-  --bs-emphasis-color: {settings.Light.EmphasisColor.Value.ToHexString()};
+  --bs-emphasis-color: {settings.Light.EmphasisColor.ToHexString()};
   --bs-emphasis-color-rgb: {settings.Light.EmphasisColor.Value.ToRgbStringValues()};
   --bs-secondary-color: {settings.Light.SecondaryColor.Value.ToRgbaString()};
   --bs-secondary-color-rgb: {settings.Light.SecondaryColor.Value.ToRgbStringValues()};
-  --bs-secondary-bg: {settings.Light.SecondaryBackgroundColor.Value.ToHexString()};
+  --bs-secondary-bg: {settings.Light.SecondaryBackgroundColor.ToHexString()};
   --bs-secondary-bg-rgb: {settings.Light.SecondaryBackgroundColor.Value.ToRgbStringValues()};
   --bs-tertiary-color: {settings.Light.TertiaryColor.Value.ToRgbaString()};
   --bs-tertiary-color-rgb: {settings.Light.TertiaryColor.Value.ToRgbStringValues()};
-  --bs-tertiary-bg: {settings.Light.TertiaryBackgroundColor.Value.ToHexString()};
+  --bs-tertiary-bg: {settings.Light.TertiaryBackgroundColor.ToHexString()};
   --bs-tertiary-bg-rgb: {settings.Light.TertiaryBackgroundColor.Value.ToRgbStringValues()};
   --bs-heading-color: inherit;
-  --bs-link-color: {settings.Light.LinkColor.Value.ToHexString()};
+  --bs-link-color: {settings.Light.LinkColor.ToHexString()};
   --bs-link-color-rgb: {settings.Light.LinkColor.Value.ToRgbStringValues()};
   --bs-link-decoration: {settings.LinkDecoration};
-  --bs-link-hover-color: {settings.Light.LinkHoverColor.Value.ToHexString()};
+  --bs-link-hover-color: {settings.Light.LinkHoverColor.ToHexString()};
   --bs-link-hover-color-rgb: {settings.Light.LinkHoverColor.Value.ToRgbStringValues()};
-  --bs-code-color: {settings.Light.CodeColor.Value.ToHexString()};
-  --bs-highlight-color: {settings.Light.HighlightColor.Value.ToHexString()};
-  --bs-highlight-bg: {settings.Light.HighlightBackgroundColor.Value.ToHexString()};
+  --bs-code-color: {settings.Light.CodeColor.ToHexString()};
+  --bs-highlight-color: {settings.Light.HighlightColor.ToHexString()};
+  --bs-highlight-bg: {settings.Light.HighlightBackgroundColor.ToHexString()};
   --bs-border-width: {settings.BorderWidth};
   --bs-border-style: {settings.BorderStyle};
-  --bs-border-color: {settings.Light.BorderColor.Value.ToHexString()};
-  --bs-border-color-translucent: {settings.Light.BorderColorTranslucent.Value.ToHexString()};
+  --bs-border-color: {settings.Light.BorderColor.ToHexString()};
+  --bs-border-color-translucent: {settings.Light.BorderColorTranslucent.ToHexString()};
   --bs-border-radius: {settings.BorderRadius};
   --bs-border-radius-sm: {settings.BorderRadiusSm};
   --bs-border-radius-lg: {settings.BorderRadiusLg};
@@ -134,66 +133,67 @@ public static class CssGenerator
   --bs-focus-ring-width: {settings.FocusRingWidth};
   --bs-focus-ring-opacity: {settings.FocusRingOpacity};
   --bs-focus-ring-color: {settings.FocusRingColor};
-  --bs-form-valid-color: {settings.Light.FormValidColor.Value.ToHexString()};
-  --bs-form-valid-border-color: {settings.Light.FormValidBorderColor.Value.ToHexString()};
-  --bs-form-invalid-color: {settings.Light.FormInvalidColor.Value.ToHexString()};
-  --bs-form-invalid-border-color: {settings.Light.FormInvalidBorderColor.Value.ToHexString()};
+  --bs-form-valid-color: {settings.Light.FormValidColor.ToHexString()};
+  --bs-form-valid-border-color: {settings.Light.FormValidBorderColor.ToHexString()};
+  --bs-form-invalid-color: {settings.Light.FormInvalidColor.ToHexString()};
+  --bs-form-invalid-border-color: {settings.Light.FormInvalidBorderColor.ToHexString()};
+  --bs-icon-link-transform: {settings.IconLinkTransform}
 }}
 
 [data-bs-theme=dark] {{
   color-scheme: dark;
-  --bs-body-color: {settings.Dark.BodyTextColor.Value.ToHexString()};
+  --bs-body-color: {settings.Dark.BodyTextColor.ToHexString()};
   --bs-body-color-rgb: {settings.Dark.BodyTextColor.Value.ToRgbStringValues()};
-  --bs-body-bg:  {settings.Dark.BodyBgColor.Value.ToHexString()};
+  --bs-body-bg:  {settings.Dark.BodyBgColor.ToHexString()};
   --bs-body-bg-rgb: {settings.Dark.BodyBgColor.Value.ToRgbStringValues()};
-  --bs-emphasis-color: {settings.Dark.EmphasisColor.Value.ToHexString()};
+  --bs-emphasis-color: {settings.Dark.EmphasisColor.ToHexString()};
   --bs-emphasis-color-rgb: {settings.Dark.EmphasisColor.Value.ToRgbStringValues()}; 
   --bs-secondary-color: {settings.Dark.SecondaryColor.Value.ToRgbaString()};
   --bs-secondary-color-rgb: {settings.Dark.SecondaryColor.Value.ToRgbStringValues()};
-  --bs-secondary-bg: {settings.Dark.SecondaryBackgroundColor.Value.ToHexString()};
+  --bs-secondary-bg: {settings.Dark.SecondaryBackgroundColor.ToHexString()};
   --bs-secondary-bg-rgb: {settings.Dark.SecondaryBackgroundColor.Value.ToRgbStringValues()};
   --bs-tertiary-color: {settings.Dark.TertiaryColor.Value.ToRgbaString()};
   --bs-tertiary-color-rgb: {settings.Dark.TertiaryColor.Value.ToRgbStringValues()};
-  --bs-tertiary-bg: {settings.Dark.TertiaryBackgroundColor.Value.ToHexString()};
+  --bs-tertiary-bg: {settings.Dark.TertiaryBackgroundColor.ToHexString()};
   --bs-tertiary-bg-rgb: {settings.Dark.TertiaryBackgroundColor.Value.ToRgbStringValues()};
-  --bs-primary-text-emphasis: {settings.Dark.PrimaryTextEmphasisColor.Value.ToHexString()};
-  --bs-secondary-text-emphasis: {settings.Dark.SecondaryTextEmphasisColor.Value.ToHexString()};
-  --bs-success-text-emphasis: {settings.Dark.SuccessTextEmphasisColor.Value.ToHexString()};
-  --bs-info-text-emphasis: {settings.Dark.InfoTextEmphasisColor.Value.ToHexString()};
-  --bs-warning-text-emphasis: {settings.Dark.WarningTextEmphasisColor.Value.ToHexString()};
-  --bs-danger-text-emphasis: {settings.Dark.DangerTextEmphasisColor.Value.ToHexString()};
-  --bs-light-text-emphasis: {settings.Dark.LightTextEmphasisColor.Value.ToHexString()};
-  --bs-dark-text-emphasis: {settings.Dark.DarkTextEmphasisColor.Value.ToHexString()};
-  --bs-primary-bg-subtle: {settings.Dark.PrimaryBgSubtleColor.Value.ToHexString()};
-  --bs-secondary-bg-subtle: {settings.Dark.SecondaryBgSubtleColor.Value.ToHexString()};
-  --bs-success-bg-subtle: {settings.Dark.SuccessBgSubtleColor.Value.ToHexString()};
-  --bs-info-bg-subtle: {settings.Dark.InfoBgSubtleColor.Value.ToHexString()};
-  --bs-warning-bg-subtle: {settings.Dark.WarningBgSubtleColor.Value.ToHexString()};
-  --bs-danger-bg-subtle: {settings.Dark.DangerBgSubtleColor.Value.ToHexString()};
-  --bs-light-bg-subtle: {settings.Dark.LightBgSubtleColor.Value.ToHexString()};
-  --bs-dark-bg-subtle: {settings.Dark.DarkBgSubtleColor.Value.ToHexString()};
-  --bs-primary-border-subtle: {settings.Dark.PrimaryBorderSubtleColor.Value.ToHexString()};
-  --bs-secondary-border-subtle: {settings.Dark.SecondaryBorderSubtleColor.Value.ToHexString()};
-  --bs-success-border-subtle: {settings.Dark.SuccessBorderSubtleColor.Value.ToHexString()};
-  --bs-info-border-subtle: {settings.Dark.InfoBorderSubtleColor.Value.ToHexString()};
-  --bs-warning-border-subtle: {settings.Dark.WarningBorderSubtleColor.Value.ToHexString()};
-  --bs-danger-border-subtle: {settings.Dark.DangerBorderSubtleColor.Value.ToHexString()};
-  --bs-light-border-subtle: {settings.Dark.LightBorderSubtleColor.Value.ToHexString()};
-  --bs-dark-border-subtle: {settings.Dark.DarkBorderSubtleColor.Value.ToHexString()};
-  --bs-link-color: {settings.Dark.LinkColor.Value.ToHexString()};
+  --bs-primary-text-emphasis: {settings.Dark.TextEmphasisColors.Primary.ToHexString()};
+  --bs-secondary-text-emphasis: {settings.Dark.TextEmphasisColors.Secondary.ToHexString()};
+  --bs-success-text-emphasis: {settings.Dark.TextEmphasisColors.Success.ToHexString()};
+  --bs-info-text-emphasis: {settings.Dark.TextEmphasisColors.Info.ToHexString()};
+  --bs-warning-text-emphasis: {settings.Dark.TextEmphasisColors.Warning.ToHexString()};
+  --bs-danger-text-emphasis: {settings.Dark.TextEmphasisColors.Danger.ToHexString()};
+  --bs-light-text-emphasis: {settings.Dark.TextEmphasisColors.Light.ToHexString()};
+  --bs-dark-text-emphasis: {settings.Dark.TextEmphasisColors.Dark.ToHexString()};
+  --bs-primary-bg-subtle: {settings.Dark.BgSubtleColors.Primary.ToHexString()};
+  --bs-secondary-bg-subtle: {settings.Dark.BgSubtleColors.Secondary.ToHexString()};
+  --bs-success-bg-subtle: {settings.Dark.BgSubtleColors.Success.ToHexString()};
+  --bs-info-bg-subtle: {settings.Dark.BgSubtleColors.Info.ToHexString()};
+  --bs-warning-bg-subtle: {settings.Dark.BgSubtleColors.Warning.ToHexString()};
+  --bs-danger-bg-subtle: {settings.Dark.BgSubtleColors.Danger.ToHexString()};
+  --bs-light-bg-subtle: {settings.Dark.BgSubtleColors.Light.ToHexString()};
+  --bs-dark-bg-subtle: {settings.Dark.BgSubtleColors.Dark.ToHexString()};
+  --bs-primary-border-subtle: {settings.Dark.BorderSubtleColors.Primary.ToHexString()};
+  --bs-secondary-border-subtle: {settings.Dark.BorderSubtleColors.Secondary.ToHexString()};
+  --bs-success-border-subtle: {settings.Dark.BorderSubtleColors.Success.ToHexString()};
+  --bs-info-border-subtle: {settings.Dark.BorderSubtleColors.Info.ToHexString()};
+  --bs-warning-border-subtle: {settings.Dark.BorderSubtleColors.Warning.ToHexString()};
+  --bs-danger-border-subtle: {settings.Dark.BorderSubtleColors.Danger.ToHexString()};
+  --bs-light-border-subtle: {settings.Dark.BorderSubtleColors.Light.ToHexString()};
+  --bs-dark-border-subtle: {settings.Dark.BorderSubtleColors.Dark.ToHexString()};
+  --bs-link-color: {settings.Dark.LinkColor.ToHexString()};
   --bs-link-color-rgb: {settings.Dark.LinkColor.Value.ToRgbStringValues()};
-  --bs-link-hover-color: {settings.Dark.LinkHoverColor.Value.ToHexString()};
+  --bs-link-hover-color: {settings.Dark.LinkHoverColor.ToHexString()};
   --bs-link-hover-color-rgb: {settings.Dark.LinkHoverColor.Value.ToRgbStringValues()};
   --bs-heading-color: inherit;
-  --bs-code-color: {settings.Dark.CodeColor.Value.ToHexString()};
-  --bs-highlight-color: {settings.Dark.HighlightColor.Value.ToHexString()};
-  --bs-highlight-bg: {settings.Dark.HighlightBackgroundColor.Value.ToHexString()};
-  --bs-border-color: {settings.Dark.BorderColor.Value.ToHexString()};
-  --bs-border-color-translucent: {settings.Dark.BorderColorTranslucent.Value.ToHexString()};
-  --bs-form-valid-color: {settings.Dark.FormValidColor.Value.ToHexString()};
-  --bs-form-valid-border-color: {settings.Dark.FormValidBorderColor.Value.ToHexString()};
-  --bs-form-invalid-color: {settings.Dark.FormInvalidColor.Value.ToHexString()};
-  --bs-form-invalid-border-color: {settings.Dark.FormInvalidBorderColor.Value.ToHexString()};
+  --bs-code-color: {settings.Dark.CodeColor.ToHexString()};
+  --bs-highlight-color: {settings.Dark.HighlightColor.ToHexString()};
+  --bs-highlight-bg: {settings.Dark.HighlightBackgroundColor.ToHexString()};
+  --bs-border-color: {settings.Dark.BorderColor.ToHexString()};
+  --bs-border-color-translucent: {settings.Dark.BorderColorTranslucent.ToHexString()};
+  --bs-form-valid-color: {settings.Dark.FormValidColor.ToHexString()};
+  --bs-form-valid-border-color: {settings.Dark.FormValidBorderColor.ToHexString()};
+  --bs-form-invalid-color: {settings.Dark.FormInvalidColor.ToHexString()};
+  --bs-form-invalid-border-color: {settings.Dark.FormInvalidBorderColor.ToHexString()};
 }}
 
 *,
@@ -708,7 +708,7 @@ progress {{
   margin-top: -1rem;
   margin-bottom: 1rem;
   font-size: 0.875em;
-  color: #6c757d;
+  color: var(--bs-secondary);
 }}
 .blockquote-footer::before {{
   content: ""— "";
@@ -1944,113 +1944,112 @@ progress {{
 }}
 
 .table-primary {{
-  --bs-table-color: #000;
-  --bs-table-bg: #d2e3f2;
-  --bs-table-border-color: #a8b6c2;
-  --bs-table-striped-bg: #c8d8e6;
-  --bs-table-striped-color: #000;
-  --bs-table-active-bg: #bdccda;
-  --bs-table-active-color: #000;
-  --bs-table-hover-bg: #c2d2e0;
-  --bs-table-hover-color: #000;
+  --bs-table-color: var(--bs-black);
+  --bs-table-bg: {settings.PrimaryColors[800].ToHexString()};
+  --bs-table-border-color: {settings.PrimaryColors[400].ToHexString()};
+  --bs-table-striped-bg: {settings.PrimaryColors[600].ToHexString()};
+  --bs-table-striped-color: var(--bs-black);
+  --bs-table-active-bg: {settings.PrimaryColors[700].ToHexString()};
+  --bs-table-active-color: var(--bs-black);
+  --bs-table-hover-bg: {settings.PrimaryColors[700].ToHexString()};
+  --bs-table-hover-color: var(--bs-black);
   color: var(--bs-table-color);
   border-color: var(--bs-table-border-color);
 }}
 
 .table-secondary {{
-  --bs-table-color: #000;
-  --bs-table-bg: #e2e3e5;
-  --bs-table-border-color: #b5b6b7;
-  --bs-table-striped-bg: #d7d8da;
-  --bs-table-striped-color: #000;
-  --bs-table-active-bg: #cbccce;
-  --bs-table-active-color: #000;
-  --bs-table-hover-bg: #d1d2d4;
-  --bs-table-hover-color: #000;
+  --bs-table-color: var(--bs-black);
+  --bs-table-bg: {settings.SecondaryColors[800].ToHexString()};
+  --bs-table-border-color: {settings.SecondaryColors[400].ToHexString()};
+  --bs-table-striped-bg: {settings.SecondaryColors[600].ToHexString()};
+  --bs-table-striped-color: var(--bs-black);
+  --bs-table-active-bg: {settings.SecondaryColors[700].ToHexString()};
+  --bs-table-active-color: var(--bs-black);
+  --bs-table-hover-bg: {settings.SecondaryColors[700].ToHexString()};
+  --bs-table-hover-color: var(--bs-black);
   color: var(--bs-table-color);
   border-color: var(--bs-table-border-color);
 }}
 
 .table-success {{
-  --bs-table-color: #000;
-  --bs-table-bg: #cce6cc;
-  --bs-table-border-color: #a3b8a3;
-  --bs-table-striped-bg: #c2dbc2;
-  --bs-table-striped-color: #000;
-  --bs-table-active-bg: #b8cfb8;
-  --bs-table-active-color: #000;
-  --bs-table-hover-bg: #bdd5bd;
-  --bs-table-hover-color: #000;
+  --bs-table-color: var(--bs-black);
+  --bs-table-bg: {settings.SuccessColors[800].ToHexString()};
+  --bs-table-border-color: {settings.SuccessColors[400].ToHexString()};
+  --bs-table-striped-bg: {settings.SuccessColors[600].ToHexString()};
+  --bs-table-striped-color: var(--bs-black);
+  --bs-table-active-bg: {settings.SuccessColors[700].ToHexString()};
+  --bs-table-active-color: var(--bs-black);
+  --bs-table-hover-bg: {settings.SuccessColors[700].ToHexString()};
+  --bs-table-hover-color: var(--bs-black);
   color: var(--bs-table-color);
   border-color: var(--bs-table-border-color);
 }}
 
 .table-info {{
-  --bs-table-color: #000;
-  --bs-table-bg: #cff4fc;
-  --bs-table-border-color: #a6c3ca;
-  --bs-table-striped-bg: #c5e8ef;
-  --bs-table-striped-color: #000;
-  --bs-table-active-bg: #badce3;
-  --bs-table-active-color: #000;
-  --bs-table-hover-bg: #bfe2e9;
-  --bs-table-hover-color: #000;
+  --bs-table-color: var(--bs-black);
+  --bs-table-bg: {settings.InfoColors[800].ToHexString()};
+  --bs-table-border-color: {settings.InfoColors[400].ToHexString()};
+  --bs-table-striped-bg: {settings.InfoColors[600].ToHexString()};
+  --bs-table-striped-color: var(--bs-black);
+  --bs-table-active-bg: {settings.InfoColors[700].ToHexString()};
+  --bs-table-active-color: var(--bs-black);
+  --bs-table-hover-bg: {settings.InfoColors[700].ToHexString()};
+  --bs-table-hover-color: var(--bs-black);
   color: var(--bs-table-color);
   border-color: var(--bs-table-border-color);
 }}
 
 .table-warning {{
-  --bs-table-color: #000;
-  --bs-table-bg: #fcfcd3;
-  --bs-table-border-color: #cacaa9;
-  --bs-table-striped-bg: #efefc8;
-  --bs-table-striped-color: #000;
-  --bs-table-active-bg: #e3e3be;
-  --bs-table-active-color: #000;
-  --bs-table-hover-bg: #e9e9c3;
-  --bs-table-hover-color: #000;
+  --bs-table-color: var(--bs-black);
+  --bs-table-bg: {settings.WarningColors[800].ToHexString()};
+  --bs-table-border-color: {settings.WarningColors[400].ToHexString()};
+  --bs-table-striped-bg: {settings.WarningColors[600].ToHexString()};
+  --bs-table-striped-color: var(--bs-black);
+  --bs-table-active-bg: {settings.WarningColors[700].ToHexString()};
+  --bs-table-active-color: var(--bs-black);
+  --bs-table-hover-bg: {settings.WarningColors[700].ToHexString()};
+  --bs-table-hover-color: var(--bs-black);
   color: var(--bs-table-color);
   border-color: var(--bs-table-border-color);
 }}
 
 .table-danger {{
-  --bs-table-color: #000;
-  --bs-table-bg: #fecccd;
-  --bs-table-border-color: #cba3a4;
-  --bs-table-striped-bg: #f1c2c3;
-  --bs-table-striped-color: #000;
-  --bs-table-active-bg: #e5b8b9;
-  --bs-table-active-color: #000;
-  --bs-table-hover-bg: #ebbdbe;
-  --bs-table-hover-color: #000;
+  --bs-table-color: var(--bs-black);
+  --bs-table-bg: {settings.DangerColors[800].ToHexString()};
+  --bs-table-border-color: {settings.DangerColors[400].ToHexString()};
+  --bs-table-striped-bg: {settings.DangerColors[600].ToHexString()};
+  --bs-table-striped-color: var(--bs-black);
+  --bs-table-active-bg: {settings.DangerColors[700].ToHexString()};
+  --bs-table-active-color: var(--bs-black);
+  --bs-table-hover-bg: {settings.DangerColors[700].ToHexString()};
+  --bs-table-hover-color: var(--bs-black);
   color: var(--bs-table-color);
   border-color: var(--bs-table-border-color);
 }}
 
 .table-light {{
-  --bs-table-color: #000;
-  --bs-table-bg: #f8f9fa;
-  --bs-table-border-color: #c6c7c8;
-  --bs-table-striped-bg: #ecedee;
-  --bs-table-striped-color: #000;
-  --bs-table-active-bg: #dfe0e1;
-  --bs-table-active-color: #000;
-  --bs-table-hover-bg: #e5e6e7;
-  --bs-table-hover-color: #000;
+  --bs-table-color: var(--bs-black);
+  --bs-table-bg: var(--bs-gray-100); 
+  --bs-table-border-color: {settings.LightColors[400].ToHexString()};
+  --bs-table-striped-bg: {settings.LightColors[600].ToHexString()};
+  --bs-table-striped-color: var(--bs-black);
+  --bs-table-active-bg: {settings.LightColors[700].ToHexString()};
+  --bs-table-active-color: var(--bs-black);
+  --bs-table-hover-bg: {settings.LightColors[700].ToHexString()};
+  --bs-table-hover-color: var(--bs-black);
   color: var(--bs-table-color);
   border-color: var(--bs-table-border-color);
 }}
 
 .table-dark {{
-  --bs-table-color: #fff;
-  --bs-table-bg: var(--bs-dark);
-  --bs-table-border-color: #4d5154;
-  --bs-table-striped-bg: #2c3034;
-  --bs-table-striped-color: #fff;
-  --bs-table-active-bg: #373b3e;
-  --bs-table-active-color: #fff;
-  --bs-table-hover-bg: #323539;
-  --bs-table-hover-color: #fff;
+  --bs-table-color: var(--bs-white);
+  --bs-table-bg: var(--bs-dark); 
+  --bs-table-border-color: {settings.DarkColors[400].ToHexString()};
+  --bs-table-striped-bg: {settings.DarkColors[600].ToHexString()};
+  --bs-table-striped-color: var(--bs-black);
+  --bs-table-active-bg: {settings.DarkColors[700].ToHexString()};
+  --bs-table-active-color: var(--bs-black);
+  --bs-table-hover-bg: {settings.DarkColors[700].ToHexString()};
   color: var(--bs-table-color);
   border-color: var(--bs-table-border-color);
 }}
@@ -2149,7 +2148,7 @@ progress {{
 .form-control:focus {{
   color: var(--bs-body-color);
   background-color: var(--bs-body-bg);
-  border-color: #8fb9df;
+  border-color: {settings.PrimaryColors[600].ToHexString()};
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(30, 115, 190, 0.25);
 }}
@@ -2294,7 +2293,7 @@ textarea.form-control-lg {{
   }}
 }}
 .form-select:focus {{
-  border-color: #8fb9df;
+  border-color: {settings.SecondaryColors[100].ToHexString()};
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(30, 115, 190, 0.25);
 }}
@@ -2378,13 +2377,13 @@ textarea.form-control-lg {{
   filter: brightness(90%);
 }}
 .form-check-input:focus {{
-  border-color: #8fb9df;
+  border-color: {settings.SecondaryColors[100].ToHexString()};
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(30, 115, 190, 0.25);
 }}
 .form-check-input:checked {{
-  background-color: #1e73be;
-  border-color: #1e73be;
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
 }}
 .form-check-input:checked[type=checkbox] {{
   --bs-form-check-bg-image: url(""data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e"");
@@ -2393,8 +2392,8 @@ textarea.form-control-lg {{
   --bs-form-check-bg-image: url(""data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e"");
 }}
 .form-check-input[type=checkbox]:indeterminate {{
-  background-color: #1e73be;
-  border-color: #1e73be;
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
   --bs-form-check-bg-image: url(""data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e"");
 }}
 .form-check-input:disabled {{
@@ -2471,10 +2470,10 @@ textarea.form-control-lg {{
   outline: 0;
 }}
 .form-range:focus::-webkit-slider-thumb {{
-  box-shadow: 0 0 0 1px #fff, 0 0 0 0.25rem rgba(30, 115, 190, 0.25);
+  box-shadow: 0 0 0 1px var(--bs-white), 0 0 0 0.25rem rgba(30, 115, 190, 0.25);
 }}
 .form-range:focus::-moz-range-thumb {{
-  box-shadow: 0 0 0 1px #fff, 0 0 0 0.25rem rgba(30, 115, 190, 0.25);
+  box-shadow: 0 0 0 1px var(--bs-white), 0 0 0 0.25rem rgba(30, 115, 190, 0.25);
 }}
 .form-range::-moz-focus-outer {{
   border: 0;
@@ -2484,7 +2483,7 @@ textarea.form-control-lg {{
   height: 1rem;
   margin-top: -0.25rem;
   appearance: none;
-  background-color: #1e73be;
+  background-color: var(--bs-primary);
   border: 0;
   border-radius: 1rem;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -2495,7 +2494,7 @@ textarea.form-control-lg {{
   }}
 }}
 .form-range::-webkit-slider-thumb:active {{
-  background-color: #bcd5ec;
+  background-color: {settings.SecondaryColors[800].ToHexString()};
 }}
 .form-range::-webkit-slider-runnable-track {{
   width: 100%;
@@ -2510,7 +2509,7 @@ textarea.form-control-lg {{
   width: 1rem;
   height: 1rem;
   appearance: none;
-  background-color: #1e73be;
+  background-color: var(--bs-primary);
   border: 0;
   border-radius: 1rem;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -2521,7 +2520,7 @@ textarea.form-control-lg {{
   }}
 }}
 .form-range::-moz-range-thumb:active {{
-  background-color: #bcd5ec;
+  background-color: {settings.SecondaryColors[800].ToHexString()};
 }}
 .form-range::-moz-range-track {{
   width: 100%;
@@ -2624,7 +2623,7 @@ textarea.form-control-lg {{
 }}
 .form-floating > :disabled ~ label,
 .form-floating > .form-control:disabled ~ label {{
-  color: #6c757d;
+  color: var(--bs-secondary);
 }}
 .form-floating > :disabled ~ label::after,
 .form-floating > .form-control:disabled ~ label::after {{
@@ -2739,7 +2738,7 @@ textarea.form-control-lg {{
   padding: 0.25rem 0.5rem;
   margin-top: 0.1rem;
   font-size: 0.875rem;
-  color: #fff;
+  color: var(--bs-white);
   background-color: var(--bs-success);
   border-radius: var(--bs-border-radius);
 }}
@@ -2829,7 +2828,7 @@ textarea.form-control-lg {{
   padding: 0.25rem 0.5rem;
   margin-top: 0.1rem;
   font-size: 0.875rem;
-  color: #fff;
+  color: var(--bs-white);
   background-color: var(--bs-danger);
   border-radius: var(--bs-border-radius);
 }}
@@ -2983,268 +2982,332 @@ textarea.form-control-lg {{
 }}
 
 .btn-primary {{
-  --bs-btn-color: #fff;
-  --bs-btn-bg: #1e73be;
-  --bs-btn-border-color: #1e73be;
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #1a62a2;
-  --bs-btn-hover-border-color: #185c98;
-  --bs-btn-focus-shadow-rgb: 64, 136, 200;
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #185c98;
-  --bs-btn-active-border-color: #17568f;
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: {settings.PrimaryColors[300].ToHexString()};
+  --bs-btn-hover-border-color: {settings.PrimaryColors[400].ToHexString()};
+  --bs-btn-focus-shadow-rgb: {settings.PrimaryColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-white);
+  --bs-btn-active-bg: {settings.PrimaryColors[200].ToHexString()};
+  --bs-btn-active-border-color: {settings.PrimaryColors[100].ToHexString()};
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: #1e73be;
-  --bs-btn-disabled-border-color: #1e73be;
+  --bs-btn-disabled-color: var(--bs-white);
+  --bs-btn-disabled-bg: var(--bs-primary);
+  --bs-btn-disabled-border-color: var(--bs-primary);
+}}
+
+[data-bs-theme=dark] .btn-primary 
+{{
+	--bs-btn-hover-bg:  {settings.PrimaryColors[700].ToHexString()};
+	--bs-btn-hover-border-color: {settings.PrimaryColors[600].ToHexString()};
+	--bs-btn-active-bg: {settings.PrimaryColors[800].ToHexString()};
+	--bs-btn-active-border-color: {settings.PrimaryColors[900].ToHexString()};
 }}
 
 .btn-secondary {{
-  --bs-btn-color: #fff;
-  --bs-btn-bg: #6c757d;
-  --bs-btn-border-color: #6c757d;
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #5c636a;
-  --bs-btn-hover-border-color: #565e64;
-  --bs-btn-focus-shadow-rgb: 130, 138, 145;
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #565e64;
-  --bs-btn-active-border-color: #51585e;
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--bs-secondary);
+  --bs-btn-border-color: var(--bs-secondary);
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: {settings.SecondaryColors[300].ToHexString()};
+  --bs-btn-hover-border-color: {settings.SecondaryColors[400].ToHexString()};
+  --bs-btn-focus-shadow-rgb: {settings.SecondaryColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-white);
+  --bs-btn-active-bg: {settings.SecondaryColors[200].ToHexString()};
+  --bs-btn-active-border-color: {settings.SecondaryColors[100].ToHexString()};
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: #6c757d;
-  --bs-btn-disabled-border-color: #6c757d;
+  --bs-btn-disabled-color: var(--bs-white);
+  --bs-btn-disabled-bg: var(--bs-secondary);
+  --bs-btn-disabled-border-color: var(--bs-secondary);
+}}
+
+[data-bs-theme=dark] .btn-secondary 
+{{
+	--bs-btn-hover-bg:  {settings.SecondaryColors[700].ToHexString()};
+	--bs-btn-hover-border-color: {settings.SecondaryColors[600].ToHexString()};
+	--bs-btn-active-bg: {settings.SecondaryColors[800].ToHexString()};
+	--bs-btn-active-border-color: {settings.SecondaryColors[900].ToHexString()};
 }}
 
 .btn-success {{
-  --bs-btn-color: #fff;
-  --bs-btn-bg: #008000;
-  --bs-btn-border-color: #008000;
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #006d00;
-  --bs-btn-hover-border-color: #006600;
-  --bs-btn-focus-shadow-rgb: 38, 147, 38;
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #006600;
-  --bs-btn-active-border-color: #006000;
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--bs-success);
+  --bs-btn-border-color: var(--bs-success);
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: {settings.SuccessColors[300].ToHexString()};
+  --bs-btn-hover-border-color: {settings.SuccessColors[400].ToHexString()};
+  --bs-btn-focus-shadow-rgb: {settings.SuccessColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-white);
+  --bs-btn-active-bg: {settings.SuccessColors[200].ToHexString()};
+  --bs-btn-active-border-color: {settings.SuccessColors[100].ToHexString()};
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #fff;
-  --bs-btn-disabled-bg: #008000;
-  --bs-btn-disabled-border-color: #008000;
+  --bs-btn-disabled-color: var(--bs-white);
+  --bs-btn-disabled-bg: var(--bs-success);
+  --bs-btn-disabled-border-color: var(--bs-success);
+}}
+
+[data-bs-theme=dark] .btn-success 
+{{
+	--bs-btn-hover-bg:  {settings.SuccessColors[700].ToHexString()};
+	--bs-btn-hover-border-color: {settings.SuccessColors[600].ToHexString()};
+	--bs-btn-active-bg: {settings.SuccessColors[800].ToHexString()};
+	--bs-btn-active-border-color: {settings.SuccessColors[900].ToHexString()};
 }}
 
 .btn-info {{
-  --bs-btn-color: #000;
-  --bs-btn-bg: #0dcaf0;
-  --bs-btn-border-color: #0dcaf0;
-  --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #31d2f2;
-  --bs-btn-hover-border-color: #25cff2;
-  --bs-btn-focus-shadow-rgb: 11, 172, 204;
-  --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #3dd5f3;
-  --bs-btn-active-border-color: #25cff2;
+  --bs-btn-color: var(--bs-black);
+  --bs-btn-bg: var(--bs-info);
+  --bs-btn-border-color: var(--bs-info);
+  --bs-btn-hover-color: var(--bs-black);
+  --bs-btn-hover-bg: {settings.InfoColors[300].ToHexString()};
+  --bs-btn-hover-border-color: {settings.InfoColors[400].ToHexString()};
+  --bs-btn-focus-shadow-rgb: {settings.InfoColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-black);
+  --bs-btn-active-bg: {settings.InfoColors[200].ToHexString()};
+  --bs-btn-active-border-color: {settings.InfoColors[100].ToHexString()};
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #000;
-  --bs-btn-disabled-bg: #0dcaf0;
-  --bs-btn-disabled-border-color: #0dcaf0;
+  --bs-btn-disabled-color: var(--bs-black);
+  --bs-btn-disabled-bg: var(--bs-info);
+  --bs-btn-disabled-border-color: var(--bs-info);
+}}
+
+[data-bs-theme=dark] .btn-info 
+{{
+	--bs-btn-hover-bg:  {settings.InfoColors[700].ToHexString()};
+	--bs-btn-hover-border-color: {settings.InfoColors[600].ToHexString()};
+	--bs-btn-active-bg: {settings.InfoColors[800].ToHexString()};
+	--bs-btn-active-border-color: {settings.InfoColors[900].ToHexString()};
 }}
 
 .btn-warning {{
-  --bs-btn-color: #000;
-  --bs-btn-bg: #eeee22;
-  --bs-btn-border-color: #eeee22;
-  --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #f1f143;
-  --bs-btn-hover-border-color: #f0f038;
-  --bs-btn-focus-shadow-rgb: 202, 202, 29;
-  --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #f1f14e;
-  --bs-btn-active-border-color: #f0f038;
+  --bs-btn-color: var(--bs-black);
+  --bs-btn-bg: var(--bs-warning);
+  --bs-btn-border-color: var(--bs-warning);
+  --bs-btn-hover-color: var(--bs-black);
+  --bs-btn-hover-bg: {settings.WarningColors[300].ToHexString()};
+  --bs-btn-hover-border-color: {settings.WarningColors[400].ToHexString()};
+  --bs-btn-focus-shadow-rgb: {settings.WarningColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-black);
+  --bs-btn-active-bg: {settings.WarningColors[200].ToHexString()};
+  --bs-btn-active-border-color: {settings.WarningColors[100].ToHexString()};
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #000;
-  --bs-btn-disabled-bg: #eeee22;
-  --bs-btn-disabled-border-color: #eeee22;
+  --bs-btn-disabled-color: var(--bs-black);
+  --bs-btn-disabled-bg: var(--bs-warning);
+  --bs-btn-disabled-border-color: var(--bs-warning);
+}}
+
+[data-bs-theme=dark] .btn-warning 
+{{
+	--bs-btn-hover-bg:  {settings.WarningColors[700].ToHexString()};
+	--bs-btn-hover-border-color: {settings.WarningColors[600].ToHexString()};
+	--bs-btn-active-bg: {settings.WarningColors[800].ToHexString()};
+	--bs-btn-active-border-color: {settings.WarningColors[900].ToHexString()};
 }}
 
 .btn-danger {{
-  --bs-btn-color: #000;
-  --bs-btn-bg: #fb0007;
-  --bs-btn-border-color: #fb0007;
-  --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #fc262c;
-  --bs-btn-hover-border-color: #fb1a20;
-  --bs-btn-focus-shadow-rgb: 213, 0, 6;
-  --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #fc3339;
-  --bs-btn-active-border-color: #fb1a20;
+  --bs-btn-color: var(--bs-black);
+  --bs-btn-bg: var(--bs-danger);
+  --bs-btn-border-color: var(--bs-danger);
+  --bs-btn-hover-color: var(--bs-black);
+  --bs-btn-hover-bg: {settings.DangerColors[300].ToHexString()};
+  --bs-btn-hover-border-color: {settings.DangerColors[400].ToHexString()};
+  --bs-btn-focus-shadow-rgb: {settings.DangerColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-black);
+  --bs-btn-active-bg: {settings.DangerColors[200].ToHexString()};
+  --bs-btn-active-border-color: {settings.DangerColors[100].ToHexString()};
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #000;
-  --bs-btn-disabled-bg: #fb0007;
-  --bs-btn-disabled-border-color: #fb0007;
+  --bs-btn-disabled-color: var(--bs-black);
+  --bs-btn-disabled-bg: var(--bs-danger);
+  --bs-btn-disabled-border-color: var(--bs-danger);
+}}
+
+[data-bs-theme=dark] .btn-danger 
+{{
+	--bs-btn-hover-bg:  {settings.DangerColors[700].ToHexString()};
+	--bs-btn-hover-border-color: {settings.DangerColors[600].ToHexString()};
+	--bs-btn-active-bg: {settings.DangerColors[800].ToHexString()};
+	--bs-btn-active-border-color: {settings.DangerColors[900].ToHexString()};
 }}
 
 .btn-light {{
   --bs-btn-color: var(--bs-black);
   --bs-btn-bg: var(--bs-light);
-  --bs-btn-border-color: #f8f9fa;
+  --bs-btn-border-color: var(--bs-gray-100);
   --bs-btn-hover-color: var(--bs-black);
-  --bs-btn-hover-bg: #d3d4d5;
-  --bs-btn-hover-border-color: #c6c7c8;
-  --bs-btn-focus-shadow-rgb: 211, 212, 213;
+  --bs-btn-hover-bg: {settings.LightColors[300].ToHexString()};
+  --bs-btn-hover-border-color: {settings.LightColors[400].ToHexString()};
+  --bs-btn-focus-shadow-rgb: {settings.LightColors[500].ToRgbStringValues()};
   --bs-btn-active-color: var(--bs-black);
-  --bs-btn-active-bg: #c6c7c8;
-  --bs-btn-active-border-color: #babbbc;
+  --bs-btn-active-bg: {settings.LightColors[200].ToHexString()};
+  --bs-btn-active-border-color: {settings.LightColors[100].ToHexString()};
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
   --bs-btn-disabled-color: var(--bs-black);
-  --bs-btn-disabled-bg: #f8f9fa;
-  --bs-btn-disabled-border-color: #f8f9fa;
+  --bs-btn-disabled-bg: var(--bs-gray-100);
+  --bs-btn-disabled-border-color: var(--bs-gray-100);
+}}
+
+[data-bs-theme=dark] .btn-light 
+{{
+	--bs-btn-hover-bg:  {settings.LightColors[700].ToHexString()};
+	--bs-btn-hover-border-color: {settings.LightColors[600].ToHexString()};
+	--bs-btn-active-bg: {settings.LightColors[800].ToHexString()};
+	--bs-btn-active-border-color: {settings.LightColors[900].ToHexString()};
 }}
 
 .btn-dark {{
-  --bs-btn-color: #fff;
+  --bs-btn-color: var(--bs-white);
   --bs-btn-bg: var(--bs-dark);
   --bs-btn-border-color: var(--bs-dark);
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #424649;
-  --bs-btn-hover-border-color: #373b3e;
-  --bs-btn-focus-shadow-rgb: 66, 70, 73;
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #4d5154;
-  --bs-btn-active-border-color: #373b3e;
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: {settings.DarkColors[300].ToHexString()};
+  --bs-btn-hover-border-color: {settings.DarkColors[400].ToHexString()};
+  --bs-btn-focus-shadow-rgb: {settings.DarkColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-white);
+  --bs-btn-active-bg: {settings.DarkColors[200].ToHexString()};
+  --bs-btn-active-border-color: {settings.DarkColors[100].ToHexString()};
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-color: var(--bs-white);
   --bs-btn-disabled-bg: var(--bs-dark);
   --bs-btn-disabled-border-color: var(--bs-dark);
 }}
 
+[data-bs-theme=dark] .btn-dark 
+{{
+	--bs-btn-hover-bg:  {settings.DarkColors[700].ToHexString()};
+	--bs-btn-hover-border-color: {settings.DarkColors[600].ToHexString()};
+	--bs-btn-active-bg: {settings.DarkColors[800].ToHexString()};
+	--bs-btn-active-border-color: {settings.DarkColors[900].ToHexString()};
+}}
+
 .btn-outline-primary {{
-  --bs-btn-color: #1e73be;
-  --bs-btn-border-color: #1e73be;
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #1e73be;
-  --bs-btn-hover-border-color: #1e73be;
-  --bs-btn-focus-shadow-rgb: 30, 115, 190;
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #1e73be;
-  --bs-btn-active-border-color: #1e73be;
+  --bs-btn-color: var(--bs-primary);
+  --bs-btn-border-color: var(--bs-primary);
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: var(--bs-primary);
+  --bs-btn-hover-border-color: var(--bs-primary);
+  --bs-btn-focus-shadow-rgb: {settings.PrimaryColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-white);
+  --bs-btn-active-bg: var(--bs-primary);
+  --bs-btn-active-border-color: var(--bs-primary);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #1e73be;
+  --bs-btn-disabled-color: var(--bs-primary);
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #1e73be;
+  --bs-btn-disabled-border-color: var(--bs-primary);
   --bs-gradient: none;
 }}
 
 .btn-outline-secondary {{
-  --bs-btn-color: #6c757d;
-  --bs-btn-border-color: #6c757d;
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #6c757d;
-  --bs-btn-hover-border-color: #6c757d;
-  --bs-btn-focus-shadow-rgb: 108, 117, 125;
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #6c757d;
-  --bs-btn-active-border-color: #6c757d;
+  --bs-btn-color: var(--bs-secondary);
+  --bs-btn-border-color: var(--bs-secondary);
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: var(--bs-secondary);
+  --bs-btn-hover-border-color: var(--bs-secondary);
+  --bs-btn-focus-shadow-rgb: {settings.SecondaryColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-white);
+  --bs-btn-active-bg: var(--bs-secondary);
+  --bs-btn-active-border-color: var(--bs-secondary);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #6c757d;
+  --bs-btn-disabled-color: var(--bs-secondary);
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #6c757d;
+  --bs-btn-disabled-border-color: var(--bs-secondary);
   --bs-gradient: none;
 }}
 
 .btn-outline-success {{
-  --bs-btn-color: #008000;
-  --bs-btn-border-color: #008000;
-  --bs-btn-hover-color: #fff;
-  --bs-btn-hover-bg: #008000;
-  --bs-btn-hover-border-color: #008000;
-  --bs-btn-focus-shadow-rgb: 0, 128, 0;
-  --bs-btn-active-color: #fff;
-  --bs-btn-active-bg: #008000;
-  --bs-btn-active-border-color: #008000;
+  --bs-btn-color: var(--bs-success);
+  --bs-btn-border-color: var(--bs-success);
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: var(--bs-success);
+  --bs-btn-hover-border-color: var(--bs-success);
+  --bs-btn-focus-shadow-rgb: {settings.SuccessColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-white);
+  --bs-btn-active-bg: var(--bs-success);
+  --bs-btn-active-border-color: var(--bs-success);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #008000;
+  --bs-btn-disabled-color: var(--bs-success);
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #008000;
+  --bs-btn-disabled-border-color: var(--bs-success);
   --bs-gradient: none;
 }}
 
 .btn-outline-info {{
-  --bs-btn-color: #0dcaf0;
-  --bs-btn-border-color: #0dcaf0;
-  --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #0dcaf0;
-  --bs-btn-hover-border-color: #0dcaf0;
-  --bs-btn-focus-shadow-rgb: 13, 202, 240;
-  --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #0dcaf0;
-  --bs-btn-active-border-color: #0dcaf0;
+  --bs-btn-color: var(--bs-info);
+  --bs-btn-border-color: var(--bs-info);
+  --bs-btn-hover-color: var(--bs-black);
+  --bs-btn-hover-bg: var(--bs-info);
+  --bs-btn-hover-border-color: var(--bs-info);
+  --bs-btn-focus-shadow-rgb: {settings.InfoColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-black);
+  --bs-btn-active-bg: var(--bs-info);
+  --bs-btn-active-border-color: var(--bs-info);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #0dcaf0;
+  --bs-btn-disabled-color: var(--bs-info);
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #0dcaf0;
+  --bs-btn-disabled-border-color: var(--bs-info);
   --bs-gradient: none;
 }}
 
 .btn-outline-warning {{
-  --bs-btn-color: #eeee22;
-  --bs-btn-border-color: #eeee22;
-  --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #eeee22;
-  --bs-btn-hover-border-color: #eeee22;
-  --bs-btn-focus-shadow-rgb: 238, 238, 34;
-  --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #eeee22;
-  --bs-btn-active-border-color: #eeee22;
+  --bs-btn-color: var(--bs-warning);
+  --bs-btn-border-color: var(--bs-warning);
+  --bs-btn-hover-color: var(--bs-black);
+  --bs-btn-hover-bg: var(--bs-warning);
+  --bs-btn-hover-border-color: var(--bs-warning);
+  --bs-btn-focus-shadow-rgb: {settings.WarningColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-black);
+  --bs-btn-active-bg: var(--bs-warning);
+  --bs-btn-active-border-color: var(--bs-warning);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #eeee22;
+  --bs-btn-disabled-color: var(--bs-warning);
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #eeee22;
+  --bs-btn-disabled-border-color: var(--bs-warning);
   --bs-gradient: none;
 }}
 
 .btn-outline-danger {{
-  --bs-btn-color: #fb0007;
-  --bs-btn-border-color: #fb0007;
-  --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #fb0007;
-  --bs-btn-hover-border-color: #fb0007;
-  --bs-btn-focus-shadow-rgb: 251, 0, 7;
-  --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #fb0007;
-  --bs-btn-active-border-color: #fb0007;
+  --bs-btn-color: var(--bs-danger);
+  --bs-btn-border-color: var(--bs-danger);
+  --bs-btn-hover-color: var(--bs-black);
+  --bs-btn-hover-bg: var(--bs-danger);
+  --bs-btn-hover-border-color: var(--bs-danger);
+  --bs-btn-focus-shadow-rgb: {settings.DangerColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-black);
+  --bs-btn-active-bg: var(--bs-danger);
+  --bs-btn-active-border-color: var(--bs-danger);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #fb0007;
+  --bs-btn-disabled-color: var(--bs-danger);
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #fb0007;
+  --bs-btn-disabled-border-color: var(--bs-danger);
   --bs-gradient: none;
 }}
 
 .btn-outline-light {{
-  --bs-btn-color: #f8f9fa;
-  --bs-btn-border-color: #f8f9fa;
-  --bs-btn-hover-color: #000;
-  --bs-btn-hover-bg: #f8f9fa;
-  --bs-btn-hover-border-color: #f8f9fa;
-  --bs-btn-focus-shadow-rgb: 248, 249, 250;
-  --bs-btn-active-color: #000;
-  --bs-btn-active-bg: #f8f9fa;
-  --bs-btn-active-border-color: #f8f9fa;
+  --bs-btn-color: var(--bs-gray-100);
+  --bs-btn-border-color: var(--bs-gray-100);
+  --bs-btn-hover-color: var(--bs-black);
+  --bs-btn-hover-bg: var(--bs-gray-100);
+  --bs-btn-hover-border-color: var(--bs-gray-100);
+  --bs-btn-focus-shadow-rgb: {settings.LightColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-black);
+  --bs-btn-active-bg: var(--bs-gray-100);
+  --bs-btn-active-border-color: var(--bs-gray-100);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-color: #f8f9fa;
+  --bs-btn-disabled-color: var(--bs-gray-100);
   --bs-btn-disabled-bg: transparent;
-  --bs-btn-disabled-border-color: #f8f9fa;
+  --bs-btn-disabled-border-color: var(--bs-gray-100);
   --bs-gradient: none;
 }}
 
 .btn-outline-dark {{
   --bs-btn-color: var(--bs-dark);
   --bs-btn-border-color: var(--bs-dark);
-  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-color: var(--bs-white);
   --bs-btn-hover-bg: var(--bs-dark);
   --bs-btn-hover-border-color: var(--bs-dark);
-  --bs-btn-focus-shadow-rgb: 33, 37, 41;
-  --bs-btn-active-color: #fff;
+  --bs-btn-focus-shadow-rgb: {settings.DarkColors[500].ToRgbStringValues()};
+  --bs-btn-active-color: var(--bs-white);
   --bs-btn-active-bg: var(--bs-dark);
   --bs-btn-active-border-color: var(--bs-dark);
   --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
@@ -3263,9 +3326,9 @@ textarea.form-control-lg {{
   --bs-btn-hover-border-color: transparent;
   --bs-btn-active-color: var(--bs-link-hover-color);
   --bs-btn-active-border-color: transparent;
-  --bs-btn-disabled-color: #6c757d;
+  --bs-btn-disabled-color: var(--bs-secondary);
   --bs-btn-disabled-border-color: transparent;
-  --bs-btn-box-shadow: 0 0 0 #000;
+  --bs-btn-box-shadow: 0 0 0 var(--bs-black);
   --bs-btn-focus-shadow-rgb: 64, 136, 200;
   text-decoration: underline;
 }}
@@ -3372,12 +3435,12 @@ textarea.form-control-lg {{
   --bs-dropdown-link-color: var(--bs-body-color);
   --bs-dropdown-link-hover-color: var(--bs-body-color);
   --bs-dropdown-link-hover-bg: var(--bs-tertiary-bg);
-  --bs-dropdown-link-active-color: #fff;
-  --bs-dropdown-link-active-bg: #1e73be;
+  --bs-dropdown-link-active-color: var(--bs-white);
+  --bs-dropdown-link-active-bg: var(--bs-primary);
   --bs-dropdown-link-disabled-color: var(--bs-tertiary-color);
   --bs-dropdown-item-padding-x: 1rem;
   --bs-dropdown-item-padding-y: 0.25rem;
-  --bs-dropdown-header-color: #6c757d;
+  --bs-dropdown-header-color: var(--bs-secondary);
   --bs-dropdown-header-padding-x: 1rem;
   --bs-dropdown-header-padding-y: 0.5rem;
   position: absolute;
@@ -3630,18 +3693,18 @@ textarea.form-control-lg {{
 }}
 
 .dropdown-menu-dark {{
-  --bs-dropdown-color: #dee2e6;
-  --bs-dropdown-bg: #343a40;
+  --bs-dropdown-color: var(--bs-gray-300);
+  --bs-dropdown-bg: var(--bs-gray-800);
   --bs-dropdown-border-color: var(--bs-border-color-translucent);
   --bs-dropdown-box-shadow: ;
-  --bs-dropdown-link-color: #dee2e6;
-  --bs-dropdown-link-hover-color: #fff;
+  --bs-dropdown-link-color: var(--bs-gray-300);
+  --bs-dropdown-link-hover-color: var(--bs-white);
   --bs-dropdown-divider-bg: var(--bs-border-color-translucent);
   --bs-dropdown-link-hover-bg: rgba(255, 255, 255, 0.15);
-  --bs-dropdown-link-active-color: #fff;
-  --bs-dropdown-link-active-bg: #1e73be;
-  --bs-dropdown-link-disabled-color: #adb5bd;
-  --bs-dropdown-header-color: #adb5bd;
+  --bs-dropdown-link-active-color: var(--bs-white);
+  --bs-dropdown-link-active-bg: var(--bs-primary);
+  --bs-dropdown-link-disabled-color: var(--bs-gray-500);
+  --bs-dropdown-header-color: var(--bs-gray-500);
 }}
 
 .btn-group,
@@ -3821,8 +3884,8 @@ textarea.form-control-lg {{
 
 .nav-pills {{
   --bs-nav-pills-border-radius: var(--bs-border-radius);
-  --bs-nav-pills-link-active-color: #fff;
-  --bs-nav-pills-link-active-bg: #1e73be;
+  --bs-nav-pills-link-active-color: var(--bs-white);
+  --bs-nav-pills-link-active-bg: var(--bs-primary);
 }}
 .nav-pills .nav-link {{
   border-radius: var(--bs-nav-pills-border-radius);
@@ -4295,9 +4358,9 @@ textarea.form-control-lg {{
   --bs-navbar-color: rgba(255, 255, 255, 0.55);
   --bs-navbar-hover-color: rgba(255, 255, 255, 0.75);
   --bs-navbar-disabled-color: rgba(255, 255, 255, 0.25);
-  --bs-navbar-active-color: #fff;
-  --bs-navbar-brand-color: #fff;
-  --bs-navbar-brand-hover-color: #fff;
+  --bs-navbar-active-color: var(--bs-white);
+  --bs-navbar-brand-color: var(--bs-white);
+  --bs-navbar-brand-hover-color: var(--bs-white);
   --bs-navbar-toggler-border-color: rgba(255, 255, 255, 0.1);
   --bs-navbar-toggler-icon-bg: url(""data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"");
 }}
@@ -4319,11 +4382,11 @@ textarea.form-control-lg {{
   --bs-card-inner-border-radius: {settings.CardInnerBorderRadius};
   --bs-card-cap-padding-y: {settings.CardCapPaddingY};
   --bs-card-cap-padding-x: {settings.CardCapPaddingX};
-  --bs-card-cap-bg: {settings.Light.CardCapBgColor.Value.ToHexString()};
+  --bs-card-cap-bg: {settings.Light.CardCapBgColor.ToHexString()};
   --bs-card-cap-color:  {(settings.Light.CardCapTextColor?.ToHexString() ?? "")};
   --bs-card-height: {settings.CardHeight};
   --bs-card-color:  {(settings.Light.CardTextColor?.ToHexString() ?? "")};
-  --bs-card-bg: {settings.Light.CardBgColor.Value.ToHexString()};
+  --bs-card-bg: {settings.Light.CardBgColor.ToHexString()};
   --bs-card-img-overlay-padding: {settings.CardImgOverlayPadding};
   --bs-card-group-margin: {settings.CardGroupMargin};
   position: {settings.CardPosition};
@@ -4343,10 +4406,10 @@ textarea.form-control-lg {{
   --bs-card-border-color: {(settings.Dark.CardBorderColor?.ToHexString() ?? "")};
   --bs-card-title-color: {(settings.Dark.CardTitleColor?.ToHexString() ?? "")}
   --bs-card-subtitle-color: {(settings.Dark.CardSubTitleColor?.ToHexString() ?? "")};
-  --bs-card-cap-bg: {settings.Dark.CardCapBgColor.Value.ToHexString()};
+  --bs-card-cap-bg: {settings.Dark.CardCapBgColor.ToHexString()};
   --bs-card-cap-color:  {(settings.Dark.CardCapTextColor?.ToHexString() ?? "")};
   --bs-card-color:  {(settings.Dark.CardTextColor?.ToHexString() ?? "")};
-  --bs-card-bg: {settings.Dark.CardBgColor.Value.ToHexString()};
+  --bs-card-bg: {settings.Dark.CardBgColor.ToHexString()};
 }}
 
 .card > hr {{
@@ -4689,9 +4752,9 @@ textarea.form-control-lg {{
   --bs-pagination-focus-color: var(--bs-link-hover-color);
   --bs-pagination-focus-bg: var(--bs-secondary-bg);
   --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(30, 115, 190, 0.25);
-  --bs-pagination-active-color: #fff;
-  --bs-pagination-active-bg: #1e73be;
-  --bs-pagination-active-border-color: #1e73be;
+  --bs-pagination-active-color: var(--bs-white);
+  --bs-pagination-active-bg: var(--bs-primary);
+  --bs-pagination-active-border-color: var(--bs-primary);
   --bs-pagination-disabled-color: var(--bs-secondary-color);
   --bs-pagination-disabled-bg: var(--bs-secondary-bg);
   --bs-pagination-disabled-border-color: var(--bs-border-color);
@@ -4773,7 +4836,7 @@ textarea.form-control-lg {{
   --bs-badge-padding-y: 0.35em;
   --bs-badge-font-size: 0.75em;
   --bs-badge-font-weight: 700;
-  --bs-badge-color: #fff;
+  --bs-badge-color: var(--bs-white);
   --bs-badge-border-radius: var(--bs-border-radius);
   display: inline-block;
   padding: var(--bs-badge-padding-y) var(--bs-badge-padding-x);
@@ -4902,8 +4965,8 @@ textarea.form-control-lg {{
   --bs-progress-bg: var(--bs-secondary-bg);
   --bs-progress-border-radius: var(--bs-border-radius);
   --bs-progress-box-shadow: var(--bs-box-shadow-inset);
-  --bs-progress-bar-color: #fff;
-  --bs-progress-bar-bg: #1e73be;
+  --bs-progress-bar-color: var(--bs-white);
+  --bs-progress-bar-bg: var(--bs-primary);
   --bs-progress-bar-transition: width 0.6s ease;
   display: flex;
   height: var(--bs-progress-height);
@@ -4967,9 +5030,9 @@ textarea.form-control-lg {{
   --bs-list-group-action-active-bg: var(--bs-secondary-bg);
   --bs-list-group-disabled-color: var(--bs-secondary-color);
   --bs-list-group-disabled-bg: var(--bs-body-bg);
-  --bs-list-group-active-color: #fff;
-  --bs-list-group-active-bg: #1e73be;
-  --bs-list-group-active-border-color: #1e73be;
+  --bs-list-group-active-color: var(--bs-white);
+  --bs-list-group-active-bg: var(--bs-primary);
+  --bs-list-group-active-border-color: var(--bs-primary);
   display: flex;
   flex-direction: column;
   padding-left: 0;
@@ -5296,7 +5359,7 @@ textarea.form-control-lg {{
 }}
 
 .btn-close {{
-  --bs-btn-close-color: #000;
+  --bs-btn-close-color: var(--bs-black);
   --bs-btn-close-bg: url(""data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414'/%3e%3c/svg%3e"");
   --bs-btn-close-opacity: 0.5;
   --bs-btn-close-hover-opacity: 0.75;
@@ -5494,7 +5557,7 @@ textarea.form-control-lg {{
 
 .modal-backdrop {{
   --bs-backdrop-zindex: 1050;
-  --bs-backdrop-bg: #000;
+  --bs-backdrop-bg: var(--bs-black);
   --bs-backdrop-opacity: 0.5;
   position: fixed;
   top: 0;
@@ -6039,7 +6102,7 @@ textarea.form-control-lg {{
   justify-content: center;
   width: 15%;
   padding: 0;
-  color: #fff;
+  color: var(--bs-white);
   text-align: center;
   background: none;
   border: 0;
@@ -6055,7 +6118,7 @@ textarea.form-control-lg {{
 .carousel-control-prev:hover, .carousel-control-prev:focus,
 .carousel-control-next:hover,
 .carousel-control-next:focus {{
-  color: #fff;
+  color: var(--bs-white);
   text-decoration: none;
   outline: 0;
   opacity: 0.9;
@@ -6110,7 +6173,7 @@ textarea.form-control-lg {{
   margin-left: 3px;
   text-indent: -999px;
   cursor: pointer;
-  background-color: #fff;
+  background-color: var(--bs-white);
   background-clip: padding-box;
   border: 0;
   border-top: 10px solid transparent;
@@ -6134,7 +6197,7 @@ textarea.form-control-lg {{
   left: 15%;
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
-  color: #fff;
+  color: var(--bs-white);
   text-align: center;
 }}
 
@@ -6143,10 +6206,10 @@ textarea.form-control-lg {{
   filter: invert(1) grayscale(100);
 }}
 .carousel-dark .carousel-indicators [data-bs-target] {{
-  background-color: #000;
+  background-color: var(--bs-black);
 }}
 .carousel-dark .carousel-caption {{
-  color: #000;
+  color: var(--bs-black);
 }}
 
 [data-bs-theme=dark] .carousel .carousel-control-prev-icon,
@@ -6155,10 +6218,10 @@ textarea.form-control-lg {{
   filter: invert(1) grayscale(100);
 }}
 [data-bs-theme=dark] .carousel .carousel-indicators [data-bs-target], [data-bs-theme=dark].carousel .carousel-indicators [data-bs-target] {{
-  background-color: #000;
+  background-color: var(--bs-black);
 }}
 [data-bs-theme=dark] .carousel .carousel-caption, [data-bs-theme=dark].carousel .carousel-caption {{
-  color: #000;
+  color: var(--bs-black);
 }}
 
 .spinner-grow,
@@ -6692,7 +6755,7 @@ textarea.form-control-lg {{
   z-index: 1040;
   width: 100vw;
   height: 100vh;
-  background-color: #000;
+  background-color: var(--bs-black);
 }}
 .offcanvas-backdrop.fade {{
   opacity: 0;
@@ -6757,7 +6820,7 @@ textarea.form-control-lg {{
   }}
 }}
 .placeholder-wave {{
-  mask-image: linear-gradient(130deg, #000 55%, rgba(0, 0, 0, 0.8) 75%, #000 95%);
+  mask-image: linear-gradient(130deg, var(--bs-black) 55%, rgba(0, 0, 0, 0.8) 75%, var(--bs-black) 95%);
   mask-size: 200% 100%;
   animation: placeholder-wave 2s linear infinite;
 }}
@@ -6774,43 +6837,43 @@ textarea.form-control-lg {{
 }}
 
 .text-bg-primary {{
-  color: #fff !important;
-  background-color: RGBA(var(--bs-primary-rgb), var(--bs-bg-opacity, 1)) !important;
+  color: {settings.TextBackgroundTextColors.Primary.ToHexString()} !important;
+  background-color: {settings.TextBackgroundColors.Primary.ToHexString()} !important;
 }}
 
 .text-bg-secondary {{
-  color: #fff !important;
-  background-color: RGBA(var(--bs-secondary-rgb), var(--bs-bg-opacity, 1)) !important;
+  color: {settings.TextBackgroundTextColors.Secondary.ToHexString()} !important;
+  background-color: {settings.TextBackgroundColors.Secondary.ToHexString()} !important;
 }}
 
 .text-bg-success {{
-  color: #fff !important;
-  background-color: RGBA(var(--bs-success-rgb), var(--bs-bg-opacity, 1)) !important;
+  color: {settings.TextBackgroundTextColors.Success.ToHexString()} !important;
+  background-color:{settings.TextBackgroundColors.Success.ToHexString()} !important;
 }}
 
 .text-bg-info {{
-  color: #000 !important;
-  background-color: RGBA(var(--bs-info-rgb), var(--bs-bg-opacity, 1)) !important;
+  color: {settings.TextBackgroundTextColors.Info.ToHexString()}!important;
+  background-color: {settings.TextBackgroundColors.Info.ToHexString()} !important;
 }}
 
 .text-bg-warning {{
-  color: #000 !important;
-  background-color: RGBA(var(--bs-warning-rgb), var(--bs-bg-opacity, 1)) !important;
+  color: {settings.TextBackgroundTextColors.Warning.ToHexString()} !important;
+  background-color: {settings.TextBackgroundColors.Warning.ToHexString()} !important;
 }}
 
 .text-bg-danger {{
-  color: #000 !important;
-  background-color: RGBA(var(--bs-danger-rgb), var(--bs-bg-opacity, 1)) !important;
+  color: {settings.TextBackgroundTextColors.Danger.ToHexString()} !important;
+  background-color: {settings.TextBackgroundColors.Danger.ToHexString()}!important;
 }}
 
 .text-bg-light {{
-  color: #000 !important;
-  background-color: RGBA(var(--bs-light-rgb), var(--bs-bg-opacity, 1)) !important;
+  color: {settings.TextBackgroundTextColors.Light.ToHexString()}!important;
+  background-color: {settings.TextBackgroundColors.Light.ToHexString()} !important;
 }}
 
 .text-bg-dark {{
-  color: #fff !important;
-  background-color: RGBA(var(--bs-dark-rgb), var(--bs-bg-opacity, 1)) !important;
+  color: {settings.TextBackgroundTextColors.Dark.ToHexString()} !important;
+  background-color: {settings.TextBackgroundColors.Dark.ToHexString()} !important;
 }}
 
 .link-primary {{
@@ -6901,18 +6964,18 @@ textarea.form-control-lg {{
 
 .icon-link {{
   display: inline-flex;
-  gap: 0.375rem;
+  gap: {settings.IconLinkGap};
   align-items: center;
   text-decoration-color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 0.5));
-  text-underline-offset: 0.25em;
+  text-underline-offset: {settings.IconLinkUnderlineOffset};
   backface-visibility: hidden;
 }}
 .icon-link > .bi {{
   flex-shrink: 0;
-  width: 1em;
-  height: 1em;
+  width: {settings.IconLinkSize};
+  height: {settings.IconLinkSize};
   fill: currentcolor;
-  transition: 0.2s ease-in-out transform;
+  transition: {settings.IconLinkTransition};
 }}
 @media (prefers-reduced-motion: reduce) {{
   .icon-link > .bi {{
@@ -7081,7 +7144,7 @@ textarea.form-control-lg {{
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 1;
+  z-index: {settings.StretchedLinkZIndex};
   content: """";
 }}
 
@@ -11884,18 +11947,13 @@ textarea.form-control-lg {{
     {
         if (settings == null)
             throw new ArgumentNullException(nameof(settings));
-
-        if (_cssCache == null)
+        
+        var result = Generate(settings.Parse());
+        if (settings.MinimizeCssOutput)
         {
-            var result = Generate(settings.Parse());
-            if (settings.MinimizeCssOutput)
-            {
-                result = Regex.Replace(result, @"\s+", String.Empty);
-            }
-
-            _cssCache = CssHeader + result;
+            result = Regex.Replace(result, @"\s+", String.Empty);
         }
 
-        return _cssCache;
+        return CssHeader + result; 
     }
 }

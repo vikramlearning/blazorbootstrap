@@ -61,6 +61,57 @@ public static class ColorExtensions
     /// </summary>
     /// <param name="c"></param>
     /// <returns>RGB(R, G, B) format string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToRgbStringValues(this Color? c) => !c.HasValue ? "" : $"{c.Value.R}, {c.Value.G}, {c.Value.B}";
+
+
+    /// <summary>
+    /// Converts System.Drawing.Color to #RRGGBBAA format string.
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
+    /// </summary>
+    /// <param name="c"></param>
+    /// <returns>#RRGGBBAA format string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToHexaString(this Color? c) => !c.HasValue ? "" : $"#{c.Value.R:X2}{c.Value.G:X2}{c.Value.B:X2}{c.Value.A:X2}";
+
+    /// <summary>
+    /// Converts System.Drawing.Color to #RRGGBB format string.
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
+    /// </summary>
+    /// <param name="c"></param>
+    /// <returns>#RRGGBB format string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToHexString(this Color? c) => !c.HasValue ? "" : $"#{c.Value.R:X2}{c.Value.G:X2}{c.Value.B:X2}";
+
+    /// <summary>
+    /// Converts System.Drawing.Color to RGBA(R, G, B, A) format string.
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
+    /// </summary>
+    /// <param name="c">System.Drawing.Color</param>
+    /// <param name="alpha">The alpha parameter is a number between 0.0 (fully transparent) and 1.0 (fully opaque).</param>
+    /// <returns>RGBA(R, G, B, A) format string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToRgbaString(this Color? c, double alpha) => !c.HasValue ? "" : $"RGBA({c.Value.R}, {c.Value.G}, {c.Value.B}, {alpha})";
+
+    /// <summary>
+    /// Converts System.Drawing.Color to RGBA(R, G, B, A) format string.
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
+    /// </summary>
+    /// <param name="c">System.Drawing.Color</param>
+    /// <returns>RGBA(R, G, B, A) format string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToRgbaString(this Color? c) => !c.HasValue ? "" : $"RGBA({c.Value.R}, {c.Value.G}, {c.Value.B}, {c.Value.A})";
+
+    /// <summary>
+    /// Converts System.Drawing.Color to RGB(R, G, B) format string.
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
+    /// </summary>
+    /// <param name="c"></param>
+    /// <returns>RGB(R, G, B) format string</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToRgbString(this Color? c) => !c.HasValue ? "" : $"RGB({c.Value.R}, {c.Value.G}, {c.Value.B})";
+
+
+    /// <summary>
+    /// Converts System.Drawing.Color to R, G, B format string.
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing.color?view=net-6.0" />
+    /// </summary>
+    /// <param name="c"></param>
+    /// <returns>RGB(R, G, B) format string</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)] public static string ToRgbStringValues(this Color c) => $"{c.R}, {c.G}, {c.B}";
 
     /// <summary>

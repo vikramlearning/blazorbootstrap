@@ -17,6 +17,11 @@ public partial class Demo : ComponentBase
     /// </summary>
     private DotNetObjectReference<Demo> objRef = default!;
 
+    /// <summary>
+    /// Can be used if the code snippet is provided directly, rather than from a .razor file
+    /// </summary>
+    [Parameter] public string? ProvidedCode { get; set; }
+
     #endregion
 
     #region Methods
@@ -39,23 +44,30 @@ public partial class Demo : ComponentBase
     {
         if (codeSnippet is null)
         {
-            var resourceName = Type.FullName + ".razor";
-
-            using (var stream = Type.Assembly.GetManifestResourceStream(resourceName)!)
+            if (ProvidedCode != null)
             {
-                try
-                {
-                    if (stream is null)
-                        return;
+                codeSnippet = ProvidedCode;
+            }
+            else
+            {
+                var resourceName = Type.FullName + ".razor";
 
-                    using (var reader = new StreamReader(stream))
-                    {
-                        codeSnippet = await reader.ReadToEndAsync();
-                    }
-                }
-                catch (Exception ex)
+                using (var stream = Type.Assembly.GetManifestResourceStream(resourceName)!)
                 {
-                    Console.WriteLine(ex.Message);
+                    try
+                    {
+                        if (stream is null)
+                            return;
+
+                        using (var reader = new StreamReader(stream))
+                        {
+                            codeSnippet = await reader.ReadToEndAsync();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
                 }
             }
         }

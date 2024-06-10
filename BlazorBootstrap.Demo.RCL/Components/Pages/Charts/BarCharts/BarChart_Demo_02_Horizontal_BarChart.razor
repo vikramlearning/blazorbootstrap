@@ -21,19 +21,25 @@
 
         chartData = new ChartData { 
             Labels = labels, 
-            Datasets = datasets };
+            Datasets = datasets,
+        };
 
         barChartOptions = new BarChartOptions();
         barChartOptions.Responsive = true;
         barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
         barChartOptions.IndexAxis = "y";
-
-        barChartOptions.Scales.X!.Title!.Text = "Visitors";
-        barChartOptions.Scales.X.Title.Display = true;
-
-        barChartOptions.Scales.Y!.Title!.Text = "Browser";
-        barChartOptions.Scales.Y.Title.Display = true;
-
+        barChartOptions.Scales = new Scales
+        {
+            X = new ChartAxes()
+            {
+                Title = new ChartAxesTitle() { Text = "Visitors", Display = true }
+            },
+            Y = new ChartAxes()
+            {
+                Title = new ChartAxesTitle() { Text = "Browser", Display = true }
+            },
+        }; 
+        
         barChartOptions.Plugins.Legend.Display = false;
     }
 
