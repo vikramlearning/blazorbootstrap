@@ -24,9 +24,7 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
     /// <param name="data">Data for front-end population</param>
     /// <returns></returns>
     public virtual Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) => Task.FromResult(chartData);
-
-    public virtual async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data) => await Task.FromResult(chartData);
-
+    
     /// <summary>
     /// Adds data to the chart.
     /// </summary>

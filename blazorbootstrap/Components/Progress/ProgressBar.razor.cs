@@ -65,17 +65,19 @@ public partial class ProgressBar
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.ProgressBar, true),
-            (BootstrapClass.ProgressBarStriped, type is ProgressType.Striped or ProgressType.StripedAndAnimated),
-            (BootstrapClass.ProgressBarAnimated, type == ProgressType.StripedAndAnimated),
-            (color.ToProgressColorClass(), color != ProgressColor.None));
+            (BootstrapClass.ProgressBarStriped, Type is ProgressType.Striped or ProgressType.StripedAndAnimated),
+            (BootstrapClass.ProgressBarAnimated, Type == ProgressType.StripedAndAnimated),
+            (Color.ToProgressColorClass(), Color != ProgressColor.None));
 
+    /// <inheritdoc />
     protected override string? StyleNames =>
         BuildStyleNames(Style,
             // FIX: Toast progressbar not showing: https://github.com/vikramlearning/blazorbootstrap/issues/155
-            ($"width:{width.ToString(CultureInfo.InvariantCulture)}%", width is >= 0 and <= 100));
+            ($"width:{Width.ToString(CultureInfo.InvariantCulture)}%", Width is >= 0 and <= 100));
 
     /*
      * StateHasChanged() needed to be invoked in .NET 6 to re-render a component when a property got altered.

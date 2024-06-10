@@ -23,44 +23,56 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
         base.OnInitialized();
     }
 
-    public static string BuildClassNames(string? userDefinedCssClass, params (string? cssClass, bool when)[] cssClassList)
+    /// <summary>
+    /// Builds the HTML class attribute string based on the user-defined class and the list of classes that belong to the component.
+    /// </summary>
+    /// <param name="userDefinedCssClass">User defined classes</param>
+    /// <param name="cssClassList">Classes that will be added based on conditions</param>
+    /// <returns>string to place in the class attribute of the html element</returns>
+    public static string BuildClassNames(string? userDefinedCssClass, params (string? cssClass, bool when)[]? cssClassList)
     {
         var list = new HashSet<string>();
 
         if (cssClassList is not null && cssClassList.Any())
             foreach (var (cssClass, when) in cssClassList)
             {
-                if (!string.IsNullOrWhiteSpace(cssClass) && when)
+                if (!String.IsNullOrWhiteSpace(cssClass) && when)
                     list.Add(cssClass);
             }
 
-        if (!string.IsNullOrWhiteSpace(userDefinedCssClass))
+        if (!String.IsNullOrWhiteSpace(userDefinedCssClass))
             list.Add(userDefinedCssClass.Trim());
 
         if (list.Any())
-            return string.Join(" ", list);
-        else
-            return string.Empty;
+            return String.Join(" ", list);
+        
+        return String.Empty;
     }
 
-    public static string BuildStyleNames(string? userDefinedCssStyle, params (string? cssStyle, bool when)[] cssStyleList)
+    /// <summary>
+    /// Builds the HTML style attribute string based on the user-defined style and the list of styles that belong to the component.
+    /// </summary>
+    /// <param name="userDefinedCssStyle">User defined styles</param>
+    /// <param name="cssStyleList">Styles that will be added based on conditions</param>
+    /// <returns>string to place in the style attribute of the html element</returns>
+    public static string BuildStyleNames(string? userDefinedCssStyle, params (string? cssStyle, bool when)[]? cssStyleList)
     {
         var list = new HashSet<string>();
 
         if (cssStyleList is not null && cssStyleList.Any())
             foreach (var (cssStyle, when) in cssStyleList)
             {
-                if (!string.IsNullOrWhiteSpace(cssStyle) && when)
+                if (!String.IsNullOrWhiteSpace(cssStyle) && when)
                     list.Add(cssStyle);
             }
 
-        if (!string.IsNullOrWhiteSpace(userDefinedCssStyle))
+        if (!String.IsNullOrWhiteSpace(userDefinedCssStyle))
             list.Add(userDefinedCssStyle.Trim());
 
         if (list.Any())
-            return string.Join(';', list);
-        else
-            return string.Empty;
+            return String.Join(';', list);
+        
+        return String.Empty;
     }
 
     /// <inheritdoc />
@@ -130,8 +142,8 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// The property returns <see langword="null" /> if no CSS classes were specified.
     /// Otherwise, it returns the collection of CSS classes separated by a single whitespace.
     /// </remarks>
-    protected virtual string? ClassNames => new CssClassBuilder(Class).Build();
-
+    protected virtual string? ClassNames => Class;
+    
     /// <summary>
     /// Element reference for the component, to use in code when interfacing with the component.
     /// </summary>
@@ -145,8 +157,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// to have the id be unique within a razor page or set of components, the layout of the page counts as well!
     /// </remarks>
     [Parameter] public string? Id { get; set; }
-
-    [Inject] protected IIdGenerator IdGenerator { get; set; } = default!;
 
     /// <summary>
     /// Determines if the element had been rendered for the first time (assigned true in <see cref="OnAfterRenderAsync(bool)"/>). <br/>
@@ -173,7 +183,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// The property returns <see langword="null" /> if no CSS styling items were specified.
     /// Otherwise, it returns the collection of CSS classes separated by a single whitespace.
     /// </remarks>
-    protected virtual string? StyleNames => new CssStyleBuilder(Style).Build();
+    protected virtual string? StyleNames => Style;
 
     #endregion
 
