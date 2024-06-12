@@ -42,5 +42,36 @@ public partial class Card : BlazorBootstrapComponentBase
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.None;
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent):
+                    ChildContent = (RenderFragment)parameter.Value;
+                    break;
+                case nameof(Color):
+                    Color = (CardColor)parameter.Value;
+                    break;
+                case nameof(TextAlignment):
+                    TextAlignment = (Alignment)parameter.Value;
+                    break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+    
     #endregion
 }

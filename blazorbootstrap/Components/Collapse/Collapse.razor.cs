@@ -79,6 +79,43 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// </summary>
     public ValueTask ToggleAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.toggle", Id);
 
+    /// <inheritdoc />
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent):
+                    ChildContent = (RenderFragment)parameter.Value;
+                    break;
+                case nameof(Horizontal):
+                    Horizontal = (bool)parameter.Value;
+                    break;
+                case nameof(OnHidden):
+                    OnHidden = (EventCallback)parameter.Value;
+                    break;
+                case nameof(OnHiding):
+                    OnHiding = (EventCallback)parameter.Value;
+                    break;
+                case nameof(OnShowing):
+                    OnShowing = (EventCallback)parameter.Value;
+                    break;
+                case nameof(OnShown):
+                    OnShown = (EventCallback)parameter.Value;
+                    break;
+                case nameof(Parent):
+                    Parent = parameter.Value;
+                    break;
+                case nameof(Toggle):
+                    Toggle = (bool)parameter.Value;
+                    break;
+            }
+        }
+        
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers

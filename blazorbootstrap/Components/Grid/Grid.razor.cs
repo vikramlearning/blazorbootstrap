@@ -800,8 +800,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public bool PageSizeSelectorVisible { get; set; }
-
-    [Obsolete("PaginationAlignment parameter is not supported from 1.8.0 version onwards")]
     
     /// <summary>
     /// Gets or sets the pagination alignment.
@@ -810,6 +808,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see cref="Alignment.Start" />.
     /// </remarks>
     [Parameter]
+    [Obsolete("PaginationAlignment parameter is not supported from 1.8.0 version onwards")]
     public Alignment PaginationAlignment { get; set; } = Alignment.Start;
 
     /// <summary>

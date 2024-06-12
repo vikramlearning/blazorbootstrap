@@ -5,79 +5,49 @@
 /// </summary>
 public partial class CardLink : BlazorBootstrapComponentBase
 {
-    #region Fields and Constants
-
-    private bool isFirstRenderComplete = false;
-
-    private bool previousDisabled;
-
-    private int? previousTabIndex;
-
-    private Target previousTarget;
-
-    private bool setButtonAttributesAgain = false;
-
-    #endregion
-
     #region Methods
-
-    /// <inheritdoc />
-    protected override void OnAfterRender(bool firstRender)
+    
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
     {
-        if (firstRender)
-            isFirstRenderComplete = true;
 
-        base.OnAfterRender(firstRender);
-    }
 
-    /// <inheritdoc />
-    protected override void OnInitialized()
-    {
-        previousDisabled = Disabled;
-        previousTarget = Target;
-        previousTabIndex = TabIndex;
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent):
+                    ChildContent = (RenderFragment)parameter.Value;
+                    break;
+                case nameof(Disabled):
+                    Disabled = (bool)parameter.Value;
+                    break;
+                case nameof(TabIndex):
+                    TabIndex = (int?)parameter.Value;
+                    break;
+                case nameof(Target):
+                    Target = (Target)parameter.Value;
+                    break;
+                case nameof(To):
+                    To = (string)parameter.Value;
+                    break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
 
         SetAttributes();
 
-        base.OnInitialized();
-    }
-
-    /// <inheritdoc />
-    protected override void OnParametersSet()
-    {
-        if (isFirstRenderComplete)
-        {
-            if (previousDisabled != Disabled)
-            {
-                previousDisabled = Disabled;
-                setButtonAttributesAgain = true;
-            }
-
-            if (previousTarget != Target)
-            {
-                previousTarget = Target;
-                setButtonAttributesAgain = true;
-            }
-
-            if (previousTabIndex != TabIndex)
-            {
-                previousTabIndex = TabIndex;
-                setButtonAttributesAgain = true;
-            }
-
-            if (setButtonAttributesAgain)
-            {
-                setButtonAttributesAgain = false;
-                SetAttributes();
-            }
-        }
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     private void SetAttributes()
     {
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
-        if (!AdditionalAttributes.TryGetValue("href", out _))
+        if (!AdditionalAttributes!.TryGetValue("href", out _))
             AdditionalAttributes.Add("href", To!);
 
         if (Target != Target.None)
@@ -161,4 +131,5 @@ public partial class CardLink : BlazorBootstrapComponentBase
     public string? To { get; set; }
 
     #endregion
+    
 }

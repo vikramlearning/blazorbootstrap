@@ -15,4 +15,22 @@ public partial class DropdownHeader : BlazorBootstrapComponentBase
     public RenderFragment ChildContent { get; set; } = default!;
 
     #endregion
+
+    /// <inheritdoc />
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+        foreach (var parameter in parameters)
+        {
+            if (parameter.Name == nameof(ChildContent))
+            {
+                               ChildContent = (RenderFragment)parameter.Value!;
+            }
+            else
+            {
+                AdditionalAttributes![parameter.Name] = parameter.Value!;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 }

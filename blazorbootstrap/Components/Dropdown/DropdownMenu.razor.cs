@@ -26,4 +26,22 @@ public partial class DropdownMenu : BlazorBootstrapComponentBase
     public DropdownMenuPosition Position { get; set; } = DropdownMenuPosition.Start;
 
     #endregion
+
+    /// <inheritdoc />
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+        
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
+                case nameof(Position): Position = (DropdownMenuPosition)parameter.Value!; break;
+                default: AdditionalAttributes![parameter.Name] = parameter.Value; break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 }

@@ -1084,22 +1084,22 @@ public sealed class BootstrapCssSettings
         // bg (subtle)
         Light.BgSubtleColors.Opacity ??= 255;
         Dark.BgSubtleColors.Opacity ??= 255;
-        Light.BgSubtleColors.Primary ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, PrimaryColors[900]);
-        Dark.BgSubtleColors.Primary ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, PrimaryColors[100]);
-        Light.BgSubtleColors.Secondary ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, PrimaryColors[900]);
-        Dark.BgSubtleColors.Secondary ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, SecondaryColors[100]);
-        Light.BgSubtleColors.Danger ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, DangerColors[900]);
-        Dark.BgSubtleColors.Danger ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, DangerColors[100]);
-        Light.BgSubtleColors.Dark ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, DarkColors[900]);
-        Dark.BgSubtleColors.Dark ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, DarkColors[100]);
-        Light.BgSubtleColors.Light ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, LightColors[900]);
-        Dark.BgSubtleColors.Light ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, LightColors[100]);
-        Light.BgSubtleColors.Info ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, InfoColors[900]);
-        Dark.BgSubtleColors.Info ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, InfoColors[100]);
-        Light.BgSubtleColors.Success ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, SuccessColors[900]);
-        Dark.BgSubtleColors.Success ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, SuccessColors[100]);
-        Light.BgSubtleColors.Warning ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, WarningColors[900]);
-        Dark.BgSubtleColors.Warning ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, WarningColors[100]);
+        Light.BgSubtleColors.Primary ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, PrimaryColors[100]);
+        Dark.BgSubtleColors.Primary ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, PrimaryColors[900]);
+        Light.BgSubtleColors.Secondary ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, PrimaryColors[100]);
+        Dark.BgSubtleColors.Secondary ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, SecondaryColors[900]);
+        Light.BgSubtleColors.Danger ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, DangerColors[100]);
+        Dark.BgSubtleColors.Danger ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, DangerColors[900]);
+        Light.BgSubtleColors.Dark ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, DarkColors[100]);
+        Dark.BgSubtleColors.Dark ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, DarkColors[900]);
+        Light.BgSubtleColors.Light ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, LightColors[100]);
+        Dark.BgSubtleColors.Light ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, LightColors[900]);
+        Light.BgSubtleColors.Info ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, InfoColors[100]);
+        Dark.BgSubtleColors.Info ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, InfoColors[900]);
+        Light.BgSubtleColors.Success ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, SuccessColors[100]);
+        Dark.BgSubtleColors.Success ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, SuccessColors[900]);
+        Light.BgSubtleColors.Warning ??= Color.FromArgb(Light.BgSubtleColors.Opacity.Value, WarningColors[100]);
+        Dark.BgSubtleColors.Warning ??= Color.FromArgb(Dark.BgSubtleColors.Opacity.Value, WarningColors[900]);
 
         // body
         Light.BodyBgColor ??= WhiteColor;

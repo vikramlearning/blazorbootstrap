@@ -24,6 +24,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -34,7 +35,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
             BsWindowResize(width);
 
-            await RefreshDataAsync(firstRender);
+            await RefreshDataAsync();
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -44,12 +45,15 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
+        
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Invoked by the browser when the window is resized.
+    /// If the <paramref name="width"/> is less than 641, <see cref="isMobile"/> is set to <see langword="true"/>.
+    /// </summary>
+    /// <param name="width">Width of the window</param>
     [JSInvokable("bsWindowResize")]
     public void BsWindowResize(int width)
     {
@@ -60,7 +64,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// Refresh the sidebar data.
     /// </summary>
     /// <returns>Task</returns>
-    public async Task RefreshDataAsync(bool firstRender = false)
+    public async Task RefreshDataAsync()
     {
         if (requestInProgress)
             return;

@@ -187,7 +187,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public bool AlwaysOpen { get; set; }
-
+    
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
@@ -208,7 +208,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     public bool Flush { get; set; }
 
     /// <summary>
-    /// This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete).
+    /// This event is fired when an accordion item has been hidden from the user (will wait for CSS transitions to complete).
     /// </summary>
     [Parameter]
     public EventCallback<AccordionEventArgs> OnHidden { get; set; }
@@ -226,11 +226,54 @@ public partial class Accordion : BlazorBootstrapComponentBase
     public EventCallback<AccordionEventArgs> OnShowing { get; set; }
 
     /// <summary>
-    /// This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to
+    /// This event is fired when an accordion item has been made visible to the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
     [Parameter]
     public EventCallback<AccordionEventArgs> OnShown { get; set; }
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+        
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AlwaysOpen):
+                    AlwaysOpen = (bool)parameter.Value;
+                    break;
+                case nameof(ChildContent):
+                    ChildContent = (RenderFragment)parameter.Value;
+                    break;
+                case nameof(Flush):
+                    Flush = (bool)parameter.Value;
+                    break;
+                case nameof(OnHidden):
+                    OnHidden = (EventCallback<AccordionEventArgs>)parameter.Value;
+                    break;
+                case nameof(OnHiding):
+                     OnHiding = (EventCallback<AccordionEventArgs>)parameter.Value;
+                    break;
+                case nameof(OnShowing):
+                     OnShowing = (EventCallback<AccordionEventArgs>)parameter.Value;
+                    break;
+                case nameof(OnShown):
+                     OnShown = (EventCallback<AccordionEventArgs>)parameter.Value;
+                    break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 
     #endregion
 }

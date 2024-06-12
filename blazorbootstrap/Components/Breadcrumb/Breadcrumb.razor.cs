@@ -1,4 +1,5 @@
-﻿namespace BlazorBootstrap;
+﻿
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Blazor Bootstrap breadcrumb component indicates the current page's location within a navigational hierarchy that automatically adds separators. <br/>
@@ -11,8 +12,7 @@ public partial class Breadcrumb : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override ValueTask DisposeAsyncCore(bool disposing)
     {
-        if (disposing) 
-            if (BreadcrumbService is not null)
+        if (disposing && BreadcrumbService is not null)
                 BreadcrumbService.OnNotify -= OnNotify;
 
         return base.DisposeAsyncCore(disposing);
@@ -54,6 +54,31 @@ public partial class Breadcrumb : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public IReadOnlyCollection<BreadcrumbItem>? Items { get; set; } = default!;
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            { 
+                case nameof(Items): 
+                    Items = (IReadOnlyCollection<BreadcrumbItem>?)parameter.Value;
+                    break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 
     #endregion
 }

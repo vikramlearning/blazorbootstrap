@@ -91,9 +91,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
               || typeof(TValue) == typeof(DateTime?)
              ))
             throw new InvalidOperationException($"{typeof(TValue)} is not supported.");
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
+        
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
         
         await base.OnInitializedAsync();

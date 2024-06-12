@@ -11,8 +11,6 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
         if (Type != SpinnerType.Dots)
         {
             if (string.IsNullOrWhiteSpace(Title))

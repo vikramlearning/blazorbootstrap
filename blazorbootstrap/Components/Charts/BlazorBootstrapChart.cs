@@ -172,6 +172,26 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
         return data;
     }
 
+    /// <inheritdoc />
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+        
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                               case nameof(Height): Height = (int?)parameter.Value; break;
+                case nameof(HeightUnit): HeightUnit = (Unit)parameter.Value; break; 
+                                                  case nameof(Width): Width = (int?)parameter.Value; break;
+                case nameof(WidthUnit): WidthUnit = (Unit)parameter.Value; break;
+                default: AdditionalAttributes![parameter.Name] = parameter.Value; break;
+            }
+        }
+        
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers

@@ -19,9 +19,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     protected override async Task OnInitializedAsync()
     {
         oldValue = Value;
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
+        
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
         await base.OnInitializedAsync();

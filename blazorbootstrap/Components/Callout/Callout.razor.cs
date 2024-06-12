@@ -1,4 +1,8 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
+using System;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Blazor Bootstrap callout component provides content presentation in a visually distinct manner. <br/> 
@@ -79,6 +83,39 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public bool HideHeading { get; set; }
+    
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent):
+                    ChildContent = (RenderFragment)parameter.Value;
+                    break;
+                case nameof(Color):
+                    Color = (CalloutColor)parameter.Value;
+                    break;
+                case nameof(Heading):
+                    Heading = (string)parameter.Value;
+                    break;
+                case nameof(HideHeading):
+                    HideHeading = (bool)parameter.Value;
+                    break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 
     #endregion
 }

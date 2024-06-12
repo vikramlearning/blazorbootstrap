@@ -1,4 +1,7 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Xml.Linq;
+using System;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// The Blazor Bootstrap Badge component shows the small count and labels. <br/>
@@ -25,7 +28,7 @@ public partial class Badge : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the badge color.
@@ -71,6 +74,46 @@ public partial class Badge : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public string VisuallyHiddenText { get; set; } = default!;
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent):
+                    ChildContent = (RenderFragment)parameter.Value;
+                    break;
+                case nameof(Color):
+                     Color = (BadgeColor)parameter.Value;
+                    break;
+                case nameof(IndicatorType):
+                     IndicatorType = (BadgeIndicatorType)parameter.Value;
+                    break;
+                case nameof(Placement):
+                     Placement = (BadgePlacement)parameter.Value;
+                    break;
+                case nameof(Position):
+                     Position = (Position)parameter.Value;
+                    break;
+                case nameof(VisuallyHiddenText):
+                     VisuallyHiddenText = (string)parameter.Value;
+                    break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 
     #endregion
 }

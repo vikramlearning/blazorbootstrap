@@ -34,8 +34,6 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
         previousActive = Active;
         previousDisabled = Disabled;
         previousTabIndex = TabIndex;
@@ -91,18 +89,16 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     }
 
     private void SetAttributes()
-    {
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
-        if (Active && !AdditionalAttributes.TryGetValue("aria-current", out _))
+    { 
+        if (Active && !AdditionalAttributes!.TryGetValue("aria-current", out _))
             AdditionalAttributes.Add("aria-current", "true");
         else if (!Active)
-            AdditionalAttributes.Remove("aria-current");
+            AdditionalAttributes!.Remove("aria-current");
 
         // 'a' tag
         if (Type == DropdownItemType.Link)
         {
-            if (!AdditionalAttributes.TryGetValue("role", out _))
+            if (!AdditionalAttributes!.TryGetValue("role", out _))
                 AdditionalAttributes.Add("role", "button");
 
             if (!AdditionalAttributes.TryGetValue("href", out _))
@@ -136,22 +132,40 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
         }
         else // button
         {
-            AdditionalAttributes.Remove("role", out _);
+            AdditionalAttributes!.Remove("role", out _);
             AdditionalAttributes.Remove("href", out _);
             AdditionalAttributes.Remove("target", out _);
             AdditionalAttributes.Remove("aria-disabled", out _);
-
-            // NOTE: This is handled in .razor page - #182
-            //if (this.Disabled && !Attributes.TryGetValue("disabled", out _))
-            //    Attributes.Add("disabled", "disabled");
-            //else if (!this.Disabled && Attributes.TryGetValue("disabled", out _))
-            //    Attributes.Remove("disabled");
 
             if (TabIndex is not null && !AdditionalAttributes.TryGetValue("tabindex", out _))
                 AdditionalAttributes.Add("tabindex", TabIndex);
             else if (TabIndex is null)
                 AdditionalAttributes.Remove("tabindex");
         }
+    }
+
+    /// <inheritdoc />
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Active): Active = (bool)parameter.Value!; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value!; break;
+                case nameof(TabIndex): TabIndex = (int?)parameter.Value!; break;
+                case nameof(Target): Target = (Target)parameter.Value!; break;
+                case nameof(To): To = (string?)parameter.Value!; break;
+                case nameof(Type): Type = (DropdownItemType)parameter.Value!; break;
+                default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
+            }
+        }
+        // SetAttributes() is handled in OnParametersSet()
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion

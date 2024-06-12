@@ -73,8 +73,8 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
             return String.Join(';', list);
         
         return String.Empty;
-    }
-
+    } 
+    
     /// <inheritdoc />
     /// <seealso href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable" />
     public void Dispose()
@@ -127,7 +127,8 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// Additional HTML attributes to be added to the component.
     /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; } = default!;
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AdditionalAttributes { get; set; } = new();
 
     /// <summary>
     /// class attribute to be applied in the Html render, for usages such as CSS.

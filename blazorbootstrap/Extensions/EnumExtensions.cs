@@ -102,6 +102,11 @@ public static class EnumExtensions
             _ => "top-0 start-100 translate-middle" // default: Top right
         };
 
+    /// <summary>
+    /// Returns the Bootstrap CSS Class for a specific button color.
+    /// </summary>
+    /// <param name="buttonColor">Button color to retrieve the class from</param>
+    /// <returns>Button color</returns>
     public static string ToButtonColorClass(this ButtonColor buttonColor) =>
         buttonColor switch
         {

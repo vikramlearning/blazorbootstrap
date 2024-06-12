@@ -25,7 +25,10 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
-        if (TitleTemplate is not null && !string.IsNullOrWhiteSpace(Title)) throw new InvalidOperationException($"{nameof(AccordionItem)} requires one of {nameof(TitleTemplate)} or {nameof(Title)}, but both were specified.");
+        if (TitleTemplate is not null && !string.IsNullOrWhiteSpace(Title)) 
+            throw new InvalidOperationException($"{nameof(AccordionItem)} requires one of {nameof(TitleTemplate)} or {nameof(Title)}, but both were specified.");
+        
+        base.OnParametersSet();
     }
 
     internal ValueTask HideAsync() => collapse.HideAsync();
@@ -62,10 +65,52 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
 
     private ValueTask ToggleAsync() => collapse.ToggleAsync();
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Active):
+                    Active = (bool)parameter.Value;
+                    break;
+                case nameof(Content):
+                     Content = (RenderFragment)parameter.Value;
+                    break;
+                case nameof(Name):
+                     Name = (string)parameter.Value;
+                    break;
+                case nameof(Parent):
+                     Parent = (Accordion)parameter.Value;
+                    break;
+                case nameof(Title):
+                     Title = (string)parameter.Value;
+                    break;
+                case nameof(TitleTemplate):
+                     TitleTemplate = (RenderFragment)parameter.Value;
+                    break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames => 
         BuildClassNames(Class, (BootstrapClass.AccordionItem, true));
 
@@ -77,7 +122,7 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public bool Active { get; set; }
-
+    
     private string ButtonCollapsedStateCssClass => isCollapsed ? "collapsed" : string.Empty;
 
     /// <summary>
@@ -103,7 +148,7 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// Gets or sets the parent.
     /// </summary>
     [CascadingParameter]
-    internal Accordion Parent { get; set; } = default!;
+    internal Accordion? Parent { get; set; } = default!; 
 
     /// <summary>
     /// Gets or sets the title.
@@ -122,6 +167,6 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public RenderFragment? TitleTemplate { get; set; } = default!;
-
+    
     #endregion
 }

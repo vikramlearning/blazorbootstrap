@@ -66,8 +66,6 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     {
         objRef ??= DotNetObjectReference.Create(this);
 
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
         // check the default value is assigned.

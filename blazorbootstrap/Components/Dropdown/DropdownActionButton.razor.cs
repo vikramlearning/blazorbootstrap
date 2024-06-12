@@ -7,12 +7,27 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void OnInitialized()
     {
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
         if (!AdditionalAttributes.TryGetValue("type", out _))
             AdditionalAttributes.Add("type", "button");
 
         base.OnInitialized();
+    }
+
+    /// <inheritdoc />
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
+                case nameof(TabIndex): TabIndex = (int?)parameter.Value!; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion

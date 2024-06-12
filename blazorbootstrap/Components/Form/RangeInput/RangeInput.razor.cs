@@ -76,9 +76,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
         if (IsLeftGreaterThanRight(Min, Max))
             throw new InvalidOperationException("The Min parameter value is greater than the Max parameter value.");
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
+        
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
         SetDefaultValues();

@@ -59,12 +59,10 @@ public partial class Tabs : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
         if (IsVertical)
             AdditionalAttributes.Add("aria-orientation", "vertical");
 

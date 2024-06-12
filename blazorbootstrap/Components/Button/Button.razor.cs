@@ -61,25 +61,7 @@ public partial class Button : BlazorBootstrapComponentBase
 
         await base.OnAfterRenderAsync(firstRender);
     }
-    
-    /// <inheritdoc />
-    protected override void OnInitialized()
-    {
-        previousDisabled = Disabled;
-        previousActive = Active;
-        previousType = Type;
-        previousTarget = Target;
-        previousTabIndex = TabIndex;
-        previousTo = To;
-        previousTooltipTitle = TooltipTitle;
-        previousTooltipColor = TooltipColor;
-
-        LoadingTemplate ??= ProvideDefaultLoadingTemplate();
-
-        SetAttributes();
-
-        base.OnInitialized();
-    }
+     
 
     /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
@@ -173,12 +155,17 @@ public partial class Button : BlazorBootstrapComponentBase
 #endif
     }
 
-    protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder => { builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-{(Size == ButtonSize.None ? ButtonSize.Medium : Size).ToButtonSpinnerSizeClass()}\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}"); };
+    /// <summary>
+    /// Default <see cref="LoadingTemplate"/> for a button in case the user does not provide one.
+    /// </summary>
+    /// <returns>The default loading template</returns>
+    protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder =>
+    {
+        builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-{(Size == ButtonSize.None ? ButtonSize.Medium : Size).ToButtonSpinnerSizeClass()}\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}");
+    };
 
     private void SetAttributes()
     {
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
         if (Active && !AdditionalAttributes.TryGetValue("aria-pressed", out _))
             AdditionalAttributes.Add("aria-pressed", "true");
         else if (!Active)
@@ -224,12 +211,6 @@ public partial class Button : BlazorBootstrapComponentBase
             AdditionalAttributes.Remove("target");
             AdditionalAttributes.Remove("aria-disabled");
 
-            // NOTE: This is handled in .razor page - #182
-            //if (this.Disabled && !Attributes.TryGetValue("disabled", out _))
-            //    Attributes.Add("disabled", "disabled");
-            //else if (!this.Disabled && Attributes.TryGetValue("disabled", out _))
-            //    Attributes.Remove("disabled");
-
             if (TabIndex is not null && !AdditionalAttributes.TryGetValue("tabindex", out _))
                 AdditionalAttributes.Add("tabindex", TabIndex);
             else if (TabIndex is null)
@@ -241,8 +222,6 @@ public partial class Button : BlazorBootstrapComponentBase
         {
             // Ref: https://getbootstrap.com/docs/5.2/components/buttons/#toggle-states
             // The below code creates an issue when the `button` or `a` element has a tooltip.
-            //if (!Attributes.TryGetValue("data-bs-toggle", out _))
-            //    Attributes.Add("data-bs-toggle", "button");
 
             if (!AdditionalAttributes.TryGetValue("data-bs-placement", out _))
                 AdditionalAttributes.Add("data-bs-placement", TooltipPlacement.ToTooltipPlacementName());
@@ -259,6 +238,94 @@ public partial class Button : BlazorBootstrapComponentBase
             AdditionalAttributes.Remove("title");
             AdditionalAttributes.Remove("data-bs-custom-class", out _);
         }
+    }
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Active):
+                    Active = (bool)parameter.Value;
+                    break;
+                case nameof(Block):
+                    Block = (bool)parameter.Value;
+                    break;
+                case nameof(ChildContent):
+                    ChildContent = (RenderFragment)parameter.Value;
+                    break;
+                case nameof(Color):
+                     Color = (ButtonColor)parameter.Value;
+                    break;
+                case nameof(Disabled):
+                     Disabled = (bool)parameter.Value;
+                    break;
+                case nameof(Loading):
+                     Loading = (bool)parameter.Value;
+                    break;
+                case nameof(LoadingTemplate):
+                     LoadingTemplate = (RenderFragment?)parameter.Value;
+                    break;
+                case nameof(LoadingText):
+                     LoadingText = (string)parameter.Value;
+                    break;
+                case nameof(Outline):
+                     Outline = (bool)parameter.Value;
+                    break;
+                case nameof(Position):
+                    Position = (Position)parameter.Value;
+                    break;
+                case nameof(Size):
+                    Size = (ButtonSize)parameter.Value;
+                    break;
+                case nameof(TabIndex):
+                    TabIndex = (int?)parameter.Value;
+                    break;
+                case nameof(Target):
+                    Target = (Target)parameter.Value;
+                    break;
+                case nameof(To):
+                    To = (string?)parameter.Value;
+                    break;
+                case nameof(TooltipColor):
+                    TooltipColor = (TooltipColor)parameter.Value;
+                    break;
+                case nameof(TooltipPlacement):
+                    TooltipPlacement = (TooltipPlacement)parameter.Value;
+                    break;
+                case nameof(TooltipTitle):
+                    TooltipTitle = (string)parameter.Value;
+                    break;
+                case nameof(Type):
+                    Type = (ButtonType)parameter.Value;
+                    ButtonTypeString = Type.ToButtonTypeString();
+                    break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        previousDisabled = Disabled;
+        previousActive = Active;
+        previousType = Type;
+        previousTarget = Target;
+        previousTabIndex = TabIndex;
+        previousTo = To;
+        previousTooltipTitle = TooltipTitle;
+        previousTooltipColor = TooltipColor;
+
+        LoadingTemplate ??= ProvideDefaultLoadingTemplate();
+        
+        SetAttributes();
+        
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
@@ -296,7 +363,7 @@ public partial class Button : BlazorBootstrapComponentBase
     [Parameter]
     public bool Block { get; set; }
 
-    private string ButtonTypeString => Type.ToButtonTypeString()!;
+    private string ButtonTypeString { get; set; } = "";
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
@@ -352,7 +419,7 @@ public partial class Button : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public string LoadingText { get; set; } = "Loading...";
-
+    
     /// <summary>
     /// Gets or sets the button outline.
     /// </summary>

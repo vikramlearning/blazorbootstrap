@@ -89,6 +89,34 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <returns></returns>
     public ValueTask UpdateAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.update", Id);
 
+    /// <inheritdoc />
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+        
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AutoClose): AutoClose = (bool)parameter.Value!; break;
+                case nameof(AutoCloseBehavior): AutoCloseBehavior = (DropdownAutoCloseBehavior)parameter.Value!; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
+                case nameof(Color): Color = (DropdownColor)parameter.Value!; break;
+                case nameof(Direction): Direction = (DropdownDirection)parameter.Value!; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value!; break;
+                case nameof(OnHidden): OnHidden = (EventCallback)parameter.Value!; break;
+                case nameof(OnHiding): OnHiding = (EventCallback)parameter.Value!; break;
+                case nameof(OnShowing): OnShowing = (EventCallback)parameter.Value!; break;
+                case nameof(OnShown): OnShown = (EventCallback)parameter.Value!; break;
+                case nameof(Size): Size = (DropdownSize)parameter.Value!; break;
+                case nameof(Split): Split = (bool)parameter.Value!; break;
+                default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
+            }
+        }
+        
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
@@ -172,7 +200,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     public EventCallback OnShowing { get; set; }
 
     /// <summary>
-    /// This event is fired when an dropdown element has been made visible to the user (will wait for CSS transitions to
+    /// This event is fired when a dropdown element has been made visible to the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
     [Parameter]

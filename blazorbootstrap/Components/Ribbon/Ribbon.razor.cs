@@ -57,9 +57,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
+        
         if (IsVertical)
             AdditionalAttributes.Add("aria-orientation", "vertical");
 

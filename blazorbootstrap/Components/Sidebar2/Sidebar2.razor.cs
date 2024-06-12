@@ -45,12 +45,14 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// The browser calls this method to tell us the <paramref name="width"/> of the window. <br/>
+    /// <see cref="isMobile"/> is set to <see langword="true"/> if the <paramref name="width"/> is less than 641 pixels.
+    /// </summary>
+    /// <param name="width"></param>
     [JSInvokable("bsWindowResize")]
     public void BsWindowResize(int width)
     {

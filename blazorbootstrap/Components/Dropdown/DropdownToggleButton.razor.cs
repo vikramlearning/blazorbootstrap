@@ -5,11 +5,21 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     #region Methods
 
     /// <inheritdoc />
-    protected override void OnInitialized()
+    public override Task SetParametersAsync(ParameterView parameters)
     {
-        AdditionalAttributes ??= new Dictionary<string, object>();
 
-        if (!AdditionalAttributes.TryGetValue("type", out _))
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            { 
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
+                case nameof(TabIndex): TabIndex = (int?)parameter.Value!; break;
+                default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
+            }
+        }
+
+        if (!AdditionalAttributes!.TryGetValue("type", out _))
             AdditionalAttributes.Add("type", "button");
 
         if (!AdditionalAttributes.TryGetValue("data-bs-toggle", out _))
@@ -34,7 +44,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
         else
             AdditionalAttributes["data-bs-auto-close"] = autoClose;
 
-        base.OnInitialized();
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
@@ -104,7 +114,8 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     [CascadingParameter(Name = "Size")]
     public DropdownSize Size { get; set; } = DropdownSize.None;
 
-    [CascadingParameter(Name = "Split")] public bool Split { get; set; }
+    [CascadingParameter(Name = "Split")] 
+    public bool Split { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown toggle button tab index.

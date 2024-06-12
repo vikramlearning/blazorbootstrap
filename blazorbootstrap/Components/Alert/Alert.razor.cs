@@ -1,4 +1,7 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Xml.Linq;
+using System;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Provide contextual feedback messages for typical user actions with the handful of available and flexible Blazor Bootstrap alert messages. <br/>
@@ -52,9 +55,15 @@ public partial class Alert : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Invoked when the close button is clicked.
+    /// </summary> 
     [JSInvokable("bsCloseAlert")]
     public Task BsCloseAlert() => OnClose.InvokeAsync();
 
+    /// <summary>
+    /// Invoked when the alert has been closed and CSS transitions have completed.
+    /// </summary> 
     [JSInvokable("bsClosedAlert")]
     public Task BsClosedAlert() => OnClosed.InvokeAsync();
 
@@ -63,10 +72,47 @@ public partial class Alert : BlazorBootstrapComponentBase
     /// </summary>
     public ValueTask CloseAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.close", Id);
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            { 
+                case nameof(ChildContent):
+                     ChildContent = (RenderFragment)parameter.Value;
+                    break;
+                case nameof(Color):
+                     Color = (AlertColor)parameter.Value;
+                    break;
+                case nameof(Dismissable):
+                     Dismissable = (bool)parameter.Value;
+                    break;
+                case nameof(OnClose):
+                     OnClose = (EventCallback)parameter.Value;
+                    break;
+                case nameof(OnClosed):
+                     OnClosed = (EventCallback)parameter.Value;
+                    break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
-    
+
     /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
