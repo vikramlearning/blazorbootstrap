@@ -39,9 +39,9 @@ public partial class Demo : ComponentBase
     {
         if (codeSnippet is null)
         {
-            var resourceName = Type.FullName + ".razor";
+            var resourceFullName = Type.FullName + ".razor";
 
-            using (var stream = Type.Assembly.GetManifestResourceStream(resourceName)!)
+            using (var stream = Type.Assembly.GetManifestResourceStream(resourceFullName)!)
             {
                 try
                 {
