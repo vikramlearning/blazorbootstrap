@@ -28,6 +28,8 @@ Use the Blazor Bootstrap Sidebar2 component to display consistent, cross-browser
 | IconName | `IconName` | `IconName.None` | | Gets or sets the IconName. | 2.1.0 |
 | ImageSrc | `string?` | null | | Gets or sets the logo. | 2.1.0 |
 | Title | `string?` | null | ✔️ | Gets or sets the title. | 2.1.0 |
+| Width | float | 270 | | Gets or sets the sidebar width. | 3.0.0 |
+| WidthUnit | `Unit` | `Unit.Px` | | Gets or sets the sidebar width unit. | 3.0.0 |
 
 ## Methods
 
@@ -417,3 +419,64 @@ Use the `ImageSrc` parameter to set the brand logo.
 ```
 
 [See demo here.](https://demos.blazorbootstrap.com/sidebar2#show-image-as-brand-logo)
+
+### Width
+
+Set the **Width** parameter to change the sidebar width. Default value is **270px**.
+
+<img src="https://i.imgur.com/BEg24Wh.png" alt="Blazor Sidebar2 - Width" />
+
+```cshtml {6,7} showLineNumbers
+<Sidebar2 Href="/"
+          IconName="IconName.BootstrapFill"
+          Title="Blazor Bootstrap"
+          BadgeText="v2.1.0"
+          DataProvider="Sidebar2DataProvider"
+          Width="350"
+          WidthUnit="Unit.Px" />
+```
+
+```cshtml {} showLineNumbers
+@code {
+    IEnumerable<NavItem>? navItems;
+
+    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        await Task.Delay(2000);
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+
+            new NavItem { Id = "2", IconName = IconName.LayoutSidebarInset, Text = "Content" },
+            new NavItem { Id = "3", Href = "/icons", IconName = IconName.PersonSquare, Text = "Icons", ParentId="2"},
+
+            new NavItem { Id = "4", IconName = IconName.ExclamationTriangleFill, Text = "Components" },
+            new NavItem { Id = "5", Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts", ParentId="4"},
+            new NavItem { Id = "6", Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb", ParentId="4"},
+
+            new NavItem { Id = "7", IconName = IconName.ListNested, Text = "Sidebar 2", ParentId="4"},
+            new NavItem { Id = "701", Href = "/sidebar2", IconName = IconName.Dash, Text = "How to use", ParentId="7"},
+            new NavItem { Id = "702", Href = "/sidebar2-examples", IconName = IconName.Dash, Text = "Examples", ParentId="7"},
+
+            new NavItem { Id = "8", IconName = IconName.WindowPlus, Text = "Forms" },
+            new NavItem { Id = "9", Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete", ParentId="8"},
+            new NavItem { Id = "10", Href = "/currency-input", IconName = IconName.CurrencyDollar, Text = "Currency Input", ParentId="8"},
+            new NavItem { Id = "11", Href = "/number-input", IconName = IconName.InputCursor, Text = "Number Input", ParentId="8"},
+            new NavItem { Id = "12", Href = "/switch", IconName = IconName.ToggleOn, Text = "Switch", ParentId="8"},
+        };
+
+        return navItems;
+    }
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/sidebar2#width)
