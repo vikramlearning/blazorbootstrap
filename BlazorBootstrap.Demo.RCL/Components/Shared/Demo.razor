@@ -1,7 +1,6 @@
 @namespace BlazorBootstrap.Demo.RCL
 @inherits ComponentBase
 
-<!--googleoff: index-->
 @if (ShowCodeOnly)
 {
     <div class="bd-example-snippet bd-code-snippet">
@@ -15,10 +14,10 @@
         </div>
          <div class="highlight">
              <pre>
-                <code class="@LanguageCssClass">
-                    @if (codeSnippet is not null)
+                <code class="@LanguageCode.ToLanguageCssClass()">
+                    @if (snippet is not null)
                     {
-                        <text>@codeSnippet.Trim()</text>
+                        <text>@snippet.Trim()</text>
                     }
                 </code>
             </pre>
@@ -41,10 +40,10 @@ else if (!Tabs)
         </div>
         <div class="highlight">
             <pre>
-                <code class="@LanguageCssClass">
-                    @if (codeSnippet is not null)
+                <code class="@LanguageCode.ToLanguageCssClass()">
+                    @if (snippet is not null)
                     {
-                        <text>@codeSnippet.Trim()</text>
+                        <text>@snippet.Trim()</text>
                     }
                 </code>
             </pre>
@@ -76,10 +75,10 @@ else // Tabs = true
                 </div>
                 <div class="highlight">
                     <pre class="mt-0 me-4">
-                        <code class="@LanguageCssClass">
-                            @if (codeSnippet is not null)
+                        <code class="@LanguageCode.ToLanguageCssClass()">
+                            @if (snippet is not null)
                             {
-                                <text>@codeSnippet.Trim()</text>
+                                <text>@snippet.Trim()</text>
                             }
                         </code>
                     </pre>
@@ -88,4 +87,3 @@ else // Tabs = true
         </Tab>
     </Tabs>
 }
-<!--googleon: index-->
