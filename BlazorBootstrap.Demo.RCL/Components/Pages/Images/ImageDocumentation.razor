@@ -1,0 +1,25 @@
+﻿@page "/images"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Images</h1>
+<div class="lead mb-3">Documentation and examples for opting images into responsive behavior (so they never become wider than their parent) and add lightweight styles to them—all via classes.</div>
+
+@* <CarbonAds /> *@
+
+<SectionHeading Size="HeadingSize.H2" Text="Example" PageUrl="@pageUrl" HashTagName="example" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Image_Demo_01_Examples)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Image thumbnails" PageUrl="@pageUrl" HashTagName="image-thumbnails" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Image_Demo_02_Thumbnail)" Tabs="false" />
+
+@code{
+    private string pageUrl = "/images";
+    private string title = "Blazor Image Component";
+    private string description = "Documentation and examples for opting images into responsive behavior (so they never become wider than their parent) and add lightweight styles to them—all via classes.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
+}

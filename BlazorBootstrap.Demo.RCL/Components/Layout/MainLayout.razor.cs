@@ -57,6 +57,8 @@ public partial class MainLayout : MainLayoutBase
 
             #endregion Grid
 
+            new (){ Id = "512", Text = "Images", Href = "/images", IconName = IconName.Image, ParentId = "5" },
+
             new (){ Id = "512", Text = "Modals", Href = "/modals", IconName = IconName.WindowStack, ParentId = "5" },
             new (){ Id = "513", Text = "Offcanvas", Href = "/offcanvas", IconName = IconName.LayoutSidebarReverse, ParentId = "5" },
             new (){ Id = "514", Text = "Pagination", Href = "/pagination", IconName = IconName.ThreeDots, ParentId = "5" },
