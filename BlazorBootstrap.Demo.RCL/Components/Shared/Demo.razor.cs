@@ -10,7 +10,7 @@ public partial class Demo : ComponentBase
 
     private string? clipboardTooltipTitle = "Copy to clipboard";
 
-    private string? codeSnippet;
+    private string? snippet;
 
     /// <summary>
     /// A reference to this component instance for use in JavaScript calls.
@@ -42,11 +42,11 @@ public partial class Demo : ComponentBase
 
     protected override async Task OnParametersSetAsync()
     {
-        if (codeSnippet is null)
+        if (snippet is null)
         {
             if (ProvidedCode != null)
             {
-                codeSnippet = ProvidedCode;
+                snippet = ProvidedCode;
             }
             else
             {
@@ -61,7 +61,7 @@ public partial class Demo : ComponentBase
 
                         using (var reader = new StreamReader(stream))
                         {
-                            codeSnippet = await reader.ReadToEndAsync();
+                            snippet = await reader.ReadToEndAsync();
                         }
                     }
                     catch (Exception ex)
@@ -109,7 +109,7 @@ public partial class Demo : ComponentBase
         StateHasChanged();
     }
 
-    private ValueTask CopyToClipboardAsync() => JS.InvokeVoidAsync("copyToClipboard", codeSnippet, objRef);
+    private ValueTask CopyToClipboardAsync() => JS.InvokeVoidAsync("copyToClipboard", snippet, objRef);
 
     #endregion
 
@@ -117,7 +117,7 @@ public partial class Demo : ComponentBase
 
     [Inject] protected IJSRuntime JS { get; set; } = default!;
 
-    [Parameter] public string LanguageCssClass { get; set; } = "language-cshtml";
+    [Parameter] public LanguageCode LanguageCode { get; set; } = LanguageCode.Razor;
 
     [Parameter] public bool ShowCodeOnly { get; set; }
 

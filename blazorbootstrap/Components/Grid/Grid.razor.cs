@@ -558,6 +558,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                 case nameof(HeaderRowCssClass): HeaderRowCssClass = (string)parameter.Value!; break;
                 case nameof(Height): Height = (float)parameter.Value!; break;
                 case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(IsResponsive): IsResponsive = (bool)parameter.Value!; break;
                 case nameof(ItemsPerPageText): ItemsPerPageText = (string)parameter.Value!; break;
                 case nameof(LoadingTemplate): LoadingTemplate = (RenderFragment)parameter.Value!; break;
                 case nameof(OnRowClick): OnRowClick = (EventCallback<GridRowEventArgs<TItem>>)parameter.Value!; break;
@@ -567,7 +568,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                 case nameof(PageSizeSelectorVisible): PageSizeSelectorVisible = (bool)parameter.Value!; break;
                 case nameof(PaginationAlignment): PaginationAlignment = (Alignment)parameter.Value!; break;
                 case nameof(PaginationItemsTextFormat): PaginationItemsTextFormat = (string)parameter.Value!; break;
-                case nameof(Responsive): Responsive = (bool)parameter.Value!; break;
                 case nameof(RowClass): RowClass = (Func<TItem, string>)parameter.Value!; break;
                 case nameof(SelectedItemsChanged): SelectedItemsChanged = (EventCallback<HashSet<TItem>>)parameter.Value!; break;
                 case nameof(SelectionMode): SelectionMode = (GridSelectionMode)parameter.Value!; break;
@@ -878,15 +878,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items"!;
 
     /// <summary>
-    /// Gets or sets a value indicating whether Grid is responsive.
+    /// Gets or sets a value indicating whether the grid is responsive.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
-    public bool Responsive { get; set; }
+    public bool IsResponsive { get; set; }
 
-    private string ResponsiveCssClass => Responsive ? "table-responsive" : "";
+    private string responsiveCssClass => IsResponsive ? "table-responsive" : "";
 
     /// <summary>
     /// Gets or sets the row class.

@@ -1,4 +1,5 @@
-﻿
+﻿using System.Diagnostics.Contracts;
+
 namespace BlazorBootstrap;
 
 /// <summary>
@@ -153,6 +154,10 @@ public partial class Sidebar : BlazorBootstrapComponentBase
             ("collapsed", collapseSidebar),
             ("expanded", !collapseSidebar));
 
+    protected override string? StyleNames =>
+        BuildStyleNames(Style, 
+            ($"--bb-sidebar-width: {Width.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};", Width > 0));
+
     /// <summary>
     /// Gets or sets the badge text.
     /// </summary>
@@ -219,6 +224,20 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     [Parameter]
     [EditorRequired]
     public string? Title { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the sidebar width.
+    /// </summary>
+    /// <remarks>Default value is 270.</remarks>
+    [Parameter]
+    public float Width { get; set; } = 270;
+
+    /// <summary>
+    /// Gets or sets the sidebar width unit.
+    /// </summary>
+    /// <remarks>Default value is <see cref="Unit.Px" />.</remarks>
+    [Parameter]
+    public Unit WidthUnit { get; set; } = Unit.Px;
 
     #endregion
 }

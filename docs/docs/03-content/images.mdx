@@ -1,0 +1,76 @@
+---
+title: Blazor Images Component
+description: Documentation and examples for opting images into responsive behavior (so they never become wider than their parent) and add lightweight styles to them.
+image: https://i.imgur.com/QrSaauv.png
+
+sidebar_label: Images
+sidebar_position: 2
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Images
+
+Documentation and examples for opting images into responsive behavior (so they never become wider than their parent) and add lightweight styles to them.
+
+<CarbonAd />
+
+<img src="https://i.imgur.com/QrSaauv.png" alt="Blazor Bootstrap: Image Component" />
+
+## Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Alt | `string?` | null | | Gets or sets the alternate text for the image. | 3.0.0 |
+| Src | `string?` | null | | Gets or sets the source of the image. | 3.0.0 |
+| IsResponsive | bool | true | | Gets or sets a value indicating whether the image is responsive. | 3.0.0 |
+| IsThumbnail | bool | false | | Makes the image have a rounded 1px border appearance if set to true. | 3.0.0 |
+
+## Examples
+
+### Images
+
+By default images are responsive. The default value of the **IsResponsive** parameter is **true**.
+
+<img src="https://i.imgur.com/QrSaauv.png" alt="Blazor Bootstrap: Image Component" />
+
+```cshtml {} showLineNumbers
+<Image Src="/images/placeholder.png" Alt="placeholder" />
+```
+[See demo here.](https://demos.blazorbootstrap.com/images#example)
+
+### Image thumbnails
+
+To set the image to have a rounded 1px border appearance, set the **IsThumbnail** parameter to **true**.
+
+<img src="https://i.imgur.com/LKgmorK.png" alt="Blazor Bootstrap: Image Component - Image thumbnails" />
+
+```cshtml {} showLineNumbers
+<Image Src="/images/placeholder.png" IsThumbnail="true" Alt="placeholder" />
+```
+[See demo here.](https://demos.blazorbootstrap.com/images#image-thumbnails)
+
+### Aligning images
+
+<img src="https://i.imgur.com/sGdkb8c.png" alt="Blazor Bootstrap: Image Component - Aligning images" />
+
+```cshtml {} showLineNumbers
+<Image Src="/images/placeholder.png" Class="rounded float-start" Alt="placeholder1" />
+<Image Src="/images/placeholder.png" Class="rounded float-end" Alt="placeholder2" />
+```
+
+<img src="https://i.imgur.com/LBp2172.png" alt="Blazor Bootstrap: Image Component - Aligning images" />
+
+```cshtml {} showLineNumbers
+<Image Src="/images/placeholder.png" Class="rounded mx-auto d-block" Alt="placeholder" />
+```
+
+<img src="https://i.imgur.com/7BPXWXs.png" alt="Blazor Bootstrap: Image Component - Aligning images" />
+
+```cshtml {} showLineNumbers
+<div class="text-center">
+    <Image Src="/images/placeholder.png" Class="rounded" Alt="placeholder" />
+</div>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/images#aligning-images)

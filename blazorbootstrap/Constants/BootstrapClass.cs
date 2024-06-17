@@ -76,6 +76,9 @@ public static class BootstrapClass
     public const string FormRange = "form-range";
     public const string FormSwitch= "form-switch";
 
+    public const string ImageFluid = "img-fluid";
+    public const string ImageThumbnail = "img-thumbnail";
+
     public const string Modal = "modal";
     public const string ModalFade = "fade";
 

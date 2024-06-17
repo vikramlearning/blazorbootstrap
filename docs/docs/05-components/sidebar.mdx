@@ -28,6 +28,8 @@ Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, res
 | IconName | `IconName` | `IconName.None` | | Gets or sets the IconName. | 1.4.0 |
 | ImageSrc | `string?` | null | | Gets or sets the sidebar logo. | 1.4.0 |
 | Title | `string?` | null | ✔️ | Gets or sets the sidebar title. | 1.4.0 |
+| Width | float | 270 | | Gets or sets the sidebar width. | 3.0.0 |
+| WidthUnit | `Unit` | `Unit.Px` | | Gets or sets the sidebar width unit. | 3.0.0 |
 
 ## Methods
 
@@ -694,3 +696,46 @@ Set the Class property of a NavItem to apply a custom CSS class.
 }
 ```
 [See demo here.](https://demos.blazorbootstrap.com/sidebar#apply-custom-css-class-to-navitem)
+
+### Width
+
+Set the **Width** parameter to change the sidebar width. Default value is **270px**.
+
+<img src="https://i.imgur.com/loeszdC.png" alt="Blazor Sidebar - Width" />
+
+```cshtml {5,6} showLineNumbers
+<Sidebar Href="/"
+         IconName="IconName.BootstrapFill"
+         Title="Blazor Bootstrap"
+         DataProvider="SidebarDataProvider"
+         Width="350"
+         WidthUnit="Unit.Px" />
+```
+
+```cshtml {} showLineNumbers
+@code {
+    IEnumerable<NavItem>? navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+            new NavItem { Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts"},
+            new NavItem { Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete"},
+            new NavItem { Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb"},
+            new NavItem { Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar"},
+        };
+        return navItems;
+    }
+}
+```
+[See demo here.](https://demos.blazorbootstrap.com/sidebar#width)
