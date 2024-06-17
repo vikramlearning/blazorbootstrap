@@ -566,7 +566,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                 case nameof(PageSize): PageSize = (int)parameter.Value!; break;
                 case nameof(PageSizeSelectorItems): PageSizeSelectorItems = (int[])parameter.Value!; break;
                 case nameof(PageSizeSelectorVisible): PageSizeSelectorVisible = (bool)parameter.Value!; break;
-                case nameof(PaginationAlignment): PaginationAlignment = (Alignment)parameter.Value!; break;
                 case nameof(PaginationItemsTextFormat): PaginationItemsTextFormat = (string)parameter.Value!; break;
                 case nameof(RowClass): RowClass = (Func<TItem, string>)parameter.Value!; break;
                 case nameof(SelectedItemsChanged): SelectedItemsChanged = (EventCallback<HashSet<TItem>>)parameter.Value!; break;
@@ -858,16 +857,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public bool PageSizeSelectorVisible { get; set; }
     
     /// <summary>
-    /// Gets or sets the pagination alignment.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Alignment.Start" />.
-    /// </remarks>
-    [Parameter]
-    [Obsolete("PaginationAlignment parameter is not supported from 1.8.0 version onwards")]
-    public Alignment PaginationAlignment { get; set; } = Alignment.Start;
-
-    /// <summary>
     /// Gets or sets the pagination items text format.
     /// </summary>
     /// <remarks>
@@ -886,7 +875,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public bool IsResponsive { get; set; }
 
-    private string responsiveCssClass => IsResponsive ? "table-responsive" : "";
+    private string ResponsiveCssClass => IsResponsive ? "table-responsive" : "";
 
     /// <summary>
     /// Gets or sets the row class.

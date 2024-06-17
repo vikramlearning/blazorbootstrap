@@ -9,6 +9,9 @@ public partial class PieChart : BlazorBootstrapChart
 {
     #region Constructors
 
+    /// <summary>
+    /// Default constructor
+    /// </summary>
     public PieChart()
     {
         ChartType = ChartType.Pie;

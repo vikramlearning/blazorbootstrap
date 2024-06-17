@@ -9,6 +9,9 @@ public partial class DoughnutChart : BlazorBootstrapChart
 {
     #region Constructors
 
+    /// <summary>
+    /// Default constructor
+    /// </summary>
     public DoughnutChart()
     {
         ChartType = ChartType.Doughnut;

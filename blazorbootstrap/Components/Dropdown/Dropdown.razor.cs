@@ -53,15 +53,27 @@ public partial class Dropdown : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
+    /// <summary>
+    /// Invoked when the dropdown menu is hidden from the user (will wait for CSS transitions to complete).
+    /// </summary> 
     [JSInvokable("bsHiddenDropdown")]
     public Task BsHiddenDropdown() => OnHidden.InvokeAsync();
 
+    /// <summary>
+    /// Invoked immediately when the hide method has been called.
+    /// </summary>
     [JSInvokable("bsHideDropdown")]
     public Task BsHideDropdown() => OnHiding.InvokeAsync();
 
+    /// <summary>
+    /// Invoked immediately when the show instance method is called.
+    /// </summary>
     [JSInvokable("bsShowDropdown")]
     public Task BsShowDropdown() => OnShowing.InvokeAsync();
 
+    /// <summary>
+    /// Invoked when the dropdown menu is made visible to the user (will wait for CSS transitions to complete).
+    /// </summary>
     [JSInvokable("bsShownDropdown")]
     public Task BsShownDropdown() => OnShown.InvokeAsync();
 

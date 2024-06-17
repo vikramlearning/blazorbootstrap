@@ -8,6 +8,9 @@ public partial class LineChart : BlazorBootstrapChart
 {
     #region Constructors
 
+    /// <summary>
+    /// Default constructor
+    /// </summary>
     public LineChart()
     {
         ChartType = ChartType.Line;

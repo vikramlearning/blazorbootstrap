@@ -52,15 +52,27 @@ public partial class Collapse : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Invoked when a collapse element has been hidden from the user (will wait for CSS transitions to complete).
+    /// </summary> 
     [JSInvokable("bsHiddenCollapse")]
     public Task BsHiddenCollapse() => OnHidden.InvokeAsync();
 
+    /// <summary>
+    /// Invoked immediately when the hide method has been called.
+    /// </summary> 
     [JSInvokable("bsHideCollapse")]
     public Task BsHideCollapse() => OnHiding.InvokeAsync();
 
+    /// <summary>
+    /// Invoked immediately when the show method has been called.
+    /// </summary> 
     [JSInvokable("bsShowCollapse")]
     public Task BsShowCollapse() => OnShowing.InvokeAsync();
 
+    /// <summary>
+    /// Invoked when a collapse element has been made visible to the user (will wait for CSS transitions to complete).
+    /// </summary> 
     [JSInvokable("bsShownCollapse")]
     public Task BsShownCollapse() => OnShown.InvokeAsync();
 

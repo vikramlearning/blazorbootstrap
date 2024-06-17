@@ -30,6 +30,8 @@
     <LangVersion Condition=" '$(TargetFramework)' == 'net6.0' ">10.0</LangVersion>
     <LangVersion Condition=" '$(TargetFramework)' == 'net7.0' ">11.0</LangVersion>
     <LangVersion Condition=" '$(TargetFramework)' == 'net8.0' ">11.0</LangVersion>
+
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <ItemGroup>

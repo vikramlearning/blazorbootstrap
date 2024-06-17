@@ -74,6 +74,9 @@ public partial class Modal : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Invoked when the modal is hidden from the user (will wait for CSS transitions to complete).
+    /// </summary> 
     [JSInvokable("bsHiddenModal")]
     public async Task BsHiddenModal()
     {
@@ -83,9 +86,16 @@ public partial class Modal : BlazorBootstrapComponentBase
             ModalService.OnClose();
     }
 
+    /// <summary>
+    /// Invoked immediately when the hide method has been called.
+    /// </summary>
     [JSInvokable("bsHideModal")]
     public Task BsHideModal() => OnHiding.InvokeAsync();
 
+    /// <summary>
+    /// Invoked when the modal is shown, its backdrop is static and a click outside the modal or an escape key press is performed
+    /// with the keyboard option or data-bs-keyboard set to <see langword="false" />.
+    /// </summary>
     [JSInvokable("bsHidePreventedModal")]
     public Task BsHidePreventedModal() => OnHidePrevented.InvokeAsync();
 

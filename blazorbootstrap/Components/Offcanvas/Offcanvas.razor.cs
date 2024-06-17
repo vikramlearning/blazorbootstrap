@@ -133,7 +133,6 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
                 case nameof(Style): Style = (string)parameter.Value!; break;
                 case nameof(TabIndex): TabIndex = (int)parameter.Value!; break;
                 case nameof(Title): Title = (string)parameter.Value!; break;
-                case nameof(UseBackdrop): UseBackdrop = (bool)parameter.Value!; break;
                 case nameof(UseStaticBackdrop): UseStaticBackdrop = (bool)parameter.Value!; break;
 
                 default:
@@ -298,18 +297,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public string Title { get; set; } = default!;
-
     
-    /// <summary>
-    /// Indicates whether to apply a backdrop on body while offcanvas is open.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="true" />.
-    /// </remarks>
-    [Parameter]
-    [Obsolete("Use `UseStaticBackdrop` parameter.")]
-    public bool UseBackdrop { get; set; } = true;
-
     /// <summary>
     /// When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it.
     /// </summary>

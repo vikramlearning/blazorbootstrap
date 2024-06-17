@@ -58,6 +58,9 @@ public class Interaction
 
     #region Constructors
 
+    /// <summary>
+    /// Default constructor
+    /// </summary>
     public Interaction()
     {
         Mode = InteractionMode.Nearest;
@@ -87,7 +90,7 @@ public class Interaction
     /// Sets which elements appear in the interaction.
     /// </summary>
     [JsonPropertyName("mode")]
-    public string ChartInteractionMode { get; private set; }
+    public string ChartInteractionMode { get; private set; } = default!;
 
     /// <summary>
     /// if <see langword="true" />, the interaction mode only applies when the mouse position intersects an item on the chart.

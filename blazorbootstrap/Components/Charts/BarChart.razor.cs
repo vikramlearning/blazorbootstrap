@@ -9,6 +9,9 @@ public partial class BarChart : BlazorBootstrapChart
 {
     #region Constructors
 
+    /// <summary>
+    /// Default constructor
+    /// </summary>
     public BarChart()
     {
         ChartType = ChartType.Bar;
