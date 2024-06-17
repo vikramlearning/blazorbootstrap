@@ -54,8 +54,8 @@
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum)
     {
-        <Dropdown>
-            <DropdownToggleButton Class="px-1" Style="@filterStyle" Color="ButtonColor.Light">
+        <Dropdown Color="DropdownColor.Light">
+            <DropdownToggleButton Class="px-1" Style="@filterStyle">
                 @if (string.IsNullOrWhiteSpace(filterValue))
                 {
                     <span class="px-2">Select</span>
