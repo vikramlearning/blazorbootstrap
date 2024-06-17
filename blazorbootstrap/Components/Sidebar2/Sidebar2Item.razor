@@ -2,9 +2,9 @@
 @inherits BlazorBootstrapComponentBase
 
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-    @if (HasChilds)
+    @if (HasChildren)
     {
-        <NavLink class="nav-link" style="@navLinkStyle" role="button" @onclick="ToggleNavItemGroup">
+        <NavLink class="nav-link" style="@NavLinkStyle" role="button" @onclick="ToggleNavItemGroup">
             @{
                 var navLinkArrowCssClass = "";
                 if (Level == 0 && NavItemGroupExpanded)
@@ -32,14 +32,14 @@
     }
     else
     {
-        <NavLink class="nav-link" style="@navLinkStyle" href="@Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
+        <NavLink class="nav-link" style="@NavLinkStyle" href="@Href" target="@TargetString" Match="@Match" @onclick="AutoHideNavMenu">
             @{
                 var navLinkArrowCssClass = "ps-2";
                 if (Level == 0)
                     navLinkArrowCssClass = "";
             }
             <span class="nav-link-icon @navLinkArrowCssClass">
-                <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+                <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
             </span>
 
             @{
@@ -49,7 +49,7 @@
         </NavLink>
     }
 
-    @if (NavItemGroupExpanded && HasChilds && ChildItems is not null && ChildItems.Any())
+    @if (NavItemGroupExpanded && HasChildren && ChildItems is not null && ChildItems.Any())
     {
         @foreach (var childItem in ChildItems)
         {
@@ -60,7 +60,7 @@
                           Text="@childItem.Text"
                           Target="@childItem.Target"
                           Match="@childItem.Match"
-                          HasChilds="@childItem.HasChildItems"
+                          HasChildren="@childItem.HasChildItems"
                           ChildItems="@childItem.ChildItems"
                           Class="@childItem.Class"
                           Level="@childItem.Level" />

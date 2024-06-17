@@ -216,7 +216,7 @@
 </Grid>
 
 @code {
-    private IEnumerable<Employee1> employees = default!;
+    private IReadOnlyCollection<Employee1> employees = default!;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
@@ -226,7 +226,7 @@
         return await Task.FromResult(request.ApplyTo(employees));
     }
 
-    private IEnumerable<Employee1> GetEmployees()
+    private IReadOnlyCollection<Employee1> GetEmployees()
     {
         return new List<Employee1>
         {

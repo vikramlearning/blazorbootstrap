@@ -102,6 +102,11 @@ public static class EnumExtensions
             _ => "top-0 start-100 translate-middle" // default: Top right
         };
 
+    /// <summary>
+    /// Returns the Bootstrap CSS Class for a specific button color.
+    /// </summary>
+    /// <param name="buttonColor">Button color to retrieve the class from</param>
+    /// <returns>Button color</returns>
     public static string ToButtonColorClass(this ButtonColor buttonColor) =>
         buttonColor switch
         {
@@ -233,10 +238,10 @@ public static class EnumExtensions
         {
             DropdownDirection.Dropdown => "dropdown",
             DropdownDirection.DropdownCentered => "dropdown dropdown-center",
-            DropdownDirection.Dropend => "dropend",
-            DropdownDirection.Dropup => "dropup",
-            DropdownDirection.DropupCentered => "dropup dropup-center",
-            DropdownDirection.Dropstart => "dropstart",
+            DropdownDirection.DropEnd => "dropend",
+            DropdownDirection.DropUp => "dropup",
+            DropdownDirection.DropUpCentered => "dropup dropup-center",
+            DropdownDirection.DropStart => "dropstart",
             _ => ""
         };
 
@@ -425,15 +430,11 @@ public static class EnumExtensions
             SortableListPullMode.False => false,
             SortableListPullMode.Clone => "clone",
             //SortableListPullMode.Array => "array"
+            _ => throw new ArgumentOutOfRangeException(nameof(sortableListPullMode), sortableListPullMode, "Invalid SortableListPullMode value supplied")
         };
 
     public static object ToSortableListPutMode(this SortableListPutMode sortableListPutMode) =>
-        sortableListPutMode switch
-        {
-            SortableListPutMode.True => true,
-            SortableListPutMode.False => false,
-            //SortableListPullMode.Array => "array"
-        };
+        sortableListPutMode == SortableListPutMode.True;
 
     public static string ToSpinnerColorClass(this SpinnerColor spinnerColor) =>
         spinnerColor switch

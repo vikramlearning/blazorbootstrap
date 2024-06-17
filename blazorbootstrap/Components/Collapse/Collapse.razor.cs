@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Toggle the visibility of content across your project with the Blazor Bootstrap Collapse component.
+/// This component is based on the <see href="https://getbootstrap.com/docs/5.0/components/collapse/">Bootstrap Collapse</see> component.
+/// </summary>
 public partial class Collapse : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -18,7 +22,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.dispose", Id);
+                    await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -30,15 +34,17 @@ public partial class Collapse : BlazorBootstrapComponentBase
 
         await base.DisposeAsyncCore(disposing);
     }
-
+    
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", Id, Parent, Toggle, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", Id, Parent, Toggle, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -46,37 +52,80 @@ public partial class Collapse : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public async Task bsHiddenCollapse() => await OnHidden.InvokeAsync();
+    /// <summary>
+    /// Invoked when a collapse element has been hidden from the user (will wait for CSS transitions to complete).
+    /// </summary> 
+    [JSInvokable("bsHiddenCollapse")]
+    public Task BsHiddenCollapse() => OnHidden.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsHideCollapse() => await OnHiding.InvokeAsync();
+    /// <summary>
+    /// Invoked immediately when the hide method has been called.
+    /// </summary> 
+    [JSInvokable("bsHideCollapse")]
+    public Task BsHideCollapse() => OnHiding.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsShowCollapse() => await OnShowing.InvokeAsync();
+    /// <summary>
+    /// Invoked immediately when the show method has been called.
+    /// </summary> 
+    [JSInvokable("bsShowCollapse")]
+    public Task BsShowCollapse() => OnShowing.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsShownCollapse() => await OnShown.InvokeAsync();
+    /// <summary>
+    /// Invoked when a collapse element has been made visible to the user (will wait for CSS transitions to complete).
+    /// </summary> 
+    [JSInvokable("bsShownCollapse")]
+    public Task BsShownCollapse() => OnShown.InvokeAsync();
 
     /// <summary>
     /// Hides a collapsible element.
     /// </summary>
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.hide", Id);
+    public ValueTask HideAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.hide", Id);
 
     /// <summary>
     /// Shows a collapsible element.
     /// </summary>
-    public async Task ShowAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.show", Id);
+    public ValueTask ShowAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.show", Id);
 
     /// <summary>
     /// Toggles a collapsible element to shown or hidden.
     /// </summary>
-    public async Task ToggleAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.toggle", Id);
+    public ValueTask ToggleAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.toggle", Id);
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Horizontal): Horizontal = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(OnHidden): OnHidden = (EventCallback)parameter.Value; break;
+                case nameof(OnHiding): OnHiding = (EventCallback)parameter.Value; break;
+                case nameof(OnShowing): OnShowing = (EventCallback)parameter.Value; break;
+                case nameof(OnShown): OnShown = (EventCallback)parameter.Value; break;
+                case nameof(Parent): Parent = parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Toggle): Toggle = (bool)parameter.Value; break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+        
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Collapse, true),
@@ -86,7 +135,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
@@ -96,7 +145,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// Gets or sets the horizontal collapsing.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Horizontal { get; set; }
@@ -139,7 +188,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// Toggles the collapsible element on invocation.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Toggle { get; set; } = false;

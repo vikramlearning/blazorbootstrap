@@ -42,8 +42,7 @@
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is LineChartDataset lineChartDataset
-                && lineChartDataset is not null
-                && lineChartDataset.Data is not null)
+                && lineChartDataset?.Data != null)
             {
                 var count = lineChartDataset.Data.Count;
 

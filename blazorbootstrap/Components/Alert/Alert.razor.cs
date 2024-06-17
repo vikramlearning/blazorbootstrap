@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Provide contextual feedback messages for typical user actions with the handful of available and flexible Blazor Bootstrap alert messages. <br/>
+/// This component is based on the <see href="https://getbootstrap.com/docs/5.0/components/alerts/">Bootstrap Alert</see> component.
+/// </summary>
 public partial class Alert : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -18,7 +22,7 @@ public partial class Alert : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.dispose", Id);
+                    await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -30,15 +34,17 @@ public partial class Alert : BlazorBootstrapComponentBase
 
         await base.DisposeAsyncCore(disposing);
     }
-
+    
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", Id, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", Id, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
-
+    
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -46,21 +52,57 @@ public partial class Alert : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public async Task bsCloseAlert() => await OnClose.InvokeAsync();
+    /// <summary>
+    /// Invoked when the close button is clicked.
+    /// </summary> 
+    [JSInvokable("bsCloseAlert")]
+    public Task BsCloseAlert() => OnClose.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsClosedAlert() => await OnClosed.InvokeAsync();
+    /// <summary>
+    /// Invoked when the alert has been closed and CSS transitions have completed.
+    /// </summary> 
+    [JSInvokable("bsClosedAlert")]
+    public Task BsClosedAlert() => OnClosed.InvokeAsync();
 
     /// <summary>
     /// Closes an alert by removing it from the DOM.
     /// </summary>
-    public async Task CloseAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.close", Id);
+    public ValueTask CloseAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.close", Id);
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            { 
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Color): Color = (AlertColor)parameter.Value; break;
+                case nameof(Dismissable): Dismissable = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(OnClose): OnClose = (EventCallback)parameter.Value; break;
+                case nameof(OnClosed): OnClosed = (EventCallback)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Alert, true),
@@ -71,7 +113,7 @@ public partial class Alert : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -89,7 +131,7 @@ public partial class Alert : BlazorBootstrapComponentBase
     /// If <see langword="true" />, shows an inline close button.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Dismissable { get; set; }

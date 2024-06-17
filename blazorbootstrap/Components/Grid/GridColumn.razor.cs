@@ -1,14 +1,18 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a column in the <see cref="Grid{T}"/>.
+/// </summary>
+/// <typeparam name="TItem">Data model to apply to the column of the grid</typeparam>
 public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
     private RenderFragment<TItem>? cellTemplate;
 
-    internal SortDirection currentSortDirection;
+    internal SortDirection CurrentSortDirection;
 
-    internal SortDirection defaultSortDirection;
+    internal SortDirection DefaultSortDirection;
 
     private FilterOperator filterOperator;
 
@@ -20,6 +24,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         Id = IdUtility.GetNextId(); // Required
@@ -27,17 +32,18 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
         filterOperator = FilterOperator;
         filterValue = FilterValue;
 
-        currentSortDirection = SortDirection;
-        defaultSortDirection = SortDirection;
+        CurrentSortDirection = SortDirection;
+        DefaultSortDirection = SortDirection;
 
         if (IsDefaultSortColumn && SortDirection == SortDirection.None)
-            currentSortDirection = SortDirection = SortDirection.Ascending;
+            CurrentSortDirection = SortDirection = SortDirection.Ascending;
 
         Parent.AddColumn(this);
 
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override void OnParametersSet() => SetDefaultFilter();
 
     internal bool CanSort() => Parent is not null && Parent.AllowSorting && Sortable && SortKeySelector is not null;
@@ -50,15 +56,17 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     internal string GetPropertyTypeName() => typeof(TItem).GetPropertyTypeName(PropertyName);
 
-    internal IEnumerable<SortingItem<TItem>> GetSorting()
+    internal IReadOnlyCollection<SortingItem<TItem>> GetSorting()
     {
         if (SortKeySelector == null && string.IsNullOrWhiteSpace(SortString))
-            yield break;
+        {
+            return Array.Empty<SortingItem<TItem>>();
+        }
 
-        yield return new SortingItem<TItem>(SortString, SortKeySelector!, currentSortDirection);
+        return new SortingItem<TItem>[] { new(SortString, SortKeySelector!, CurrentSortDirection) };
     }
 
-    internal async Task OnFilterChangedAsync(FilterEventArgs args, GridColumn<TItem> column)
+    internal async Task OnFilterChangedAsync(FilterEventArgs args)
     {
         if (filterValue != args.Text || filterOperator != args.FilterOperator)
             await Parent.ResetPageNumberAsync();
@@ -118,14 +126,60 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     private async Task OnSortClickAsync()
     {
         // toggle the direction
-        if (currentSortDirection == SortDirection.Ascending)
-            currentSortDirection = SortDirection = SortDirection.Descending;
-        else if (currentSortDirection == SortDirection.Descending)
-            currentSortDirection = SortDirection = SortDirection.None;
-        else if (currentSortDirection == SortDirection.None)
-            currentSortDirection = SortDirection = SortDirection.Ascending;
+        if (CurrentSortDirection == SortDirection.Ascending)
+            CurrentSortDirection = SortDirection = SortDirection.Descending;
+        else if (CurrentSortDirection == SortDirection.Descending)
+            CurrentSortDirection = SortDirection = SortDirection.None;
+        else if (CurrentSortDirection == SortDirection.None)
+            CurrentSortDirection = SortDirection = SortDirection.Ascending;
 
         await Parent.SortingChangedAsync(this);
+    }
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent): ChildContent = (RenderFragment<TItem>)parameter.Value!; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(ColumnClass): ColumnClass = (Func<TItem, string>)parameter.Value!; break;
+                case nameof(Filterable): Filterable = (bool)parameter.Value!; break;
+                case nameof(FilterButtonColor): FilterButtonColor = (ButtonColor)parameter.Value!; break;
+                case nameof(FilterButtonCssClass): FilterButtonCssClass = (string)parameter.Value!; break;
+                case nameof(FilterOperator): FilterOperator = (FilterOperator)parameter.Value!; break;
+                case nameof(FilterTextboxWidth): FilterTextboxWidth = (int)parameter.Value!; break;
+                case nameof(FilterValue): FilterValue = (string)parameter.Value!; break;
+                case nameof(Freeze): Freeze = (bool)parameter.Value!; break;
+                case nameof(FreezeDirection): FreezeDirection = (FreezeDirection)parameter.Value!; break;
+                case nameof(FreezeLeftPosition): FreezeLeftPosition = (double)parameter.Value!; break;
+                case nameof(FreezeRightPosition): FreezeRightPosition = (double)parameter.Value!; break;
+                case nameof(HeaderContent): HeaderContent = (RenderFragment)parameter.Value!; break;
+                case nameof(HeaderText): HeaderText = (string)parameter.Value!; break;
+                case nameof(HeaderTextAlignment): HeaderTextAlignment = (Alignment)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(IsDefaultSortColumn): IsDefaultSortColumn = (bool)parameter.Value!; break;
+                case nameof(Parent): Parent = (Grid<TItem>)parameter.Value!; break;
+                case nameof(PropertyName): PropertyName = (string)parameter.Value!; break;
+                case nameof(Sortable): Sortable = (bool)parameter.Value!; break;
+                case nameof(SortDirection): SortDirection = (SortDirection)parameter.Value!; break;
+                case nameof(SortKeySelector): SortKeySelector = (Expression<Func<TItem, IComparable>>)parameter.Value!; break;
+                case nameof(SortString): SortString = (string)parameter.Value!; break;
+                case nameof(StringComparison): StringComparison = (StringComparison)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(TextAlignment): TextAlignment = (Alignment)parameter.Value!; break;
+                case nameof(TextNoWrap): TextNoWrap = (bool)parameter.Value!; break;
+
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
@@ -180,7 +234,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                                             builder.AddAttribute(101, "style", string.Join(";", styleList));
                                         }
 
-                                        if (classList.Any())
+                                        if (classList.Count > 0)
                                             builder.AddAttribute(102, "class", string.Join(" ", classList));
 
                                         builder.AddContent(103, ChildContent, rowData);
@@ -191,7 +245,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Specifies the content to be rendered inside the grid column.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment<TItem> ChildContent { get; set; } = default!;
@@ -207,7 +261,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// The filter is enabled or disabled based on the grid `AllowFiltering` parameter.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     [Parameter]
     public bool Filterable { get; set; } = true;
@@ -225,10 +279,10 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the filter button CSS class.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public string? FilterButtonCSSClass { get; set; }
+    public string? FilterButtonCssClass { get; set; }
 
     /// <summary>
     /// Gets or sets the filter operator.
@@ -243,7 +297,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the filter textbox width in pixels.
     /// </summary>
     /// <remarks>
-    /// Default value is 0.
+    /// Default value is <see langword="0"/>.
     /// </remarks>
     [Parameter]
     public int FilterTextboxWidth { get; set; }
@@ -252,7 +306,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the filter value.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string FilterValue { get; set; } = default!;
@@ -261,7 +315,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Indicates whether the column is frozen.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Freeze { get; set; }
@@ -279,7 +333,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the horizontal position of the column from left. It has no effect on non-positioned columns.
     /// </summary>
     /// <remarks>
-    /// Default value is 0.
+    /// Default value is <see langword="0"/>.
     /// </remarks>
     [Parameter]
     public double FreezeLeftPosition { get; set; }
@@ -288,7 +342,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the horizontal position of the column from right. It has no effect on non-positioned columns.
     /// </summary>
     /// <remarks>
-    /// Default value is 0.
+    /// Default value is <see langword="0"/>.
     /// </remarks>
     [Parameter]
     public double FreezeRightPosition { get; set; }
@@ -297,7 +351,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the header content.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public RenderFragment HeaderContent { get; set; } = default!;
@@ -306,7 +360,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the header template.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     internal RenderFragment HeaderTemplate =>
         headerTemplate ??= builder =>
@@ -365,9 +419,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
                                        var sortIcon = "bi bi-arrow-down-up"; // default icon
 
-                                       if (currentSortDirection is not SortDirection.None and SortDirection.Ascending)
+                                       if (CurrentSortDirection is not SortDirection.None and SortDirection.Ascending)
                                            sortIcon = "bi bi-sort-alpha-down";
-                                       else if (currentSortDirection is not SortDirection.None and SortDirection.Descending)
+                                       else if (CurrentSortDirection is not SortDirection.None and SortDirection.Descending)
                                            sortIcon = "bi bi-sort-alpha-down-alt";
 
                                        builder.AddAttribute(111, "class", sortIcon);
@@ -377,7 +431,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                                }
                                else
                                {
-                                   // If headercontent is used, filters and sorting wont be added.
+                                   // If headercontent is used, filters and sorting won't be added.
                                    builder.AddContent(112, HeaderContent);
                                }
 
@@ -388,7 +442,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the table column header text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string HeaderText { get; set; } = default!;
@@ -406,7 +460,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the default sort column.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool IsDefaultSortColumn { get; set; } = false;
@@ -415,20 +469,20 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the property name.
-    /// This is required when `AllowFiltering` is true.
+    /// This is required when <see cref="Filterable"/> is <see langword="true" />.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string PropertyName { get; set; } = default!;
 
     /// <summary>
     /// Enable or disable the sorting on a specific column.
-    /// The sorting is enabled or disabled based on the `AllowSorting` parameter on the grid.
+    /// The sorting is enabled or disabled based on the <see cref="SortString"/> parameter on the grid.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     [Parameter]
     public bool Sortable { get; set; } = true;
@@ -446,7 +500,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Expression used for sorting.
     /// </summary>
     [Parameter]
-    public Expression<Func<TItem, IComparable>> SortKeySelector { get; set; } = default!;
+    public Expression<Func<TItem, IComparable>>? SortKeySelector { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the column sort string.
@@ -454,7 +508,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// And this property is ignored for the client-side sorting.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string SortString { get; set; } = default!;
@@ -481,7 +535,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets text nowrap.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool TextNoWrap { get; set; }

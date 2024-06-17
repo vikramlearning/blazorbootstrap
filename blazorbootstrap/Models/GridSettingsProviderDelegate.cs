@@ -3,4 +3,4 @@
 /// <summary>
 /// Grid settings provider (delegate).
 /// </summary>
-public delegate Task<GridSettings> GridSettingsProviderDelegate();
+public delegate Task<GridSettings?> GridSettingsProviderDelegate();

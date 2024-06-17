@@ -1,4 +1,7 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Xml.Linq;
+using System;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// A component for loading scripts dynamically in a Blazor application.
@@ -10,7 +13,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <summary>
     /// The default content type for scripts.
     /// </summary>
-    private const string type = "text/javascript";
+    private const string Type = "text/javascript";
 
     /// <summary>
     /// A reference to this component instance for use in JavaScript calls.
@@ -21,14 +24,16 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, ScriptId, Source, type, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, ScriptId, Source, Type, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -36,6 +41,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (string.IsNullOrWhiteSpace(Source))
@@ -48,7 +54,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// Handles a script error event from JavaScript.
     /// </summary>
     /// <param name="errorMessage">The error message.</param>
-    [JSInvokable]
+    [JSInvokable("OnErrorJS")]
     public void OnErrorJS(string errorMessage)
     {
         if (OnError.HasDelegate)
@@ -58,11 +64,39 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <summary>
     /// Handles a script load event from JavaScript.
     /// </summary>
-    [JSInvokable]
+    [JSInvokable("OnLoadJS")]
     public void OnLoadJS()
     {
         if (OnLoad.HasDelegate)
             OnLoad.InvokeAsync();
+    }
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Async): Async = (bool)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(OnError): OnError = (EventCallback<string>)parameter.Value; break;
+                case nameof(OnLoad): OnLoad = (EventCallback)parameter.Value; break;
+                case nameof(ScriptId): ScriptId = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(Source): Source = (string)parameter.Value; break;
+                
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion

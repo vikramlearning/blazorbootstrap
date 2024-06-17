@@ -26,7 +26,7 @@
 
 @code {
     BlazorBootstrap.Grid<Employee1> grid = default!;
-    private IEnumerable<Employee1>? employees;
+    private IReadOnlyCollection<Employee1>? employees;
 
     [Inject] public IJSRuntime JS { get; set; } = default!;
 
@@ -63,7 +63,7 @@
         return settings;
     }
 
-    private IEnumerable<Employee1> GetEmployees()
+    private IReadOnlyCollection<Employee1> GetEmployees()
     {
         return new List<Employee1>
         {

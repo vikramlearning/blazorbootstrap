@@ -10,7 +10,7 @@ public class BubbleChartDataset : ChartDataset
 
     public new double BorderWidth { get; set; }
 
-    public new List<BubbleData>? Data { get; set; }
+    public new IReadOnlyCollection<BubbleData>? Data { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public new string? HoverBackgroundColor { get; set; }
 

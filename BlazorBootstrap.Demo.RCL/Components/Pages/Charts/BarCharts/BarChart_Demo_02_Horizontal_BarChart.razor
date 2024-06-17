@@ -19,16 +19,27 @@
             };
         datasets.Add(dataset1);
 
-        chartData = new ChartData { Labels = labels, Datasets = datasets };
+        chartData = new ChartData { 
+            Labels = labels, 
+            Datasets = datasets,
+        };
 
         barChartOptions = new BarChartOptions();
         barChartOptions.Responsive = true;
         barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
         barChartOptions.IndexAxis = "y";
-
-        barChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "Visitors", Display = true };
-        barChartOptions.Scales.Y!.Title = new ChartAxesTitle { Text = "Browser", Display = true };
-
+        barChartOptions.Scales = new Scales
+        {
+            X = new ChartAxes()
+            {
+                Title = new ChartAxesTitle() { Text = "Visitors", Display = true }
+            },
+            Y = new ChartAxes()
+            {
+                Title = new ChartAxesTitle() { Text = "Browser", Display = true }
+            },
+        }; 
+        
         barChartOptions.Plugins.Legend.Display = false;
     }
 

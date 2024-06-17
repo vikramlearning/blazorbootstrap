@@ -36,7 +36,7 @@
                 <div class="tab-pane @(EnableFadeEffect ? "fade" : "")" id="nav-@t.Id" role="tabpanel" aria-labelledby="@t.Id">
                     <div class="d-flex flex-row border">
                         <CascadingValue Value="this" Name="Ribbon2" IsFixed="true">
-                            @t.Content
+                            @t.ChildContent
                         </CascadingValue>
                     </div>
                 </div>

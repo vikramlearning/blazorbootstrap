@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Use the Blazor Bootstrap <see cref="Switch"/>> component to show the consistent cross-browser and cross-device custom checkboxes.
+/// </summary>
 public partial class Switch : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -12,17 +15,17 @@ public partial class Switch : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         oldValue = Value;
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
+        
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (oldValue != Value)
@@ -51,7 +54,9 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <param name="args"></param>
     private async Task OnChange(ChangeEventArgs args)
     {
-        bool.TryParse(args.Value?.ToString(), out var newValue);
+        if (!bool.TryParse(args.Value?.ToString(), out var newValue))
+            return;
+        
         Value = newValue;
 
         await ValueChanged.InvokeAsync(Value);
@@ -61,10 +66,38 @@ public partial class Switch : BlazorBootstrapComponentBase
         oldValue = Value;
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
+                case nameof(EditContext): EditContext = (EditContext)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Label): Label = (string)parameter.Value; break;
+                case nameof(Reverse): Reverse = (bool)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(Value): Value = (bool)parameter.Value; break;
+                case nameof(ValueChanged): ValueChanged = (EventCallback<bool>)parameter.Value; break;
+                case nameof(ValueExpression): ValueExpression = (Expression<Func<bool>>)parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.FormCheck, true),
@@ -75,31 +108,29 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string FieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string Label { get; set; } = default!;
-
-    private string reverse => Reverse ? BootstrapClass.FormCheckReverse : "";
 
     /// <summary>
     /// Determines whether to put the switch on the opposite side.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Reverse { get; set; }
@@ -108,7 +139,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// Gets or sets the value.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Value { get; set; }
@@ -119,6 +150,9 @@ public partial class Switch : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; } = default!;
 
+    /// <summary>
+    /// An expression that identifies the bound value.
+    /// </summary>
     [Parameter] public Expression<Func<bool>> ValueExpression { get; set; } = default!;
 
     #endregion

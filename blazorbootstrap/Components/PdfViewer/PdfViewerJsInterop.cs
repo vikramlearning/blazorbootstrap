@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// A display module for PDF files, whether downloaded from a URL or shown via Base64.
+/// </summary>
 public class PdfViewerJsInterop : IAsyncDisposable
 {
     #region Fields and Constants
