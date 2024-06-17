@@ -59,7 +59,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     {
         if (!items?.Any() ?? false) return;
 
-        foreach (var accordionItem in items!)
+        foreach (var accordionItem in items!.ToList())
             if (accordionItem is not null)
                 await accordionItem.HideAsync();
     }
@@ -168,6 +168,35 @@ public partial class Accordion : BlazorBootstrapComponentBase
         items ??= new List<AccordionItem>();
         items.Add(accordionItem);
     }
+    
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AlwaysOpen): AlwaysOpen = (bool)parameter.Value; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Flush): Flush = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(OnHidden): OnHidden = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case nameof(OnHiding): OnHiding = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case nameof(OnShowing): OnShowing = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case nameof(OnShown): OnShown = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 
     #endregion
 
@@ -231,49 +260,6 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public EventCallback<AccordionEventArgs> OnShown { get; set; }
-
-
-    /// <summary>
-    /// Parameters are loaded manually for sake of performance.
-    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
-    /// </summary> 
-    public override Task SetParametersAsync(ParameterView parameters)
-    {
-
-        
-        foreach (var parameter in parameters)
-        {
-            switch (parameter.Name)
-            {
-                case nameof(AlwaysOpen):
-                    AlwaysOpen = (bool)parameter.Value;
-                    break;
-                case nameof(ChildContent):
-                    ChildContent = (RenderFragment)parameter.Value;
-                    break;
-                case nameof(Flush):
-                    Flush = (bool)parameter.Value;
-                    break;
-                case nameof(OnHidden):
-                    OnHidden = (EventCallback<AccordionEventArgs>)parameter.Value;
-                    break;
-                case nameof(OnHiding):
-                     OnHiding = (EventCallback<AccordionEventArgs>)parameter.Value;
-                    break;
-                case nameof(OnShowing):
-                     OnShowing = (EventCallback<AccordionEventArgs>)parameter.Value;
-                    break;
-                case nameof(OnShown):
-                     OnShown = (EventCallback<AccordionEventArgs>)parameter.Value;
-                    break;
-                default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
-                    break;
-            }
-        }
-
-        return base.SetParametersAsync(ParameterView.Empty);
-    }
 
     #endregion
 }

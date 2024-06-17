@@ -1,4 +1,5 @@
-﻿namespace BlazorBootstrap;
+﻿
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Sidebars are vertical navigation menus that are typically positioned on the left or right side of a page. <br/>
@@ -95,10 +96,36 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     {
         if (isMobile && !collapseNavMenu)
             collapseNavMenu = true;
-    }
+    } 
 
-    private string GetNavMenuCssClass()
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
     {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            { 
+                case nameof(BadgeText): BadgeText = (string)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(CustomIconName): CustomIconName = (string)parameter.Value; break;
+                case nameof(DataProvider): DataProvider = (SidebarDataProviderDelegate)parameter.Value; break;
+                case nameof(Href): Href = (string)parameter.Value; break;
+                case nameof(IconName): IconName = (IconName)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(ImageSrc): ImageSrc = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Title): Title = (string)parameter.Value; break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
         var classList = new HashSet<string>();
 
         if (collapseNavMenu)
@@ -109,15 +136,17 @@ public partial class Sidebar : BlazorBootstrapComponentBase
         if (collapseSidebar)
             classList.Add("bb-scrollbar-hidden");
 
-        return string.Join(" ", classList);
+        NavMenuCssClass = String.Join(" ", classList);
+        
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
-    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             ("bb-sidebar", true),
@@ -179,7 +208,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     [Parameter]
     public string? ImageSrc { get; set; }
 
-    private string? NavMenuCssClass => GetNavMenuCssClass();
+    private string? NavMenuCssClass { get; set; }
 
     /// <summary>
     /// Gets or sets the sidebar title.

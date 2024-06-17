@@ -66,6 +66,33 @@ public partial class Switch : BlazorBootstrapComponentBase
         oldValue = Value;
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
+                case nameof(EditContext): EditContext = (EditContext)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Label): Label = (string)parameter.Value; break;
+                case nameof(Reverse): Reverse = (bool)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(Value): Value = (bool)parameter.Value; break;
+                case nameof(ValueChanged): ValueChanged = (EventCallback<bool>)parameter.Value; break;
+                case nameof(ValueExpression): ValueExpression = (Expression<Func<bool>>)parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
@@ -123,6 +150,9 @@ public partial class Switch : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; } = default!;
 
+    /// <summary>
+    /// An expression that identifies the bound value.
+    /// </summary>
     [Parameter] public Expression<Func<bool>> ValueExpression { get; set; } = default!;
 
     #endregion

@@ -145,6 +145,41 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         else if (PropertyTypeName == StringConstants.PropertyTypeNameGuid) selectedFilterSymbol = filterOperators?.FirstOrDefault(x => x.FilterOperator == filterOperator)?.Symbol;
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(GridColumnFilterChanged): GridColumnFilterChanged = (EventCallback<FilterEventArgs>)parameter.Value!; break;
+                case nameof(FilterButtonColor): FilterButtonColor = (ButtonColor)parameter.Value!; break;
+                case nameof(FilterButtonCssClass): FilterButtonCssClass = (string)parameter.Value!; break;
+                case nameof(FilterOperator): FilterOperator = (FilterOperator)parameter.Value!; break;
+                case nameof(FiltersTranslationProvider): FiltersTranslationProvider = (GridFiltersTranslationDelegate)parameter.Value!; break;
+                case nameof(FilterValue): FilterValue = (string)parameter.Value!; break;
+                case nameof(FilterWidth): 
+                    FilterWidth = (int)parameter.Value!;
+                    FilterStyle = FilterWidth > 0 ? $"width:{FilterWidth.ToString(CultureInfo.InvariantCulture)}{Unit.ToString().ToLower()};" : "";
+                    break;
+                case nameof(FixedHeader): FixedHeader = (bool)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(PropertyType): PropertyType = (Type)parameter.Value!; break;
+                case nameof(PropertyTypeName): PropertyTypeName = (string)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(Unit): Unit = (Unit)parameter.Value!; break;
+
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
@@ -180,7 +215,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     [Parameter]
     public GridFiltersTranslationDelegate? FiltersTranslationProvider { get; set; } = default!;
 
-    private string FilterStyle => FilterWidth > 0 ? $"width:{FilterWidth.ToString(CultureInfo.InvariantCulture)}{Unit.ToString().ToLower()};" : "";
+    private string FilterStyle { get; set; } = "";
 
     /// <summary>
     /// Gets or sets filter value.

@@ -13,27 +13,18 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// </summary> 
     public override Task SetParametersAsync(ParameterView parameters)
     {
-
-
         foreach (var parameter in parameters)
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent):
-                    ChildContent = (RenderFragment)parameter.Value;
-                    break;
-                case nameof(Disabled):
-                    Disabled = (bool)parameter.Value;
-                    break;
-                case nameof(TabIndex):
-                    TabIndex = (int?)parameter.Value;
-                    break;
-                case nameof(Target):
-                    Target = (Target)parameter.Value;
-                    break;
-                case nameof(To):
-                    To = (string)parameter.Value;
-                    break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(TabIndex): TabIndex = (int?)parameter.Value; break;
+                case nameof(Target): Target = (Target)parameter.Value; break;
+                case nameof(To): To = (string)parameter.Value; break;
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;

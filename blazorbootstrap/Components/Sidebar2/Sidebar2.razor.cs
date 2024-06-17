@@ -110,10 +110,41 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
 
     private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
 
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(BadgeText): BadgeText = (string)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(CustomIconName): CustomIconName = (string)parameter.Value; break;
+                case nameof(DataProvider): DataProvider = (Sidebar2DataProviderDelegate)parameter.Value; break;
+                case nameof(Href): Href = (string)parameter.Value; break;
+                case nameof(IconName): IconName = (IconName)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(ImageSrc): ImageSrc = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Title): Title = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             ("bb-sidebar2", true),

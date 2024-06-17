@@ -68,10 +68,53 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
             await OnUpdate.InvokeAsync(new SortableListEventArgs(oldIndex, newIndex));
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AllowSorting): AllowSorting = (bool)parameter.Value; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Data): Data = (IReadOnlyCollection<TItem>)parameter.Value; break;
+                case nameof(DisabledItemCssClass): DisabledItemCssClass = (string)parameter.Value; break;
+                case nameof(DisableItem): DisableItem = (Func<TItem, bool>)parameter.Value; break;
+                case nameof(EmptyDataTemplate): EmptyDataTemplate = (RenderFragment)parameter.Value; break;
+                case nameof(EmptyText): EmptyText = (string)parameter.Value; break;
+                case nameof(Group): Group = (string)parameter.Value; break;
+                case nameof(Handle): Handle = (string)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(IsLoading): IsLoading = (bool)parameter.Value; break;
+                case nameof(ItemTemplate): ItemTemplate = (RenderFragment<TItem>)parameter.Value; break;
+                case nameof(LoadingTemplate): LoadingTemplate = (RenderFragment)parameter.Value; break;
+                case nameof(Name): Name = (string)parameter.Value; break;
+                case nameof(OnAdd): OnAdd = (EventCallback<SortableListEventArgs>)parameter.Value; break;
+                case nameof(OnRemove): OnRemove = (EventCallback<SortableListEventArgs>)parameter.Value; break;
+                case nameof(OnUpdate): OnUpdate = (EventCallback<SortableListEventArgs>)parameter.Value; break;
+                case nameof(Pull): Pull = (SortableListPullMode)parameter.Value; break;
+                case nameof(Put): Put = (SortableListPutMode)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class, ("list-group", true));
 

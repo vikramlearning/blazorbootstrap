@@ -5,31 +5,46 @@
 /// For more information, visit the <see href="https://getbootstrap.com/docs/5.0/components/progress/">Bootstrap Progress</see> documentation.
 /// </summary>
 public partial class Progress : BlazorBootstrapComponentBase
-{
-    #region Fields and Constants
-
-    private double height = 0;
-
-    #endregion
+{ 
 
     #region Methods
-
-    protected override void OnInitialized()
+ 
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
     {
-        height = Height;
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Height): Height = (double)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
 
-        base.OnInitialized();
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class, (BootstrapClass.Progress, true));
 
+    /// <inheritdoc />
     protected override string? StyleNames =>
-        BuildStyleNames(Style, ($"height:{height.ToString(CultureInfo.InvariantCulture)}px", height >= 0));
+        BuildStyleNames(Style, ($"height:{Height.ToString(CultureInfo.InvariantCulture)}px", Height >= 0));
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.

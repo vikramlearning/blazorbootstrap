@@ -10,6 +10,10 @@ public class SortableListJsInterop : IAsyncDisposable
 
     #region Constructors
 
+    /// <summary>
+    /// Default constructor with dependency injection.
+    /// </summary>
+    /// <param name="jsRuntime"></param>
     public SortableListJsInterop(IJSRuntime jsRuntime)
     {
         moduleTask = new Lazy<Task<IJSObjectReference>>(() => jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Blazor.Bootstrap/blazor.bootstrap.sortable-list.js").AsTask());

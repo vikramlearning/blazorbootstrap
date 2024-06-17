@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Use Blazor Bootstrap pagination component to indicate a series of related content exists across multiple pages. <br/>
@@ -31,7 +33,7 @@ public partial class Pagination : BlazorBootstrapComponentBase
         if (q < 1)
             return 1;
 
-        if (q > 0 && r == 0)
+        if (r == 0)
             return (q - 1) * DisplayPages + 1;
 
         if (q > 1 && r < DisplayPages)
@@ -64,6 +66,44 @@ public partial class Pagination : BlazorBootstrapComponentBase
             ActivePageNumber = newPageNumber;
             await PageChanged.InvokeAsync(newPageNumber);
         }
+    }
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ActivePageNumber): ActivePageNumber = (int)parameter.Value; break;
+                case nameof(Alignment): Alignment = (Alignment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(DisplayPages): DisplayPages = (int)parameter.Value; break;
+                case nameof(FirstLinkIcon): FirstLinkIcon = (IconName)parameter.Value; break;
+                case nameof(FirstLinkText): FirstLinkText = (string)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(LastLinkIcon): LastLinkIcon = (IconName)parameter.Value; break;
+                case nameof(LastLinkText): LastLinkText = (string)parameter.Value; break;
+                case nameof(NextLinkIcon): NextLinkIcon = (IconName)parameter.Value; break;
+                case nameof(NextLinkText): NextLinkText = (string)parameter.Value; break;
+                case nameof(PageChanged): PageChanged = (EventCallback<int>)parameter.Value; break;
+                case nameof(PreviousLinkIcon): PreviousLinkIcon = (IconName)parameter.Value; break;
+                case nameof(PreviousLinkText): PreviousLinkText = (string)parameter.Value; break;
+                case nameof(Size): Size = (PaginationSize)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(TotalPages): TotalPages = (int)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion

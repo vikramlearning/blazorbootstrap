@@ -2,7 +2,7 @@
 @inherits BlazorBootstrapComponentBase
 
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-    @if (HasChilds)
+    @if (HasChildren)
     {
         <NavLink class="nav-link" role="button" @onclick="ToggleNavItemGroup">
             @if (!CollapseSidebar)
@@ -55,7 +55,7 @@
         </NavLink>
     }
 
-    @if (navitemGroupExpanded && HasChilds && ChildItems is not null && ChildItems.Any())
+    @if (navitemGroupExpanded && HasChildren && ChildItems is not null && ChildItems.Any())
     {
         @foreach (var childItem in ChildItems)
         {

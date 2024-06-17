@@ -136,6 +136,52 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
         await Parent.SortingChangedAsync(this);
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent): ChildContent = (RenderFragment<TItem>)parameter.Value!; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(ColumnClass): ColumnClass = (Func<TItem, string>)parameter.Value!; break;
+                case nameof(Filterable): Filterable = (bool)parameter.Value!; break;
+                case nameof(FilterButtonColor): FilterButtonColor = (ButtonColor)parameter.Value!; break;
+                case nameof(FilterButtonCssClass): FilterButtonCssClass = (string)parameter.Value!; break;
+                case nameof(FilterOperator): FilterOperator = (FilterOperator)parameter.Value!; break;
+                case nameof(FilterTextboxWidth): FilterTextboxWidth = (int)parameter.Value!; break;
+                case nameof(FilterValue): FilterValue = (string)parameter.Value!; break;
+                case nameof(Freeze): Freeze = (bool)parameter.Value!; break;
+                case nameof(FreezeDirection): FreezeDirection = (FreezeDirection)parameter.Value!; break;
+                case nameof(FreezeLeftPosition): FreezeLeftPosition = (double)parameter.Value!; break;
+                case nameof(FreezeRightPosition): FreezeRightPosition = (double)parameter.Value!; break;
+                case nameof(HeaderContent): HeaderContent = (RenderFragment)parameter.Value!; break;
+                case nameof(HeaderText): HeaderText = (string)parameter.Value!; break;
+                case nameof(HeaderTextAlignment): HeaderTextAlignment = (Alignment)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(IsDefaultSortColumn): IsDefaultSortColumn = (bool)parameter.Value!; break;
+                case nameof(Parent): Parent = (Grid<TItem>)parameter.Value!; break;
+                case nameof(PropertyName): PropertyName = (string)parameter.Value!; break;
+                case nameof(Sortable): Sortable = (bool)parameter.Value!; break;
+                case nameof(SortDirection): SortDirection = (SortDirection)parameter.Value!; break;
+                case nameof(SortKeySelector): SortKeySelector = (Expression<Func<TItem, IComparable>>)parameter.Value!; break;
+                case nameof(SortString): SortString = (string)parameter.Value!; break;
+                case nameof(StringComparison): StringComparison = (StringComparison)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(TextAlignment): TextAlignment = (Alignment)parameter.Value!; break;
+                case nameof(TextNoWrap): TextNoWrap = (bool)parameter.Value!; break;
+
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers

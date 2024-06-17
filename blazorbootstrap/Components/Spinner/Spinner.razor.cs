@@ -55,10 +55,41 @@ public partial class Spinner : BlazorBootstrapComponentBase
         return (width, height, new List<SpinnerCircle> { circle1, circle2, circle3 });
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Color): Color = (SpinnerColor)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Size): Size = (SpinnerSize)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Title): Title = (string)parameter.Value; break;
+                case nameof(Type): Type = (SpinnerType)parameter.Value; break;
+                case nameof(Visible): Visible = (bool)parameter.Value; break;
+                case nameof(VisuallyHiddenText): VisuallyHiddenText = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (Type.ToSpinnerTypeClass(), true),

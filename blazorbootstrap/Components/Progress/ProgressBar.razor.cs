@@ -27,14 +27,8 @@ public partial class ProgressBar
     /// </summary>
     /// <param name="width"></param>
     public void IncreaseWidth(double width)
-    {
-        if (width is < 0 or > 100)
-            return;
-
-        if (Width + width > 100)
-            Width = 100;
-        else
-            Width += width;
+    { 
+        Width = Math.Clamp(Width + width, 0, 100);
     }
 
     /// <summary>
@@ -54,11 +48,35 @@ public partial class ProgressBar
     /// </summary>
     /// <param name="width"></param>
     public void SetWidth(double width)
-    {
-        if (width is < 0 or > 100)
-            return;
+    { 
+        Width = Math.Clamp(width, 0, 100);
+    }
 
-        Width = width;
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Color): Color = (ProgressColor)parameter.Value; break;
+
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(Label): Label = (string)parameter.Value; break;
+                case nameof(Type): Type = (ProgressType)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion

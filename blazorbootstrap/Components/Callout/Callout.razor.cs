@@ -1,8 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using System;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
 /// Blazor Bootstrap callout component provides content presentation in a visually distinct manner. <br/> 
@@ -11,32 +7,55 @@ public partial class Callout : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    private string GetHeading()
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
     {
-        if (!string.IsNullOrWhiteSpace(Heading))
-            return Heading;
-
-        return Color switch
-               {
-                   CalloutColor.Default => "NOTE",
-                   CalloutColor.Info => "INFO",
-                   CalloutColor.Warning => "WARNING",
-                   CalloutColor.Danger => "DANGER",
-                   CalloutColor.Success => "TIP",
-                   _ => ""
-               };
-    }
-
-    private IconName GetIconName() =>
-        Color switch
+        foreach (var parameter in parameters)
         {
-            CalloutColor.Default => IconName.InfoCircleFill,
-            CalloutColor.Info => IconName.InfoCircleFill,
-            CalloutColor.Warning => IconName.ExclamationTriangleFill,
-            CalloutColor.Danger => IconName.Fire,
-            CalloutColor.Success => IconName.Lightbulb,
-            _ => IconName.InfoCircleFill
-        };
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Color): 
+                    Color = (CalloutColor)parameter.Value;
+                    IconName = Color switch
+                    {
+                        CalloutColor.Default => IconName.InfoCircleFill,
+                        CalloutColor.Info => IconName.InfoCircleFill,
+                        CalloutColor.Warning => IconName.ExclamationTriangleFill,
+                        CalloutColor.Danger => IconName.Fire,
+                        CalloutColor.Success => IconName.Lightbulb,
+                        _ => IconName.InfoCircleFill
+                    };
+                    break;
+                case nameof(Heading): Heading = (string)parameter.Value; break;
+                case nameof(HideHeading): HideHeading = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        if (String.IsNullOrWhiteSpace(Heading))
+        {
+            Heading = Color switch
+            {
+                CalloutColor.Default => "NOTE",
+                CalloutColor.Info => "INFO",
+                CalloutColor.Warning => "WARNING",
+                CalloutColor.Danger => "DANGER",
+                CalloutColor.Success => "TIP",
+                _ => ""
+            };
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 
     #endregion
 
@@ -83,39 +102,8 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public bool HideHeading { get; set; }
-    
-    /// <summary>
-    /// Parameters are loaded manually for sake of performance.
-    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
-    /// </summary> 
-    public override Task SetParametersAsync(ParameterView parameters)
-    {
 
-
-        foreach (var parameter in parameters)
-        {
-            switch (parameter.Name)
-            {
-                case nameof(ChildContent):
-                    ChildContent = (RenderFragment)parameter.Value;
-                    break;
-                case nameof(Color):
-                    Color = (CalloutColor)parameter.Value;
-                    break;
-                case nameof(Heading):
-                    Heading = (string)parameter.Value;
-                    break;
-                case nameof(HideHeading):
-                    HideHeading = (bool)parameter.Value;
-                    break;
-                default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
-                    break;
-            }
-        }
-
-        return base.SetParametersAsync(ParameterView.Empty);
-    }
+    private IconName IconName { get; set; } = IconName.InfoCircleFill;
 
     #endregion
 }

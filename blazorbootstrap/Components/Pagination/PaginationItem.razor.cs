@@ -1,22 +1,49 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a pagination item within a <see cref="Pagination"/> component.
+/// </summary>
 public partial class PaginationItem : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    /// <inheritdoc />
-    protected override void OnParametersSet()
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
     {
-        if (Active)
-            AdditionalAttributes?.Add("aria-current", "page");
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Active): 
+                    Active = (bool)parameter.Value;
+                    if (Active)
+                        AdditionalAttributes["aria-current"] = "page";
+                    break;
+                case nameof(AriaLabel): AriaLabel = (string)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(LinkIcon): LinkIcon = (IconName)parameter.Value; break;
+                case nameof(LinkText): LinkText = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Text): Text = (string)parameter.Value; break;
 
-        base.OnParametersSet();
+                default: AdditionalAttributes![parameter.Name] = parameter.Value; break;
+            }
+        }
+         
+        
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.PaginationItem, true),

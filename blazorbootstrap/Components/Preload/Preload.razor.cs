@@ -43,21 +43,47 @@ public partial class Preload : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
-    private void OnShow(SpinnerColor spinnerColor, string? loadingText)
+    private void OnShow(SpinnerColor newSpinnerColor, string? newLoadingText)
     {
-        this.spinnerColor = spinnerColor.ToSpinnerColorClass();
+        this.spinnerColor = newSpinnerColor.ToSpinnerColorClass();
 
         showBackdrop = true;
 
-        this.loadingText = loadingText;
+        this.loadingText = newLoadingText;
 
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(LoadingText): LoadingText = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Modal, true),
@@ -65,6 +91,7 @@ public partial class Preload : BlazorBootstrapComponentBase
             (BootstrapClass.ModalFade, true),
             (BootstrapClass.Show, showBackdrop));
 
+    /// <inheritdoc />
     protected override string? StyleNames =>
         BuildStyleNames(Style,
             ("display:block", showBackdrop),

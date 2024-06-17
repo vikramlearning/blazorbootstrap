@@ -1,12 +1,46 @@
-﻿namespace BlazorBootstrap;
+﻿using static System.Net.Mime.MediaTypeNames;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Use Blazor Bootstrap loading placeholders for your components or pages to indicate something may still be loading.
 /// </summary>
 public partial class Placeholder : BlazorBootstrapComponentBase
 {
+    #region Methods
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Color): Color = (PlaceholderColor)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Size): Size = (PlaceholderSize)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(Width): Width = (PlaceholderWidth)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+    
+    #endregion
+
+
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Placeholder, true),

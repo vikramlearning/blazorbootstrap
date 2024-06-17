@@ -338,11 +338,43 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
         }
     }
 
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AllowNegativeNumbers): AllowNegativeNumbers = (bool)parameter.Value; break;
+                case nameof(AutoComplete): AutoComplete = (bool)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
+                case nameof(EditContext): EditContext = (EditContext)parameter.Value!; break;
+                case nameof(EnableMinMax): EnableMinMax = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Max): Max = (TValue)parameter.Value; break;
+                case nameof(Min): Min = (TValue)parameter.Value; break;
+                case nameof(Placeholder): Placeholder = (string)parameter.Value; break;
+                case nameof(Step): Step = (double?)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(TextAlignment): TextAlignment = (Alignment)parameter.Value; break;
+                case nameof(Value): Value = (TValue)parameter.Value; break;
+                case nameof(ValueChanged): ValueChanged = (EventCallback<TValue>)parameter.Value; break;
+                case nameof(ValueExpression): ValueExpression = (Expression<Func<TValue>>)parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
-    
-    
+
+
     /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
@@ -452,6 +484,9 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
 
+    /// <summary>
+    /// An expression that identifies the bound value.
+    /// </summary>
     [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 
     #endregion

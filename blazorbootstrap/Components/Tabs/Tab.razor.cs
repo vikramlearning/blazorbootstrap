@@ -54,7 +54,7 @@ public partial class Tab : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the disabled state.

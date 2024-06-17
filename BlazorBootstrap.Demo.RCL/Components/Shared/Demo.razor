@@ -58,17 +58,17 @@ else // Tabs = true
             <TitleTemplate>
                 <Icon Name="IconName.Display" Class="me-2" /><b>Example</b>
             </TitleTemplate>
-            <Content>
+            <ChildContent>
                 <div class="bb-example border-top-0 mt-0">
                     <DynamicComponent Type="this.Type"/>
                 </div>
-            </Content>
+            </ChildContent>
         </Tab>
         <Tab>
             <TitleTemplate>
                 <Icon Name="IconName.CodeSlash" Class="me-2" /><b>View Source</b>
             </TitleTemplate>
-            <Content>
+            <ChildContent>
                 <div class="position-relative d-block float-end mt-3 me-3 me-sm-4">
                     <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="(async() => await CopyToClipboardAsync())">
                         <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
@@ -84,7 +84,7 @@ else // Tabs = true
                         </code>
                     </pre>
                 </div>
-            </Content>
+            </ChildContent>
         </Tab>
     </Tabs>
 }

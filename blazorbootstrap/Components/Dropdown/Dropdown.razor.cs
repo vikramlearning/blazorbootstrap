@@ -89,11 +89,13 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <returns></returns>
     public ValueTask UpdateAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.update", Id);
 
-    /// <inheritdoc />
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
     public override Task SetParametersAsync(ParameterView parameters)
     {
-
-        
         foreach (var parameter in parameters)
         {
             switch (parameter.Name)
@@ -101,15 +103,18 @@ public partial class Dropdown : BlazorBootstrapComponentBase
                 case nameof(AutoClose): AutoClose = (bool)parameter.Value!; break;
                 case nameof(AutoCloseBehavior): AutoCloseBehavior = (DropdownAutoCloseBehavior)parameter.Value!; break;
                 case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
                 case nameof(Color): Color = (DropdownColor)parameter.Value!; break;
                 case nameof(Direction): Direction = (DropdownDirection)parameter.Value!; break;
                 case nameof(Disabled): Disabled = (bool)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
                 case nameof(OnHidden): OnHidden = (EventCallback)parameter.Value!; break;
                 case nameof(OnHiding): OnHiding = (EventCallback)parameter.Value!; break;
                 case nameof(OnShowing): OnShowing = (EventCallback)parameter.Value!; break;
                 case nameof(OnShown): OnShown = (EventCallback)parameter.Value!; break;
                 case nameof(Size): Size = (DropdownSize)parameter.Value!; break;
                 case nameof(Split): Split = (bool)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
                 default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
             }
         }

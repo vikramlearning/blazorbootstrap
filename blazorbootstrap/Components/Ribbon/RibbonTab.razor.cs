@@ -1,5 +1,10 @@
-﻿namespace BlazorBootstrap;
+﻿using static System.Net.Mime.MediaTypeNames;
 
+namespace BlazorBootstrap;
+
+/// <summary>
+/// Represents a tab within a <see cref="Ribbon"/> component. This component is intended to contain <see cref="RibbonGroup"/> and <see cref="RibbonItem"/> components.
+/// </summary>
 public partial class RibbonTab : BlazorBootstrapComponentBase
 {
     #region Methods
@@ -29,6 +34,35 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
         Parent.AddTab(this);
     }
 
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Active): Active = (bool)parameter.Value; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Name): Name = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(OnClick): OnClick = (EventCallback<TabEventArgs>)parameter.Value; break;
+                case nameof(Parent): Parent = (Ribbon)parameter.Value!; break;
+                case nameof(Title): Title = (string)parameter.Value; break;
+                case nameof(TitleTemplate): TitleTemplate = (RenderFragment)parameter.Value; break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
@@ -50,7 +84,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the disabled state.

@@ -26,17 +26,23 @@ public partial class DropdownMenu : BlazorBootstrapComponentBase
     public DropdownMenuPosition Position { get; set; } = DropdownMenuPosition.Start;
 
     #endregion
+    
+    #region Methods
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
     public override Task SetParametersAsync(ParameterView parameters)
     {
-
-        
         foreach (var parameter in parameters)
         {
             switch (parameter.Name)
             {
                 case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
                 case nameof(Position): Position = (DropdownMenuPosition)parameter.Value!; break;
                 default: AdditionalAttributes![parameter.Name] = parameter.Value; break;
             }
@@ -44,4 +50,6 @@ public partial class DropdownMenu : BlazorBootstrapComponentBase
 
         return base.SetParametersAsync(ParameterView.Empty);
     }
+    
+    #endregion
 }

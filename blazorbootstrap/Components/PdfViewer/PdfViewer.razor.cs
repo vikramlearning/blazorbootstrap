@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using static System.Net.Mime.MediaTypeNames;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions. <br/>
@@ -168,7 +170,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     {
         if (rotation == 0)
             oldOrientation = Orientation = Orientation.Portrait;
-        else if (rotation == -90)
+        else if (Math.Abs(rotation - (-90)) < Single.Epsilon)
             oldOrientation = Orientation = Orientation.Landscape;
     }
 
@@ -202,6 +204,33 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
         await PdfViewerJsInterop.ZoomInOutAsync(objRef!, Id!, scale);
+    }
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(OnDocumentLoaded): OnDocumentLoaded = (EventCallback<PdfViewerEventArgs>)parameter.Value; break;
+                case nameof(OnPageChanged): OnPageChanged = (EventCallback<PdfViewerEventArgs>)parameter.Value; break;
+                case nameof(Orientation): Orientation = (Orientation)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Url): Url = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion

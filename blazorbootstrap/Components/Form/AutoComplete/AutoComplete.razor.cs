@@ -82,8 +82,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         {
             isDropdownShown = false;
 
-            if (AdditionalAttributes is not null && AdditionalAttributes.TryGetValue(BootstrapAttributes.DataBootstrapToggle, out _))
-                AdditionalAttributes.Remove(BootstrapAttributes.DataBootstrapToggle);
+            AdditionalAttributes.Remove(BootstrapAttributes.DataBootstrapToggle, out _);
 
             StateHasChanged();
         }
@@ -200,8 +199,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     {
         isDropdownShown = false;
 
-        if (AdditionalAttributes is not null && AdditionalAttributes.TryGetValue(BootstrapAttributes.DataBootstrapToggle, out _))
-            AdditionalAttributes.Remove(BootstrapAttributes.DataBootstrapToggle);
+        AdditionalAttributes.Remove(BootstrapAttributes.DataBootstrapToggle);
 
         await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", Element);
     }
@@ -282,10 +280,43 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     {
         isDropdownShown = true;
 
-        if (AdditionalAttributes is not null && !AdditionalAttributes.TryGetValue(BootstrapAttributes.DataBootstrapToggle, out _))
-            AdditionalAttributes.Add(BootstrapAttributes.DataBootstrapToggle, "dropdown");
+         AdditionalAttributes[BootstrapAttributes.DataBootstrapToggle] =  "dropdown";
 
         await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.show", Element);
+    }
+    
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(DataProvider): DataProvider = (AutoCompleteDataProviderDelegate<TItem>)parameter.Value; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
+                case nameof(EditContext): EditContext = (EditContext)parameter.Value!; break;  
+                case nameof(EmptyText): EmptyText = (string)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(LoadingText): LoadingText = (string)parameter.Value; break;
+                case nameof(OnChanged): OnChanged = (EventCallback<TItem>)parameter.Value; break;
+                case nameof(Placeholder): Placeholder = (string)parameter.Value; break;
+                case nameof(PropertyName): PropertyName = (string)parameter.Value; break;
+                case nameof(Size): Size = (AutoCompleteSize)parameter.Value; break;
+                case nameof(StringComparison): StringComparison = (StringComparison)parameter.Value; break;
+                case nameof(StringFilterOperator): StringFilterOperator = (StringFilterOperator)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(Value): Value = (string)parameter.Value; break;
+                case nameof(ValueChanged): ValueChanged = (EventCallback<string>)parameter.Value; break;
+                case nameof(ValueExpression): ValueExpression = (Expression<Func<string?>>)parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
@@ -423,7 +454,11 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<string?>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// An expression that identifies the bound value.
+    /// </summary>
+    [Parameter] 
+    public Expression<Func<string?>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

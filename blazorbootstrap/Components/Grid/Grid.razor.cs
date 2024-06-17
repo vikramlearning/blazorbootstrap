@@ -526,10 +526,66 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         }
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AllowFiltering): AllowFiltering = (bool)parameter.Value!; break;
+                case nameof(AllowPaging): AllowPaging = (bool)parameter.Value!; break;
+                case nameof(AllowRowClick): AllowRowClick = (bool)parameter.Value!; break;
+                case nameof(AllowSelection): AllowSelection = (bool)parameter.Value!; break;
+                case nameof(AllowSorting): AllowSorting = (bool)parameter.Value!; break;
+                case nameof(AutoHidePaging): AutoHidePaging = (bool)parameter.Value!; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Data): Data = (IReadOnlyCollection<TItem>)parameter.Value!; break;
+                case nameof(DataProvider): DataProvider = (GridDataProviderDelegate<TItem>)parameter.Value!; break;
+                case nameof(DisableAllRowsSelection): DisableAllRowsSelection = (Func<IReadOnlyCollection<TItem>, bool>)parameter.Value!; break;
+                case nameof(DisableRowSelection): DisableRowSelection = (Func<TItem, bool>)parameter.Value!; break;
+                case nameof(EmptyDataTemplate): EmptyDataTemplate = (RenderFragment)parameter.Value!; break;
+                case nameof(EmptyText): EmptyText = (string)parameter.Value!; break;
+                case nameof(FiltersRowCssClass): FiltersRowCssClass = (string)parameter.Value!; break;
+                case nameof(FiltersTranslationProvider): FiltersTranslationProvider = (GridFiltersTranslationDelegate)parameter.Value!; break;
+                case nameof(FixedHeader): FixedHeader = (bool)parameter.Value!; break;
+                case nameof(GridSettingsChanged): GridSettingsChanged = (EventCallback<GridSettings>)parameter.Value!; break;
+                case nameof(HeaderRowCssClass): HeaderRowCssClass = (string)parameter.Value!; break;
+                case nameof(Height): Height = (float)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(ItemsPerPageText): ItemsPerPageText = (string)parameter.Value!; break;
+                case nameof(LoadingTemplate): LoadingTemplate = (RenderFragment)parameter.Value!; break;
+                case nameof(OnRowClick): OnRowClick = (EventCallback<GridRowEventArgs<TItem>>)parameter.Value!; break;
+                case nameof(OnRowDoubleClick): OnRowDoubleClick = (EventCallback<GridRowEventArgs<TItem>>)parameter.Value!; break;
+                case nameof(PageSize): PageSize = (int)parameter.Value!; break;
+                case nameof(PageSizeSelectorItems): PageSizeSelectorItems = (int[])parameter.Value!; break;
+                case nameof(PageSizeSelectorVisible): PageSizeSelectorVisible = (bool)parameter.Value!; break;
+                case nameof(PaginationAlignment): PaginationAlignment = (Alignment)parameter.Value!; break;
+                case nameof(PaginationItemsTextFormat): PaginationItemsTextFormat = (string)parameter.Value!; break;
+                case nameof(Responsive): Responsive = (bool)parameter.Value!; break;
+                case nameof(RowClass): RowClass = (Func<TItem, string>)parameter.Value!; break;
+                case nameof(SelectedItemsChanged): SelectedItemsChanged = (EventCallback<HashSet<TItem>>)parameter.Value!; break;
+                case nameof(SelectionMode): SelectionMode = (GridSelectionMode)parameter.Value!; break;
+                case nameof(SettingsProvider): SettingsProvider = (GridSettingsProviderDelegate)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(TableHeaderCssClass): TableHeaderCssClass = (string)parameter.Value!; break;
+                case nameof(Unit): Unit = (Unit)parameter.Value!; break;
+                
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
-    
+
     /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,

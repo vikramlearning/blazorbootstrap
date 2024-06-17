@@ -35,6 +35,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -64,10 +65,42 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     /// </summary>
     public ValueTask ShowAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.show", Id, AutoHide, Delay, objRef);
 
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AutoHide): AutoHide = (bool)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Delay): Delay = (int)parameter.Value; break;
+                case nameof(Hidden): Hidden = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case nameof(Hiding): Hiding = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value; break;
+                case nameof(Showing): Showing = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case nameof(Shown): Shown = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(ToastMessage): ToastMessage = (ToastMessage)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Toast, true),

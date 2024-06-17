@@ -23,7 +23,7 @@
     @if (childComponent is not null)
     {
         <div class="offcanvas-body @BodyCssClass">
-            <DynamicComponent Type="@childComponent" Parameters="@parameters"/>
+            <DynamicComponent Type="@childComponent" Parameters="@offcanvasParameters"/>
         </div>
     }
     else if (BodyTemplate != null)

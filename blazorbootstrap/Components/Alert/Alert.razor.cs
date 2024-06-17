@@ -1,7 +1,4 @@
-﻿using System.Xml.Linq;
-using System;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
 /// Provide contextual feedback messages for typical user actions with the handful of available and flexible Blazor Bootstrap alert messages. <br/>
@@ -79,27 +76,19 @@ public partial class Alert : BlazorBootstrapComponentBase
     /// </summary> 
     public override Task SetParametersAsync(ParameterView parameters)
     {
-
-
         foreach (var parameter in parameters)
         {
             switch (parameter.Name)
             { 
-                case nameof(ChildContent):
-                     ChildContent = (RenderFragment)parameter.Value;
-                    break;
-                case nameof(Color):
-                     Color = (AlertColor)parameter.Value;
-                    break;
-                case nameof(Dismissable):
-                     Dismissable = (bool)parameter.Value;
-                    break;
-                case nameof(OnClose):
-                     OnClose = (EventCallback)parameter.Value;
-                    break;
-                case nameof(OnClosed):
-                     OnClosed = (EventCallback)parameter.Value;
-                    break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Color): Color = (AlertColor)parameter.Value; break;
+                case nameof(Dismissable): Dismissable = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(OnClose): OnClose = (EventCallback)parameter.Value; break;
+                case nameof(OnClosed): OnClosed = (EventCallback)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;

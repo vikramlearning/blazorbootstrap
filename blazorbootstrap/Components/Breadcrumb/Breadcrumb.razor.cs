@@ -37,6 +37,31 @@ public partial class Breadcrumb : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(Items): Items = (IReadOnlyCollection<BreadcrumbItem>?)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
@@ -54,31 +79,6 @@ public partial class Breadcrumb : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public IReadOnlyCollection<BreadcrumbItem>? Items { get; set; } = default!;
-
-
-    /// <summary>
-    /// Parameters are loaded manually for sake of performance.
-    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
-    /// </summary> 
-    public override Task SetParametersAsync(ParameterView parameters)
-    {
-
-
-        foreach (var parameter in parameters)
-        {
-            switch (parameter.Name)
-            { 
-                case nameof(Items): 
-                    Items = (IReadOnlyCollection<BreadcrumbItem>?)parameter.Value;
-                    break;
-                default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
-                    break;
-            }
-        }
-
-        return base.SetParametersAsync(ParameterView.Empty);
-    }
 
     #endregion
 }

@@ -1,4 +1,7 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Xml.Linq;
+using System;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// A component for loading scripts dynamically in a Blazor application.
@@ -66,6 +69,34 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     {
         if (OnLoad.HasDelegate)
             OnLoad.InvokeAsync();
+    }
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Async): Async = (bool)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(OnError): OnError = (EventCallback<string>)parameter.Value; break;
+                case nameof(OnLoad): OnLoad = (EventCallback)parameter.Value; break;
+                case nameof(ScriptId): ScriptId = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(Source): Source = (string)parameter.Value; break;
+                
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion

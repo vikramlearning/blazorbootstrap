@@ -15,12 +15,6 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
 
     #region Methods
     
-    /// <inheritdoc />
-    protected override void OnInitialized()
-    {
-        Id = IdUtility.GetNextId(); // This is required
-        Parent.Add(this);
-    }
     
     /// <inheritdoc />
     protected override void OnParametersSet()
@@ -37,7 +31,7 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
 
     private async Task OnCollapseHiddenAsync()
     {
-        if (Parent is not null && Parent.OnHidden.HasDelegate)
+        if (Parent.OnHidden.HasDelegate)
             await Parent.OnHidden.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
@@ -45,7 +39,7 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     {
         isCollapsed = true;
 
-        if (Parent is not null && Parent.OnHiding.HasDelegate)
+        if (Parent.OnHiding.HasDelegate)
             await Parent.OnHiding.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
@@ -53,13 +47,13 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     {
         isCollapsed = false;
 
-        if (Parent is not null && Parent.OnShowing.HasDelegate)
+        if (Parent.OnShowing.HasDelegate)
             await Parent.OnShowing.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
     private async Task OnCollapseShownAsync()
     {
-        if (Parent is not null && Parent.OnShown.HasDelegate)
+        if (Parent.OnShown.HasDelegate)
             await Parent.OnShown.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
@@ -72,36 +66,28 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// </summary> 
     public override Task SetParametersAsync(ParameterView parameters)
     {
-
+        Id = IdUtility.GetNextId(); // This is required
 
         foreach (var parameter in parameters)
         {
             switch (parameter.Name)
             {
-                case nameof(Active):
-                    Active = (bool)parameter.Value;
-                    break;
-                case nameof(Content):
-                     Content = (RenderFragment)parameter.Value;
-                    break;
-                case nameof(Name):
-                     Name = (string)parameter.Value;
-                    break;
-                case nameof(Parent):
-                     Parent = (Accordion)parameter.Value;
-                    break;
-                case nameof(Title):
-                     Title = (string)parameter.Value;
-                    break;
-                case nameof(TitleTemplate):
-                     TitleTemplate = (RenderFragment)parameter.Value;
-                    break;
+                case nameof(Active): Active = (bool)parameter.Value; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(Name): Name = (string)parameter.Value; break;
+                case nameof(Parent): Parent = (Accordion)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Title): Title = (string)parameter.Value; break;
+                case nameof(TitleTemplate): TitleTemplate = (RenderFragment)parameter.Value; break;
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;
             }
         }
-
+        
+        Parent.Add(this);
         return base.SetParametersAsync(ParameterView.Empty);
     }
 
@@ -133,7 +119,7 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the name.
@@ -142,13 +128,13 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public string Name { get; set; } = default!;
+    public string? Name { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the parent.
     /// </summary>
-    [CascadingParameter]
-    internal Accordion? Parent { get; set; } = default!; 
+    [CascadingParameter, EditorRequired]
+    internal Accordion Parent { get; set; } = default!; 
 
     /// <summary>
     /// Gets or sets the title.

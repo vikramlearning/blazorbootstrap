@@ -79,36 +79,29 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// </summary>
     public ValueTask ToggleAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.toggle", Id);
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
     public override Task SetParametersAsync(ParameterView parameters)
     {
         foreach (var parameter in parameters)
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent):
-                    ChildContent = (RenderFragment)parameter.Value;
-                    break;
-                case nameof(Horizontal):
-                    Horizontal = (bool)parameter.Value;
-                    break;
-                case nameof(OnHidden):
-                    OnHidden = (EventCallback)parameter.Value;
-                    break;
-                case nameof(OnHiding):
-                    OnHiding = (EventCallback)parameter.Value;
-                    break;
-                case nameof(OnShowing):
-                    OnShowing = (EventCallback)parameter.Value;
-                    break;
-                case nameof(OnShown):
-                    OnShown = (EventCallback)parameter.Value;
-                    break;
-                case nameof(Parent):
-                    Parent = parameter.Value;
-                    break;
-                case nameof(Toggle):
-                    Toggle = (bool)parameter.Value;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Horizontal): Horizontal = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(OnHidden): OnHidden = (EventCallback)parameter.Value; break;
+                case nameof(OnHiding): OnHiding = (EventCallback)parameter.Value; break;
+                case nameof(OnShowing): OnShowing = (EventCallback)parameter.Value; break;
+                case nameof(OnShown): OnShown = (EventCallback)parameter.Value; break;
+                case nameof(Parent): Parent = parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Toggle): Toggle = (bool)parameter.Value; break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;
             }
         }

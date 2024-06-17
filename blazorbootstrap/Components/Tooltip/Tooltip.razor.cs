@@ -38,6 +38,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -62,6 +63,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (isFirstRenderComplete)
@@ -75,9 +77,42 @@ public partial class Tooltip : BlazorBootstrapComponentBase
             }
     }
 
-    public async Task ShowAsync()
+    /// <summary>
+    /// Invokes the javascript function to show the tooltip.
+    /// </summary>
+    /// <returns>The <see cref="ValueTask"/> associated with the Javascript invocation.</returns>
+    public ValueTask ShowAsync()
     {
-        await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.show", Element);
+        return JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.show", Element);
+    }
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Color): Color = (TooltipColor)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(IsHtml): IsHtml = (bool)parameter.Value; break;
+                case nameof(Placement): Placement = (TooltipPlacement)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Title): Title = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion

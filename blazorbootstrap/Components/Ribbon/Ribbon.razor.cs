@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Reflection.Emit;
+
+namespace BlazorBootstrap;
 
 public partial class Ribbon : BlazorBootstrapComponentBase
 {
@@ -28,6 +30,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -54,6 +57,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -265,10 +269,50 @@ public partial class Ribbon : BlazorBootstrapComponentBase
             await tab.OnClick.InvokeAsync(new TabEventArgs(tab!.Name, tab.Title));
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(EnableFadeEffect): EnableFadeEffect = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(NavStyle): NavStyle = (NavStyle)parameter.Value; break;
+                case nameof(OnClick): OnClick = (EventCallback<RibbonItemEventArgs>)parameter.Value; break;
+                case nameof(OnHidden): OnHidden = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case nameof(OnHiding): OnHiding = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case nameof(OnShowing): OnShowing = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case nameof(OnShown): OnShown = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        if (NavStyle == NavStyle.Vertical)
+        {
+            TabContentCssClass = "tab-content flex-grow-1";
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Nav, true),
@@ -311,8 +355,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="NavStyle.Underline" />.
     /// </remarks>
-    //[Parameter]
-    private NavStyle NavStyle { get; set; } = NavStyle.Underline;
+    [Parameter]
+    public NavStyle NavStyle { get; set; } = NavStyle.Underline;
 
     /// <summary>
     /// This event fires when the user clicks the corresponding <see cref="RibbonItem" />.
@@ -347,7 +391,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <summary>
     /// CSS class applied to the tab content container.
     /// </summary>
-    private string? TabContentCssClass => IsVertical ? "tab-content flex-grow-1" : "tab-content";
+    private string TabContentCssClass { get; set; } = "tab-content";
 
     #endregion
 }

@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-using System;
-
+﻿
 namespace BlazorBootstrap;
 
 /// <summary>
@@ -75,6 +73,10 @@ public partial class Badge : BlazorBootstrapComponentBase
     [Parameter]
     public string VisuallyHiddenText { get; set; } = default!;
 
+    #endregion
+
+    #region Methods
+
 
     /// <summary>
     /// Parameters are loaded manually for sake of performance.
@@ -82,30 +84,19 @@ public partial class Badge : BlazorBootstrapComponentBase
     /// </summary> 
     public override Task SetParametersAsync(ParameterView parameters)
     {
-
-
         foreach (var parameter in parameters)
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent):
-                    ChildContent = (RenderFragment)parameter.Value;
-                    break;
-                case nameof(Color):
-                     Color = (BadgeColor)parameter.Value;
-                    break;
-                case nameof(IndicatorType):
-                     IndicatorType = (BadgeIndicatorType)parameter.Value;
-                    break;
-                case nameof(Placement):
-                     Placement = (BadgePlacement)parameter.Value;
-                    break;
-                case nameof(Position):
-                     Position = (Position)parameter.Value;
-                    break;
-                case nameof(VisuallyHiddenText):
-                     VisuallyHiddenText = (string)parameter.Value;
-                    break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Color): Color = (BadgeColor)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(IndicatorType): IndicatorType = (BadgeIndicatorType)parameter.Value; break;
+                case nameof(Placement): Placement = (BadgePlacement)parameter.Value; break;
+                case nameof(Position): Position = (Position)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(VisuallyHiddenText): VisuallyHiddenText = (string)parameter.Value; break;
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;

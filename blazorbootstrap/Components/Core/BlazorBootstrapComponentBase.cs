@@ -127,7 +127,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// Additional HTML attributes to be added to the component.
     /// </summary>
-    [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> AdditionalAttributes { get; set; } = new();
 
     /// <summary>

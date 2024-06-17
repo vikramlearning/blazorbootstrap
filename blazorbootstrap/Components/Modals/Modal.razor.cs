@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Xml.Linq;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Use Bootstrap’s JavaScript modal plugin to add dialogs to your site for lightboxes, user notifications, or completely custom content. <br/>
@@ -20,7 +22,7 @@ public partial class Modal : BlazorBootstrapComponentBase
 
     private DotNetObjectReference<Modal> objRef = default!;
 
-    private Dictionary<string, object> parameters = default!;
+    private Dictionary<string, object> modalParameters = default!;
 
     private bool showFooterButton = false;
 
@@ -152,17 +154,60 @@ public partial class Modal : BlazorBootstrapComponentBase
 
         childComponent = type;
 
-        this.parameters = parameters!;
+        this.modalParameters = parameters!;
 
         await InvokeAsync(StateHasChanged);
 
         await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.modal.show", Id);
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(BodyCssClass): BodyCssClass = (string)parameter.Value!; break;
+                case nameof(BodyTemplate): BodyTemplate = (RenderFragment)parameter.Value!; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(CloseIconColor): CloseIconColor = (IconColor)parameter.Value!; break;
+                case nameof(CloseOnEscape): CloseOnEscape = (bool)parameter.Value!; break;
+                case nameof(DialogCssClass): DialogCssClass = (string)parameter.Value!; break;
+                case nameof(FooterCssClass): FooterCssClass = (string)parameter.Value!; break;
+                case nameof(FooterTemplate): FooterTemplate = (RenderFragment)parameter.Value!; break;
+                case nameof(Fullscreen): Fullscreen = (ModalFullscreen)parameter.Value!; break;
+                case nameof(HeaderCssClass): HeaderCssClass = (string)parameter.Value!; break;
+                case nameof(HeaderTemplate): HeaderTemplate = (RenderFragment)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(IsScrollable): IsScrollable = (bool)parameter.Value!; break;
+                case nameof(IsServiceModal): IsServiceModal = (bool)parameter.Value!; break;
+                case nameof(IsVerticallyCentered): IsVerticallyCentered = (bool)parameter.Value!; break;
+                case nameof(Message): Message = (string)parameter.Value!; break;
+                case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value!; break;
+                case nameof(Size): Size = (ModalSize)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(TabIndex): TabIndex = (int)parameter.Value!; break;
+                case nameof(Title): Title = (string)parameter.Value!; break;
+                case nameof(UseStaticBackdrop): UseStaticBackdrop = (bool)parameter.Value!; break;
+                
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
-    
+
     /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,

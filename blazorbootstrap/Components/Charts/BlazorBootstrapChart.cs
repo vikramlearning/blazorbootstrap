@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// The abstract base class for all chart components.
+/// </summary>
 public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, IAsyncDisposable
 {
     #region Fields and Constants
@@ -9,12 +12,6 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
     #endregion
 
     #region Methods
-
-    //public async Task Stop() { }
-
-    //public async Task ToBase64Image() { }
-
-    //public async Task ToBase64Image(string type, double quality) { }
 
     /// <summary>
     /// Adds data to the chart.
@@ -78,11 +75,7 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
                     break;
             }
         }
-    }
-
-    //public async Task Render() { }
-
-    //public async Task Reset() { }
+    } 
 
     /// <summary>
     /// Resize the chart.
@@ -124,6 +117,9 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
         }
     }
 
+    /// <summary>
+    /// Returns the chart type as a string.
+    /// </summary> 
     protected string GetChartType() =>
         ChartType switch
         {
@@ -172,18 +168,22 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
         return data;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
     public override Task SetParametersAsync(ParameterView parameters)
     {
-
-        
         foreach (var parameter in parameters)
         {
             switch (parameter.Name)
             {
-                               case nameof(Height): Height = (int?)parameter.Value; break;
-                case nameof(HeightUnit): HeightUnit = (Unit)parameter.Value; break; 
-                                                  case nameof(Width): Width = (int?)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Height): Height = (int?)parameter.Value; break;
+                case nameof(HeightUnit): HeightUnit = (Unit)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Width): Width = (int?)parameter.Value; break;
                 case nameof(WidthUnit): WidthUnit = (Unit)parameter.Value; break;
                 default: AdditionalAttributes![parameter.Name] = parameter.Value; break;
             }

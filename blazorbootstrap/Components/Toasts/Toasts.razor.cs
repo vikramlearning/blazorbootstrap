@@ -82,10 +82,41 @@ public partial class Toasts : BlazorBootstrapComponentBase
         }
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AutoHide): AutoHide = (bool)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Delay): Delay = (int)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Messages): Messages = (List<ToastMessage>)parameter.Value; break;
+                case nameof(Placement): Placement = (ToastsPlacement)parameter.Value; break;
+                case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value; break;
+                case nameof(StackLength): StackLength = (int)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break; 
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.ToastContainer, true),
@@ -146,6 +177,9 @@ public partial class Toasts : BlazorBootstrapComponentBase
     [Parameter]
     public int StackLength { get; set; } = 5;
 
+    /// <summary>
+    /// Dependency injected Toast Service
+    /// </summary>
     [Inject] public ToastService ToastService { get; set; } = default!;
 
     #endregion

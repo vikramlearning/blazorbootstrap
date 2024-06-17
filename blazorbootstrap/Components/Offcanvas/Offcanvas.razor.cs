@@ -12,7 +12,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
 
     private DotNetObjectReference<Offcanvas> objRef = default!;
 
-    private Dictionary<string, object> parameters = default!;
+    private Dictionary<string, object> offcanvasParameters = default!;
 
     private string title = default!;
 
@@ -96,9 +96,53 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
             this.title = title;
 
         childComponent = type;
-        this.parameters = parameters!;
+        this.offcanvasParameters = parameters!;
         await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", Id);
         await InvokeAsync(StateHasChanged);
+    }
+
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(BodyCssClass): BodyCssClass = (string)parameter.Value!; break;
+                case nameof(BodyTemplate): BodyTemplate = (RenderFragment)parameter.Value!; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(CloseOnEscape): CloseOnEscape = (bool)parameter.Value!; break;
+                 case nameof(FooterCssClass): FooterCssClass = (string)parameter.Value!; break;
+                case nameof(FooterTemplate): FooterTemplate = (RenderFragment)parameter.Value!; break;
+                 case nameof(HeaderCssClass): HeaderCssClass = (string)parameter.Value!; break;
+                case nameof(HeaderTemplate): HeaderTemplate = (RenderFragment)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(IsScrollable): IsScrollable = (bool)parameter.Value!; break;
+                case nameof(OnHidden): OnHidden = (EventCallback)parameter.Value!; break;
+                case nameof(OnHiding): OnHiding = (EventCallback)parameter.Value!; break;
+                case nameof(OnShowing): OnShowing = (EventCallback)parameter.Value!; break;
+                case nameof(OnShown): OnShown = (EventCallback)parameter.Value!; break;
+                case nameof(Placement): Placement = (Placement)parameter.Value!; break;
+                case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value!; break;
+                case nameof(Size): Size = (OffcanvasSize)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(TabIndex): TabIndex = (int)parameter.Value!; break;
+                case nameof(Title): Title = (string)parameter.Value!; break;
+                case nameof(UseBackdrop): UseBackdrop = (bool)parameter.Value!; break;
+                case nameof(UseStaticBackdrop): UseStaticBackdrop = (bool)parameter.Value!; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
