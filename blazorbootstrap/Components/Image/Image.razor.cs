@@ -10,15 +10,6 @@ public partial class Image: BlazorBootstrapComponentBase
             (BootstrapClass.ImageThumbnail, IsThumbnail));
 
     /// <summary>
-    /// Gets or sets the source of the image.
-    /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
-    [Parameter]
-    public string? Src { get; set; }
-
-    /// <summary>
     /// Gets or sets the alternate text for the image.
     /// </summary>
     /// <remarks>
@@ -26,6 +17,15 @@ public partial class Image: BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public string? Alt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the source of the image.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public string? Src { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the image is responsive.
