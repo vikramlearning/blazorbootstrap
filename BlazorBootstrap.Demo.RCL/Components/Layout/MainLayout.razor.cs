@@ -14,6 +14,7 @@ public partial class MainLayout : MainLayoutBase
 
             new (){ Id = "3", Text = "Content", IconName = IconName.BodyText, IconColor = IconColor.Primary },
             new (){ Id = "300", Text = "Icons", Href = "/icons", IconName = IconName.PersonSquare, ParentId = "3" },
+            new (){ Id = "301", Text = "Images", Href = "/images", IconName = IconName.Image, ParentId = "3" },
 
             new (){ Id = "4", Text = "Forms", IconName = IconName.InputCursorText, IconColor = IconColor.Success },
             new (){ Id = "400", Text = "Auto Complete", Href = "/autocomplete", IconName = IconName.InputCursorText, ParentId = "4" },
@@ -56,9 +57,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "51114", Text = "Other", Href = "/grid/other", IconName = IconName.PlusSquareFill, ParentId = "511" },
 
             #endregion Grid
-
-            new (){ Id = "512", Text = "Images", Href = "/images", IconName = IconName.Image, ParentId = "5" },
-
+                        
             new (){ Id = "512", Text = "Modals", Href = "/modals", IconName = IconName.WindowStack, ParentId = "5" },
             new (){ Id = "513", Text = "Offcanvas", Href = "/offcanvas", IconName = IconName.LayoutSidebarReverse, ParentId = "5" },
             new (){ Id = "514", Text = "Pagination", Href = "/pagination", IconName = IconName.ThreeDots, ParentId = "5" },
