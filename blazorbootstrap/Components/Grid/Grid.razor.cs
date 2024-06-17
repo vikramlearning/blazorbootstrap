@@ -826,15 +826,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items"!;
 
     /// <summary>
-    /// Gets or sets a value indicating whether Grid is responsive.
+    /// Gets or sets a value indicating whether the grid is responsive.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
     [Parameter]
-    public bool Responsive { get; set; }
+    public bool IsResponsive { get; set; }
 
-    private string responsiveCssClass => Responsive ? "table-responsive" : "";
+    private string responsiveCssClass => IsResponsive ? "table-responsive" : "";
 
     /// <summary>
     /// Gets or sets the row class.

@@ -1,0 +1,34 @@
+﻿@page "/images"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Images</h1>
+<div class="lead mb-3">Documentation and examples for opting images into responsive behavior (so they never become wider than their parent) and add lightweight styles to them.</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Example" PageUrl="@pageUrl" HashTagName="example" />
+<div class="mb-3">
+    By default images are responsive. The default value of the <b>IsResponsive</b> parameter is <b>true</b>.
+</div>
+<Demo Type="typeof(Image_Demo_01_Examples)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Image thumbnails" PageUrl="@pageUrl" HashTagName="image-thumbnails" />
+<div class="mb-3">
+    To set the image to have a rounded 1px border appearance, set the <b>IsThumbnail</b> parameter to <b>true</b>.
+</div>
+<Demo Type="typeof(Image_Demo_02_Thumbnail)" Tabs="false" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Aligning images" PageUrl="@pageUrl" HashTagName="aligning-images" />
+<Demo Type="typeof(Image_Demo_03_Aligning_Images_A)" Tabs="false" />
+<Demo Type="typeof(Image_Demo_03_Aligning_Images_B)" Tabs="false" />
+<Demo Type="typeof(Image_Demo_03_Aligning_Images_C)" Tabs="false" />
+
+@code {
+    private string pageUrl = "/images";
+    private string title = "Blazor Image Component";
+    private string description = "Documentation and examples for opting images into responsive behavior (so they never become wider than their parent) and add lightweight styles to them.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg"; // TODO: update this
+}
