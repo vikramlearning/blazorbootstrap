@@ -1,9 +1,9 @@
 ﻿<Offcanvas @ref="offcanvas"
            title="Offcanvas title"
-           OnShowing="OnOffcanvasShowingAsync"
-           OnShown="OnOffcanvasShownAsync"
-           OnHiding="OnOffcanvasHidingAsync"
-           OnHidden="OnOffcanvasHiddenAsync">
+           OnShowing="OnOffcanvasShowing"
+           OnShown="OnOffcanvasShown"
+           OnHiding="OnOffcanvasHiding"
+           OnHidden="OnOffcanvasHidden">
 
     <BodyTemplate>
         <div>Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.</div>
@@ -17,12 +17,30 @@
 
 <Button Color="ButtonColor.Primary" @onclick="OnShowOffcanvasClick">Show offcanvas</Button>
 
+<Toasts class="p-3" Messages="messages" AutoHide="true" StackLength="3" Placement="ToastsPlacement.TopRight" />
+
 @code {
     private Offcanvas offcanvas = default!;
+
+    List<ToastMessage> messages = new List<ToastMessage>();
+
+    private void ShowMessage(ToastType toastType, string message)
+        => messages.Add(CreateToastMessage(toastType, message));
+
+    private ToastMessage CreateToastMessage(ToastType toastType, string message)
+        => new ToastMessage
+            {
+                Type = toastType,
+                Title = "Blazor Bootstrap",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Event {message}. DateTime: {DateTime.Now}",
+            };
+
     private async Task OnShowOffcanvasClick() => await offcanvas.ShowAsync();
     private async Task OnHideOffcanvasClick() => await offcanvas.HideAsync();
-    private async Task OnOffcanvasShowingAsync() => await Task.Run(() => { Console.WriteLine("Event: Showing"); });
-    private async Task OnOffcanvasShownAsync() => await Task.Run(() => { Console.WriteLine("Event: Shown"); });
-    private async Task OnOffcanvasHidingAsync() => await Task.Run(() => { Console.WriteLine("Event: Hiding"); });
-    private async Task OnOffcanvasHiddenAsync() => await Task.Run(() => { Console.WriteLine("Event: Hidden"); });
+
+    private void OnOffcanvasShowing() => ShowMessage(ToastType.Primary, "Event: Showing");
+    private void OnOffcanvasShown() => ShowMessage(ToastType.Secondary, "Event: Shown");
+    private void OnOffcanvasHiding() => ShowMessage(ToastType.Success, "Event: Hiding");
+    private void OnOffcanvasHidden() => ShowMessage(ToastType.Danger, "Event: Hidden");
 }
