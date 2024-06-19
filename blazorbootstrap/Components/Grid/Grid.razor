@@ -136,13 +136,15 @@
                         foreach (var item in items)
                         {
                             var rowClass = RowClass?.Invoke(item) ?? "";
-                            var detailViewRowId = Guid.NewGuid();
+                            var detailViewRowId = IdUtility.GetNextId();
                             <tr @key="item?.GetHashCode()" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
                                 @if (AllowDetailView)
                                 {
                                     <td>
-                                        <i class="bi bi-plus-lg" data-bs-toggle="collapse" data-bs-target="@($"#collape-{detailViewRowId}")" aria-expanded="false" aria-controls="@($"collape-{detailViewRowId}")">
-                                        </i>
+                                        <span class="bb-detail-view-icon collapsed" data-bs-toggle="collapse" data-bs-target="@($"#collape-{detailViewRowId}")" aria-expanded="false" aria-controls="@($"collape-{detailViewRowId}")" role="button">
+                                            <i class="bi bi-plus-lg icon-collapsed"></i>
+                                            <i class="bi bi-dash-lg icon-expanded"></i>
+                                        </span>
                                     </td>
                                 }
                                 @if (AllowSelection)

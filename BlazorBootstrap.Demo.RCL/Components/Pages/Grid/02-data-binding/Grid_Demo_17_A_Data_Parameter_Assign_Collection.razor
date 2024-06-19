@@ -21,22 +21,26 @@
         </GridColumns>
 
         <GridDetailView TItem="Employee1">
-            <dl class="row">
-                <dt class="col-sm-3">Id</dt>
-                <dd class="col-sm-9">@context.Id</dd>
-
-                <dt class="col-sm-3">Name</dt>
-                <dd class="col-sm-9">@context.Name</dd>
-
-                <dt class="col-sm-3">Designation</dt>
-                <dd class="col-sm-9">@context.Designation</dd>
-
-                <dt class="col-sm-3">DOJ</dt>
-                <dd class="col-sm-9">@context.DOJ</dd>
-
-                <dt class="col-sm-3">IsActive</dt>
-                <dd class="col-sm-9">@context.IsActive</dd>
-            </dl>
+            <div class="row">
+                <div class="col-2 fw-bold">Id</div>
+                <div class="col">@context.Id</div>
+            </div>
+            <div class="row">
+                <div class="col-2 fw-bold">Name</div>
+                <div class="col">@context.Name</div>
+            </div>
+            <div class="row">
+                <div class="col-2 fw-bold">Designation</div>
+                <div class="col">@context.Designation</div>
+            </div>
+            <div class="row">
+                <div class="col-2 fw-bold">DOJ</div>
+                <div class="col">@context.DOJ</div>
+            </div>
+            <div class="row">
+                <div class="col-2 fw-bold">IsActive</div>
+                <div class="col">@context.IsActive</div>
+            </div>
         </GridDetailView>
     </Grid>
 }
