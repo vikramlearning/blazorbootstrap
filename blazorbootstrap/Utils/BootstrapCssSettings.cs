@@ -1181,6 +1181,14 @@ public sealed class BootstrapCssSettings
         Dark.ButtonBackgroundColor ??= Color.Transparent;
         Light.ButtonHoverBorderColor ??= Color.Transparent;
         Dark.ButtonHoverBorderColor ??= Color.Transparent;
+        Light.ButtonDisabledBackgroundColor ??= Color.Transparent;
+        Dark.ButtonDisabledBackgroundColor ??= Color.Transparent;
+        Light.ButtonDisabledBorderColor ??= Color.Transparent;
+        Dark.ButtonDisabledBorderColor ??= Color.Transparent;
+        Light.ButtonDisabledTextColor ??= Gray100Color;
+        Dark.ButtonDisabledTextColor ??= Gray100Color;
+        Light.ButtonDisabledOpacity ??= 0.65d;
+        Dark.ButtonDisabledOpacity ??= 0.65d;
 
 
         // Cards
@@ -1458,12 +1466,44 @@ public sealed class BootstrapCssSettingsColorTheme
     public Color? ButtonHoverBorderColor { get; set; }
     
     /// <summary>
-    /// Default Bootstrap --bs-btn-bg-color
+    /// Default Bootstrap --bs-btn-bg
     /// </summary>
     /// <remarks>
     /// Default value is transparent.
     /// </remarks>
     public Color? ButtonBackgroundColor { get; set; }
+    
+    /// <summary>
+    /// Default Bootstrap --bs-btn-disabled-color
+    /// </summary>
+    /// <remarks>
+    /// Default value is derived from <see cref="BootstrapCssSettings.Gray100Color"/>
+    /// </remarks>
+    public Color? ButtonDisabledTextColor { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-disabled-bg
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Color.Transparent"/>
+    /// </remarks>
+    public Color? ButtonDisabledBackgroundColor { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-disabled-opacity
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0.65
+    /// </remarks>
+    public double? ButtonDisabledOpacity { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-btn-disabled-border-color
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Color.Transparent"/>
+    /// </remarks>
+    public Color? ButtonDisabledBorderColor { get; set; }
 
     #endregion
 

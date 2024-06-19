@@ -2915,7 +2915,10 @@ textarea.form-control-lg {{
   --bs-btn-border-radius: {settings.BtnBorderRadius};
   --bs-btn-hover-border-color: {settings.Light.ButtonHoverBorderColor.Value.ToRgbaString()};
   --bs-btn-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 1px 1px rgba(0, 0, 0, 0.075);
-  --bs-btn-disabled-opacity: 0.65;
+  --bs-btn-disabled-bg: {settings.Light.ButtonDisabledBackgroundColor.Value.ToRgbaString()};
+  --bs-btn-disabled-border-color: {settings.Light.ButtonDisabledBorderColor.Value.ToRgbaString()};
+  --bs-btn-disabled-color: {settings.Light.ButtonDisabledTextColor.Value.ToRgbaString()};
+  --bs-btn-disabled-opacity: {settings.Light.ButtonDisabledOpacity};
   --bs-btn-focus-box-shadow: 0 0 0 0.25rem rgba(var(--bs-btn-focus-shadow-rgb), .5);
   display:  {settings.BtnDisplay};
   padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
@@ -2933,6 +2936,14 @@ textarea.form-control-lg {{
   border-radius: var(--bs-btn-border-radius);
   background-color: var(--bs-btn-bg);
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}}
+
+[data-bs-theme=dark] .btn 
+{{
+  --bs-btn-disabled-bg: {settings.Dark.ButtonDisabledBackgroundColor.Value.ToRgbaString()};
+  --bs-btn-disabled-border-color: {settings.Dark.ButtonDisabledBorderColor.Value.ToRgbaString()};
+  --bs-btn-disabled-color: {settings.Dark.ButtonDisabledTextColor.Value.ToRgbaString()};
+  --bs-btn-disabled-opacity: {settings.Dark.ButtonDisabledOpacity};
 }}
 
 @media (prefers-reduced-motion: reduce) {{
@@ -2974,11 +2985,11 @@ textarea.form-control-lg {{
   box-shadow: var(--bs-btn-focus-box-shadow);
 }}
 .btn:disabled, .btn.disabled, fieldset:disabled .btn {{
-  color: var(--bs-btn-disabled-color);
+  color: var(--bs-btn-disabled-color)!important;
   pointer-events: none;
-  background-color: var(--bs-btn-disabled-bg);
-  border-color: var(--bs-btn-disabled-border-color);
-  opacity: var(--bs-btn-disabled-opacity);
+  background-color: var(--bs-btn-disabled-bg)!important;
+  border-color: var(--bs-btn-disabled-border-color)!important;
+  opacity: var(--bs-btn-disabled-opacity)!important;
 }}
 
 .btn-primary {{
