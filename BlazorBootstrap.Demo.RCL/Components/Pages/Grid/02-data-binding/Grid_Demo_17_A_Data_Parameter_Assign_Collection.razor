@@ -1,7 +1,7 @@
 ﻿@foreach (var department in departments)
 {
     <p>@department.Name Employees:</p>
-    <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" Data="department.Employees" AllowDetailView="true">
+    <Grid TItem="Employee1" class="table table-hover border-top" Data="department.Employees" AllowDetailView="true">
         <GridColumns>
             <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
                 @context.Id
@@ -20,7 +20,24 @@
             </GridColumn>
         </GridColumns>
 
-        <GridDetailView TItem="Employee1">DetailView</GridDetailView>
+        <GridDetailView TItem="Employee1">
+            <dl class="row">
+                <dt class="col-sm-3">Id</dt>
+                <dd class="col-sm-9">@context.Id</dd>
+
+                <dt class="col-sm-3">Name</dt>
+                <dd class="col-sm-9">@context.Name</dd>
+
+                <dt class="col-sm-3">Designation</dt>
+                <dd class="col-sm-9">@context.Designation</dd>
+
+                <dt class="col-sm-3">DOJ</dt>
+                <dd class="col-sm-9">@context.DOJ</dd>
+
+                <dt class="col-sm-3">IsActive</dt>
+                <dd class="col-sm-9">@context.IsActive</dd>
+            </dl>
+        </GridDetailView>
     </Grid>
 }
 

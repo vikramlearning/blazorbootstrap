@@ -141,8 +141,7 @@
                                 @if (AllowDetailView)
                                 {
                                     <td>
-                                        <i class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collape-{detailViewRowId}")" aria-expanded="false" aria-controls="@($"collape-{detailViewRowId}")">
-                                            Button with data-bs-target
+                                        <i class="bi bi-plus-lg" data-bs-toggle="collapse" data-bs-target="@($"#collape-{detailViewRowId}")" aria-expanded="false" aria-controls="@($"collape-{detailViewRowId}")">
                                         </i>
                                     </td>
                                 }
@@ -159,7 +158,12 @@
                             @if (AllowDetailView)
                             {
                                 <tr class="collapse" id="@($"collape-{detailViewRowId}")">
-                                    <td colspan="@columnCount">
+                                    <td></td>
+                                    @if (AllowSelection)
+                                    {
+                                        <td></td>
+                                    }
+                                    <td colspan="@(columnCount - 1)">
                                         @gridDetailView?.GridDetailViewTemplate(item)
                                     </td>
                                 </tr>
