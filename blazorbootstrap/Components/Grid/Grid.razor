@@ -12,6 +12,10 @@
         <table @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
             <thead class="@THeadCssClass">
                 <tr class="@(FixedHeader ? BootstrapClass.TextNoWrap : "") @HeaderRowCssClass">
+                    @if (AllowDetailView)
+                    {
+                        <th></th>
+                    }
                     @if (AllowSelection)
                     {
                         @HeaderSelectionTemplate
@@ -24,6 +28,10 @@
                 @if (AllowFiltering)
                 {
                     <tr class="@FiltersRowCssClass">
+                        @if (AllowDetailView)
+                        {
+                            <th></th>
+                        }
                         @if (AllowSelection)
                         {
                             <th></th>
@@ -69,7 +77,9 @@
             </thead>
             <tbody>
                 @{
-                    var columnCount = AllowSelection ? columns.Count + 1 : columns.Count;
+                    var columnCount = columns.Count;
+                    if (AllowSelection) columnCount += 1;
+                    if (AllowDetailView) columnCount += 1;
                 }
                 @if (requestInProgress) //|| totalCount is null
                 {
@@ -126,7 +136,16 @@
                         foreach (var item in items)
                         {
                             var rowClass = RowClass?.Invoke(item) ?? "";
+                            var detailViewRowId = Guid.NewGuid();
                             <tr @key="item?.GetHashCode()" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
+                                @if (AllowDetailView)
+                                {
+                                    <td>
+                                        <i class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collape-{detailViewRowId}")" aria-expanded="false" aria-controls="@($"collape-{detailViewRowId}")">
+                                            Button with data-bs-target
+                                        </i>
+                                    </td>
+                                }
                                 @if (AllowSelection)
                                 {
                                     @ChildSelectionTemplate(rowIndex, item)
@@ -137,11 +156,14 @@
                                     @column.CellTemplate(item)
                                 }
                             </tr>
-                            <tr>
-                                <td colspan="@items?.Count ?? 1">
-                                    @gridDetailView?.GridDetailViewTemplate(item)
-                                </td>
-                            </tr>
+                            @if (AllowDetailView)
+                            {
+                                <tr class="collapse" id="@($"collape-{detailViewRowId}")">
+                                    <td colspan="@columnCount">
+                                        @gridDetailView?.GridDetailViewTemplate(item)
+                                    </td>
+                                </tr>
+                            }
                             rowIndex++;
                         }
                     }
