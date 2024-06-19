@@ -137,6 +137,11 @@
                                     @column.CellTemplate(item)
                                 }
                             </tr>
+                            <tr>
+                                <td colspan="@items?.Count ?? 1">
+                                    @gridDetailView?.GridDetailViewTemplate(item)
+                                </td>
+                            </tr>
                             rowIndex++;
                         }
                     }
