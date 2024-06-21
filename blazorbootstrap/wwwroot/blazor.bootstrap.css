@@ -290,27 +290,12 @@ table > tbody > tr > td:is(.freeze-column-right).freeze-column-active {
 }
 
 /* detail view */
-.bb-detail-view-icon i {
-    transition: opacity 0.3s, transform 0.3s;
-    transform: scale(0.5);
+.bb-detail-view-icon svg {
+    transition: transform 0.2s ease-in-out;
 }
 
-.bb-detail-view-icon.collapsed[aria-expanded="false"] .icon-expanded {
-    transform: scale(0.5);
-    opacity: 0;
-    display: none;
-}
-
-.bb-detail-view-icon.collapsed[aria-expanded="false"] .icon-expanded {
-    transform: scale(0.5);
-    opacity: 0;
-    display: none;
-}
-
-.bb-detail-view-icon[aria-expanded="true"] .icon-collapsed {
-    transform: scale(0.5);
-    opacity: 0;
-    display: none;
+.bb-detail-view-icon[aria-expanded="true"] svg {
+    transform: rotate(-180deg);
 }
 
 /* scrollbar */
