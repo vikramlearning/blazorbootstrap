@@ -52,12 +52,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.4" />
   </ItemGroup>
 
-  <ItemGroup>
-    <UpToDateCheckInput Remove="components\grid\GridDetailView.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="components\grid\GridDetailView.razor" />
-  </ItemGroup>
-
 </Project>
