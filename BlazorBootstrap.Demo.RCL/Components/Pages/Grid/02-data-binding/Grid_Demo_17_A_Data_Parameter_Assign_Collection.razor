@@ -1,47 +1,22 @@
 ﻿@foreach (var department in departments)
 {
     <p>@department.Name Employees:</p>
-    <Grid TItem="Employee1" class="table table-hover border-top" Data="department.Employees" AllowDetailView="true">
-        <GridColumns>
-            <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
-                @context.Id
-            </GridColumn>
-            <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-                @context.Name
-            </GridColumn>
-            <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-                @context.Designation
-            </GridColumn>
-            <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-                @context.DOJ
-            </GridColumn>
-            <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
-                @context.IsActive
-            </GridColumn>
-        </GridColumns>
-
-        <GridDetailView TItem="Employee1">
-            <div class="row">
-                <div class="col-2 fw-bold">Id</div>
-                <div class="col">@context.Id</div>
-            </div>
-            <div class="row">
-                <div class="col-2 fw-bold">Name</div>
-                <div class="col">@context.Name</div>
-            </div>
-            <div class="row">
-                <div class="col-2 fw-bold">Designation</div>
-                <div class="col">@context.Designation</div>
-            </div>
-            <div class="row">
-                <div class="col-2 fw-bold">DOJ</div>
-                <div class="col">@context.DOJ</div>
-            </div>
-            <div class="row">
-                <div class="col-2 fw-bold">IsActive</div>
-                <div class="col">@context.IsActive</div>
-            </div>
-        </GridDetailView>
+    <Grid TItem="Employee1" class="table table-hover border-top" Data="department.Employees">
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
     </Grid>
 }
 
