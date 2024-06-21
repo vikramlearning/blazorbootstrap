@@ -30,10 +30,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="components\grid\GridDetailView.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\nuget\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -42,7 +38,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Include="components\grid\GridDetailView.razor" />
   </ItemGroup>
 
   <ItemGroup>
