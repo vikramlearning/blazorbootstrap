@@ -541,7 +541,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     //[Parameter] public int AllowEdit { get; set; }
 
     /// <summary>
-    /// Gets or sets the grid detail view enable/disable state.
+    /// Gets or sets a value indicating whether the grid detail view is enabled.
     /// </summary>
     /// <remarks>
     /// Default value is false.
