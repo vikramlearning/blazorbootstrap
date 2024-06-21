@@ -1,4 +1,8 @@
-﻿<Grid TItem="Employee1" class="table table-hover border-top" Data="employees" AllowDetailView="true">
+﻿<Grid TItem="Employee1"
+      Class="table table-hover border-top"
+      Data="employees"
+      AllowDetailView="true">
+
     <GridColumns>
         <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
             @context.Id
@@ -39,6 +43,7 @@
             <div class="col">@context.IsActive</div>
         </div>
     </GridDetailView>
+
 </Grid>
 
 @code {
