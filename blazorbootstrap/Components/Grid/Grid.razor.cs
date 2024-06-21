@@ -21,6 +21,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private RenderFragment? headerSelectionTemplate;
 
+    private GridDetailView<TItem>? gridDetailView;
+
     private bool isFirstRenderComplete = false;
 
     private List<TItem>? items = null;
@@ -152,13 +154,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await LoadGridSettingsAsync();
 
         var request = new GridDataProviderRequest<TItem>
-                      {
-                          PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
-                          PageSize = AllowPaging ? pageSize : 0,
-                          Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting()! : null!,
-                          Filters = AllowFiltering ? GetFilters()! : null!,
-                          CancellationToken = cancellationToken
-                      };
+        {
+            PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
+            PageSize = AllowPaging ? pageSize : 0,
+            Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting()! : null!,
+            Filters = AllowFiltering ? GetFilters()! : null!,
+            CancellationToken = cancellationToken
+        };
 
         GridDataProviderResult<TItem> result = default!;
 
@@ -491,6 +493,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState) => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
 
+    internal void SetGridDetailView(GridDetailView<TItem> detailView) => gridDetailView = detailView;
+
     /// <summary>
     /// Set filters.
     /// </summary>
@@ -535,6 +539,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the grid edit.
     /// </summary>
     //[Parameter] public int AllowEdit { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the grid detail view is enabled.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [Parameter]
+    public bool AllowDetailView { get; set; }
 
     /// <summary>
     /// Gets or sets the grid filtering.

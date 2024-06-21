@@ -289,6 +289,15 @@ table > tbody > tr > td:is(.freeze-column-right).freeze-column-active {
     box-shadow: inset 1px 0 0 var(--bs-table-border-color);
 }
 
+/* detail view */
+.bb-detail-view-icon svg {
+    transition: transform 0.2s ease-in-out;
+}
+
+.bb-detail-view-icon[aria-expanded="true"] svg {
+    transform: rotate(-180deg);
+}
+
 /* scrollbar */
 .v-scroll-auto {
     overflow-y: auto !important;

@@ -40,21 +40,22 @@ public partial class MainLayout : MainLayoutBase
 
             #region Grid
 
-            new (){ Id = "511", Text = "Grid", IconName = IconName.Grid, ParentId = "5" },
-            new (){ Id = "51101", Text = "Overview", Href = "/grid/overview", IconName = IconName.Grid, ParentId = "511" },
-            new (){ Id = "51102", Text = "Data Binding", Href = "/grid/data-binding", IconName = IconName.GridFill, ParentId = "511" },
-            new (){ Id = "51103", Text = "Filters", Href = "/grid/filters", IconName = IconName.FunnelFill, ParentId = "511" },
-            new (){ Id = "51104", Text = "Paging", Href = "/grid/paging", IconName = IconName.ChevronBarRight, ParentId = "511" },
-            new (){ Id = "51105", Text = "Sorting", Href = "/grid/sorting", IconName = IconName.ArrowDownUp, ParentId = "511" },
-            new (){ Id = "51106", Text = "Selection", Href = "/grid/selection", IconName = IconName.CheckSquareFill, ParentId = "511" },
-            new (){ Id = "51107", Text = "Alignment", Href = "/grid/alignment", IconName = IconName.Justify, ParentId = "511" },
-            new (){ Id = "51108", Text = "Grid Settings", Href = "/grid/settings", IconName = IconName.GearFill, ParentId = "511" },
-            new (){ Id = "51109", Text = "Custom CSS Class", Href = "/grid/custom-css-class", IconName = IconName.FileTypeCss, ParentId = "511" },
-            new (){ Id = "51110", Text = "Events", Href = "/grid/events", IconName = IconName.Fire, ParentId = "511" },
-            new (){ Id = "51111", Text = "Translations", Href = "/grid/translations", IconName = IconName.Translate, ParentId = "511" },
-            new (){ Id = "51112", Text = "Fixed Header", Href = "/grid/fixed-header", IconName = IconName.Table, ParentId = "511" },
-            new (){ Id = "51113", Text = "Freeze Columns", Href = "/grid/freeze-columns", IconName = IconName.LayoutThreeColumns, ParentId = "511" },
-            new (){ Id = "51114", Text = "Other", Href = "/grid/other", IconName = IconName.PlusSquareFill, ParentId = "511" },
+            new (){ Id = "511", Text = "Grid", IconName = IconName.Grid, ParentId = "5" },            
+            new (){ Id = "51101", Text = "Overview", Href = "/grid/overview", IconName = IconName.Grid, ParentId = "511" }, // first item- do not change
+            new (){ Id = "51102", Text = "Alignment", Href = "/grid/alignment", IconName = IconName.Justify, ParentId = "511" },
+            new (){ Id = "51103", Text = "Custom CSS Class", Href = "/grid/custom-css-class", IconName = IconName.FileTypeCss, ParentId = "511" },
+            new (){ Id = "51104", Text = "Data Binding", Href = "/grid/data-binding", IconName = IconName.GridFill, ParentId = "511" },
+            new (){ Id = "51106", Text = "Detail View", Href = "/grid/detail-view", IconName = IconName.ListNested, ParentId = "511" },
+            new (){ Id = "51107", Text = "Filters", Href = "/grid/filters", IconName = IconName.FunnelFill, ParentId = "511" },
+            new (){ Id = "51108", Text = "Fixed Header", Href = "/grid/fixed-header", IconName = IconName.Table, ParentId = "511" },
+            new (){ Id = "51109", Text = "Freeze Columns", Href = "/grid/freeze-columns", IconName = IconName.LayoutThreeColumns, ParentId = "511" },
+            new (){ Id = "51110", Text = "Grid Settings", Href = "/grid/settings", IconName = IconName.GearFill, ParentId = "511" },
+            new (){ Id = "51111", Text = "Nested Grid", Href = "/grid/nested-grid", IconName = IconName.Pip, ParentId = "511" },
+            new (){ Id = "51112", Text = "Paging", Href = "/grid/paging", IconName = IconName.ChevronBarRight, ParentId = "511" },
+            new (){ Id = "51113", Text = "Selection", Href = "/grid/selection", IconName = IconName.CheckSquareFill, ParentId = "511" },
+            new (){ Id = "51114", Text = "Sorting", Href = "/grid/sorting", IconName = IconName.ArrowDownUp, ParentId = "511" },            
+            new (){ Id = "51115", Text = "Translations", Href = "/grid/translations", IconName = IconName.Translate, ParentId = "511" },            
+            new (){ Id = "51199", Text = "Other", Href = "/grid/other", IconName = IconName.PlusSquareFill, ParentId = "511" }, // last item - do not change
 
             #endregion Grid
                         

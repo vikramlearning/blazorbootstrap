@@ -1,7 +1,7 @@
 ﻿@foreach (var department in departments)
 {
     <p>@department.Name Employees:</p>
-    <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" Data="department.Employees">
+    <Grid TItem="Employee1" class="table table-hover border-top" Data="department.Employees">
         <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
             @context.Id
         </GridColumn>
