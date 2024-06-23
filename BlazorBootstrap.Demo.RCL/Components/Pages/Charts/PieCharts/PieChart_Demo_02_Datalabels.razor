@@ -98,11 +98,11 @@
             var dataset = GetRandomPieChartDataset();
 
             if (index == 0)
-                dataset.Datalabels.Anchor = "end";
+                dataset.Datalabels.Anchor = Anchor.End;
             else if (index == numberOfDatasets - 1)
-                dataset.Datalabels.Anchor = "end";
+                dataset.Datalabels.Anchor = Anchor.End;
             else
-                dataset.Datalabels.Anchor = "center";
+                dataset.Datalabels.Anchor = Anchor.Center;
 
             datasets.Add(dataset);
         }

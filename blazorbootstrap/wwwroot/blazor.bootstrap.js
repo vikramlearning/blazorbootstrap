@@ -1334,3 +1334,123 @@ window.blazorChart.pie = {
         }
     },
 }
+
+window.blazorChart.polarArea = {
+    addDatasetData: (elementId, dataLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            const chartData = chart.data;
+            const chartDatasetData = data;
+
+            if (!chartData.labels.includes(dataLabel))
+                chartData.labels.push(dataLabel);
+
+            const chartDatasets = chartData.datasets;
+
+            if (chartDatasets.length > 0) {
+                let datasetIndex = chartDatasets.findIndex(dataset => dataset.label === chartDatasetData.datasetLabel);
+                if (datasetIndex > -1) {
+                    chartDatasets[datasetIndex].data.push(chartDatasetData.data);
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDatasetsData: (elementId, dataLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart && data) {
+            const chartData = chart.data;
+
+            if (!chartData.labels.includes(dataLabel)) {
+                chartData.labels.push(dataLabel);
+
+                if (chartData.datasets.length > 0 && chartData.datasets.length === data.length) {
+                    data.forEach(chartDatasetData => {
+                        let datasetIndex = chartData.datasets.findIndex(dataset => dataset.label === chartDatasetData.datasetLabel);
+                        chartData.datasets[datasetIndex].data.push(chartDatasetData.data);
+                        chartData.datasets[datasetIndex].backgroundColor.push(chartDatasetData.backgroundColor);
+                    });
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDataset: (elementId, newDataset) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.data.datasets.push(newDataset);
+            chart.update();
+        }
+    },
+    create: (elementId, type, data, options, plugins) => {
+        let chartEl = document.getElementById(elementId);
+        let _plugins = [];
+
+        if (plugins && plugins.length > 0) {
+            // register `ChartDataLabels` plugin
+            if (plugins.includes('ChartDataLabels')) {
+                _plugins.push(ChartDataLabels);
+
+                // set datalabel background color
+                options.plugins.datalabels.backgroundColor = function (context) {
+                    return context.dataset.backgroundColor;
+                };
+            }
+        }
+
+        // https://www.chartjs.org/docs/latest/configuration/#configuration-object-structure
+        const config = {
+            type: type,
+            data: data,
+            options: options,
+            plugins: _plugins
+        };
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options, plugins) => {
+        let chart = window.blazorChart.polarArea.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.polarArea.create(elementId, type, data, options, plugins);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.polarArea.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = height;
+            chart.canvas.parentNode.style.width = width;
+        }
+    },
+    update: (elementId, type, data, options) => {
+        let chart = window.blazorChart.polarArea.get(elementId);
+        if (chart) {
+            if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
+                // set datalabel background color
+                options.plugins.datalabels.backgroundColor = function (context) {
+                    return context.dataset.backgroundColor;
+                };
+            }
+
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        }
+        else {
+            console.warn(`The chart is not initialized. Initialize it and then call update.`);
+        }
+    },
+}
+
