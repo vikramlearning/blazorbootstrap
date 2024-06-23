@@ -1,13 +1,14 @@
-﻿<PieChart @ref="pieChart" Width="500" />
+﻿<PolarAreaChart @ref="polarAreaChart" Width="600" />
 
 <div class="mt-5">
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()">Add Data</Button>
+    <button class="btn btn-primary btn-sm" @onclick="async () => await RandomizeAsync()"> Randomize </button>
+    <button class="btn btn-primary btn-sm" @onclick="async () => await AddDatasetAsync()"> Add Dataset </button>
+    <button class="btn btn-primary btn-sm" @onclick="async () => await AddDataAsync()">Add Data</button>
 </div>
 
 @code {
-    private PieChart pieChart = default!;
-    private PieChartOptions pieChartOptions = default!;
+    private PolarAreaChart polarAreaChart = default!;
+    private PolarAreaChartOptions polarAreaChartOptions = default!;
     private ChartData chartData = default!;
     private string[]? backgroundColors;
 
@@ -19,20 +20,19 @@
     protected override void OnInitialized()
     {
         backgroundColors = ColorUtility.CategoricalTwelveColors;
-        chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(3) };
+        chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(1) };
 
-        pieChartOptions = new();
-        pieChartOptions.Responsive = true;
-        pieChartOptions.Plugins.Title!.Text = "2022 - Sales";
-        pieChartOptions.Plugins.Title.Display = true;
+        polarAreaChartOptions = new();
+        polarAreaChartOptions.Responsive = true;
+        polarAreaChartOptions.Plugins.Title!.Text = "2022 - Sales";
+        polarAreaChartOptions.Plugins.Title.Display = true;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // pass the plugin name to enable the data labels
-            await pieChart.InitializeAsync(chartData: chartData, chartOptions: pieChartOptions, plugins: new string[] { "ChartDataLabels" });
+            await polarAreaChart.InitializeAsync(chartData, polarAreaChartOptions);
         }
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -45,11 +45,11 @@
 
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is PieChartDataset pieChartDataset
-                && pieChartDataset is not null
-                && pieChartDataset.Data is not null)
+            if (dataset is PolarAreaChartDataset polarAreaChartDataset
+                && polarAreaChartDataset is not null
+                && polarAreaChartDataset.Data is not null)
             {
-                var count = pieChartDataset.Data.Count;
+                var count = polarAreaChartDataset.Data.Count;
 
                 var newData = new List<double>();
                 for (var i = 0; i < count; i++)
@@ -57,14 +57,22 @@
                     newData.Add(random.Next(0, 100));
                 }
 
-                pieChartDataset.Data = newData;
-                newDatasets.Add(pieChartDataset);
+                polarAreaChartDataset.Data = newData;
+                newDatasets.Add(polarAreaChartDataset);
             }
         }
 
         chartData.Datasets = newDatasets;
 
-        await pieChart.UpdateAsync(chartData, pieChartOptions);
+        await polarAreaChart.UpdateAsync(chartData, polarAreaChartOptions);
+    }
+
+    private async Task AddDatasetAsync()
+    {
+        if (chartData is null || chartData.Datasets is null) return;
+
+        var chartDataset = GetRandomPolarAreaChartDataset();
+        chartData = await polarAreaChart.AddDatasetAsync(chartData, chartDataset, polarAreaChartOptions);
     }
 
     private async Task AddDataAsync()
@@ -78,11 +86,11 @@
         var data = new List<IChartDatasetData>();
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is PieChartDataset pieChartDataset)
-                data.Add(new PieChartDatasetData(pieChartDataset.Label, random.Next(0, 100), backgroundColors![dataLabelsCount]));
+            if (dataset is PolarAreaChartDataset polarAreaChartDataset)
+                data.Add(new PolarAreaChartDatasetData(polarAreaChartDataset.Label, random.Next(0, 100), backgroundColors![dataLabelsCount]));
         }
 
-        chartData = await pieChart.AddDataAsync(chartData, GetNextDataLabel(), data);
+        chartData = await polarAreaChart.AddDataAsync(chartData, GetNextDataLabel(), data);
 
         dataLabelsCount += 1;
     }
@@ -95,22 +103,13 @@
 
         for (var index = 0; index < numberOfDatasets; index++)
         {
-            var dataset = GetRandomPieChartDataset();
-
-            if (index == 0)
-                dataset.Datalabels.Anchor = Anchor.End;
-            else if (index == numberOfDatasets - 1)
-                dataset.Datalabels.Anchor = Anchor.End;
-            else
-                dataset.Datalabels.Anchor = Anchor.Center;
-
-            datasets.Add(dataset);
+            datasets.Add(GetRandomPolarAreaChartDataset());
         }
 
         return datasets;
     }
 
-    private PieChartDataset GetRandomPieChartDataset()
+    private PolarAreaChartDataset GetRandomPolarAreaChartDataset()
     {
         datasetsCount += 1;
         return new() { Label = $"Team {datasetsCount}", Data = GetRandomData(), BackgroundColor = GetRandomBackgroundColors() };
