@@ -81,6 +81,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "601", Text = "Doughnut Chart", Href = "/charts/doughnut-chart", IconName = IconName.CircleFill, ParentId = "6", Match = NavLinkMatch.All },
             new (){ Id = "602", Text = "Line Chart", Href = "/charts/line-chart", IconName = IconName.GraphUp, ParentId = "6", Match = NavLinkMatch.All },
             new (){ Id = "603", Text = "Pie Chart", Href = "/charts/pie-chart", IconName = IconName.PieChartFill, ParentId = "6", Match = NavLinkMatch.All },
+            new (){ Id = "604", Text = "Polar Area Chart", Href = "/charts/polar-area-chart", IconName = IconName.PieChartFill, ParentId = "6", Match = NavLinkMatch.All },
 
             new(){ Id = "7", Text = "Services", IconName = IconName.WrenchAdjustableCircleFill, IconColor = IconColor.Success },
             new (){ Id = "700", Text = "Modal Service", Href = "/modal-service", IconName = IconName.WindowStack, ParentId = "7" },
