@@ -74,6 +74,7 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Dropdown | [Docs](https://docs.blazorbootstrap.com/components/dropdown) | [Demos](https://demos.blazorbootstrap.com/dropdown) |
 | Grid | [Docs](https://docs.blazorbootstrap.com/components/grid) | [Demos](https://demos.blazorbootstrap.com/grid) |
 | Icons | [Docs](https://docs.blazorbootstrap.com/content/icons) | [Demos](https://demos.blazorbootstrap.com/icons) |
+| Images | [Docs](https://docs.blazorbootstrap.com/content/images) | [Demos](https://demos.blazorbootstrap.com/images) |
 | Modals | [Docs](https://docs.blazorbootstrap.com/components/modal) | [Demos](https://demos.blazorbootstrap.com/modals) |
 | Number Input | [Docs](https://docs.blazorbootstrap.com/forms/number-input) | [Demos](https://demos.blazorbootstrap.com/form/number-input) |
 | Offcanvas | [Docs](https://docs.blazorbootstrap.com/components/offcanvas) | [Demos](https://demos.blazorbootstrap.com/offcanvas) |
@@ -115,11 +116,17 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Badge
 ![Blazor Bootstrap - Badge](https://i.imgur.com/ux0sTs9.png "Blazor Bootstrap - Badge")
 
+### Blazor Bootstrap - Breadcrumb
+![Blazor Bootstrap - Breadcrumb](https://i.imgur.com/hO90HoC.jpg "Blazor Bootstrap - Breadcrumb")
+
 ### Blazor Bootstrap - Buttons
 ![Blazor Bootstrap - Buttons](https://i.imgur.com/ENKhcXR.jpg "Blazor Bootstrap - Buttons")
 
 ### Blazor Bootstrap - Callout
 ![Blazor Bootstrap - Callout](https://i.imgur.com/vmibzEu.png "Blazor Bootstrap - Callout")
+
+### Blazor Bootstrap - Card
+![Blazor Bootstrap - Card](https://i.imgur.com/RhytwPa.png "Blazor Bootstrap - Card")
 
 ### Blazor Bootstrap - Charts: Bar Chart
 ![Blazor Bootstrap - Charts: Bar Chart](https://i.imgur.com/JLV7oss.png "Blazor Bootstrap - Charts: Bar Chart")
@@ -133,6 +140,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Charts: Pie Chart
 ![Blazor Bootstrap - Charts: Pie Chart](https://i.imgur.com/jr3w0fM.png "Blazor Bootstrap - Charts: Pie Chart")
 
+### Blazor Bootstrap - Charts: Polar Area Chart
+![Blazor Bootstrap - Charts: Polar Area Chart](https://i.imgur.com/MSFDsSo.png "Blazor Bootstrap - Charts: Polar Area Chart")
+
 ### Blazor Bootstrap - Collapse
 ![Blazor Bootstrap - Collapse](https://i.imgur.com/8A0emQe.png "Blazor Bootstrap - Collapse")
 
@@ -145,8 +155,17 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Date Input
 ![Blazor Bootstrap - Date Input](https://i.imgur.com/1mVjqQv.png "Blazor Bootstrap - Date Input")
 
+### Blazor Bootstrap - Dropdown
+![Blazor Bootstrap - Dropdown](https://i.imgur.com/beAr31J.png "Blazor Bootstrap - Dropdown")
+
 ### Blazor Bootstrap - Grid
 ![Blazor Bootstrap - Grid](https://i.imgur.com/36RsWZ3.png "Blazor Bootstrap - Grid")
+
+### Blazor Bootstrap - Icon
+![Blazor Bootstrap - Icon](https://i.imgur.com/ko7c6k3.jpg "Blazor Bootstrap - Icon")
+
+### Blazor Bootstrap - Image
+![Blazor Bootstrap - Image](https://i.imgur.com/eiSTmvO.png "Blazor Bootstrap - Image")
 
 ### Blazor Bootstrap - Modal
 ![Blazor Bootstrap - Modal](https://i.imgur.com/n0m4Fhq.jpg "Blazor Bootstrap - Modal")
@@ -162,6 +181,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - PDF Viewer
 ![Blazor Bootstrap - PDF Viewer](https://i.imgur.com/7Vz9Efi.png "Blazor Bootstrap - PDF Viewer")
+
+### Blazor Bootstrap - Placeholder
+![Blazor Bootstrap - Placeholder](https://i.imgur.com/Mw13qfX.png "Blazor Bootstrap - Placeholder")
 
 ### Blazor Bootstrap - Preload
 ![Blazor Bootstrap - Preload](https://i.imgur.com/3pvzbXY.png "Blazor Bootstrap - Preload")
@@ -198,6 +220,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Toasts
 ![Blazor Bootstrap - Toasts](https://i.imgur.com/OCQUchu.png "Blazor Bootstrap - Toasts")
+
+### Blazor Bootstrap - Tooltips
+![Blazor Bootstrap - Tooltips](https://i.imgur.com/2xuTx6b.png "Blazor Bootstrap - Tooltips")
 
 ## Creators
 
