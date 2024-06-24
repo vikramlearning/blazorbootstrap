@@ -1129,11 +1129,11 @@ public sealed class BootstrapCssSettings
         Light.BorderSubtleColors.Opacity ??= 255;
         Dark.BorderSubtleColors.Opacity ??= 255;
         Light.BorderSubtleColors.Primary ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, PrimaryColors[200]);
-        Dark.BorderSubtleColors.Primary ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, WarningColors[800]);
+        Dark.BorderSubtleColors.Primary ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, PrimaryColors[800]);
         Light.BorderSubtleColors.Secondary ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, SecondaryColors[200]);
-        Dark.BorderSubtleColors.Secondary ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, WarningColors[800]);
+        Dark.BorderSubtleColors.Secondary ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, SecondaryColors[800]);
         Light.BorderSubtleColors.Danger ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, DangerColors[200]);
-        Dark.BorderSubtleColors.Danger ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, WarningColors[800]);
+        Dark.BorderSubtleColors.Danger ??= Color.FromArgb(Dark.BorderSubtleColors.Opacity.Value, DangerColors[800]);
         Light.BorderSubtleColors.Dark ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, DarkColors[200]);
         Dark.BorderSubtleColors.Dark ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, DarkColors[800]);
         Light.BorderSubtleColors.Light ??= Color.FromArgb(Light.BorderSubtleColors.Opacity.Value, LightColors[200]);
