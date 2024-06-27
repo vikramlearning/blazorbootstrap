@@ -110,7 +110,7 @@
                     // show empty
                     <tr>
                         <td colspan="@columnCount">
-                            @if (EmptyDataTemplate is null)
+                            @if (emptyDataTemplate is null)
                             {
                                 <div class="text-center text-secondary my-5">
                                     <div class="fs-3">
@@ -122,7 +122,7 @@
                             else
                             {
                                 <div class="my-3">
-                                    @EmptyDataTemplate
+                                    @emptyDataTemplate?.Template
                                 </div>
                             }
                         </td>
@@ -167,7 +167,7 @@
                                         <td></td>
                                     }
                                     <td colspan="@(columnCount - 1)">
-                                        @gridDetailView?.GridDetailViewTemplate(item)
+                                        @detailView?.GridDetailViewTemplate(item)
                                     </td>
                                 </tr>
                             }

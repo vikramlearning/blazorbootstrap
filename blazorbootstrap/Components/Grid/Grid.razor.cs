@@ -21,7 +21,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private RenderFragment? headerSelectionTemplate;
 
-    private GridDetailView<TItem>? gridDetailView;
+    private GridDetailView<TItem>? detailView;
+
+    public GridEmptyDataTemplate<TItem>? emptyDataTemplate;
 
     private bool isFirstRenderComplete = false;
 
@@ -493,7 +495,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState) => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
 
-    internal void SetGridDetailView(GridDetailView<TItem> detailView) => gridDetailView = detailView;
+    internal void SetGridDetailView(GridDetailView<TItem> detailView) => this.detailView = detailView;
+
+    internal void SetGridEmptyDataTemplate(GridEmptyDataTemplate<TItem> emptyDataTemplate) => this.emptyDataTemplate = emptyDataTemplate;
 
     /// <summary>
     /// Set filters.
@@ -643,14 +647,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public Func<TItem, bool>? DisableRowSelection { get; set; }
-
-    /// <summary>
-    /// Gets or sets the empty data template.
-    /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
-    public RenderFragment EmptyDataTemplate { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the empty text.

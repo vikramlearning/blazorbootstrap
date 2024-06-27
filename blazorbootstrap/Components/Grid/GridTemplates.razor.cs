@@ -1,9 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class GridColumns : BlazorBootstrapComponentBase
+public partial class GridTemplates : BlazorBootstrapComponentBase
 {
     /// <summary>
-    /// Specifies the content to be rendered inside the grid columns component.
+    /// Specifies the content to be rendered inside the grid templates component.
     /// </summary>
     /// <remarks>
     /// Default value is null.
