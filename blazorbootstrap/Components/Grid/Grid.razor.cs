@@ -25,6 +25,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     public GridEmptyDataTemplate<TItem>? emptyDataTemplate;
 
+    public GridLoadingTemplate<TItem>? loadingTemplate;
+
     private bool isFirstRenderComplete = false;
 
     private List<TItem>? items = null;
@@ -499,6 +501,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     internal void SetGridEmptyDataTemplate(GridEmptyDataTemplate<TItem> emptyDataTemplate) => this.emptyDataTemplate = emptyDataTemplate;
 
+    internal void SetGridLoadingTemplate(GridLoadingTemplate<TItem> loadingTemplate) => this.loadingTemplate = loadingTemplate;
+
     /// <summary>
     /// Set filters.
     /// </summary>
@@ -761,14 +765,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     //[EditorRequired] 
     public string ItemsPerPageText { get; set; } = "Items per page"!;
-
-    /// <summary>
-    /// Gets or sets the loading template.
-    /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
-    public RenderFragment LoadingTemplate { get; set; } = default!;
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.

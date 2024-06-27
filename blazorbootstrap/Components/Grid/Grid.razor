@@ -83,7 +83,7 @@
                 }
                 @if (requestInProgress) //|| totalCount is null
                 {
-                    @if (LoadingTemplate is null)
+                    @if (loadingTemplate is null)
                     {
                         // show placeholders
                         @for (var i = 0; i < 5; i++)
@@ -101,7 +101,7 @@
                     else
                     {
                         <div class="my-3">
-                            @LoadingTemplate
+                            @loadingTemplate.Template
                         </div>
                     }
                 }
@@ -167,7 +167,7 @@
                                         <td></td>
                                     }
                                     <td colspan="@(columnCount - 1)">
-                                        @detailView?.GridDetailViewTemplate(item)
+                                        @detailView?.GetTemplate(item)
                                     </td>
                                 </tr>
                             }
