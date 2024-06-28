@@ -7,26 +7,28 @@
       AllowSorting="true"
       IsResponsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" PropertyName="IsActive" Filterable="false" Sortable="false">
-      <HeaderContent>
-        <Switch @bind-Value="IsAllChecked"/>
-      </HeaderContent>
-      <ChildContent>
-        <Switch @bind-Value="@context.IsActive"/>
-      </ChildContent>
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" PropertyName="IsActive" Filterable="false" Sortable="false">
+            <HeaderContent>
+                <Switch @bind-Value="IsAllChecked" />
+            </HeaderContent>
+            <ChildContent>
+                <Switch @bind-Value="@context.IsActive" />
+            </ChildContent>
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 

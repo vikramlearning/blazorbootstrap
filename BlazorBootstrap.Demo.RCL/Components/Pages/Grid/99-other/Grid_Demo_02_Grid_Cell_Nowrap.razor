@@ -1,31 +1,38 @@
-﻿<Grid TItem="Employee3" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" IsResponsive="true">
-    <GridColumn TItem="Employee3" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="First Name">
-        @context.FirstName
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="First Name">
-        @context.LastName
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Email">
-        @context.Email
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Company" TextNoWrap="true">
-        @context.Company
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Designation" TextNoWrap="true">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
-        @context.Salary.ToString("N2")
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.IsActive
-    </GridColumn>
+﻿<Grid TItem="Employee3"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      IsResponsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee3" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="First Name">
+            @context.FirstName
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="First Name">
+            @context.LastName
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Email">
+            @context.Email
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Company" TextNoWrap="true">
+            @context.Company
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Designation" TextNoWrap="true">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
+            @context.Salary.ToString("N2")
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 
 @code {

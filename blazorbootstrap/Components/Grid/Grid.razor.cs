@@ -21,7 +21,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private RenderFragment? headerSelectionTemplate;
 
-    private GridDetailView<TItem>? gridDetailView;
+    private GridDetailView<TItem>? detailView;
+
+    public GridEmptyDataTemplate<TItem>? emptyDataTemplate;
+
+    public GridLoadingTemplate<TItem>? loadingTemplate;
 
     private bool isFirstRenderComplete = false;
 
@@ -288,7 +292,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
               ?
               .SelectMany(item => item.GetSorting());
 
-    private string GetGridParentStyle()
+    private string GetGridContainerStyle()
     {
         var styleAttributes = new HashSet<string>();
 
@@ -493,7 +497,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState) => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
 
-    internal void SetGridDetailView(GridDetailView<TItem> detailView) => gridDetailView = detailView;
+    internal void SetGridDetailView(GridDetailView<TItem> detailView) => this.detailView = detailView;
+
+    internal void SetGridEmptyDataTemplate(GridEmptyDataTemplate<TItem> emptyDataTemplate) => this.emptyDataTemplate = emptyDataTemplate;
+
+    internal void SetGridLoadingTemplate(GridLoadingTemplate<TItem> loadingTemplate) => this.loadingTemplate = loadingTemplate;
 
     /// <summary>
     /// Set filters.
@@ -645,14 +653,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public Func<TItem, bool>? DisableRowSelection { get; set; }
 
     /// <summary>
-    /// Gets or sets the empty data template.
-    /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
-    public RenderFragment EmptyDataTemplate { get; set; } = default!;
-
-    /// <summary>
     /// Gets or sets the empty text.
     /// Shows text on no records.
     /// </summary>
@@ -689,7 +689,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public bool FixedHeader { get; set; }
 
-    private string gridParentStyle => GetGridParentStyle();
+    private string gridContainerStyle => GetGridContainerStyle();
 
     /// <summary>
     /// This event is fired when the grid state is changed.
@@ -765,14 +765,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     //[EditorRequired] 
     public string ItemsPerPageText { get; set; } = "Items per page"!;
-
-    /// <summary>
-    /// Gets or sets the loading template.
-    /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
-    public RenderFragment LoadingTemplate { get; set; } = default!;
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.
