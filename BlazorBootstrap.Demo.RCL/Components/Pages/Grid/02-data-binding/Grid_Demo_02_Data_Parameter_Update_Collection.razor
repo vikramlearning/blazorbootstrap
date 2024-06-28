@@ -1,22 +1,29 @@
 ﻿<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="AddEmployee"> Add Employee </Button>
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="AddEmployee2"> Add Employee 2 </Button>
 
-<Grid @ref="grid" TItem="Employee1" class="table table-hover table-bordered table-striped mt-3" Data="employees">
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+<Grid @ref="grid"
+      TItem="Employee1"
+      Class="table table-hover table-bordered table-striped mt-3"
+      Data="employees">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 
 @code {

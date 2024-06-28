@@ -5,18 +5,20 @@
        AllowFiltering="true"
        IsResponsive="true">
 
-    <GridColumn TItem="User" HeaderText="Id" PropertyName="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="User" HeaderText="DOB" PropertyName="DOB">
-        @context.DOB
-    </GridColumn>
-    <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
-        @context.Status
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="User" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="DOB" PropertyName="DOB">
+            @context.DOB
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
+            @context.Status
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
