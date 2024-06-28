@@ -292,7 +292,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
               ?
               .SelectMany(item => item.GetSorting());
 
-    private string GetGridParentStyle()
+    private string GetGridContainerStyle()
     {
         var styleAttributes = new HashSet<string>();
 
@@ -689,7 +689,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public bool FixedHeader { get; set; }
 
-    private string gridParentStyle => GetGridParentStyle();
+    private string gridContainerStyle => GetGridContainerStyle();
 
     /// <summary>
     /// This event is fired when the grid state is changed.

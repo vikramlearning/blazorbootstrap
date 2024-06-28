@@ -1,0 +1,38 @@
+﻿<Grid TItem="Employee"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      EmptyText="No records to display">
+
+    <GridColumns>
+        <GridColumn TItem="Employee" HeaderText="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="First Name">
+            @context.FirstName
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Last Name">
+            @context.LastName
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Designation">
+            @context.Designation
+        </GridColumn>
+    </GridColumns>
+
+    <GridTemplates>
+        <GridEmptyDataTemplate TItem="Employee">
+            <div class="text-center">
+                <svg clip-rule="evenodd" fill-rule="evenodd" height="128" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 64 64" width="128" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="fi_7486754"><linearGradient id="lg1"><stop offset="0" stop-color="#cadcf0"></stop><stop offset="1" stop-color="#a4bbdb"></stop></linearGradient><linearGradient id="_Linear1" gradientTransform="matrix(40 0 0 25.912 12 48.573)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg1" y1="0" y2="0"></linearGradient><linearGradient id="lg2"><stop offset="0" stop-color="#a4bbdb"></stop><stop offset="1" stop-color="#8da3be"></stop></linearGradient><linearGradient id="_Linear2" gradientTransform="matrix(20.086 0 0 25.912 31.914 48.573)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg2" y1="0" y2="0"></linearGradient><linearGradient id="lg3"><stop offset="0" stop-color="#e9f3fc"></stop><stop offset="1" stop-color="#cadcf0"></stop></linearGradient><linearGradient id="_Linear3" gradientTransform="matrix(14.679 14.768 -21.492 8.973 12.133 35.609)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2=".337"></linearGradient><linearGradient id="_Linear4" gradientTransform="matrix(25.743 1.634 -3.837 17.203 32.081 42.038)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2=".227"></linearGradient><linearGradient id="_Linear5" gradientTransform="matrix(20.007 -6.501 5.236 7.762 9.382 31.736)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2="-.619"></linearGradient><linearGradient id="_Linear6" gradientTransform="matrix(15.249 13.945 -20.61 7.651 37.354 21.357)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2=".429"></linearGradient><linearGradient id="_Linear7" gradientTransform="matrix(40 0 0 13 12 35.606)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg1" y1="0" y2="0"></linearGradient><linearGradient id="_Linear8" gradientTransform="matrix(.431 16.153 -16.153 .431 34.048 28.815)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg2" y1="0" y2="0"></linearGradient><linearGradient id="_Linear9" gradientTransform="matrix(19.724 23.273 -23.273 19.724 20.991 6.831)" gradientUnits="userSpaceOnUse" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#559aff"></stop><stop offset="1" stop-color="#2e69ef"></stop></linearGradient><linearGradient id="_Linear18" gradientTransform="matrix(6.695 0 0 4.448 30.933 4.607)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2="0"></linearGradient><linearGradient id="_Linear19" gradientTransform="matrix(6.695 0 0 -4.448 30.933 10.607)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2="0"></linearGradient><g id="Exp-3.-G"><path d="m52 35.617h-40v18.512c0 .883.579 1.662 1.425 1.916 4.019 1.205 15.321 4.596 18 5.4.375.112.775.112 1.15 0 2.679-.804 13.981-4.195 18-5.4.846-.254 1.425-1.033 1.425-1.916 0-4.636 0-18.512 0-18.512z" fill="url(#_Linear1)"></path><path d="m52 35.617h-20s-.194 25.912 0 25.912.387-.028.575-.084c2.679-.804 13.981-4.195 18-5.4.846-.254 1.425-1.033 1.425-1.916 0-4.636 0-18.512 0-18.512z" fill="url(#_Linear2)"></path><path d="m32 42.106-20-6.489s-3.507 5.2-5.075 7.524c-.176.261-.219.588-.117.885.103.297.338.528.637.626 3.799 1.234 15.045 4.888 17.995 5.846.423.138.887-.021 1.137-.39 1.341-1.979 5.423-8.002 5.423-8.002z" fill="url(#_Linear3)"></path><path d="m52 35.617-20 6.489s4.082 6.023 5.423 8.002c.25.369.714.528 1.137.39 2.95-.958 14.196-4.612 17.995-5.846.299-.098.534-.329.637-.626.102-.297.059-.624-.117-.885-1.568-2.324-5.075-7.524-5.075-7.524z" fill="url(#_Linear4)"></path><path d="m27.159 21.986c-.25-.367-.713-.526-1.136-.388-2.948.957-14.197 4.612-17.996 5.847-.299.097-.535.328-.637.625s-.059.625.117.885c1.444 2.142 4.493 6.662 4.493 6.662l20-6.511s-3.592-5.283-4.841-7.12z" fill="url(#_Linear5)"></path><path d="m56.493 28.955c.176-.26.219-.588.117-.885s-.338-.528-.637-.625c-3.799-1.235-15.048-4.89-17.996-5.847-.423-.138-.886.021-1.136.388-1.249 1.837-4.841 7.12-4.841 7.12l20 6.511s3.049-4.52 4.493-6.662z" fill="url(#_Linear6)"></path><path d="m52 35.617-20-6.511-20 6.511 20 6.489z" fill="url(#_Linear7)"></path><path d="m32 42.106v-13l-20 6.511z" fill="url(#_Linear8)"></path><g fill="url(#_Linear9)"><path d="m27.982 31.978c-.416-.272-.791-.563-1.124-.868-.406-.373-1.039-.346-1.413.061-.373.406-.346 1.039.061 1.412.409.376.87.734 1.382 1.069.462.302 1.082.172 1.384-.29s.172-1.082-.29-1.384z"></path><path d="m24.866 28.906c-.297-.403-.548-.808-.754-1.213-.25-.492-.853-.688-1.345-.438s-.688.853-.438 1.345c.254.498.562.997.927 1.492.327.444.953.539 1.398.212.444-.328.539-.954.212-1.398z"></path><path d="m23.404 24.825c.01-.403.069-.794.177-1.169.152-.53-.155-1.085-.686-1.237-.53-.152-1.085.155-1.237.686-.153.536-.239 1.095-.254 1.67-.013.552.423 1.011.975 1.024.552.014 1.011-.422 1.025-.974z"></path><path d="m24.942 21.485c.257-.238.545-.458.86-.657.467-.295.607-.913.313-1.379-.295-.467-.913-.607-1.38-.313-.423.267-.807.562-1.152.882-.405.375-.429 1.008-.054 1.413s1.008.429 1.413.054z"></path><path d="m28.661 19.76c.503-.093 1.036-.153 1.598-.176.552-.024.98-.491.957-1.042s-.49-.98-1.042-.957c-.66.028-1.286.099-1.877.208-.542.101-.902.623-.801 1.165.1.543.622.902 1.165.802z"></path><path d="m33.873 19.701c.853.01 1.647-.02 2.384-.085.55-.049.957-.535.908-1.085-.049-.549-.535-.956-1.085-.907-.675.059-1.402.087-2.184.077-.552-.006-1.005.437-1.011.988-.007.552.436 1.006.988 1.012z"></path><path d="m39.544 19.003c.99-.303 1.826-.691 2.526-1.136.465-.297.603-.915.306-1.381-.296-.465-.915-.603-1.381-.306-.563.358-1.238.666-2.036.91-.527.162-.825.721-.663 1.249.161.528.721.825 1.248.664z"></path><path d="m44.634 15.068c.472-.976.653-2.008.607-3.003-.026-.552-.495-.978-1.046-.952s-.978.494-.952 1.045c.032.676-.09 1.377-.41 2.04-.24.497-.032 1.096.465 1.336s1.096.031 1.336-.466z"></path><path d="m43.997 8.529c-.729-.985-1.718-1.671-2.796-1.892-.541-.11-1.07.238-1.181.779-.11.541.239 1.07.779 1.181.622.127 1.17.554 1.591 1.123.329.443.956.536 1.399.208.444-.329.537-.956.208-1.399z"></path></g><path d="m30.933 6.831c1.082-6.127 10.459-5.731 5 0z" fill="url(#_Linear18)"></path><path d="m30.933 8.383c1.082 6.126 10.459 5.731 5 0z" fill="url(#_Linear19)"></path><path d="m30.843 8.617h6.696c.552 0 1-.448 1-1s-.448-1-1-1h-6.696c-.551 0-1 .448-1 1s.449 1 1 1z" fill="url(#_Linear9)"></path></g></svg>
+            </div>
+        </GridEmptyDataTemplate>
+    </GridTemplates>
+
+</Grid>
+
+@code {
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {
+        await Task.Delay(3000);
+
+        return (new GridDataProviderResult<Employee> { Data = new List<Employee>(), TotalCount = 0 });
+    }
+}
