@@ -38,6 +38,8 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | FiltersRowCssClass | string | null | | Gets or sets the filters row css class. | 1.9.2 |
 | FiltersTranslationProvider | `GridFiltersTranslationDelegate` | null | | Filters transalation is for grid filters to render. The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed. | 1.10.0 |
 | FixedHeader | bool | false | | Gets or sets the grid fixed header. | 1.10.3 |
+| GridContainerClass | string | null | | Gets or sets the grid container css class. | 3.0.0 |
+| GridContainerStyle | string | null | | Gets or sets the grid container css style. | 3.0.0 |
 | HeaderRowCssClass | string | null | | Gets or sets the header row css class but not the thead tag class. | 1.9.2 |
 | Height | float | 320 pixels | | Gets or sets the grid height. | 1.10.3 |
 | ItemsPerPageText | string | `Items per page` | ✔️ | Gets or sets the items per page text. | 1.9.5 |
@@ -118,23 +120,32 @@ Add `AllowFiltering="true"` parameter to Grid and `PropertyName` parameter to al
 
 <img src="https://i.imgur.com/Clr8W11.png" alt="Blazor Bootstrap: Grid Component - Client side filtering" />
 
-```cshtml {1,2,5,8,11,14} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+```cshtml {5,9,12,15,18,21} showLineNumbers
+<Grid @ref="grid"
+      TItem="Employee4"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee4" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
@@ -171,25 +182,37 @@ Add `AllowFiltering="true"` parameter to Grid and `PropertyName` parameter to al
 
 In the below example, `StringComparision.Ordinal` is used on the **Employee Name** column to make the filter case-sensitive.
 
+:::info
+By default, <code>StringComparison.OrdinalIgnoreCase</code> is used to compare culture-agnostic and case-insensitive string matching.
+:::
+
 <img src="https://i.imgur.com/yLzUB8I.png" alt="Blazor Bootstrap: Grid Component - Client side filtering with string comparision" />
 
-```cshtml {5} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" StringComparison="StringComparison.Ordinal">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+```cshtml {4,8,11,14,17,20} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" StringComparison="StringComparison.Ordinal">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
@@ -222,10 +245,6 @@ In the below example, `StringComparision.Ordinal` is used on the **Employee Name
 
 [See demo here](https://demos.blazorbootstrap.com/grid#client-side-filtering-with-string-comparision)
 
-:::info
-By default, <code>StringComparison.OrdinalIgnoreCase</code> is used to compare culture-agnostic and case-insensitive string matching.
-:::
-
 ### Client side paging
 
 For paging, `AllowPaging` and `PageSize` parameters are required.
@@ -237,23 +256,32 @@ Add `AllowPaging="true"` and `PageSize="20"` parameters to the Grid. `PageSize` 
 The default page size is 10.
 :::
 
-```cshtml {1} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowPaging="true" PageSize="5" Responsive="true">
-    <GridColumn TItem="Employee1" HeaderText="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active">
-        @context.IsActive
-    </GridColumn>
+```cshtml {4} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowPaging="true"
+      PageSize="5"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
@@ -296,23 +324,35 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
 
 <img src="https://i.imgur.com/wkIWG5S.png" alt="Blazor Bootstrap: Grid Component - Client side sorting" />
 
-```cshtml {1,2,5,8,11,14} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowSorting="true" Responsive="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+```cshtml {2,8,12,16,20,24} showLineNumbers
+<Grid TItem="Employee1"
+      AllowSorting="true"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+
+        <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+
+        <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+
+        <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
@@ -349,33 +389,71 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
 
 <img src="https://i.imgur.com/wZ0cQiO.png" alt="Blazor Bootstrap: Grid Component - Client side filtering, paging, and sorting" />
 
-```cshtml {1,2,5,8,11,14} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+```cshtml {4,5,6,7} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      PageSize="5"
+      AllowSorting="true"
+      AllowSelection="true"
+      SelectionMode="GridSelectionMode.Multiple"
+      SelectedItemsChanged="OnSelectedItemsChanged"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
+
+<div class="mt-3">
+    Selected Items Count: @selectedEmployees.Count
+</div>
+
+<div class="mt-2">
+    Selected Employees:
+    <ul>
+        @foreach (var emp in selectedEmployees)
+        {
+            <li>@emp.Name</li>
+        }
+    </ul>
+</div>
 ```
 
 ```cs showLineNumbers
 @code {
-    private IEnumerable<Employee1> employees;
+    private IEnumerable<Employee1> employees = default!;
 
-    protected override void OnInitialized()
+    private HashSet<Employee1> selectedEmployees = new();
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
-        employees = new List<Employee1>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
         {
             new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
             new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
@@ -392,9 +470,10 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
         };
     }
 
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
     {
-        return await Task.FromResult(request.ApplyTo(employees));
+        selectedEmployees = employees is not null && employees.Any() ? employees : new();
+        return Task.CompletedTask;
     }
 }
 ```
@@ -411,33 +490,49 @@ Add `AllowSorting="true"` parameter to Grid and `SortKeySelector` to all the Gri
 You can set the default filter on more than one GridColumn.
 :::
 
-```cshtml {2} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" FilterOperator="FilterOperator.GreaterThanOrEquals" FilterValue="105">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+```cshtml {4,8} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" FilterOperator="FilterOperator.GreaterThanOrEquals" FilterValue="105">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
-```cs showLineNumbers
+```cs {} showLineNumbers
 @code {
-    private IEnumerable<Employee1> employees;
+    private IEnumerable<Employee1>? employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
-        employees = new List<Employee1>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
         {
             new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
             new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
@@ -449,11 +544,6 @@ You can set the default filter on more than one GridColumn.
             new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
         };
-    }
-
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
     }
 }
 ```
@@ -463,40 +553,57 @@ You can set the default filter on more than one GridColumn.
 ### Disable specific column filter
 
 `Filterable` parameter is required to disable the filter on a specific column. 
-Add `Filterable="false"` parameter to GridColumn.
+Add `Filterable="false"` parameter to GridColumn. The column filter is disabled on the Id column in the below example.
 
 <img src="https://i.imgur.com/oGeA4VO.png" alt="Blazor Bootstrap: Grid Component - Disable specific column filter" />
 
 :::info INFO
 By default, `Filterable="true"` on all the columns if the `AllowFiltering` parameter is set to `true` on the grid.
 :::
-```cshtml {14} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" Filterable="false">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" Filterable="false">
-        @context.IsActive
-    </GridColumn>
+
+```cshtml {4,8} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" Filterable="false">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" Filterable="false">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
-```cs showLineNumbers
+```cs {} showLineNumbers
 @code {
-    private IEnumerable<Employee1> employees;
+    private IEnumerable<Employee1>? employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
-        employees = new List<Employee1>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
         {
             new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
             new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
@@ -508,11 +615,6 @@ By default, `Filterable="true"` on all the columns if the `AllowFiltering` param
             new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
         };
-    }
-
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
     }
 }
 ```
@@ -529,45 +631,61 @@ Add `FilterTextboxWidth` parameter to the GridColumn to increase or decrease the
 Filter textbox width measured in pixels.
 :::
 
-```cshtml {2,5,8} showLineNumbers
-<Grid TItem="Employee3" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" Responsive="true">
-    <GridColumn TItem="Employee3" HeaderText="Id" PropertyName="Id" FilterTextboxWidth="80">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="First Name" PropertyName="FirstName" FilterTextboxWidth="80">
-        @context.FirstName
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Last Name" PropertyName="LastName" FilterTextboxWidth="80">
-        @context.LastName
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Email" PropertyName="Email">
-        @context.Email
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Company" TextNoWrap="true" PropertyName="Company">
-        @context.Company
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Designation" TextNoWrap="true" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" PropertyName="Salary" FilterTextboxWidth="80">
-        @context.Salary.ToString("N2")
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+```cshtml {4,8,11,14} showLineNumbers
+<Grid TItem="Employee3"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee3" HeaderText="Id" PropertyName="Id" FilterTextboxWidth="80">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="First Name" PropertyName="FirstName" FilterTextboxWidth="80">
+            @context.FirstName
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Last Name" PropertyName="LastName" FilterTextboxWidth="80">
+            @context.LastName
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Email" PropertyName="Email">
+            @context.Email
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Company" TextNoWrap="true" PropertyName="Company">
+            @context.Company
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Designation" TextNoWrap="true" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" PropertyName="Salary" FilterTextboxWidth="80">
+            @context.Salary.ToString("N2")
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
 ```cs showLineNumbers
 @code {
-    private IEnumerable<Employee3> employees;
+    private IEnumerable<Employee3>? employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee3>> EmployeesDataProvider(GridDataProviderRequest<Employee3> request)
     {
-        employees = new List<Employee3>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee3> GetEmployees()
+    {
+        return new List<Employee3>
         {
             new Employee3 { Id = 107, FirstName = "Alice", LastName = "Reddy", Email = "alice@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), Salary = 7700, IsActive = true },
             new Employee3 { Id = 103, FirstName = "Bob", LastName = "Roy", Email = "bob@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), Salary = 19000, IsActive = true },
@@ -579,11 +697,6 @@ Filter textbox width measured in pixels.
             new Employee3 { Id = 108, FirstName = "Zayne", LastName = "Simmons", Email = "zayne@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), Salary = 17850, IsActive = true },
             new Employee3 { Id = 109, FirstName = "Isha", LastName = "Davison", Email = "isha@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), Salary = 8000, IsActive = true },
         };
-    }
-
-    private async Task<GridDataProviderResult<Employee3>> EmployeesDataProvider(GridDataProviderRequest<Employee3> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
     }
 }
 ```
@@ -598,37 +711,45 @@ Filter textbox width measured in pixels.
 For server-side sorting, we need the `SortString` parameter on GridColumn along with the `SortKeySelector` parameter.
 :::
 
-```cshtml showLineNumbers
-<Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true" Responsive="true">
-    <GridColumn TItem="Employee" HeaderText="Id" PropertyName="Id" SortString="Id" SortKeySelector="item => item.Id">
-        @context.Id
+```cshtml {4,5,6} showLineNumbers
+<Grid TItem="Customer2"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="CustomersDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      AllowSorting="true"
+      Responsive="true">
+
+    <GridColumn TItem="Customer2" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+        @context.CustomerId
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="First Name" PropertyName="FirstName" SortString="FirstName" SortKeySelector="item => item.FirstName">
-        @context.FirstName
+    <GridColumn TItem="Customer2" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+        @context.CustomerName
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Last Name" PropertyName="LastName" SortString="LastName" SortKeySelector="item => item.LastName">
-        @context.LastName
+    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
+        @context.Phone
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Designation" PropertyName="Designation" SortString="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
+    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
+        @context.Email
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Salary" PropertyName="Salary" SortString="Salary" SortKeySelector="item => item.Salary">
-        @context.Salary
+    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
+        @context.Address
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="DOJ" PropertyName="DOJ" SortString="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
+    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
+        @context.PostalZip
     </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Active" PropertyName="IsActive" SortString="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
+    <GridColumn TItem="Customer2" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+        @context.Country
     </GridColumn>
+
 </Grid>
 ```
 
 ```cs {11} showLineNumbers
 @code {
-    [Inject] public IEmployeeService _employeeService { get; set; }
+    [Inject] public ICustomerService _customerService { get; set; } = default!;
 
-    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    private async Task<GridDataProviderResult<Customer2>> CustomersDataProvider(GridDataProviderRequest<Customer2> request)
     {
         string sortString = "";
         SortDirection sortDirection = SortDirection.None;
@@ -636,11 +757,11 @@ For server-side sorting, we need the `SortString` parameter on GridColumn along 
         if (request.Sorting is not null && request.Sorting.Any())
         {
             // Note: Multi column sorting is not supported at this moment
-            sortString = request.Sorting[0].SortString;
-            sortDirection = request.Sorting[0].SortDirection;
+            sortString = request.Sorting.FirstOrDefault()!.SortString;
+            sortDirection = request.Sorting.FirstOrDefault()!.SortDirection;
         }
-        var result = _employeeService.GetEmployees(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection);
-        return await Task.FromResult(new GridDataProviderResult<Employee> { Data = result.Item1, TotalCount = result.Item2 });
+        var result = await _customerService.GetCustomersAsync(request.Filters, request.PageNumber, request.PageSize, sortString, sortDirection, request.CancellationToken);
+        return await Task.FromResult(new GridDataProviderResult<Customer2> { Data = result.Item1, TotalCount = result.Item2 });
     }
 }
 ```
@@ -658,33 +779,48 @@ The default sort direction will be **ascending**. To change the default sorting 
 If more than one GridColumn has the `IsDefaultSortColumn` paramter, it will pick the first column as the default sorting column.
 :::
 
-```cshtml {5} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowSorting="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="@(item => item.Id)">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="@(item => item.Name)" IsDefaultSortColumn="true" SortDirection="SortDirection.Descending">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="@(item => item.Designation)">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="@(item => item.DOJ)">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="@(item => item.IsActive)">
-        @context.IsActive
-    </GridColumn>
+```cshtml {4,10} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowSorting="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="@(item => item.Id)">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="@(item => item.Name)" IsDefaultSortColumn="true" SortDirection="SortDirection.Descending">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="@(item => item.Designation)">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="@(item => item.DOJ)">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="@(item => item.IsActive)">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
-```cs showLineNumbers
+```cs {} showLineNumbers
 @code {
-    private IEnumerable<Employee1> employees;
+    private IEnumerable<Employee1>? employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
-        employees = new List<Employee1>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
         {
             new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
             new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
@@ -696,11 +832,6 @@ If more than one GridColumn has the `IsDefaultSortColumn` paramter, it will pick
             new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
         };
-    }
-
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
     }
 }
 ```
@@ -715,33 +846,50 @@ Add `Sortable="false"` parameter the GridColumn to disable the sorting.
 If sorting is disabled, then the `SortKeySelector` parameter is not required.
 :::
 
-```cshtml {8} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowSorting="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="@(item => item.Id)">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="@(item => item.Name)">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" Sortable="false">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="@(item => item.DOJ)">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="@(item => item.IsActive)">
-        @context.IsActive
-    </GridColumn>
+The sorting is disabled on the Designation column in the below example.
+
+```cshtml {4,13} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowSorting="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="@(item => item.Id)">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="@(item => item.Name)">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" Sortable="false">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="@(item => item.DOJ)">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="@(item => item.IsActive)">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
-```cs showLineNumbers
+```cs {} showLineNumbers
 @code {
-    private IEnumerable<Employee1> employees;
+    private IEnumerable<Employee1>? employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
-        employees = new List<Employee1>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
         {
             new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
             new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
@@ -753,11 +901,6 @@ If sorting is disabled, then the `SortKeySelector` parameter is not required.
             new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
         };
-    }
-
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
     }
 }
 ```
@@ -771,33 +914,47 @@ By default, `HeaderTextAlignment` is set to Alignment.Start. Other options you c
 
 <img src="https://i.imgur.com/gWgIESD.png" alt="Blazor Bootstrap: Grid Component - Header text alignment" />
 
-```cshtml {8,11,14} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider">
-    <GridColumn TItem="Employee1" HeaderText="Id" HeaderTextAlignment="Alignment.Center">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" HeaderTextAlignment="Alignment.Center">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" HeaderTextAlignment="Alignment.Center">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" HeaderTextAlignment="Alignment.End">
-        @context.IsActive
-    </GridColumn>
+```cshtml {6,12,15,18} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" HeaderTextAlignment="Alignment.Center">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" HeaderTextAlignment="Alignment.Center">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" HeaderTextAlignment="Alignment.Center">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" HeaderTextAlignment="Alignment.End">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
 ```cs showLineNumbers
 @code {
-    private IEnumerable<Employee1> employees;
+    private IEnumerable<Employee1>? employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
-        employees = new List<Employee1>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
         {
             new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
             new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
@@ -809,11 +966,6 @@ By default, `HeaderTextAlignment` is set to Alignment.Start. Other options you c
             new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
         };
-    }
-
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
     }
 }
 ```
@@ -827,33 +979,47 @@ By default, `TextAlignment` is set to `Alignment.Start`. Other options you can u
 
 <img src="https://i.imgur.com/0OKp4yd.png" alt="Blazor Bootstrap: Grid Component - Cell alignment" />
 
-```cshtml {11,14} showLineNumbers
-<Grid TItem="Employee2" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider">
-    <GridColumn TItem="Employee2" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Employee Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
-        @context.Salary
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.IsActive
-    </GridColumn>
+```cshtml {6,15,18} showLineNumbers
+<Grid TItem="Employee2"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider">
+
+    <GridColumns>
+        <GridColumn TItem="Employee2" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Employee Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
+            @context.Salary
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
-```cs showLineNumbers
+```cs {} showLineNumbers
 @code {
-    private IEnumerable<Employee2> employees;
+    private IEnumerable<Employee2>? employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee2>> EmployeesDataProvider(GridDataProviderRequest<Employee2> request)
     {
-        employees = new List<Employee2>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee2> GetEmployees()
+    {
+        return new List<Employee2>
         {
             new Employee2 { Id = 107, Name = "Alice", Designation = "AI Engineer", Salary = 7700, IsActive = true },
             new Employee2 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", Salary = 19000, IsActive = true },
@@ -865,11 +1031,6 @@ By default, `TextAlignment` is set to `Alignment.Start`. Other options you can u
             new Employee2 { Id = 108, Name = "Zayne", Designation = "Data Analyst", Salary = 17850, IsActive = true },
             new Employee2 { Id = 109, Name = "Isha", Designation = "App Maker", Salary = 8000, IsActive = true },
         };
-    }
-
-    private async Task<GridDataProviderResult<Employee2>> EmployeesDataProvider(GridDataProviderRequest<Employee2> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
     }
 }
 ```
@@ -877,7 +1038,7 @@ By default, `TextAlignment` is set to `Alignment.Start`. Other options you can u
 [See demo here](https://demos.blazorbootstrap.com/grid#cell-alignment)
 
 ### Cell formating
-To format the cell data, use `ToString` method and format strings. Refer: [How to format numbers, dates, enums, and other types in .NET](https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types)
+To format the cell data, use `ToString()` method and format strings. Refer: [How to format numbers, dates, enums, and other types in .NET](https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types)
 
 <img src="https://i.imgur.com/MitfasL.png" alt="Blazor Bootstrap: Grid Component - Cell formating" />
 
@@ -885,33 +1046,48 @@ To format the cell data, use `ToString` method and format strings. Refer: [How t
 @context.Salary.ToString("N2")
 :::
 
-```cshtml {12} showLineNumbers
+```cshtml {17} showLineNumbers
 <Grid TItem="Employee2" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider">
-    <GridColumn TItem="Employee2" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Employee Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
-        @context.Salary.ToString("N2")
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.IsActive
-    </GridColumn>
+<Grid TItem="Employee2"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider">
+
+    <GridColumns>
+        <GridColumn TItem="Employee2" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Employee Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
+            @context.Salary.ToString("N2")
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
-```cs showLineNumbers
+```cs {} showLineNumbers
 @code {
-    private IEnumerable<Employee2> employees;
+    private IEnumerable<Employee2>? employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee2>> EmployeesDataProvider(GridDataProviderRequest<Employee2> request)
     {
-        employees = new List<Employee2>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee2> GetEmployees()
+    {
+        return new List<Employee2>
         {
             new Employee2 { Id = 107, Name = "Alice", Designation = "AI Engineer", Salary = 7700, IsActive = true },
             new Employee2 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", Salary = 19000, IsActive = true },
@@ -923,11 +1099,6 @@ To format the cell data, use `ToString` method and format strings. Refer: [How t
             new Employee2 { Id = 108, Name = "Zayne", Designation = "Data Analyst", Salary = 17850, IsActive = true },
             new Employee2 { Id = 109, Name = "Isha", Designation = "App Maker", Salary = 8000, IsActive = true },
         };
-    }
-
-    private async Task<GridDataProviderResult<Employee2>> EmployeesDataProvider(GridDataProviderRequest<Employee2> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
     }
 }
 ```
@@ -944,45 +1115,60 @@ To prevent text from wrapping, add `TextNoWrap="true"` parameter to the GridColu
 Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.
 :::
 
-```cshtml {14,17} showLineNumbers
-<Grid TItem="Employee3" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" Responsive="true">
-    <GridColumn TItem="Employee3" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="First Name">
-        @context.FirstName
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="First Name">
-        @context.LastName
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Email">
-        @context.Email
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Company" TextNoWrap="true">
-        @context.Company
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Designation" TextNoWrap="true">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
-        @context.Salary.ToString("N2")
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.IsActive
-    </GridColumn>
+```cshtml {19,22} showLineNumbers
+<Grid TItem="Employee3"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee3" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="First Name">
+            @context.FirstName
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="First Name">
+            @context.LastName
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Email">
+            @context.Email
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Company" TextNoWrap="true">
+            @context.Company
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Designation" TextNoWrap="true">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
+            @context.Salary.ToString("N2")
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
-```cs showLineNumbers
+```cs {} showLineNumbers
 @code {
-    private IEnumerable<Employee3> employees;
+    private IEnumerable<Employee3>? employees;
 
-    protected override void OnInitialized()
+    private async Task<GridDataProviderResult<Employee3>> EmployeesDataProvider(GridDataProviderRequest<Employee3> request)
     {
-        employees = new List<Employee3>
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee3> GetEmployees()
+    {
+        return new List<Employee3>
         {
             new Employee3 { Id = 107, FirstName = "Alice", LastName = "Reddy", Email = "alice@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), Salary = 7700, IsActive = true },
             new Employee3 { Id = 103, FirstName = "Bob", LastName = "Roy", Email = "bob@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), Salary = 19000, IsActive = true },
@@ -995,74 +1181,10 @@ Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.
             new Employee3 { Id = 109, FirstName = "Isha", LastName = "Davison", Email = "isha@blazorbootstrap.com", Company = "BlazorBootstrap Company", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), Salary = 8000, IsActive = true },
         };
     }
-
-    private async Task<GridDataProviderResult<Employee3>> EmployeesDataProvider(GridDataProviderRequest<Employee3> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
-    }
 }
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/grid#cell-nowrap)
-
-### Pagination alignment
-
-Change the alignment of pagination by adding the `PaginationAlignment` parameter to the Grid. 
-By default, `PaginationAlignment` is set to `Alignment.Start`. Other options you can use are `Alignment.Center` and `Alignment.End`.
-
-<img src="https://i.imgur.com/CtSqfJb.png" alt="Blazor Bootstrap: Grid Component - Pagination alignment" />
-
-```cshtml {1} showLineNumbers
-<Grid TItem="Employee1" class="table table-hover table-bordered table-striped table-striped" DataProvider="EmployeesDataProvider" AllowPaging="true" PageSize="5" PaginationAlignment="Alignment.End" Responsive="true">
-    <GridColumn TItem="Employee1" HeaderText="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active">
-        @context.IsActive
-    </GridColumn>
-</Grid>
-```
-
-```cs showLineNumbers
-@code {
-    private IEnumerable<Employee1> employees;
-
-    protected override void OnInitialized()
-    {
-        employees = new List<Employee1>
-        {
-            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
-            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
-            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
-            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
-            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
-            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
-            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
-            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
-            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
-            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
-            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
-            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
-        };
-    }
-
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
-    {
-        return await Task.FromResult(request.ApplyTo(employees));
-    }
-}
-```
-
-[See demo here](https://demos.blazorbootstrap.com/grid#pagination-alignment)
 
 ### Empty data
 
@@ -1071,24 +1193,31 @@ You can change this message by adding the `EmptyText` parameter to the Grid.
 
 <img src="https://i.imgur.com/cLuvfmD.png" alt="Blazor Bootstrap: Grid Component - Empty data" />
 
-```cshtml {1} showLineNumbers
-<Grid TItem="Employee" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" EmptyText="No records to display">
-    <GridColumn TItem="Employee" HeaderText="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="First Name">
-        @context.FirstName
-    </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Last Name">
-        @context.LastName
-    </GridColumn>
-    <GridColumn TItem="Employee" HeaderText="Designation">
-        @context.Designation
-    </GridColumn>
+```cshtml {4} showLineNumbers
+<Grid TItem="Employee"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      EmptyText="No records to display">
+
+    <GridColumns>
+        <GridColumn TItem="Employee" HeaderText="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="First Name">
+            @context.FirstName
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Last Name">
+            @context.LastName
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Designation">
+            @context.Designation
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
-```cs showLineNumbers
+```cs {} showLineNumbers
 @code {
     private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
     {
@@ -1105,6 +1234,56 @@ You can change this message by adding the `EmptyText` parameter to the Grid.
 Add `Responsive="true"` parameter to the grid to enable horizontal scrolling.
 :::
 
+### Empty data template
+
+Set the `GridEmptyDataTemplate` to customize the message displayed when the grid has no records.
+
+<img src="https://i.imgur.com/18zUnNa.png" alt="Blazor Bootstrap: Grid Component - Empty data template" />
+
+```cshtml {20-26} showLineNumbers
+<Grid TItem="Employee"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider">
+
+    <GridColumns>
+        <GridColumn TItem="Employee" HeaderText="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="First Name">
+            @context.FirstName
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Last Name">
+            @context.LastName
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Designation">
+            @context.Designation
+        </GridColumn>
+    </GridColumns>
+
+    <GridTemplates>
+        <GridEmptyDataTemplate TItem="Employee">
+            <div class="text-center">
+                <svg clip-rule="evenodd" fill-rule="evenodd" height="128" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 64 64" width="128" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="fi_7486754"><linearGradient id="lg1"><stop offset="0" stop-color="#cadcf0"></stop><stop offset="1" stop-color="#a4bbdb"></stop></linearGradient><linearGradient id="_Linear1" gradientTransform="matrix(40 0 0 25.912 12 48.573)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg1" y1="0" y2="0"></linearGradient><linearGradient id="lg2"><stop offset="0" stop-color="#a4bbdb"></stop><stop offset="1" stop-color="#8da3be"></stop></linearGradient><linearGradient id="_Linear2" gradientTransform="matrix(20.086 0 0 25.912 31.914 48.573)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg2" y1="0" y2="0"></linearGradient><linearGradient id="lg3"><stop offset="0" stop-color="#e9f3fc"></stop><stop offset="1" stop-color="#cadcf0"></stop></linearGradient><linearGradient id="_Linear3" gradientTransform="matrix(14.679 14.768 -21.492 8.973 12.133 35.609)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2=".337"></linearGradient><linearGradient id="_Linear4" gradientTransform="matrix(25.743 1.634 -3.837 17.203 32.081 42.038)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2=".227"></linearGradient><linearGradient id="_Linear5" gradientTransform="matrix(20.007 -6.501 5.236 7.762 9.382 31.736)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2="-.619"></linearGradient><linearGradient id="_Linear6" gradientTransform="matrix(15.249 13.945 -20.61 7.651 37.354 21.357)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2=".429"></linearGradient><linearGradient id="_Linear7" gradientTransform="matrix(40 0 0 13 12 35.606)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg1" y1="0" y2="0"></linearGradient><linearGradient id="_Linear8" gradientTransform="matrix(.431 16.153 -16.153 .431 34.048 28.815)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg2" y1="0" y2="0"></linearGradient><linearGradient id="_Linear9" gradientTransform="matrix(19.724 23.273 -23.273 19.724 20.991 6.831)" gradientUnits="userSpaceOnUse" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#559aff"></stop><stop offset="1" stop-color="#2e69ef"></stop></linearGradient><linearGradient id="_Linear18" gradientTransform="matrix(6.695 0 0 4.448 30.933 4.607)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2="0"></linearGradient><linearGradient id="_Linear19" gradientTransform="matrix(6.695 0 0 -4.448 30.933 10.607)" gradientUnits="userSpaceOnUse" x1="0" x2="1" xlink:href="#lg3" y1="0" y2="0"></linearGradient><g id="Exp-3.-G"><path d="m52 35.617h-40v18.512c0 .883.579 1.662 1.425 1.916 4.019 1.205 15.321 4.596 18 5.4.375.112.775.112 1.15 0 2.679-.804 13.981-4.195 18-5.4.846-.254 1.425-1.033 1.425-1.916 0-4.636 0-18.512 0-18.512z" fill="url(#_Linear1)"></path><path d="m52 35.617h-20s-.194 25.912 0 25.912.387-.028.575-.084c2.679-.804 13.981-4.195 18-5.4.846-.254 1.425-1.033 1.425-1.916 0-4.636 0-18.512 0-18.512z" fill="url(#_Linear2)"></path><path d="m32 42.106-20-6.489s-3.507 5.2-5.075 7.524c-.176.261-.219.588-.117.885.103.297.338.528.637.626 3.799 1.234 15.045 4.888 17.995 5.846.423.138.887-.021 1.137-.39 1.341-1.979 5.423-8.002 5.423-8.002z" fill="url(#_Linear3)"></path><path d="m52 35.617-20 6.489s4.082 6.023 5.423 8.002c.25.369.714.528 1.137.39 2.95-.958 14.196-4.612 17.995-5.846.299-.098.534-.329.637-.626.102-.297.059-.624-.117-.885-1.568-2.324-5.075-7.524-5.075-7.524z" fill="url(#_Linear4)"></path><path d="m27.159 21.986c-.25-.367-.713-.526-1.136-.388-2.948.957-14.197 4.612-17.996 5.847-.299.097-.535.328-.637.625s-.059.625.117.885c1.444 2.142 4.493 6.662 4.493 6.662l20-6.511s-3.592-5.283-4.841-7.12z" fill="url(#_Linear5)"></path><path d="m56.493 28.955c.176-.26.219-.588.117-.885s-.338-.528-.637-.625c-3.799-1.235-15.048-4.89-17.996-5.847-.423-.138-.886.021-1.136.388-1.249 1.837-4.841 7.12-4.841 7.12l20 6.511s3.049-4.52 4.493-6.662z" fill="url(#_Linear6)"></path><path d="m52 35.617-20-6.511-20 6.511 20 6.489z" fill="url(#_Linear7)"></path><path d="m32 42.106v-13l-20 6.511z" fill="url(#_Linear8)"></path><g fill="url(#_Linear9)"><path d="m27.982 31.978c-.416-.272-.791-.563-1.124-.868-.406-.373-1.039-.346-1.413.061-.373.406-.346 1.039.061 1.412.409.376.87.734 1.382 1.069.462.302 1.082.172 1.384-.29s.172-1.082-.29-1.384z"></path><path d="m24.866 28.906c-.297-.403-.548-.808-.754-1.213-.25-.492-.853-.688-1.345-.438s-.688.853-.438 1.345c.254.498.562.997.927 1.492.327.444.953.539 1.398.212.444-.328.539-.954.212-1.398z"></path><path d="m23.404 24.825c.01-.403.069-.794.177-1.169.152-.53-.155-1.085-.686-1.237-.53-.152-1.085.155-1.237.686-.153.536-.239 1.095-.254 1.67-.013.552.423 1.011.975 1.024.552.014 1.011-.422 1.025-.974z"></path><path d="m24.942 21.485c.257-.238.545-.458.86-.657.467-.295.607-.913.313-1.379-.295-.467-.913-.607-1.38-.313-.423.267-.807.562-1.152.882-.405.375-.429 1.008-.054 1.413s1.008.429 1.413.054z"></path><path d="m28.661 19.76c.503-.093 1.036-.153 1.598-.176.552-.024.98-.491.957-1.042s-.49-.98-1.042-.957c-.66.028-1.286.099-1.877.208-.542.101-.902.623-.801 1.165.1.543.622.902 1.165.802z"></path><path d="m33.873 19.701c.853.01 1.647-.02 2.384-.085.55-.049.957-.535.908-1.085-.049-.549-.535-.956-1.085-.907-.675.059-1.402.087-2.184.077-.552-.006-1.005.437-1.011.988-.007.552.436 1.006.988 1.012z"></path><path d="m39.544 19.003c.99-.303 1.826-.691 2.526-1.136.465-.297.603-.915.306-1.381-.296-.465-.915-.603-1.381-.306-.563.358-1.238.666-2.036.91-.527.162-.825.721-.663 1.249.161.528.721.825 1.248.664z"></path><path d="m44.634 15.068c.472-.976.653-2.008.607-3.003-.026-.552-.495-.978-1.046-.952s-.978.494-.952 1.045c.032.676-.09 1.377-.41 2.04-.24.497-.032 1.096.465 1.336s1.096.031 1.336-.466z"></path><path d="m43.997 8.529c-.729-.985-1.718-1.671-2.796-1.892-.541-.11-1.07.238-1.181.779-.11.541.239 1.07.779 1.181.622.127 1.17.554 1.591 1.123.329.443.956.536 1.399.208.444-.329.537-.956.208-1.399z"></path></g><path d="m30.933 6.831c1.082-6.127 10.459-5.731 5 0z" fill="url(#_Linear18)"></path><path d="m30.933 8.383c1.082 6.126 10.459 5.731 5 0z" fill="url(#_Linear19)"></path><path d="m30.843 8.617h6.696c.552 0 1-.448 1-1s-.448-1-1-1h-6.696c-.551 0-1 .448-1 1s.449 1 1 1z" fill="url(#_Linear9)"></path></g></svg>
+            </div>
+        </GridEmptyDataTemplate>
+    </GridTemplates>
+
+</Grid>
+```
+
+```cs {} showLineNumbers
+@code {
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {
+        await Task.Delay(3000);
+
+        return (new GridDataProviderResult<Employee> { Data = new List<Employee>(), TotalCount = 0 });
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid#empty-data)
+
 ### Save and Load Grid Settings
 
 This example shows how to save/load the Grid state. The state includes the page number, page size, and filters.
@@ -1119,40 +1298,48 @@ Browser local storage is used to persist the Grid state. Common locations exist 
 
 <img src="https://i.imgur.com/weFYVWA.png" alt="Blazor Bootstrap: Grid Component - Save and Load Grid Settings" />
 
-```cshtml {1,6,7} showLineNumbers
+```cshtml {12,13} showLineNumbers
 @using System.Text.Json
 
-<Grid @ref="grid" TItem="Employee1" class="table table-hover table-bordered table-striped"
+<Grid @ref="grid"
+      TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
-      AllowFiltering="true" PageSize="8" AllowPaging="true" AllowSorting="true" Responsive="true"
+      AllowFiltering="true" 
+      PageSize="8" 
+      AllowPaging="true" 
+      AllowSorting="true" 
+      Responsive="true"
       GridSettingsChanged="OnGridSettingsChanged"
       SettingsProvider="GridSettingsProvider">
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id" FilterOperator="FilterOperator.GreaterThanOrEquals" FilterValue="109">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id" FilterOperator="FilterOperator.GreaterThanOrEquals" FilterValue="109">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
-```cshtml {1,6,7} showLineNumbers
-
+```cshtml {15-25,27-38} showLineNumbers
 @code {
-    BlazorBootstrap.Grid<Employee1> grid;
-    private IEnumerable<Employee1> employees;
+    BlazorBootstrap.Grid<Employee1> grid = default!;
+    private IEnumerable<Employee1>? employees;
 
-    [Inject] public IJSRuntime JS { get; set; }
-    public GridSettings Settings { get; set; }
+    [Inject] public IJSRuntime JS { get; set; } = default!;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
@@ -1178,15 +1365,14 @@ Browser local storage is used to persist the Grid state. Common locations exist 
     {
         var settingsJson = await JS.InvokeAsync<string>("window.localStorage.getItem", "grid-settings");
         if (string.IsNullOrWhiteSpace(settingsJson))
-            return null;
+            return null!;
 
         var settings = JsonSerializer.Deserialize<GridSettings>(settingsJson);
         if (settings is null)
-            return null;
+            return null!;
 
         return settings;
     }
-
 
     private IEnumerable<Employee1> GetEmployees()
     {
@@ -1215,36 +1401,40 @@ Browser local storage is used to persist the Grid state. Common locations exist 
 
 Assign a collection to the `Data` parameter to render the grid dynamically. The example below will render different department employees in the individual grid.
 
-```cshtml {} showLineNumbers
+```cshtml {8} showLineNumbers
 @using BlazorBootstrap.Demo.Models;
 
 @foreach (var department in departments)
 {
     <p>@department.Name Employees:</p>
-    <Grid TItem="Employee1" class="table table-hover table-bordered table-striped" Data="department.Employees">
-        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
-            @context.Id
-        </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-            @context.Name
-        </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-            @context.Designation
-        </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-            @context.DOJ
-        </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
-            @context.IsActive
-        </GridColumn>
+    <Grid TItem="Employee1"
+          Class="table table-hover border-top"
+          Data="department.Employees">
+
+        <GridColumns>
+            <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+                @context.Id
+            </GridColumn>
+            <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+                @context.Name
+            </GridColumn>
+            <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+                @context.Designation
+            </GridColumn>
+            <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+                @context.DOJ
+            </GridColumn>
+            <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+                @context.IsActive
+            </GridColumn>
+        </GridColumns>
+
     </Grid>
 }
 ```
 
 ```cs {} showLineNumbers
 @code {
-    Grid<Employee1> grid;
-
     private List<Department> departments = new List<Department>()
     {
         new Department("Product 1 - Research & Development", new List<Employee1> {
@@ -1271,35 +1461,39 @@ Assign a collection to the `Data` parameter to render the grid dynamically. The 
 Assign a collection to the `Data` parameter to render the grid dynamically. The example below will render different department employees in the individual grid.
 
 ```cshtml {} showLineNumbers
-@using BlazorBootstrap.Demo.Models;
-
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="AddEmployee"> Add Employee </Button>
 <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="AddEmployee2"> Add Employee 2 </Button>
 
-<Grid @ref="grid" TItem="Employee1" class="table table-hover table-bordered table-striped mt-3" Data="employees">
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+<Grid @ref="grid"
+      TItem="Employee1"
+      Class="table table-hover table-bordered table-striped mt-3"
+      Data="employees">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 ```
 
 ```cs {} showLineNumbers
 @code {
-    Grid<Employee1> grid;
-
-    private List<Employee1> employees;
+    Grid<Employee1> grid = default!;
+    private List<Employee1>? employees;
 
     protected override void OnInitialized()
     {
@@ -1316,14 +1510,14 @@ Assign a collection to the `Data` parameter to render the grid dynamically. The 
     {
         // for the same employees collection, we are adding an object
         // explicit grid refresh required
-        employees.Add(CreateEmployee());
+        employees!.Add(CreateEmployee());
         await grid.RefreshDataAsync();
     }
 
     private void AddEmployee2()
     {
         // creates a shallow copy
-        var emps = employees.GetRange(0, employees.Count);
+        var emps = employees!.GetRange(0, employees.Count);
         emps.Add(CreateEmployee());
         // now employees variable has a new reference. So no need to refresh the grid explicitly
         // explicit grid refresh is not required
@@ -1333,7 +1527,7 @@ Assign a collection to the `Data` parameter to render the grid dynamically. The 
     private Employee1 CreateEmployee()
     {
         var emp = new Employee1();
-        emp.Id = employees.Max(x => x.Id) + 1;
+        emp.Id = employees!.Max(x => x.Id) + 1;
         emp.Name = $"Employee {emp.Id}";
         emp.Designation = $"QA Engineer {emp.Id}";
         emp.DOJ = new DateOnly(new Random().Next(1970, 2000), new Random().Next(1, 12), new Random().Next(1, 25));
@@ -1368,28 +1562,30 @@ In the below example, we applied `table-danger` CSS class to the row where the e
       Responsive="true"
       RowClass="GetRowClass">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
 
 ```cs {12-20} showLineNumbers
 @code {
-    private IEnumerable<Employee1> employees;
+    private IEnumerable<Employee1>? employees;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
@@ -1438,7 +1634,7 @@ In the below example, we applied `table-danger` CSS class to the Active column w
 
 <img src="https://i.imgur.com/XlatgsB.png" alt="Blazor Bootstrap: Grid Component - Conditional css class for grid column" />
 
-```cshtml {26} showLineNumbers
+```cshtml {27} showLineNumbers
 <Grid TItem="Employee1"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
@@ -1448,28 +1644,31 @@ In the below example, we applied `table-danger` CSS class to the Active column w
       AllowSorting="true"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1"
-                HeaderText="Active"
-                PropertyName="IsActive"
-                SortKeySelector="item => item.IsActive"
-                ColumnClass="@(x => x.IsActive ? "table-success" : "table-danger")">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1"
+                    HeaderText="Active"
+                    PropertyName="IsActive"
+                    SortKeySelector="item => item.IsActive"
+                    ColumnClass="@(x => x.IsActive ? "table-success" : "table-danger")">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
+
 ```cs {} showLineNumbers
 @code {
     private IEnumerable<Employee1> employees;
@@ -1511,7 +1710,7 @@ In the following example, the `Class` parameter is used to apply the CSS class t
 
 <img src="https://i.imgur.com/XG4Wv17.png" alt="Blazor Bootstrap: Grid Component - Column class" />
 
-```cshtml {13} showLineNumbers
+```cshtml {14} showLineNumbers
 <Grid TItem="Employee1"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
@@ -1521,21 +1720,23 @@ In the following example, the `Class` parameter is used to apply the CSS class t
       AllowSorting="true"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" Class="text-danger" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" Class="text-danger" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -1591,41 +1792,46 @@ In the below example, we use `<HeaderContent>` and `<ChildContent>` tags to defi
       AllowSorting="true"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" PropertyName="IsActive" Filterable="false" Sortable="false">
-      <HeaderContent>
-        <Switch @bind-Value="IsAllChecked"/>
-      </HeaderContent>
-      <ChildContent>
-        <Switch @bind-Value="@context.IsActive"/>
-      </ChildContent>
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" PropertyName="IsActive" Filterable="false" Sortable="false">
+            <HeaderContent>
+                <Switch @bind-Value="IsAllChecked" />
+            </HeaderContent>
+            <ChildContent>
+                <Switch @bind-Value="@context.IsActive" />
+            </ChildContent>
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
+
 ```cs {4-8} showLineNumbers
 @code {
-    private IEnumerable<Employee1> employees;
+    private IEnumerable<Employee1> employees = default!;
 
     private bool IsAllChecked
     {
-        get => employees.All(e => e.IsActive);
-        set => Array.ForEach(employees.ToArray(), e => e.IsActive = value);
+        get => employees?.All(e => e.IsActive) ?? false;
+        set => Array.ForEach(employees?.ToArray()!, e => e.IsActive = value);
     }
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
+        Console.WriteLine("EmployeesDataProvider called...");
+
         if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
             employees = GetEmployees(); // call a service or an API to pull the employees
 
@@ -1667,21 +1873,23 @@ Set `AllowSelection="true"` to enable the selection on the Grid. By default, Sel
       SelectedItemsChanged="OnSelectedItemsChanged"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -1748,30 +1956,33 @@ To select multiple rows, set `SelectionMode="GridSelectionMode.Multiple"`.
 
 <img src="https://i.imgur.com/yzJETf8.png" alt="Blazor Bootstrap: Grid Component - Multiple selection" />
 
-```cshtml {4-6} showLineNumbers
+```cshtml {6-7} showLineNumbers
 <Grid TItem="Employee1"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
       AllowSelection="true"
       SelectionMode="GridSelectionMode.Multiple"
       SelectedItemsChanged="OnSelectedItemsChanged"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -1830,6 +2041,10 @@ To select multiple rows, set `SelectionMode="GridSelectionMode.Multiple"`.
 }
 ```
 
+:::danger NOTE
+Selected items are removed from the selection if they are not rendered after paging, sorting, filtering, etc.
+:::
+
 [See demo here](https://demos.blazorbootstrap.com/grid#multiple-selection)
 
 ### Disable selection
@@ -1852,21 +2067,23 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       SelectedItemsChanged="OnSelectedItemsChanged"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -1939,7 +2156,7 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 
 <img src="https://user-images.githubusercontent.com/2337067/239613002-c7b4b6f6-be67-4f14-accc-b3dd390eb0f9.png" alt="Blazor Bootstrap: Grid Component - Dynamic page size" />
 
-```cshtml {5,26-28} showLineNumbers
+```cshtml {5,28-30} showLineNumbers
 <Grid TItem="Employee1"
       Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
@@ -1947,27 +2164,29 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       PageSize="@pageSize"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => ChangeSize(5)">Grid Size 5</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="() => ChangeSize(10)">Grid Size 10</Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="() => ChangeSize(15)">Grid Size 15</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="() => ChangeSize(5)">Page Size 5</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="() => ChangeSize(10)">Page Size 10</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="() => ChangeSize(15)">Page Size 15</Button>
 ```
 
 ```cs {2,32} showLineNumbers
@@ -2022,21 +2241,23 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       PageSizeSelectorItems="@(new int[] { 5,10,20 })"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -2080,7 +2301,7 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 
 <img src="https://i.imgur.com/KIqBefV.png" alt="Blazor Bootstrap: Grid Component - Header row css class" />
 
-```cshtml {5,34,63,92} showLineNumbers
+```cshtml {5,36,67,98} showLineNumbers
 <Grid TItem="Employee1"
       AllowSorting="true"
       Class="table table-hover"
@@ -2088,25 +2309,27 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       HeaderRowCssClass="bg-primary text-white border-bottom-0"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -2117,54 +2340,58 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       HeaderRowCssClass="bg-primary text-white bg-opacity-75 border-bottom-0"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
 <Grid TItem="Employee1"
-             AllowSorting="true"
-             Class="table table-hover"
-             DataProvider="EmployeesDataProvider"
-             HeaderRowCssClass="bg-success text-white border-bottom-0"
-             Responsive="true">
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="EmployeesDataProvider"
+      HeaderRowCssClass="bg-success text-white border-bottom-0"
+      Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -2175,25 +2402,27 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       HeaderRowCssClass="bg-success text-white bg-opacity-75 border-bottom-0"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -2231,35 +2460,37 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
 
 <img src="https://i.imgur.com/11SK9v4.png" alt="Blazor Bootstrap: Grid Component - Filters row css class" />
 
-```cshtml {7,38,69,100,131,162,193} showLineNumbers
+```cshtml {6-7,39-40,72-73,105-106,138-139,171-172,204-205} showLineNumbers
 <Grid TItem="Employee1"
       AllowFiltering="true"
       AllowSorting="true"
       Class="table table-hover"
       DataProvider="EmployeesDataProvider"
-      HeaderRowCssClass="bg-primary text-white border-bottom-0"
       FiltersRowCssClass="bg-primary text-white bg-opacity-25 border-bottom-0"
+      HeaderRowCssClass="bg-primary text-white border-bottom-0"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -2272,25 +2503,27 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       FiltersRowCssClass="bg-warning text-white bg-opacity-25 border-bottom-0"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -2303,25 +2536,27 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       FiltersRowCssClass="bg-danger text-white bg-opacity-25 border-bottom-0"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -2334,25 +2569,27 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       FiltersRowCssClass="bg-success text-white bg-opacity-25 border-bottom-0"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -2365,25 +2602,27 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       FiltersRowCssClass="bg-info text-white bg-opacity-25 border-bottom-0"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -2396,25 +2635,27 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       FiltersRowCssClass="bg-dark text-white bg-opacity-25 border-bottom-0"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 
@@ -2427,25 +2668,27 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       FiltersRowCssClass="bg-secondary text-white bg-opacity-25 border-bottom-0"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -2491,25 +2734,27 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       OnRowClick="OnRowClick"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -2562,25 +2807,27 @@ Also, disable check the row level checkbox if the employee Id is less than 105.
       OnRowDoubleClick="OnRowDoubleClick"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
 
-    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -2644,21 +2891,23 @@ In the example below, you will see translations related to pagination and filter
       ItemsPerPageText="Artikelen per pagina"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -2735,44 +2984,46 @@ To set the fixed header, set the **FixedHeader** parameter to **true**. The mini
       FixedHeader="true"
       Height="350"
       Responsive="true"
-      Unit="Unit.px">
+      Unit="Unit.Px">
 
-    <GridColumn TItem="Employee4" HeaderText="Id" PropertyName="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="Employee Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
-    <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee4" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -2822,36 +3073,38 @@ To set the fixed header, set the **FixedHeader** parameter to **true**. The mini
 
 ```cshtml {4,7,9} showLineNumbers
 <Grid TItem="Customer2"
-Class="table table-hover table-bordered"
+      Class="table table-hover table-bordered"
       DataProvider="CustomersDataProvider"
       AllowFiltering="true"
       AllowPaging="true"
       AllowSorting="true"
       FixedHeader="true"
       Responsive="true"
-      Unit="Unit.px">
+      Unit="Unit.Px">
 
-    <GridColumn TItem="Customer2" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.CustomerId
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
-        @context.CustomerName
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
-        @context.Phone
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
-        @context.Email
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
-        @context.Address
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
-        @context.PostalZip
-    </GridColumn>
-    <GridColumn TItem="Customer2" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
-        @context.Country
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Customer2" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.CustomerId
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+            @context.CustomerName
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
+            @context.Phone
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
+            @context.Email
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
+            @context.Address
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
+            @context.PostalZip
+        </GridColumn>
+        <GridColumn TItem="Customer2" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+            @context.Country
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -2883,36 +3136,38 @@ Class="table table-hover table-bordered"
 
 <img src="https://i.imgur.com/1vRu0LU.png" alt="Blazor Bootstrap: Grid Component - Freeze columns" />
 
-```cshtml {7,9,12,27} showLineNumbers
+```cshtml {7,10,13,28} showLineNumbers
 <Grid TItem="Customer2"
       Class="table table-hover table-bordered text-nowrap"
       DataProvider="CustomersDataProvider"
       AllowPaging="true"
       AllowSorting="true"
       Responsive="true"
-      Unit="Unit.px">
+      Unit="Unit.Px">
 
-    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.CustomerId
-    </GridColumn>
-    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="55.98" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
-        @context.CustomerName
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
-        @context.Phone
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
-        @context.Email
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
-        @context.Address
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
-        @context.PostalZip
-    </GridColumn>
-    <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
-        @context.Country
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.CustomerId
+        </GridColumn>
+        <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="54.98" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+            @context.CustomerName
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
+            @context.Phone
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
+            @context.Email
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
+            @context.Address
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
+            @context.PostalZip
+        </GridColumn>
+        <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+            @context.Country
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -2944,7 +3199,7 @@ Class="table table-hover table-bordered"
 
 <img src="https://i.imgur.com/qIVCEKH.png" alt="Blazor Bootstrap: Grid Component - Freeze columns with fixed header" />
 
-```cshtml {6,8,10,13,28} showLineNumbers
+```cshtml {6,8,11,14,29} showLineNumbers
 <Grid TItem="Customer2"
       Class="table table-hover table-bordered text-nowrap"
       DataProvider="CustomersDataProvider"
@@ -2952,29 +3207,31 @@ Class="table table-hover table-bordered"
       AllowSorting="true"
       FixedHeader="true"
       Responsive="true"
-      Unit="Unit.px">
+      Unit="Unit.Px">
 
-    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.CustomerId
-    </GridColumn>
-    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="55.98" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
-        @context.CustomerName
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
-        @context.Phone
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
-        @context.Email
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
-        @context.Address
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
-        @context.PostalZip
-    </GridColumn>
-    <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
-        @context.Country
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.CustomerId
+        </GridColumn>
+        <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="54.98" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+            @context.CustomerName
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
+            @context.Phone
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
+            @context.Email
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
+            @context.Address
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
+            @context.PostalZip
+        </GridColumn>
+        <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+            @context.Country
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -3006,7 +3263,7 @@ Class="table table-hover table-bordered"
 
 <img src="https://i.imgur.com/GzXuQep.png" alt="Blazor Bootstrap: Grid Component - Freeze columns with fixed header and filters" />
 
-```cshtml {4,7,9,11,14,26,29} showLineNumbers
+```cshtml {4,7,9,12,15,27,30} showLineNumbers
 <Grid TItem="Customer2"
       Class="table table-hover table-bordered text-nowrap"
       DataProvider="CustomersDataProvider"
@@ -3015,29 +3272,31 @@ Class="table table-hover table-bordered"
       AllowSorting="true"
       FixedHeader="true"
       Responsive="true"
-      Unit="Unit.px">
+      Unit="Unit.Px">
 
-    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.CustomerId
-    </GridColumn>
-    <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="131.95" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
-        @context.CustomerName
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
-        @context.Phone
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
-        @context.Email
-    </GridColumn>
-    <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
-        @context.Address
-    </GridColumn>
-    <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="171" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
-        @context.PostalZip
-    </GridColumn>
-    <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
-        @context.Country
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.CustomerId
+        </GridColumn>
+        <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="130.35" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+            @context.CustomerName
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
+            @context.Phone
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
+            @context.Email
+        </GridColumn>
+        <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
+            @context.Address
+        </GridColumn>
+        <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="171" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
+            @context.PostalZip
+        </GridColumn>
+        <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+            @context.Country
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -3084,21 +3343,23 @@ Automatically hides the paging controls when the grid item count is less than or
       PageSizeSelectorItems="@(new int[] { 5,10,20 })"
       Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
@@ -3142,7 +3403,7 @@ Automatically hides the paging controls when the grid item count is less than or
 
 <img src="https://i.imgur.com/eJ9tlTH.png" alt="Blazor Bootstrap: Grid Component - Enum filter" />
 
-```cshtml {} showLineNumbers
+```cshtml {18-20} showLineNumbers
 <Grid @ref="grid"
        TItem="User"
        Class="table table-hover table-bordered table-striped"
@@ -3150,23 +3411,25 @@ Automatically hides the paging controls when the grid item count is less than or
        AllowFiltering="true"
        Responsive="true">
 
-    <GridColumn TItem="User" HeaderText="Id" PropertyName="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="User" HeaderText="DOB" PropertyName="DOB">
-        @context.DOB
-    </GridColumn>
-    <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
-        @context.Status
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="User" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="DOB" PropertyName="DOB">
+            @context.DOB
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
+            @context.Status
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 ```
 
-```cshtml {} showLineNumbers
+```cshtml {40,43-48} showLineNumbers
 @code {
     BlazorBootstrap.Grid<User> grid = default!;
     private IEnumerable<User> users = default!;
@@ -3224,7 +3487,7 @@ Automatically hides the paging controls when the grid item count is less than or
 
 <img src="https://i.imgur.com/0ZuKyGX.png" alt="Blazor Bootstrap: Grid Component - Guid filter" />
 
-```cshtml {
+```cshtml {9-11,37,44-49} showLineNumbers
 <Grid @ref="grid"
        TItem="User"
        Class="table table-hover table-bordered table-striped"
@@ -3232,24 +3495,25 @@ Automatically hides the paging controls when the grid item count is less than or
        AllowFiltering="true"
        Responsive="true">
 
-    <GridColumn TItem="User" HeaderText="Oid" PropertyName="Oid" FilterTextboxWidth="240">
-        @context.Oid
-    </GridColumn>
-    <GridColumn TItem="User" HeaderText="Id" PropertyName="Id" FilterTextboxWidth="70">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name" FilterTextboxWidth="100">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="User" HeaderText="DOB" PropertyName="DOB">
-        @context.DOB
-    </GridColumn>
-    <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
-        @context.Status
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="User" HeaderText="Oid" PropertyName="Oid" FilterTextboxWidth="240">
+            @context.Oid
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="Id" PropertyName="Id" FilterTextboxWidth="70">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name" FilterTextboxWidth="100">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="DOB" PropertyName="DOB">
+            @context.DOB
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
+            @context.Status
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
-} showLineNumbers
 ```
 
 ```cshtml {} showLineNumbers
@@ -3309,7 +3573,7 @@ Automatically hides the paging controls when the grid item count is less than or
 
 ### Detail View
 
-To enable detail view, set the AllowDetailView parameter to true. In the following example, existing `<GridColumn>` tags are nested under `<GridColumns>` tag to distinguish them from `<GridDetailView>`.
+To enable detail view, set the `AllowDetailView` parameter to true. In the following example, existing `<GridColumn>` tags are nested under `<GridColumns>` tag to distinguish them from `<GridDetailView>`.
 
 <img src="https://i.imgur.com/eetvhBB.png" alt="Blazor Bootstrap: Grid Component - Detail View" />
 
