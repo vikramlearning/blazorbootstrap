@@ -28,6 +28,23 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
         base.OnInitialized();
     }
 
+    public static string BuildClassNames(params (string? cssClass, bool when)[] cssClassList)
+    {
+        var list = new HashSet<string>();
+
+        if (cssClassList is not null && cssClassList.Any())
+            foreach (var (cssClass, when) in cssClassList)
+            {
+                if (!string.IsNullOrWhiteSpace(cssClass) && when)
+                    list.Add(cssClass);
+            }
+
+        if (list.Any())
+            return string.Join(" ", list);
+        else
+            return string.Empty;
+    }
+
     public static string BuildClassNames(string? userDefinedCssClass, params (string? cssClass, bool when)[] cssClassList)
     {
         var list = new HashSet<string>();

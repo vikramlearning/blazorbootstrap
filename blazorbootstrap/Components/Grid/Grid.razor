@@ -8,7 +8,7 @@
 
 @if (columns.Any())
 {
-    <div class="@responsiveCssClass" style="@gridContainerStyle" onscroll="@OnScroll">
+    <div class="@GridContainerClassNames" style="@GridContainerStyleNames" onscroll="@OnScroll">
         <table @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
             <thead class="@THeadCssClass">
                 <tr class="@(FixedHeader ? BootstrapClass.TextNoWrap : "") @HeaderRowCssClass">

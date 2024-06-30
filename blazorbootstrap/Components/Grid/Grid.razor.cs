@@ -689,7 +689,25 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public bool FixedHeader { get; set; }
 
-    private string gridContainerStyle => GetGridContainerStyle();
+    /// <summary>
+    /// Gets or sets the grid container css class.
+    /// </summary>
+    [Parameter]
+    public string? GridContainerClass { get; set; }
+
+    private string? GridContainerClassNames =>
+        BuildClassNames(GridContainerClass,
+            (BootstrapClass.TableResponsive, Responsive));
+
+    /// <summary>
+    /// Gets or sets the grid container css style.
+    /// </summary>
+    [Parameter]
+    public string? GridContainerStyle { get; set; }
+
+    private string? GridContainerStyleNames =>
+        BuildStyleNames(GridContainerStyle,
+            ($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}", FixedHeader));
 
     /// <summary>
     /// This event is fired when the grid state is changed.
@@ -837,9 +855,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [Parameter]
-    public bool IsResponsive { get; set; }
-
-    private string responsiveCssClass => IsResponsive ? "table-responsive" : "";
+    public bool Responsive { get; set; }
 
     /// <summary>
     /// Gets or sets the row class.

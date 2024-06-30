@@ -46,6 +46,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "51103", Text = "Custom CSS Class", Href = "/grid/custom-css-class", IconName = IconName.FileTypeCss, ParentId = "511" },
             new (){ Id = "51104", Text = "Data Binding", Href = "/grid/data-binding", IconName = IconName.GridFill, ParentId = "511" },
             new (){ Id = "51106", Text = "Detail View", Href = "/grid/detail-view", IconName = IconName.ListNested, ParentId = "511" },
+            new (){ Id = "51107", Text = "Events", Href = "/grid/events", IconName = IconName.LightningChargeFill, ParentId = "511" },
             new (){ Id = "51107", Text = "Filters", Href = "/grid/filters", IconName = IconName.FunnelFill, ParentId = "511" },
             new (){ Id = "51108", Text = "Fixed Header", Href = "/grid/fixed-header", IconName = IconName.Table, ParentId = "511" },
             new (){ Id = "51109", Text = "Freeze Columns", Href = "/grid/freeze-columns", IconName = IconName.LayoutThreeColumns, ParentId = "511" },
