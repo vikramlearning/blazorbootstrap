@@ -4,10 +4,28 @@
         <title>Blazor Bootstrap Docs Blog</title>
         <link>https://docs.blazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Docs Blog</description>
-        <lastBuildDate>Sat, 08 Jun 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Mon, 01 Jul 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v3.0.0-preview.2]]></title>
+            <link>https://docs.blazorbootstrap.com/blog/2024/07/01/blazorbootstrap-3.0.0-preview.2</link>
+            <guid>https://docs.blazorbootstrap.com/blog/2024/07/01/blazorbootstrap-3.0.0-preview.2</guid>
+            <pubDate>Mon, 01 Jul 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release version 3.0.0-preview.2, which includes new polar area charts and image components, and other improvements!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release version 3.0.0-preview.2, which includes new polar area charts and image components, and other improvements!</p><p><img loading="lazy" src="https://i.imgur.com/IpMhPwG.png" alt="image" title="Blazor Bootstrap: Grid Component - Nested Grid" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's new<a href="#whats-new" class="hash-link" aria-label="Direct link to What's new" title="Direct link to What's new">​</a></h2><ul><li><code>Polar Area Chart</code> component</li><li><code>Image</code> component</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>Grid</code> component</p><ul><li>Details View</li><li>Nested Grid</li><li>Templates: New <code>GridLoadingTemplate</code> and <code>GridEmptyDataTemplate</code></li><li>New <code>GridContainerClass</code> and <code>GridContainerStyle</code> parameters</li><li>Highlight row when selected and customize the row color and background color</li><li>All the demos updated</li></ul></li><li><p><code>Sidebar</code> component</p><ul><li>New <code>Width</code> and <code>WidthUnit</code> parameters</li></ul></li><li><p><code>Sidebar2</code> component</p><ul><li>New <code>Width</code> and <code>WidthUnit</code> parameters</li></ul></li><li><p>Demos &amp; Docs updated.</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li></ul>]]></content:encoded>
+            <category>v3.0.0</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>blazorbootstrap</category>
+            <category>charts</category>
+            <category>grid</category>
+            <category>image</category>
+            <category>polarareachart</category>
+            <category>sidebar</category>
+            <category>sidebar2</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v3.0.0-preview.1]]></title>
             <link>https://docs.blazorbootstrap.com/blog/2024/06/08/blazorbootstrap-3.0.0-preview.1</link>
