@@ -14,13 +14,13 @@
     Set <code>AllowSelection="true"</code> to enable the selection on the <code>Grid</code>.
     By default, <code>SelectionMode</code> is <b>Single</b>.
 </div>
-<Demo Type="typeof(Grid_Demo_22_Selection)" Tabs="true" />
+<Demo Type="typeof(Grid_Demo_01_Selection)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Multiple Selection" PageUrl="@pageUrl" HashTagName="multiple-selection" />
 <div class="mb-3">
     To select multiple rows, set <code>SelectionMode="GridSelectionMode.Multiple"</code>.
 </div>
-<Demo Type="typeof(Grid_Demo_23_Multiple_Selection)" Tabs="true" />
+<Demo Type="typeof(Grid_Demo_02_Multiple_Selection)" Tabs="true" />
 <Callout Color="CalloutColor.Danger" Heading="Note">
     <p>Selected items are removed from the selection if they are not rendered after paging, sorting, filtering, etc.</p>
 </Callout>
@@ -31,7 +31,15 @@
     For this, we have <code>DisableAllRowsSelection</code> and <code>DisableRowSelection</code> delegate parameters. In the below example, we disabled the header checkbox if any of the employee Id is less than 105.
     Also, disable check the row level checkbox if the employee Id is less than 105.
 </div>
-<Demo Type="typeof(Grid_Demo_24_Disable_Selection)" Tabs="true" />
+<Demo Type="typeof(Grid_Demo_03_Disable_Selection)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Change selected row background color" PageUrl="@pageUrl" HashTagName="change-selected-row-background-color" />
+<Demo Type="typeof(Grid_Demo_04_B_Selected_Row_CSS_Variables)" ShowCodeOnly="true" LanguageCode="LanguageCode.Css" />
+<div class="mb-3">
+    These CSS variables are used to set the default colors and background color of a row when it's selected.
+    You can override the <Badge>--bb-table-selected-row-color</Badge>, <Badge>--bb-table-selected-row-background-color</Badge>, <Badge>--bb-table-selected-row-hover-color</Badge>, and <Badge>--bb-table-selected-row-hover-background-color</Badge> variables in the application's specific CSS file to change the selected row's appearance. Please see the following example where the row text color is set to #fff (white) and the background color is set to #4c0bce (purple) when the row is selected.
+</div>
+<Demo Type="typeof(Grid_Demo_04_A_Change_Selected_Row_Background_Color)" Tabs="true" />
 
 @code {
     private const string pageUrl = "/grid/selection";
