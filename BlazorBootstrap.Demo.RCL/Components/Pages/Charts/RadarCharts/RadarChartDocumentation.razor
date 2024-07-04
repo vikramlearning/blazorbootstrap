@@ -1,0 +1,44 @@
+﻿@page "/charts/radar-chart"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl"/>
+
+<h1>Blazor Radar Chart</h1>
+<div class="lead mb-3">
+    A Blazor Bootstrap radar chart component is a way of showing multiple data points and the variation between them.
+    They are often useful for comparing the points of two or more different data sets.
+</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H4" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites" />
+<div class="mb-3">
+    Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
+</div>
+
+<SectionHeading Size="HeadingSize.H4" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works"/>
+<div class="mb-3">
+    In the following example, a categorical 12-color palette is used.
+</div>
+<Callout Heading="TIP" Color="CalloutColor.Success">
+    For data visualization, you can use the predefined palettes <code>ColorBuilder.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorBuilder.CategoricalSixColors</code> for a 6-color palette.
+    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
+</Callout>
+<Demo Type="typeof(RadarChart_Demo_01_A_Examples)" Tabs="true"/>
+<div class="my-3"></div>
+<Demo Type="typeof(RadarChart_Demo_01_B_Examples)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H4" Text="Locale" PageUrl="@pageUrl" HashTagName="locale"/>
+<div class="my-3">
+    By default, the chart is using the default locale of the platform on which it is running.
+    In the following example, you will see the chart in the <b>German</b> locale (<b>de_DE</b>).
+</div>
+<Demo Type="typeof(RadarChart_Demo_02_Locale)" Tabs="true"/>
+
+@code {
+    private readonly string pageUrl = "/charts/radar-chart";
+    private readonly string title = "Blazor Radar Chart";
+    private readonly string description = "A Blazor Bootstrap radar chart component is a way of showing multiple data points and the variation between them. They are often useful for comparing the points of two or more different data sets.";
+    private readonly string imageUrl = "https://i.imgur.com/8b7jH0D.png"; // TODO: update this
+}

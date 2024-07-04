@@ -1,4 +1,5 @@
-﻿<LineChart @ref="lineChart" Width="500" Height="200" />
+﻿@* <RadarChart @ref="radarChart" Width="500" Height="200" /> *@
+<RadarChart @ref="radarChart" />
 
 <div class="mt-5">
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
@@ -9,8 +10,8 @@
 </div>
 
 @code {
-    private LineChart lineChart = default!;
-    private LineChartOptions lineChartOptions = default!;
+    private RadarChart radarChart = default!;
+    private RadarChartOptions radarChartOptions = default!;
     private ChartData chartData = default!;
 
     private int datasetsCount;
@@ -21,14 +22,14 @@
     protected override void OnInitialized()
     {
         chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
-        lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+        radarChartOptions = new() { Responsive = true/*, Interaction = new Interaction { Mode = InteractionMode.Index }*/ };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await lineChart.InitializeAsync(chartData, lineChartOptions);
+            await radarChart.InitializeAsync(chartData, radarChartOptions);
         }
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -41,11 +42,11 @@
 
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is LineChartDataset lineChartDataset
-                && lineChartDataset is not null
-                && lineChartDataset.Data is not null)
+            if (dataset is RadarChartDataset radarChartDataset
+                && radarChartDataset is not null
+                && radarChartDataset.Data is not null)
             {
-                var count = lineChartDataset.Data.Count;
+                var count = radarChartDataset.Data.Count;
 
                 var newData = new List<double>();
                 for (var i = 0; i < count; i++)
@@ -53,22 +54,22 @@
                     newData.Add(random.Next(200));
                 }
 
-                lineChartDataset.Data = newData;
-                newDatasets.Add(lineChartDataset);
+                radarChartDataset.Data = newData;
+                newDatasets.Add(radarChartDataset);
             }
         }
 
         chartData.Datasets = newDatasets;
 
-        await lineChart.UpdateAsync(chartData, lineChartOptions);
+        await radarChart.UpdateAsync(chartData, radarChartOptions);
     }
 
     private async Task AddDatasetAsync()
     {
         if (chartData is null || chartData.Datasets is null) return;
 
-        var chartDataset = GetRandomLineChartDataset();
-        chartData = await lineChart.AddDatasetAsync(chartData, chartDataset, lineChartOptions);
+        var chartDataset = GetRandomRadarChartDataset();
+        chartData = await radarChart.AddDatasetAsync(chartData, chartDataset, radarChartOptions);
     }
 
     private async Task AddDataAsync()
@@ -79,23 +80,23 @@
         var data = new List<IChartDatasetData>();
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is LineChartDataset lineChartDataset)
-                data.Add(new LineChartDatasetData(lineChartDataset.Label, random.Next(200)));
+            if (dataset is RadarChartDataset radarChartDataset)
+                data.Add(new RadarChartDatasetData(radarChartDataset.Label, random.Next(200)));
         }
 
-        chartData = await lineChart.AddDataAsync(chartData, GetNextDataLabel(), data);
+        chartData = await radarChart.AddDataAsync(chartData, GetNextDataLabel(), data);
     }
 
     private async Task ShowHorizontalLineChartAsync()
     {
-        lineChartOptions.IndexAxis = "y";
-        await lineChart.UpdateAsync(chartData, lineChartOptions);
+        //radarChartOptions.IndexAxis = "y";
+        await radarChart.UpdateAsync(chartData, radarChartOptions);
     }
 
     private async Task ShowVerticalLineChartAsync()
     {
-        lineChartOptions.IndexAxis = "x";
-        await lineChart.UpdateAsync(chartData, lineChartOptions);
+        //radarChartOptions.IndexAxis = "x";
+        await radarChart.UpdateAsync(chartData, radarChartOptions);
     }
 
     #region Data Preparation
@@ -106,25 +107,26 @@
 
         for (var index = 0; index < numberOfDatasets; index++)
         {
-            datasets.Add(GetRandomLineChartDataset());
+            datasets.Add(GetRandomRadarChartDataset());
         }
 
         return datasets;
     }
 
-    private LineChartDataset GetRandomLineChartDataset()
+    private RadarChartDataset GetRandomRadarChartDataset()
     {
         var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
 
         datasetsCount += 1;
 
-        return new LineChartDataset
+        return new RadarChartDataset
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = c.ToRgbString(),
-                BorderColor = c.ToRgbString(),
+                BackgroundColor = c.ToRgbaString(), // RGBA
+                BorderColor = c.ToRgbString(), // RGB
                 BorderWidth = 2,
+                Fill = true,
                 HoverBorderWidth = 4,
                 // PointBackgroundColor = c.ToRgbString(),
                 // PointRadius = 0, // hide points

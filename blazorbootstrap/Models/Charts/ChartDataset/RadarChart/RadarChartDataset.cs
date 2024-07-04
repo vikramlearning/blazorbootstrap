@@ -5,7 +5,7 @@
 /// They are often useful for comparing the points of two or more different data sets.
 /// <see href="https://www.chartjs.org/docs/latest/charts/radar.html#dataset-properties" />.
 /// </summary>
-public class RadarChartDataset
+public class RadarChartDataset : ChartDataset
 {
     #region Properties, Indexers
 

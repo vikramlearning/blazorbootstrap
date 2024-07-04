@@ -31,9 +31,9 @@ public partial class RadarChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
-            if (dataset is PolarAreaChartDataset barChartDataset && barChartDataset.Label == dataLabel)
-                if (data is PolarAreaChartDatasetData barChartDatasetData)
-                    barChartDataset.Data?.Add(barChartDatasetData.Data);
+            if (dataset is RadarChartDataset radarChartDataset && radarChartDataset.Label == dataLabel)
+                if (data is RadarChartDatasetData radarChartDatasetData)
+                    radarChartDataset.Data?.Add(radarChartDatasetData.Data);
 
         await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
@@ -72,15 +72,15 @@ public partial class RadarChart : BlazorBootstrapChart
         chartData.Labels.Add(dataLabel);
 
         foreach (var dataset in chartData.Datasets)
-            if (dataset is PolarAreaChartDataset barChartDataset)
+            if (dataset is RadarChartDataset radarChartDataset)
             {
-                var chartDatasetData = data.FirstOrDefault(x => x is PolarAreaChartDatasetData barChartDatasetData && barChartDatasetData.DatasetLabel == barChartDataset.Label);
+                var chartDatasetData = data.FirstOrDefault(x => x is RadarChartDatasetData radarChartDatasetData && radarChartDatasetData.DatasetLabel == radarChartDataset.Label);
 
-                if (chartDatasetData is PolarAreaChartDatasetData barChartDatasetData)
-                    barChartDataset.Data?.Add(barChartDatasetData.Data);
+                if (chartDatasetData is RadarChartDatasetData radarChartDatasetData)
+                    radarChartDataset.Data?.Add(radarChartDatasetData.Data);
             }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (PolarAreaChartDatasetData)x));
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (RadarChartDatasetData)x));
 
         return chartData;
     }
@@ -96,10 +96,10 @@ public partial class RadarChart : BlazorBootstrapChart
         if (chartDataset is null)
             throw new ArgumentNullException(nameof(chartDataset));
 
-        if (chartDataset is PolarAreaChartDataset)
+        if (chartDataset is RadarChartDataset)
         {
             chartData.Datasets.Add(chartDataset);
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (PolarAreaChartDataset)chartDataset);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (RadarChartDataset)chartDataset);
         }
 
         return chartData;
@@ -109,9 +109,9 @@ public partial class RadarChart : BlazorBootstrapChart
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
-            var datasets = chartData.Datasets.OfType<PolarAreaChartDataset>();
+            var datasets = chartData.Datasets.OfType<RadarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions, plugins);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (RadarChartOptions)chartOptions, plugins);
         }
     }
 
@@ -119,9 +119,9 @@ public partial class RadarChart : BlazorBootstrapChart
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
-            var datasets = chartData.Datasets.OfType<PolarAreaChartDataset>();
+            var datasets = chartData.Datasets.OfType<RadarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (RadarChartOptions)chartOptions);
         }
     }
 
