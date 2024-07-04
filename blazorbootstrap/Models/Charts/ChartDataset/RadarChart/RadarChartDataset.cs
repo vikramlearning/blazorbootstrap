@@ -1,11 +1,11 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// The line chart allows a number of properties to be specified for each dataset. 
-/// These are used to set display properties for a specific dataset. 
-/// <see href="https://www.chartjs.org/docs/latest/charts/line.html#dataset-properties" />.
+/// A radar chart is a way of showing multiple data points and the variation between them.
+/// They are often useful for comparing the points of two or more different data sets.
+/// <see href="https://www.chartjs.org/docs/latest/charts/radar.html#dataset-properties" />.
 /// </summary>
-public class LineChartDataset : ChartDataset
+public class RadarChartDataset
 {
     #region Properties, Indexers
 
@@ -68,34 +68,8 @@ public class LineChartDataset : ChartDataset
     /// </remarks>
     public double BorderWidth { get; set; } = 3;
 
-    /// <summary>
-    /// <see href="https://www.chartjs.org/docs/latest/charts/line.html#cubicinterpolationmode" />.
-    /// Supported values are 'default', and 'monotone'.
-    /// </summary>
-    /// <remarks>
-    /// Default value is 'default'.
-    /// </remarks>
-    public string CubicInterpolationMode { get; set; } = "default";
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
-    public LineChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
-
-    /// <summary>
-    /// Draw the active points of a dataset over the other points of the dataset.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null"/>.
-    /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<bool>? DrawActiveElementsOnTop { get; set; }
-
-    /// <summary>
-    /// How to fill the area under the line.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="false"/>.
-    /// </remarks>
-    public bool Fill { get; set; }
+    public RadarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: Add reference link
 
     /// <summary>
     /// The line fill color when hovered.
@@ -161,12 +135,12 @@ public class LineChartDataset : ChartDataset
     public double? HoverBorderWidth { get; set; }
 
     /// <summary>
-    /// The base axis of the dataset. 'x' for horizontal lines and 'y' for vertical lines.
+    /// How to fill the area under the line.
     /// </summary>
     /// <remarks>
-    /// Default value is 'x'.
+    /// Default value is <see langword="false"/>.
     /// </remarks>
-    public string IndexAxis { get; set; } = "x";
+    public bool Fill { get; set; }
 
     /// <summary>
     /// The fill color for points.
@@ -269,17 +243,6 @@ public class LineChartDataset : ChartDataset
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? PointStyle { get; set; }
 
-    //segment
-    //https://www.chartjs.org/docs/latest/charts/line.html#segment
-
-    /// <summary>
-    /// If <see langword="false" />, the lines between points are not drawn.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="true"/>.
-    /// </remarks>
-    public bool ShowLine { get; set; } = true;
-
     /// <summary>
     /// If <see langword="true" />, lines will be drawn between points with no or null data.
     /// If <see langword="false" />, points with null data will create a break in the line.
@@ -292,17 +255,6 @@ public class LineChartDataset : ChartDataset
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SpanGaps { get; set; }
 
-    //stack
-    //https://www.chartjs.org/docs/latest/charts/line.html#general
-
-    /// <summary>
-    /// true to show the line as a stepped line (tension will be ignored).
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="false"/>.
-    /// </remarks>
-    public bool Stepped { get; set; }
-
     /// <summary>
     /// Bezier curve tension of the line. Set to 0 to draw straight lines.
     /// This option is ignored if monotone cubic interpolation is used.
@@ -312,27 +264,9 @@ public class LineChartDataset : ChartDataset
     /// </remarks>
     public double Tension { get; set; }
 
-    /// <summary>
-    /// The ID of the x axis to plot this dataset on.
-    /// </summary>
-    /// <remarks>
-    /// Default value is 'first x axis'.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? XAxisID { get; set; }
-
-    /// <summary>
-    /// The ID of the y axis to plot this dataset on.
-    /// </summary>
-    /// <remarks>
-    /// Default value is 'first y axis'.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? YAxisID { get; set; }
-
     #endregion
 }
 
-public class LineChartDatasetDataLabels : ChartDatasetDataLabels
+public class RadarChartDatasetDataLabels : ChartDatasetDataLabels
 {
 }
