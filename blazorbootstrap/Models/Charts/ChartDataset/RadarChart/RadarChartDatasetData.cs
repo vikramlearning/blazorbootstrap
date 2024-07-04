@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace BlazorBootstrap;
 
-namespace BlazorBootstrap;
-
-public class RadarChartDatasetData
+public record RadarChartDatasetData : ChartDatasetData
 {
+    #region Constructors
+
+    public RadarChartDatasetData(string? datasetLabel, double data) : base(datasetLabel, data) { }
+
+    #endregion
 }
