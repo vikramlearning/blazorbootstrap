@@ -166,7 +166,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 'x'.
     /// </remarks>
-    public string IndexAxis { get; set; } = "x";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? IndexAxis { get; set; }
 
     /// <summary>
     /// The fill color for points.

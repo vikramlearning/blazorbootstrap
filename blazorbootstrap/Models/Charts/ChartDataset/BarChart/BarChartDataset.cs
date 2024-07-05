@@ -126,12 +126,13 @@ public class BarChartDataset : ChartDataset
 
     /// <summary>
     /// The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts.
+    /// Supported values are 'x' and 'y'.
     /// </summary>
     /// <remarks>
-    /// Default value is 'x'.
+    /// Default value is <see langword="null"/>.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string IndexAxis { get; set; } = "x";
+    public string? IndexAxis { get; set; }
 
     //InflateAmount
     //https://www.chartjs.org/docs/latest/charts/bar.html#inflateamount
