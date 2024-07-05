@@ -140,6 +140,15 @@ public static class EnumExtensions
             _ => null
         };
 
+    public static string? ToChartDatasetDataLabelAnchorString(this Alignment anchor) =>
+        anchor switch
+        {
+            Alignment.Start => "start",
+            Alignment.Center or Alignment.None => "center", // default
+            Alignment.End => "end",
+            _ => null
+        };
+
     public static string ToDropdownButtonColorClass(this DropdownColor dropdownColor) =>
         dropdownColor switch
         {

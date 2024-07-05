@@ -4,12 +4,12 @@ public partial class GridLoadingTemplate<TItem> : BlazorBootstrapComponentBase
 {
     private RenderFragment? template;
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         Id = IdUtility.GetNextId(); // Required
 
-        if (Parent is not null)
-            Parent.SetGridLoadingTemplate(this);
+        Parent?.SetGridLoadingTemplate(this);
 
         await base.OnInitializedAsync();
     }
@@ -30,5 +30,5 @@ public partial class GridLoadingTemplate<TItem> : BlazorBootstrapComponentBase
         };
 
     [CascadingParameter]
-    public Grid<TItem> Parent { get; set; } = default!;
+    public Grid<TItem>? Parent { get; set; }
 }

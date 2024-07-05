@@ -22,6 +22,7 @@ public class PdfViewerJsInterop : IAsyncDisposable
 
     #region Methods
 
+    /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
         if (moduleTask.IsValueCreated)
