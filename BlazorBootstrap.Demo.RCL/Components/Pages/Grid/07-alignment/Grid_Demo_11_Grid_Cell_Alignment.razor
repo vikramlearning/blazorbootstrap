@@ -1,19 +1,25 @@
-﻿<Grid TItem="Employee2" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider">
-    <GridColumn TItem="Employee2" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Employee Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
-        @context.Salary
-    </GridColumn>
-    <GridColumn TItem="Employee2" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
-        @context.IsActive
-    </GridColumn>
+﻿<Grid TItem="Employee2"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider">
+
+    <GridColumns>
+        <GridColumn TItem="Employee2" HeaderText="Id" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Employee Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
+            @context.Salary
+        </GridColumn>
+        <GridColumn TItem="Employee2" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 
 @code {

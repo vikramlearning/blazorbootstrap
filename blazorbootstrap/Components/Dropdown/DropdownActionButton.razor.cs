@@ -1,5 +1,10 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Action button within a <see cref="Dropdown"/>, which is used to make only <br/>
+/// the part defined in this component open up the <see cref="Dropdown"/> rather than the whole <see cref="DropdownToggleButton"/> <br/>
+/// For more information, see <seealso href="https://demos.blazorbootstrap.com/dropdown#split-button"/>
+/// </summary>
 public partial class DropdownActionButton : BlazorBootstrapComponentBase
 {
     #region Methods

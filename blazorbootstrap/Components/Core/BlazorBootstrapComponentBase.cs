@@ -24,6 +24,28 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     }
 
     /// <summary>
+    /// Builds the HTML class attribute string based on the list of classes that belong to the component.
+    /// </summary>
+    /// <param name="cssClassList">Classes that will be added based on conditions</param>
+    /// <returns>string to place in the class attribute of the html element</returns>
+    public static string BuildClassNames(params (string? cssClass, bool when)[] cssClassList)
+    {
+        var list = new HashSet<string>();
+
+        if (cssClassList is not null && cssClassList.Any())
+            foreach (var (cssClass, when) in cssClassList)
+            {
+                if (!string.IsNullOrWhiteSpace(cssClass) && when)
+                    list.Add(cssClass);
+            }
+
+        if (list.Any())
+            return string.Join(" ", list);
+        else
+            return string.Empty;
+    }
+
+    /// <summary>
     /// Builds the HTML class attribute string based on the user-defined class and the list of classes that belong to the component.
     /// </summary>
     /// <param name="userDefinedCssClass">User defined classes</param>

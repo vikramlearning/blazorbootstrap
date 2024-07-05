@@ -5,7 +5,7 @@
 {
     <div class="bd-example-snippet bd-code-snippet">
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border">
-            <small class="font-monospace text-body-secondary text-uppercase">razor</small>
+            <small class="font-monospace text-body-secondary text-uppercase">@LanguageCode.ToLanguageCodeString()</small>
             <div class="d-flex ms-auto">
                 <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="(async() => await CopyToClipboardAsync())">
                     <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
@@ -31,7 +31,7 @@ else if (!Tabs)
             <DynamicComponent Type="this.Type"/>
         </div>
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border border-top-0">
-            <small class="font-monospace text-body-secondary text-uppercase">razor</small>
+            <small class="font-monospace text-body-secondary text-uppercase">@LanguageCode.ToLanguageCodeString()</small>
             <div class="d-flex ms-auto">
                 <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="(async() => await CopyToClipboardAsync())">
                     <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />

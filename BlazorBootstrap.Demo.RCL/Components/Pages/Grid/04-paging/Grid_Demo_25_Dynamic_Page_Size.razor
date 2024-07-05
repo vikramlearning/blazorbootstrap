@@ -3,23 +3,25 @@
       DataProvider="EmployeesDataProvider"
       AllowPaging="true"
       PageSize="@pageSize"
-      IsResponsive="true">
+      Responsive="true">
 
-    <GridColumn TItem="Employee1" HeaderText="Id">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 

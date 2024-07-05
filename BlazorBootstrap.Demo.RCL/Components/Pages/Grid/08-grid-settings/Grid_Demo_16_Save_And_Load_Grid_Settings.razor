@@ -1,26 +1,34 @@
 ﻿@using System.Text.Json
 
-<Grid @ref="grid" TItem="Employee1" class="table table-hover table-bordered table-striped"
+<Grid @ref="grid"
+      TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
-      AllowFiltering="true" PageSize="8" AllowPaging="true" AllowSorting="true" IsResponsive="true"
+      AllowFiltering="true" 
+      PageSize="8" 
+      AllowPaging="true" 
+      AllowSorting="true" 
+      Responsive="true"
       GridSettingsChanged="OnGridSettingsChanged"
       SettingsProvider="GridSettingsProvider">
 
-    <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id" FilterOperator="FilterOperator.GreaterThanOrEquals" FilterValue="109">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-        @context.IsActive
-    </GridColumn>
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id" FilterOperator="FilterOperator.GreaterThanOrEquals" FilterValue="109">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
 
 </Grid>
 

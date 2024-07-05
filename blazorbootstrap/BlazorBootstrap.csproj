@@ -3,14 +3,14 @@
   <PropertyGroup>
 
     <PackageId>Blazor.Bootstrap</PackageId>
-    <Version>3.0.0-preview.1</Version>
-    <PackageVersion>3.0.0-preview.1</PackageVersion>
+    <Version>3.0.0-preview.2</Version>
+    <PackageVersion>3.0.0-preview.2</PackageVersion>
 
     <!--<PackageIconUrl></PackageIconUrl>-->
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://docs.blazorbootstrap.com/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/vikramlearning/blazorbootstrap</RepositoryUrl>
-    <PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap, BlazorAlert, BlazorAutoComplete, BlazorButtons, BlazorCallout, BlazorCharts, BlazorConfirmDialog, BlazorGrid, BlazorIcon, BlazorModal, BlazorCurrencyInput, BlazorNumberInput, BlazorInput, BlazorNumber, BlazorDate, BlazorDateInput, BlazorDatePicker, BlazorTime, BlazorTimeInput, BlazorTimePicker, BlazorOffcanvas, BlazorPagination, BlazorPdfViewer, BlazorPlaceholders, BlazorPreload, BlazorProgress, BlazorRibbon, BlazorScriptLoader, BlazorSidebar, BlazorSidebar2, BlazorSortableList, BlazorSwitch, BlazorSpinners, BlazorTabs, BlazorToasts, BlazorTooltips, BlazorTooltips, BlazorBarChart, BlazorDoughnutChart, BlazorLineChart, BlazorPieChart</PackageTags>
+    <PackageTags>Blazor, WebAssembly, BlazorWebAssembly, Bootstrap, Bootstrap5, BlazorBootstrap, BlazorAlert, BlazorAutoComplete, BlazorButtons, BlazorCallout, BlazorCharts, BlazorConfirmDialog, BlazorGrid, BlazorIcon, BlazorImage, BlazorModal, BlazorCurrencyInput, BlazorNumberInput, BlazorInput, BlazorNumber, BlazorDate, BlazorDateInput, BlazorDatePicker, BlazorTime, BlazorTimeInput, BlazorTimePicker, BlazorOffcanvas, BlazorPagination, BlazorPdfViewer, BlazorPlaceholders, BlazorPreload, BlazorProgress, BlazorRibbon, BlazorScriptLoader, BlazorSidebar, BlazorSidebar2, BlazorSortableList, BlazorSwitch, BlazorSpinners, BlazorTabs, BlazorToasts, BlazorTooltips, BlazorTooltips, BlazorBarChart, BlazorDoughnutChart, BlazorLineChart, BlazorPieChart, BlazorPolarAreaChart</PackageTags>
     <Description>Blazor Bootstrap is a component library built on top of Blazor and Bootstrap5 CSS framework.</Description>
     <Authors>Vikram Reddy</Authors>
     <!--<Company>your_company</Company>-->

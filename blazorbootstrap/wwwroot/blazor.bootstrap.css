@@ -50,6 +50,10 @@
     /* table */
     --bb-table-sticky-background-color: #fff;
     --bb-table-freeze-column-background-color: #efefef;
+    --bb-table-selected-row-color: #000;
+    --bb-table-selected-row-hover-color: #000;
+    --bb-table-selected-row-background-color: rgba(0,0,0,0.075);
+    --bb-table-selected-row-hover-background-color: rgba(0,0,0,0.075);
     /* callout */
     --bb-callout-link: 10, 88, 202;
     --bb-callout-code-color: #ab296a;
@@ -136,6 +140,17 @@ table button.dropdown-toggle.bb-grid-filter::after {
     --bs-table-color: inherit !important;
     --bs-table-bg: inherit !important;
 }
+
+    .bb-table tr:has(input[type=checkbox]:checked) {
+        color: var(--bb-table-selected-row-color);
+        background-color: var(--bb-table-selected-row-background-color);
+    }
+
+        .bb-table tr:has(input[type=checkbox]:checked):hover,
+        .bb-table tr:has(input[type=checkbox]:checked):hover > * {
+            color: var(--bb-table-selected-row-hover-color);
+            background-color: var(--bb-table-selected-row-hover-background-color);
+        }
 
 .bb-table-sticky {
     border-collapse: collapse;
@@ -287,6 +302,15 @@ table > tbody > tr > td:not(.freeze-column-right).freeze-column-active {
 /* tbody: every row -> all td's, right freeze columns only */
 table > tbody > tr > td:is(.freeze-column-right).freeze-column-active {
     box-shadow: inset 1px 0 0 var(--bs-table-border-color);
+}
+
+/* detail view */
+.bb-detail-view-icon svg {
+    transition: transform 0.2s ease-in-out;
+}
+
+.bb-detail-view-icon[aria-expanded="true"] svg {
+    transform: rotate(-180deg);
 }
 
 /* scrollbar */

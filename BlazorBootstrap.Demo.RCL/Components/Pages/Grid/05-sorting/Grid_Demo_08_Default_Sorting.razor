@@ -1,19 +1,26 @@
-﻿<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowSorting="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="@(item => item.Id)">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="@(item => item.Name)" IsDefaultSortColumn="true" SortDirection="SortDirection.Descending">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="@(item => item.Designation)">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="@(item => item.DOJ)">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="@(item => item.IsActive)">
-        @context.IsActive
-    </GridColumn>
+﻿<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowSorting="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" SortKeySelector="@(item => item.Id)">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" SortKeySelector="@(item => item.Name)" IsDefaultSortColumn="true" SortDirection="SortDirection.Descending">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" SortKeySelector="@(item => item.Designation)">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" SortKeySelector="@(item => item.DOJ)">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" SortKeySelector="@(item => item.IsActive)">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 
 @code {

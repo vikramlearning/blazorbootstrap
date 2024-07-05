@@ -113,7 +113,8 @@ public static class BootstrapClass
     public const string Show = "show";
     
     public const string Spinner = "spinner";
-    
+
+    public const string TableResponsive = "table-responsive";
     public const string TableSticky = "bb-table-sticky";
 
     public const string TextNoWrap = "text-nowrap";

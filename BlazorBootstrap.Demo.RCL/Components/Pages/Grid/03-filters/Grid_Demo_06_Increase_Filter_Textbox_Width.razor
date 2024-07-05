@@ -1,31 +1,39 @@
-﻿<Grid TItem="Employee3" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" IsResponsive="true">
-    <GridColumn TItem="Employee3" HeaderText="Id" PropertyName="Id" FilterTextboxWidth="80">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="First Name" PropertyName="FirstName" FilterTextboxWidth="80">
-        @context.FirstName
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Last Name" PropertyName="LastName" FilterTextboxWidth="80">
-        @context.LastName
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Email" PropertyName="Email">
-        @context.Email
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Company" TextNoWrap="true" PropertyName="Company">
-        @context.Company
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Designation" TextNoWrap="true" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" PropertyName="Salary" FilterTextboxWidth="80">
-        @context.Salary.ToString("N2")
-    </GridColumn>
-    <GridColumn TItem="Employee3" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" PropertyName="IsActive">
-        @context.IsActive
-    </GridColumn>
+﻿<Grid TItem="Employee3"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee3" HeaderText="Id" PropertyName="Id" FilterTextboxWidth="80">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="First Name" PropertyName="FirstName" FilterTextboxWidth="80">
+            @context.FirstName
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Last Name" PropertyName="LastName" FilterTextboxWidth="80">
+            @context.LastName
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Email" PropertyName="Email">
+            @context.Email
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Company" TextNoWrap="true" PropertyName="Company">
+            @context.Company
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Designation" TextNoWrap="true" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" PropertyName="Salary" FilterTextboxWidth="80">
+            @context.Salary.ToString("N2")
+        </GridColumn>
+        <GridColumn TItem="Employee3" HeaderText="Active" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 
 @code {

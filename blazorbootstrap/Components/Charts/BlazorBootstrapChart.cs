@@ -156,8 +156,7 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
                 switch (dataset)
                 {
                     case BarChartDataset barChartDataset: datasets.Add(barChartDataset); break;
-                    case BubbleChartDataset bubbleChartDataset: datasets.Add(bubbleChartDataset); break;
-                    case DoughnutChartDataset doughnutChartDataset: datasets.Add(doughnutChartDataset); break;
+                     case DoughnutChartDataset doughnutChartDataset: datasets.Add(doughnutChartDataset); break;
                     case LineChartDataset lineChartDataset: datasets.Add(lineChartDataset); break;
                     case PieChartDataset pieChartDataset: datasets.Add(pieChartDataset); break;
                     default: throw new NotImplementedException();

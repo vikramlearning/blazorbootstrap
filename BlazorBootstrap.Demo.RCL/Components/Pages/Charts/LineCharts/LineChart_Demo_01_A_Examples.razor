@@ -121,13 +121,13 @@
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = new List<string> { c.ToRgbString() },
-                BorderColor = new List<string> { c.ToRgbString() },
-                BorderWidth = new List<double> { 2 },
-                HoverBorderWidth = new List<double> { 4 },
-                PointBackgroundColor = new List<string> { c.ToRgbString() },
-                PointRadius = new List<int> { 0 }, // hide points
-                PointHoverRadius = new List<int> { 4 }
+                BackgroundColor = c.ToRgbString(),
+                BorderColor = c.ToRgbString(),
+                BorderWidth = 2,
+                HoverBorderWidth = 4,
+                PointBackgroundColor = c.ToRgbString(),
+                PointRadius = 0, // hide points
+                PointHoverRadius = 4,
             };
     }
 

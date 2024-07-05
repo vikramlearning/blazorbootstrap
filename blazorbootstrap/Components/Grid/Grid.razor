@@ -8,10 +8,14 @@
 
 @if (columns.Any())
 {
-    <div class="@ResponsiveCssClass" style="@GetGridParentStyle()" onscroll="@OnScroll">
+    <div class="@ResponsiveCssClass" style="@GetGridContainerStyle()" onscroll="@OnScroll">
         <table @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
             <thead class="@TableHeaderCssClass">
                 <tr class="@(FixedHeader ? BootstrapClass.TextNoWrap : "") @HeaderRowCssClass">
+                    @if (AllowDetailView)
+                    {
+                        <th></th>
+                    }
                     @if (AllowSelection)
                     {
                         @HeaderSelectionTemplate
@@ -24,6 +28,10 @@
                 @if (AllowFiltering)
                 {
                     <tr class="@FiltersRowCssClass">
+                        @if (AllowDetailView)
+                        {
+                            <th></th>
+                        }
                         @if (AllowSelection)
                         {
                             <th></th>
@@ -69,11 +77,13 @@
             </thead>
             <tbody>
                 @{
-                    var columnCount = AllowSelection ? columns.Count + 1 : columns.Count;
+                    var columnCount = columns.Count;
+                    if (AllowSelection) columnCount += 1;
+                    if (AllowDetailView) columnCount += 1;
                 }
                 @if (requestInProgress) //|| totalCount is null
                 {
-                    @if (LoadingTemplate is null)
+                    @if (loadingTemplate is null)
                     {
                         // show placeholders
                         @for (var i = 0; i < 5; i++)
@@ -91,7 +101,7 @@
                     else
                     {
                         <div class="my-3">
-                            @LoadingTemplate
+                            @loadingTemplate.Template
                         </div>
                     }
                 }
@@ -100,7 +110,7 @@
                     // show empty
                     <tr>
                         <td colspan="@columnCount">
-                            @if (EmptyDataTemplate is null)
+                            @if (emptyDataTemplate is null)
                             {
                                 <div class="text-center text-secondary my-5">
                                     <div class="fs-3">
@@ -112,7 +122,7 @@
                             else
                             {
                                 <div class="my-3">
-                                    @EmptyDataTemplate
+                                    @emptyDataTemplate?.Template
                                 </div>
                             }
                         </td>
@@ -126,7 +136,18 @@
                         foreach (var item in items)
                         {
                             var rowClass = RowClass?.Invoke(item) ?? "";
+                            var detailViewRowId = IdUtility.GetNextId();
                             <tr @key="item?.GetHashCode()" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
+                                @if (AllowDetailView)
+                                {
+                                    <td class="text-center">
+                                        <span class="bb-detail-view-icon collapsed" data-bs-toggle="collapse" data-bs-target="@($"#collape-{detailViewRowId}")" aria-expanded="false" aria-controls="@($"collape-{detailViewRowId}")" role="button">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708" />
+                                            </svg>
+                                        </span>
+                                    </td>
+                                }
                                 @if (AllowSelection)
                                 {
                                     @ChildSelectionTemplate(rowIndex, item)
@@ -137,6 +158,19 @@
                                     @column.CellTemplate(item)
                                 }
                             </tr>
+                            @if (AllowDetailView)
+                            {
+                                <tr class="collapse" id="@($"collape-{detailViewRowId}")">
+                                    <td></td>
+                                    @if (AllowSelection)
+                                    {
+                                        <td></td>
+                                    }
+                                    <td colspan="@(columnCount - 1)">
+                                        @detailView?.GetTemplate(item)
+                                    </td>
+                                </tr>
+                            }
                             rowIndex++;
                         }
                     }

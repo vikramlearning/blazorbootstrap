@@ -1,19 +1,27 @@
-﻿<Grid TItem="Employee1" class="table table-hover table-bordered table-striped" DataProvider="EmployeesDataProvider" AllowFiltering="true" IsResponsive="true">
-    <GridColumn TItem="Employee1" HeaderText="Id" Filterable="false">
-        @context.Id
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
-        @context.Name
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-        @context.Designation
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-        @context.DOJ
-    </GridColumn>
-    <GridColumn TItem="Employee1" HeaderText="Active" Filterable="false">
-        @context.IsActive
-    </GridColumn>
+﻿<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" Filterable="false">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" Filterable="false">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
 </Grid>
 
 @code {

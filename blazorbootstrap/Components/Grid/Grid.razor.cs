@@ -27,6 +27,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private RenderFragment? headerSelectionTemplate;
 
+    private GridDetailView<TItem>? detailView;
+
+    public GridEmptyDataTemplate<TItem>? emptyDataTemplate;
+
+    public GridLoadingTemplate<TItem>? loadingTemplate;
+
     private bool isFirstRenderComplete = false;
 
     private IReadOnlyCollection<TItem>? items = null;
@@ -294,7 +300,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             ? null
             : columns?.Where(column => column.CanSort() && column.IsDefaultSortColumn).SelectMany(item => item.GetSorting()).ToImmutableArray();
 
-    private string GetGridParentStyle()
+    private string GetGridContainerStyle()
     {
         var styleAttributes = new HashSet<string>();
 
@@ -500,6 +506,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private ValueTask SetCheckboxStateAsync(string id, CheckboxState checkboxState) => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
 
+    internal void SetGridDetailView(GridDetailView<TItem> detailView) => this.detailView = detailView;
+
+    internal void SetGridEmptyDataTemplate(GridEmptyDataTemplate<TItem> emptyDataTemplate) => this.emptyDataTemplate = emptyDataTemplate;
+
+    internal void SetGridLoadingTemplate(GridLoadingTemplate<TItem> loadingTemplate) => this.loadingTemplate = loadingTemplate;
+
     /// <summary>
     /// Set filters.
     /// </summary>
@@ -591,6 +603,16 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             ("bb-table", true),
             (BootstrapClass.TableSticky, FixedHeader));
 
+
+    /// <summary>
+    /// Gets or sets adding a column for detailed view.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="false" />.
+    /// </remarks>
+    [Parameter]
+    public bool AllowDetailView { get; set; }
+    
     /// <summary>
     /// Gets or sets the grid filtering.
     /// </summary>
