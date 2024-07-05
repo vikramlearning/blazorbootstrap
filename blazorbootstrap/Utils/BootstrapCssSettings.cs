@@ -332,6 +332,42 @@ public sealed class BootstrapCssSettings
 
     #endregion
 
+    #region Accordion
+    
+    /// <summary>
+    /// Default Bootstrap --bs-accordion-border-width
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0px
+    /// </remarks>
+    public CssPropertyValue? AccordionBorderWidth { get; set; }
+
+
+    /// <summary>
+    /// Default Bootstrap --bs-accordion-btn-padding-x
+    /// </summary>
+    /// <remarks>
+    /// Default value is 1.25rem
+    /// </remarks>
+    public CssPropertyValue? AccordionBtnPaddingX { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-accordion-btn-padding-y
+    /// </summary>
+    /// <remarks>
+    /// Default value is 8px
+    /// </remarks>
+    public CssPropertyValue? AccordionBtnPaddingY { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-accordion-inner-border-radius
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0px
+    /// </remarks>
+    public CssPropertyValue? AccordionInnerBorderRadius { get; set; }
+
+    #endregion
 
     #region Body
 
@@ -1116,7 +1152,7 @@ public sealed class BootstrapCssSettings
         Light.BorderColor ??= Gray300Color;
         Dark.BorderColor ??= Gray700Color;
         Light.BorderColorTranslucent ??= Color.FromArgb(45, BlackColor.Value);
-        Dark.BorderColorTranslucent ??= Color.FromArgb((int)(256f * 0.175f), WhiteColor.Value);
+        Dark.BorderColorTranslucent ??= Color.FromArgb(45, WhiteColor.Value);
         BorderRadius ??= CssPropertyValue.Rem(0.375f);
         BorderRadiusSm ??= CssPropertyValue.Rem(0.25f);
         BorderRadiusLg ??= CssPropertyValue.Rem(0.5f);
@@ -1416,6 +1452,51 @@ public sealed class BootstrapCssSettingsColorTheme
     public CssColorSet TextEmphasisColors { get; set; } = new();
 
     #endregion
+
+    #endregion
+
+    #region Accordions
+
+    /// <summary>
+    /// Default Bootstrap --bs-accordion-color
+    /// </summary>
+    /// <remarks>
+    /// Default value for light mode is derived from <see cref="BootstrapCssSettingsColorTheme.BodyTextColor"/>
+    /// </remarks>
+    public Color? AccordionColor { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-accordion-bg
+    /// </summary>
+    /// <remarks>
+    /// Default value for light mode is derived from <see cref="BootstrapCssSettingsColorTheme.BodyBgColor"/>
+    /// </remarks>
+    public Color? AccordionBackgroundColor { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-accordion-border-color
+    /// </summary>
+    /// <remarks>
+    /// Default value for light mode is derived from <see cref="BootstrapCssSettingsColorTheme.BorderColor"/>
+    /// </remarks>
+    public Color? AccordionBorderColor { get; set; }
+
+
+    /// <summary>
+    /// Default Bootstrap --bs-accordion-btn-color
+    /// </summary>
+    /// <remarks>
+    /// Default value for light mode is derived from <see cref="BootstrapCssSettingsColorTheme.AccordionColor"/>
+    /// </remarks>
+    public Color? AccordionButtonColor { get; set; }
+
+    /// <summary>
+    /// Default Bootstrap --bs-accordion-btn-bg
+    /// </summary>
+    /// <remarks>
+    /// Default value for light mode is derived from <see cref="BootstrapCssSettingsColorTheme.AccordionBackgroundColor"/>
+    /// </remarks>
+    public Color? AccordionButtonBackgroundColor { get; set; }
 
     #endregion
 

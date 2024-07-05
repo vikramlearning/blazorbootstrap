@@ -44,7 +44,7 @@ public class ChartDataset : IChartDataset
     /// <summary>
     /// Get or sets the Data.
     /// </summary>
-    public List<double>? Data { get; set; }
+    public List<double?>? Data { get; set; }
 
     /// <summary>
     /// Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart.
