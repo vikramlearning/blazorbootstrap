@@ -33,7 +33,7 @@ public partial class RadarChart : BlazorBootstrapChart
         foreach (var dataset in chartData.Datasets)
             if (dataset is RadarChartDataset radarChartDataset && radarChartDataset.Label == dataLabel)
                 if (data is RadarChartDatasetData radarChartDatasetData)
-                    radarChartDataset.Data?.Add(radarChartDatasetData.Data);
+                    radarChartDataset.Data?.Add(radarChartDatasetData.Data as double?);
 
         await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
@@ -77,7 +77,7 @@ public partial class RadarChart : BlazorBootstrapChart
                 var chartDatasetData = data.FirstOrDefault(x => x is RadarChartDatasetData radarChartDatasetData && radarChartDatasetData.DatasetLabel == radarChartDataset.Label);
 
                 if (chartDatasetData is RadarChartDatasetData radarChartDatasetData)
-                    radarChartDataset.Data?.Add(radarChartDatasetData.Data);
+                    radarChartDataset.Data?.Add(radarChartDatasetData.Data as double?);
             }
 
         await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (RadarChartDatasetData)x));

@@ -1,13 +1,13 @@
-﻿@page "/charts/radar-chart"
+﻿@page "/charts/scatter-chart"
 
 <PageTitle>@title</PageTitle>
 
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl"/>
 
-<h1>Blazor Radar Chart</h1>
+<h1>Blazor Scatter Chart</h1>
 <div class="lead mb-3">
-    A Blazor Bootstrap radar chart component is a way of showing multiple data points and the variation between them.
-    They are often useful for comparing the points of two or more different data sets.
+    A Blazor Bootstrap scatter chart components are based on basic line charts with the x-axis changed to a linear axis. 
+    To use a scatter chart, data must be passed as objects containing X and Y properties.
 </div>
 
 <CarbonAds />
@@ -25,11 +25,11 @@
     For data visualization, you can use the predefined palettes <code>ColorBuilder.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorBuilder.CategoricalSixColors</code> for a 6-color palette.
     These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
 </Callout>
-<Demo Type="typeof(RadarChart_Demo_01_Examples)" Tabs="true"/>
+<Demo Type="typeof(ScatterChart_Demo_01_Examples)" Tabs="true"/>
 
 @code {
-    private readonly string pageUrl = "/charts/radar-chart";
-    private readonly string title = "Blazor Radar Chart";
-    private readonly string description = "A Blazor Bootstrap radar chart component is a way of showing multiple data points and the variation between them. They are often useful for comparing the points of two or more different data sets.";
+    private readonly string pageUrl = "/charts/scatter-chart";
+    private readonly string title = "Blazor Scatter Chart";
+    private readonly string description = "A Blazor Bootstrap scatter chart components are based on basic line charts with the x-axis changed to a linear axis. To use a scatter chart, data must be passed as objects containing X and Y properties.";
     private readonly string imageUrl = "https://i.imgur.com/8b7jH0D.png"; // TODO: update this
 }

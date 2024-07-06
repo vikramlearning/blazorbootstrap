@@ -51,7 +51,7 @@
             {
                 var count = doughnutChartDataset.Data.Count;
 
-                var newData = new List<double>();
+                var newData = new List<double?>();
                 for (var i = 0; i < count; i++)
                 {
                     newData.Add(random.Next(0, 100));
@@ -117,9 +117,9 @@
         return new() { Label = $"Team {datasetsCount}", Data = GetRandomData(), BackgroundColor = GetRandomBackgroundColors() };
     }
 
-    private List<double> GetRandomData()
+    private List<double?> GetRandomData()
     {
-        var data = new List<double>();
+        var data = new List<double?>();
         for (var index = 0; index < dataLabelsCount; index++)
         {
             data.Add(random.Next(0, 100));

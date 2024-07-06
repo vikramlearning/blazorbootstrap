@@ -30,6 +30,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="components\charts\ScatterChart.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\nuget\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -38,6 +42,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
+    <None Include="components\charts\ScatterChart.razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +55,14 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="components\charts\ScatterChart.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="components\charts\ScatterChart.razor" />
   </ItemGroup>
 
 </Project>

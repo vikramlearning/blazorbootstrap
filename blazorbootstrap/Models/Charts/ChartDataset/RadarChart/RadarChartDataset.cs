@@ -68,6 +68,15 @@ public class RadarChartDataset : ChartDataset
     /// </remarks>
     public double BorderWidth { get; set; } = 3;
 
+    /// <summary>
+    /// Get or sets the Data.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null"/>.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public new List<double?>? Data { get; set; }
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public RadarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: Add reference link
 

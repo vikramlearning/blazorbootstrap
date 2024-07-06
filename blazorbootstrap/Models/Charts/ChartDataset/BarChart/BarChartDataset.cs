@@ -68,6 +68,15 @@ public class BarChartDataset : ChartDataset
     //https://www.chartjs.org/docs/latest/api/interfaces/BarControllerDatasetOptions.html#borderskipped
 
     /// <summary>
+    /// Get or sets the Data.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null"/>.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public new List<double?>? Data { get; set; }
+
+    /// <summary>
     /// Percent (0-1) of the available width each category should be within the sample width.
     /// </summary>
     /// <remarks>

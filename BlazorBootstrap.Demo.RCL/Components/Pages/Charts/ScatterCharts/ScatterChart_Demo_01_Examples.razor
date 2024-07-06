@@ -1,5 +1,5 @@
-﻿@* <RadarChart @ref="radarChart" Width="500" Height="200" /> *@
-<RadarChart @ref="radarChart" />
+﻿@* <ScatterChart @ref="scatterChart" Width="500" Height="200" /> *@
+<ScatterChart @ref="scatterChart" />
 
 <div class="mt-5">
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
@@ -10,8 +10,8 @@
 </div>
 
 @code {
-    private RadarChart radarChart = default!;
-    private RadarChartOptions radarChartOptions = default!;
+    private ScatterChart scatterChart = default!;
+    private ScatterChartOptions scatterChartOptions = default!;
     private ChartData chartData = default!;
 
     private int datasetsCount;
@@ -22,14 +22,18 @@
     protected override void OnInitialized()
     {
         chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
-        radarChartOptions = new() { Responsive = true/*, Interaction = new Interaction { Mode = InteractionMode.Index }*/ };
+        scatterChartOptions = new()
+            {
+                Responsive = true,/*, Interaction = new Interaction { Mode = InteractionMode.Index }*/
+                Scales = new Scales{ X = new ChartAxes{ Type = "linear"}}
+            };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await radarChart.InitializeAsync(chartData, radarChartOptions);
+            await scatterChart.InitializeAsync(chartData, scatterChartOptions);
         }
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -42,26 +46,26 @@
 
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is RadarChartDataset radarChartDataset
-                && radarChartDataset is not null
-                && radarChartDataset.Data is not null)
+            if (dataset is ScatterChartDataset scatterChartDataset
+                && scatterChartDataset is not null
+                && scatterChartDataset.Data is not null)
             {
-                var count = radarChartDataset.Data.Count;
+                var count = scatterChartDataset.Data.Count;
 
-                var newData = new List<double>();
+                var newData = new List<ScatterChartDataPoint?>();
                 for (var i = 0; i < count; i++)
                 {
-                    newData.Add(random.Next(200));
+                    newData.Add(new(random.Next(200), random.Next(200)));
                 }
 
-                radarChartDataset.Data = newData;
-                newDatasets.Add(radarChartDataset);
+                scatterChartDataset.Data = newData;
+                newDatasets.Add(scatterChartDataset);
             }
         }
 
         chartData.Datasets = newDatasets;
 
-        await radarChart.UpdateAsync(chartData, radarChartOptions);
+        await scatterChart.UpdateAsync(chartData, scatterChartOptions);
     }
 
     private async Task AddDatasetAsync()
@@ -69,7 +73,7 @@
         if (chartData is null || chartData.Datasets is null) return;
 
         var chartDataset = GetRandomRadarChartDataset();
-        chartData = await radarChart.AddDatasetAsync(chartData, chartDataset, radarChartOptions);
+        chartData = await scatterChart.AddDatasetAsync(chartData, chartDataset, scatterChartOptions);
     }
 
     private async Task AddDataAsync()
@@ -80,23 +84,23 @@
         var data = new List<IChartDatasetData>();
         foreach (var dataset in chartData.Datasets)
         {
-            if (dataset is RadarChartDataset radarChartDataset)
-                data.Add(new RadarChartDatasetData(radarChartDataset.Label, random.Next(200)));
+            if (dataset is ScatterChartDataset scatterChartDataset)
+                data.Add(new ScatterChartDatasetData(scatterChartDataset.Label, random.Next(200)));
         }
 
-        chartData = await radarChart.AddDataAsync(chartData, GetNextDataLabel(), data);
+        chartData = await scatterChart.AddDataAsync(chartData, GetNextDataLabel(), data);
     }
 
     private async Task ShowHorizontalLineChartAsync()
     {
         //radarChartOptions.IndexAxis = "y";
-        await radarChart.UpdateAsync(chartData, radarChartOptions);
+        await scatterChart.UpdateAsync(chartData, scatterChartOptions);
     }
 
     private async Task ShowVerticalLineChartAsync()
     {
         //radarChartOptions.IndexAxis = "x";
-        await radarChart.UpdateAsync(chartData, radarChartOptions);
+        await scatterChart.UpdateAsync(chartData, scatterChartOptions);
     }
 
     #region Data Preparation
@@ -113,13 +117,13 @@
         return datasets;
     }
 
-    private RadarChartDataset GetRandomRadarChartDataset()
+    private ScatterChartDataset GetRandomRadarChartDataset()
     {
         var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
 
         datasetsCount += 1;
 
-        return new RadarChartDataset
+        return new ScatterChartDataset
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
@@ -134,12 +138,12 @@
             };
     }
 
-    private List<double> GetRandomData()
+    private List<ScatterChartDataPoint?> GetRandomData()
     {
-        var data = new List<double>();
+        var data = new List<ScatterChartDataPoint?>();
         for (var index = 0; index < labelsCount; index++)
         {
-            data.Add(random.Next(200));
+            data.Add(new(random.Next(200), random.Next(200)));
         }
 
         return data;

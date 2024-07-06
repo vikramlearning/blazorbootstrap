@@ -1,11 +1,13 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// The line chart allows a number of properties to be specified for each dataset. 
-/// These are used to set display properties for a specific dataset. 
-/// <see href="https://www.chartjs.org/docs/latest/charts/line.html#dataset-properties" />.
+/// Scatter charts are based on basic line charts with the x-axis changed to a linear axis. 
+/// To use a scatter chart, data must be passed as objects containing X and Y properties.
+/// <see href="https://www.chartjs.org/docs/latest/charts/scatter.html#dataset-properties" />.
+/// The scatter chart supports all the same properties as the line chart. 
+/// By default, the scatter chart will override the showLine property of the line chart to <see langword="false"/>.
 /// </summary>
-public class LineChartDataset : ChartDataset
+public class ScatterChartDataset : ChartDataset
 {
     #region Properties, Indexers
 
@@ -84,9 +86,9 @@ public class LineChartDataset : ChartDataset
     /// Default value is <see langword="null"/>.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new List<double?>? Data { get; set; }
+    public new List<ScatterChartDataPoint?>? Data { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public LineChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
     /// <summary>
@@ -284,11 +286,12 @@ public class LineChartDataset : ChartDataset
 
     /// <summary>
     /// If <see langword="false" />, the lines between points are not drawn.
+    /// By default, the scatter chart will override the showLine property of the line chart to false.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="true"/>.
+    /// Default value is <see langword="false"/>.
     /// </remarks>
-    public bool ShowLine { get; set; } = true;
+    public bool ShowLine { get; } = false;
 
     /// <summary>
     /// If <see langword="true" />, lines will be drawn between points with no or null data.
@@ -343,6 +346,6 @@ public class LineChartDataset : ChartDataset
     #endregion
 }
 
-public class LineChartDatasetDataLabels : ChartDatasetDataLabels
+public class ScatterChartDatasetDataLabels : ChartDatasetDataLabels
 {
 }

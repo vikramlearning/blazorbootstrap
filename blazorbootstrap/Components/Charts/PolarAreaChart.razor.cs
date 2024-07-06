@@ -33,7 +33,7 @@ public partial class PolarAreaChart : BlazorBootstrapChart
         foreach (var dataset in chartData.Datasets)
             if (dataset is PolarAreaChartDataset barChartDataset && barChartDataset.Label == dataLabel)
                 if (data is PolarAreaChartDatasetData barChartDatasetData)
-                    barChartDataset.Data?.Add(barChartDatasetData.Data);
+                    barChartDataset.Data?.Add(barChartDatasetData.Data as double?);
 
         await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
@@ -77,7 +77,7 @@ public partial class PolarAreaChart : BlazorBootstrapChart
                 var chartDatasetData = data.FirstOrDefault(x => x is PolarAreaChartDatasetData barChartDatasetData && barChartDatasetData.DatasetLabel == barChartDataset.Label);
 
                 if (chartDatasetData is PolarAreaChartDatasetData barChartDatasetData)
-                    barChartDataset.Data?.Add(barChartDatasetData.Data);
+                    barChartDataset.Data?.Add(barChartDatasetData.Data as double?);
             }
 
         await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (PolarAreaChartDatasetData)x));

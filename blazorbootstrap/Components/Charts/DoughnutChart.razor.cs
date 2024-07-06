@@ -2,6 +2,12 @@
 
 public partial class DoughnutChart : BlazorBootstrapChart
 {
+    #region Fields and Constants
+
+    private const string _jsObjectName = "window.blazorChart.doughnut";
+
+    #endregion
+
     #region Constructors
 
     public DoughnutChart()
@@ -28,11 +34,11 @@ public partial class DoughnutChart : BlazorBootstrapChart
             if (dataset is DoughnutChartDataset doughnutChartDataset && doughnutChartDataset.Label == dataLabel)
                 if (data is DoughnutChartDatasetData doughnutChartDatasetData)
                 {
-                    doughnutChartDataset.Data?.Add(doughnutChartDatasetData.Data);
+                    doughnutChartDataset.Data?.Add(doughnutChartDatasetData.Data as double?);
                     doughnutChartDataset.BackgroundColor?.Add(doughnutChartDatasetData.BackgroundColor!);
                 }
 
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.doughnut.addDatasetData", Id, dataLabel, data);
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
@@ -75,12 +81,12 @@ public partial class DoughnutChart : BlazorBootstrapChart
 
                 if (chartDatasetData is DoughnutChartDatasetData doughnutChartDatasetData)
                 {
-                    doughnutChartDataset.Data?.Add(doughnutChartDatasetData.Data);
+                    doughnutChartDataset.Data?.Add(doughnutChartDatasetData.Data as double?);
                     doughnutChartDataset.BackgroundColor?.Add(doughnutChartDatasetData.BackgroundColor!);
                 }
             }
 
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.doughnut.addDatasetsData", Id, dataLabel, data?.Select(x => (DoughnutChartDatasetData)x));
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (DoughnutChartDatasetData)x));
 
         return chartData;
     }
@@ -99,7 +105,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         if (chartDataset is DoughnutChartDataset doughnutChartDataset)
         {
             chartData.Datasets.Add(doughnutChartDataset);
-            await JSRuntime.InvokeVoidAsync("window.blazorChart.doughnut.addDataset", Id, doughnutChartDataset);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, doughnutChartDataset);
         }
 
         return chartData;
@@ -111,7 +117,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync("window.blazorChart.doughnut.initialize", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions, plugins);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions, plugins);
         }
     }
 
@@ -121,7 +127,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync("window.blazorChart.doughnut.update", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions);
         }
     }
 

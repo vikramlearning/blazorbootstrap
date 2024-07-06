@@ -36,7 +36,7 @@ public class ChartDataset : IChartDataset
     /// Default value is <see langword="null"/>.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? Data { get; set; }
+    public object Data { get; set; }
 
     /// <summary>
     /// Configures the visibility state of the dataset. Set it to <see langword="true"/>, to hide the dataset from the chart.

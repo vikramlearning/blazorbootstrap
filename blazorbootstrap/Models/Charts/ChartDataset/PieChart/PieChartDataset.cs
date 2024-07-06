@@ -92,6 +92,15 @@ public class PieChartDataset : ChartDataset
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Circumference { get; set; }
 
+    /// <summary>
+    /// Get or sets the Data.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null"/>.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public new List<double?>? Data { get; set; }
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public PieChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 

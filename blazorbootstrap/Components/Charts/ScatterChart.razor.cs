@@ -1,12 +1,18 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class LineChart : BlazorBootstrapChart
+public partial class ScatterChart : BlazorBootstrapChart
 {
+    #region Fields and Constants
+
+    private const string _jsObjectName = "window.blazorChart.scatter";
+
+    #endregion
+
     #region Constructors
 
-    public LineChart()
+    public ScatterChart()
     {
-        chartType = ChartType.Line;
+        chartType = ChartType.Scatter;
     }
 
     #endregion
@@ -25,11 +31,11 @@ public partial class LineChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
-            if (dataset is LineChartDataset lineChartDataset && lineChartDataset.Label == dataLabel)
-                if (data is LineChartDatasetData lineChartDatasetData)
-                    lineChartDataset.Data?.Add(lineChartDatasetData.Data as double?);
+            if (dataset is ScatterChartDataset scatterChartDataset && scatterChartDataset.Label == dataLabel)
+                if (data is ScatterChartDatasetData scatterChartDatasetData && scatterChartDatasetData.Data is ScatterChartDataPoint scatterChartDataPoint)
+                    scatterChartDataset.Data?.Add(scatterChartDataPoint);
 
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.addDatasetData", Id, dataLabel, data);
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
@@ -66,15 +72,15 @@ public partial class LineChart : BlazorBootstrapChart
         chartData.Labels.Add(dataLabel);
 
         foreach (var dataset in chartData.Datasets)
-            if (dataset is LineChartDataset lineChartDataset)
+            if (dataset is ScatterChartDataset scatterChartDataset)
             {
-                var chartDatasetData = data.FirstOrDefault(x => x is LineChartDatasetData lineChartDatasetData && lineChartDatasetData.DatasetLabel == lineChartDataset.Label);
+                var chartDatasetData = data.FirstOrDefault(x => x is ScatterChartDatasetData scatterChartDatasetData && scatterChartDatasetData.DatasetLabel == scatterChartDataset.Label);
 
-                if (chartDatasetData is LineChartDatasetData lineChartDatasetData)
-                    lineChartDataset.Data?.Add(lineChartDatasetData.Data as double?);
+                if (chartDatasetData is ScatterChartDatasetData scatterChartDatasetData && scatterChartDatasetData.Data is ScatterChartDataPoint scatterChartDataPoint)
+                    scatterChartDataset.Data?.Add(scatterChartDataPoint);
             }
 
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.addDatasetsData", Id, dataLabel, data?.Select(x => (LineChartDatasetData)x));
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (ScatterChartDatasetData)x));
 
         return chartData;
     }
@@ -90,10 +96,10 @@ public partial class LineChart : BlazorBootstrapChart
         if (chartDataset is null)
             throw new ArgumentNullException(nameof(chartDataset));
 
-        if (chartDataset is LineChartDataset)
+        if (chartDataset is ScatterChartDataset)
         {
             chartData.Datasets.Add(chartDataset);
-            await JSRuntime.InvokeVoidAsync("window.blazorChart.line.addDataset", Id, (LineChartDataset)chartDataset);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (ScatterChartDataset)chartDataset);
         }
 
         return chartData;
@@ -110,9 +116,9 @@ public partial class LineChart : BlazorBootstrapChart
         if (chartOptions is null)
             throw new ArgumentNullException(nameof(chartOptions));
 
-        var datasets = chartData.Datasets.OfType<LineChartDataset>();
+        var datasets = chartData.Datasets.OfType<ScatterChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins);
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, plugins);
     }
 
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
@@ -126,9 +132,9 @@ public partial class LineChart : BlazorBootstrapChart
         if (chartOptions is null)
             throw new ArgumentNullException(nameof(chartOptions));
 
-        var datasets = chartData.Datasets.OfType<LineChartDataset>();
+        var datasets = chartData.Datasets.OfType<ScatterChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (ScatterChartOptions)chartOptions);
     }
 
     #endregion
