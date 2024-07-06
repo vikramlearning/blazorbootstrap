@@ -232,9 +232,11 @@ public class ChartAxes
     public ChartAxesTitle? Title { get; set; }
 
     /// <summary>
-    /// 
+    /// Gets or sets the index scale type.
     /// </summary>
-    /// <remarks>Default value is <see langword="null"/>.</remarks>
+    /// <remarks>
+    /// Default value is <see langword="null"/>.
+    /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Type { get; set; }
 

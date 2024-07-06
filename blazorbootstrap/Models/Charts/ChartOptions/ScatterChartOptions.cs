@@ -21,7 +21,7 @@ public class ScatterChartOptions : ChartOptions
 
     public ChartLayout Layout { get; set; } = new();
 
-    public LineChartPlugins Plugins { get; set; } = new();
+    public ScatterChartPlugins Plugins { get; set; } = new();
 
     public Scales Scales { get; set; } = new();
 

@@ -1,5 +1,4 @@
-﻿@* <ScatterChart @ref="scatterChart" Width="500" Height="200" /> *@
-<ScatterChart @ref="scatterChart" />
+﻿<ScatterChart @ref="scatterChart" />
 
 <div class="mt-5">
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
@@ -22,11 +21,10 @@
     protected override void OnInitialized()
     {
         chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
-        scatterChartOptions = new()
-            {
-                Responsive = true,/*, Interaction = new Interaction { Mode = InteractionMode.Index }*/
-                Scales = new Scales{ X = new ChartAxes{ Type = "linear"}}
-            };
+        scatterChartOptions = new() { 
+            Responsive = true, 
+            Interaction = new Interaction { Mode = InteractionMode.Index },
+        };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -93,13 +91,13 @@
 
     private async Task ShowHorizontalLineChartAsync()
     {
-        //radarChartOptions.IndexAxis = "y";
+        scatterChartOptions.IndexAxis = "y";
         await scatterChart.UpdateAsync(chartData, scatterChartOptions);
     }
 
     private async Task ShowVerticalLineChartAsync()
     {
-        //radarChartOptions.IndexAxis = "x";
+        scatterChartOptions.IndexAxis = "x";
         await scatterChart.UpdateAsync(chartData, scatterChartOptions);
     }
 
@@ -132,9 +130,7 @@
                 BorderWidth = 2,
                 Fill = true,
                 HoverBorderWidth = 4,
-                // PointBackgroundColor = c.ToRgbString(),
-                // PointRadius = 0, // hide points
-                // PointHoverRadius = 4,
+                PointHoverRadius = new List<double>{6},
             };
     }
 

@@ -25,7 +25,15 @@
     For data visualization, you can use the predefined palettes <code>ColorBuilder.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorBuilder.CategoricalSixColors</code> for a 6-color palette.
     These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
 </Callout>
-<Demo Type="typeof(ScatterChart_Demo_01_Examples)" Tabs="true"/>
+<Demo Type="typeof(ScatterChart_Demo_01_Basic_Example)" Tabs="true"/>
+
+<SectionHeading Size="HeadingSize.H4" Text="Dynamic data" PageUrl="@pageUrl" HashTagName="dynamic-data" />
+<div class="mb-3">
+    In the following example, you can randomize the data and datasets dynamically. 
+    Along with this, the <b>ScatterChartOptions</b> are updated. With these changes, the scatter chart is responsive, and when hovered over, the points' radius increases for better visibility to the end-user.
+    Additionally, the data is grouped and displayed in a tooltip by index.
+</div>
+<Demo Type="typeof(ScatterChart_Demo_02_Dynamic_Data)" Tabs="true" />
 
 @code {
     private readonly string pageUrl = "/charts/scatter-chart";
