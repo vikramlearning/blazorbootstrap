@@ -4,8 +4,6 @@
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
 </div>
 
 @code {
@@ -84,18 +82,6 @@
         }
 
         chartData = await radarChart.AddDataAsync(chartData, GetNextDataLabel(), data);
-    }
-
-    private async Task ShowHorizontalLineChartAsync()
-    {
-        //radarChartOptions.IndexAxis = "y";
-        await radarChart.UpdateAsync(chartData, radarChartOptions);
-    }
-
-    private async Task ShowVerticalLineChartAsync()
-    {
-        //radarChartOptions.IndexAxis = "x";
-        await radarChart.UpdateAsync(chartData, radarChartOptions);
     }
 
     #region Data Preparation
