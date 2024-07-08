@@ -88,6 +88,9 @@ public partial class MainLayout : MainLayoutBase
 
             new(){ Id = "7", Text = "Services", IconName = IconName.WrenchAdjustableCircleFill, IconColor = IconColor.Success },
             new (){ Id = "700", Text = "Modal Service", Href = "/modal-service", IconName = IconName.WindowStack, ParentId = "7" },
+
+            new(){ Id = "19", Text = "Utilities", IconName = IconName.GearWideConnected, IconColor = IconColor.Info },
+            new (){ Id = "1900", Text = "Color Utility", Href = "/utils/color-util", IconName = IconName.WindowStack, ParentId = "19" },
         };
 
         return navItems;

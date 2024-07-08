@@ -4,9 +4,10 @@ public record PolarAreaChartDatasetData : ChartDatasetData
 {
     #region Constructors
 
-    public PolarAreaChartDatasetData(string? datasetLabel, double data, string? backgroundColor) : base(datasetLabel, data)
+    public PolarAreaChartDatasetData(string? datasetLabel, double data, string? backgroundColor, string? borderColor) : base(datasetLabel, data)
     {
         BackgroundColor = backgroundColor;
+        BorderColor = borderColor;
     }
 
     #endregion
@@ -14,6 +15,7 @@ public record PolarAreaChartDatasetData : ChartDatasetData
     #region Properties, Indexers
 
     public string? BackgroundColor { get; init; }
+    public string? BorderColor { get; init; }
 
     #endregion
 }

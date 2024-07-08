@@ -1,0 +1,25 @@
+﻿@page "/utils/color-util"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Bootstrap Color Utils</h1>
+<div class="lead mb-3">
+    For data visualization, you can use the predefined palettes <b>ColorBuilder.CategoricalTwelveColors</b> for a 12-color palette and <b>ColorBuilder.CategoricalSixColors</b> for a 6-color palette.
+    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Categorical six colors" PageUrl="@pageUrl" HashTagName="categorical-six-colors" />
+<Demo Type="typeof(ColorUtil_Demo_01_CategoricalSixColors)" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Categorical twelve colors" PageUrl="@pageUrl" HashTagName="categorical-twelve-colors" />
+<Demo Type="typeof(ColorUtil_Demo_02_CategoricalTwelveColors)" />
+
+@code {
+    private string pageUrl = "/utils/color-util";
+    private string title = "Blazor Bootstrap Color Utils";
+    private string description = "For data visualization, you can use the predefined palettes ColorBuilder.CategoricalTwelveColors for a 12-color palette and ColorBuilder.CategoricalSixColors for a 6-color palette. These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.";
+    private string imageUrl = "https://i.imgur.com/VRglJqU.jpg"; // TODO: update this
+}
