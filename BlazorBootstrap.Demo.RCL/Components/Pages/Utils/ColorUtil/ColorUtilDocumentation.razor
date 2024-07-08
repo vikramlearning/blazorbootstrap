@@ -6,16 +6,17 @@
 
 <h1>Blazor Bootstrap Color Utils</h1>
 <div class="lead mb-3">
-    For data visualization, you can use the predefined palettes <b>ColorBuilder.CategoricalTwelveColors</b> for a 12-color palette and <b>ColorBuilder.CategoricalSixColors</b> for a 6-color palette.
-    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.</div>
+    For data visualization, you can use the predefined palettes <code>ColorUtility.CategoricalSixColors</code> for a 6-color palette and <code>ColorUtility.CategoricalTwelveColors</code> for a 12-color palette.
+    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
+</div>
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Categorical six colors" PageUrl="@pageUrl" HashTagName="categorical-six-colors" />
-<Demo Type="typeof(ColorUtil_Demo_01_CategoricalSixColors)" />
+<SectionHeading Size="HeadingSize.H2" Text="Categorical 6-color" PageUrl="@pageUrl" HashTagName="categorical-6-color" />
+<Demo Type="typeof(ColorUtil_Demo_01_CategoricalSixColor)" Tabs="true" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Categorical twelve colors" PageUrl="@pageUrl" HashTagName="categorical-twelve-colors" />
-<Demo Type="typeof(ColorUtil_Demo_02_CategoricalTwelveColors)" />
+<SectionHeading Size="HeadingSize.H2" Text="Categorical 12-color" PageUrl="@pageUrl" HashTagName="categorical-12-color" />
+<Demo Type="typeof(ColorUtil_Demo_02_CategoricalTwelveColor)" Tabs="true" />
 
 @code {
     private string pageUrl = "/utils/color-util";
