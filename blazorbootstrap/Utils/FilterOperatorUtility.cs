@@ -59,6 +59,12 @@ return new List<FilterOperatorInfo>()
         return filters;
     }
 
+    /// <summary>
+    /// Provides a number of filters for a grid column for the user to filter their records on.
+    /// </summary>
+    /// <param name="propertyTypeName">Property type to filter.</param>
+    /// <exception cref="NotSupportedException">If <paramref name="propertyTypeName"/> is not supported in this method.</exception>
+    /// <returns>List of filters.</returns>
     public static IReadOnlyCollection<FilterOperatorInfo> GetFilterOperators(string propertyTypeName)
     {
         if (propertyTypeName is StringConstants.PropertyTypeNameInt16
@@ -83,9 +89,13 @@ return new List<FilterOperatorInfo>()
 
         if (propertyTypeName == StringConstants.PropertyTypeNameGuid) return GetEnumFilterOperators();
 
-        return new List<FilterOperatorInfo>();
+        throw new NotSupportedException($"{propertyTypeName}'' is not supported!");
     }
 
+    /// <summary>
+    /// Returns filter operators that can be applied to <see cref="Guid"/>'s.
+    /// </summary>
+    /// <returns>List of usable filters</returns>
     public static IReadOnlyCollection<FilterOperatorInfo> GetGuidFilterOperators()
     {
         List<FilterOperatorInfo> result = new()
@@ -98,6 +108,10 @@ return new List<FilterOperatorInfo>()
         return result;
     }
 
+    /// <summary>
+    /// Returns filter operators that can be applied to numbers.
+    /// </summary>
+    /// <returns>List of usable filters</returns>
     public static IReadOnlyCollection<FilterOperatorInfo> GetNumberFilterOperators()
     {
         List<FilterOperatorInfo> result = new()
@@ -114,6 +128,10 @@ return new List<FilterOperatorInfo>()
         return result;
     }
 
+    /// <summary>
+    /// Returns filter operators that can be applied to <see langword="string"/>s.
+    /// </summary>
+    /// <returns>List of usable filters</returns>
     public static IReadOnlyCollection<FilterOperatorInfo> GetStringFilterOperators()
     {
         List<FilterOperatorInfo> result = new()

@@ -6,6 +6,11 @@ public class GridDataProviderRequest<TItem>
 {
     #region Methods
 
+    /// <summary>
+    /// Applies the user requested filters and sorting on a stack of data for use in a <see cref="Grid{T}" />.
+    /// </summary>
+    /// <param name="data">Data to be filtered/sorted</param>
+    /// <returns>Filtered/sorted data taken from <paramref name="data"/></returns>
     public GridDataProviderResult<TItem> ApplyTo(IReadOnlyCollection<TItem>? data)
     {
         if (data == null)

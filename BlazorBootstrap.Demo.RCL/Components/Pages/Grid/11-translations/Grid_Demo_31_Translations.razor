@@ -37,12 +37,12 @@
 @code {
     private IReadOnlyCollection<Employee1> employees = default!;
 
-    private async Task<IReadOnlyCollection<FilterOperatorInfo>> GridFiltersTranslationProvider()
+    private IReadOnlyCollection<FilterOperatorInfo> GridFiltersTranslationProvider()
     {
         var filtersTranslation = new List<FilterOperatorInfo>();
 
         // number/date/boolean
-        filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
+        filtersTranslation.Add(new("=", "Gelijk aan", FilterOperator.Equals));
         filtersTranslation.Add(new("!=", "Niet gelijk", FilterOperator.NotEquals));
         // number/date
         filtersTranslation.Add(new("<", "Minder dan", FilterOperator.LessThan));
@@ -53,11 +53,11 @@
         filtersTranslation.Add(new("*a*", "Bevat", FilterOperator.Contains));
         filtersTranslation.Add(new("a**", "Begint met", FilterOperator.StartsWith));
         filtersTranslation.Add(new("**a", "Eindigt met", FilterOperator.EndsWith));
-        filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
+        filtersTranslation.Add(new("=", "Gelijk aan", FilterOperator.Equals));
         // common
-        filtersTranslation.Add(new("x", "Duidelijk", FilterOperator.Clear));
+        filtersTranslation.Add(new("x", "Leegmaken", FilterOperator.Clear));
 
-        return await Task.FromResult(filtersTranslation);
+        return filtersTranslation;
     }
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)

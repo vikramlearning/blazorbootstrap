@@ -333,12 +333,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         return 1;
     }
 
-    private async Task<IReadOnlyCollection<FilterOperatorInfo>?> GridFiltersTranslationProviderAsync()
+    private IReadOnlyCollection<FilterOperatorInfo>? GridFiltersTranslationProviderAsync()
     {
         if (FiltersTranslationProvider is null)
             return null;
 
-        var filters = await FiltersTranslationProvider.Invoke();
+        var filters = FiltersTranslationProvider.Invoke();
 
         if (filters is null || !filters.Any())
             return null;

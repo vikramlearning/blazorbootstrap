@@ -3,4 +3,4 @@
 /// <summary>
 /// Grid filters translation provider (delegate).
 /// </summary>
-public delegate Task<IReadOnlyCollection<FilterOperatorInfo>?> GridFiltersTranslationDelegate();
+public delegate IReadOnlyCollection<FilterOperatorInfo>? GridFiltersTranslationDelegate();
