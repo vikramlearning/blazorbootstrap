@@ -1,6 +1,9 @@
 ﻿@namespace BlazorBootstrap.Demo.RCL
 
-<ScriptLoader Async="true"
-              Class="@Class"
-              ScriptId="_carbonads_js"
-              Source="//cdn.carbonads.com/carbon.js?serve=CWYICKQU&placement=docsblazorbootstrapcom" />
+@if (!isLocalUrl)
+{
+    <ScriptLoader Async="true"
+                  Class="@Class"
+                  ScriptId="_carbonads_js"
+                  Source="//cdn.carbonads.com/carbon.js?serve=CWYICKQU&placement=docsblazorbootstrapcom" />
+}

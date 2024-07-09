@@ -20,7 +20,7 @@
     protected override void OnInitialized()
     {
         chartColors = ColorUtility.CategoricalTwelveColors;
-        chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(1) };
+        chartData = new ChartData { Labels = GetDefaultDataLabels(5), Datasets = GetDefaultDataSets(1) };
 
         polarAreaChartOptions = new();
         polarAreaChartOptions.Responsive = true;
@@ -57,7 +57,14 @@
                     newData.Add(random.Next(0, 100));
                 }
 
+                var colors = new List<string>();
+                for (var index = 0; index < count; index++)
+                {
+                    colors.Add(chartColors![index].ToColor().ToRgbaString(0.5)); // RGBA
+                }
+
                 polarAreaChartDataset.Data = newData;
+                polarAreaChartDataset.BackgroundColor = colors;
                 newDatasets.Add(polarAreaChartDataset);
             }
         }
@@ -89,13 +96,27 @@
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is PolarAreaChartDataset polarAreaChartDataset)
-                data.Add(new PolarAreaChartDatasetData(polarAreaChartDataset.Label, random.Next(0, 100), chartColors![dataLabelsCount - 1].ToColor().ToRgbaString(), chartColors![dataLabelsCount - 1].ToColor().ToRgbString()));
+                data.Add(new PolarAreaChartDatasetData(polarAreaChartDataset.Label, random.Next(0, 100), chartColors![dataLabelsCount - 1].ToColor().ToRgbaString(0.5), null));
         }
 
         chartData = await polarAreaChart.AddDataAsync(chartData, GetNextDataLabel(), data);
     }
 
     #region Data Preparation
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            dataLabelsCount += 1;
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel() => $"Product {dataLabelsCount}";
 
     private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
     {
@@ -116,8 +137,7 @@
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = GetRandomBackgroundColors(),
-                BorderColor = GetRandomBorderColors()
+                BackgroundColor = GetRandomBackgroundColors()
             };
     }
 
@@ -137,7 +157,7 @@
         var colors = new List<string>();
         for (var index = 0; index < dataLabelsCount; index++)
         {
-            colors.Add(chartColors![index].ToColor().ToRgbaString()); // RGBA
+            colors.Add(chartColors![index].ToColor().ToRgbaString(0.5)); // RGBA
         }
 
         return colors;
@@ -153,20 +173,6 @@
 
         return colors;
     }
-
-    private List<string> GetDefaultDataLabels(int numberOfLabels)
-    {
-        var labels = new List<string>();
-        for (var index = 0; index < numberOfLabels; index++)
-        {
-            dataLabelsCount += 1;
-            labels.Add(GetNextDataLabel());
-        }
-
-        return labels;
-    }
-
-    private string GetNextDataLabel() => $"Product {dataLabelsCount}";
 
     #endregion  Data Preparation
 }
