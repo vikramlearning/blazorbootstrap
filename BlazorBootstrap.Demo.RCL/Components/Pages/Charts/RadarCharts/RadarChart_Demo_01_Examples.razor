@@ -1,4 +1,4 @@
-﻿<RadarChart @ref="radarChart" Width="550" />
+﻿<RadarChart @ref="radarChart" Width="600" />
 
 <div class="mt-5">
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
@@ -10,16 +10,18 @@
     private RadarChart radarChart = default!;
     private RadarChartOptions radarChartOptions = default!;
     private ChartData chartData = default!;
+    private string[]? chartColors;
 
     private int datasetsCount;
-    private int labelsCount;
+    private int dataLabelsCount;
 
     private Random random = new();
 
     protected override void OnInitialized()
     {
+        chartColors = ColorUtility.CategoricalTwelveColors;
         chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
-        radarChartOptions = new() { Responsive = true/*, Interaction = new Interaction { Mode = InteractionMode.Index }*/ };
+        radarChartOptions = new() { Responsive = true };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -71,8 +73,13 @@
 
     private async Task AddDataAsync()
     {
+        if (dataLabelsCount >= 12)
+            return;
+
         if (chartData is null || chartData.Datasets is null)
             return;
+
+        dataLabelsCount += 1;
 
         var data = new List<IChartDatasetData>();
         foreach (var dataset in chartData.Datasets)
@@ -85,6 +92,20 @@
     }
 
     #region Data Preparation
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            dataLabelsCount += 1;
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel() => $"Day {dataLabelsCount}";
 
     private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
     {
@@ -100,7 +121,7 @@
 
     private RadarChartDataset GetRandomRadarChartDataset()
     {
-        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
+        var c = chartColors![datasetsCount].ToColor();
 
         datasetsCount += 1;
 
@@ -108,8 +129,8 @@
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = c.ToRgbaString(), // RGBA
-                BorderColor = c.ToRgbString(), // RGB
+                BackgroundColor = c.ToRgbaString(),
+                BorderColor = c.ToRgbaString(0.8),
                 BorderWidth = 2,
                 Fill = true,
                 HoverBorderWidth = 4,
@@ -122,29 +143,12 @@
     private List<double?> GetRandomData()
     {
         var data = new List<double?>();
-        for (var index = 0; index < labelsCount; index++)
+        for (var index = 0; index < dataLabelsCount; index++)
         {
             data.Add(random.Next(200));
         }
 
         return data;
-    }
-
-    private List<string> GetDefaultDataLabels(int numberOfLabels)
-    {
-        var labels = new List<string>();
-        for (var index = 0; index < numberOfLabels; index++)
-        {
-            labels.Add(GetNextDataLabel());
-        }
-
-        return labels;
-    }
-
-    private string GetNextDataLabel()
-    {
-        labelsCount += 1;
-        return $"Day {labelsCount}";
     }
 
     #endregion Data Preparation

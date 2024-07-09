@@ -21,7 +21,6 @@
     {
         chartColors = ColorUtility.CategoricalTwelveColors;
         chartData = new ChartData { Labels = GetDefaultDataLabels(5), Datasets = GetDefaultDataSets(1) };
-
         polarAreaChartOptions = new();
         polarAreaChartOptions.Responsive = true;
         polarAreaChartOptions.Plugins.Title!.Text = "2022 - Sales";
@@ -57,14 +56,14 @@
                     newData.Add(random.Next(0, 100));
                 }
 
-                var colors = new List<string>();
+                var backgroundColors = new List<string>();
                 for (var index = 0; index < count; index++)
                 {
-                    colors.Add(chartColors![index].ToColor().ToRgbaString(0.5)); // RGBA
+                    backgroundColors.Add(chartColors![index].ToColor().ToRgbaString(0.5)); // RGBA
                 }
 
                 polarAreaChartDataset.Data = newData;
-                polarAreaChartDataset.BackgroundColor = colors;
+                polarAreaChartDataset.BackgroundColor = backgroundColors;
                 newDatasets.Add(polarAreaChartDataset);
             }
         }
