@@ -16,9 +16,9 @@ public record ChartDatasetData : IChartDatasetData
 
     #region Properties, Indexers
 
-    public object? Data { get; init; }
-
     public string? DatasetLabel { get; init; }
+
+    public object? Data { get; init; }
 
     #endregion
 }

@@ -1617,7 +1617,6 @@ window.blazorChart.scatter = {
                     data.forEach(chartDatasetData => {
                         let datasetIndex = chartData.datasets.findIndex(dataset => dataset.label === chartDatasetData.datasetLabel);
                         chartData.datasets[datasetIndex].data.push(chartDatasetData.data);
-                        chartData.datasets[datasetIndex].backgroundColor.push(chartDatasetData.backgroundColor);
                     });
                     chart.update();
                 }

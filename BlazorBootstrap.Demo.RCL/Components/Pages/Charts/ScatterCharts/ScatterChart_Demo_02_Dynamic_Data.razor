@@ -14,7 +14,7 @@
     private ChartData chartData = default!;
 
     private int datasetsCount;
-    private int labelsCount;
+    private int dataLabelsCount;
 
     private Random random = new();
 
@@ -68,9 +68,12 @@
 
     private async Task AddDatasetAsync()
     {
+        if (datasetsCount >= 12)
+            return;
+
         if (chartData is null || chartData.Datasets is null) return;
 
-        var chartDataset = GetRandomRadarChartDataset();
+        var chartDataset = GetRandomScatterChartDataset();
         chartData = await scatterChart.AddDatasetAsync(chartData, chartDataset, scatterChartOptions);
     }
 
@@ -83,7 +86,7 @@
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is ScatterChartDataset scatterChartDataset)
-                data.Add(new ScatterChartDatasetData(scatterChartDataset.Label, random.Next(200)));
+                data.Add(new ScatterChartDatasetData(scatterChartDataset.Label, new ScatterChartDataPoint(random.Next(200), random.Next(200))));
         }
 
         chartData = await scatterChart.AddDataAsync(chartData, GetNextDataLabel(), data);
@@ -109,13 +112,13 @@
 
         for (var index = 0; index < numberOfDatasets; index++)
         {
-            datasets.Add(GetRandomRadarChartDataset());
+            datasets.Add(GetRandomScatterChartDataset());
         }
 
         return datasets;
     }
 
-    private ScatterChartDataset GetRandomRadarChartDataset()
+    private ScatterChartDataset GetRandomScatterChartDataset()
     {
         var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
 
@@ -137,9 +140,9 @@
     private List<ScatterChartDataPoint?> GetRandomData()
     {
         var data = new List<ScatterChartDataPoint?>();
-        for (var index = 0; index < labelsCount; index++)
+        for (var index = 0; index < dataLabelsCount; index++)
         {
-            data.Add(new(random.Next(200), random.Next(200)));
+            data.Add(new ScatterChartDataPoint(random.Next(200), random.Next(200)));
         }
 
         return data;
@@ -158,8 +161,8 @@
 
     private string GetNextDataLabel()
     {
-        labelsCount += 1;
-        return $"Day {labelsCount}";
+        dataLabelsCount += 1;
+        return $"Day {dataLabelsCount}";
     }
 
     #endregion Data Preparation
