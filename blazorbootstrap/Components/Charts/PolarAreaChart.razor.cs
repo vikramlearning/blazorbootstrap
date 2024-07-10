@@ -19,6 +19,7 @@ public partial class PolarAreaChart : BlazorBootstrapChart
 
     #region Methods
 
+    // TODO: May be this method is not required
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)

@@ -65,6 +65,9 @@
 
     private async Task AddDatasetAsync()
     {
+        if (datasetsCount >= 12)
+            return;
+
         if (chartData is null || chartData.Datasets is null) return;
 
         var chartDataset = GetRandomRadarChartDataset();
