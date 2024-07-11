@@ -68,6 +68,14 @@ public class BarChartDataset : ChartDataset
     //https://www.chartjs.org/docs/latest/api/interfaces/BarControllerDatasetOptions.html#borderskipped
 
     /// <summary>
+    /// Percent (0-1) of the available width each category should be within the sample width.
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0.8.
+    /// </remarks>
+    public double CategoryPercentage { get; set; } = 0.8;
+
+    /// <summary>
     /// Get or sets the Data.
     /// </summary>
     /// <remarks>
@@ -76,21 +84,13 @@ public class BarChartDataset : ChartDataset
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public new List<double?>? Data { get; set; }
 
-    /// <summary>
-    /// Percent (0-1) of the available width each category should be within the sample width.
-    /// </summary>
-    /// <remarks>
-    /// Default value is 0.8.
-    /// </remarks>
-    public double CategoryPercentage { get; set; } = 0.8;
-
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public BarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
     /// <summary>
     /// Should the bars be grouped on index axis. 
-    /// When true, all the datasets at same index value will be placed next to each other centering on that index value. 
-    /// When false, each bar is placed on its actual index-axis value.
+    /// When <see langword="true"/>, all the datasets at same index value will be placed next to each other centering on that index value. 
+    /// When <see langword="false"/>, each bar is placed on its actual index-axis value.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="true"/>.

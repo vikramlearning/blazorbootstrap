@@ -20,7 +20,7 @@ public class ChartDatasetDataLabels
     /// Gets or sets the data labels alignment. 
     /// </summary>
     /// <remarks>
-    /// Default value is <see cref="Alignment.Center"/>.
+    /// Default value is <see cref="Alignment.None"/>.
     /// </remarks>
     [JsonIgnore]
     public Alignment Alignment
