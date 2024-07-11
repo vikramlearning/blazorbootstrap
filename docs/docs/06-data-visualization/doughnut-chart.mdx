@@ -42,8 +42,8 @@ It is similar to a pie chart, but the center of the donut chart is hollow. This 
 
 | Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
-| Datasets | `List<IChartDataset>` | null | ✔️ | Gets or sets the Datasets. | 1.0.0 |
-| Labels | `List<string>` | null | ✔️ | Gets or sets the Labels. | 1.0.0 |
+| Datasets | `List<IChartDataset>?` | null | ✔️ | Gets or sets the Datasets. | 1.0.0 |
+| Labels | `List<string>?` | null | ✔️ | Gets or sets the Labels. | 1.0.0 |
 
 ## DoughnutChartDataset Members
 
@@ -75,6 +75,7 @@ It is similar to a pie chart, but the center of the donut chart is hollow. This 
 | HoverOffset | `List<double>?` | null | | Arc offset when hovered (in pixels). | 3.0.0 |
 | Label | string | null | | The label for the dataset which appears in the legend and tooltips. | 1.0.0 |
 | Offset | `List<double>?` | null | | Arc offset (in pixels). | 3.0.0 |
+| Order | int | 0 | | The drawing order of dataset. Also affects order for stacking, tooltip and legend. | 3.0.0 |
 | Rotation | `double?` | null | | Per-dataset override for the starting angle to draw arcs from. | 3.0.0 |
 | Spacing | `double` | 0 | | Fixed arc offset (in pixels). Similar to `Offset` but applies to all arcs. | 3.0.0 |
 | Weight | `double` | 1 | | The relative thickness of the dataset. Providing a value for weight will cause the pie or doughnut dataset to be drawn with a thickness relative to the sum of all the dataset weight values. | 3.0.0 |
