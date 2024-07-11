@@ -1,0 +1,264 @@
+---
+title: Blazor Radar Chart Component
+description: A Blazor Bootstrap radar chart component is a way of showing multiple data points and the variation between them. They are often useful for comparing the points of two or more different data sets.
+image: https://i.imgur.com/Urrb79M.png
+
+sidebar_label: Radar Chart
+sidebar_position: 6
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Pie Chart
+
+A Blazor Bootstrap radar chart component is a way of showing multiple data points and the variation between them. They are often useful for comparing the points of two or more different data sets.
+
+<CarbonAd />
+
+<img src="https://i.imgur.com/Urrb79M.png" alt="Blazor Chart Component - Blazor Radar Chart" />
+
+## Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Height | `int?` | null | | Gets or sets chart container height. | 1.0.0 |
+| HeightUnit | `Unit` | `Unit.Px` | | Gets or sets chart container height unit of measure. | 1.0.0 |
+| Width | `int?` | null | | Gets or sets chart container width. | 1.0.0 |
+| WidthUnit | `Unit` | `Unit.Px` | | Gets or sets chart container width unit of measure. | 1.0.0 |
+
+## Methods
+
+| Name | Return type | Description | Added Version |
+|:--|:--|:--|:--|
+| AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) | `Task<ChartData>` | Adds data to chart. | 1.10.0 |
+| AddDataAsync(ChartData chartData, string dataLabel, `List<IChartDatasetData>` data) | `Task<ChartData>` | Adds dataset to chart. | 1.10.0 |
+| AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) | `Task<ChartData>` | Adds dataset to chart. | 1.10.0 || InitializeAsync | Task | Initialize Bar Chart. | 1.0.0 |
+| InitializeAsync(ChartData chartData, IChartOptions chartOptions, `string[]?` plugins = null) | Task | Initialize the chat. | 1.0.0 |
+| ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px) | Task | Resize the chart. | 1.0.0 |
+| UpdateAsync(ChartData chartData, IChartOptions chartOptions) | Task | Update the chart. | 1.0.0 |
+
+## ChartData Members
+
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Labels | `List<string>` | null | ✔️ | Gets or sets the Labels. | 1.0.0 |
+| Datasets | `List<IChartDataset>` | null | ✔️ | Gets or sets the Datasets. | 1.0.0 |
+
+## PieChartDataset Members
+
+:::info
+**PieChartDataset** implements **IChartDataset**.
+:::
+
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:-|
+| BackgroundColor | `List<string>` | null | | Get or sets the BackgroundColor. | 1.0.0 |
+| BorderColor | `List<string>` | null | | Get or sets the BorderColor. | 1.0.0 |
+| BorderWidth | `List<double>` | null | | Get or sets the BorderWidth. | 1.0.0 |
+| Clip | string | null | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0} | 1.0.0 |
+| Data | `List<double>` | null | | Get or sets the Data. | 1.0.0 |
+| Datalabels | `PieChartDatasetDataLabels` | | | Get or sets the data labels | | 1.10.2 |
+| Hidden | bool | false | | Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart. | 1.0.0 |
+| HoverBackgroundColor | `List<string>` | null | ✔️ | Get or sets the HoverBackgroundColor. | 1.0.0 |
+| HoverBorderColor | `List<string>` | null | ✔️ | Get or sets the HoverBorderColor. | 1.0.0 |
+| HoverBorderWidth | `List<double>` | null | ✔️ | Get or sets the HoverBorderWidth. | 1.0.0 |
+| Type | string | null | ✔️ | Get or sets the chart type. | 1.0.0 |
+
+## PieChartDatasetDataLabels Members
+
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Anchor | `string?` | `center` | | Gets or sets the anchor. | 1.10.2 |
+| BorderWidth | `double?` | `2` | | Gets or sets the border width. | 1.10.2 |
+
+## PieChartOptions Members
+
+:::info
+**PieChartOptions** implements **ChartOptions**.
+:::
+
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 1.10.0 |
+| Plugins | `PieChartPlugins` | | | Gets or sets the Plugins. | 1.10.2 |
+| Responsive | bool | false | | Gets or sets the Responsive. | 1.0.0 |
+
+## Examples
+
+### Prerequisites
+
+Refer to the [getting started guide](/getting-started/blazor-webassembly) for setting up charts.
+
+### How it works
+
+In the following example, a [categorical 12-color](/utils/color-utility#categorical-12-color) palette is used.
+
+:::tip
+For data visualization, you can use the predefined palettes `ColorBuilder.CategoricalTwelveColors` for a 12-color palette and `ColorBuilder.CategoricalSixColors` for a 6-color palette. 
+These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
+:::
+
+<img src="https://i.imgur.com/Urrb79M.png" alt="Blazor Bootstrap: Radar Chart Component - How it works" />
+
+```cshtml {} showLineNumbers
+<RadarChart @ref="radarChart" Width="600" />
+
+<div class="mt-5">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
+</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private RadarChart radarChart = default!;
+    private RadarChartOptions radarChartOptions = default!;
+    private ChartData chartData = default!;
+    private string[]? chartColors;
+
+    private int datasetsCount;
+    private int dataLabelsCount;
+
+    private Random random = new();
+
+    protected override void OnInitialized()
+    {
+        chartColors = ColorUtility.CategoricalTwelveColors;
+        chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
+        radarChartOptions = new() { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await radarChart.InitializeAsync(chartData, radarChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task RandomizeAsync()
+    {
+        if (chartData is null || chartData.Datasets is null || !chartData.Datasets.Any()) return;
+
+        var newDatasets = new List<IChartDataset>();
+
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is RadarChartDataset radarChartDataset
+                && radarChartDataset is not null
+                && radarChartDataset.Data is not null)
+            {
+                var count = radarChartDataset.Data.Count;
+
+                var newData = new List<double?>();
+                for (var i = 0; i < count; i++)
+                {
+                    newData.Add(random.Next(200));
+                }
+
+                radarChartDataset.Data = newData;
+                newDatasets.Add(radarChartDataset);
+            }
+        }
+
+        chartData.Datasets = newDatasets;
+
+        await radarChart.UpdateAsync(chartData, radarChartOptions);
+    }
+
+    private async Task AddDatasetAsync()
+    {
+        if (datasetsCount >= 12)
+            return;
+
+        if (chartData is null || chartData.Datasets is null) return;
+
+        var chartDataset = GetRandomRadarChartDataset();
+        chartData = await radarChart.AddDatasetAsync(chartData, chartDataset, radarChartOptions);
+    }
+
+    private async Task AddDataAsync()
+    {
+        if (dataLabelsCount >= 12)
+            return;
+
+        if (chartData is null || chartData.Datasets is null)
+            return;
+
+        dataLabelsCount += 1;
+
+        var data = new List<IChartDatasetData>();
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is RadarChartDataset radarChartDataset)
+                data.Add(new RadarChartDatasetData(radarChartDataset.Label, random.Next(200)));
+        }
+
+        chartData = await radarChart.AddDataAsync(chartData, GetNextDataLabel(), data);
+    }
+
+    #region Data Preparation
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            dataLabelsCount += 1;
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel() => $"Day {dataLabelsCount}";
+
+    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
+    {
+        var datasets = new List<IChartDataset>();
+
+        for (var index = 0; index < numberOfDatasets; index++)
+        {
+            datasets.Add(GetRandomRadarChartDataset());
+        }
+
+        return datasets;
+    }
+
+    private RadarChartDataset GetRandomRadarChartDataset()
+    {
+        var c = chartColors![datasetsCount].ToColor();
+
+        datasetsCount += 1;
+
+        return new RadarChartDataset
+            {
+                Label = $"Team {datasetsCount}",
+                Data = GetRandomData(),
+                BackgroundColor = c.ToRgbaString(),
+                BorderColor = c.ToRgbaString(0.8),
+                BorderWidth = 2,
+                Fill = true,
+                HoverBorderWidth = 4,
+            };
+    }
+
+    private List<double?> GetRandomData()
+    {
+        var data = new List<double?>();
+        for (var index = 0; index < dataLabelsCount; index++)
+        {
+            data.Add(random.Next(200));
+        }
+
+        return data;
+    }
+
+    #endregion Data Preparation
+
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/charts/radar-chart#how-it-works)
