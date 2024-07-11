@@ -20,7 +20,7 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 
 ## Parameters
 
-| Name | Type | Default | Required | Description | Added Version |
+| Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
 | Height | `int?` | null | | Gets or sets chart container height. | 1.0.0 |
 | HeightUnit | `Unit` | `Unit.Px` | | Gets or sets chart container height unit of measure. | 1.0.0 |
@@ -29,7 +29,7 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 
 ## Methods
 
-| Name | Return type | Description | Added Version |
+| Name | Return type | Description | Added / Modified Version |
 |:--|:--|:--|:--|
 | AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) | `Task<ChartData>` | Adds data to chart. | 1.10.0 |
 | AddDataAsync(ChartData chartData, string dataLabel, `List<IChartDatasetData>` data) | `Task<ChartData>` | Adds dataset to chart. | 1.10.0 |
@@ -40,7 +40,7 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 
 ## ChartData Members
 
-| Property Name | Type | Default | Required | Description | Added Version |
+| Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
 | Datasets | `List<IChartDataset>?` | null | ✔️ | Gets or sets the Datasets. | 1.0.0 |
 | Labels | `List<string>?` | null | ✔️ | Gets or sets the Labels. | 1.0.0 |
@@ -83,10 +83,11 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 **BarChartDatasetDataLabels** implements **ChartDatasetDataLabels**.
 :::
 
-| Property Name | Type | Default | Required | Description | Added Version |
+| Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
 | Alignment | `Alignment` | `Alignment.None` | | Gets or sets the data labels alignment. | 3.0.0 |
 | Anchor | `Anchor` | `Anchor.None` | | Gets or sets the data labels anchor. | 3.0.0 |
+| BorderWidth | double | 2 | | Gets or sets the border width | 3.0.0 |
 
 ## BarChartOptions Members
 
@@ -94,7 +95,7 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 **BarChartOptions** implements **ChartOptions**.
 :::
 
-| Property Name | Type | Default | Required | Description | Added Version |
+| Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
 | IndexAxis | string | x | | The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts. | 1.0.0 |
 | Interaction | `Interaction` | | | Gets or sets the Interaction. | 1.0.0 |

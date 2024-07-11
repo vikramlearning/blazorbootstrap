@@ -20,7 +20,7 @@ It is similar to a pie chart, but the center of the donut chart is hollow. This 
 
 ## Parameters
 
-| Name | Type | Default | Required | Description | Added Version |
+| Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
 | Height | `int?` | null | | Gets or sets chart container height. | 1.0.0 |
 | HeightUnit | `Unit` | `Unit.Px` | | Gets or sets chart container height unit of measure. | 1.0.0 |
@@ -29,7 +29,7 @@ It is similar to a pie chart, but the center of the donut chart is hollow. This 
 
 ## Methods
 
-| Name | Return type | Description | Added Version |
+| Name | Return type | Description | Added / Modified Version |
 |:--|:--|:--|:--|
 | AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) | `Task<ChartData>` | Adds data to chart. | 1.10.0 |
 | AddDataAsync(ChartData chartData, string dataLabel, `List<IChartDatasetData>` data) | `Task<ChartData>` | Adds dataset to chart. | 1.10.0 |
@@ -40,7 +40,7 @@ It is similar to a pie chart, but the center of the donut chart is hollow. This 
 
 ## ChartData Members
 
-| Property Name | Type | Default | Required | Description | Added Version |
+| Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
 | Datasets | `List<IChartDataset>` | null | ✔️ | Gets or sets the Datasets. | 1.0.0 |
 | Labels | `List<string>` | null | ✔️ | Gets or sets the Labels. | 1.0.0 |
@@ -51,27 +51,45 @@ It is similar to a pie chart, but the center of the donut chart is hollow. This 
 **DoughnutChartDataset** implements **IChartDataset**.
 :::
 
-| Property Name | Type | Default | Required | Description | Added Version |
+| Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
-| BackgroundColor | `List<string>` | null | | Get or sets the BackgroundColor. | 1.0.0 |
-| BorderColor | `List<string>` | null | | Get or sets the BorderColor. | 1.0.0 |
-| BorderWidth | `List<double>` | null | | Get or sets the BorderWidth. | 1.0.0 |
-| Clip | string | null | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0} | 1.0.0 |
-| Data | `List<double>` | null | | Get or sets the Data. | 1.0.0 |
+| BackgroundColor | `List<string>?` | null | | Get or sets the BackgroundColor. | 1.0.0 |
+| BorderAlign | `List<string>?` | null | | Supported values are 'center' and 'inner'. When 'center' is set, the borders of arcs next to each other will overlap. When 'inner' is set, it is guaranteed that all borders will not overlap. | 3.0.0 |
+| BorderColor | `List<string>?` | null | | Get or sets the BorderColor. | 1.0.0 |
+| BorderDash | `List<double>?` | null | | Arc border length and spacing of dashes. | 3.0.0 |
+| BorderDashOffset | double | 0.0 | | Arc border offset for line dashes. | 3.0.0 |
+| BorderJoinStyle | `List<string>?` | null | | Arc border join style. Supported values are 'round', 'bevel', 'miter'. | 3.0.0 |
+| BorderRadius | `List<double>?` | null | | It is applied to all corners of the arc (outerStart, outerEnd, innerStart, innerRight). | 3.0.0 |
+| BorderWidth | `List<double>?` | null | | Arc border width (in pixels). | 1.0.0 |
+| Clip | `string?` | null | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: `clip: {left: 5, top: false, right: -2, bottom: 0}` | 1.0.0 |
+| Circumference | `double?` | null | | Per-dataset override for the sweep that the arcs cover. | 3.0.0 |
+| Data | `List<double?>?` | null | ✔️ | Get or sets the Data. | 1.0.0 |
 | Datalabels | `DoughnutChartDatasetDataLabels` | | | Get or sets the data labels | | 1.10.2 |
 | Hidden | bool | false | | Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart. | 1.0.0 |
-| HoverBackgroundColor | `List<string>` | null | ✔️ | Get or sets the HoverBackgroundColor. | 1.0.0 |
-| HoverBorderColor | `List<string>` | null | ✔️ | Get or sets the HoverBorderColor. | 1.0.0 |
-| HoverBorderWidth | `List<double>` | null | ✔️ | Get or sets the HoverBorderWidth. | 1.0.0 |
+| HoverBackgroundColor | `List<string>?` | null | | Arc background color when hovered. | 1.0.0 |
+| HoverBorderColor | `List<string>?` | null | | Arc border color when hovered. | 1.0.0 |
+| HoverBorderDash | `List<double>?` | null | | Arc border length and spacing of dashes when hovered. | 3.0.0 |
+| HoverBorderDashOffset | `double?` | null | | Arc border offset for line dashes when hovered. | 3.0.0 |
+| HoverBorderJoinStyle | `List<string>?` | null | | Arc border join style when hovered. Supported values are 'round', 'bevel', 'miter'. | 3.0.0 |
+| HoverBorderWidth | `List<double>?` | null | | Arc border width when hovered (in pixels). | 3.0.0 |
+| HoverOffset | `List<double>?` | null | | Arc offset when hovered (in pixels). | 3.0.0 |
 | Label | string | null | | The label for the dataset which appears in the legend and tooltips. | 1.0.0 |
-| Type | string | null | ✔️ | Get or sets the chart type. | 1.0.0 |
+| Offset | `List<double>?` | null | | Arc offset (in pixels). | 3.0.0 |
+| Rotation | `double?` | null | | Per-dataset override for the starting angle to draw arcs from. | 3.0.0 |
+| Spacing | `double` | 0 | | Fixed arc offset (in pixels). Similar to `Offset` but applies to all arcs. | 3.0.0 |
+| Weight | `double` | 1 | | The relative thickness of the dataset. Providing a value for weight will cause the pie or doughnut dataset to be drawn with a thickness relative to the sum of all the dataset weight values. | 3.0.0 |
 
 ## DoughnutChartDatasetDataLabels Members
 
-| Property Name | Type | Default | Required | Description | Added Version |
+:::info
+**DoughnutChartDatasetDataLabels** implements **ChartDatasetDataLabels**.
+:::
+
+| Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
-| Anchor | `string?` | `center` | | Gets or sets the anchor. | 1.10.2 |
-| BorderWidth | `double?` | `2` | | Gets or sets the border width. | 1.10.2 |
+| Alignment | `Alignment` | `Alignment.None` | | Gets or sets the data labels alignment. | 3.0.0 |
+| Anchor | `Anchor` | `Anchor.None` | | Gets or sets the data labels anchor. | 3.0.0 |
+| BorderWidth | double | 2 | | Gets or sets the border width | 3.0.0 |
 
 ## DoughnutChartOptions Members
 
@@ -79,11 +97,12 @@ It is similar to a pie chart, but the center of the donut chart is hollow. This 
 **DoughnutChartOptions** implements **ChartOptions**.
 :::
 
-| Property Name | Type | Default | Required | Description | Added Version |
+| Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
 | Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 1.10.0 |
+| MaintainAspectRatio | bool | true | | Maintain the original canvas aspect ratio (width / height) when resizing. | 3.0.0 |
 | Plugins | `DoughnutChartPlugins` | | | Gets or sets the Plugins. | 1.10.2 |
-| Responsive | bool | false | | Gets or sets the Responsive. | 1.0.0 |
+| Responsive | bool | false | | Resizes the chart canvas when its container does. | 1.0.0 |
 
 ## Examples
 
