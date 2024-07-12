@@ -85,8 +85,10 @@
                 {
                     @if (loadingTemplate is null)
                     {
+                        var placeholderRowCount = AllowPaging ? pageSize : (totalCount < 10 ? totalCount : 10);
+
                         // show placeholders
-                        @for (var i = 0; i < 5; i++)
+                        @for (var i = 0; i < placeholderRowCount; i++)
                         {
                             <tr>
                                 @for (var j = 0; j < columnCount; j++)
