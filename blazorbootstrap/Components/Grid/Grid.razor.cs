@@ -258,7 +258,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             builder.AddAttribute(103, "class", $"form-check bb-grid-form-check-{headerCheckboxId}");
 
             builder.OpenElement(104, "input");
-            builder.AddAttribute(105, "class", "form-check-input");
+            builder.AddAttribute(105, "class", "form-check-input bb-grid-form-check-input");
             builder.AddAttribute(106, "type", "checkbox");
             builder.AddAttribute(107, "role", "button");
 

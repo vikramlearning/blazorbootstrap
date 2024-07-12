@@ -141,16 +141,16 @@ table button.dropdown-toggle.bb-grid-filter::after {
     --bs-table-bg: inherit !important;
 }
 
-    .bb-table tr:has(input[type=checkbox]:checked) {
+    .bb-table > tbody tr:has(input[type=checkbox].bb-grid-form-check-input:checked) {
         color: var(--bb-table-selected-row-color);
         background-color: var(--bb-table-selected-row-background-color);
     }
 
-        .bb-table tr:has(input[type=checkbox]:checked):hover,
-        .bb-table tr:has(input[type=checkbox]:checked):hover > * {
-            color: var(--bb-table-selected-row-hover-color);
-            background-color: var(--bb-table-selected-row-hover-background-color);
-        }
+    .bb-table > tbody tr:has(input[type=checkbox].bb-grid-form-check-input:checked):hover,
+    .bb-table > tbody tr:has(input[type=checkbox].bb-grid-form-check-input:checked):hover > * {
+        color: var(--bb-table-selected-row-hover-color);
+        background-color: var(--bb-table-selected-row-hover-background-color);
+    }
 
 .bb-table-sticky {
     border-collapse: collapse;
