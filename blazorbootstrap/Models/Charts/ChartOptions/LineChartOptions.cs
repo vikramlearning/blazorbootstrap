@@ -9,10 +9,13 @@ public class LineChartOptions : ChartOptions
     //plugins -> title -> display, text
 
     /// <summary>
-    /// The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts.
+    /// The base axis of the dataset. 'x' for horizontal lines and 'y' for vertical lines.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null"/>.
+    /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string IndexAxis { get; set; } = "x";
+    public string? IndexAxis { get; set; }
 
     public Interaction Interaction { get; set; } = new();
 

@@ -10,9 +10,13 @@ public class BarChartOptions : ChartOptions
 
     /// <summary>
     /// The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts.
+    /// Supported values are 'x' and 'y'.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null"/>.
+    /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string IndexAxis { get; set; } = "x";
+    public string? IndexAxis { get; set; }
 
     public Interaction Interaction { get; set; } = new();
 

@@ -4,7 +4,7 @@ public class PolarAreaChartPlugins : ChartPlugins
 {
     #region Properties, Indexers
 
-    public PieChartDataLabels Datalabels { get; set; } = new();
+    public PolarAreaChartDataLabels Datalabels { get; set; } = new();
 
     #endregion
 }
@@ -17,7 +17,7 @@ public class PolarAreaChartDataLabels
     public double BorderRadius { get; set; } = 25;
     public double BorderWidth { get; set; } = 2;
     public string? Color { get; set; } = "white";
-    public PieChartDataLabelsFont Font { get; set; } = new();
+    public PolarAreaChartDataLabelsFont Font { get; set; } = new();
     public double Padding { get; set; } = 6;
 
     #endregion

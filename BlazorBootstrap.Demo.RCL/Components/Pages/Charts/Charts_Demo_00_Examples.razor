@@ -26,7 +26,7 @@
                     new BarChartDataset()
                     {
                         Label = "India",
-                        Data = new List<double>{ 9, 11, 9, 4, 17, 16, 9, 11, 5, 14, 15, 6, 15, 9, 6, 8, 13, 3, 4, 11 },
+                        Data = new List<double?>{ 9, 11, 9, 4, 17, 16, 9, 11, 5, 14, 15, 6, 15, 9, 6, 8, 13, 3, 4, 11 },
                         BackgroundColor = new List<string>{ "rgb(88, 80, 141)" },
                         CategoryPercentage = 0.8,
                         BarPercentage = 1,
@@ -34,7 +34,7 @@
                     new BarChartDataset()
                     {
                         Label = "England",
-                        Data = new List<double>{ 1, 0, 7, 11, 5, 2, 13, 8, 9, 10, 7, 13, 7, 5, 9, 5, 10, 5, 11, 2 },
+                        Data = new List<double?>{ 1, 0, 7, 11, 5, 2, 13, 8, 9, 10, 7, 13, 7, 5, 9, 5, 10, 5, 11, 2 },
                         BackgroundColor = new List<string> { "rgb(255, 166, 0)" },
                         CategoryPercentage = 0.8,
                         BarPercentage = 1,
@@ -68,28 +68,28 @@
                     new LineChartDataset()
                     {
                         Label = "India",
-                        Data = new List<double>{ 9, 20, 29, 33, 50, 66, 75, 86, 91, 105, 120, 126, 141, 150, 156, 164, 177, 180, 184, 195 },
+                        Data = new List<double?>{ 9, 20, 29, 33, 50, 66, 75, 86, 91, 105, 120, 126, 141, 150, 156, 164, 177, 180, 184, 195 },
                         BackgroundColor = "rgb(88, 80, 141)",
                         BorderColor = "rgb(88, 80, 141)",
                         BorderWidth = 2,
                         HoverBorderWidth = 4,
-                        PointBackgroundColor = "rgb(88, 80, 141)",
-                        PointBorderColor = "rgb(88, 80, 141)",
-                        PointRadius = 0, // hide points
-                        PointHoverRadius = 4,
+                        //PointBackgroundColor = "rgb(88, 80, 141)",
+                        //PointBorderColor = "rgb(88, 80, 141)",
+                        //PointRadius = 0, // hide points
+                        //PointHoverRadius = 4,
                     },
                     new LineChartDataset()
                     {
                         Label = "England",
-                        Data = new List<double>{ 1, 1, 8, 19, 24, 26, 39, 47, 56, 66, 75, 88, 95, 100, 109, 114, 124, 129, 140, 142 },
+                        Data = new List<double?>{ 1, 1, 8, 19, 24, 26, 39, 47, 56, 66, 75, 88, 95, 100, 109, 114, 124, 129, 140, 142 },
                         BackgroundColor = "rgb(255, 166, 0)",
                         BorderColor = "rgb(255, 166, 0)",
                         BorderWidth = 2,
                         HoverBorderWidth = 4,
-                        PointBackgroundColor = "rgb(255, 166, 0)",
-                        PointBorderColor = "rgb(255, 166, 0)",
-                        PointRadius = 0, // hide points
-                        PointHoverRadius = 4,
+                        // PointBackgroundColor = "rgb(255, 166, 0)",
+                        // PointBorderColor = "rgb(255, 166, 0)",
+                        // PointRadius = 0, // hide points
+                        // PointHoverRadius = 4,
                     }
                 }
             };

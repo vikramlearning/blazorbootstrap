@@ -1,0 +1,170 @@
+﻿<ScatterChart @ref="scatterChart" />
+
+<div class="mt-5">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
+</div>
+
+@code {
+    private ScatterChart scatterChart = default!;
+    private ScatterChartOptions scatterChartOptions = default!;
+    private ChartData chartData = default!;
+
+    private int datasetsCount;
+    private int dataLabelsCount;
+
+    private Random random = new();
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
+        scatterChartOptions = new() { 
+            Responsive = true, 
+            Interaction = new Interaction { Mode = InteractionMode.Index },
+        };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await scatterChart.InitializeAsync(chartData, scatterChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task RandomizeAsync()
+    {
+        if (chartData is null || chartData.Datasets is null || !chartData.Datasets.Any()) return;
+
+        var newDatasets = new List<IChartDataset>();
+
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is ScatterChartDataset scatterChartDataset
+                && scatterChartDataset is not null
+                && scatterChartDataset.Data is not null)
+            {
+                var count = scatterChartDataset.Data.Count;
+
+                var newData = new List<ScatterChartDataPoint?>();
+                for (var i = 0; i < count; i++)
+                {
+                    newData.Add(new(random.Next(200), random.Next(200)));
+                }
+
+                scatterChartDataset.Data = newData;
+                newDatasets.Add(scatterChartDataset);
+            }
+        }
+
+        chartData.Datasets = newDatasets;
+
+        await scatterChart.UpdateAsync(chartData, scatterChartOptions);
+    }
+
+    private async Task AddDatasetAsync()
+    {
+        if (datasetsCount >= 12)
+            return;
+
+        if (chartData is null || chartData.Datasets is null) return;
+
+        var chartDataset = GetRandomScatterChartDataset();
+        chartData = await scatterChart.AddDatasetAsync(chartData, chartDataset, scatterChartOptions);
+    }
+
+    private async Task AddDataAsync()
+    {
+        if (chartData is null || chartData.Datasets is null)
+            return;
+
+        var data = new List<IChartDatasetData>();
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is ScatterChartDataset scatterChartDataset)
+                data.Add(new ScatterChartDatasetData(scatterChartDataset.Label, new ScatterChartDataPoint(random.Next(200), random.Next(200))));
+        }
+
+        chartData = await scatterChart.AddDataAsync(chartData, GetNextDataLabel(), data);
+    }
+
+    private async Task ShowHorizontalLineChartAsync()
+    {
+        scatterChartOptions.IndexAxis = "y";
+        await scatterChart.UpdateAsync(chartData, scatterChartOptions);
+    }
+
+    private async Task ShowVerticalLineChartAsync()
+    {
+        scatterChartOptions.IndexAxis = "x";
+        await scatterChart.UpdateAsync(chartData, scatterChartOptions);
+    }
+
+    #region Data Preparation
+
+    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
+    {
+        var datasets = new List<IChartDataset>();
+
+        for (var index = 0; index < numberOfDatasets; index++)
+        {
+            datasets.Add(GetRandomScatterChartDataset());
+        }
+
+        return datasets;
+    }
+
+    private ScatterChartDataset GetRandomScatterChartDataset()
+    {
+        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
+
+        datasetsCount += 1;
+
+        return new ScatterChartDataset
+            {
+                Label = $"Team {datasetsCount}",
+                Data = GetRandomData(),
+                BackgroundColor = c.ToRgbaString(), // RGBA
+                BorderColor = c.ToRgbString(), // RGB
+                BorderWidth = 2,
+                Fill = true,
+                HoverBorderWidth = 4,
+                PointHoverRadius = new List<double>{6},
+            };
+    }
+
+    private List<ScatterChartDataPoint?> GetRandomData()
+    {
+        var data = new List<ScatterChartDataPoint?>();
+        for (var index = 0; index < dataLabelsCount; index++)
+        {
+            data.Add(new ScatterChartDataPoint(random.Next(200), random.Next(200)));
+        }
+
+        return data;
+    }
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel()
+    {
+        dataLabelsCount += 1;
+        return $"Day {dataLabelsCount}";
+    }
+
+    #endregion Data Preparation
+
+}

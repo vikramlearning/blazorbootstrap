@@ -81,15 +81,15 @@
                 BorderColor = c.ToRgbString(),
                 BorderWidth = 2,
                 HoverBorderWidth = 4,
-                PointBackgroundColor = c.ToRgbString(),
-                PointRadius = 0, // hide points
-                PointHoverRadius = 4,
+                // PointBackgroundColor = c.ToRgbString(),
+                // PointRadius = 0, // hide points
+                // PointHoverRadius = 4,
             };
     }
 
-    private List<double> GetRandomData()
+    private List<double?> GetRandomData()
     {
-        var data = new List<double>();
+        var data = new List<double?>();
         for (var index = 0; index < labelsCount; index++)
         {
             data.Add(random.Next(200));

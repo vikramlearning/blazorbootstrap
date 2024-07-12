@@ -1,0 +1,156 @@
+﻿<RadarChart @ref="radarChart" Width="600" />
+
+<div class="mt-5">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
+</div>
+
+@code {
+    private RadarChart radarChart = default!;
+    private RadarChartOptions radarChartOptions = default!;
+    private ChartData chartData = default!;
+    private string[]? chartColors;
+
+    private int datasetsCount;
+    private int dataLabelsCount;
+
+    private Random random = new();
+
+    protected override void OnInitialized()
+    {
+        chartColors = ColorUtility.CategoricalTwelveColors;
+        chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
+        radarChartOptions = new() { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await radarChart.InitializeAsync(chartData, radarChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task RandomizeAsync()
+    {
+        if (chartData is null || chartData.Datasets is null || !chartData.Datasets.Any()) return;
+
+        var newDatasets = new List<IChartDataset>();
+
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is RadarChartDataset radarChartDataset
+                && radarChartDataset is not null
+                && radarChartDataset.Data is not null)
+            {
+                var count = radarChartDataset.Data.Count;
+
+                var newData = new List<double?>();
+                for (var i = 0; i < count; i++)
+                {
+                    newData.Add(random.Next(200));
+                }
+
+                radarChartDataset.Data = newData;
+                newDatasets.Add(radarChartDataset);
+            }
+        }
+
+        chartData.Datasets = newDatasets;
+
+        await radarChart.UpdateAsync(chartData, radarChartOptions);
+    }
+
+    private async Task AddDatasetAsync()
+    {
+        if (datasetsCount >= 12)
+            return;
+
+        if (chartData is null || chartData.Datasets is null) return;
+
+        var chartDataset = GetRandomRadarChartDataset();
+        chartData = await radarChart.AddDatasetAsync(chartData, chartDataset, radarChartOptions);
+    }
+
+    private async Task AddDataAsync()
+    {
+        if (dataLabelsCount >= 12)
+            return;
+
+        if (chartData is null || chartData.Datasets is null)
+            return;
+
+        dataLabelsCount += 1;
+
+        var data = new List<IChartDatasetData>();
+        foreach (var dataset in chartData.Datasets)
+        {
+            if (dataset is RadarChartDataset radarChartDataset)
+                data.Add(new RadarChartDatasetData(radarChartDataset.Label, random.Next(200)));
+        }
+
+        chartData = await radarChart.AddDataAsync(chartData, GetNextDataLabel(), data);
+    }
+
+    #region Data Preparation
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            dataLabelsCount += 1;
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel() => $"Day {dataLabelsCount}";
+
+    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
+    {
+        var datasets = new List<IChartDataset>();
+
+        for (var index = 0; index < numberOfDatasets; index++)
+        {
+            datasets.Add(GetRandomRadarChartDataset());
+        }
+
+        return datasets;
+    }
+
+    private RadarChartDataset GetRandomRadarChartDataset()
+    {
+        var c = chartColors![datasetsCount].ToColor();
+
+        datasetsCount += 1;
+
+        return new RadarChartDataset
+            {
+                Label = $"Team {datasetsCount}",
+                Data = GetRandomData(),
+                BackgroundColor = c.ToRgbaString(),
+                BorderColor = c.ToRgbaString(0.8),
+                BorderWidth = 2,
+                Fill = true,
+                HoverBorderWidth = 4,
+            };
+    }
+
+    private List<double?> GetRandomData()
+    {
+        var data = new List<double?>();
+        for (var index = 0; index < dataLabelsCount; index++)
+        {
+            data.Add(random.Next(200));
+        }
+
+        return data;
+    }
+
+    #endregion Data Preparation
+
+}

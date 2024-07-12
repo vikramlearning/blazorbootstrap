@@ -1,0 +1,63 @@
+﻿<ScatterChart @ref="scatterChart" Width="560" Height="480" />
+
+@code {
+    private ScatterChart scatterChart = default!;
+    private ScatterChartOptions scatterChartOptions = default!;
+    private ChartData chartData = default!;
+
+    private Random random = new();
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+            {
+                Datasets = new()
+                {
+                    GetRandomRadarChartDataset(0),
+                    GetRandomRadarChartDataset(1),
+                    GetRandomRadarChartDataset(2)
+                }
+            };
+
+        scatterChartOptions = new() { };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await scatterChart.InitializeAsync(chartData, scatterChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    #region Data Preparation
+
+    private ScatterChartDataset GetRandomRadarChartDataset(int recordIndex)
+    {
+        var c = ColorUtility.CategoricalTwelveColors[recordIndex].ToColor();
+
+        return new ScatterChartDataset
+            {
+                Label = $"Team {recordIndex + 1}",
+                Data = GetRandomData(),
+                BackgroundColor = c.ToRgbaString(), // RGBA
+                BorderColor = c.ToRgbString(), // RGB
+                BorderWidth = 2,
+                HoverBorderWidth = 4,
+            };
+    }
+
+    private List<ScatterChartDataPoint?> GetRandomData()
+    {
+        var data = new List<ScatterChartDataPoint?>();
+        for (var index = 0; index < 10; index++)
+        {
+            data.Add(new(random.Next(200), random.Next(200)));
+        }
+
+        return data;
+    }
+
+    #endregion Data Preparation
+}

@@ -83,9 +83,14 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "602", Text = "Line Chart", Href = "/charts/line-chart", IconName = IconName.GraphUp, ParentId = "6", Match = NavLinkMatch.All },
             new (){ Id = "603", Text = "Pie Chart", Href = "/charts/pie-chart", IconName = IconName.PieChartFill, ParentId = "6", Match = NavLinkMatch.All },
             new (){ Id = "604", Text = "Polar Area Chart", Href = "/charts/polar-area-chart", IconName = IconName.PieChartFill, ParentId = "6", Match = NavLinkMatch.All },
+            new (){ Id = "605", Text = "Radar Chart", Href = "/charts/radar-chart", IconName = IconName.Radar, ParentId = "6", Match = NavLinkMatch.All },
+            new (){ Id = "605", Text = "Scatter Chart", Href = "/charts/scatter-chart", IconName = IconName.GraphUpArrow, ParentId = "6", Match = NavLinkMatch.All },
 
             new(){ Id = "7", Text = "Services", IconName = IconName.WrenchAdjustableCircleFill, IconColor = IconColor.Success },
             new (){ Id = "700", Text = "Modal Service", Href = "/modal-service", IconName = IconName.WindowStack, ParentId = "7" },
+
+            new(){ Id = "19", Text = "Utilities", IconName = IconName.GearWideConnected, IconColor = IconColor.Info },
+            new (){ Id = "1900", Text = "Color Utility", Href = "/utils/color-utility", IconName = IconName.Palette2, ParentId = "19" },
         };
 
         return navItems;

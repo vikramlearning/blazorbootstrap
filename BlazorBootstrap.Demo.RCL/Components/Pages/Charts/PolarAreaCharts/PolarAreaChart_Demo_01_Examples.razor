@@ -10,7 +10,7 @@
     private PolarAreaChart polarAreaChart = default!;
     private PolarAreaChartOptions polarAreaChartOptions = default!;
     private ChartData chartData = default!;
-    private string[]? backgroundColors;
+    private string[]? chartColors;
 
     private int datasetsCount = 0;
     private int dataLabelsCount = 0;
@@ -19,9 +19,8 @@
 
     protected override void OnInitialized()
     {
-        backgroundColors = ColorUtility.CategoricalTwelveColors;
-        chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(1) };
-
+        chartColors = ColorUtility.CategoricalTwelveColors;
+        chartData = new ChartData { Labels = GetDefaultDataLabels(5), Datasets = GetDefaultDataSets(1) };
         polarAreaChartOptions = new();
         polarAreaChartOptions.Responsive = true;
         polarAreaChartOptions.Plugins.Title!.Text = "2022 - Sales";
@@ -51,13 +50,20 @@
             {
                 var count = polarAreaChartDataset.Data.Count;
 
-                var newData = new List<double>();
+                var newData = new List<double?>();
                 for (var i = 0; i < count; i++)
                 {
                     newData.Add(random.Next(0, 100));
                 }
 
+                var backgroundColors = new List<string>();
+                for (var index = 0; index < count; index++)
+                {
+                    backgroundColors.Add(chartColors![index].ToColor().ToRgbaString(0.5)); // RGBA
+                }
+
                 polarAreaChartDataset.Data = newData;
+                polarAreaChartDataset.BackgroundColor = backgroundColors;
                 newDatasets.Add(polarAreaChartDataset);
             }
         }
@@ -83,19 +89,33 @@
         if (chartData is null || chartData.Datasets is null)
             return;
 
+        dataLabelsCount += 1;
+
         var data = new List<IChartDatasetData>();
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is PolarAreaChartDataset polarAreaChartDataset)
-                data.Add(new PolarAreaChartDatasetData(polarAreaChartDataset.Label, random.Next(0, 100), backgroundColors![dataLabelsCount]));
+                data.Add(new PolarAreaChartDatasetData(polarAreaChartDataset.Label, random.Next(0, 100), chartColors![dataLabelsCount - 1].ToColor().ToRgbaString(0.5), null));
         }
 
         chartData = await polarAreaChart.AddDataAsync(chartData, GetNextDataLabel(), data);
-
-        dataLabelsCount += 1;
     }
 
     #region Data Preparation
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            dataLabelsCount += 1;
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel() => $"Product {dataLabelsCount}";
 
     private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
     {
@@ -112,12 +132,17 @@
     private PolarAreaChartDataset GetRandomPolarAreaChartDataset()
     {
         datasetsCount += 1;
-        return new() { Label = $"Team {datasetsCount}", Data = GetRandomData(), BackgroundColor = GetRandomBackgroundColors() };
+        return new()
+            {
+                Label = $"Team {datasetsCount}",
+                Data = GetRandomData(),
+                BackgroundColor = GetRandomBackgroundColors()
+            };
     }
 
-    private List<double> GetRandomData()
+    private List<double?> GetRandomData()
     {
-        var data = new List<double>();
+        var data = new List<double?>();
         for (var index = 0; index < dataLabelsCount; index++)
         {
             data.Add(random.Next(0, 100));
@@ -131,27 +156,22 @@
         var colors = new List<string>();
         for (var index = 0; index < dataLabelsCount; index++)
         {
-            colors.Add(backgroundColors![index]);
+            colors.Add(chartColors![index].ToColor().ToRgbaString(0.5)); // RGBA
         }
 
         return colors;
     }
 
-    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    private List<string> GetRandomBorderColors()
     {
-        var labels = new List<string>();
-        for (var index = 0; index < numberOfLabels; index++)
+        var colors = new List<string>();
+        for (var index = 0; index < dataLabelsCount; index++)
         {
-            labels.Add(GetNextDataLabel());
-            dataLabelsCount += 1;
+            colors.Add(chartColors![index].ToColor().ToRgbString()); // RGB
         }
 
-        return labels;
+        return colors;
     }
-
-    private string GetNextDataLabel() => $"Product {dataLabelsCount + 1}";
-
-    private string GetNextDataBackgrounfColor() => backgroundColors![dataLabelsCount];
 
     #endregion  Data Preparation
 }

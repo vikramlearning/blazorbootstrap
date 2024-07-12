@@ -2,6 +2,12 @@
 
 public partial class PieChart : BlazorBootstrapChart
 {
+    #region Fields and Constants
+
+    private const string _jsObjectName = "window.blazorChart.pie";
+
+    #endregion
+
     #region Constructors
 
     public PieChart()
@@ -28,11 +34,11 @@ public partial class PieChart : BlazorBootstrapChart
             if (dataset is PieChartDataset pieChartDataset && pieChartDataset.Label == dataLabel)
                 if (data is PieChartDatasetData pieChartDatasetData)
                 {
-                    pieChartDataset.Data?.Add(pieChartDatasetData.Data);
+                    pieChartDataset.Data?.Add(pieChartDatasetData.Data as double?);
                     pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor!);
                 }
 
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.pie.addDatasetData", Id, dataLabel, data);
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
@@ -75,12 +81,12 @@ public partial class PieChart : BlazorBootstrapChart
 
                 if (chartDatasetData is PieChartDatasetData pieChartDatasetData)
                 {
-                    pieChartDataset.Data?.Add(pieChartDatasetData.Data);
+                    pieChartDataset.Data?.Add(pieChartDatasetData.Data as double?);
                     pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor!);
                 }
             }
 
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.pie.addDatasetsData", Id, dataLabel, data?.Select(x => (PieChartDatasetData)x));
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (PieChartDatasetData)x));
 
         return chartData;
     }
@@ -99,7 +105,7 @@ public partial class PieChart : BlazorBootstrapChart
         if (chartDataset is PieChartDataset pieChartDataset)
         {
             chartData.Datasets.Add(pieChartDataset);
-            await JSRuntime.InvokeVoidAsync("window.blazorChart.pie.addDataset", Id, pieChartDataset);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, pieChartDataset);
         }
 
         return chartData;
@@ -111,7 +117,7 @@ public partial class PieChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PieChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync("window.blazorChart.pie.initialize", Id, GetChartType(), data, (PieChartOptions)chartOptions, plugins);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PieChartOptions)chartOptions, plugins);
         }
     }
 
@@ -121,7 +127,7 @@ public partial class PieChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PieChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync("window.blazorChart.pie.update", Id, GetChartType(), data, (PieChartOptions)chartOptions);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PieChartOptions)chartOptions);
         }
     }
 

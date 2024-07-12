@@ -75,13 +75,22 @@ public class BarChartDataset : ChartDataset
     /// </remarks>
     public double CategoryPercentage { get; set; } = 0.8;
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    /// <summary>
+    /// Get or sets the Data.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null"/>.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public new List<double?>? Data { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public BarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
     /// <summary>
     /// Should the bars be grouped on index axis. 
-    /// When true, all the datasets at same index value will be placed next to each other centering on that index value. 
-    /// When false, each bar is placed on its actual index-axis value.
+    /// When <see langword="true"/>, all the datasets at same index value will be placed next to each other centering on that index value. 
+    /// When <see langword="false"/>, each bar is placed on its actual index-axis value.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="true"/>.
@@ -126,12 +135,13 @@ public class BarChartDataset : ChartDataset
 
     /// <summary>
     /// The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts.
+    /// Supported values are 'x' and 'y'.
     /// </summary>
     /// <remarks>
-    /// Default value is 'x'.
+    /// Default value is <see langword="null"/>.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string IndexAxis { get; set; } = "x";
+    public string? IndexAxis { get; set; }
 
     //InflateAmount
     //https://www.chartjs.org/docs/latest/charts/bar.html#inflateamount
@@ -189,72 +199,6 @@ public class BarChartDataset : ChartDataset
     #endregion
 }
 
-public class BarChartDatasetDataLabels
+public class BarChartDatasetDataLabels : ChartDatasetDataLabels
 {
-    #region Fields and Constants
-
-    private Alignment alignment;
-
-    private Anchor anchor;
-
-    #endregion
-
-    #region Properties, Indexers
-    
-    /// <summary>
-    /// Gets or sets the data labels alignment. 
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Alignment.Center"/>.
-    /// </remarks>
-    [JsonIgnore]
-    public Alignment Alignment
-    {
-        get => alignment;
-        set
-        {
-            alignment = value;
-            DataLabelsAlignment = value.ToChartDatasetDataLabelAlignmentString();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the data labels anchor.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Anchor.None"/>.
-    /// </remarks>
-    [JsonIgnore]
-    public Anchor Anchor
-    {
-        get => anchor;
-        set
-        {
-            anchor = value;
-            DataLabelsAnchor = value.ToChartDatasetDataLabelAnchorString();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the data labels alignment.
-    /// Possible values: start, center, and end.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null"/>.
-    /// </remarks>
-    [JsonPropertyName("align")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? DataLabelsAlignment { get; private set; }
-
-    /// <summary>
-    /// Gets or sets the data labels anchor.
-    /// Possible values: start, center, and end.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null"/>.
-    /// </remarks>
-    [JsonPropertyName("anchor")]
-    public string? DataLabelsAnchor { get; private set; }
-
-    #endregion
 }
