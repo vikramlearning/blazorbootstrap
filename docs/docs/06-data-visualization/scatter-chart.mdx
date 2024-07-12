@@ -109,8 +109,9 @@ A Blazor Bootstrap scatter chart components are based on basic line charts with 
 
 | Property Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Anchor | `string?` | `center` | | Gets or sets the anchor. | 1.10.2 |
-| BorderWidth | `double?` | `2` | | Gets or sets the border width. | 1.10.2 |
+| Alignment | `Alignment` | `Alignment.None` | | Gets or sets the data labels alignment. | 3.0.0 |
+| Anchor | `Anchor` | `Anchor.None` | | Gets or sets the data labels anchor. | 3.0.0 |
+| BorderWidth | double | 2 | | Gets or sets the border width | 3.0.0 |
 
 ## ScatterChartOptions Members
 
@@ -120,11 +121,14 @@ A Blazor Bootstrap scatter chart components are based on basic line charts with 
 
 | Property Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 1.10.0 |
-| Plugins | `PieChartPlugins` | | | Gets or sets the Plugins. | 1.10.2 |
-| Responsive | bool | false | | Gets or sets the Responsive. | 1.0.0 |
-
-**TODO:** updat this section
+| IndexAxis | `string?` | null | | The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts. | 3.0.0 |
+| Interaction | `Interaction` | | | Gets or sets the Interaction. | 3.0.0 |
+| Layout | `ChartLayout` | | | Gets or sets the ChartLayout. | 3.0.0 |
+| Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 3.0.0 |
+| MaintainAspectRatio | bool | true | | Maintain the original canvas aspect ratio (width / height) when resizing. | 3.0.0 |
+| Plugins | `ScatterChartPlugins` | | | Gets or sets the Plugins. | 3.0.0 |
+| Responsive | bool | false | | Gets or sets the Responsive. | 3.0.0 |
+| Scales | `Scales` | | | Gets or sets the Scales. | 3.0.0 |
 
 ## Examples
 
