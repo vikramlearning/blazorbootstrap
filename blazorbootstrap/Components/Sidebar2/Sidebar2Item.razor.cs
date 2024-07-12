@@ -33,7 +33,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
         else if (!HasChilds && Level == 0)
             level += 0.25;
 
-        return $"padding-left:{level}rem;";
+        return $"padding-left:{level.ToString(CultureInfo.InvariantCulture)}rem;";
     }
 
     private void ToggleNavItemGroup() => NavItemGroupExpanded = !NavItemGroupExpanded;
