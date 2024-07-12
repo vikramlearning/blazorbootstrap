@@ -9,7 +9,7 @@ sidebar_position: 6
 
 import CarbonAd from '/carbon-ad.mdx'
 
-# Blazor Pie Chart
+# Blazor Radar Chart
 
 A Blazor Bootstrap radar chart component is a way of showing multiple data points and the variation between them. They are often useful for comparing the points of two or more different data sets.
 
@@ -21,67 +21,95 @@ A Blazor Bootstrap radar chart component is a way of showing multiple data point
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Height | `int?` | null | | Gets or sets chart container height. | 1.0.0 |
-| HeightUnit | `Unit` | `Unit.Px` | | Gets or sets chart container height unit of measure. | 1.0.0 |
-| Width | `int?` | null | | Gets or sets chart container width. | 1.0.0 |
-| WidthUnit | `Unit` | `Unit.Px` | | Gets or sets chart container width unit of measure. | 1.0.0 |
+| Height | `int?` | null | | Gets or sets chart container height. | 3.0.0 |
+| HeightUnit | `Unit` | `Unit.Px` | | Gets or sets chart container height unit of measure. | 3.0.0 |
+| Width | `int?` | null | | Gets or sets chart container width. | 3.0.0 |
+| WidthUnit | `Unit` | `Unit.Px` | | Gets or sets chart container width unit of measure. | 3.0.0 |
 
 ## Methods
 
 | Name | Return type | Description | Added Version |
 |:--|:--|:--|:--|
-| AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) | `Task<ChartData>` | Adds data to chart. | 1.10.0 |
-| AddDataAsync(ChartData chartData, string dataLabel, `List<IChartDatasetData>` data) | `Task<ChartData>` | Adds dataset to chart. | 1.10.0 |
-| AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) | `Task<ChartData>` | Adds dataset to chart. | 1.10.0 || InitializeAsync | Task | Initialize Bar Chart. | 1.0.0 |
-| InitializeAsync(ChartData chartData, IChartOptions chartOptions, `string[]?` plugins = null) | Task | Initialize the chat. | 1.0.0 |
-| ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px) | Task | Resize the chart. | 1.0.0 |
-| UpdateAsync(ChartData chartData, IChartOptions chartOptions) | Task | Update the chart. | 1.0.0 |
+| AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) | `Task<ChartData>` | Adds data to chart. | 3.0.0 |
+| AddDataAsync(ChartData chartData, string dataLabel, `List<IChartDatasetData>` data) | `Task<ChartData>` | Adds dataset to chart. | 3.0.0 |
+| AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) | `Task<ChartData>` | Adds dataset to chart. | 1.10.0 || InitializeAsync | Task | Initialize Bar Chart. | 3.0.0 |
+| InitializeAsync(ChartData chartData, IChartOptions chartOptions, `string[]?` plugins = null) | Task | Initialize the chat. | 3.0.0 |
+| ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px) | Task | Resize the chart. | 3.0.0 |
+| UpdateAsync(ChartData chartData, IChartOptions chartOptions) | Task | Update the chart. | 3.0.0 |
 
 ## ChartData Members
 
 | Property Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Labels | `List<string>` | null | ✔️ | Gets or sets the Labels. | 1.0.0 |
-| Datasets | `List<IChartDataset>` | null | ✔️ | Gets or sets the Datasets. | 1.0.0 |
+| Datasets | `List<IChartDataset>` | null | ✔️ | Gets or sets the Datasets. | 3.0.0 |
+| Labels | `List<string>` | null | ✔️ | Gets or sets the Labels. | 3.0.0 |
 
-## PieChartDataset Members
+## RadarChartDataset Members
 
 :::info
-**PieChartDataset** implements **IChartDataset**.
+**RadarChartDataset** implements **IChartDataset** and inherits from the parent class **ChartDataset**.
 :::
 
 | Property Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:-|
-| BackgroundColor | `List<string>` | null | | Get or sets the BackgroundColor. | 1.0.0 |
-| BorderColor | `List<string>` | null | | Get or sets the BorderColor. | 1.0.0 |
-| BorderWidth | `List<double>` | null | | Get or sets the BorderWidth. | 1.0.0 |
-| Clip | string | null | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0} | 1.0.0 |
-| Data | `List<double>` | null | | Get or sets the Data. | 1.0.0 |
-| Datalabels | `PieChartDatasetDataLabels` | | | Get or sets the data labels | | 1.10.2 |
-| Hidden | bool | false | | Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart. | 1.0.0 |
-| HoverBackgroundColor | `List<string>` | null | ✔️ | Get or sets the HoverBackgroundColor. | 1.0.0 |
-| HoverBorderColor | `List<string>` | null | ✔️ | Get or sets the HoverBorderColor. | 1.0.0 |
-| HoverBorderWidth | `List<double>` | null | ✔️ | Get or sets the HoverBorderWidth. | 1.0.0 |
-| Type | string | null | ✔️ | Get or sets the chart type. | 1.0.0 |
+| BackgroundColor | string | `rgba(0, 0, 0, 0.1)` | | Get or sets the line fill color. | 3.0.0 |
+| BorderCapStyle | string | `butt` | | Cap style of the line. Supported values are 'butt', 'round', and 'square'. | 3.0.0 |
+| BorderColor | string | `rgba(0, 0, 0, 0.1)` | | Get or sets the line color. | 3.0.0 |
+| BorderDash | `List<double>?` | null | | Gets or sets the length and spacing of dashes. | 3.0.0 |
+| BorderDashOffset | double | 0.0 | | Offset for line dashes. | 3.0.0 |
+| BorderJoinStyle | string | `miter` | | Line joint style. There are three possible values for this property: 'round', 'bevel', and 'miter'. | 3.0.0 |
+| BorderWidth | double | 3 | | Gets or sets the line width (in pixels). | 3.0.0 |
+| Clip | `string?` | null | | How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside chartArea. 0 = clip at chartArea. Clipping can also be configured per side: `clip: {left: 5, top: false, right: -2, bottom: 0}` | 1.0.0 |
+| Data | `List<double?>?` | null | ✔️ | Get or sets the Data. | 3.0.0 |
+| Datalabels | `PieChartDatasetDataLabels` | | | Get or sets the data labels | 3.0.0 |
+| Fill | bool | false | | How to fill the area under the line. | 3.0.0 |
+| Hidden | bool | false | | Configures the visibility state of the dataset. Set it to true, to hide the dataset from the chart. | 3.0.0 |
+| HoverBackgroundColor | `string?` | null | | The line fill color when hovered. | 3.0.0 |
+| HoverBorderCapStyle | `string?` | null | | Cap style of the line when hovered. | 3.0.0 |
+| HoverBorderColor | `string?` | null | | The line color when hovered. | 3.0.0 |
+| HoverBorderDash | `List<double>?` | null | | Gets or sets the length and spacing of dashes when hovered. | 3.0.0 |
+| HoverBorderDashOffset | `double?` | null | | Offset for line dashes when hovered. | 3.0.0 |
+| HoverBorderJoinStyle | string | `miter` | | Line joint style. There are three possible values for this property: 'round', 'bevel', and 'miter'. | 3.0.0 |
+| HoverBorderWidth | `double?` | null | | The bar border width when hovered (in pixels) when hovered. | 3.0.0 |
+| Label | `string?` | null | | The label for the dataset which appears in the legend and tooltips. | 3.0.0 |
+| Order | int | 0 | | The drawing order of dataset. Also affects order for stacking, tooltip and legend. | 3.0.0 |
+| PointBackgroundColor | `List<string>?` | null | | The fill color for points. | 3.0.0 |
+| PointBorderColor | `List<string>?` | null | | The border color for points. | 3.0.0 |
+| PointBorderWidth | `List<double>?` | null | | The width of the point border in pixels. | 3.0.0 |
+| PointHitRadius | `List<double>?` | null | | The pixel size of the non-displayed point that reacts to mouse events. | 3.0.0 |
+| PointHoverBackgroundColor | `List<string>?` | null | | Point background color when hovered. | 3.0.0 |
+| PointHoverBorderColor | `List<string>?` | null | | Point border color when hovered. | 3.0.0 |
+| PointHoverBorderWidth | `List<double>?` | null | | Border width of point when hovered. | 3.0.0 |
+| PointHoverRadius | `List<double>?` | null | | The radius of the point when hovered. | 3.0.0 |
+| PointRadius | `List<double>?` | null | | The radius of the point shape. If set to 0, the point is not rendered. | 3.0.0 |
+| PointRotation | `List<double>?` | null | | The rotation of the point in degrees. | 3.0.0 |
+| PointStyle | `List<string>?` | null | | Style of the point. Supported values are 'circle', 'cross', 'crossRot', 'dash', 'line', 'rect', 'rectRounded', 'rectRot', 'star', and 'triangle' to style. | 3.0.0 |
+| SpanGaps | `bool?` | null | | If true, lines will be drawn between points with no or null data. If false, points with null data will create a break in the line. Can also be a number specifying the maximum gap length to span. The unit of the value depends on the scale used. | 3.0.0 |
+| Tension | double | 0 | | Bezier curve tension of the line. Set to 0 to draw straight lines. This option is ignored if monotone cubic interpolation is used. | 3.0.0 |
 
-## PieChartDatasetDataLabels Members
-
-| Property Name | Type | Default | Required | Description | Added Version |
-|:--|:--|:--|:--|:--|:--|
-| Anchor | `string?` | `center` | | Gets or sets the anchor. | 1.10.2 |
-| BorderWidth | `double?` | `2` | | Gets or sets the border width. | 1.10.2 |
-
-## PieChartOptions Members
+## RadarChartDatasetDataLabels Members
 
 :::info
-**PieChartOptions** implements **ChartOptions**.
+**RadarChartDatasetDataLabels** inherits from the parent class  **ChartDatasetDataLabels**.
 :::
 
 | Property Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 1.10.0 |
-| Plugins | `PieChartPlugins` | | | Gets or sets the Plugins. | 1.10.2 |
-| Responsive | bool | false | | Gets or sets the Responsive. | 1.0.0 |
+| Alignment | `Alignment` | `Alignment.None` | | Gets or sets the data labels alignment. | 3.0.0 |
+| Anchor | `Anchor` | `Anchor.None` | | Gets or sets the data labels anchor. | 3.0.0 |
+| BorderWidth | double | 2 | | Gets or sets the border width | 3.0.0 |
+
+## RadarChartOptions Members
+
+:::info
+**RadarChartOptions** inherits from the parent class **ChartOptions**.
+:::
+
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 3.0.0 |
+| MaintainAspectRatio | bool | true | | Maintain the original canvas aspect ratio (width / height) when resizing. | 3.0.0 |
+| Responsive | bool | false | | Gets or sets the Responsive. | 3.0.0 |
 
 ## Examples
 

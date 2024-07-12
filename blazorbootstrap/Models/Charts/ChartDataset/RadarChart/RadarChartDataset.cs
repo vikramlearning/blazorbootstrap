@@ -81,6 +81,14 @@ public class RadarChartDataset : ChartDataset
     public RadarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: Add reference link
 
     /// <summary>
+    /// How to fill the area under the line.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="false"/>.
+    /// </remarks>
+    public bool Fill { get; set; }
+
+    /// <summary>
     /// The line fill color when hovered.
     /// </summary>
     /// <remarks>
@@ -142,14 +150,6 @@ public class RadarChartDataset : ChartDataset
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? HoverBorderWidth { get; set; }
-
-    /// <summary>
-    /// How to fill the area under the line.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="false"/>.
-    /// </remarks>
-    public bool Fill { get; set; }
 
     /// <summary>
     /// The fill color for points.
