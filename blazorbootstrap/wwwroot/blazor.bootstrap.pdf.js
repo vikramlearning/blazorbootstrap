@@ -1,5 +1,5 @@
-import * as pdfJS from './pdfjs-4.0.379.min.mjs';
-import * as pdfWorker from './pdfjs-4.0.379.worker.min.mjs';
+import * as pdfJS from './pdfjs-4.0.379.min.js';
+import * as pdfWorker from './pdfjs-4.0.379.worker.min.js';
 
 if (pdfJS != null && pdfWorker != null) {
     pdfJS.GlobalWorkerOptions.workerSrc = pdfWorker;
@@ -130,7 +130,7 @@ export async function print(dotNetHelper, elementId, url) {
 
     for (const pageNumber of pageRange) {
         const page = await pdfDoc.getPage(pageNumber);
-        
+
         const viewport = page.getViewport({ scale: 1.5 });
         const canvas = document.createElement("canvas");
         canvas.height = viewport.height;
@@ -147,7 +147,7 @@ export async function print(dotNetHelper, elementId, url) {
             viewport: viewport
         };
         await page.render(renderContext).promise;
-        
+
         const iframeDoc = iframeEl.contentWindow.document;
         iframeDoc.body.appendChild(canvas);
     }
@@ -156,7 +156,7 @@ export async function print(dotNetHelper, elementId, url) {
         iframeEl.contentWindow.print();
         iframeEl.remove();
     },
-    1000);
+        1000);
 }
 
 export function rotate(dotNetHelper, elementId, rotation) {
@@ -246,13 +246,13 @@ function renderPage(pdf, num) {
 
         // Wait for rendering to finish
         renderTask.promise.then(() => {
-                pdf.pageRendering = false;
-                if (pdf.pageNumPending !== null) {
-                    // New page rendering is pending
-                    renderPage(pdf, pdf.pageNumPending);
-                    pdf.pageNumPending = null;
-                }
-            })
+            pdf.pageRendering = false;
+            if (pdf.pageNumPending !== null) {
+                // New page rendering is pending
+                renderPage(pdf, pdf.pageNumPending);
+                pdf.pageNumPending = null;
+            }
+        })
             .catch((error) => {
                 // TODO: track exception
             });
