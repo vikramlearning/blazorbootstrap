@@ -54,6 +54,8 @@
     --bb-table-selected-row-hover-color: #000;
     --bb-table-selected-row-background-color: rgba(0,0,0,0.075);
     --bb-table-selected-row-hover-background-color: rgba(0,0,0,0.075);
+    /* enum filter */
+    --bb-grid-filter-dropdown-max-height: 300px;
     /* callout */
     --bb-callout-link: 10, 88, 202;
     --bb-callout-code-color: #ab296a;
@@ -78,6 +80,20 @@
     --bb-sidebar2-nav-item-text-active-color: rgba(var(--bb-sidebar2-nav-item-text-active-color-rgb),0.9);
     --bb-sidebar2-nav-item-background-hover-color: rgba(var(--bb-sidebar2-nav-item-text-active-color-rgb),0.08);
     --bb-sidebar2-nav-item-group-background-color: rgba(var(--bb-sidebar2-nav-item-text-active-color-rgb),0.08);
+}
+
+/* grid - enum dropdown */
+@media (max-width: 767px) {
+    .table-responsive .bb-dropdown-menu-enum,
+    .table-responsive .dropdown-toggle {
+        position: static !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .table-responsive:has(.bb-dropdown-menu-enum) {
+        overflow: visible;
+    }
 }
 
 /* preload */
