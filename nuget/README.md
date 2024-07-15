@@ -18,7 +18,7 @@
 Get started any way you want
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.0.0-preview.2`
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.0.0-preview.3`
 - Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with **.NET CLI**: `dotnet new install Blazor.Bootstrap.Templates::1.10.0`
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
@@ -46,6 +46,9 @@ Get started any way you want
 | Charts: Doughnut chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/doughnut-chart) | [Demos](https://demos.blazorbootstrap.com/charts/doughnut-chart) |
 | Charts: Line chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/line-chart) | [Demos](https://demos.blazorbootstrap.com/charts/line-chart) |
 | Charts: Pie chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/pie-chart) | [Demos](https://demos.blazorbootstrap.com/charts/pie-chart) |
+| Charts: Polar Area chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/polar-area-chart) | [Demos](https://demos.blazorbootstrap.com/charts/polar-area-chart) |
+| Charts: Radar chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/radar-chart) | [Demos](https://demos.blazorbootstrap.com/charts/radar-chart) |
+| Charts: Scatter chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/scatter-chart) | [Demos](https://demos.blazorbootstrap.com/charts/scatter-chart) |
 | Collapse | [Docs](https://docs.blazorbootstrap.com/components/collapse) | [Demos](https://demos.blazorbootstrap.com/collapse) |
 | Confirm Dialog | [Docs](https://docs.blazorbootstrap.com/components/confirm-dialog) | [Demos](https://demos.blazorbootstrap.com/confirm-dialog) |
 | Currency Input | [Docs](https://docs.blazorbootstrap.com/forms/currency-input) | [Demos](https://demos.blazorbootstrap.com/form/currency-input) |
