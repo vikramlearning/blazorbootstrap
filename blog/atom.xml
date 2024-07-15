@@ -2,11 +2,38 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://docs.blazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Docs Blog</title>
-    <updated>2024-07-01T00:00:00.000Z</updated>
+    <updated>2024-07-15T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://docs.blazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Docs Blog</subtitle>
     <icon>https://docs.blazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v3.0.0-preview.3]]></title>
+        <id>https://docs.blazorbootstrap.com/blog/2024/07/15/blazorbootstrap-3.0.0-preview.3</id>
+        <link href="https://docs.blazorbootstrap.com/blog/2024/07/15/blazorbootstrap-3.0.0-preview.3"/>
+        <updated>2024-07-15T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release version 3.0.0-preview.3, which includes new Radar chart and Scatter chart components, and other improvements!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release version 3.0.0-preview.3, which includes new Radar chart and Scatter chart components, and other improvements!</p><p><img loading="lazy" src="https://i.imgur.com/Urrb79M.png" alt="image" title="Blazor Bootstrap: Radar Chart Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's new<a href="#whats-new" class="hash-link" aria-label="Direct link to What's new" title="Direct link to What's new">​</a></h2><ul><li><code>Radar Chart</code> component</li><li><code>Scatter Chart</code> component</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>Grid</code> component</p><ul><li>Fixed enum filter issues</li><li>Updated placeholders</li></ul></li><li><p><code>Bar Chart</code> component</p><ul><li>Updated Dataset and ChartOption properties</li><li>Updated documentation and demos</li></ul></li><li><p><code>Doughnut Chart</code> component</p><ul><li>Updated Dataset and ChartOption properties</li><li>Updated documentation and demos</li></ul></li><li><p><code>Line Chart</code> component</p><ul><li>Updated Dataset and ChartOption properties</li><li>Updated documentation and demos</li></ul></li><li><p><code>Pie Chart</code> component</p><ul><li>Updated Dataset and ChartOption properties</li><li>Updated documentation and demos</li></ul></li><li><p><code>PolarArea Chart</code> component</p><ul><li>Updated Dataset and ChartOption properties</li><li>Updated documentation and demos</li></ul></li><li><p><code>Sidebar2</code> component</p><ul><li>Fixed icon alignment issue for non-US cultures</li></ul></li><li><p><code>PdfViewer</code> component</p><ul><li>Fixed rendering issue for MAUI Blazor Hybrid Apps</li></ul></li><li><p><code>Color Utility</code></p><ul><li>Added color utility demos</li></ul></li><li><p>Demos &amp; Docs updated.</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v3.0.0" term="v3.0.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="charts" term="charts"/>
+        <category label="grid" term="grid"/>
+        <category label="barchart" term="barchart"/>
+        <category label="doughnutchart" term="doughnutchart"/>
+        <category label="linechart" term="linechart"/>
+        <category label="piechart" term="piechart"/>
+        <category label="polarareachart" term="polarareachart"/>
+        <category label="radarchart" term="radarchart"/>
+        <category label="scatterchart" term="scatterchart"/>
+        <category label="pdfviewer" term="pdfviewer"/>
+        <category label="sidebar2" term="sidebar2"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v3.0.0-preview.2]]></title>
         <id>https://docs.blazorbootstrap.com/blog/2024/07/01/blazorbootstrap-3.0.0-preview.2</id>
