@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Radar charts are a way of showing multiple data points and the variation between them.
+/// </summary>
 public partial class RadarChart : BlazorBootstrapChart
 {
     #region Fields and Constants
@@ -10,9 +13,12 @@ public partial class RadarChart : BlazorBootstrapChart
 
     #region Constructors
 
+    /// <summary>
+    /// Default constructor
+    /// </summary>
     public RadarChart()
     {
-        chartType = ChartType.Radar;
+        ChartType = ChartType.Radar;
     }
 
     #endregion
@@ -20,6 +26,7 @@ public partial class RadarChart : BlazorBootstrapChart
     #region Methods
 
     // TODO: May be this method is not required
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
@@ -36,11 +43,12 @@ public partial class RadarChart : BlazorBootstrapChart
                 if (data is RadarChartDatasetData radarChartDatasetData)
                     radarChartDataset.Data?.Add(radarChartDatasetData.Data as double?);
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data)
     {
         if (chartData is null)
@@ -81,11 +89,12 @@ public partial class RadarChart : BlazorBootstrapChart
                     radarChartDataset.Data?.Add(radarChartDatasetData.Data as double?);
             }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (RadarChartDatasetData)x));
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (RadarChartDatasetData)x));
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions)
     {
         if (chartData is null)
@@ -100,29 +109,31 @@ public partial class RadarChart : BlazorBootstrapChart
         if (chartDataset is RadarChartDataset)
         {
             chartData.Datasets.Add(chartDataset);
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (RadarChartDataset)chartDataset);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (RadarChartDataset)chartDataset);
         }
 
         return chartData;
     }
 
-    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
+    /// <inheritdoc />
+    public override async Task InitializeAsync(ChartData? chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
-        if (chartData is not null && chartData.Datasets is not null)
+        if (chartData?.Datasets != null)
         {
             var datasets = chartData.Datasets.OfType<RadarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (RadarChartOptions)chartOptions, plugins);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (RadarChartOptions)chartOptions, plugins);
         }
     }
 
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
+    /// <inheritdoc />
+    public override async Task UpdateAsync(ChartData? chartData, IChartOptions chartOptions)
     {
-        if (chartData is not null && chartData.Datasets is not null)
+        if (chartData?.Datasets != null)
         {
             var datasets = chartData.Datasets.OfType<RadarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (RadarChartOptions)chartOptions);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (RadarChartOptions)chartOptions);
         }
     }
 

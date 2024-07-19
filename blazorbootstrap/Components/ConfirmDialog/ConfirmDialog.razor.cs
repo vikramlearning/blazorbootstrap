@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// A modal dialog to display if you want the user to verify or accept something. 
+/// </summary>
 public partial class ConfirmDialog : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -71,7 +74,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(() => JSRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", Id));
+        Task.Run(() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", Id));
     }
 
     private void OnNoClick()
@@ -116,21 +119,45 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(() => JSRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
+        Task.Run(() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
 
         return task;
+    }
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Modal, true),
             (BootstrapClass.ConfirmationModal, true),
             (BootstrapClass.ModalFade, true));
 
+    /// <inheritdoc />
     protected override string? StyleNames =>
         BuildStyleNames(Style,
             ("display:block", showBackdrop),

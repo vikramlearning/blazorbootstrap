@@ -4,7 +4,7 @@ public class AutoCompleteDataProviderRequest<TItem>
 {
     #region Methods
 
-    public AutoCompleteDataProviderResult<TItem> ApplyTo(IEnumerable<TItem> data)
+    public AutoCompleteDataProviderResult<TItem> ApplyTo(IReadOnlyCollection<TItem> data)
     {
         if (data is null)
             return new AutoCompleteDataProviderResult<TItem> { Data = null, TotalCount = null };
@@ -19,14 +19,14 @@ public class AutoCompleteDataProviderRequest<TItem>
                 var lambda = ExpressionExtensions.GetExpressionDelegate<TItem>(parameterExpression, Filter);
 
                 if (lambda is not null)
-                    resultData = resultData.Where(lambda.Compile());
+                    resultData = resultData.Where(lambda.Compile()).ToArray();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
-        var totalCount = resultData.Count();
+        var totalCount = resultData.Count;
 
         return new AutoCompleteDataProviderResult<TItem> { Data = resultData.ToList(), TotalCount = totalCount };
     }
@@ -36,7 +36,7 @@ public class AutoCompleteDataProviderRequest<TItem>
     #region Properties, Indexers
 
     public CancellationToken CancellationToken { get; init; } = default;
-    public FilterItem Filter { get; init; } = default!;
+    public FilterItem? Filter { get; init; } = default!;
 
     #endregion
 }

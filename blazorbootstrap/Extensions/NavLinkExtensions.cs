@@ -47,22 +47,21 @@ public static class NavLinkExtensions
                    || (match == NavLinkMatch.Prefix && IsStrictlyPrefixWithSeparator(navigationManager.Uri, hrefAbsolute)));
     }
 
-    public static bool ShouldExpand(NavigationManager navigationManager, IEnumerable<NavItem> navItems, NavLinkMatch match, int currentLevel = 0)
+    public static bool ShouldExpand(NavigationManager navigationManager, IReadOnlyCollection<NavItem>? navItems, NavLinkMatch match, int currentLevel = 0)
     {
         if(currentLevel > 16)
             return false;
 
-        if (navItems?.Any() ?? false)
+        if (!(navItems?.Any() ?? false)) return false;
+        
+        foreach (var item in navItems)
         {
-            foreach (var item in navItems)
-            {
-                if (ShouldExpand(navigationManager, item.Href!, match))
-                    return true;
+            if (ShouldExpand(navigationManager, item.Href!, match))
+                return true;
 
-                if (item?.HasChildItems ?? false)
-                    if (ShouldExpand(navigationManager, item.ChildItems!, match, currentLevel + 1))
-                        return true;
-            }
+            if (item?.HasChildItems ?? false)
+                if (ShouldExpand(navigationManager, item.ChildItems!, match, currentLevel + 1))
+                    return true;
         }
 
         return false;

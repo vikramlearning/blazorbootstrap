@@ -1,18 +1,25 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Collections.Immutable;
+
+namespace BlazorBootstrap;
 
 public class GridDataProviderRequest<TItem>
 {
     #region Methods
 
-    public GridDataProviderResult<TItem> ApplyTo(IEnumerable<TItem> data)
+    /// <summary>
+    /// Applies the user requested filters and sorting on a stack of data for use in a <see cref="Grid{T}" />.
+    /// </summary>
+    /// <param name="data">Data to be filtered/sorted</param>
+    /// <returns>Filtered/sorted data taken from <paramref name="data"/></returns>
+    public GridDataProviderResult<TItem> ApplyTo(IReadOnlyCollection<TItem>? data)
     {
         if (data == null)
             return new GridDataProviderResult<TItem> { Data = null, TotalCount = null };
 
-        var resultData = data;
+        var resultData = data.ToList().AsEnumerable(); // make a copy first.
 
         // apply filter
-        if (Filters != null && Filters.Any())
+        if (Filters is { Count: > 0 })
             try
             {
                 var parameterExpression = Expression.Parameter(typeof(TItem)); // second param optional
@@ -33,7 +40,7 @@ public class GridDataProviderRequest<TItem>
             }
 
         // apply sorting
-        if (Sorting != null && Sorting.Any())
+        if (Sorting is { Count: > 0 })
         {
             IOrderedEnumerable<TItem> orderedData = null!;
             var index = 1;
@@ -43,7 +50,7 @@ public class GridDataProviderRequest<TItem>
                 if (index == 1)
                 {
                     orderedData = sortItem.SortDirection == SortDirection.Ascending
-                                      ? resultData.OrderBy(sortItem.SortKeySelector.Compile())
+                        ? resultData.OrderBy(sortItem.SortKeySelector.Compile())
                                       : resultData.OrderByDescending(sortItem.SortKeySelector.Compile());
                 }
                 else
@@ -61,18 +68,16 @@ public class GridDataProviderRequest<TItem>
         }
 
         // apply paging
-        var skip = 0;
-        var take = data.Count();
         var totalCount = resultData!.Count(); // before paging
 
         if (PageNumber > 0 && PageSize > 0)
         {
-            skip = (PageNumber - 1) * PageSize;
-            take = PageSize;
+            var skip = (PageNumber - 1) * PageSize;
+            var take = PageSize;
             resultData = resultData!.Skip(skip).Take(take);
         }
 
-        return new GridDataProviderResult<TItem> { Data = resultData, TotalCount = totalCount };
+        return new GridDataProviderResult<TItem> { Data = resultData!.ToImmutableList(), TotalCount = totalCount };
     }
 
     #endregion
@@ -84,7 +89,7 @@ public class GridDataProviderRequest<TItem>
     /// <summary>
     /// Current filters.
     /// </summary>
-    public IEnumerable<FilterItem> Filters { get; init; } = default!;
+    public IReadOnlyCollection<FilterItem>? Filters { get; init; } = default!;
 
     /// <summary>
     /// Page number.
@@ -99,7 +104,7 @@ public class GridDataProviderRequest<TItem>
     /// <summary>
     /// Current sorting.
     /// </summary>
-    public IEnumerable<SortingItem<TItem>> Sorting { get; init; } = default!;
+    public IReadOnlyCollection<SortingItem<TItem>>? Sorting { get; init; } = default!;
 
     #endregion
 }
