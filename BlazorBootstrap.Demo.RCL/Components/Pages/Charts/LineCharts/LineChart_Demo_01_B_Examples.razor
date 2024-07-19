@@ -20,9 +20,9 @@
                 BorderColor = new List<string> { colors[0] },
                 BorderWidth = new List<double> { 2 },
                 HoverBorderWidth = new List<double> { 4 },
-                PointBackgroundColor = colors[0],
-                PointRadius = 0, // hide points
-                PointHoverRadius = 4
+                PointBackgroundColor = colors,
+                PointRadius = [0], // hide points
+                PointHoverRadius = [4]
             };
         datasets.Add(dataset1);
 
@@ -34,9 +34,9 @@
                 BorderColor = new List<string> { colors[1] },
                 BorderWidth = new List<double> { 2 },
                 HoverBorderWidth = new List<double> { 4 },
-                PointBackgroundColor = colors[1] ,
-                PointRadius = 0, // hide points
-                PointHoverRadius = 4
+                PointBackgroundColor = colors,
+                PointRadius = [0], // hide points
+                PointHoverRadius = [4]
             };
         datasets.Add(dataset2);
 
@@ -48,9 +48,9 @@
                 BorderColor = new List<string> { colors[2] },
                 BorderWidth = new List<double> { 2 },
                 HoverBorderWidth = new List<double> { 4 },
-                PointBackgroundColor = colors[2],
-                PointRadius = 0, // hide points
-                PointHoverRadius = 4
+                PointBackgroundColor = colors,
+                PointRadius = [0], // hide points
+                PointHoverRadius = [4]
             };
         datasets.Add(dataset3);
 
@@ -59,7 +59,7 @@
         lineChartOptions = new();
         lineChartOptions.Responsive = true;
         lineChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index };
-         
+
         lineChartOptions.Scales = new Scales
         {
             X = new ChartAxes()

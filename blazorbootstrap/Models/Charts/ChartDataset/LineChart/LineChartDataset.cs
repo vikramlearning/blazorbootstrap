@@ -25,7 +25,7 @@ public class LineChartDataset : ChartDataset
     /// Default value is <see langword="null"/>.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? BorderDash { get; set; }
+    public IReadOnlyCollection<double>? BorderDash { get; set; }
 
     /// <summary>
     /// Offset for line dashes.
@@ -53,6 +53,15 @@ public class LineChartDataset : ChartDataset
     /// </remarks>
     public string CubicInterpolationMode { get; set; } = "default";
 
+    /// <summary>
+    /// Get or sets the Data.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null"/>.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public new List<double?>? Data { get; set; }
+
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public LineChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
@@ -63,7 +72,7 @@ public class LineChartDataset : ChartDataset
     /// Default value is <see langword="null"/>.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<bool>? DrawActiveElementsOnTop { get; set; }
+    public IReadOnlyCollection<bool>? DrawActiveElementsOnTop { get; set; }
 
     /// <summary>
     /// How to fill the area under the line.
@@ -89,7 +98,7 @@ public class LineChartDataset : ChartDataset
     /// Default value is <see langword="null"/>.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? HoverBorderDash { get; set; }
+    public IReadOnlyCollection<double>? HoverBorderDash { get; set; }
 
     /// <summary>
     /// Offset for line dashes when hovered.
@@ -115,7 +124,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 'x'.
     /// </remarks>
-    public string IndexAxis { get; set; } = "x";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? IndexAxis { get; set; }
 
     /// <summary>
     /// The fill color for points.
@@ -123,7 +133,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
-    public string PointBackgroundColor { get; set; } = "rgba(0, 0, 0, 0.1)";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<string>? PointBackgroundColor { get; set; }
 
     /// <summary>
     /// The border color for points.
@@ -131,7 +142,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
-    public string PointBorderColor { get; set; } = "rgba(0, 0, 0, 0.1)";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<string>? PointBorderColor { get; set; }
 
     /// <summary>
     /// The width of the point border in pixels.
@@ -139,7 +151,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 1.
     /// </remarks>
-    public double PointBorderWidth { get; set; } = 1;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<double>? PointBorderWidth { get; set; }
 
     /// <summary>
     /// The pixel size of the non-displayed point that reacts to mouse events.
@@ -147,7 +160,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 1.
     /// </remarks>
-    public double PointHitRadius { get; set; } = 1;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<double>? PointHitRadius { get; set; }
 
     /// <summary>
     /// Point background color when hovered.
@@ -156,7 +170,7 @@ public class LineChartDataset : ChartDataset
     /// Default value is <see langword="null"/>.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? PointHoverBackgroundColor { get; set; }
+    public IReadOnlyCollection<string>? PointHoverBackgroundColor { get; set; }
 
     /// <summary>
     /// Point border color when hovered.
@@ -165,7 +179,7 @@ public class LineChartDataset : ChartDataset
     /// Default value is <see langword="null"/>.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? PointHoverBorderColor { get; set; }
+    public IReadOnlyCollection<string>? PointHoverBorderColor { get; set; }
 
     /// <summary>
     /// Border width of point when hovered.
@@ -173,7 +187,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 1.
     /// </remarks>
-    public double PointHoverBorderWidth { get; set; } = 1;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<double>? PointHoverBorderWidth { get; set; }
 
     /// <summary>
     /// The radius of the point when hovered.
@@ -181,7 +196,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 4.
     /// </remarks>
-    public double PointHoverRadius { get; set; } = 4;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<double>? PointHoverRadius { get; set; }
 
     /// <summary>
     /// The radius of the point shape. If set to 0, the point is not rendered.
@@ -189,7 +205,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 3.
     /// </remarks>
-    public double PointRadius { get; set; } = 3;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<double>? PointRadius { get; set; }
 
     /// <summary>
     /// The rotation of the point in degrees.
@@ -197,7 +214,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
-    public double PointRotation { get; set; } = 0;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<double>? PointRotation { get; set; }
 
     /// <summary>
     /// Style of the point.
@@ -207,7 +225,8 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is 'circle'.
     /// </remarks>
-    public string PointStyle { get; set; } = "circle";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<string>? PointStyle { get; set; }
 
     //segment
     //https://www.chartjs.org/docs/latest/charts/line.html#segment
@@ -273,66 +292,6 @@ public class LineChartDataset : ChartDataset
     #endregion
 }
 
-public class LineChartDatasetDataLabels
+public class LineChartDatasetDataLabels : ChartDatasetDataLabels
 {
-    #region Fields and Constants
-
-    private Alignment alignment;
-
-    private Anchor anchor;
-
-    #endregion
-
-    #region Properties, Indexers
-
-    /// <summary>
-    /// Gets or sets the data labels alignment. 
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Alignment.Center"/>.
-    /// </remarks>
-    [JsonIgnore]
-    public Alignment Alignment
-    {
-        get => alignment;
-        set
-        {
-            alignment = value;
-            DataLabelsAlignment = value.ToChartDatasetDataLabelAlignmentString();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the data labels anchor.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Anchor.None"/>.
-    /// </remarks>
-    [JsonIgnore]
-    public Anchor Anchor
-    {
-        get => anchor;
-        set
-        {
-            anchor = value;
-            DataLabelsAnchor = value.ToChartDatasetDataLabelAnchorString();
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the data labels alignment.
-    /// Possible values: start, center, and end.
-    /// </summary>
-    [JsonPropertyName("align")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? DataLabelsAlignment { get; private set; }
-
-    /// <summary>
-    /// Gets or sets the data labels anchor.
-    /// Possible values: start, center, and end.
-    /// </summary>
-    [JsonPropertyName("anchor")]
-    public string? DataLabelsAnchor { get; private set; }
-
-    #endregion
 }

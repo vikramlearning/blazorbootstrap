@@ -46,7 +46,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void OnParametersSet() => SetDefaultFilter();
 
-    internal bool CanSort() => Parent is not null && Parent.AllowSorting && Sortable && SortKeySelector is not null;
+    internal bool CanSort() => Parent.AllowSorting && Sortable && SortKeySelector is not null;
 
     internal FilterOperator GetFilterOperator() => filterOperator;
 

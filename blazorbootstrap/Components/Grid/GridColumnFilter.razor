@@ -53,7 +53,7 @@
                     <span class="px-2">@FilterValue</span>
                 }
             </DropdownToggleButton>
-            <DropdownMenu>
+            <DropdownMenu Class="bb-dropdown-menu-enum" Style="max-height: var(--bb-grid-filter-dropdown-max-height); overflow-x: hidden; overflow-y: auto;">
                 @if (PropertyType is not null)
                 {
                     @foreach (var item in Enum.GetValues(PropertyType!))

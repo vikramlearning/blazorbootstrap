@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Polar Area charts are similar to pie charts, but each segment has the same angle - the radius of the segment differs depending on the value.
+/// </summary>
 public partial class PolarAreaChart : BlazorBootstrapChart
 {
     #region Fields and Constants
@@ -10,6 +13,7 @@ public partial class PolarAreaChart : BlazorBootstrapChart
 
     #region Methods
 
+    // TODO: May be this method is not required
     /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
@@ -25,7 +29,7 @@ public partial class PolarAreaChart : BlazorBootstrapChart
         foreach (var dataset in chartData.Datasets)
             if (dataset is PolarAreaChartDataset barChartDataset && barChartDataset.Label == dataLabel)
                 if (data is PolarAreaChartDatasetData barChartDatasetData)
-                    barChartDataset.Data?.Add(barChartDatasetData.Data);
+                    barChartDataset.Data?.Add(barChartDatasetData.Data as double?);
 
         await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
@@ -70,7 +74,7 @@ public partial class PolarAreaChart : BlazorBootstrapChart
                 var chartDatasetData = data.FirstOrDefault(x => x is PolarAreaChartDatasetData polarAreaChartDatasetData && polarAreaChartDatasetData.DatasetLabel == barChartDataset.Label);
 
                 if (chartDatasetData is PolarAreaChartDatasetData barChartDatasetData)
-                    barChartDataset.Data?.Add(barChartDatasetData.Data);
+                    barChartDataset.Data?.Add(barChartDatasetData.Data as double?);
             }
 
         await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (PolarAreaChartDatasetData)x));

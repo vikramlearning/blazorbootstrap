@@ -60,10 +60,10 @@
                                BorderColor = new List<string> { "rgb(88, 80, 141)" },
                                BorderWidth = new List<double> { 2 },
                                HoverBorderWidth = new List<double> { 4 },
-                               PointBackgroundColor = "rgb(88, 80, 141)",
-                               PointBorderColor = "rgb(88, 80, 141)",
-                               PointRadius = 0, // hide points
-                               PointHoverRadius = 4
+                               PointBackgroundColor = ["rgb(88, 80, 141)"],
+                               PointBorderColor = ["rgb(88, 80, 141)"],
+                               PointRadius = [0], // hide points
+                               PointHoverRadius = [4]
                            },
                            new LineChartDataset
                            {
@@ -73,10 +73,10 @@
                                BorderColor = new List<string> { "rgb(255, 166, 0)" },
                                BorderWidth = new List<double> { 2 },
                                HoverBorderWidth = new List<double> { 4 },
-                               PointBackgroundColor = "rgb(255, 166, 0)",
-                               PointBorderColor = "rgb(255, 166, 0)",
-                               PointRadius = 0, // hide points
-                               PointHoverRadius = 4
+                               PointBackgroundColor = ["rgb(255, 166, 0)"],
+                               PointBorderColor = ["rgb(255, 166, 0)"],
+                               PointRadius = [0], // hide points
+                               PointHoverRadius = [4]
                            }
                        };
 
@@ -90,26 +90,24 @@
         options.Interaction.Mode = InteractionMode.Index;
 
         options.Plugins.Title = new ChartPluginsTitle()
-        {
-            Text = "WORM",
-            Display = true,
-            Font = new ChartFont() { Size = 20 }
-        }; 
-
+            {
+                Text = "WORM",
+                Display = true,
+                Font = new ChartFont() { Size = 20 }
+            };
         options.Responsive = true;
-        
         options.Scales = new Scales
-        {
-            X = new ChartAxes()
             {
-                Title = new ChartAxesTitle() { Text = "Over", Display = true }
-            },
-            Y = new ChartAxes()
-            {
-                Title = new ChartAxesTitle() { Text = "Runs", Display = true },
-                SuggestedMax = 150
-            },
-        };
+                X = new ChartAxes()
+                {
+                    Title = new ChartAxesTitle() { Text = "Over", Display = true }
+                },
+                Y = new ChartAxes()
+                {
+                    Title = new ChartAxesTitle() { Text = "Runs", Display = true },
+                    SuggestedMax = 150
+                },
+            };
 
         return options;
     }

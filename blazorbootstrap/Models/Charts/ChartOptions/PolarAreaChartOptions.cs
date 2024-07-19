@@ -4,7 +4,7 @@ public class PolarAreaChartOptions : ChartOptions
 {
     #region Properties, Indexers
 
-    public PieChartPlugins Plugins { get; set; } = new();
+    public PolarAreaChartPlugins Plugins { get; set; } = new();
 
     #endregion
 }

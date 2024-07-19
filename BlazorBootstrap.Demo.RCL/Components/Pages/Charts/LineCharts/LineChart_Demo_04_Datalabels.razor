@@ -20,9 +20,9 @@
                 BorderColor = new List<string> { colors[0] },
                 BorderWidth = new List<double> { 2 },
                 HoverBorderWidth = new List<double> { 4 },
-                PointBackgroundColor = colors[0],
-                PointRadius = 3, // show points
-                PointHoverRadius = 4,
+                PointBackgroundColor = colors,
+                PointRadius = [3], // show points
+                PointHoverRadius = [4],
 
                 // datalabels
                 Datalabels = new() { Alignment = Alignment.End, Anchor = Anchor.End }
@@ -37,9 +37,9 @@
                 BorderColor = new List<string> { colors[1] },
                 BorderWidth = new List<double> { 2 },
                 HoverBorderWidth = new List<double> { 4 },
-                PointBackgroundColor = colors[1],
-                PointRadius = 3, // show points
-                PointHoverRadius = 4,
+                PointBackgroundColor = colors,
+                PointRadius = [3], // show points
+                PointHoverRadius = [4],
 
                 // datalabels
                 Datalabels = new() { Alignment = Alignment.End, Anchor = Anchor.End }
@@ -54,9 +54,9 @@
                 BorderColor = new List<string> { colors[2] },
                 BorderWidth = new List<double> { 2 },
                 HoverBorderWidth = new List<double> { 4 },
-                PointBackgroundColor = colors[2],
-                PointRadius = 3, // show points
-                PointHoverRadius = 4,
+                PointBackgroundColor = colors,
+                PointRadius = [3], // show points
+                PointHoverRadius = [4],
 
                 // datalabels
                 Datalabels = new() { Alignment = Alignment.Start, Anchor = Anchor.Start }
@@ -71,8 +71,8 @@
 
         lineChartOptions = new();
         lineChartOptions.Responsive = true;
-        lineChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index }; 
-        
+        lineChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index };
+
         lineChartOptions.Scales = new Scales
         {
             X = new ChartAxes()
@@ -84,7 +84,6 @@
                 Title = new ChartAxesTitle() { Text = "Visitors", Display = true }
             },
         };
-
 
         lineChartOptions.Plugins.Title!.Text = "Operating system";
         lineChartOptions.Plugins.Title.Display = true;

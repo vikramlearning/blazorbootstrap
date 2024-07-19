@@ -9,6 +9,9 @@ public class ChartOptions : IChartOptions
 {
     #region Properties, Indexers
 
+    //aspectRatio
+    //https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options
+
     /// <summary>
     /// Gets or sets the locale.
     /// By default, the chart is using the default locale of the platform which is running on.
@@ -17,20 +20,36 @@ public class ChartOptions : IChartOptions
     public string? Locale { get; set; }
 
     /// <summary>
-    /// Gets or sets the MaintainAspectRatio of the chart.
-    /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />
+    /// Maintain the original canvas aspect ratio (width / height) when resizing.
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="true"/>.
+    /// </remarks>
     public bool MaintainAspectRatio { get; set; } = true;
 
+    //onResize
+    //https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options
+
+    //resizeDelay
+    //https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options
+
     /// <summary>
-    /// Gets or set the responsive.
-    /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />
+    /// Resizes the chart canvas when its container does.
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />.    /// 
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="false"/>.
+    /// </remarks>
     public bool Responsive { get; set; }
 
     #endregion
 }
 
+/// <summary>
+/// Namespace: options.layout, the global options for the chart layout is defined in Chart.defaults.layout.
+/// <see href="https://www.chartjs.org/docs/latest/configuration/layout.html#layout" />.
+/// </summary>
 public class ChartLayout
 {
     #region Properties, Indexers
@@ -38,7 +57,10 @@ public class ChartLayout
     /// <summary>
     /// Apply automatic padding so visible elements are completely drawn.
     /// </summary>
-    public bool AutoPadding { get; set; } = false;
+    /// <remarks>
+    /// Default value is <see langword="true"/>.
+    /// </remarks>
+    public bool AutoPadding { get; set; } = true;
 
     /// <summary>
     /// The padding to add inside the chart.
@@ -48,6 +70,10 @@ public class ChartLayout
     #endregion
 }
 
+/// <summary>
+/// Namespace: options.interaction, the global interaction configuration is at Chart.defaults.interaction. 
+/// <see href="https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions" />.
+/// </summary>
 public class Interaction
 {
     #region Fields and Constants
@@ -86,6 +112,9 @@ public class Interaction
 
     #region Properties, Indexers
 
+    //axis
+    //https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions
+
     /// <summary>
     /// Sets which elements appear in the interaction.
     /// </summary>
@@ -95,7 +124,10 @@ public class Interaction
     /// <summary>
     /// if <see langword="true" />, the interaction mode only applies when the mouse position intersects an item on the chart.
     /// </summary>
-    public bool Intersect { get; set; }
+    /// <remarks>
+    /// Default value is <see langword="true"/>.
+    /// </remarks>
+    public bool Intersect { get; set; } = true;
 
     /// <summary>
     /// Sets which elements appear in the tooltip. See Interaction Modes for details.
@@ -110,6 +142,9 @@ public class Interaction
             SetMode(value);
         }
     }
+
+    //includeInvisible
+    //https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions
 
     #endregion
 }
@@ -128,7 +163,8 @@ public class Scales
 {
     #region Properties, Indexers
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartAxes? X { get; set; } = new();
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    public ChartAxes? X { get; set; } = new();
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartAxes? Y { get; set; } = new();
     
@@ -198,6 +234,15 @@ public class ChartAxes
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartAxesTitle? Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets the index scale type.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null"/>.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Type { get; set; }
 
     #endregion
 }

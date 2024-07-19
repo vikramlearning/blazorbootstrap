@@ -42,7 +42,8 @@
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is LineChartDataset lineChartDataset
-                && lineChartDataset?.Data != null)
+                && lineChartDataset is not null
+                && lineChartDataset.Data is not null)
             {
                 var count = lineChartDataset.Data.Count;
 
@@ -125,9 +126,9 @@
                 BorderColor = [c.ToRgbString()],
                 BorderWidth = [2],
                 HoverBorderWidth = [4],
-                PointBackgroundColor = c.ToRgbString(),
-                PointRadius = 0, // hide points
-                PointHoverRadius = 4,
+                PointBackgroundColor = [c.ToRgbString()],
+                PointRadius = [0], // hide points
+                PointHoverRadius = [4],
             };
     }
 

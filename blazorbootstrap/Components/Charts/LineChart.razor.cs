@@ -35,7 +35,7 @@ public partial class LineChart : BlazorBootstrapChart
         foreach (var dataset in chartData.Datasets)
             if (dataset is LineChartDataset lineChartDataset && lineChartDataset.Label == dataLabel)
                 if (data is LineChartDatasetData lineChartDatasetData)
-                    lineChartDataset.Data?.Add(lineChartDatasetData.Data);
+                    lineChartDataset.Data?.Add(lineChartDatasetData.Data as double?);
 
         await JsRuntime.InvokeVoidAsync("window.blazorChart.line.addDatasetData", Id, dataLabel, data);
 
@@ -80,7 +80,7 @@ public partial class LineChart : BlazorBootstrapChart
                 var chartDatasetData = data.FirstOrDefault(x => x is LineChartDatasetData lineChartDatasetData && lineChartDatasetData.DatasetLabel == lineChartDataset.Label);
 
                 if (chartDatasetData is LineChartDatasetData lineChartDatasetData)
-                    lineChartDataset.Data?.Add(lineChartDatasetData.Data);
+                    lineChartDataset.Data?.Add(lineChartDatasetData.Data as double?);
             }
 
         await JsRuntime.InvokeVoidAsync("window.blazorChart.line.addDatasetsData", Id, dataLabel, data?.Select(x => (LineChartDatasetData)x));

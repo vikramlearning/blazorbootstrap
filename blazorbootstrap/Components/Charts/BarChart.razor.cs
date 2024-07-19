@@ -7,6 +7,12 @@
 /// </summary>
 public partial class BarChart : BlazorBootstrapChart
 {
+    #region Fields and Constants
+
+    private const string _jsObjectName = "window.blazorChart.bar";
+
+    #endregion
+
     #region Constructors
 
     /// <summary>
@@ -36,9 +42,9 @@ public partial class BarChart : BlazorBootstrapChart
         foreach (var dataset in chartData.Datasets)
             if (dataset is BarChartDataset barChartDataset && barChartDataset.Label == dataLabel)
                 if (data is BarChartDatasetData barChartDatasetData)
-                    barChartDataset.Data?.Add(barChartDatasetData.Data);
+                    barChartDataset.Data?.Add(barChartDatasetData.Data as double?);
 
-        await JsRuntime.InvokeVoidAsync("window.blazorChart.bar.addDatasetData", Id, dataLabel, data);
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
@@ -81,10 +87,10 @@ public partial class BarChart : BlazorBootstrapChart
                 var chartDatasetData = data.FirstOrDefault(x => x is BarChartDatasetData barChartDatasetData && barChartDatasetData.DatasetLabel == barChartDataset.Label);
 
                 if (chartDatasetData is BarChartDatasetData barChartDatasetData)
-                    barChartDataset.Data?.Add(barChartDatasetData.Data);
+                    barChartDataset.Data?.Add(barChartDatasetData.Data as double?);
             }
 
-        await JsRuntime.InvokeVoidAsync("window.blazorChart.bar.addDatasetsData", Id, dataLabel, data?.Select(x => (BarChartDatasetData)x));
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (BarChartDatasetData)x));
 
         return chartData;
     }
@@ -103,8 +109,8 @@ public partial class BarChart : BlazorBootstrapChart
 
         if (chartDataset is BarChartDataset barChartDataset)
         {
-            chartData.Datasets.Add(barChartDataset);
-            await JsRuntime.InvokeVoidAsync("window.blazorChart.bar.addDataset", Id, barChartDataset);
+            chartData.Datasets.Add(chartDataset);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (BarChartDataset)chartDataset);
         }
 
         return chartData;
@@ -117,7 +123,7 @@ public partial class BarChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<BarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JsRuntime.InvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), data, (BarChartOptions)chartOptions, plugins);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (BarChartOptions)chartOptions, plugins);
         }
     }
 
@@ -128,7 +134,7 @@ public partial class BarChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<BarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JsRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
         }
     }
 
