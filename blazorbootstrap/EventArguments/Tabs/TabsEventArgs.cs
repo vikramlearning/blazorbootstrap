@@ -4,9 +4,11 @@ public class TabsEventArgs : EventArgs
 {
     #region Constructors
 
-    public TabsEventArgs(string activeTabTitle, string previousActiveTabTitle)
+    public TabsEventArgs(string activeTabName, string activeTabTitle, string previousActiveTabName, string previousActiveTabTitle)
     {
+        ActiveTabName = activeTabName;
         ActiveTabTitle = activeTabTitle;
+        PreviousActiveTabName = previousActiveTabName;
         PreviousActiveTabTitle = previousActiveTabTitle;
     }
 
@@ -15,12 +17,22 @@ public class TabsEventArgs : EventArgs
     #region Properties, Indexers
 
     /// <summary>
-    /// Gets the active tab title.
+    /// Gets the active <see cref="Tab" /> name.
+    /// </summary>
+    public string ActiveTabName { get; }
+
+    /// <summary>
+    /// Gets the active <see cref="Tab" /> title.
     /// </summary>
     public string ActiveTabTitle { get; }
 
     /// <summary>
-    /// Gets the previous active tab title.
+    /// Gets the previous active <see cref="Tab" /> name.
+    /// </summary>
+    public string PreviousActiveTabName { get; }
+
+    /// <summary>
+    /// Gets the previous active <see cref="Tab" /> title.
     /// </summary>
     public string PreviousActiveTabTitle { get; }
 

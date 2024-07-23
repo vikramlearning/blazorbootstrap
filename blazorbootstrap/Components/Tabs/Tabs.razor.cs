@@ -69,42 +69,48 @@ public partial class Tabs : BlazorBootstrapComponentBase
     [JSInvokable]
     public async Task bsHiddenTab(string activeTabId, string previousActiveTabId)
     {
-        var activeTabTitle = tabs?.FirstOrDefault(x => x.Id == activeTabId)?.Title;
-        var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId)?.Title;
+        var activeTab = tabs?.FirstOrDefault(x => x.Id == activeTabId);
+        var previousActiveTab = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId);
 
-        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
+        var args = new TabsEventArgs(activeTab?.Name!, activeTab?.Title!, previousActiveTab?.Name!, previousActiveTab?.Title!);
         await OnHidden.InvokeAsync(args);
     }
 
     [JSInvokable]
     public async Task bsHideTab(string activeTabId, string previousActiveTabId)
     {
-        var activeTabTitle = tabs?.FirstOrDefault(x => x.Id == activeTabId)?.Title;
-        var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId)?.Title;
+        var activeTab = tabs?.FirstOrDefault(x => x.Id == activeTabId);
+        var previousActiveTab = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId);
 
-        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
+        var args = new TabsEventArgs(activeTab?.Name!, activeTab?.Title!, previousActiveTab?.Name!, previousActiveTab?.Title!);
         await OnHiding.InvokeAsync(args);
     }
 
     [JSInvokable]
     public async Task bsShownTab(string activeTabId, string previousActiveTabId)
     {
-        var activeTabTitle = tabs?.FirstOrDefault(x => x.Id == activeTabId)?.Title;
-        var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId)?.Title;
+        var activeTab = tabs?.FirstOrDefault(x => x.Id == activeTabId);
+        var previousActiveTab = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId);
 
-        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
+        var args = new TabsEventArgs(activeTab?.Name!, activeTab?.Title!, previousActiveTab?.Name!, previousActiveTab?.Title!);
         await OnShown.InvokeAsync(args);
     }
 
     [JSInvokable]
     public async Task bsShowTab(string activeTabId, string previousActiveTabId)
     {
-        var activeTabTitle = tabs?.FirstOrDefault(x => x.Id == activeTabId)?.Title;
-        var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId)?.Title;
+        var activeTab = tabs?.FirstOrDefault(x => x.Id == activeTabId);
+        var previousActiveTab = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId);
 
-        var args = new TabsEventArgs(activeTabTitle!, previousActiveTabTitle!);
+        var args = new TabsEventArgs(activeTab?.Name!, activeTab?.Title!, previousActiveTab?.Name!, previousActiveTab?.Title!);
         await OnShowing.InvokeAsync(args);
     }
+
+    /// <summary>
+    /// Gets the active tab.
+    /// </summary>
+    /// <returns>Returns the cuurent active <see cref="Tab"/>.</returns>
+    public Tab GetActiveTab() => activeTab;
 
     /// <summary>
     /// Initializes the most recently added tab, optionally displaying it.
