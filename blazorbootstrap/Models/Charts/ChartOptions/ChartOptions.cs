@@ -169,6 +169,15 @@ public class Scales
     #endregion
 }
 
+public class ChartAxesType
+{
+  public static readonly string Linear = "linear";
+  public static readonly string Logarithmic = "logarithmic";
+  public static readonly string Category = "category";
+  public static readonly string Time = "time";
+  public static readonly string Timeseries = "timeseries";
+}
+
 public class ChartAxes
 {
     #region Properties, Indexers
