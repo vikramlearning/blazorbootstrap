@@ -161,9 +161,11 @@ public class Scales
   #region Properties, Indexers
 
   [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  [JsonPropertyOrder( 0 )]
   public ChartAxes? X { get; set; } = new();
 
   [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  [JsonPropertyOrder( 1 )]
   public ChartAxes? Y { get; set; } = new();
 
   #endregion
