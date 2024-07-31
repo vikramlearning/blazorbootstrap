@@ -338,7 +338,10 @@ public class LineChartDataset : ChartDataset
     /// Default value is 'first y axis'.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? YAxisID { get; set; }
+  public string? YAxisID => this.OnSecondaryYAxis ? "Y1" : null;
+
+  [JsonIgnore]
+  public bool OnSecondaryYAxis { get; set; }
 
     #endregion
 }
