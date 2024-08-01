@@ -75,6 +75,10 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Invoked by JavaScript when the autocomplete dropdown is hidden.
+    /// </summary>
+
     [JSInvokable("bsHiddenAutocomplete")]
     public void BsHiddenAutocomplete()
     {

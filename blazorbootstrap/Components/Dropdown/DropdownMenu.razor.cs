@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents the menu section in a <see cref="Dropdown"/> component.
+/// </summary>
 public partial class DropdownMenu : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers

@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents an item in a <see cref="DropDown"/>
+/// </summary>
 public partial class DropdownItem : BlazorBootstrapComponentBase
 {
     #region Fields and Constants

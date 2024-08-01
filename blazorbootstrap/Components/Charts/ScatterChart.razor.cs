@@ -133,7 +133,7 @@ public partial class ScatterChart : BlazorBootstrapChart
     }
 
     /// <inheritdoc />
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
+    public override async Task UpdateAsync(ChartData? chartData, IChartOptions chartOptions)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
