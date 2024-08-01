@@ -1,4 +1,8 @@
-﻿namespace BlazorBootstrap;
+﻿using System;
+using System.ComponentModel.Design;
+using System.Data;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// The line chart allows a number of properties to be specified for each dataset. 
@@ -104,7 +108,80 @@ public class LineChartDataset : ChartDataset
     /// <remarks>
     /// Default value is <see langword="false"/>.
     /// </remarks>
-    public bool Fill { get; set; }
+  public object Fill { get; set; } = false;
+
+  public LineChartDataset FillToDataset( int index, bool relativeIndex = false )
+  {
+    if( relativeIndex && ( index == 0 ) )
+    {
+      throw new ArgumentException( "The relative index must be non-zero." );
+    }
+
+    Fill = relativeIndex ? index.ToString( "+0;-0" ) : index + 1;
+    return this;
+  }
+
+  public LineChartDataset FillToDataset( ChartData chartData, IChartDataset dataset, bool relativeIndex = false )
+  {
+    int index = chartData?.Datasets?.IndexOf( dataset ) ?? -1;
+    if( index < 0 )
+    {
+      throw new ArgumentException( "The dataset is not in the chart data." );
+    }
+
+    if( relativeIndex )
+    {
+
+      int myIndex = relativeIndex ? chartData.Datasets.IndexOf( this ) : 0;
+      if( myIndex < 0 )
+      {
+        throw new ArgumentException( "The dataset is not in the chart data." );
+      }
+
+      if( myIndex == index )
+      {
+        throw new ArgumentException( "The dataset is the same as this dataset." );
+      }
+
+      Fill = ( index - myIndex ).ToString( "+0;-0" );
+    }
+    else
+    {
+      Fill = index + 1;
+    }
+
+    return this;
+  }
+
+  public LineChartDataset FillToStart()
+  {
+    Fill = "start";
+    return this;
+  }
+
+  public LineChartDataset FillToEnd()
+  {
+    Fill = "end";
+    return this;
+  }
+
+  public LineChartDataset FillToOrigin()
+  {
+    Fill = "origin";
+    return this;
+  }
+
+  public LineChartDataset FillToStackedValueBelow()
+  {
+    Fill = "stack";
+    return this;
+  }
+
+  public LineChartDataset FillToValue( double value )
+  {
+    Fill = new { value };
+    return this;
+  }
 
     /// <summary>
     /// The line fill color when hovered.
