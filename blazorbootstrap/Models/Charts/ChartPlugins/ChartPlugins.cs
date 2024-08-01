@@ -86,6 +86,60 @@ public class ChartPlugins
   #endregion
 }
 
+public class ChartPluginsAnnotation
+{
+  #region Inner classes
+
+  public class ChartPluginsAnnotationsCommon
+  {
+    #region Properties, Indexers
+
+    /// <summary>
+    /// Determines where in the chart lifecycle the drawing occurs. Defaults to <c>afterDatasetsDraw</c>
+    /// </summary
+    [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+    public DrawTime? DrawTime { get; set; }
+
+    /// <summary>
+    /// Enable the animation to the annotations when they are drawing at chart initialization. Defaults to <see langword="false"/>.
+    /// </summary
+    [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+    public bool? Init { get; set; }
+
+    #endregion
+  }
+
+  #endregion
+
+  #region Properties, Indexers
+
+  /// <summary>
+  /// Are the annotations clipped to the chartArea? Defaults to <see langword="true"/>.
+  /// </summary>
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  public bool? Clip { get; set; }
+
+  /// <summary>
+  /// Configure common options apply to all annotations
+  /// </summary>
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  public ChartPluginsAnnotationsCommon? Common { get; set; }
+
+  /// <summary>
+  /// To configure which events trigger plugin interactions.
+  /// </summary>
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  public Interaction? Interaction { get; set; }
+
+  /// <summary>
+  /// The annotations for this chart
+  /// </summary>
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  public List<Annotation>? Annotations { get; set; }
+
+  #endregion
+}
+
 public class ChartPluginsLegend : ChartPlugin
 {
   #region Properties, Indexers
