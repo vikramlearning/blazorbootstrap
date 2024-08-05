@@ -4,224 +4,224 @@ namespace BlazorBootstrap;
 
 public partial class Sidebar : BlazorBootstrapComponentBase
 {
-  #region Fields and Constants
+    #region Fields and Constants
 
-  private bool collapseNavMenu = true;
+    private bool collapseNavMenu = true;
 
-  private bool collapseSidebar = false;
+    private bool collapseSidebar = false;
 
-  private bool isMobile = false;
+    private bool isMobile = false;
 
-  private IEnumerable<NavItem>? items = null;
+    private IEnumerable<NavItem>? items = null;
 
-  private DotNetObjectReference<Sidebar> objRef = default!;
+    private DotNetObjectReference<Sidebar> objRef = default!;
 
-  private bool requestInProgress = false;
+    private bool requestInProgress = false;
 
-  #endregion
+    #endregion
 
-  #region Methods
+    #region Methods
 
-  protected override async Task OnAfterRenderAsync( bool firstRender )
-  {
-    if( firstRender )
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-      await JSRuntime.InvokeVoidAsync( "window.blazorBootstrap.sidebar.initialize", Id, objRef );
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", Id, objRef);
 
-      var width = await JSRuntime.InvokeAsync<int>( "window.blazorBootstrap.sidebar.windowSize" );
+            var width = await JSRuntime.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
 
-      bsWindowResize( width );
+            bsWindowResize(width);
 
-      await RefreshDataAsync( firstRender );
+            await RefreshDataAsync(firstRender);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
-    await base.OnAfterRenderAsync( firstRender );
-  }
-
-  protected override async Task OnInitializedAsync()
-  {
-    objRef ??= DotNetObjectReference.Create( this );
-
-    AdditionalAttributes ??= new Dictionary<string, object>();
-
-    await base.OnInitializedAsync();
-  }
-
-  [JSInvokable]
-  public void bsWindowResize( int width )
-  {
-    if( width < 641 ) // mobile
-      isMobile = true;
-    else
-      isMobile = false;
-  }
-
-  /// <summary>
-  /// Refresh the sidebar data.
-  /// </summary>
-  /// <returns>Task</returns>
-  public async Task RefreshDataAsync( bool firstRender = false )
-  {
-    if( requestInProgress )
-      return;
-
-    requestInProgress = true;
-
-    if( DataProvider != null )
+    protected override async Task OnInitializedAsync()
     {
-      var request = new SidebarDataProviderRequest();
-      var result = await DataProvider.Invoke( request );
-      items = result != null ? result.Data : new List<NavItem>();
+        objRef ??= DotNetObjectReference.Create(this);
+
+        AdditionalAttributes ??= new Dictionary<string, object>();
+
+        await base.OnInitializedAsync();
     }
 
-    requestInProgress = false;
-
-    await InvokeAsync( StateHasChanged );
-  }
-
-  /// <summary>
-  /// Toggles sidebar.
-  /// </summary>
-  public void ToggleSidebar()
-  {
-    ToggleTo( !collapseSidebar );
-  }
-
-  private void ToggleTo( bool isCollapsed )
-  {
-    if( collapseSidebar != isCollapsed )
+    [JSInvokable]
+    public void bsWindowResize(int width)
     {
-      collapseSidebar = isCollapsed;
-      StateHasChanged();
+        if (width < 641) // mobile
+            isMobile = true;
+        else
+            isMobile = false;
     }
-  }
 
-  internal void HideNavMenuOnMobile()
-  {
-    if( isMobile && !collapseNavMenu )
-      collapseNavMenu = true;
-  }
+    /// <summary>
+    /// Refresh the sidebar data.
+    /// </summary>
+    /// <returns>Task</returns>
+    public async Task RefreshDataAsync(bool firstRender = false)
+    {
+        if (requestInProgress)
+            return;
 
-  private string GetNavMenuCssClass()
-  {
-    var classList = new HashSet<string>();
+        requestInProgress = true;
 
-    if( collapseNavMenu )
-      classList.Add( "collapse" );
+        if (DataProvider != null)
+        {
+            var request = new SidebarDataProviderRequest();
+            var result = await DataProvider.Invoke(request);
+            items = result != null ? result.Data : new List<NavItem>();
+        }
 
-    classList.Add( "bb-sidebar-content nav-scrollable bb-scrollbar" );
+        requestInProgress = false;
 
-    if( collapseSidebar )
-      classList.Add( "bb-scrollbar-hidden" );
+        await InvokeAsync(StateHasChanged);
+    }
 
-    return string.Join( " ", classList );
-  }
+    /// <summary>
+    /// Toggles sidebar.
+    /// </summary>
+    public void ToggleSidebar()
+    {
+        ToggleTo(!collapseSidebar);
+    }
 
-  private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+    private void ToggleTo(bool isCollapsed)
+    {
+        if (collapseSidebar != isCollapsed)
+        {
+            collapseSidebar = isCollapsed;
+            StateHasChanged();
+        }
+    }
 
-  #endregion
+    internal void HideNavMenuOnMobile()
+    {
+        if (isMobile && !collapseNavMenu)
+            collapseNavMenu = true;
+    }
 
-  #region Properties, Indexers
+    private string GetNavMenuCssClass()
+    {
+        var classList = new HashSet<string>();
 
-  protected override string? ClassNames =>
-      BuildClassNames( Class,
-          ("bb-sidebar", true),
-          ("collapsed", collapseSidebar),
-          ("expanded", !collapseSidebar) );
+        if (collapseNavMenu)
+            classList.Add("collapse");
 
-  protected override string? StyleNames =>
-      BuildStyleNames( Style,
-          ($"--bb-sidebar-width: {Width.ToString( CultureInfo.InvariantCulture )}{WidthUnit.ToCssString()};", Width > 0) );
+        classList.Add("bb-sidebar-content nav-scrollable bb-scrollbar");
 
-  /// <summary>
-  /// Gets or sets the badge text.
-  /// </summary>
-  /// <remarks>
-  /// Default value is null.
-  /// </remarks>
-  [Parameter]
-  public string? BadgeText { get; set; }
+        if (collapseSidebar)
+            classList.Add("bb-scrollbar-hidden");
 
-  /// <summary>
-  /// Gets or sets the custom icon name.
-  /// </summary>
-  /// <remarks>
-  /// Default value is null.
-  /// </remarks>
-  [Parameter]
-  public string? CustomIconName { get; set; }
+        return string.Join(" ", classList);
+    }
 
-  /// <summary>
-  /// Gets or sets the data provider.
-  /// </summary>
-  /// <remarks>
-  /// Default value is null.
-  /// </remarks>
-  [Parameter]
-  [EditorRequired]
-  public SidebarDataProviderDelegate? DataProvider { get; set; } = default!;
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
 
-  /// <summary>
-  /// Gets or sets the Href.
-  /// </summary>
-  /// <remarks>
-  /// Default value is <see cref="string.Empty" />.
-  /// </remarks>
-  [Parameter]
-  public string? Href { get; set; } = string.Empty;
+    #endregion
 
-  /// <summary>
-  /// Gets or sets the IconName.
-  /// </summary>
-  /// <remarks>
-  /// Default value is <see cref="IconName.None" />.
-  /// </remarks>
-  [Parameter]
-  public IconName IconName { get; set; } = IconName.None;
+    #region Properties, Indexers
 
-  /// <summary>
-  /// Gets or sets the sidebar logo.
-  /// </summary>
-  /// <remarks>
-  /// Default value is null.
-  /// </remarks>
-  [Parameter]
-  public string? ImageSrc { get; set; }
+    protected override string? ClassNames =>
+        BuildClassNames(Class,
+            ("bb-sidebar", true),
+            ("collapsed", collapseSidebar),
+            ("expanded", !collapseSidebar));
 
-  /// <summary>
-  /// Gets or sets the current collapsed state of the sidebar.
-  /// </summary>
-  public bool IsCollapsed
-  {
-    get => collapseSidebar;
-    set => ToggleTo( value );
-  }
+    protected override string? StyleNames =>
+        BuildStyleNames(Style,
+            ($"--bb-sidebar-width: {Width.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};", Width > 0));
 
-  private string? navMenuCssClass => GetNavMenuCssClass();
+    /// <summary>
+    /// Gets or sets the badge text.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public string? BadgeText { get; set; }
 
-  /// <summary>
-  /// Gets or sets the sidebar title.
-  /// </summary>
-  /// <remarks>
-  /// Default value is null.
-  /// </remarks>
-  [Parameter]
-  [EditorRequired]
-  public string? Title { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets the custom icon name.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public string? CustomIconName { get; set; }
 
-  /// <summary>
-  /// Gets or sets the sidebar width.
-  /// </summary>
-  /// <remarks>Default value is 270.</remarks>
-  [Parameter]
-  public float Width { get; set; } = 270;
+    /// <summary>
+    /// Gets or sets the data provider.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    [EditorRequired]
+    public SidebarDataProviderDelegate? DataProvider { get; set; } = default!;
 
-  /// <summary>
-  /// Gets or sets the sidebar width unit.
-  /// </summary>
-  /// <remarks>Default value is <see cref="Unit.Px" />.</remarks>
-  [Parameter]
-  public Unit WidthUnit { get; set; } = Unit.Px;
+    /// <summary>
+    /// Gets or sets the Href.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="string.Empty" />.
+    /// </remarks>
+    [Parameter]
+    public string? Href { get; set; } = string.Empty;
 
-  #endregion
+    /// <summary>
+    /// Gets or sets the IconName.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="IconName.None" />.
+    /// </remarks>
+    [Parameter]
+    public IconName IconName { get; set; } = IconName.None;
+
+    /// <summary>
+    /// Gets or sets the sidebar logo.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    public string? ImageSrc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current collapsed state of the sidebar.
+    /// </summary>
+    public bool IsCollapsed
+    {
+        get => collapseSidebar;
+        set => ToggleTo(value);
+    }
+
+    private string? navMenuCssClass => GetNavMenuCssClass();
+
+    /// <summary>
+    /// Gets or sets the sidebar title.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    [Parameter]
+    [EditorRequired]
+    public string? Title { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the sidebar width.
+    /// </summary>
+    /// <remarks>Default value is 270.</remarks>
+    [Parameter]
+    public float Width { get; set; } = 270;
+
+    /// <summary>
+    /// Gets or sets the sidebar width unit.
+    /// </summary>
+    /// <remarks>Default value is <see cref="Unit.Px" />.</remarks>
+    [Parameter]
+    public Unit WidthUnit { get; set; } = Unit.Px;
+
+    #endregion
 }
