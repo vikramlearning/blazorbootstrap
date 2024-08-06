@@ -3,8 +3,8 @@
   <PropertyGroup>
 
     <PackageId>Blazor.Bootstrap</PackageId>
-    <Version>3.0.0-preview.4</Version>
-    <PackageVersion>3.0.0-preview.4</PackageVersion>
+    <Version>3.0.0-preview.5</Version>
+    <PackageVersion>3.0.0-preview.5</PackageVersion>
 
     <!--<PackageIconUrl></PackageIconUrl>-->
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -32,6 +32,14 @@
     <LangVersion Condition=" '$(TargetFramework)' == 'net8.0' ">11.0</LangVersion>
 
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
+    <WarningLevel>7</WarningLevel>
   </PropertyGroup>
 
   <ItemGroup>
