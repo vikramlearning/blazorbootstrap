@@ -74,7 +74,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
   }
 
   /// <summary>
-  /// Update chart.
+  /// Update chart by reapplying all chart data and options. If animation is enabled, this will animate the datasets from scratch.
   /// </summary>
   /// <param name="chartData"></param>
   /// <param name="chartOptions"></param>
@@ -94,10 +94,9 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
   }
 
   /// <summary>
-  /// Update chart.
+  /// Update only data labels and values. If animation is enabled, this will animate the datapoints from their previous values, but changes to the options will not be applied.
   /// </summary>
-  /// <param name="chartData"></param>
-  /// <param name="chartOptions"></param>
+  /// <param name="chartData">The updated chart data. Only dataset labels and values will be applied.</param>
   public virtual async Task UpdateValuesAsync( ChartData chartData )
   {
     if( chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any() )
