@@ -483,3 +483,16 @@ public class ChartPluginsTooltipFont : ChartPlugin
 
   #endregion
 }
+
+/// <summary>
+/// Configuration for the Zoom plugin, if enabled.
+/// See <see href="https://www.chartjs.org/chartjs-plugin-zoom/latest/guide/" />
+/// </summary>
+public class ChartPluginsZoom : ChartPlugin
+{
+  public ZoomLimitOptions? Limits { get; set; }
+
+  public PanOptions? Pan { get; set; }
+
+  public ZoomOptions? Zoom { get; set; }
+}
