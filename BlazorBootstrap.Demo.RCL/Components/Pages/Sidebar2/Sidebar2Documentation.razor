@@ -6,7 +6,7 @@
 
 <h1>Blazor Sidebar2</h1>
 <div class="lead mb-3">
-    Use the Blazor Bootstrap <code>Sidebar2</code> component to display consistent, cross-browser, and responsive navigation links that support more than two nested levels.
+  Use the Blazor Bootstrap <code>Sidebar2</code> component to display consistent, cross-browser, and responsive navigation links that support more than two nested levels.
 </div>
 
 <CarbonAds />
@@ -27,6 +27,10 @@
 <div class="mb-3">Replace your <b>MainLayout.razor</b> page code with the below example to have a complete layout with a sidebar.</div>
 <Demo Type="typeof(Sidebar2_Demo_04_Full_layout_with_sidebar)" Tabs="true" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Toggle sidebar to show icons only" PageUrl="@pageUrl" HashTagName="toggle-sidebar-to-show-icons-only" />
+<div class="mb-3">Call <code>ToggleSidebar()</code> method to toggle the Sidebar to show the icons only, or set <code>IsCollapsed</code> directly.</div>
+<Demo Type="typeof(Sidebar2_Demo_05_Toggle_Sidebar_to_Show_Icons_Only)" Tabs="true" />
+
 <SectionHeading Size="HeadingSize.H2" Text="Custom brand icon" PageUrl="@pageUrl" HashTagName="custom-brand-icon" />
 <div class="mb-3">Use the <code>CustomIconName</code> parameter to set the custom logo icon using font awesome or other icons.</div>
 <Demo Type="typeof(Sidebar2_Demo_07_Custom_Brand_Icon)" Tabs="true" />
@@ -40,8 +44,8 @@
 <Demo Type="typeof(Sidebar2_Demo_09_Width)" Tabs="true" />
 
 @code {
-    private string pageUrl = "sidebar2";
-    private string title = "Blazor Sidebar2 Component";
-    private string description = "Use the Blazor Bootstrap Sidebar2 component to display consistent, cross-browser, and responsive navigation links that support more than two nested levels.";
-    private string imageUrl = "https://i.imgur.com/U0l6wXo.png";
+  private string pageUrl = "sidebar2";
+  private string title = "Blazor Sidebar2 Component";
+  private string description = "Use the Blazor Bootstrap Sidebar2 component to display consistent, cross-browser, and responsive navigation links that support more than two nested levels.";
+  private string imageUrl = "https://i.imgur.com/U0l6wXo.png";
 }
