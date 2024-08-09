@@ -18,9 +18,10 @@ public class LineChartDataset : ChartDataset
     /// <exception cref="ArgumentException">If the relative index is zero.</exception>
     public LineChartDataset FillToDataset(int index, bool relativeIndex = false)
     {
-        if (relativeIndex && index == 0) throw new ArgumentException("The relative index must be non-zero.");
+        if (relativeIndex && index == 0) 
+            throw new ArgumentException("The relative index must be non-zero.");
 
-        Fill = relativeIndex ? index.ToString("+0;-0") : index;
+        Fill = relativeIndex ? index.ToString("+0;-0", CultureInfo.InvariantCulture) : index;
 
         return this;
     }
@@ -37,17 +38,20 @@ public class LineChartDataset : ChartDataset
     {
         var index = chartData?.Datasets?.IndexOf(dataset) ?? -1;
 
-        if (index < 0) throw new ArgumentException("The dataset is not in the chart data.");
+        if (index < 0)
+            throw new ArgumentException("The dataset is not in the chart data.");
 
         if (relativeIndex)
         {
             var myIndex = relativeIndex ? chartData.Datasets.IndexOf(this) : 0;
 
-            if (myIndex < 0) throw new ArgumentException("The dataset is not in the chart data.");
+            if (myIndex < 0)
+                throw new ArgumentException("The dataset is not in the chart data.");
 
-            if (myIndex == index) throw new ArgumentException("The dataset is the same as this dataset.");
+            if (myIndex == index)
+                throw new ArgumentException("The dataset is the same as this dataset.");
 
-            Fill = (index - myIndex).ToString("+0;-0");
+            Fill = (index - myIndex).ToString("+0;-0", CultureInfo.InvariantCulture);
         }
         else
         {
@@ -64,7 +68,6 @@ public class LineChartDataset : ChartDataset
     public LineChartDataset FillToEnd()
     {
         Fill = "end";
-
         return this;
     }
 
@@ -75,7 +78,6 @@ public class LineChartDataset : ChartDataset
     public LineChartDataset FillToOrigin()
     {
         Fill = "origin";
-
         return this;
     }
 
@@ -86,7 +88,6 @@ public class LineChartDataset : ChartDataset
     public LineChartDataset FillToStackedValueBelow()
     {
         Fill = "stack";
-
         return this;
     }
 
@@ -97,7 +98,6 @@ public class LineChartDataset : ChartDataset
     public LineChartDataset FillToStart()
     {
         Fill = "start";
-
         return this;
     }
 
@@ -109,7 +109,6 @@ public class LineChartDataset : ChartDataset
     public LineChartDataset FillToValue(double value)
     {
         Fill = new { value };
-
         return this;
     }
 
@@ -207,6 +206,7 @@ public class LineChartDataset : ChartDataset
 
     /// <summary>
     /// How to fill the area under the line.
+    /// <see href="https://www.chartjs.org/docs/latest/charts/line.html#line-styling" />
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="false" />.
