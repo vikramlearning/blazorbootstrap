@@ -1,10 +1,10 @@
 ﻿<div class="bb-page">
 
-  <Sidebar @ref="sidebar"
-           Href="/"
-           IconName="IconName.BootstrapFill"
-           Title="Blazor Bootstrap"
-           DataProvider="SidebarDataProvider" />
+  <Sidebar2 @ref="sidebar"
+            Href="/"
+            IconName="IconName.BootstrapFill"
+            Title="Blazor Bootstrap"
+            DataProvider="Sidebar2DataProvider" />
 
   <main>
     <div class="bb-top-row px-4 d-flex justify-content-between">
@@ -23,10 +23,10 @@
 </div>
 
 @code {
-  Sidebar sidebar { get; set; } = default!;
+  Sidebar2 sidebar { get; set; } = default!;
   IEnumerable<NavItem>? navItems;
 
-  private async Task<SidebarDataProviderResult> SidebarDataProvider( SidebarDataProviderRequest request )
+  private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider( Sidebar2DataProviderRequest request )
   {
     if( navItems is null )
       navItems = GetNavItems();
