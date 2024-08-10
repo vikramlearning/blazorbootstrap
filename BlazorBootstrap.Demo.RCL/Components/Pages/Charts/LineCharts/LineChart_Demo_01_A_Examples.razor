@@ -1,11 +1,13 @@
-﻿<LineChart @ref="lineChart" Width="500" Height="200" />
+﻿<div class="container-fluid overflow-x-auto">
+    <LineChart @ref="lineChart" Width="800" />
+</div>
 
 <div class="mt-5">
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
+    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()" Disabled="@(datasetsCount >= 12)"> Add Dataset </Button>
+    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
+    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
+    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
 </div>
 
 @code {
@@ -22,7 +24,7 @@
     {
         chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
         lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
-        lineChartOptions.Scales.Y!.Max = 200;
+        lineChartOptions.Scales.Y!.Max = 250;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
