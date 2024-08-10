@@ -845,6 +845,23 @@ window.blazorChart = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.bar = {
@@ -957,6 +974,23 @@ window.blazorChart.bar = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.doughnut = {
@@ -1075,6 +1109,23 @@ window.blazorChart.doughnut = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.line = {
@@ -1227,6 +1278,23 @@ window.blazorChart.line = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.pie = {
@@ -1345,6 +1413,23 @@ window.blazorChart.pie = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.polarArea = {
@@ -1464,6 +1549,23 @@ window.blazorChart.polarArea = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.radar = {
@@ -1582,6 +1684,23 @@ window.blazorChart.radar = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.scatter = {
@@ -1700,4 +1819,21 @@ window.blazorChart.scatter = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
