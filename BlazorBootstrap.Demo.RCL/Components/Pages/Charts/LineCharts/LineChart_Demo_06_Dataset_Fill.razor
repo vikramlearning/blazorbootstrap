@@ -1,4 +1,4 @@
-﻿<LineChart Height="200" @ref="lineChart" Width="500"/>
+﻿<LineChart Height="200" @ref="lineChart" Width="500" />
 
 <div class="mt-5">
     <Button Color="ButtonColor.Primary" @onclick="async () => await NoFillAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> No fill</Button>
@@ -107,17 +107,17 @@
         datasetsCount += 1;
 
         return new LineChartDataset
-               {
-                   Label = $"Team {datasetsCount}",
-                   Data = GetRandomData(),
-                   BackgroundColor = c.ToRgbString(),
-                   BorderColor = c.ToRgbString(),
-                   BorderWidth = 2,
-                   HoverBorderWidth = 4
-    // PointBackgroundColor = c.ToRgbString(),
-    // PointRadius = 0, // hide points
-    // PointHoverRadius = 4,
-               };
+            {
+                Label = $"Team {datasetsCount}",
+                Data = GetRandomData(),
+                BackgroundColor = c.ToRgbString(),
+                BorderColor = c.ToRgbString(),
+                BorderWidth = 2,
+                HoverBorderWidth = 4
+                // PointBackgroundColor = c.ToRgbString(),
+                // PointRadius = 0, // hide points
+                // PointHoverRadius = 4,
+            };
     }
 
     private List<double?> GetRandomData()
