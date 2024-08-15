@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System;
+
+namespace BlazorBootstrap;
 
 public interface IChartOptions { }
 
@@ -273,6 +275,12 @@ public class ChartAxes
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Type { get; set; }
+
+  /// <summary>
+  /// Gets or sets the time axis configuration
+  /// </summary>
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  public ChartTimeAxisOptions? Time { get; set; }
 
     #endregion
 }
@@ -648,4 +656,81 @@ public class ChartFont
     public string? Weight { get; set; } = "bold";
 
     #endregion
+}
+
+public enum ChartTimeUnit
+{
+  Millisecond,
+  Second,
+  Minute,
+  Hour,
+  Day,
+  Week,
+  Month,
+  Quarter,
+  Year
+}
+
+/// <summary>
+///     <see href="https://www.chartjs.org/docs/latest/axes/cartesian/time.html" />
+/// </summary>
+public class ChartTimeAxisOptions
+{
+  #region Properties, Indexers
+
+  /// <summary>
+  /// Sets how different time units are displayed. 
+  /// <summary>
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  public object? DisplayFormats { get; set; }
+
+  /// <summary>
+  /// If boolean and true and the unit is set to 'week', then the first day of the week will be Monday. Otherwise, it will be Sunday. If number, the index of the first day of the week (0 - Sunday, 6 - Saturday)
+  /// <summary>
+  [JsonIgnore]
+  public DayOfWeek? IsoWeekday { get; set; }
+
+  [JsonInclude]
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  private int? isoWeekDay => (int?)IsoWeekday;
+
+  /// <summary>
+  /// If defined, dates will be rounded to the start of this unit. See Units below for the allowed units.
+  /// <summary>
+  [JsonIgnore]
+  public ChartTimeUnit? Round { get; set; }
+
+
+  [JsonInclude]
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  private string round => Round?.ToString().ToLower();
+
+  /// <summary>
+  /// The format string to use for the tooltip.
+  /// <summary>
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  public string? TooltipFormat { get; set; }
+
+  /// <summary>
+  /// If defined, will force the unit to be a certain type. See Units section below for details.
+  /// <summary>
+  [JsonIgnore]
+  public ChartTimeUnit? Unit { get; set; }
+
+  [JsonInclude]
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  private string unit => Unit?.ToString().ToLower();
+
+  /// <summary>
+  /// The minimum display format to be used for a time unit.
+  /// <summary>
+  [JsonIgnore]
+  public ChartTimeUnit? MinUnit { get; set; }
+
+
+  [JsonInclude]
+  [JsonIgnore( Condition = JsonIgnoreCondition.WhenWritingNull )]
+  private string minUnit => MinUnit?.ToString().ToLower();
+
+  #endregion
 }
