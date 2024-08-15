@@ -18,7 +18,7 @@ public class LineChartDataset : ChartDataset
     /// <exception cref="ArgumentException">If the relative index is zero.</exception>
     public LineChartDataset FillToDataset(int index, bool relativeIndex = false)
     {
-        if (relativeIndex && index == 0) 
+        if (relativeIndex && index == 0)
             throw new ArgumentException("The relative index must be non-zero.");
 
         Fill = relativeIndex ? index.ToString("+0;-0", CultureInfo.InvariantCulture) : index;
@@ -68,6 +68,7 @@ public class LineChartDataset : ChartDataset
     public LineChartDataset FillToEnd()
     {
         Fill = "end";
+
         return this;
     }
 
@@ -78,6 +79,7 @@ public class LineChartDataset : ChartDataset
     public LineChartDataset FillToOrigin()
     {
         Fill = "origin";
+
         return this;
     }
 
@@ -88,6 +90,7 @@ public class LineChartDataset : ChartDataset
     public LineChartDataset FillToStackedValueBelow()
     {
         Fill = "stack";
+
         return this;
     }
 
@@ -98,6 +101,7 @@ public class LineChartDataset : ChartDataset
     public LineChartDataset FillToStart()
     {
         Fill = "start";
+
         return this;
     }
 
@@ -109,6 +113,7 @@ public class LineChartDataset : ChartDataset
     public LineChartDataset FillToValue(double value)
     {
         Fill = new { value };
+
         return this;
     }
 
