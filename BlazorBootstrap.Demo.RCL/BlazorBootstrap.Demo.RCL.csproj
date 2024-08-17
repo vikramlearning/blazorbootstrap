@@ -19,6 +19,10 @@
     <ProjectReference Include="..\blazorbootstrap\BlazorBootstrap.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\Pages\Maps\" />
+  </ItemGroup>
+
   <Target Name="EmbedDemos" BeforeTargets="PrepareForBuild">
     <!-- Let's embed demos sources into the assembly to show the source at runtime. -->
     <ItemGroup>

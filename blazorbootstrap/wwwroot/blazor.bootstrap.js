@@ -392,6 +392,54 @@ window.blazorBootstrap = {
                 bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl)?.update();
         }
     },
+    googlemaps: {
+        instances: [],
+        initialize: (elementId, zoom, center, markers) => {
+            console.log(`googlemaps init: start`);
+            //let center = { lat: -34.397, lng: 150.644 };
+            let mapOptions = {
+                center: center,
+                zoom: zoom,
+                mapId: elementId,
+            };
+            let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
+            if (markers) {
+                for (const marker of markers) {
+                    let _content;
+
+                    if (marker.pinElement) {
+                        const pinElement = new PinElement({
+                            scale: marker.pinElement.scale
+                        });
+                        _content = pinElement.element;
+                    }
+                    else if (marker.content) {
+                        _content = document.createElement("div");
+                        _content.classList.add("bb-google-marker-content");
+                        _content.innerHTML = marker.content;
+                    }
+
+                    const advancedMarkerElement = new google.maps.marker.AdvancedMarkerElement({
+                        map,
+                        content: _content,
+                        position: marker.position,
+                        title: marker.title
+                    });
+                }
+            }
+
+            window.blazorBootstrap.googlemaps.instances[elementId] = map;
+            console.log(`googlemaps init: end`);
+        },
+        get: (elementId) => {
+            let map;
+            let instances = window.blazorBootstrap.googlemaps.instances;
+            if (instances.length > 0) {
+                map = instances[elementId];
+            }
+            return map;
+        }
+    },
     grid: {
         checkOrUnCheckAll: (cssSelector, isChecked) => {
             let chkEls = document.querySelectorAll(cssSelector);
@@ -583,7 +631,7 @@ window.blazorBootstrap = {
         }
     },
     scriptLoader: {
-        initialize: (elementId, async, scriptId, source, type, dotNetHelper) => {
+        initialize: (elementId, async, defer, scriptId, source, type, dotNetHelper) => {
             let scriptLoaderEl = document.getElementById(elementId);
 
             if (source.length === 0) {
@@ -594,6 +642,8 @@ window.blazorBootstrap = {
             let scriptEl = document.createElement('script');
 
             scriptEl.async = async;
+
+            scriptEl.defer = defer;
 
             if (scriptId != null)
                 scriptEl.id = scriptId;

@@ -1,0 +1,27 @@
+﻿<GoogleMap ApiKey="AIzaSyA-k5n6Q7VzGE-XEDbWFQI4IcgzRrafdy0"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker(){
+            Content = "<i class='bi bi-house-fill fs-4 text-primary'></i>",
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352),
+            Title = "Single family house with modern design"
+        },
+        new GoogleMapMarker(){
+            Content = "<i class='bi bi-house-fill fs-4 text-danger'></i>",
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727),
+            Title = "Townhouse with friendly neighbors"
+        },
+        new GoogleMapMarker(){
+            Content = "<i class='bi bi-house-fill fs-4 text-dark'></i>",
+            Position = new GoogleMapMarkerPosition(37.39561833718522, -122.21855116258479),
+            Title = "Spacious warehouse great for small business"
+        }
+    };
+}
