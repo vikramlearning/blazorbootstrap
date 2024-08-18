@@ -396,7 +396,6 @@ window.blazorBootstrap = {
         instances: [],
         initialize: (elementId, zoom, center, markers) => {
             console.log(`googlemaps init: start`);
-            //let center = { lat: -34.397, lng: 150.644 };
             let mapOptions = {
                 center: center,
                 zoom: zoom,
@@ -408,10 +407,24 @@ window.blazorBootstrap = {
                     let _content;
 
                     if (marker.pinElement) {
-                        const pinElement = new PinElement({
-                            scale: marker.pinElement.scale
+                        let _glyph;
+
+                        if (marker.pinElement.useIconFonts) {
+                            const icon = document.createElement("div");
+                            icon.innerHTML = `<i class="${marker.pinElement.glyph}"></i>`;
+                            _glyph = icon;
+                        } else {
+                            _glyph = marker.pinElement.glyph;
+                        }
+
+                        const pin = new google.maps.marker.PinElement({
+                            background: marker.pinElement.background,
+                            borderColor: marker.pinElement.borderColor,
+                            glyph: _glyph,
+                            glyphColor: marker.pinElement.glyphColor,
+                            scale: marker.pinElement.scale,
                         });
-                        _content = pinElement.element;
+                        _content = pin.element;
                     }
                     else if (marker.content) {
                         _content = document.createElement("div");
