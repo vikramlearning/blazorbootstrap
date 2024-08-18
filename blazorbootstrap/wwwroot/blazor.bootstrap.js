@@ -394,8 +394,7 @@ window.blazorBootstrap = {
     },
     googlemaps: {
         instances: [],
-        initialize: (elementId, zoom, center, markers) => {
-            console.log(`googlemaps init: start`);
+        initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
             let mapOptions = {
                 center: center,
                 zoom: zoom,
@@ -403,6 +402,7 @@ window.blazorBootstrap = {
             };
             let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
             if (markers) {
+                const infoWindow = new google.maps.InfoWindow();
                 for (const marker of markers) {
                     let _content;
 
@@ -432,17 +432,27 @@ window.blazorBootstrap = {
                         _content.innerHTML = marker.content;
                     }
 
-                    const advancedMarkerElement = new google.maps.marker.AdvancedMarkerElement({
+                    const markerEl = new google.maps.marker.AdvancedMarkerElement({
                         map,
                         content: _content,
                         position: marker.position,
                         title: marker.title
                     });
-                }
+
+                    // add a click listener for each marker, and set up the info window.
+                    if (clickable) {                    
+                        markerEl.addListener("click", ({ domEvent, latLng }) => {
+                            const { target } = domEvent;
+                            infoWindow.close();
+                            infoWindow.setContent(markerEl.title);
+                            infoWindow.open(markerEl.map, markerEl);
+                            dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
+                        });
+                    }
+                } // end: for
             }
 
             window.blazorBootstrap.googlemaps.instances[elementId] = map;
-            console.log(`googlemaps init: end`);
         },
         get: (elementId) => {
             let map;

@@ -15,7 +15,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     private void OnScriptLoad()
     {
         Console.WriteLine($"OnScriptLoad called...");
-        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers));
+        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef));
     }
 
     /// <inheritdoc />
@@ -46,6 +46,16 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    [JSInvokable]
+    public async Task OnMarkerClickJS(GoogleMapMarker marker)
+    {
+        if (OnMarkerClick.HasDelegate)
+            await OnMarkerClick.InvokeAsync(marker);
+    }
+
+    [Parameter]
+    public EventCallback<GoogleMapMarker> OnMarkerClick { get; set; }
+
     #endregion
 
     #region Properties, Indexers
@@ -55,6 +65,9 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public string? ApiKey { get; set; }
+
+    [Parameter]
+    public bool Clickable { get; set; }
 
     [Parameter]
     public GoogleMapCenter Center { get; set; } = default!;
@@ -133,7 +146,6 @@ public class GoogleMapCenter
 
 public class GoogleMapMarker
 {
-
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Content { get; set; }
 
@@ -160,7 +172,6 @@ public class GoogleMapMarkerPosition
     public double Longitude { get; }
 }
 
-
 public class PinElement
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -170,7 +181,7 @@ public class PinElement
     public string? BorderColor { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Glyph { get; set; }
+    public object? Glyph { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? GlyphColor { get; set; }
@@ -178,4 +189,25 @@ public class PinElement
     public double Scale { get; set; } = 1.0;
 
     public bool UseIconFonts { get; set; }
+}
+
+public class GoogleMapMarkerEventArgs : EventArgs
+{
+    #region Constructors
+
+    public GoogleMapMarkerEventArgs(GoogleMapMarker marker)
+    {
+        Marker = marker;
+    }
+
+    #endregion
+
+    #region Properties, Indexers
+
+    /// <summary>
+    /// Gets the elementId.
+    /// </summary>
+    public GoogleMapMarker Marker { get; }
+
+    #endregion
 }

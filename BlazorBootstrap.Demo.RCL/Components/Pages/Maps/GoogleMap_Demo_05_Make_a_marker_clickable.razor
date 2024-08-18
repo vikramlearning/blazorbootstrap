@@ -3,10 +3,17 @@ Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
            Height="400"
            Width="100"
            Zoom="10"
-           Markers="markers" />
+           Markers="markers"
+           Clickable="true"
+           OnMarkerClick="OnGoogleMapMarkerClick" />
 
 @code {
-    Icon iconRef1 = default!;
+    [Inject] public ToastService ToastService { get; set; } = default!;
+
+    private void OnGoogleMapMarkerClick(GoogleMapMarker marker)
+    {
+        ToastService.Notify(new ToastMessage(ToastType.Success, $"{marker.Title}", $"This is a toast message for a weather forecast. DateTime: {DateTime.Now}"));
+    }
 
     List<GoogleMapMarker> markers = new()
     {
