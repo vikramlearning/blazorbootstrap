@@ -439,7 +439,7 @@ window.blazorBootstrap = {
                 if (clickable) {
                     markerEl.addListener("click", ({ domEvent, latLng }) => {
                         const { target } = domEvent;
-                        const infoWindow = window.blazorBootstrap.googlemaps.infoWindow;
+                        const infoWindow = new google.maps.InfoWindow();
                         infoWindow.close();
                         infoWindow.setContent(markerEl.title);
                         infoWindow.open(markerEl.map, markerEl);
@@ -462,7 +462,6 @@ window.blazorBootstrap = {
         },
         initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
             window.blazorBootstrap.googlemaps.markerEls[elementId] = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? []
-            window.blazorBootstrap.googlemaps.infoWindow = window.blazorBootstrap.googlemaps.infoWindow ?? new google.maps.InfoWindow();
 
             let mapOptions = { center: center, zoom: zoom, mapId: elementId };
             let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
@@ -475,7 +474,6 @@ window.blazorBootstrap = {
                 }
             }
         },
-        infoWindow: {},
         instances: {},
         markerEls: {},
         updateMarkers: (elementId, markers, dotNetHelper) => {
