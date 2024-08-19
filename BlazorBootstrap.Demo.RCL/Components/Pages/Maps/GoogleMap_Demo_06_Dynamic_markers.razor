@@ -1,4 +1,6 @@
-﻿<div>
+﻿@inherits GoogleMapDemoComponentBase
+
+<div>
     <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="(async () => await AddWeatherMarkerAsync())">
         <Icon Name="IconName.GeoAltFill" /> Add Marker
     </Button>
@@ -10,7 +12,7 @@
     </Button>
 </div>
 
-<GoogleMap @ref="googleMapRef" ApiKey="AIzaSyA-k5n6Q7VzGE-XEDbWFQI4IcgzRrafdy0"
+<GoogleMap ApiKey="@ApiKey"
            Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
            Height="400"
            Width="100"
