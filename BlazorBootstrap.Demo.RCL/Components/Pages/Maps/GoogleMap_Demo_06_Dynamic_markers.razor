@@ -12,7 +12,8 @@
     </Button>
 </div>
 
-<GoogleMap ApiKey="@ApiKey"
+<GoogleMap @ref="googleMapRef" 
+           ApiKey="@ApiKey"
            Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
            Height="400"
            Width="100"
