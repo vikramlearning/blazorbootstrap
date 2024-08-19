@@ -24,7 +24,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, ScriptId, Source, type, objRef);
+            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, Defer, ScriptId, Source, type, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -74,6 +74,13 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public bool Async { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the script is meant to be executed 
+    /// after the document has been parsed, but before firing DOMContentLoaded event..
+    /// </summary>
+    [Parameter]
+    public bool Defer { get; set; }
 
     /// <summary>
     /// An event that is fired when a script loading error occurs.
