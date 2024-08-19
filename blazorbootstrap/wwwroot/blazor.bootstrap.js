@@ -430,7 +430,8 @@ window.blazorBootstrap = {
                     map,
                     content: _content,
                     position: marker.position,
-                    title: marker.title
+                    title: marker.title,
+                    gmpClickable: clickable
                 });                
 
                 window.blazorBootstrap.googlemaps.markerEls[elementId].push(markerEl);
