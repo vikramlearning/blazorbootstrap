@@ -1,12 +1,58 @@
-﻿<GoogleMap ApiKey="AIzaSyA-k5n6Q7VzGE-XEDbWFQI4IcgzRrafdy0"
+﻿<div>
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="(async () => await AddWeatherMarkerAsync())">
+        <Icon Name="IconName.GeoAltFill" /> Add Marker
+    </Button>
+    <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="(async () => await UpdateWeatherMarkersAsync())">
+        <Icon Name="IconName.GeoAltFill" /> Update Markers
+    </Button>
+    <Button Color="ButtonColor.Warning" Size="ButtonSize.Small" @onclick="(async () => await RefreshMapAsync())">
+        <Icon Name="IconName.MapFill" /> Refresh Map
+    </Button>
+</div>
+
+<GoogleMap @ref="googleMapRef" ApiKey="AIzaSyA-k5n6Q7VzGE-XEDbWFQI4IcgzRrafdy0"
            Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
            Height="400"
            Width="100"
            Zoom="10"
-           Markers="markers" />
+           Markers="markers"
+           Clickable="true"
+           OnMarkerClick="OnGoogleMapMarkerClick" />
 
 @code {
-    Icon iconRef1 = default!;
+    Random random = new Random(2000000000);
+    GoogleMap googleMapRef = default!;
+
+    [Inject] public ToastService ToastService { get; set; } = default!;
+
+    private async ValueTask AddWeatherMarkerAsync() => await googleMapRef.AddMarkerAsync(GetRandomMarker());
+
+    private async Task UpdateWeatherMarkersAsync()
+    {
+        var markerList = new List<GoogleMapMarker>
+        {
+            GetRandomMarker(),
+            GetRandomMarker(),
+            GetRandomMarker(),
+            GetRandomMarker(),
+            GetRandomMarker(),
+            GetRandomMarker(),
+        };
+        await googleMapRef.UpdateMarkersAsync(markerList);
+    }
+
+    private async Task RefreshMapAsync()
+    {
+        markers.Add(GetRandomMarker());
+        markers.Add(GetRandomMarker());
+
+        await googleMapRef.RefreshAsync();
+    }
+
+    private void OnGoogleMapMarkerClick(GoogleMapMarker marker)
+    {
+        ToastService.Notify(new ToastMessage(ToastType.Success, $"{marker.Title}", $"This is a toast message for a weather forecast. DateTime: {DateTime.Now}"));
+    }
 
     List<GoogleMapMarker> markers = new()
     {
@@ -93,18 +139,24 @@
             },
             Position = new GoogleMapMarkerPosition(37.38343706184458, -122.02340436985183),
             Title = "Heavy rain",
-        },
-        new GoogleMapMarker()
-        {
-            PinElement = new PinElement
-            {
-                Glyph = "bi bi-cloud-rain-heavy-fill fs-6 text-white",
-                UseIconFonts = true,
-                Background=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbaString().ToLowerInvariant(),
-                BorderColor=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbString().ToLowerInvariant()
-            },
-            Position = new GoogleMapMarkerPosition(37.34576403052, -122.04455090047453),
-            Title = "Heavy rain",
         }
     };
+
+    private GoogleMapMarker GetRandomMarker()
+    {
+        var lat = Double.Parse($"37.{random.Next()}");
+        var lng = Double.Parse($"-122.{random.Next()}");
+        return new GoogleMapMarker()
+            {
+                PinElement = new PinElement
+                {
+                    Glyph = "bi bi-cloud-rain-heavy-fill fs-6 text-white",
+                    UseIconFonts = true,
+                    Background = ColorUtility.CategoricalTwelveColors[9].ToColor().ToRgbaString().ToLowerInvariant(),
+                    BorderColor = ColorUtility.CategoricalTwelveColors[9].ToColor().ToRgbString().ToLowerInvariant()
+                },
+                Position = new GoogleMapMarkerPosition(lat, lng),
+                Title = "Heavy rain",
+            };
+    }
 }

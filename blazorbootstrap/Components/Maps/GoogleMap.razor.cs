@@ -12,6 +12,28 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
 
     #region Methods
 
+    //public ValueTask SetCenter() { return ValueTask.CompletedTask; }
+
+    //public ValueTask SetZoom() { return ValueTask.CompletedTask; }
+
+    public ValueTask AddMarkerAsync(GoogleMapMarker marker)
+    {
+        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.addMarker", Id, marker, objRef);
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask UpdateMarkersAsync(IEnumerable<GoogleMapMarker> markers)
+    {
+        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.updateMarkers", Id, markers, objRef);
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask RefreshAsync() 
+    {
+        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef);
+        return ValueTask.CompletedTask; 
+    }
+
     private void OnScriptLoad()
     {
         Console.WriteLine($"OnScriptLoad called...");
@@ -129,7 +151,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     #endregion
 }
 
-public class GoogleMapCenter
+public record class GoogleMapCenter
 {
     public GoogleMapCenter(double latitude, double longitude)
     {
@@ -157,7 +179,7 @@ public class GoogleMapMarker
     public string? Title { get; set; }
 }
 
-public class GoogleMapMarkerPosition
+public record class GoogleMapMarkerPosition
 {
     public GoogleMapMarkerPosition(double latitude, double longitude)
     {
