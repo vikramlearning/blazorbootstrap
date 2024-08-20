@@ -1,0 +1,783 @@
+---
+title: Blazor Google Map Component
+description: Blazor Bootstrap Google Map component will create maps to show locations anywhere in the world using the Google JavaScript API.
+image: https://i.imgur.com/beAr31J.png
+
+sidebar_label: Google Maps
+sidebar_position: 12
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Google Map
+
+Blazor Bootstrap Google Map component will create maps to show locations anywhere in the world using the Google JavaScript API.
+
+<CarbonAd />
+
+<img src="https://i.imgur.com/AbyDP51.png" alt="Blazor Bootstrap: Google Map component" />
+
+## Prerequisite
+
+Before you start using the GoogleMap component in your project, you need an API key. 
+Please follow the link below for detailed steps. <br />
+**Link:** https://developers.google.com/maps/documentation/javascript/adding-a-google-map#key.
+
+## Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ApiKey | `string?` | null | ✔️ | Gets or sets the Google Maps API key. | 3.0.0 |
+| Center | `GoogleMapCenter` | null | | Gets or sets the center parameter. | 3.0.0 |
+| Clickable | bool | false | | Makes the marker clickable if set to `true`. | 3.0.0 |
+| Height | `double?` | null | | Gets or sets the height of the `GoogleMap`. | 3.0.0 |
+| HeightUnit | `Unit` | `Unit.Px` | | Gets or sets the units for the `Height`. | 3.0.0 |
+| Markers | `IEnumerable<GoogleMapMarker>?` | null | ✔️ | Gets or sets the markers. | 3.0.0 |
+| Width | `double?` | null | | Gets or sets the width of the `GoogleMap`. | 3.0.0 |
+| WidthUnit | `Unit` | `Unit.Px` | | Gets or sets the units for the `Width`. | 3.0.0 |
+| Zoom | int | 14 | | Gets or sets the zoom level of the `GoogleMap`. | 3.0.0 |
+
+## Methods
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| AddMarkerAsync(GoogleMapMarker marker) | Adds a marker to the GoogleMap. | 3.0.0 |
+| RefreshAsync() | Refreshes the Google Maps component. | 3.0.0 |
+| UpdateMarkersAsync(`IEnumerable<GoogleMapMarker>` markers) | Updates the markers on the Google Map. | 3.0.0 |
+
+## Callback Events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| OnMarkerClick | Event fired when a user clicks on a marker. This event fires only when **Clickable** is set to **true**. | 3.0.0 |
+
+## Examples
+
+This example demonstrates how to use a simple Google Maps component.
+
+<img src="https://i.imgur.com/cKVhchz.png" alt="Blazor Bootstrap: Google Map Component - Examples" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(-34.397, 150.644)"
+           Height="400"
+           Width="100"
+           Zoom="8" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#examples)
+
+### Add a marker to a map
+
+This example demonstrates how to use a simple Google Maps component with marker.
+
+<img src="https://i.imgur.com/5FaorJo.png" alt="Blazor Bootstrap: Google Map Component - Add a marker to a map" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+```
+
+```cs {} showLineNumbers
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        { 
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352) ,
+            Title = "Single family house with modern design", 
+        },
+        new GoogleMapMarker()
+        { 
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727) ,
+            Title = "Townhouse with friendly neighbors",
+        }
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#add-a-marker-to-a-map)
+
+### Marker customization
+
+### Scale the marker
+
+To scale a marker, use the **PinElement.Scale** option.
+
+<img src="https://i.imgur.com/kkiDpu0.png" alt="Blazor Bootstrap: Google Map Component - Scale the marker" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+```
+
+```cs {} showLineNumbers
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement{ Scale = 1.5  },
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352) ,
+            Title = "Single family house with modern design",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement{ Scale = 1.5  },
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727) ,
+            Title = "Townhouse with friendly neighbors",
+        }
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#scale-the-marker)
+
+### Change the background color
+
+Use the **PinElement.Background** option to change the background color of a marker.
+
+<img src="https://i.imgur.com/JmFNYbe.png" alt="Blazor Bootstrap: Google Map Component - Change the background color" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+```
+
+```cs {} showLineNumbers
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement{ Background = "#FBBC04",  },
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352) ,
+            Title = "Single family house with modern design",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement{ Background = "#FBBC04",  },
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727) ,
+            Title = "Townhouse with friendly neighbors",
+        }
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#change-the-background-color)
+
+### Change the border color
+
+Use the **PinElement.BorderColor** option to change the border color of a marker.
+
+<img src="https://i.imgur.com/9Z4qFFX.png" alt="Blazor Bootstrap: Google Map Component - Change the border color" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+```
+
+```cs {} showLineNumbers
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement{ BorderColor = "#137333",  },
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352) ,
+            Title = "Single family house with modern design",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement{ BorderColor = "#137333",  },
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727) ,
+            Title = "Townhouse with friendly neighbors",
+        }
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#change-the-border-color)
+
+### Change the glyph color
+
+Use the **PinElement.GlyphColor** option to change the glyph color of a marker.
+
+<img src="https://i.imgur.com/vvrV7AK.png" alt="Blazor Bootstrap: Google Map Component - Change the glyph color" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+```
+
+```cs {} showLineNumbers
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement{ GlyphColor = "white",  },
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352) ,
+            Title = "Single family house with modern design",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement{ GlyphColor = "white",  },
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727) ,
+            Title = "Townhouse with friendly neighbors",
+        }
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#change-the-glyph-color)
+
+### Hide the glyph
+
+Set the **PinElement.Glyph** option to an empty string to hide a marker's glyph.
+
+<img src="https://i.imgur.com/SE0ptb1.png" alt="Blazor Bootstrap: Google Map Component - Hide the glyph" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+```
+
+```cs {} showLineNumbers
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement{ Glyph = "",  },
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352) ,
+            Title = "Single family house with modern design",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement{ Glyph = "",  },
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727) ,
+            Title = "Townhouse with friendly neighbors",
+        }
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#hide-the-glyph)
+
+### Use icon fonts
+
+Use the **PinElement.UseIconFonts** and **PinElement.Glyph** options to use the icon fonts.
+
+<img src="https://i.imgur.com/l1ss4Nl.png" alt="Blazor Bootstrap: Google Map Component - Use icon fonts" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+```
+
+```cs {} showLineNumbers
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-drizzle-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352),
+            Title = "Drizzle",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-drizzle-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727),
+            Title = "Drizzle",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-lightning-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.39561833718522, -122.21855116258479),
+            Title = "Lightning rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-lightning-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.423928529779644, -122.1087629822001),
+            Title = "Lightning rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.40578635332598, -122.15043378466069),
+            Title = "Rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.36399747905774, -122.10465384268522),
+            Title = "Rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-heavy-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.38343706184458, -122.02340436985183),
+            Title = "Heavy rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-heavy-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.34576403052, -122.04455090047453),
+            Title = "Heavy rain",
+        }
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#use-icon-fonts)
+
+### Markers with HTML and CSS
+
+<img src="https://i.imgur.com/Sy8ukyS.png" alt="Blazor Bootstrap: Google Map Component - Markers with HTML and CSS" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+```
+
+```cs {} showLineNumbers
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            Content = "<i class='bi bi-cloud-drizzle-fill fs-4 text-primary'></i>",
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352),
+            Title = "Drizzle"
+        },
+        new GoogleMapMarker()
+        {
+            Content = "<i class='bi bi-cloud-lightning-rain-fill fs-4 text-danger'></i>",
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727),
+            Title = "Lightning rain"
+        },
+        new GoogleMapMarker()
+        {
+            Content = "<i class='bi bi-cloud-rain-fill fs-4 text-dark'></i>",
+            Position = new GoogleMapMarkerPosition(37.39561833718522, -122.21855116258479),
+            Title = "Rain"
+        }
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#markers-with-html-and-css)
+
+### Make a marker clickable
+
+This example shows you how to make markers respond to click events. To make a marker clickable: Set the **Clickable** parameter to **true**.
+
+<img src="https://i.imgur.com/xV1fRz5.png" alt="Blazor Bootstrap: Google Map Component - Make a marker clickable" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers"
+           Clickable="true"
+           OnMarkerClick="OnGoogleMapMarkerClick" />
+```
+
+```cs {} showLineNumbers
+@code {
+    [Inject] public ToastService ToastService { get; set; } = default!;
+
+    private void OnGoogleMapMarkerClick(GoogleMapMarker marker)
+    {
+        ToastService.Notify(new ToastMessage(ToastType.Success, $"{marker.Title}", $"This is a toast message for a weather forecast. DateTime: {DateTime.Now}"));
+    }
+
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-drizzle-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352),
+            Title = "Drizzle",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-drizzle-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727),
+            Title = "Drizzle",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-lightning-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.39561833718522, -122.21855116258479),
+            Title = "Lightning rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-lightning-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.423928529779644, -122.1087629822001),
+            Title = "Lightning rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.40578635332598, -122.15043378466069),
+            Title = "Rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.36399747905774, -122.10465384268522),
+            Title = "Rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-heavy-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.38343706184458, -122.02340436985183),
+            Title = "Heavy rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-heavy-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.34576403052, -122.04455090047453),
+            Title = "Heavy rain",
+        }
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#make-a-marker-clickable)
+
+### Dynamic markers
+
+**Add marker**
+
+<img src="https://i.imgur.com/tHGnrwE.png" alt="Blazor Bootstrap: Google Map Component - Dynamic markers - Add marker" />
+
+**Update markers**
+
+<img src="https://i.imgur.com/rH8VYqg.png" alt="Blazor Bootstrap: Google Map Component - Dynamic markers - Update markers" />
+
+```cshtml {} showLineNumbers
+@inherits GoogleMapDemoComponentBase
+
+<div>
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="(async () => await AddWeatherMarkerAsync())">
+        <Icon Name="IconName.GeoAltFill" /> Add Marker
+    </Button>
+    <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="(async () => await UpdateWeatherMarkersAsync())">
+        <Icon Name="IconName.GeoAltFill" /> Update Markers
+    </Button>
+    <Button Color="ButtonColor.Warning" Size="ButtonSize.Small" @onclick="(async () => await RefreshMapAsync())">
+        <Icon Name="IconName.MapFill" /> Refresh Map
+    </Button>
+</div>
+
+<GoogleMap @ref="googleMapRef" 
+           ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers"
+           OnMarkerClick="OnGoogleMapMarkerClick" />
+```
+
+```cs {} showLineNumbers
+@code {
+    Random random = new Random(2000000000);
+    GoogleMap googleMapRef = default!;
+
+    [Inject] public ToastService ToastService { get; set; } = default!;
+
+    private async ValueTask AddWeatherMarkerAsync() => await googleMapRef.AddMarkerAsync(GetRandomMarker());
+
+    private async Task UpdateWeatherMarkersAsync()
+    {
+        var markerList = new List<GoogleMapMarker>
+        {
+            GetRandomMarker(),
+            GetRandomMarker(),
+            GetRandomMarker(),
+            GetRandomMarker(),
+            GetRandomMarker(),
+            GetRandomMarker(),
+        };
+        await googleMapRef.UpdateMarkersAsync(markerList);
+    }
+
+    private async Task RefreshMapAsync()
+    {
+        markers.Add(GetRandomMarker());
+        markers.Add(GetRandomMarker());
+
+        await googleMapRef.RefreshAsync();
+    }
+
+    private void OnGoogleMapMarkerClick(GoogleMapMarker marker)
+    {
+        ToastService.Notify(new ToastMessage(ToastType.Success, $"{marker.Title}", $"This is a toast message for a weather forecast. DateTime: {DateTime.Now}"));
+    }
+
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-drizzle-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352),
+            Title = "Drizzle",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-drizzle-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727),
+            Title = "Drizzle",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-lightning-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.39561833718522, -122.21855116258479),
+            Title = "Lightning rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-lightning-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.423928529779644, -122.1087629822001),
+            Title = "Lightning rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.40578635332598, -122.15043378466069),
+            Title = "Rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.36399747905774, -122.10465384268522),
+            Title = "Rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-heavy-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.38343706184458, -122.02340436985183),
+            Title = "Heavy rain",
+        }
+    };
+
+    private GoogleMapMarker GetRandomMarker()
+    {
+        var lat = Double.Parse($"37.{random.Next()}");
+        var lng = Double.Parse($"-122.{random.Next()}");
+        return new GoogleMapMarker()
+            {
+                PinElement = new PinElement
+                {
+                    Glyph = "bi bi-cloud-rain-heavy-fill fs-6 text-white",
+                    UseIconFonts = true,
+                    Background = ColorUtility.CategoricalTwelveColors[9].ToColor().ToRgbaString().ToLowerInvariant(),
+                    BorderColor = ColorUtility.CategoricalTwelveColors[9].ToColor().ToRgbString().ToLowerInvariant()
+                },
+                Position = new GoogleMapMarkerPosition(lat, lng),
+                Title = "Heavy rain",
+            };
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-maps#dynamic-markers)
