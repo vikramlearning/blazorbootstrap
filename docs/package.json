@@ -1,6 +1,6 @@
 {
   "name": "blazorbootstrap",
-  "version": "3.0.0-preview.3",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",

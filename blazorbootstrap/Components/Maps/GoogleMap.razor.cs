@@ -17,6 +17,11 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Adds a marker to the GoogleMap.
+    /// </summary>
+    /// <param name="marker">The marker to add to the map.</param>
+    /// <returns>A completed task.</returns>
     public ValueTask AddMarkerAsync(GoogleMapMarker marker)
     {
         JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.addMarker", Id, marker, objRef);
@@ -31,6 +36,10 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
             await OnMarkerClick.InvokeAsync(marker);
     }
 
+    /// <summary>
+    /// Refreshes the Google Maps component.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     public ValueTask RefreshAsync()
     {
         JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef);
@@ -38,6 +47,10 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Updates the markers on the Google Map.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     public ValueTask UpdateMarkersAsync(IEnumerable<GoogleMapMarker> markers)
     {
         JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.updateMarkers", Id, markers, objRef);
