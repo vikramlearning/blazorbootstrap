@@ -462,7 +462,7 @@ window.blazorBootstrap = {
             return window.blazorBootstrap.googlemaps.instances[elementId];
         },
         initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
-            window.blazorBootstrap.googlemaps.markerEls[elementId] = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? []
+            window.blazorBootstrap.googlemaps.markerEls[elementId] = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
 
             let mapOptions = { center: center, zoom: zoom, mapId: elementId };
             let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
