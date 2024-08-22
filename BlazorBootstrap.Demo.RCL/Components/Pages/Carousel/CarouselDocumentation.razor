@@ -1,0 +1,21 @@
+﻿@page "/carousel"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Carousel</h1>
+<div class="lead mb-3">Blazor Carousel component is a slideshow component that cycles through elements, images, or slides of text.</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div class="mb-3">Here is a basic example of a carousel with three slides.</div>
+<Demo Type="typeof(Carousel_Demo_01_Examples)" Tabs="true" />
+
+@code{
+    private string pageUrl = "/carousel";
+    private string title = "Blazor Carousel Component";
+    private string description = "Blazor Carousel component is a slideshow component that cycles through elements, images, or slides of text.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg"; // TODO: update
+}
