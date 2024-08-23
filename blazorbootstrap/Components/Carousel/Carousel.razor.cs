@@ -38,6 +38,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
 
     //    await base.OnAfterRenderAsync(firstRender);
     //}
+
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -64,6 +65,12 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool ShowIndicators { get; set; }
+
+    [Parameter]
+    public bool ShowPreviousNextControls { get; set; } = true;
 
     #endregion
 }

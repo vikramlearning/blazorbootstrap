@@ -66,6 +66,12 @@ public static class BootstrapClass
     public const string ConfirmationModal = "modal-confirmation";
 
     public const string Disabled = "disabled";
+    public const string DisplayNone = "d-none";
+    public const string DisplayBlock = "d-block";
+    public const string DisplaySmallBlock = "d-sm-block";
+    public const string DisplayMediumBlock = "d-md-block";
+    public const string DisplayLargeBlock = "d-lg-block";
+    public const string DisplayExtraLargeBlock = "d-xl-block";
 
     public const string Dropdown = "dropdown";
     public const string DropdownDivider = "dropdown-divider";
