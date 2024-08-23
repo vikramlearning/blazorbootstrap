@@ -54,6 +54,7 @@ public static class BootstrapClass
     public const string CarouselControlPrevious = "carousel-control-prev";
     public const string CarouselControlPreviousIcon = "carousel-control-prev-icon";
     public const string CarouselDark = "carousel-dark";
+    public const string CarouselFade = "carousel-fade";
     public const string CarouselIndicators = "carousel-indicators";
     public const string CarouselInner = "carousel-inner";
     public const string CarouselItem = "carousel-item";

@@ -2,8 +2,9 @@
 @inherits BlazorBootstrapComponentBase
 
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="alert" @attributes="@AdditionalAttributes">
-    @ChildContent
-
+    <div class="@BootstrapClass.CarouselInner">
+        @ChildContent
+    </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#@Id" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>

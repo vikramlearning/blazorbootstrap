@@ -38,7 +38,6 @@ public partial class Carousel : BlazorBootstrapComponentBase
 
     //    await base.OnAfterRenderAsync(firstRender);
     //}
-
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -51,9 +50,11 @@ public partial class Carousel : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        BuildClassNames(Class,
+        BuildClassNames(
+            Class,
             (BootstrapClass.Carousel, true),
-            (BootstrapClass.CarouselSlide, true));
+            (BootstrapClass.CarouselSlide, true)
+        );
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
