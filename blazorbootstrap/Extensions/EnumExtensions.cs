@@ -221,6 +221,14 @@ public static class EnumExtensions
             _ => ""
         };
 
+    public static string? ToCarouselAutoPlayString(this CarouselAutoPlay autoplay) =>
+        autoplay switch
+        {
+            CarouselAutoPlay.StartOnPageLoad => "carousel",
+            CarouselAutoPlay.StartAfterUserInteraction => "true",
+            _ => null
+        };
+
     public static string ToCssString(this Unit unit) =>
         unit switch
         {

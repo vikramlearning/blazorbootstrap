@@ -9,18 +9,18 @@
 
 <CarbonAds />
 
-@* <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <div class="mb-3">Here is a basic example of a carousel with three slides.</div>
-<Demo Type="typeof(Carousel_Demo_01_Examples)" Tabs="true" /> *@
+<Demo Type="typeof(Carousel_Demo_01_Examples)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Indicators" PageUrl="@pageUrl" HashTagName="indicators" />
 <div class="mb-3">
-    You can add indicators to the carousel, alongside the previous/next controls. 
+    You can add indicators to the carousel, alongside the previous/next controls.
     The indicators let users jump directly to a particular slide.
 </div>
 <Demo Type="typeof(Carousel_Demo_02_Indicators)" Tabs="true" />
 
-@* <SectionHeading Size="HeadingSize.H2" Text="Captions" PageUrl="@pageUrl" HashTagName="captions" />
+<SectionHeading Size="HeadingSize.H2" Text="Captions" PageUrl="@pageUrl" HashTagName="captions" />
 <div class="mb-3">
     You can add captions to your slides with the <b>CarouselCaption</b> component within any <b>CarouselItem</b>.
     They can be easily hidden on smaller viewports.
@@ -31,7 +31,33 @@
 <div class="mb-3">
     Set <b>Crossfade</b> to <b>true</b>, to animate slides with a fade transition instead of a slide.
 </div>
-<Demo Type="typeof(Carousel_Demo_04_Crossfade)" Tabs="true" /> *@
+<Demo Type="typeof(Carousel_Demo_04_Crossfade)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Autoplaying carousels" PageUrl="@pageUrl" HashTagName="autoplaying-carousels" />
+<div class="mb-3">    
+</div>
+<Demo Type="typeof(Carousel_Demo_05_Autoplay_A_StartOnPageLoad)" Tabs="true" />
+<Demo Type="typeof(Carousel_Demo_05_Autoplay_B_StartAfterUserInteraction)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Individual carousel item interval" PageUrl="@pageUrl" HashTagName="individual-carousel-item-interval" />
+<div class="mb-3">
+</div>
+<Demo Type="typeof(Carousel_Demo_06_Individual_Carouselitem_Interval)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Autoplaying carousels without controls" PageUrl="@pageUrl" HashTagName="autoplaying-carousels-without-controls" />
+<div class="mb-3">
+</div>
+<Demo Type="typeof(Carousel_Demo_07_Autoplaying_Carousels_without_Controls)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Disable touch swiping" PageUrl="@pageUrl" HashTagName="disable-touch-swiping" />
+<div class="mb-3">
+</div>
+<Demo Type="typeof(Carousel_Demo_08_Touch)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Events" PageUrl="@pageUrl" HashTagName="events" />
+<div class="mb-3">
+</div>
+<Demo Type="typeof(Carousel_Demo_09_Events)" Tabs="true" />
 
 @code {
     private string pageUrl = "/carousel";

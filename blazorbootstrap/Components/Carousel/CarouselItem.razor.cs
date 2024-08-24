@@ -4,11 +4,9 @@ public partial class CarouselItem : BlazorBootstrapComponentBase
 {
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine($"START: CarouselItem.OnInitializedAsync() called");
         Id = IdUtility.GetNextId(); // Required
         Parent.AddItem(this);
         await base.OnInitializedAsync();
-        Console.WriteLine($"END: CarouselItem.OnInitializedAsync() called");
     }
 
     #region Properties, Indexers
@@ -46,6 +44,15 @@ public partial class CarouselItem : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public string? Label { get; set; }
+
+    /// <summary>
+    /// The amount of time to delay between automatically cycling an item.
+    /// </summary>
+    /// <remarks>
+    /// Default value is 5000.
+    /// </remarks>
+    [Parameter]
+    public int? Interval { get; set; } = 5000;
 
     #endregion
 }

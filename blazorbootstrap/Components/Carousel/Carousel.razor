@@ -2,18 +2,25 @@
 @inherits BlazorBootstrapComponentBase
 
 <CascadingValue Name="Carousel" Value="(this)" IsFixed="true">
-    <div>@HasItems</div>
-    <div>@ItemCount</div>
     <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-        
-        @if (ShowIndicators)// && HasItems)
+        @if (ShowIndicators && HasItems)
         {
             <div class="@BootstrapClass.CarouselIndicators">
                 @{
                     var i = 0;
                     foreach (var item in items)
                     {
-                        <button type="button" data-bs-target="#@Id" data-bs-slide-to="@i" aria-label="Slide @(i + 1)"></button>
+                        var j = i;
+                        bool isActiveItem = (i == activeIndex);
+                        string? itemClass = isActiveItem ? "active" : null;
+                        string? label = item.Label ?? $"Slide {i + 1}";
+
+                        <button type="button"
+                                class="@itemClass"
+                                aria-current="isActiveItem"
+                                aria-label="@label"
+                                data-bs-target="#@Id"
+                                @onclick="async () => await ShowItemByIndexAsync(j)"></button>
                         i++;
                     }
                 }
@@ -26,11 +33,11 @@
 
         @if (ShowPreviousNextControls)
         {
-            <button class="carousel-control-prev" type="button" data-bs-target="#@Id" data-bs-slide="prev">
+            <button class="carousel-control-prev" type="button" @onclick="async () => await ShowPreviousItemAsync()">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#@Id" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" @onclick="async () => await ShowNextItemAsync()">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>

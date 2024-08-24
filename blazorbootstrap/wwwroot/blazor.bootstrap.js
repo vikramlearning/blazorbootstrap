@@ -272,7 +272,7 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bslide', e);
             });
 
-            bootstrap?.Carousel?.getOrCreateInstance(carouselEl); //, options);
+            bootstrap?.Carousel?.getOrCreateInstance(carouselEl, options);
         },
         next: (elementId) => {
             let carouselEl = document.getElementById(elementId);
