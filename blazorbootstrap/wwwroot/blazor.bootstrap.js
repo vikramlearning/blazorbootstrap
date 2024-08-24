@@ -249,6 +249,57 @@ window.blazorBootstrap = {
                 bodyEl[0].style['overflow'] = 'auto';
         }
     },
+    carousel: {
+        cycle: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.cycle();
+        },
+        dispose: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.dispose();
+        },
+        initialize: (elementId, options, dotNetHelper) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl == null)
+                return;
+
+            carouselEl.addEventListener('slid.bs.carousel', function (e) {
+                dotNetHelper.invokeMethodAsync('bsSlid', e);
+            });
+            carouselEl.addEventListener('slide.bs.carousel', function (e) {
+                dotNetHelper.invokeMethodAsync('bslide', e);
+            });
+
+            bootstrap?.Carousel?.getOrCreateInstance(carouselEl); //, options);
+        },
+        next: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.next();
+        },
+        nextWhenVisible: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.nextWhenVisible();
+        },
+        pause: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.pause();
+        },
+        prev: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.prev();
+        },
+        to: (elementId, index) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.to(index);
+        },
+    },
     currencyInput: {
         initialize: (elementId, isFloat, allowNegativeNumbers, decimalSeperator) => {
             let currencyEl = document.getElementById(elementId);
@@ -432,7 +483,7 @@ window.blazorBootstrap = {
                     position: marker.position,
                     title: marker.title,
                     gmpClickable: clickable
-                });                
+                });
 
                 window.blazorBootstrap.googlemaps.markerEls[elementId].push(markerEl);
 

@@ -9,9 +9,9 @@
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+@* <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <div class="mb-3">Here is a basic example of a carousel with three slides.</div>
-<Demo Type="typeof(Carousel_Demo_01_Examples)" Tabs="true" />
+<Demo Type="typeof(Carousel_Demo_01_Examples)" Tabs="true" /> *@
 
 <SectionHeading Size="HeadingSize.H2" Text="Indicators" PageUrl="@pageUrl" HashTagName="indicators" />
 <div class="mb-3">
@@ -20,12 +20,18 @@
 </div>
 <Demo Type="typeof(Carousel_Demo_02_Indicators)" Tabs="true" />
 
-<SectionHeading Size="HeadingSize.H2" Text="Captions" PageUrl="@pageUrl" HashTagName="captions" />
+@* <SectionHeading Size="HeadingSize.H2" Text="Captions" PageUrl="@pageUrl" HashTagName="captions" />
 <div class="mb-3">
     You can add captions to your slides with the <b>CarouselCaption</b> component within any <b>CarouselItem</b>.
     They can be easily hidden on smaller viewports.
 </div>
 <Demo Type="typeof(Carousel_Demo_03_Captions)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Crossfade" PageUrl="@pageUrl" HashTagName="Crossfade" />
+<div class="mb-3">
+    Set <b>Crossfade</b> to <b>true</b>, to animate slides with a fade transition instead of a slide.
+</div>
+<Demo Type="typeof(Carousel_Demo_04_Crossfade)" Tabs="true" /> *@
 
 @code {
     private string pageUrl = "/carousel";

@@ -2,6 +2,15 @@
 
 public partial class CarouselItem : BlazorBootstrapComponentBase
 {
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine($"START: CarouselItem.OnInitializedAsync() called");
+        Id = IdUtility.GetNextId(); // Required
+        Parent.AddItem(this);
+        await base.OnInitializedAsync();
+        Console.WriteLine($"END: CarouselItem.OnInitializedAsync() called");
+    }
+
     #region Properties, Indexers
 
     protected override string? ClassNames =>
@@ -28,6 +37,15 @@ public partial class CarouselItem : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public bool Active { get; set; }
+
+    [CascadingParameter(Name= "Carousel")]
+    public Carousel Parent { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the aria-label.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
 
     #endregion
 }
