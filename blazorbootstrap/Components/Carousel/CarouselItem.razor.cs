@@ -2,12 +2,16 @@
 
 public partial class CarouselItem : BlazorBootstrapComponentBase
 {
+    #region Methods
+
     protected override async Task OnInitializedAsync()
     {
         Id = IdUtility.GetNextId(); // Required
         Parent.AddItem(this);
         await base.OnInitializedAsync();
     }
+
+    #endregion
 
     #region Properties, Indexers
 
@@ -19,31 +23,22 @@ public partial class CarouselItem : BlazorBootstrapComponentBase
         );
 
     /// <summary>
-    /// Gets or sets the content to be rendered within the component.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null"/>.
-    /// </remarks>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
-    /// <summary>
     /// Gets or sets the active state.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="false"/>.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Active { get; set; }
 
-    [CascadingParameter(Name= "Carousel")]
-    public Carousel Parent { get; set; } = default!;
-
     /// <summary>
-    /// Gets or sets the aria-label.
+    /// Gets or sets the content to be rendered within the component.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [Parameter]
-    public string? Label { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// The amount of time to delay between automatically cycling an item.
@@ -53,6 +48,15 @@ public partial class CarouselItem : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public int? Interval { get; set; } = 5000;
+
+    /// <summary>
+    /// Gets or sets the aria-label.
+    /// </summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    [CascadingParameter(Name = "Carousel")] 
+    public Carousel Parent { get; set; } = default!;
 
     #endregion
 }
