@@ -10,7 +10,7 @@ tags: [v3.0.0, blazor, bootstrap, blazorbootstrap, charts, grid, barchart, dough
 
 We are excited to release version 3.0.0, which includes new Carousel, Google Map, Image, Polar Area Chart, Radar Chart, Scatter Chart components and other improvements!!!
 
-![image](https://i.imgur.com/Urrb79M.png "Blazor Bootstrap: Radar Chart Component")
+![image](https://i.imgur.com/AbyDP51.png "Blazor Bootstrap: Radar Chart Component")
 
 <!--truncate-->
 
@@ -90,7 +90,6 @@ We are excited to release version 3.0.0, which includes new Carousel, Google Map
 
 - `Tab`
   - **IsActive** parameter renamed to **Active**.
-
 
 ## Links
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
