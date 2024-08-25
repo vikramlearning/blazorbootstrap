@@ -2,11 +2,40 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://docs.blazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Docs Blog</title>
-    <updated>2024-07-15T00:00:00.000Z</updated>
+    <updated>2024-08-25T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://docs.blazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Docs Blog</subtitle>
     <icon>https://docs.blazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v3.0.0]]></title>
+        <id>https://docs.blazorbootstrap.com/blog/2024/08/25/blazorbootstrap-3.0.0</id>
+        <link href="https://docs.blazorbootstrap.com/blog/2024/08/25/blazorbootstrap-3.0.0"/>
+        <updated>2024-08-25T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release version 3.0.0, which includes new Carousel, Google Map, Image, Polar Area Chart, Radar Chart, Scatter Chart components and other improvements!!!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release version 3.0.0, which includes new Carousel, Google Map, Image, Polar Area Chart, Radar Chart, Scatter Chart components and other improvements!!!</p><p><img loading="lazy" src="https://i.imgur.com/AbyDP51.png" alt="image" title="Blazor Bootstrap: Radar Chart Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's new<a href="#whats-new" class="hash-link" aria-label="Direct link to What's new" title="Direct link to What's new">​</a></h2><ul><li><code>Carousel</code> component</li><li><code>Google Map</code> component</li><li><code>Image Chart</code> component</li><li><code>Polar Area Chart</code> component</li><li><code>Radar Chart</code> component</li><li><code>Scatter Chart</code> component</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li><p><code>Chart</code> components</p></li><li><p>Tick configuration support added</p></li><li><p>Grid configuration support added</p></li><li><p>Updated Dataset and ChartOption properties</p></li><li><p>Updated documentation and demos</p></li><li><p><code>Color Utility</code></p><ul><li>Added color utility demos</li></ul></li><li><p><code>Grid</code> component</p><ul><li>Grid filters - Supports DoesNotContain filter.</li><li>Grid filters - Enum support added.</li><li>Grid filters - Guid support added.</li><li>Details View support added.</li><li>Nested Grid support added.</li><li>New GridLoadingTemplate and GridEmptyDataTemplate params added.</li><li>New GridContainerClass and GridContainerStyle parameters added.</li><li>New FilterButtonColor parameter added to change the filter button color to filter button.</li><li>New FilterButtonCSSClass parameter added to apply custom CSS classes to filter button.</li><li>Highlight row when selected and customize the row color and background color.</li></ul></li><li><p><code>Modal</code> component</p><ul><li>Bootstrtap 5.3.3 fixes: Modal close button alignment issue fixed.</li></ul></li><li><p><code>PdfViewer</code> component</p><ul><li>Fixed rendering issue for MAUI Blazor Hybrid Apps</li></ul></li><li><p><code>Sidebar</code> and <code>Sidebar2</code> components</p><ul><li>Href, Width and WidthUnit parameters added.</li><li>Fixed icon alignment issue for non-US cultures</li></ul></li><li><p><code>Tabs</code> component</p><ul><li><code>GetActiveTab()</code> method added</li></ul></li><li><p>Demos &amp; Docs updated.</p></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="breaking-changes">Breaking changes<a href="#breaking-changes" class="hash-link" aria-label="Direct link to Breaking changes" title="Direct link to Breaking changes">​</a></h2><ul><li><p><code>AccordionItem</code></p><ul><li><strong>IsActive</strong> parameter renamed to <strong>Active</strong>.</li></ul></li><li><p><code>Button</code></p><ul><li><strong>Size</strong>'s parameter data type changed from <strong>Size</strong> to <strong>ButtonSize</strong>.</li></ul></li><li><p><code>Callout</code></p><ul><li><strong>Type</strong> parameter changed to <strong>Color</strong>.</li></ul></li><li><p><code>Dropdown</code></p><ul><li>Set the dropdown color on <code>Dropdown</code> component only instead of setting on the <code>DropdownActionButton</code> and <code>DropdownToggleButton</code>.</li><li><strong>Size</strong>'s parameter data type changed from <strong>Size</strong> to <strong>DropdownSize</strong>.</li></ul></li><li><p><code>DropdownActionButton</code></p><ul><li><strong>Color</strong> parameter removed.</li></ul></li><li><p><code>DropdownToggleButton</code></p><ul><li><strong>Color</strong> parameter removed.</li></ul></li><li><p><code>DropdownItem</code></p><ul><li><strong>Type</strong>'s parameter data type changed from <strong>ButtonType</strong> to <strong>DropdownItemType</strong>.</li></ul></li><li><p><code>RibbonTab</code></p><ul><li><strong>IsActive</strong> parameter renamed to <strong>Active</strong>.</li></ul></li><li><p><code>Tab</code></p><ul><li><strong>IsActive</strong> parameter renamed to <strong>Active</strong>.</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor Server</a></li><li><a href="https://demos.getblazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demo Website - Blazor WebAssembly</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v3.0.0" term="v3.0.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="charts" term="charts"/>
+        <category label="grid" term="grid"/>
+        <category label="barchart" term="barchart"/>
+        <category label="doughnutchart" term="doughnutchart"/>
+        <category label="linechart" term="linechart"/>
+        <category label="modal" term="modal"/>
+        <category label="pdfviewer" term="pdfviewer"/>
+        <category label="piechart" term="piechart"/>
+        <category label="polarareachart" term="polarareachart"/>
+        <category label="radarchart" term="radarchart"/>
+        <category label="scatterchart" term="scatterchart"/>
+        <category label="sidebar" term="sidebar"/>
+        <category label="sidebar2" term="sidebar2"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v3.0.0-preview.3]]></title>
         <id>https://docs.blazorbootstrap.com/blog/2024/07/15/blazorbootstrap-3.0.0-preview.3</id>

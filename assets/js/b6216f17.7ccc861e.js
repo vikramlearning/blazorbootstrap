@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblazorbootstrap=self.webpackChunkblazorbootstrap||[]).push([[57243],{24633:o=>{o.exports=JSON.parse('{"permalink":"/blog/tags/modal/page/2","page":2,"postsPerPage":10,"totalPages":2,"totalCount":14,"previousPage":"/blog/tags/modal","blogDescription":"Blog","blogTitle":"Blog"}')}}]);
