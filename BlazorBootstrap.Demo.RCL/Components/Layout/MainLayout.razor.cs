@@ -38,7 +38,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "509", Text = "Collapse", Href = "/collapse", IconName = IconName.ArrowsCollapse, ParentId = "5" },
             new (){ Id = "510", Text = "Confirm Dialog", Href = "/confirm-dialog", IconName = IconName.QuestionDiamondFill, ParentId = "5" },
             new (){ Id = "511", Text = "Dropdown", Href = "/dropdown", IconName = IconName.MenuButtonWideFill, ParentId = "5" },
-            new (){ Id = "512", Text = "Google Maps", Href = "/google-maps", IconName = IconName.Map, ParentId = "5" },
+            new (){ Id = "512", Text = "Google Maps", Href = "/google-map", IconName = IconName.Map, ParentId = "5" },
 
             #region Grid
 
