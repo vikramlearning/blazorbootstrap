@@ -37,7 +37,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Refreshes the Google Maps component.
+    /// Refreshes the Google Map component.
     /// </summary>
     /// <returns>A completed task.</returns>
     public ValueTask RefreshAsync()
@@ -75,7 +75,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
         );
 
     /// <summary>
-    /// Gets or sets the Google Maps API key.
+    /// Gets or sets the Google Map API key.
     /// </summary>
     [Parameter]
     public string? ApiKey { get; set; }
