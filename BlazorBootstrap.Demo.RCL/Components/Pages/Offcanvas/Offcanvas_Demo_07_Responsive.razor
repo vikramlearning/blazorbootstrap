@@ -1,0 +1,19 @@
+﻿@* Per bootstrap documentation, disable the default "offcanvas" class and replace with responsive offcanvas-lg class.
+    This will make the offcanvas appear as a modal on small devices and on larger devices show the content inline.
+*@
+<Offcanvas @ref="offcanvas" Title="Responsive Offcanvas" Class="offcanvas-lg" EnableDefaultClass="false">
+    <BodyTemplate>...</BodyTemplate>
+</Offcanvas>
+
+@* Only show the button when the offcanvas is hidden belkow its breakpoint. *@
+<Button Class="d-lg-none" Color="ButtonColor.Primary" @onclick="() => OnShowOffcanvasClick()">Show offcanvas</Button>
+
+@code {
+    private Offcanvas offcanvas = default!;
+    private Placement placement;
+
+    private async Task OnShowOffcanvasClick()
+    {
+        await offcanvas.ShowAsync();
+    }
+}
