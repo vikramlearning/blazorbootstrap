@@ -96,12 +96,12 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 <img src="https://i.imgur.com/HkqLwlx.png" alt="Blazor Bootstrap: Dropdown Component - Single button" />
 
 ```cshtml {} showLineNumbers
-<Dropdown>
-    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown button</DropdownToggleButton>
+<Dropdown Color="DropdownColor.Secondary">
+    <DropdownToggleButton>Dropdown button</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 ```
@@ -112,54 +112,59 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 <img src="https://i.imgur.com/cuvBVJu.png" alt="Blazor Bootstrap: Dropdown Component - Color" />
 
-```cshtml {3,11,19,27,35,43} showLineNumbers
+```cshtml {2,11,20,29,38,47} showLineNumbers
 <div class="d-flex gap-2 mb-4">
-    <Dropdown>
-        <DropdownToggleButton Color="ButtonColor.Primary">Primary</DropdownToggleButton>
+    <Dropdown Color="DropdownColor.Primary">
+        <DropdownToggleButton>Primary</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown>
-        <DropdownToggleButton Color="ButtonColor.Secondary">Secondary</DropdownToggleButton>
+
+    <Dropdown Color="DropdownColor.Secondary">
+        <DropdownToggleButton>Secondary</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown>
-        <DropdownToggleButton Color="ButtonColor.Success">Success</DropdownToggleButton>
+
+    <Dropdown Color="DropdownColor.Success">
+        <DropdownToggleButton>Success</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown>
-        <DropdownToggleButton Color="ButtonColor.Info">Info</DropdownToggleButton>
+
+    <Dropdown Color="DropdownColor.Info">
+        <DropdownToggleButton>Info</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown>
-        <DropdownToggleButton Color="ButtonColor.Warning">Warning</DropdownToggleButton>
+
+    <Dropdown Color="DropdownColor.Warning">
+        <DropdownToggleButton>Warning</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown>
-        <DropdownToggleButton Color="ButtonColor.Danger">Danger</DropdownToggleButton>
+
+    <Dropdown Color="DropdownColor.Danger">
+        <DropdownToggleButton>Danger</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
 </div>
@@ -171,60 +176,65 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 <img src="https://i.imgur.com/beAr31J.png" alt="Blazor Bootstrap: Dropdown Component - Split button" />
 
-```cshtml {3-4,12-13,21-22,30-31,39-40,48-49} showLineNumbers
+```cshtml {2-3,12-13,22-23,32-33,42-43,52-53} showLineNumbers
 <div class="d-flex gap-2 mb-4">
-    <Dropdown Split="true">
-        <DropdownActionButton Color="ButtonColor.Primary">Primary</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Primary" />
+    <Dropdown Color="DropdownColor.Primary" Split="true">
+        <DropdownActionButton>Primary</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Split="true">
-        <DropdownActionButton Color="ButtonColor.Secondary">Secondary</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Secondary" />
+
+    <Dropdown Color="DropdownColor.Secondary" Split="true">
+        <DropdownActionButton>Secondary</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Split="true">
-        <DropdownActionButton Color="ButtonColor.Success">Success</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Success" />
+
+    <Dropdown Color="DropdownColor.Success" Split="true">
+        <DropdownActionButton>Success</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Split="true">
-        <DropdownActionButton Color="ButtonColor.Info">Info</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Info" />
+
+    <Dropdown Color="DropdownColor.Info" Split="true">
+        <DropdownActionButton>Info</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Split="true">
-        <DropdownActionButton Color="ButtonColor.Warning">Warning</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Warning" />
+
+    <Dropdown Color="DropdownColor.Warning" Split="true">
+        <DropdownActionButton>Warning</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Split="true">
-        <DropdownActionButton Color="ButtonColor.Danger">Danger</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Danger" />
+
+    <Dropdown Color="DropdownColor.Danger" Split="true">
+        <DropdownActionButton>Danger</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
 </div>
@@ -236,23 +246,24 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 <img src="https://i.imgur.com/fwcMxKb.png" alt="Blazor Bootstrap: Dropdown Component - Sizing - Large" />
 
-```cshtml {2,10} showLineNumbers
+```cshtml {2,11} showLineNumbers
 <div class="d-flex gap-2 mb-4">
-    <Dropdown Size="Size.Large">
-        <DropdownToggleButton Color="ButtonColor.Secondary">Large button</DropdownToggleButton>
+    <Dropdown Color="DropdownColor.Secondary" Size="DropdownSize.Large">
+        <DropdownToggleButton>Large button</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem Size="Size.Large" To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Size="Size.Large" Split="true">
-        <DropdownActionButton Color="ButtonColor.Secondary">Large split button</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Secondary" />
+
+    <Dropdown Color="DropdownColor.Secondary" Split="true" Size="DropdownSize.Large">
+        <DropdownActionButton>Large split button</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
 </div>
@@ -260,23 +271,24 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 
 <img src="https://i.imgur.com/HOlA6Uw.png" alt="Blazor Bootstrap: Dropdown Component - Sizing - Small" />
 
-```cshtml {2,10} showLineNumbers
+```cshtml {2,11} showLineNumbers
 <div class="d-flex gap-2 mb-4">
-    <Dropdown Size="Size.Small">
-        <DropdownToggleButton Color="ButtonColor.Secondary">Small button</DropdownToggleButton>
+    <Dropdown Color="DropdownColor.Secondary" Size="DropdownSize.Small">
+        <DropdownToggleButton>Small button</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Size="Size.Small" Split="true">
-        <DropdownActionButton Color="ButtonColor.Secondary">Small split button</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Secondary" />
+
+    <Dropdown Color="DropdownColor.Secondary" Size="DropdownSize.Small" Split="true">
+        <DropdownActionButton>Small split button</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
 </div>
@@ -292,23 +304,24 @@ To trigger **DropdownMenu** above elements, add the `Direction="DropdownDirectio
 
 <img src="https://i.imgur.com/l90nW3S.png" alt="Blazor Bootstrap: Dropdown Component - Dropup" />
 
-```cshtml {2,10} showLineNumbers
+```cshtml {2,11} showLineNumbers
 <div class="d-flex gap-2">
-    <Dropdown Direction="DropdownDirection.Dropup">
-        <DropdownToggleButton Color="ButtonColor.Secondary">Dropup button with text</DropdownToggleButton>
+    <Dropdown Color="DropdownColor.Secondary" Direction="DropdownDirection.Dropup">
+        <DropdownToggleButton>Dropup button with text</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Direction="DropdownDirection.Dropup" Split="true">
-        <DropdownActionButton Color="ButtonColor.Secondary">Dropup split button</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Secondary" />
+
+    <Dropdown Color="DropdownColor.Secondary" Direction="DropdownDirection.Dropup" Split="true">
+        <DropdownActionButton>Dropup split button</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
 </div>
@@ -324,12 +337,12 @@ To center the DropdownMenu above the toggle, add the Direction="DropdownDirectio
 
 ```cshtml {2} showLineNumbers
 <div class="d-flex gap-2">
-    <Dropdown Direction="DropdownDirection.DropupCentered">
-        <DropdownToggleButton Color="ButtonColor.Secondary">Centered dropup</DropdownToggleButton>
+    <Dropdown Color="DropdownColor.Secondary" Direction="DropdownDirection.DropupCentered">
+        <DropdownToggleButton>Centered dropup</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
 </div>
@@ -343,23 +356,24 @@ To trigger DropdownMenu at the right of elements, add the Direction="DropdownDir
 
 <img src="https://i.imgur.com/nSZ6Kdv.png" alt="Blazor Bootstrap: Dropdown Component - Dropend" />
 
-```cshtml {2,10} showLineNumbers
+```cshtml {2,11} showLineNumbers
 <div class="d-flex gap-2">
-    <Dropdown Direction="DropdownDirection.Dropend">
-        <DropdownToggleButton Color="ButtonColor.Secondary">Dropend</DropdownToggleButton>
+    <Dropdown Color="DropdownColor.Secondary" Direction="DropdownDirection.Dropend">
+        <DropdownToggleButton>Dropend</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Direction="DropdownDirection.Dropend" Split="true">
-        <DropdownActionButton Color="ButtonColor.Secondary">Split dropend</DropdownActionButton>
-        <DropdownToggleButton Color="ButtonColor.Secondary" />
+
+    <Dropdown Color="DropdownColor.Secondary" Direction="DropdownDirection.Dropend" Split="true">
+        <DropdownActionButton>Split dropend</DropdownActionButton>
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
 </div>
@@ -375,22 +389,22 @@ To trigger DropdownMenu at the left of elements, you can add the Direction="Drop
 
 ```cshtml {2,10} showLineNumbers
 <div class="d-flex gap-2">
-    <Dropdown Direction="DropdownDirection.Dropstart">
-        <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
+    <Dropdown Color="DropdownColor.Secondary" Direction="DropdownDirection.Dropstart">
+        <DropdownToggleButton>Dropstart</DropdownToggleButton>
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
     </Dropdown>
-    <Dropdown Direction="DropdownDirection.Dropstart" Split="true">
-        <DropdownToggleButton Color="ButtonColor.Secondary" />
+    <Dropdown Color="DropdownColor.Secondary" Direction="DropdownDirection.Dropstart" Split="true">
+        <DropdownToggleButton />
         <DropdownMenu>
-            <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-            <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         </DropdownMenu>
-        <DropdownActionButton Color="ButtonColor.Secondary">Split dropstart</DropdownActionButton>
+        <DropdownActionButton>Split dropstart</DropdownActionButton>
     </Dropdown>
 </div>
 ```
@@ -404,12 +418,12 @@ To style DropdownItem as active, add the Active="true" parameter to the Dropdown
 <img src="https://i.imgur.com/y95OWSd.png" alt="Blazor Bootstrap: Dropdown Component - Active" />
 
 ```cshtml {5} showLineNumbers
-<Dropdown>
-    <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
+<Dropdown Color="DropdownColor.Secondary">
+    <DropdownToggleButton>Dropstart</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link" Active="true">Another action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link" Active="true">Another action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 ```
@@ -423,18 +437,18 @@ To disable the dropdown, set the <b>Disabled</b> parameter to <b>true</b> on the
 <img src="https://i.imgur.com/jMrshBs.png" alt="Blazor Bootstrap: Dropdown Component - Disabled" />
 
 ```cshtml {1} showLineNumbers
-<Dropdown Disabled="@isDropdownDisabled">
-    <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
+<Dropdown Color="DropdownColor.Secondary" Disabled="@isDropdownDisabled">
+    <DropdownToggleButton>Dropstart</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 
 <div class="mt-3">
-    <Button Color="ButtonColor.Primary" Size="Size.Small" @onclick="EnableDropdown">Enable</Button>
-    <Button Color="ButtonColor.Danger" Size="Size.Small" @onclick="DisableDropdown">Disable</Button>
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="EnableDropdown">Enable</Button>
+    <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="DisableDropdown">Disable</Button>
 </div>
 @code
 {
@@ -449,12 +463,12 @@ To style a dropdown item as disabled, set the <b>Disabled</b> parameter to <b>tr
 <img src="https://i.imgur.com/C3tUcRn.png" alt="Blazor Bootstrap: Dropdown Component - Disabled (Dropdown Item)" />
 
 ```cshtml {5} showLineNumbers
-<Dropdown>
-    <DropdownToggleButton Color="ButtonColor.Secondary">Dropstart</DropdownToggleButton>
+<Dropdown Color="DropdownColor.Secondary">
+    <DropdownToggleButton>Dropstart</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link" Disabled="true">Another action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link" Disabled="true">Another action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 ```
@@ -470,12 +484,12 @@ To right-align a DropdownMenu, add the Position="DropdownMenuPosition.End" param
 <img src="https://i.imgur.com/dwmK0j3.png" alt="Blazor Bootstrap: Dropdown Component - Menu position" />
 
 ```cshtml {3} showLineNumbers
-<Dropdown>
-    <DropdownToggleButton Color="ButtonColor.Secondary">Right-aligned menu example</DropdownToggleButton>
+<Dropdown Color="DropdownColor.Secondary">
+    <DropdownToggleButton>Right-aligned menu example</DropdownToggleButton>
     <DropdownMenu Position="DropdownMenuPosition.End">
-        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 ```
@@ -491,13 +505,13 @@ Add a header to label sections of actions in any dropdown menu.
 <img src="https://i.imgur.com/eDvOLvf.png" alt="Blazor Bootstrap: Dropdown Component - Header" />
 
 ```cshtml {4} showLineNumbers
-<Dropdown>
-    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown</DropdownToggleButton>
+<Dropdown Color="DropdownColor.Secondary">
+    <DropdownToggleButton>Dropdown</DropdownToggleButton>
     <DropdownMenu>
         <DropdownHeader>Dropdown header</DropdownHeader>
-        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 ```
@@ -511,14 +525,14 @@ Separate groups of related menu items with a divider.
 <img src="https://i.imgur.com/8zd9Rod.png" alt="Blazor Bootstrap: Dropdown Component - Dividers" />
 
 ```cshtml {7} showLineNumbers
-<Dropdown>
-    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown</DropdownToggleButton>
+<Dropdown Color="DropdownColor.Secondary">
+    <DropdownToggleButton>Dropdown</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
         <DropdownDivider>Dropdown header</DropdownDivider>
-        <DropdownItem To="#" Type="ButtonType.Link">Separated link</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Separated link</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 ```
@@ -532,8 +546,8 @@ Place any freeform text within a dropdown menu with text and use spacing utiliti
 <img src="https://i.imgur.com/2G0ozU0.png" alt="Blazor Bootstrap: Dropdown Component - Text" />
 
 ```cshtml {3-6} showLineNumbers
-<Dropdown>
-    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown</DropdownToggleButton>
+<Dropdown Color="DropdownColor.Secondary">
+    <DropdownToggleButton>Dropdown</DropdownToggleButton>
     <DropdownMenu Class="p-4 text-muted" Style="width: 320px;">
         <p>Some example text that's free-flowing within the dropdown menu.</p>
         <p class="mb-0">And this is more example text.</p>
@@ -566,8 +580,8 @@ Put a form within a dropdown menu, or make it into a dropdown menu, and use marg
     }
 </style>
 
-<Dropdown>
-    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown form</DropdownToggleButton>
+<Dropdown Color="DropdownColor.Secondary">
+    <DropdownToggleButton>Dropdown form</DropdownToggleButton>
     <DropdownMenu Class="px-4 py-3" Style="width:480px;">
         <EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
             <DataAnnotationsValidator />
@@ -674,37 +688,40 @@ By default, the DropdownMenu is closed when clicking either inside or outside th
 
 <img src="https://i.imgur.com/vq2sgtO.png" alt="Blazor Bootstrap: Dropdown Component - Auto close behavior" />
 
-```cshtml {1,9,17,25} showLineNumbers
-<Dropdown AutoClose="true">
-    <DropdownToggleButton Color="ButtonColor.Secondary">Default dropdown</DropdownToggleButton>
+```cshtml {1,10,19,28} showLineNumbers
+<Dropdown Color="DropdownColor.Secondary" AutoClose="true">
+    <DropdownToggleButton>Default dropdown</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
     </DropdownMenu>
 </Dropdown>
-<Dropdown AutoClose="true" AutoCloseBehavior="DropdownAutoCloseBehavior.Outside">
-    <DropdownToggleButton Color="ButtonColor.Secondary">Clickable outside</DropdownToggleButton>
+
+<Dropdown Color="DropdownColor.Secondary" AutoClose="true" AutoCloseBehavior="DropdownAutoCloseBehavior.Outside">
+    <DropdownToggleButton>Clickable outside</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
     </DropdownMenu>
 </Dropdown>
-<Dropdown AutoClose="true" AutoCloseBehavior="DropdownAutoCloseBehavior.Inside">
-    <DropdownToggleButton Color="ButtonColor.Secondary">Clickable inside</DropdownToggleButton>
+
+<Dropdown Color="DropdownColor.Secondary" AutoClose="true" AutoCloseBehavior="DropdownAutoCloseBehavior.Inside">
+    <DropdownToggleButton>Clickable inside</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
     </DropdownMenu>
 </Dropdown>
-<Dropdown AutoClose="false">
-    <DropdownToggleButton Color="ButtonColor.Secondary">Manual close</DropdownToggleButton>
+
+<Dropdown Color="DropdownColor.Secondary" AutoClose="false">
+    <DropdownToggleButton>Manual close</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Menu item</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 ```
@@ -715,13 +732,13 @@ By default, the DropdownMenu is closed when clicking either inside or outside th
 
 <img src="https://i.imgur.com/gaJz8Ar.png" alt="Blazor Bootstrap: Dropdown Component - Methods" />
 
-```cshtml {10-12} showLineNumbers
-<Dropdown @ref="dropdown1">
-    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown button</DropdownToggleButton>
+```cshtml {1,10-12} showLineNumbers
+<Dropdown @ref="dropdown1" Color="DropdownColor.Secondary">
+    <DropdownToggleButton>Dropdown button</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 
@@ -748,27 +765,38 @@ All dropdown events are fired at the toggling element and then bubbled up.
 
 <img src="https://i.imgur.com/74NtN1y.png" alt="Blazor Bootstrap: Dropdown Component - Events" />
 
-```cshtml {1-4} showLineNumbers
-<Dropdown OnHiding="OnDropdownHidingAsync"
+```cshtml {2-5} showLineNumbers
+<Dropdown Color="DropdownColor.Secondary"
+          OnHiding="OnDropdownHidingAsync"
           OnHidden="OnDropdownHiddenAsync"
           OnShowing="OnDropdownShowingAsync"
           OnShown="OnDropdownShownAsync">
-    <DropdownToggleButton Color="ButtonColor.Secondary">Dropdown button</DropdownToggleButton>
+    <DropdownToggleButton>Dropdown button</DropdownToggleButton>
     <DropdownMenu>
-        <DropdownItem To="#" Type="ButtonType.Link">Action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Another action</DropdownItem>
-        <DropdownItem To="#" Type="ButtonType.Link">Something else here</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
     </DropdownMenu>
 </Dropdown>
+
+<div class="mt-3">
+    @foreach (var item in messages)
+    {
+        <p>Event: @item</p>
+    }
+</div>
 ```
 
-```cs {4-7} showLineNumbers
+```cs {4,6,8,10} showLineNumbers
 @code {
     List<string> messages = new List<string>();
 
     private void OnDropdownHidingAsync() => messages.Add(new("OnHiding"));
+
     private void OnDropdownHiddenAsync() => messages.Add(new("OnHidden"));
+
     private void OnDropdownShowingAsync() => messages.Add(new("OnShowing"));
+
     private void OnDropdownShownAsync() => messages.Add(new("OnShown"));
 }
 ```
