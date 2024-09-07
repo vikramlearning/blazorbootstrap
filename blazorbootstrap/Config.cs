@@ -1,4 +1,5 @@
 ﻿using BlazorBootstrap;
+using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -9,19 +10,21 @@ public static class Config
     /// <summary>
     /// Adds a bootstrap providers and component mappings.
     /// </summary>
-    /// <param name="serviceCollection"></param>
+    /// <param name="services"></param>
     /// <returns>IServiceCollection</returns>
-    public static IServiceCollection AddBlazorBootstrap(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddBlazorBootstrap(this IServiceCollection services, IConfiguration configuration = null!)
     {
-        serviceCollection.AddScoped<BreadcrumbService>();
-        serviceCollection.AddScoped<ModalService>();
-        serviceCollection.AddScoped<PreloadService>();
-        serviceCollection.AddScoped<ToastService>();
+        services.AddScoped<BreadcrumbService>();
+        services.AddScoped<ModalService>();
+        services.AddScoped<PreloadService>();
+        services.AddScoped<ToastService>();
 
-        serviceCollection.AddScoped<PdfViewerJsInterop>();
-        serviceCollection.AddScoped<SortableListJsInterop>();
+        services.AddScoped<PdfViewerJsInterop>();
+        services.AddScoped<SortableListJsInterop>();
 
-        return serviceCollection;
+        services.AddScoped<AIJSInterop>();
+
+        return services;
     }
 
     #endregion

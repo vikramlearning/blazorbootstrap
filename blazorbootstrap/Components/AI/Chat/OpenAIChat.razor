@@ -1,0 +1,57 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div class="container d-flex flex-column vh-100">
+    <div class="flex-grow-1">
+        @foreach (var message in conversationHistory)
+        {
+            <div class="row p-2">
+                <div class="col-1 rounded-circle bg-dark-subtle text-center m-2 p-0"
+                     style="width:50px;height:50px;">
+                    <span class="bi fs-2 @(message.Role == "user" ? "bi-person-fill" : "bi-robot")"></span>
+                </div>
+                <div class="col-11 rounded p-3 shadow-sm @(message.Role == "user" ? "text-bg-primary" : "text-bg-light")">
+                    @if (message.Role == "user")
+                    {
+                        @message.Content
+                    }
+                    else
+                    {
+                        @((MarkupString)message.Content)
+                    }
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrWhiteSpace(currentCompletion))
+        {
+            <div class="row">
+                <div class="col-1 rounded-circle bg-dark-subtle text-center m-2 p-0"
+                     style="width:50px;height:50px;">
+                    <span class="bi fs-2 bi-robot"></span>
+                </div><div class="col-11 rounded p-3 shadow-sm text-bg-light">
+                    @((MarkupString)currentCompletion!)
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="sticky-bottom w-50 p-3 rounded mx-auto">
+        @if (isSendingMessage)
+        {
+            <div class="text-center">
+                <div class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        }
+        <div class="input-group">
+            <button class="btn btn-primary" @onclick="ClearConversation">
+                <span class="bi bi-eraser"></span>
+            </button>
+            <textarea rows="2" class="form-control" placeholder="Ask your question..."
+                      @bind-value="userQuestion" @bind-value:event="oninput" @onkeypress="OnKeyPress"
+                      disabled="@isSendingMessage">
+        </textarea>
+        </div>
+    </div>
+</div>
