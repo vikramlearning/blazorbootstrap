@@ -5,7 +5,7 @@
 /// These are used to set display properties for a specific dataset.
 /// <see href="https://www.chartjs.org/docs/latest/charts/line.html#dataset-properties" />.
 /// </summary>
-public class LineChartDataset : ChartDataset
+public class LineChartDataset : ChartDataset<double?>
 {
     #region Methods
 
@@ -188,17 +188,9 @@ public class LineChartDataset : ChartDataset
     /// Default value is 'default'.
     /// </remarks>
     public string CubicInterpolationMode { get; set; } = "default";
-
-    /// <summary>
-    /// Get or sets the Data.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null" />.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new List<double?>? Data { get; set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public LineChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
+    
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    public LineChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
     /// <summary>
     /// Draw the active points of a dataset over the other points of the dataset.
