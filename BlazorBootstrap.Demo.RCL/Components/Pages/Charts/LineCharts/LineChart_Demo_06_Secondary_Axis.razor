@@ -1,102 +1,102 @@
 ﻿<LineChart @ref="lineChart" Width="500" Height="200" />
 
 @code {
-  private LineChart lineChart = default!;
-  private LineChartOptions lineChartOptions = default!;
-  private ChartData chartData = default!;
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
 
-  private int datasetsCount;
-  private int labelsCount;
+    private int datasetsCount;
+    private int labelsCount;
 
-  private Random random = new();
+    private Random random = new();
 
-  protected override void OnInitialized()
-  {
-    chartData = new ChartData { Labels = GetDefaultDataLabels( 6 ), Datasets = GetDefaultDataSets() };
-    lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
-
-    lineChartOptions.Scales.Y!.Title = new ChartAxesTitle() { Display = true, Text = "Primary y-axis" };
-    lineChartOptions.Scales.Y!.Max = 100;
-    // Set secondary y-axis
-    lineChartOptions.Scales.SecondaryY!.Display = true;
-    lineChartOptions.Scales.SecondaryY!.Title = new ChartAxesTitle() { Display = true, Text = "Secondary y-axis" };
-    lineChartOptions.Scales.SecondaryY!.Max = 500;
-  }
-
-  protected override async Task OnAfterRenderAsync( bool firstRender )
-  {
-    if( firstRender )
+    protected override void OnInitialized()
     {
-      await lineChart.InitializeAsync( chartData, lineChartOptions );
-    }
-    await base.OnAfterRenderAsync( firstRender );
-  }
+        chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets() };
+        lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
 
-  #region Data Preparation
-
-  private List<IChartDataset> GetDefaultDataSets()
-  {
-    var datasets = new List<IChartDataset>();
-    var primaryDataset = GetRandomLineChartDataset( 100 );
-    var secondaryDataset = GetRandomLineChartDataset( 500 );
-
-    // Move the dataset to the secondary y-axis
-    secondaryDataset.OnSecondaryYAxis = true;
-
-    datasets.Add( primaryDataset );
-    datasets.Add( secondaryDataset );
-
-    return datasets;
-  }
-
-  private LineChartDataset GetRandomLineChartDataset( int max )
-  {
-    var c = ColorUtility.CategoricalTwelveColors[ datasetsCount ].ToColor();
-
-    datasetsCount += 1;
-
-    return new LineChartDataset
-      {
-        Label = $"Team {datasetsCount}",
-        Data = GetRandomData( max ),
-        BackgroundColor = c.ToRgbString(),
-        BorderColor = c.ToRgbString(),
-        BorderWidth = 2,
-        HoverBorderWidth = 4,
-        // PointBackgroundColor = c.ToRgbString(),
-        // PointRadius = 0, // hide points
-        // PointHoverRadius = 4,
-      };
-  }
-
-  private List<double?> GetRandomData( int max )
-  {
-    var data = new List<double?>();
-    for( var index = 0; index < labelsCount; index++ )
-    {
-      data.Add( random.Next( max ) );
+        lineChartOptions.Scales.Y!.Title = new ChartAxesTitle() { Display = true, Text = "Primary y-axis" };
+        lineChartOptions.Scales.Y!.Max = 100;
+        // Set secondary y-axis
+        lineChartOptions.Scales.SecondaryY!.Display = true;
+        lineChartOptions.Scales.SecondaryY!.Title = new ChartAxesTitle() { Display = true, Text = "Secondary y-axis" };
+        lineChartOptions.Scales.SecondaryY!.Max = 500;
     }
 
-    return data;
-  }
-
-  private List<string> GetDefaultDataLabels( int numberOfLabels )
-  {
-    var labels = new List<string>();
-    for( var index = 0; index < numberOfLabels; index++ )
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-      labels.Add( GetNextDataLabel() );
+        if (firstRender)
+        {
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
-    return labels;
-  }
+    #region Data Preparation
 
-  private string GetNextDataLabel()
-  {
-    labelsCount += 1;
-    return $"Day {labelsCount}";
-  }
+    private List<IChartDataset> GetDefaultDataSets()
+    {
+        var datasets = new List<IChartDataset>();
+        var primaryDataset = GetRandomLineChartDataset(100);
+        var secondaryDataset = GetRandomLineChartDataset(500);
 
-  #endregion Data Preparation
+        // Move the dataset to the secondary y-axis
+        secondaryDataset.OnSecondaryYAxis = true;
+
+        datasets.Add(primaryDataset);
+        datasets.Add(secondaryDataset);
+
+        return datasets;
+    }
+
+    private LineChartDataset GetRandomLineChartDataset(int max)
+    {
+        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
+
+        datasetsCount += 1;
+
+        return new LineChartDataset
+            {
+                Label = $"Team {datasetsCount}",
+                Data = GetRandomData(max),
+                BackgroundColor = c.ToRgbString(),
+                BorderColor = c.ToRgbString(),
+                BorderWidth = 2,
+                HoverBorderWidth = 4,
+                // PointBackgroundColor = c.ToRgbString(),
+                // PointRadius = 0, // hide points
+                // PointHoverRadius = 4,
+            };
+    }
+
+    private List<double?> GetRandomData(int max)
+    {
+        var data = new List<double?>();
+        for (var index = 0; index < labelsCount; index++)
+        {
+            data.Add(random.Next(max));
+        }
+
+        return data;
+    }
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel()
+    {
+        labelsCount += 1;
+        return $"Day {labelsCount}";
+    }
+
+    #endregion Data Preparation
 
 }
