@@ -1,0 +1,110 @@
+﻿@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-drizzle-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352),
+            Title = "Drizzle",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-drizzle-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[0].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727),
+            Title = "Drizzle",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-lightning-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.39561833718522, -122.21855116258479),
+            Title = "Lightning rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-lightning-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[2].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.423928529779644, -122.1087629822001),
+            Title = "Lightning rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.40578635332598, -122.15043378466069),
+            Title = "Rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[1].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.36399747905774, -122.10465384268522),
+            Title = "Rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-heavy-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.38343706184458, -122.02340436985183),
+            Title = "Heavy rain",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement
+            {
+                Glyph = "bi bi-cloud-rain-heavy-fill fs-6 text-white",
+                UseIconFonts = true,
+                Background=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbaString().ToLowerInvariant(),
+                BorderColor=ColorUtility.CategoricalSixColors[3].ToColor().ToRgbString().ToLowerInvariant()
+            },
+            Position = new GoogleMapMarkerPosition(37.34576403052, -122.04455090047453),
+            Title = "Heavy rain",
+        }
+    };
+}

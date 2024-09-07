@@ -47,12 +47,31 @@ public static class BootstrapClass
     public const string CardText = "card-text";
     public const string CardTitle = "card-title";
 
+    public const string Carousel = "carousel";
+    public const string CarouselCaption = "carousel-caption";
+    public const string CarouselControlNext = "carousel-control-next";
+    public const string CarouselControlNextIcon = "carousel-control-next-icon";
+    public const string CarouselControlPrevious = "carousel-control-prev";
+    public const string CarouselControlPreviousIcon = "carousel-control-prev-icon";
+    public const string CarouselDark = "carousel-dark";
+    public const string CarouselFade = "carousel-fade";
+    public const string CarouselIndicators = "carousel-indicators";
+    public const string CarouselInner = "carousel-inner";
+    public const string CarouselItem = "carousel-item";
+    public const string CarouselSlide = "slide";
+
     public const string Collapse = "collapse";
     public const string CollapseHorizontal = "collapse-horizontal";
 
     public const string ConfirmationModal = "modal-confirmation";
 
     public const string Disabled = "disabled";
+    public const string DisplayNone = "d-none";
+    public const string DisplayBlock = "d-block";
+    public const string DisplaySmallBlock = "d-sm-block";
+    public const string DisplayMediumBlock = "d-md-block";
+    public const string DisplayLargeBlock = "d-lg-block";
+    public const string DisplayExtraLargeBlock = "d-xl-block";
 
     public const string Dropdown = "dropdown";
     public const string DropdownDivider = "dropdown-divider";

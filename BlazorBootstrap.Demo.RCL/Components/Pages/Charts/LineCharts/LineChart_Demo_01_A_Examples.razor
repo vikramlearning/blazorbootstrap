@@ -1,4 +1,6 @@
-﻿<LineChart @ref="lineChart" Width="500" Height="200" />
+﻿<div class="container-fluid overflow-x-auto">
+    <LineChart @ref="lineChart" Width="800" />
+</div>
 
 <div class="mt-5">
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="my-1 mr-1" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
@@ -65,7 +67,7 @@
 
         chartData.Datasets = newDatasets;
 
-        await lineChart.UpdateAsync(chartData, lineChartOptions);
+        await lineChart.UpdateValuesAsync(chartData);
     }
 
     private async Task AddDatasetAsync()

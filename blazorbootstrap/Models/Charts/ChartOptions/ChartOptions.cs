@@ -24,7 +24,7 @@ public class ChartOptions : IChartOptions
     /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="true"/>.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     public bool MaintainAspectRatio { get; set; } = true;
 
@@ -36,10 +36,10 @@ public class ChartOptions : IChartOptions
 
     /// <summary>
     /// Resizes the chart canvas when its container does.
-    /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />.    /// 
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />.    ///
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="false"/>.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     public bool Responsive { get; set; }
 
@@ -58,7 +58,7 @@ public class ChartLayout
     /// Apply automatic padding so visible elements are completely drawn.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="true"/>.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     public bool AutoPadding { get; set; } = true;
 
@@ -71,7 +71,7 @@ public class ChartLayout
 }
 
 /// <summary>
-/// Namespace: options.interaction, the global interaction configuration is at Chart.defaults.interaction. 
+/// Namespace: options.interaction, the global interaction configuration is at Chart.defaults.interaction.
 /// <see href="https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions" />.
 /// </summary>
 public class Interaction
@@ -122,7 +122,7 @@ public class Interaction
     /// if <see langword="true" />, the interaction mode only applies when the mouse position intersects an item on the chart.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="true"/>.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     public bool Intersect { get; set; } = true;
 
@@ -140,19 +140,42 @@ public class Interaction
         }
     }
 
+    #endregion
+
     //includeInvisible
     //https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions
-
-    #endregion
 }
 
 public enum InteractionMode
 {
+  /// <summary>
+  /// Finds items in the same dataset.
+  /// </summary>
     Dataset,
+
+  /// <summary>
+  /// Finds item at the same index. 
+  /// </summary>
     Index,
+
+  /// <summary>
+  /// Gets the items that are at the nearest distance to the point. 
+  /// </summary>
     Nearest,
+
+  /// <summary>
+  /// Finds all of the items that intersect the point
+  /// </summary>
     Point,
+
+  /// <summary>
+  /// Returns all items that would intersect based on the X coordinate of the position only. Would be useful for a vertical cursor implementation. Note that this only applies to cartesian charts.
+  /// </summary>
     X,
+
+  /// <summary>
+  /// Returns all items that would intersect based on the Y coordinate of the position. This would be useful for a horizontal cursor implementation. Note that this only applies to cartesian charts.
+  /// </summary>
     Y
 }
 
@@ -160,11 +183,22 @@ public class Scales
 {
     #region Properties, Indexers
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
-    public ChartAxes? X { get; set; } = new();
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartAxes? X { get; set; } = new();
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
-    public ChartAxes? Y { get; set; } = new();
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartAxes? Y { get; set; } = new();
+
+    #endregion
+}
+
+public class ChartAxesType
+{
+    #region Fields and Constants
+
+    public static readonly string Linear = "linear";
+    public static readonly string Logarithmic = "logarithmic";
+    public static readonly string Category = "category";
+    public static readonly string Time = "time";
+    public static readonly string Timeseries = "timeseries";
 
     #endregion
 }
@@ -232,10 +266,10 @@ public class ChartAxes
     public ChartAxesTitle? Title { get; set; }
 
     /// <summary>
-    /// Gets or sets the index scale type.
+    /// Gets or sets the index scale type. See <see cref="ChartAxesType" />.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Type { get; set; }
