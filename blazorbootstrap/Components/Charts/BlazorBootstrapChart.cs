@@ -74,7 +74,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     }
 
     /// <summary>
-    /// Update chart.
+    /// Update chart by reapplying all chart data and options.
+    /// If animation is enabled, this will animate the datasets from scratch.
     /// </summary>
     /// <param name="chartData"></param>
     /// <param name="chartOptions"></param>
@@ -82,14 +83,34 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
         {
-            var _data = GetChartDataObject(chartData);
+            var data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), _data, (BarChartOptions)chartOptions);
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
             else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), _data, (LineChartOptions)chartOptions);
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
             else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), _data, chartOptions);
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions);
+        }
+    }
+
+    /// <summary>
+    /// Update only data labels and values. If animation is enabled, this will animate the datapoints.
+    /// Changes to the options will not be applied.
+    /// </summary>
+    /// <param name="chartData">The updated chart data. Only dataset labels and values will be applied.</param>
+    public virtual async Task UpdateValuesAsync(ChartData chartData)
+    {
+        if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
+        {
+            var data = GetChartDataObject(chartData);
+
+            if (chartType == ChartType.Bar)
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.updateDataValues", Id, data);
+            else if (chartType == ChartType.Line)
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.updateDataValues", Id, data);
+            else
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.updateDataValues", Id, data);
         }
     }
 

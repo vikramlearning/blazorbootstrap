@@ -1,9 +1,11 @@
-﻿<LineChart @ref="lineChart" Width="500" Height="200" />
+﻿<div class="container-fluid overflow-x-auto">
+    <LineChart @ref="lineChart" Width="800" />
+</div>
 
 <div class="mt-5">
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ChangeTicksAlignmentToStart()"> Alignment: start </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ChangeTicksAlignmentToCenter()"> Alignment: center (default) </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ChangeTicksAlignmentToEnd()"> Alignment: end </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="my-1 mr-1" @onclick="async () => await ChangeTicksAlignmentToStart()"> Alignment: start </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="my-1 mr-1" @onclick="async () => await ChangeTicksAlignmentToCenter()"> Alignment: center (default) </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="my-1 mr-1" @onclick="async () => await ChangeTicksAlignmentToEnd()"> Alignment: end </Button>
 </div>
 
 @code {

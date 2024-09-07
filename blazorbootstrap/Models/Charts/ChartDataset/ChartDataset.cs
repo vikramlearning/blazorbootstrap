@@ -5,7 +5,7 @@ public interface IChartDataset { }
 /// <summary>
 /// <See href="https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration" />
 /// </summary>
-public class ChartDataset : IChartDataset
+public class ChartDataset<TData> : IChartDataset
 {
     #region Constructors
 
@@ -24,7 +24,7 @@ public class ChartDataset : IChartDataset
     /// Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0}
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Clip { get; set; }
@@ -33,16 +33,16 @@ public class ChartDataset : IChartDataset
     /// Get or sets the Data.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public object Data { get; set; }
+    public List<TData>? Data { get; set; }
 
     /// <summary>
-    /// Configures the visibility state of the dataset. Set it to <see langword="true"/>, to hide the dataset from the chart.
+    /// Configures the visibility state of the dataset. Set it to <see langword="true" />, to hide the dataset from the chart.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="false"/>.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     public bool Hidden { get; set; }
 
@@ -75,7 +75,7 @@ public class ChartDataset : IChartDataset
     /// Gets or sets the chart type.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Type { get; protected set; }

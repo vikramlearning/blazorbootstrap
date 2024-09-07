@@ -1,12 +1,12 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// The bar chart allows a number of properties to be specified for each dataset. 
+/// The bar chart allows a number of properties to be specified for each dataset.
 /// These are used to set display properties for a specific dataset.
 /// <see href="https://www.chartjs.org/docs/latest/charts/bar.html#dataset-properties" />
 /// <seealso href="https://www.chartjs.org/docs/latest/charts/bar.html#general" />
 /// </summary>
-public class BarChartDataset : ChartDataset
+public class BarChartDataset : ChartDataset<double?>
 {
     #region Properties, Indexers
 
@@ -29,11 +29,11 @@ public class BarChartDataset : ChartDataset
     public double BarPercentage { get; set; } = 0.9;
 
     /// <summary>
-    /// It is applied to the width of each bar, in pixels. 
+    /// It is applied to the width of each bar, in pixels.
     /// When this is enforced, barPercentage and categoryPercentage are ignored.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? BarThickness { get; set; }
@@ -75,25 +75,17 @@ public class BarChartDataset : ChartDataset
     /// </remarks>
     public double CategoryPercentage { get; set; } = 0.8;
 
-    /// <summary>
-    /// Get or sets the Data.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null"/>.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new List<double?>? Data { get; set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public BarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
     /// <summary>
-    /// Should the bars be grouped on index axis. 
-    /// When <see langword="true"/>, all the datasets at same index value will be placed next to each other centering on that index value. 
-    /// When <see langword="false"/>, each bar is placed on its actual index-axis value.
+    /// Should the bars be grouped on index axis.
+    /// When <see langword="true" />, all the datasets at same index value will be placed next to each other centering on that
+    /// index value.
+    /// When <see langword="false" />, each bar is placed on its actual index-axis value.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="true"/>.
+    /// Default value is <see langword="true" />.
     /// </remarks>
     public bool Grouped { get; set; } = true;
 
@@ -101,7 +93,7 @@ public class BarChartDataset : ChartDataset
     /// The bar background color when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? HoverBackgroundColor { get; set; }
@@ -110,7 +102,7 @@ public class BarChartDataset : ChartDataset
     /// The bar border color when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? HoverBorderColor { get; set; }
@@ -138,7 +130,7 @@ public class BarChartDataset : ChartDataset
     /// Supported values are 'x' and 'y'.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? IndexAxis { get; set; }
@@ -150,7 +142,7 @@ public class BarChartDataset : ChartDataset
     /// Set this to ensure that bars are not sized thicker than this.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? MaxBarThickness { get; set; }
@@ -159,7 +151,7 @@ public class BarChartDataset : ChartDataset
     /// Set this to ensure that bars have a minimum length in pixels.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? MinBarLength { get; set; }
@@ -168,10 +160,11 @@ public class BarChartDataset : ChartDataset
     //https://www.chartjs.org/docs/latest/configuration/elements.html#point-styles
 
     /// <summary>
-    /// If <see langword="true"/>, null or undefined values will not be used for spacing calculations when determining bar size.
+    /// If <see langword="true" />, null or undefined values will not be used for spacing calculations when determining bar
+    /// size.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="false"/>.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     public bool SkipNull { get; set; }
 
@@ -199,6 +192,4 @@ public class BarChartDataset : ChartDataset
     #endregion
 }
 
-public class BarChartDatasetDataLabels : ChartDatasetDataLabels
-{
-}
+public class BarChartDatasetDataLabels : ChartDatasetDataLabels { }
