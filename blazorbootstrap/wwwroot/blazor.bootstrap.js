@@ -249,6 +249,57 @@ window.blazorBootstrap = {
                 bodyEl[0].style['overflow'] = 'auto';
         }
     },
+    carousel: {
+        cycle: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.cycle();
+        },
+        dispose: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.dispose();
+        },
+        initialize: (elementId, options, dotNetHelper) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl == null)
+                return;
+
+            carouselEl.addEventListener('slid.bs.carousel', function (e) {
+                dotNetHelper.invokeMethodAsync('bsSlid', e);
+            });
+            carouselEl.addEventListener('slide.bs.carousel', function (e) {
+                dotNetHelper.invokeMethodAsync('bslide', e);
+            });
+
+            bootstrap?.Carousel?.getOrCreateInstance(carouselEl, options);
+        },
+        next: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.next();
+        },
+        nextWhenVisible: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.nextWhenVisible();
+        },
+        pause: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.pause();
+        },
+        prev: (elementId) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.prev();
+        },
+        to: (elementId, index) => {
+            let carouselEl = document.getElementById(elementId);
+            if (carouselEl != null)
+                bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.to(index);
+        },
+    },
     currencyInput: {
         initialize: (elementId, isFloat, allowNegativeNumbers, decimalSeperator) => {
             let currencyEl = document.getElementById(elementId);
@@ -390,6 +441,108 @@ window.blazorBootstrap = {
             let dropdownEl = document.getElementById(elementId);
             if (dropdownEl != null)
                 bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl)?.update();
+        }
+    },
+    googlemaps: {
+        addMarker: (elementId, marker, dotNetHelper) => {
+            let mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
+            if (mapInstance) {
+                let map = mapInstance.map;
+                let clickable = mapInstance.clickable;
+                let _content;
+
+                if (marker.pinElement) {
+                    let _glyph;
+
+                    if (marker.pinElement.useIconFonts) {
+                        const icon = document.createElement("div");
+                        icon.innerHTML = `<i class="${marker.pinElement.glyph}"></i>`;
+                        _glyph = icon;
+                    } else {
+                        _glyph = marker.pinElement.glyph;
+                    }
+
+                    const pin = new google.maps.marker.PinElement({
+                        background: marker.pinElement.background,
+                        borderColor: marker.pinElement.borderColor,
+                        glyph: _glyph,
+                        glyphColor: marker.pinElement.glyphColor,
+                        scale: marker.pinElement.scale,
+                    });
+                    _content = pin.element;
+                }
+                else if (marker.content) {
+                    _content = document.createElement("div");
+                    _content.classList.add("bb-google-marker-content");
+                    _content.innerHTML = marker.content;
+                }
+
+                const markerEl = new google.maps.marker.AdvancedMarkerElement({
+                    map,
+                    content: _content,
+                    position: marker.position,
+                    title: marker.title,
+                    gmpClickable: clickable
+                });
+
+                window.blazorBootstrap.googlemaps.markerEls[elementId].push(markerEl);
+
+                // add a click listener for each marker, and set up the info window.
+                if (clickable) {
+                    markerEl.addListener("click", ({ domEvent, latLng }) => {
+                        const { target } = domEvent;
+                        const infoWindow = new google.maps.InfoWindow();
+                        infoWindow.close();
+                        infoWindow.setContent(markerEl.title);
+                        infoWindow.open(markerEl.map, markerEl);
+                        dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
+                    });
+                }
+            }
+        },
+        create: (elementId, map, zoom, center, markers, clickable) => {
+            window.blazorBootstrap.googlemaps.instances[elementId] = {
+                map: map,
+                zoom: zoom,
+                center: center,
+                markers: markers,
+                clickable: clickable
+            };
+        },
+        get: (elementId) => {
+            return window.blazorBootstrap.googlemaps.instances[elementId];
+        },
+        initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
+            window.blazorBootstrap.googlemaps.markerEls[elementId] = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
+
+            let mapOptions = { center: center, zoom: zoom, mapId: elementId };
+            let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
+
+            window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable);
+
+            if (markers) {
+                for (const marker of markers) {
+                    window.blazorBootstrap.googlemaps.addMarker(elementId, marker, dotNetHelper);
+                }
+            }
+        },
+        instances: {},
+        markerEls: {},
+        updateMarkers: (elementId, markers, dotNetHelper) => {
+            let markerEls = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
+
+            // delete the markers
+            if (markerEls.length > 0) {
+                for (const markerEl of markerEls) {
+                    markerEl.setMap(null);
+                }
+            }
+
+            if (markers) {
+                for (const marker of markers) {
+                    window.blazorBootstrap.googlemaps.addMarker(elementId, marker, dotNetHelper);
+                }
+            }
         }
     },
     grid: {
@@ -583,7 +736,7 @@ window.blazorBootstrap = {
         }
     },
     scriptLoader: {
-        initialize: (elementId, async, scriptId, source, type, dotNetHelper) => {
+        initialize: (elementId, async, defer, scriptId, source, type, dotNetHelper) => {
             let scriptLoaderEl = document.getElementById(elementId);
 
             if (source.length === 0) {
@@ -594,6 +747,8 @@ window.blazorBootstrap = {
             let scriptEl = document.createElement('script');
 
             scriptEl.async = async;
+
+            scriptEl.defer = defer;
 
             if (scriptId != null)
                 scriptEl.id = scriptId;
@@ -845,6 +1000,23 @@ window.blazorChart = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.bar = {
@@ -957,6 +1129,23 @@ window.blazorChart.bar = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.doughnut = {
@@ -1075,6 +1264,23 @@ window.blazorChart.doughnut = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.line = {
@@ -1227,6 +1433,23 @@ window.blazorChart.line = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.pie = {
@@ -1345,6 +1568,23 @@ window.blazorChart.pie = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.polarArea = {
@@ -1464,6 +1704,23 @@ window.blazorChart.polarArea = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.radar = {
@@ -1582,6 +1839,23 @@ window.blazorChart.radar = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
 
 window.blazorChart.scatter = {
@@ -1700,4 +1974,21 @@ window.blazorChart.scatter = {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
+    updateDataValues: (elementId, data) => {
+        let chart = window.blazorChart.line.get(elementId);
+        if (chart) {
+            chart.data.datasets.splice(data.datasets.length);
+
+            for (var datasetIndex = 0; datasetIndex < chart.data.datasets.length; ++datasetIndex) {
+                chart.data.datasets[datasetIndex].data = data.datasets[datasetIndex].data;
+                chart.data.labels = data.labels;
+            }
+
+            for (var datasetIndex = chart.data.datasets.length; datasetIndex < data.datasets.length; ++datasetIndex) {
+                chart.data.datasets.push(data.datasets[datasetIndex]);
+            }
+
+            chart.update();
+        }
+    }
 }
