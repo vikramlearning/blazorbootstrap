@@ -3,11 +3,11 @@
 </div>
 
 <div class="mt-5">
-    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
-    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()" Disabled="@(datasetsCount >= 12)"> Add Dataset </Button>
-    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
-    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
-    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="my-1 mr-1" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="my-1 mr-1" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="my-1 mr-1" @onclick="async () => await AddDataAsync()"> Add Data </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="my-1 mr-1" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="my-1 mr-1" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
 </div>
 
 @code {
@@ -23,8 +23,12 @@
     protected override void OnInitialized()
     {
         chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
-        lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
-        lineChartOptions.Scales.Y!.Max = 250;
+        lineChartOptions = new()
+            {
+                IndexAxis = "x",
+                Interaction = new Interaction { Mode = InteractionMode.Index, Intersect = false },
+                Responsive = true,
+            };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -125,13 +129,10 @@
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = c.ToRgbString(),
+                BackgroundColor = c.ToRgbaString(),
                 BorderColor = c.ToRgbString(),
-                BorderWidth = 2,
-                HoverBorderWidth = 4,
-                // PointBackgroundColor = c.ToRgbString(),
-                // PointRadius = 0, // hide points
-                // PointHoverRadius = 4,
+                PointRadius = new List<double> { 5 },
+                PointHoverRadius = new List<double> { 8 },
             };
     }
 
