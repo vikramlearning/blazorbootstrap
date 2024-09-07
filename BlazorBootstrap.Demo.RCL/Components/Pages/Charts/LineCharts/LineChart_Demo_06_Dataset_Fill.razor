@@ -1,13 +1,13 @@
 ﻿<LineChart Height="200" @ref="lineChart" Width="500" />
 
 <div class="mt-5">
-    <Button Color="ButtonColor.Primary" @onclick="async () => await NoFillAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> No fill</Button>
-    <Button Color="ButtonColor.Primary" @onclick="async () => await FillToNextAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to next (relative index +1)</Button>
-    <Button Color="ButtonColor.Primary" @onclick="async () => await FillToZeroAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to specific (absolute index 0) </Button>
-    <Button Color="ButtonColor.Primary" @onclick="async () => await FillToReferenceAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to specific (by object reference)</Button>
-    <Button Color="ButtonColor.Primary" @onclick="async () => await FillToStartAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to start </Button>
-    <Button Color="ButtonColor.Primary" @onclick="async () => await FillToEndAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to end</Button>
-    <Button Color="ButtonColor.Primary" @onclick="async () => await FillToValueAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to value 50</Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await NoFillAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> No fill</Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToNextAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to next (relative index +1)</Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToZeroAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to specific (absolute index 0) </Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToReferenceAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to specific (by object reference)</Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToStartAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to start </Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToEndAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to end</Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToValueAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to value 50</Button>
 </div>
 
 @code {
@@ -110,13 +110,14 @@
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = c.ToRgbString(),
+                BackgroundColor = c.ToRgbaString(),
+                BorderCapStyle = "round",
                 BorderColor = c.ToRgbString(),
                 BorderWidth = 2,
-                HoverBorderWidth = 4
-                // PointBackgroundColor = c.ToRgbString(),
+                HoverBorderWidth = 4,
+                PointBackgroundColor = new List<string>() { c.ToRgbString() },
                 // PointRadius = 0, // hide points
-                // PointHoverRadius = 4,
+                PointHoverRadius = new List<double>() { 4 },
             };
     }
 
