@@ -75,7 +75,8 @@ public class BarChartDataset : ChartDataset<double?>
     /// </remarks>
     public double CategoryPercentage { get; set; } = 0.8;
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public BarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    public BarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
     /// <summary>
     /// Should the bars be grouped on index axis.

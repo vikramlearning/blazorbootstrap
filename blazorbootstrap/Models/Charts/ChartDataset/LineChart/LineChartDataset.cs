@@ -189,7 +189,8 @@ public class LineChartDataset : ChartDataset<double?>
     /// </remarks>
     public string CubicInterpolationMode { get; set; } = "default";
     
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public LineChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    public LineChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
     /// <summary>
     /// Draw the active points of a dataset over the other points of the dataset.

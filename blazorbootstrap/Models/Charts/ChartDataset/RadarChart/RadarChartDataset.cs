@@ -68,7 +68,8 @@ public class RadarChartDataset : ChartDataset<double?>
     /// </remarks>
     public double BorderWidth { get; set; } = 3;
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public RadarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: Add reference link
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    public RadarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: Add reference link
 
     /// <summary>
     /// How to fill the area under the line.

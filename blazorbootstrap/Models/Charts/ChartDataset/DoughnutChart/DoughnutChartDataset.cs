@@ -92,7 +92,8 @@ public class DoughnutChartDataset : ChartDataset<double?>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Circumference { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public DoughnutChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    public DoughnutChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
     /// <summary>
     /// Arc background color when hovered.

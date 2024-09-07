@@ -77,7 +77,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// </remarks>
     public bool Circular { get; set; } = true;
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public PieChartDatasetDataLabels Datalabels { get; set; } = new();
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
+    public PieChartDatasetDataLabels Datalabels { get; set; } = new();
 
     /// <summary>
     /// Arc background color when hovered.
