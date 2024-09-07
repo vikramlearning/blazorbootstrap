@@ -1,0 +1,310 @@
+---
+title: Blazor Carousel Component
+description: Blazor Carousel component is a slideshow component that cycles through elements, images, or slides of text.
+image: https://i.imgur.com/YoZd9Hy.png
+
+sidebar_label: Carousel
+sidebar_position: 7
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Carousel
+
+Blazor Carousel component is a slideshow component that cycles through elements, images, or slides of text.
+
+<CarbonAd />
+
+<img src="https://i.imgur.com/YoZd9Hy.png" alt="Blazor Bootstrap: Carousel component" />
+
+## Parameters
+
+### Carousel Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Autoplay | `CarouselAutoPlay` | `CarouselAutoPlay.None` | | Controls the autoplay behavior of the carousel. | 3.0.0 |
+| ChildContent | RenderFragment? | null | ✔️ | Gets or sets the content to be rendered within the component. | 3.0.0 |
+| Crossfade | bool | false | | Determines whether to use a crossfade effect when transitioning between slides. | 3.0.0 |
+| Interval | int? | 5000 milliseconds | | The amount of time to delay between automatically cycling an item. | 3.0.0 |
+| Keyboard | bool | true | | Whether the carousel should react to keyboard events. | 3.0.0 |
+| ShowIndicators | bool | false | | Indicates whether to show indicators (dots) below the carousel to navigate between slides. | 3.0.0 |
+| ShowPreviousNextControls | bool | true | | Specifies whether to display the previous and next controls (arrows) for navigating slides. | 3.0.0 |
+| Touch | bool | true | | Carousels support swiping left/right on touchscreen devices to move between slides. This can be disabled by setting the `Touch` parameter to `false`. | 3.0.0 |
+
+### CarouselItem Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Active | bool | false | | Gets or sets the active state. | 3.0.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 3.0.0 |
+| Interval | int? | 5000 milliseconds | | The amount of time to delay between automatically cycling an item. | 3.0.0 |
+| Label | string? | null | | Gets or sets the aria-label. | 3.0.0 |
+
+## Methods
+
+| Name | Description | Added Version |
+|--|--|--|
+| ShowItemByIndexAsync(int index) | Shows `CarouselItem` by index. | 3.0.0 |
+| PauseCarouselAsync() | Shows next `CarouselItem`. | 3.0.0 |
+| ShowNextItemAsync() | Shows next `CarouselItem`. | 3.0.0 |
+| ShowPreviousItemAsync() | Shows previous `CarouselItem`. | 3.0.0 |
+
+## Callback Events
+
+| Name | Description | Added Version |
+|--|--|--|
+| Onslide | Fires immediately when the slide instance method is invoked. | 3.0.0 |
+| Onslid | Fired when the carousel has completed its slide transition. | 3.0.0 |
+
+## Examples
+
+### Carousel
+
+Here is a basic example of a carousel with three slides.
+
+<img src="https://i.imgur.com/7TCatHj.png" alt="Blazor Bootstrap: Carousel Component - Examples" />
+
+```cshtml {} showLineNumbers
+<Carousel>
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/carousel#examples)
+
+### Indicators
+
+You can add indicators to the carousel, alongside the previous/next controls. 
+The indicators allow users to jump directly to a particular slide. 
+Set `ShowIndicators` to `true` to show the indicators.
+
+<img src="https://i.imgur.com/e2MK7nE.png" alt="Blazor Bootstrap: Carousel Component - Indicators" />
+
+```cshtml {} showLineNumbers
+<Carousel ShowIndicators="true">
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/carousel#indicators)
+
+### Captions
+
+You can add captions to your slides with the `CarouselCaption` component within any `CarouselItem`. 
+They can be easily hidden on smaller viewports.
+
+<img src="https://i.imgur.com/HoYACSr.png" alt="Blazor Bootstrap: Carousel Component - Captions" />
+
+```cshtml {} showLineNumbers
+<Carousel ShowIndicators="true">
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-04.png" />
+        <CarouselCaption>
+            <h2>Earth Day</h2>
+            <p>Let's unite to protect our planet and create a sustainable future for generations to come.</p>
+        </CarouselCaption>
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-05.png" />
+        <CarouselCaption>
+            <h2>International Yoga Day</h2>
+            <p>Embrace the ancient art of harmony for a healthier, happier you.</p>
+        </CarouselCaption>
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-06.png" />
+        <CarouselCaption>
+            <h2>World Water Day</h2>
+            <p>Every drop counts, let's protect our planet's most precious resource.</p>
+        </CarouselCaption>
+    </CarouselItem>
+</Carousel>
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/carousel#captions)
+
+### Crossfade
+
+To animate slides with a fading transition instead of sliding, set `Crossfade` to `true`.
+
+<img src="https://i.imgur.com/vfV9VGu.png" alt="Blazor Bootstrap: Carousel Component - Crossfade" />
+
+```cshtml {} showLineNumbers
+<Carousel Crossfade="true">
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/carousel#crossfade)
+
+### Autoplaying carousels
+
+You can make your carousels autoplay on page load by setting the `Autoplay` parameter to `CarouselAutoPlay.StartOnPageLoad`. 
+Autoplaying carousels automatically pause while hovered with the mouse.
+
+```cshtml {} showLineNumbers
+<Carousel Autoplay="CarouselAutoPlay.StartOnPageLoad">
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+```
+
+When the `Autoplay` parameter is set to `CarouselAutoPlay.StartAfterUserInteraction`, the carousel won't automatically start to cycle on page load. 
+Instead, it will only start after the first user interaction.
+
+```cshtml {} showLineNumbers
+<Carousel Autoplay="CarouselAutoPlay.StartAfterUserInteraction">
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/carousel#autoplaying-carousels)
+
+### Individual carousel item interval
+
+Add `Interval` parameter to a `CarouselItem` component to change the amount of time to delay between automatically cycling to the next item.
+
+```cshtml {} showLineNumbers
+<Carousel Autoplay="CarouselAutoPlay.StartOnPageLoad">
+    <CarouselItem Active="true" Interval="10000">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem Interval="2000">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/carousel#individual-carousel-item-interval)
+
+### Autoplaying carousels without controls
+
+Hide the controls by setting `ShowPreviousNextControls` parameter to `false`.
+
+```cshtml {} showLineNumbers
+<Carousel Autoplay="CarouselAutoPlay.StartOnPageLoad" ShowPreviousNextControls="false">
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/carousel#autoplaying-carousels-without-controls)
+
+### Disable touch swiping
+
+Carousels support swiping left/right on touchscreen devices to move between slides. 
+This can be disabled by setting the `Touch` option to `false`.
+
+```cshtml {} showLineNumbers
+<Carousel Touch="false">
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/carousel#disable-touch-swiping)
+
+### Events
+
+Blazor Bootstrap Carousel component exposes a two events for hooking into Carousel functionality.
+
+```cshtml {} showLineNumbers
+<Carousel Onslid="Onslid" Onslide="Onslide">
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+
+@code {
+    [Inject]
+    ToastService ToastService { get; set; } = default!;
+    private void Onslid(CarouselEventArgs e)
+    {
+        var message = new ToastMessage
+            {
+                Type = ToastType.Secondary,
+                Title = "Carousel Events",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Onslid: from={e.From}, to={e.To}"
+            };
+        ToastService.Notify(message);
+    }
+
+    private void Onslide(CarouselEventArgs e)
+    {
+        var message = new ToastMessage
+            {
+                Type = ToastType.Secondary,
+                Title = "Carousel Events",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Onslide: from={e.From}, to={e.To}"
+            };
+        ToastService.Notify(message);
+    }
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/carousel#events)
