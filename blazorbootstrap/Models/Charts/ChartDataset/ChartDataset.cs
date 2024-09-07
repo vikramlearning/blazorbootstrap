@@ -3,7 +3,7 @@
 public interface IChartDataset { }
 
 /// <summary>
-///     <See href="https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration" />
+/// <See href="https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration" />
 /// </summary>
 public class ChartDataset<TData> : IChartDataset
 {
