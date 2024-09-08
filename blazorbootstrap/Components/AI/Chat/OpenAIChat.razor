@@ -1,8 +1,8 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div class="container d-flex flex-column vh-100">
-    <div class="flex-grow-1">
+<div class="container">
+    <div style="min-height:200px;max-height:400px;overflow-x:hidden;overflow-y:auto;">
         @foreach (var message in conversationHistory)
         {
             <div class="row p-2">
@@ -35,8 +35,8 @@
         }
     </div>
 
-    <div class="sticky-bottom w-50 p-3 rounded mx-auto">
-        @if (isSendingMessage)
+    <div class="p-3 rounded">
+        @if (isRequestInProgress)
         {
             <div class="text-center">
                 <div class="spinner-border spinner-border-sm" role="status">
@@ -44,14 +44,15 @@
                 </div>
             </div>
         }
-        <div class="input-group">
-            <button class="btn btn-primary" @onclick="ClearConversation">
-                <span class="bi bi-eraser"></span>
-            </button>
-            <textarea rows="2" class="form-control" placeholder="Ask your question..."
-                      @bind-value="userQuestion" @bind-value:event="oninput" @onkeypress="OnKeyPress"
-                      disabled="@isSendingMessage">
-        </textarea>
+        <div>
+            <textarea rows="2"
+                      class="form-control mb-2"
+                      placeholder="Enter a prompt here."
+                      @bind-value="userPrompt"
+                      @bind-value:event="oninput"
+                      disabled="@isRequestInProgress">
+            </textarea>
+            <span class="text-primary float-end" role="button" @onclick="SendPromptAsync">Submit<i class="bi bi-arrow-up-circle-fill ms-1"></i></span>
         </div>
     </div>
 </div>

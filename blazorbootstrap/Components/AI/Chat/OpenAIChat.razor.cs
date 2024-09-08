@@ -6,9 +6,9 @@ public partial class OpenAIChat : BlazorBootstrapComponentBase
 
     private string key = "";
     private string model = "gpt-4";
-    private string userQuestion = string.Empty;
+    private string userPrompt = string.Empty;
     private readonly List<Message> conversationHistory = new();
-    private bool isSendingMessage;
+    private bool isRequestInProgress;
     private string? currentCompletion;
     private DotNetObjectReference<OpenAIChat>? objRef;
 
@@ -22,17 +22,11 @@ public partial class OpenAIChat : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    private async Task OnKeyPress(KeyboardEventArgs e)
+    private async Task SendPromptAsync()
     {
-        if (e.Key is not "Enter") return;
-        await SendMessageAsync();
-    }
+        if (string.IsNullOrWhiteSpace(userPrompt)) return;
 
-    private async Task SendMessageAsync()
-    {
-        if (string.IsNullOrWhiteSpace(userQuestion)) return;
-
-        var message = new Message("user", userQuestion);
+        var message = new Message("user", userPrompt);
         conversationHistory.Add(message);
 
         StateHasChanged();
@@ -43,7 +37,7 @@ public partial class OpenAIChat : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
-    private void ClearInput() => userQuestion = string.Empty;
+    private void ClearInput() => userPrompt = string.Empty;
 
     private void ClearConversation()
     {
@@ -53,7 +47,7 @@ public partial class OpenAIChat : BlazorBootstrapComponentBase
 
     private async Task CreateCompletionAsync(Message message)
     {
-        isSendingMessage = true;
+        isRequestInProgress = true;
         //await AIJSInterop.CreateChatCompletionsAsync(key, message, objRef!); // OpenAI
         await AIJSInterop.CreateChatCompletions2Async("", message, objRef!); // Azure OpenAI
         //await OpenAIChatJsInterop.CreateChatCompletionsApiAsync(key, message, objRef!); // API
@@ -62,8 +56,8 @@ public partial class OpenAIChat : BlazorBootstrapComponentBase
     [JSInvokable]
     public async Task ChartCompletetionsStreamJs(string content, bool done)
     {
-        if (isSendingMessage)
-            isSendingMessage = false;
+        if (isRequestInProgress)
+            isRequestInProgress = false;
 
         if (done)
         {
