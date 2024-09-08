@@ -59,6 +59,9 @@ export async function createChatCompletions(key, message, dotNetHelper) {
 export async function createChatCompletions2(key, message, dotNetHelper) {
     const API_KEY = key;
     const API_URL = 'https://vk-aoai-test.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-02-15-preview';
+    let messages = [];
+    let notificationTriggered = false;
+    let stopSetInterval = false;
 
     try {
         // Fetch the response from the OpenAI API with the signal from AbortController
@@ -97,19 +100,36 @@ export async function createChatCompletions2(key, message, dotNetHelper) {
             for (const payload of lines) {
 
                 if (payload.includes('[DONE]')) {
+                    stopSetInterval = true;
                     dotNetHelper.invokeMethodAsync('ChartCompletetionsStreamJs', '', true);
                     return;
                 }
 
                 if (payload.startsWith("data:")) {
                     const data = JSON.parse(payload.replace("data:", ""));
-                    const content = data.choices[0].delta.content;
+                    const content = data.choices[0]?.delta?.content;
                     if (content) {
-                        dotNetHelper.invokeMethodAsync('ChartCompletetionsStreamJs', content, false);
+                        messages.push(content);
+                        if (!notificationTriggered) {
+                            notificationTriggered = true;
+                            triggerNotify();
+                        }
                     }
                 }
             }
         }
+
+        function triggerNotify() {
+            setInterval(() => {
+                if (stopSetInterval) {
+                    stopSetInterval = false;
+                    clearInterval();
+                }
+                const content = messages.shift();
+                dotNetHelper.invokeMethodAsync('ChartCompletetionsStreamJs', content, false);
+            }, 100);
+        }
+
     } catch (error) {
         // Handle fetch request errors
         console.log(error);

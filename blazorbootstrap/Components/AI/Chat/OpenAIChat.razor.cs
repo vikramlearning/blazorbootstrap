@@ -60,7 +60,7 @@ public partial class OpenAIChat : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public void ChartCompletetionsStreamJs(string content, bool done)
+    public async Task ChartCompletetionsStreamJs(string content, bool done)
     {
         if (isSendingMessage)
             isSendingMessage = false;
@@ -69,12 +69,12 @@ public partial class OpenAIChat : BlazorBootstrapComponentBase
         {
             conversationHistory.Add(new Message("system", currentCompletion!));
             currentCompletion = "";
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
             return;
         }
 
         currentCompletion += content;
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     #endregion
