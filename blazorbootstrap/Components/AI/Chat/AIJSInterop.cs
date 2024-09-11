@@ -29,16 +29,16 @@ internal class AIJSInterop : IAsyncDisposable
         }
     }
 
-    public async Task CreateChatCompletionsAsync(string key, object message, object objRef)
+    public async Task CreateChatCompletionsAsync(string key, object messages, object objRef)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("createChatCompletions", key, message, objRef);
+        await module.InvokeVoidAsync("createChatCompletions", key, messages, objRef);
     }
 
-    public async Task CreateChatCompletions2Async(string key, object message, object objRef)
+    public async Task CreateChatCompletions2Async(string url, string key, object payload, object objRef)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("createChatCompletions2", key, message, objRef);
+        await module.InvokeVoidAsync("createChatCompletions2", url, key, payload, objRef);
     }
 
     #endregion
