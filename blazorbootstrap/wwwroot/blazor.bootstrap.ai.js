@@ -61,7 +61,7 @@ export async function createChatCompletions2(key, message, dotNetHelper) {
     const API_URL = 'https://vk-aoai-test.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-02-15-preview';
     let messages = [];
     let notificationTriggered = false;
-    let stopSetInterval = false;
+    let streamComplete = false;
 
     try {
         // Fetch the response from the OpenAI API with the signal from AbortController
@@ -100,8 +100,7 @@ export async function createChatCompletions2(key, message, dotNetHelper) {
             for (const payload of lines) {
 
                 if (payload.includes('[DONE]')) {
-                    stopSetInterval = true;
-                    dotNetHelper.invokeMethodAsync('ChartCompletetionsStreamJs', '', true);
+                    streamComplete = true;
                     return;
                 }
 
@@ -120,13 +119,14 @@ export async function createChatCompletions2(key, message, dotNetHelper) {
         }
 
         function triggerNotify() {
-            setInterval(() => {
-                if (stopSetInterval) {
-                    stopSetInterval = false;
-                    clearInterval();
-                }
+            let handler = setInterval(() => {
                 const content = messages.shift();
                 dotNetHelper.invokeMethodAsync('ChartCompletetionsStreamJs', content, false);
+
+                if (streamComplete && messages.length === 0) {
+                    clearInterval(handler);
+                    dotNetHelper.invokeMethodAsync('ChartCompletetionsStreamJs', '', true);
+                }
             }, 100);
         }
 
