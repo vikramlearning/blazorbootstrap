@@ -1,0 +1,95 @@
+﻿<LineChart Height="200" @ref="lineChart" Width="500" />
+
+@* You need to enable a date adapter for ChartJS, e.g. Luxon: *@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/luxon/3.5.0/luxon.min.js" integrity="sha512-SN7iwxiJt9nFKiLayg3NjLItXPwRfBr4SQSIugMeBFrD4lIFJe1Z/exkTZYAg3Ul+AfZEGws2PQ+xSoaWfxRQQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-luxon/1.3.1/chartjs-adapter-luxon.umd.js" integrity="sha512-shMguvn9vyPHoXeEEPgqLX+f7zEHpuYbhK4xcBMS+IATkIj/1P+PhnWC4wMhFUekmSZqKTvL43cHnRkAlrMJ3Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<div class="mt-5">
+  <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="@(async () => await TextLabels())" Size="ButtonSize.Small" Type="ButtonType.Button"> Text labels</Button>
+  <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="@(async () => await DateLabels("dd-MM-yyyy"))" Size="ButtonSize.Small" Type="ButtonType.Button"> Date labels [European format]</Button>
+  <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="@(async () => await DateLabels("MM/dd/yy"))" Size="ButtonSize.Small" Type="ButtonType.Button"> Date labels [US format]</Button>
+</div>
+
+@code {
+  private LineChart lineChart = default!;
+  private LineChartOptions lineChartOptions = default!;
+  private ChartData chartData = default!;
+  private DateTime startOfYear = new DateTime( DateTime.Today.Year, 1, 1 );
+
+  protected override void OnInitialized()
+  {
+    var colors = ColorUtility.CategoricalTwelveColors;
+
+    var rng = new Random();
+    var labels = new List<string>();
+    var data = new List<double?>();
+    for( int i = 0; i < 20; i++ )
+    {
+      labels.Add( startOfYear.AddDays( rng.Next( 0, 365 ) ).ToString( "yyyy-MM-dd" ) );
+      data.Add( rng.Next( 0, 200 ) );
+    }
+
+    var datasets = new List<IChartDataset>();
+    labels.Sort();
+    var dataset = new LineChartDataset
+      {
+        Label = "Value",
+        Data = data,
+        BackgroundColor = colors[ 0 ],
+        BorderColor = colors[ 0 ],
+        BorderWidth = 2,
+        HoverBorderWidth = 4
+      };
+    datasets.Add( dataset );
+
+    chartData = new ChartData { Labels = labels, Datasets = datasets };
+
+    lineChartOptions = new();
+    lineChartOptions.Responsive = true;
+    lineChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index };
+
+    lineChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "Day", Display = true };
+    lineChartOptions.Scales.Y!.Title = new ChartAxesTitle { Text = "Value", Display = true };
+  }
+
+  protected async Task TextLabels()
+  {
+    // Set the defaults
+    lineChartOptions.Scales.X!.Type = null;
+    lineChartOptions.Scales.X!.Time = null;
+
+    lineChartOptions.Scales.X!.Min = null;
+    lineChartOptions.Scales.X!.Max = null;
+
+    await lineChart.UpdateAsync( chartData, lineChartOptions );
+  }
+
+  protected async Task DateLabels( string format )
+  {
+    lineChartOptions.Scales.X!.Type = ChartAxesType.Time;
+    lineChartOptions.Scales.X!.Time = new ChartTimeAxisOptions()
+      {
+        TooltipFormat = format,
+        DisplayFormats = new
+        {
+          month = format
+        },
+        Unit = ChartTimeUnit.Month
+      };
+
+    lineChartOptions.Scales.X!.Min = startOfYear.ToString( "yyyy-MM-dd" );
+    lineChartOptions.Scales.X!.Max = startOfYear.AddYears( 1 ).ToString( "yyyy-MM-dd" );
+
+    await lineChart.UpdateAsync( chartData, lineChartOptions );
+  }
+
+  protected override async Task OnAfterRenderAsync( bool firstRender )
+  {
+    if( firstRender )
+    {
+      await lineChart.InitializeAsync( chartData, lineChartOptions );
+    }
+    await base.OnAfterRenderAsync( firstRender );
+  }
+
+}
