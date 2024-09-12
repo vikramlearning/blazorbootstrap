@@ -19,6 +19,11 @@ public class ChartPlugins
 
   #region Methods
 
+  public void AddObject( string key, object plugin )
+  {
+    customPlugins.Add( key, plugin );
+  }
+
   public void Add<T>( string key, T plugin )
     where T : ChartPlugin
   {
@@ -86,7 +91,7 @@ public class ChartPlugins
   #endregion
 }
 
-public class ChartPluginsAnnotation
+public class ChartPluginsAnnotation : ChartPlugin
 {
   #region Inner classes
 
@@ -139,7 +144,6 @@ public class ChartPluginsAnnotation
 
   #endregion
 }
-
 public class ChartPluginsLegend : ChartPlugin
 {
   #region Properties, Indexers
