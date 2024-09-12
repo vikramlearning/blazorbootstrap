@@ -22,8 +22,6 @@ public static class Config
         services.AddScoped<PdfViewerJsInterop>();
         services.AddScoped<SortableListJsInterop>();
 
-        services.AddScoped<AIJSInterop>();
-
         return services;
     }
 

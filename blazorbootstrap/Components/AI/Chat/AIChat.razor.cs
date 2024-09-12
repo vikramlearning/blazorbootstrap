@@ -1,16 +1,19 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class OpenAIChat : BlazorBootstrapComponentBase
+public partial class AIChat : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private string key = "";
-    private string model = "gpt-4";
+    private string? endpoint;
+    private string? deploymentName;
+    private string? apiKey;
+    private string? apiVersion;
+
     private string userPrompt = string.Empty;
     private readonly List<Message> conversationHistory = new();
     private bool isRequestInProgress;
     private string? currentCompletion;
-    private DotNetObjectReference<OpenAIChat>? objRef;
+    private DotNetObjectReference<AIChat>? objRef;
 
     #endregion
 
@@ -18,6 +21,26 @@ public partial class OpenAIChat : BlazorBootstrapComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        var configurationSection = Configuration.GetSection("AzureOpenAI");
+        if(Configuration is null)
+            throw new ArgumentException($"`AzureOpenAI` section was not found in the application configuration.");
+
+        endpoint = configurationSection["Endpoint"];
+        if (endpoint is null)
+            throw new ArgumentException($"`Endpoint` key/value was not found in the 'AzureOpenAI' section of the application configuration.");
+
+        deploymentName = configurationSection["DeploymentName"];
+        if (deploymentName is null)
+            throw new ArgumentException($"`DeploymentName` key/value was not found in the 'AzureOpenAI' section of the application configuration.");
+
+        apiKey = configurationSection["ApiKey"];
+        if (apiKey is null)
+            throw new ArgumentException($"`ApiKey` key/value was not found in the 'AzureOpenAI' section of the application configuration.");
+
+        apiVersion = configurationSection["ApiVersion"];
+        if (apiVersion is null)
+            throw new ArgumentException($"`ApiVersion` key/value was not found in the 'AzureOpenAI' section of the application configuration.");
+
         objRef ??= DotNetObjectReference.Create(this);
         await base.OnInitializedAsync();
     }
@@ -38,22 +61,27 @@ public partial class OpenAIChat : BlazorBootstrapComponentBase
     private async Task CreateCompletionAsync(List<Message> messages)
     {
         isRequestInProgress = true;
-        //await AIJSInterop.CreateChatCompletionsAsync(key, messages, objRef!); // OpenAI
 
         var payload = new OpenAIChatPayload { 
             Messages = messages, 
-            MaximumTokens = 200,
-            Temperature = 0.7,
-            TopP = 0.95,
+            MaximumTokens = MaximumTokens,
+            Temperature = Temperature,
+            TopP = TopP
         };
 
-        await AIJSInterop.CreateChatCompletions2Async(
-            url: "",
-            key: "", 
-            payload: payload, 
-            objRef: objRef!); // Azure OpenAI
-
-        //await OpenAIChatJsInterop.CreateChatCompletionsApiAsync(key, messages, objRef!); // API
+        try
+        {
+            await JSRuntime.InvokeVoidAsync(
+                AIChatInterop.AzureOpenAIChatCompletions,
+                $"{endpoint}openai/deployments/{deploymentName}/chat/completions?api-version={apiVersion}",
+                apiKey,
+                payload,
+                objRef!);
+        }
+        catch
+        {
+            isRequestInProgress = false;
+        }
     }
 
     [JSInvokable]
@@ -80,7 +108,30 @@ public partial class OpenAIChat : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
-    [Inject] private AIJSInterop AIJSInterop { get; set; } = default!;
+    /// <summary>
+    /// The maximum number of tokens to generate shared between the prompt and completion. 
+    /// The exact limit varies by model. (One token is roughly 4 characters for standard English text)
+    /// Minimum 1 and the maximum tokens is 4096.
+    /// </summary>
+    /// <remarks>Default value is 2048. This value is limited by gpt-3.5-turbo.</remarks>
+    [Parameter]
+    public long MaximumTokens { get; set; } = 2048;
+
+    /// <summary>
+    /// Controls randomness: Lowering results in less random completions. 
+    /// As the temperature approaches zero, the model will become deterministic and repetitive.
+    /// Minimum 1 and the maximum is 2.
+    /// </summary>
+    /// <remarks>Default value is 1.</remarks>
+    [Parameter]
+    public double Temperature { get; set; } = 1;
+
+    /// <summary>
+    /// Controls diversity via nucleus sampling: 0.5 means half of all likelihood-weighted options are considered.
+    /// </summary>
+    /// <remarks>Default value is 1.</remarks>
+    [Parameter]
+    public double TopP { get; set; } = 1;
 
     #endregion
 }
