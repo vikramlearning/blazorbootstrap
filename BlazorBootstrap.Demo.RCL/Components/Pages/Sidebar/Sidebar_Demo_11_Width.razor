@@ -6,17 +6,17 @@
          WidthUnit="Unit.Px" />
 
 @code {
-    IEnumerable<NavItem>? navItems;
+    IReadOnlyCollection<NavItem>? navItems;
 
-    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    private async Task<SidebarDataProviderResult> SidebarDataProvider()
     {
         if (navItems is null)
             navItems = GetNavItems();
 
-        return await Task.FromResult(request.ApplyTo(navItems));
+        return await Task.FromResult(SidebarDataProviderRequest.ApplyTo(navItems));
     }
 
-    private IEnumerable<NavItem> GetNavItems()
+    private IReadOnlyCollection<NavItem> GetNavItems()
     {
         navItems = new List<NavItem>
         {

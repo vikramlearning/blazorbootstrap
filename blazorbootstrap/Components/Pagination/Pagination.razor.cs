@@ -1,5 +1,11 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Reflection.Metadata.Ecma335;
 
+namespace BlazorBootstrap;
+
+/// <summary>
+/// Use Blazor Bootstrap pagination component to indicate a series of related content exists across multiple pages. <br/>
+/// For more information, visit the <see href="https://getbootstrap.com/docs/5.0/components/pagination/">Bootstrap Pagination</see> documentation.
+/// </summary>
 public partial class Pagination : BlazorBootstrapComponentBase
 {
     #region Methods
@@ -27,7 +33,7 @@ public partial class Pagination : BlazorBootstrapComponentBase
         if (q < 1)
             return 1;
 
-        if (q > 0 && r == 0)
+        if (r == 0)
             return (q - 1) * DisplayPages + 1;
 
         if (q > 1 && r < DisplayPages)
@@ -36,7 +42,7 @@ public partial class Pagination : BlazorBootstrapComponentBase
         return ActivePageNumber / DisplayPages * DisplayPages + 1;
     }
 
-    private int GetPageToExclusive() => TotalPages == 0 ? 1 : Math.Min(TotalPages, pageFromInclusive + DisplayPages - 1);
+    private int GetPageToExclusive() => TotalPages == 0 ? 1 : Math.Min(TotalPages, PageFromInclusive + DisplayPages - 1);
 
     private int GetPreviousPageNumber()
     {
@@ -62,10 +68,49 @@ public partial class Pagination : BlazorBootstrapComponentBase
         }
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ActivePageNumber): ActivePageNumber = (int)parameter.Value; break;
+                case nameof(Alignment): Alignment = (Alignment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(DisplayPages): DisplayPages = (int)parameter.Value; break;
+                case nameof(FirstLinkIcon): FirstLinkIcon = (IconName)parameter.Value; break;
+                case nameof(FirstLinkText): FirstLinkText = (string)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(LastLinkIcon): LastLinkIcon = (IconName)parameter.Value; break;
+                case nameof(LastLinkText): LastLinkText = (string)parameter.Value; break;
+                case nameof(NextLinkIcon): NextLinkIcon = (IconName)parameter.Value; break;
+                case nameof(NextLinkText): NextLinkText = (string)parameter.Value; break;
+                case nameof(PageChanged): PageChanged = (EventCallback<int>)parameter.Value; break;
+                case nameof(PreviousLinkIcon): PreviousLinkIcon = (IconName)parameter.Value; break;
+                case nameof(PreviousLinkText): PreviousLinkText = (string)parameter.Value; break;
+                case nameof(Size): Size = (PaginationSize)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(TotalPages): TotalPages = (int)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Pagination, true),
@@ -108,18 +153,14 @@ public partial class Pagination : BlazorBootstrapComponentBase
     [Parameter]
     public IconName FirstLinkIcon { get; set; } = IconName.None;
 
-    private string firstLinkText => string.IsNullOrWhiteSpace(FirstLinkText) ? "First" : FirstLinkText;
-
     /// <summary>
     /// Gets or sets the first link text. 'FirstLinkText' is ignored if 'FirstLinkIcon' is specified.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? FirstLinkText { get; set; }
-
-    private int firstPageNumber => 1;
 
     /// <summary>
     /// Gets or sets the last link icon.
@@ -130,18 +171,16 @@ public partial class Pagination : BlazorBootstrapComponentBase
     [Parameter]
     public IconName LastLinkIcon { get; set; } = IconName.None;
 
-    private string lastLinkText => string.IsNullOrWhiteSpace(LastLinkText) ? "Last" : LastLinkText;
-
     /// <summary>
     /// Gets or sets the last link text. 'LastLinkText' is ignored if 'LastLinkIcon' is specified.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? LastLinkText { get; set; }
 
-    private int lastPageNumber => TotalPages == 0 ? 1 : TotalPages;
+    private int LastPageNumber => TotalPages == 0 ? 1 : TotalPages;
 
     /// <summary>
     /// Gets or sets the next link icon.
@@ -151,19 +190,17 @@ public partial class Pagination : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public IconName NextLinkIcon { get; set; } = IconName.None;
-
-    private string nextLinkText => string.IsNullOrWhiteSpace(NextLinkText) ? "Next" : NextLinkText;
-
+    
     /// <summary>
     /// Gets or sets the next link text. 'NextLinkText' is ignored if 'NextLinkIcon' is specified.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? NextLinkText { get; set; }
 
-    private int nextPageNumber => GetNextPageNumber();
+    private int NextPageNumber => GetNextPageNumber();
 
     /// <summary>
     /// This event fires immediately when the page number is changed.
@@ -171,9 +208,9 @@ public partial class Pagination : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<int> PageChanged { get; set; }
 
-    private int pageFromInclusive => GetPageFromInclusive();
+    private int PageFromInclusive => GetPageFromInclusive();
 
-    private int pageToExclusive => GetPageToExclusive();
+    private int PageToExclusive => GetPageToExclusive();
 
     /// <summary>
     /// Gets or sets the previous link icon.
@@ -183,19 +220,17 @@ public partial class Pagination : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public IconName PreviousLinkIcon { get; set; } = IconName.None;
-
-    private string previousLinkText => string.IsNullOrWhiteSpace(PreviousLinkText) ? "Previous" : PreviousLinkText;
-
+    
     /// <summary>
     /// Gets or sets the previous link text. 'PreviousLinkText' is ignored if 'PreviousLinkIcon' is specified.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? PreviousLinkText { get; set; }
 
-    private int previousPageNumber => GetPreviousPageNumber();
+    private int PreviousPageNumber => GetPreviousPageNumber();
 
     /// <summary>
     /// Gets or sets the pagination size.

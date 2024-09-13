@@ -10,6 +10,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -24,7 +25,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// <returns>A completed task.</returns>
     public ValueTask AddMarkerAsync(GoogleMapMarker marker)
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.addMarker", Id, marker, objRef);
+        JsRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.addMarker", Id, marker, objRef);
 
         return ValueTask.CompletedTask;
     }
@@ -42,7 +43,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// <returns>A completed task.</returns>
     public ValueTask RefreshAsync()
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef);
+        JsRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef);
 
         return ValueTask.CompletedTask;
     }
@@ -53,14 +54,14 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// <returns>A completed task.</returns>
     public ValueTask UpdateMarkersAsync(IEnumerable<GoogleMapMarker> markers)
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.updateMarkers", Id, markers, objRef);
+        JsRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.updateMarkers", Id, markers, objRef);
 
         return ValueTask.CompletedTask;
     }
 
     private void OnScriptLoad()
     {
-        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef));
+        Task.Run(async () => await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef));
     }
 
     #endregion

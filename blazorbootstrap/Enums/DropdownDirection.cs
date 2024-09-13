@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Direction the items in a <see cref="Dropdown" /> should be ordered in.
+/// </summary>
 public enum DropdownDirection
 {
     /// <summary>
@@ -15,19 +18,20 @@ public enum DropdownDirection
     /// <summary>
     /// Displays the dropdown menu right of the <see cref="Dropdown" /> element.
     /// </summary>
-    Dropend,
+    DropEnd,
 
     /// <summary>
     /// Displays the dropdown menu above the <see cref="Dropdown" /> element.
-    Dropup,
+    /// </summary>
+    DropUp,
 
     /// <summary>
     /// Displays the dropdown menu above the <see cref="Dropdown" /> element and centered.
     /// </summary>
-    DropupCentered,
+    DropUpCentered,
 
     /// <summary>
     /// Displays the dropdown menu start the <see cref="Dropdown" /> element.
     /// </summary>
-    Dropstart
+    DropStart
 }

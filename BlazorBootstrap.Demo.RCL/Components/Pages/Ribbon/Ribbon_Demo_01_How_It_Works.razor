@@ -1,6 +1,6 @@
 ﻿<Ribbon OnClick="OnRibbonItemClick">
     <RibbonTab Title="Home" Active="true">
-        <Content>
+        <ChildContent>
             <!-- New -->
             <RibbonItemGroup Text="New">
                 <RibbonItem Name="NewEmail" IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" IsFirstItem="true">New<br />Email</RibbonItem>
@@ -11,10 +11,10 @@
                 <RibbonItem Name="Delete" IconColor="IconColor.Danger" IconName="IconName.Trash" IconSize="IconSize.x3" Text="Delete" IsFirstItem="true" />
                 <RibbonItem Name="Archive" IconColor="IconColor.Primary" IconName="IconName.Archive" IconSize="IconSize.x3" Text="Archive" IsLastItem="true" />
             </RibbonItemGroup>
-        </Content>
+        </ChildContent>
     </RibbonTab>
     <RibbonTab Title="Send / Receive">
-        <Content>
+        <ChildContent>
             <!-- Send & Receive -->
             <RibbonItemGroup Text="Send & Receive">
                 <RibbonItem Name="SendReceiveAllFolders" IconColor="IconColor.Success" IconName="IconName.EnvelopePlus" IconSize="IconSize.x3" IsFirstItem="true">Send/Receive<br />All Folders</RibbonItem>
@@ -25,10 +25,10 @@
                 <RibbonItem Name="ShowProgress" IconColor="IconColor.Success" IconName="IconName.Trash" IconSize="IconSize.x3" IsFirstItem="true">Show<br />Progress</RibbonItem>
                 <RibbonItem Name="CancelAll" IconColor="IconColor.Primary" IconName="IconName.XSquareFill" IconSize="IconSize.x3" IsLastItem="true">Cancel<br />All</RibbonItem>
             </RibbonItemGroup>
-        </Content>
+        </ChildContent>
     </RibbonTab>
     <RibbonTab Title="Folder">
-        <Content>
+        <ChildContent>
             <!-- New -->
             <RibbonItemGroup Text="New">
                 <RibbonItem Name="NewFolder" IconColor="IconColor.Success" IconName="IconName.FolderPlus" IconSize="IconSize.x3" IsFirstItem="true">New<br />Folder</RibbonItem>
@@ -41,7 +41,7 @@
                 <RibbonItem Name="MoveFolder" IconColor="IconColor.Primary" IconName="IconName.ArrowRight" IconSize="IconSize.x3">Move<br />Folder</RibbonItem>
                 <RibbonItem Name="DeleteFolder" IconColor="IconColor.Primary" IconName="IconName.FolderX" IconSize="IconSize.x3" IsLastItem="true">Delete<br />Folder</RibbonItem>
             </RibbonItemGroup>
-        </Content>
+        </ChildContent>
     </RibbonTab>
 </Ribbon>
 

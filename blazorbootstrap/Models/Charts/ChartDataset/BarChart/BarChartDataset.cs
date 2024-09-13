@@ -11,15 +11,6 @@ public class BarChartDataset : ChartDataset<double?>
     #region Properties, Indexers
 
     /// <summary>
-    /// The bar background color.
-    /// </summary>
-    /// <remarks>
-    /// Default value is 'rgba(0, 0, 0, 0.1)'.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? BackgroundColor { get; set; }
-
-    /// <summary>
     /// Percent (0-1) of the available width each bar should be within the category width.
     /// 1.0 will take the whole category width and put the bars right next to each other.
     /// </summary>
@@ -39,33 +30,12 @@ public class BarChartDataset : ChartDataset<double?>
     public double? BarThickness { get; set; }
 
     /// <summary>
-    /// The bar border color.
-    /// </summary>
-    /// <remarks>
-    /// Default value is 'rgba(0, 0, 0, 0.1)'.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? BorderColor { get; set; }
-
-    /// <summary>
     /// Border radius
     /// </summary>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
-    public List<double>? BorderRadius { get; set; }
-
-    /// <summary>
-    /// Gets or sets the border width (in pixels).
-    /// </summary>
-    /// <remarks>
-    /// Default value is 0.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? BorderWidth { get; set; }
-
-    //BorderSkipped
-    //https://www.chartjs.org/docs/latest/api/interfaces/BarControllerDatasetOptions.html#borderskipped
+    public IReadOnlyCollection<double>? BorderRadius { get; set; }
 
     /// <summary>
     /// Percent (0-1) of the available width each category should be within the sample width.
@@ -114,16 +84,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// Default value is 0.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? HoverBorderRadius { get; set; }
-
-    /// <summary>
-    /// The bar border width when hovered (in pixels).
-    /// </summary>
-    /// <remarks>
-    /// Default value is 1.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? HoverBorderWidth { get; set; }
+    public IReadOnlyCollection<double>? HoverBorderRadius { get; set; }
 
     /// <summary>
     /// The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts.

@@ -10,15 +10,6 @@ public class DoughnutChartDataset : ChartDataset<double?>
     #region Properties, Indexers
 
     /// <summary>
-    /// Arc background color.
-    /// </summary>
-    /// <remarks>
-    /// Default value is 'rgba(0, 0, 0, 0.1)'.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? BackgroundColor { get; set; }
-
-    /// <summary>
     /// Supported values are 'center' and 'inner'.
     /// When 'center' is set, the borders of arcs next to each other will overlap.
     /// When 'inner' is set, it is guaranteed that all borders will not overlap.
@@ -27,16 +18,7 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// Default value is 'center'.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? BorderAlign { get; set; } // TODO: change this to enum
-
-    /// <summary>
-    /// Arc border color.
-    /// </summary>
-    /// <remarks>
-    /// Default value is '#fff'.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? BorderColor { get; set; }
+    public IReadOnlyCollection<string>? BorderAlign { get; set; } // TODO
 
     /// <summary>
     /// Arc border length and spacing of dashes.
@@ -45,7 +27,7 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? BorderDash { get; set; }
+    public IReadOnlyCollection<double>? BorderDash { get; set; }
 
     /// <summary>
     /// Arc border offset for line dashes.
@@ -63,7 +45,7 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? BorderJoinStyle { get; set; } // TODO: change this to enum
+    public IReadOnlyCollection<string>? BorderJoinStyle { get; set; } // TODO: change this to enum
 
     /// <summary>
     /// It is applied to all corners of the arc (outerStart, outerEnd, innerStart, innerRight).
@@ -72,16 +54,7 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// Default value is 0.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? BorderRadius { get; set; }
-
-    /// <summary>
-    /// Arc border width (in pixels).
-    /// </summary>
-    /// <remarks>
-    /// Default value is 2.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? BorderWidth { get; set; }
+    public IReadOnlyCollection<double>? BorderRadius { get; set; }
 
     /// <summary>
     /// Per-dataset override for the sweep that the arcs cover.
@@ -90,7 +63,7 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public double? Circumference { get; set; }
+    public double? Circumference { get; set; } 
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public DoughnutChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
@@ -120,7 +93,7 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? HoverBorderDash { get; set; }
+    public IReadOnlyCollection<double>? HoverBorderDash { get; set; }
 
     /// <summary>
     /// Arc border offset for line dashes when hovered.
@@ -139,7 +112,7 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? HoverBorderJoinStyle { get; set; } // TODO: change this to enum
+    public IReadOnlyCollection<string>? HoverBorderJoinStyle { get; set; } // TODO: change this to enum
 
     /// <summary>
     /// Arc border width when hovered (in pixels).
@@ -157,7 +130,7 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// Default value is 0.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? HoverOffset { get; set; }
+    public IReadOnlyCollection<double>? HoverOffset { get; set; }
 
     /// <summary>
     /// Arc offset (in pixels).
@@ -166,7 +139,7 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// Default value is 0.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? Offset { get; set; }
+    public IReadOnlyCollection<double>? Offset { get; set; }
 
     /// <summary>
     /// Per-dataset override for the starting angle to draw arcs from.

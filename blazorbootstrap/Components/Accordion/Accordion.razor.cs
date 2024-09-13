@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Build vertically collapsing accordions in combination with our <see cref="Collapse"/>> component. <br/>
+/// The accordion is based on the <see href="https://getbootstrap.com/docs/5.0/components/accordion/">Bootstrap Accordion</see> component. 
+/// </summary>
 public partial class Accordion : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -55,7 +59,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     {
         if (!items?.Any() ?? false) return;
 
-        foreach (var accordionItem in items!)
+        foreach (var accordionItem in items!.ToList())
             if (accordionItem is not null)
                 await accordionItem.HideAsync();
     }
@@ -117,7 +121,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Shows all <see cref="AccordionItem" /> instances if AlwaysOpen is true.
+    /// Shows all <see cref="AccordionItem" /> instances if <see cref="AlwaysOpen"/> is <see langword="true" />.
     /// </summary>
     public async Task ShowAllAccordionItemsAsync()
     {
@@ -161,17 +165,44 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// <param name="accordionItem">The AccordionItem to add.</param>
     internal void Add(AccordionItem accordionItem)
     {
-        if (items is null)
-            items = new List<AccordionItem>();
+        items ??= new List<AccordionItem>();
+        items.Add(accordionItem);
+    }
+    
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AlwaysOpen): AlwaysOpen = (bool)parameter.Value; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Flush): Flush = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(OnHidden): OnHidden = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case nameof(OnHiding): OnHiding = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case nameof(OnShowing): OnShowing = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case nameof(OnShown): OnShown = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
 
-        if (accordionItem is not null)
-            items.Add(accordionItem);
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Accordion, true),
@@ -181,16 +212,16 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// If <see langword="true" />, accordion items stay open when another item is opened.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AlwaysOpen { get; set; }
-
+    
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
@@ -200,13 +231,13 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// If <see langword="true" />, removes borders and rounded corners to render accordions edge-to-edge with their parent container.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Flush { get; set; }
 
     /// <summary>
-    /// This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete).
+    /// This event is fired when an accordion item has been hidden from the user (will wait for CSS transitions to complete).
     /// </summary>
     [Parameter]
     public EventCallback<AccordionEventArgs> OnHidden { get; set; }
@@ -224,7 +255,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     public EventCallback<AccordionEventArgs> OnShowing { get; set; }
 
     /// <summary>
-    /// This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to
+    /// This event is fired when an accordion item has been made visible to the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
     [Parameter]

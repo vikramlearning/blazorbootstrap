@@ -1,5 +1,14 @@
 ﻿namespace BlazorBootstrap;
 
+
+/// <summary>
+/// Blazor Bootstrap <see cref="TimeInput{T}"/> component is constructed using an HTML input of type="time" which limits user input based on pre-defined parameters.
+/// This component enables users to input a time using a text box with validation or a special time picker interface.
+/// </summary>
+/// <typeparam name="TValue">Time datatype to insert: <see cref="TimeOnly"/> and its <see cref="Nullable{T}"/>> variant are supported.</typeparam>
+/// <exception cref="InvalidOperationException">Thrown if <typeparamref name="TValue"/> isn't of type <see cref="TimeOnly"/> or its <see cref="Nullable{T}"/>> alternative.</exception>
+/// <exception cref="InvalidOperationException">Thrown if <see cref="Min"/> is larger than <see cref="Max"/> and <see cref="EnableMinMax"/> is <see langword="true" /></exception>
+
 public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -27,6 +36,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -65,6 +75,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         max = Max;
@@ -80,14 +91,13 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
               || typeof(TValue) == typeof(TimeOnly?)
              ))
             throw new InvalidOperationException($"{typeof(TValue)} is not supported.");
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
+        
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (EnableMinMax && !min!.Equals(Min))
@@ -146,12 +156,12 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Determines where the left input is greater than the right input.
+    /// Determines where the <paramref name="left"/>> input is greater than the <paramref name="right"/>> input.
     /// </summary>
-    /// <param name="left"></param>
-    /// <param name="right"></param>
-    /// <returns>bool</returns>
-    private bool IsLeftGreaterThanRight(object left, object right)
+    /// <param name="left">Left hand object</param>
+    /// <param name="right">Right hand object</param>
+    /// <returns><see langword="true"/> if <paramref name="left"/> is greater than <paramref name="right"/></returns>
+    private static bool IsLeftGreaterThanRight(object? left, object? right)
     {
         if (left is null || right is null)
             return false;
@@ -202,14 +212,14 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
         formattedValue = GetFormattedValue(Value!);
 
         if (oldValue!.Equals(Value))
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.timeInput.setValue", Id, formattedValue);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.timeInput.setValue", Id, formattedValue);
 
         await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
     }
 
-    private bool TryParseValue(object value, out TValue newValue)
+    private static bool TryParseValue(object value, out TValue newValue)
     {
         try
         {
@@ -241,20 +251,49 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
         }
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AutoComplete): AutoComplete = (bool)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
+                case nameof(EditContext): EditContext = (EditContext)parameter.Value!; break;
+                case nameof(EnableMinMax): EnableMinMax = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Max): Max = (TValue)parameter.Value; break;
+                case nameof(Min): Min = (TValue)parameter.Value; break;
+                case nameof(Placeholder): Placeholder = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(Value): Value = (TValue)parameter.Value; break;
+                case nameof(ValueChanged): ValueChanged = (EventCallback<TValue>)parameter.Value; break;
+                case nameof(ValueExpression): ValueExpression = (Expression<Func<TValue>>)parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class, (BootstrapClass.FormControl, true));
-
-    private string autoComplete => AutoComplete ? "true" : "false";
 
     /// <summary>
     /// If <see langword="true" />, DateInput can complete the values automatically by the browser.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AutoComplete { get; set; }
@@ -263,7 +302,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
@@ -275,12 +314,12 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     /// If <see langword="true" />, restricts the user input between the Min and Max range. Else accepts the user input.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool EnableMinMax { get; set; }
 
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string FieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
     /// Gets or sets the max.
@@ -300,7 +339,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the placeholder.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Placeholder { get; set; }
@@ -318,7 +357,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     public EventCallback<TValue> ValueChanged { get; set; }
 
     /// <summary>
-    /// Gets or sets the expression.
+    ///  An expression that identifies the bound value.
     /// </summary>
     [Parameter]
     public Expression<Func<TValue>> ValueExpression { get; set; } = default!;

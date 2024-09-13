@@ -7,7 +7,7 @@ public class GridSettings
     /// <summary>
     /// Current filters.
     /// </summary>
-    public IEnumerable<FilterItem>? Filters { get; set; }
+    public IReadOnlyCollection<FilterItem>? Filters { get; set; }
 
     /// <summary>
     /// Page number.

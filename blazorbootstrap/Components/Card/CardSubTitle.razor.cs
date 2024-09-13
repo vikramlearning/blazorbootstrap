@@ -1,9 +1,14 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// This component represents the subtitle of a <see cref="Card"/>. <br/>
+/// If no subtitle is required, it can be omitted from the card implementation.
+/// </summary>
 public partial class CardSubTitle : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class, (BootstrapClass.CardSubTitle, true));
 
@@ -14,7 +19,7 @@ public partial class CardSubTitle : BlazorBootstrapComponentBase
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the card sub title size.
+    /// Gets or sets the card subtitle size.
     /// </summary>
     /// <remarks>
     /// Default value is <see cref="HeadingSize.H6" />.
@@ -22,5 +27,34 @@ public partial class CardSubTitle : BlazorBootstrapComponentBase
     [Parameter]
     public HeadingSize Size { get; set; } = HeadingSize.H6;
 
+    #endregion
+
+    #region Methods
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Size): Size = (HeadingSize)parameter.Value; break;
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+    
     #endregion
 }

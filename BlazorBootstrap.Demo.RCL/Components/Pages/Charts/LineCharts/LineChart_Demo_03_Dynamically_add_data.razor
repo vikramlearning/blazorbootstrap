@@ -58,27 +58,27 @@
                            {
                                Label = "India",
                                Data = new List<double?>(),
-                               BackgroundColor = "rgb(88, 80, 141)",
-                               BorderColor = "rgb(88, 80, 141)",
-                               BorderWidth = 2,
-                               HoverBorderWidth = 4,
-                               // PointBackgroundColor = "rgb(88, 80, 141)",
-                               // PointBorderColor = "rgb(88, 80, 141)",
-                               // PointRadius = 0, // hide points
-                               // PointHoverRadius = 4,
+                               BackgroundColor = new List<string> { "rgb(88, 80, 141)" },
+                               BorderColor = new List<string> { "rgb(88, 80, 141)" },
+                               BorderWidth = new List<double> { 2 },
+                               HoverBorderWidth = new List<double> { 4 },
+                               PointBackgroundColor = ["rgb(88, 80, 141)"],
+                               PointBorderColor = ["rgb(88, 80, 141)"],
+                               PointRadius = [0], // hide points
+                               PointHoverRadius = [4]
                            },
                            new LineChartDataset
                            {
                                Label = "England",
                                Data = new List<double?>(),
-                               BackgroundColor = "rgb(255, 166, 0)",
-                               BorderColor = "rgb(255, 166, 0)",
-                               BorderWidth = 2,
-                               HoverBorderWidth = 4,
-                               // PointBackgroundColor = "rgb(255, 166, 0)",
-                               // PointBorderColor = "rgb(255, 166, 0)",
-                               // PointRadius = 0, // hide points
-                               // PointHoverRadius = 4,
+                               BackgroundColor = new List<string> { "rgb(255, 166, 0)" },
+                               BorderColor = new List<string> { "rgb(255, 166, 0)" },
+                               BorderWidth = new List<double> { 2 },
+                               HoverBorderWidth = new List<double> { 4 },
+                               PointBackgroundColor = ["rgb(255, 166, 0)"],
+                               PointBorderColor = ["rgb(255, 166, 0)"],
+                               PointRadius = [0], // hide points
+                               PointHoverRadius = [4]
                            }
                        };
 
@@ -91,13 +91,25 @@
 
         options.Interaction.Mode = InteractionMode.Index;
 
-        options.Plugins.Title = new ChartPluginsTitle { Text = "WORM", Display = true, Font = new ChartFont { Size = 20 } };
-
+        options.Plugins.Title = new ChartPluginsTitle()
+            {
+                Text = "WORM",
+                Display = true,
+                Font = new ChartFont() { Size = 20 }
+            };
         options.Responsive = true;
-
-        options.Scales.X!.Title = new ChartAxesTitle { Text = "Overs", Display = true };
-        options.Scales.Y!.Title = new ChartAxesTitle { Text = "Runs", Display = true };
-        options.Scales.Y.SuggestedMax = 150;
+        options.Scales = new Scales
+            {
+                X = new ChartAxes()
+                {
+                    Title = new ChartAxesTitle() { Text = "Over", Display = true }
+                },
+                Y = new ChartAxes()
+                {
+                    Title = new ChartAxesTitle() { Text = "Runs", Display = true },
+                    SuggestedMax = 150
+                },
+            };
 
         return options;
     }

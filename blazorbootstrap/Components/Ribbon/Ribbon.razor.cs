@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Reflection.Emit;
+
+namespace BlazorBootstrap;
 
 public partial class Ribbon : BlazorBootstrapComponentBase
 {
@@ -28,10 +30,11 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", Id, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", Id, objRef);
 
         // Set active tab
         if (firstRender && !isDefaultActiveTabSet)
@@ -54,20 +57,19 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
+        
         if (IsVertical)
             AdditionalAttributes.Add("aria-orientation", "vertical");
 
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public async Task bsHiddenTab(string activeTabId, string previousActiveTabId)
+    [JSInvokable("bsHiddenTab")]
+    public async Task BsHiddenTab(string activeTabId, string previousActiveTabId)
     {
         var activeTabTitle = tabs?.FirstOrDefault(x => x.Id == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId)?.Title;
@@ -76,8 +78,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         await OnHidden.InvokeAsync(args);
     }
 
-    [JSInvokable]
-    public async Task bsHideTab(string activeTabId, string previousActiveTabId)
+    [JSInvokable("bsHideTab")]
+    public async Task BsHideTab(string activeTabId, string previousActiveTabId)
     {
         var activeTabTitle = tabs?.FirstOrDefault(x => x.Id == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId)?.Title;
@@ -86,8 +88,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         await OnHiding.InvokeAsync(args);
     }
 
-    [JSInvokable]
-    public async Task bsShownTab(string activeTabId, string previousActiveTabId)
+    [JSInvokable("bsShownTab")]
+    public async Task BsShownTab(string activeTabId, string previousActiveTabId)
     {
         var activeTabTitle = tabs?.FirstOrDefault(x => x.Id == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId)?.Title;
@@ -96,8 +98,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         await OnShown.InvokeAsync(args);
     }
 
-    [JSInvokable]
-    public async Task bsShowTab(string activeTabId, string previousActiveTabId)
+    [JSInvokable("bsShowTab")]
+    public async Task BsShowTab(string activeTabId, string previousActiveTabId)
     {
         var activeTabTitle = tabs?.FirstOrDefault(x => x.Id == activeTabId)?.Title;
         var previousActiveTabTitle = tabs?.FirstOrDefault(x => x.Id == previousActiveTabId)?.Title;
@@ -113,7 +115,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <exception cref="IndexOutOfRangeException"></exception>
     public void RemoveTabByIndex(int tabIndex)
     {
-        if (!tabs?.Any() ?? true) return;
+        if (tabs == null || tabs.Count == 0) return;
 
         if (tabIndex < 0 || tabIndex >= tabs!.Count) throw new IndexOutOfRangeException();
 
@@ -132,7 +134,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <param name="tabName"></param>
     public void RemoveTabByName(string tabName)
     {
-        if (!tabs?.Any() ?? true) return;
+        if (tabs == null || tabs.Count == 0) return;
 
         var tabIndex = tabs!.FindIndex(x => x.Name == tabName);
 
@@ -150,7 +152,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// </summary>
     public async Task ShowFirstTabAsync()
     {
-        if (!tabs?.Any() ?? true) return;
+        if (tabs == null || tabs.Count == 0) return;
 
         var tab = tabs!.FirstOrDefault(x => !x.Disabled);
 
@@ -163,7 +165,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// </summary>
     public async Task ShowLastTabAsync()
     {
-        if (!tabs?.Any() ?? true) return;
+        if (tabs == null || tabs.Count == 0) return;
 
         var tab = tabs!.LastOrDefault(x => !x.Disabled);
 
@@ -182,7 +184,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <param name="tabIndex">The zero-based index of the element to get or set.</param>
     public async Task ShowTabByIndexAsync(int tabIndex)
     {
-        if (!tabs?.Any() ?? true) return;
+        if (tabs == null || tabs.Count == 0) return;
 
         if (tabIndex < 0 || tabIndex >= tabs!.Count) throw new IndexOutOfRangeException();
 
@@ -198,7 +200,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <param name="tabName">The name of the tab to select.</param>
     public async Task ShowTabByNameAsync(string tabName)
     {
-        if (!tabs?.Any() ?? true) return;
+        if (tabs == null || tabs.Count == 0) return;
 
         var tab = tabs!.LastOrDefault(x => x.Name == tabName && !x.Disabled);
 
@@ -227,7 +229,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// </summary>
     internal async Task SetDefaultActiveTabAsync()
     {
-        if (!tabs?.Any() ?? true) return;
+        if (tabs == null || tabs.Count == 0) return;
 
         activeTab ??= tabs!.FirstOrDefault(x => !x.Disabled)!;
 
@@ -235,11 +237,11 @@ public partial class Ribbon : BlazorBootstrapComponentBase
             await ShowTabAsync(activeTab);
     }
 
-    private async Task OnTabClickAsync(RibbonTab tab) => await ShowTabAsync(tab);
+    private Task OnTabClickAsync(RibbonTab tab) => ShowTabAsync(tab);
 
     private async Task ShowNextAvailableTabAsync(int removedTabIndex)
     {
-        if (!tabs?.Any() ?? true) return;
+        if (tabs == null || tabs.Count == 0) return;
 
         if (removedTabIndex < 0 || removedTabIndex > tabs!.Count) throw new IndexOutOfRangeException();
 
@@ -261,16 +263,56 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         if (!isDefaultActiveTabSet)
             isDefaultActiveTabSet = true;
 
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.Id);
+        await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.Id);
 
         if (tab?.OnClick.HasDelegate ?? false)
             await tab.OnClick.InvokeAsync(new TabEventArgs(tab!.Name, tab.Title));
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(EnableFadeEffect): EnableFadeEffect = (bool)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(NavStyle): NavStyle = (NavStyle)parameter.Value; break;
+                case nameof(OnClick): OnClick = (EventCallback<RibbonItemEventArgs>)parameter.Value; break;
+                case nameof(OnHidden): OnHidden = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case nameof(OnHiding): OnHiding = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case nameof(OnShowing): OnShowing = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case nameof(OnShown): OnShown = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        if (NavStyle == NavStyle.Vertical)
+        {
+            TabContentCssClass = "tab-content flex-grow-1";
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Nav, true),
@@ -289,7 +331,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// Gets or sets the tabs fade effect.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool EnableFadeEffect { get; set; }
@@ -313,8 +355,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="NavStyle.Underline" />.
     /// </remarks>
-    //[Parameter]
-    private NavStyle NavStyle { get; set; } = NavStyle.Underline;
+    [Parameter]
+    public NavStyle NavStyle { get; set; } = NavStyle.Underline;
 
     /// <summary>
     /// This event fires when the user clicks the corresponding <see cref="RibbonItem" />.
@@ -349,7 +391,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <summary>
     /// CSS class applied to the tab content container.
     /// </summary>
-    private string? TabContentCssClass => IsVertical ? "tab-content flex-grow-1" : "tab-content";
+    private string TabContentCssClass { get; set; } = "tab-content";
 
     #endregion
 }

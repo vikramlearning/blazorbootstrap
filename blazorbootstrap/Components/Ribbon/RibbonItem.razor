@@ -8,23 +8,26 @@
      @attributes="@AdditionalAttributes"
      @onclick="OnRibbonItemClickAsync">
 
-    <div>
-        @if (!string.IsNullOrEmpty(ImgSrc))
-        {
+    @if (!string.IsNullOrEmpty(ImgSrc))
+    {
+        <div>
             <img class="my-2"
                  src="@ImgSrc"
                  width="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px"
                  height="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px" />
-        }
-        else
-        {
+        </div>
+    }
+    else if (IconName != IconName.None)
+    {
+        <div>
             <Icon Class="@IconCssClass"
                   Color="@IconColor"
                   Name="@IconName"
                   CustomIconName="@CustomIconName"
                   Size="@IconSize" />
-        }
-    </div>
+        </div>
+    }
+    
     @if (!string.IsNullOrEmpty(Text))
     {
         <div class="text-center">@Text</div>
