@@ -1,17 +1,17 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// The doughnut/pie chart allows a number of properties to be specified for each dataset. 
+/// The doughnut/pie chart allows a number of properties to be specified for each dataset.
 /// These are used to set display properties for a specific dataset.
 /// <see href="https://www.chartjs.org/docs/latest/charts/doughnut.html#dataset-properties" />.
 /// </summary>
-public class DoughnutChartDataset : ChartDataset
+public class DoughnutChartDataset : ChartDataset<double?>
 {
     #region Properties, Indexers
 
     /// <summary>
     /// Supported values are 'center' and 'inner'.
-    /// When 'center' is set, the borders of arcs next to each other will overlap. 
+    /// When 'center' is set, the borders of arcs next to each other will overlap.
     /// When 'inner' is set, it is guaranteed that all borders will not overlap.
     /// </summary>
     /// <remarks>
@@ -24,7 +24,7 @@ public class DoughnutChartDataset : ChartDataset
     /// Arc border length and spacing of dashes.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<double>? BorderDash { get; set; }
@@ -42,7 +42,7 @@ public class DoughnutChartDataset : ChartDataset
     /// Supported values are 'round', 'bevel', 'miter'.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<string>? BorderJoinStyle { get; set; } // TODO: change this to enum
@@ -60,7 +60,7 @@ public class DoughnutChartDataset : ChartDataset
     /// Per-dataset override for the sweep that the arcs cover.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Circumference { get; set; } 
@@ -69,10 +69,28 @@ public class DoughnutChartDataset : ChartDataset
     public DoughnutChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
     /// <summary>
-    /// Arc border length and spacing of dashes when hovered. 
+    /// Arc background color when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<string>? HoverBackgroundColor { get; set; }
+
+    /// <summary>
+    /// Arc border color when hovered.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<string>? HoverBorderColor { get; set; }
+
+    /// <summary>
+    /// Arc border length and spacing of dashes when hovered.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<double>? HoverBorderDash { get; set; }
@@ -81,7 +99,7 @@ public class DoughnutChartDataset : ChartDataset
     /// Arc border offset for line dashes when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? HoverBorderDashOffset { get; set; }
@@ -91,10 +109,19 @@ public class DoughnutChartDataset : ChartDataset
     /// Supported values are 'round', 'bevel', 'miter'.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<string>? HoverBorderJoinStyle { get; set; } // TODO: change this to enum
+
+    /// <summary>
+    /// Arc border width when hovered (in pixels).
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<double>? HoverBorderWidth { get; set; }
 
     /// <summary>
     /// Arc offset when hovered (in pixels).
@@ -118,7 +145,7 @@ public class DoughnutChartDataset : ChartDataset
     /// Per-dataset override for the starting angle to draw arcs from.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Rotation { get; set; }
@@ -132,8 +159,8 @@ public class DoughnutChartDataset : ChartDataset
     public double Spacing { get; set; }
 
     /// <summary>
-    /// The relative thickness of the dataset. 
-    /// Providing a value for weight will cause the pie or doughnut dataset to be drawn 
+    /// The relative thickness of the dataset.
+    /// Providing a value for weight will cause the pie or doughnut dataset to be drawn
     /// with a thickness relative to the sum of all the dataset weight values.
     /// </summary>
     /// <remarks>
@@ -144,6 +171,4 @@ public class DoughnutChartDataset : ChartDataset
     #endregion
 }
 
-public class DoughnutChartDatasetDataLabels : ChartDatasetDataLabels
-{
-}
+public class DoughnutChartDatasetDataLabels : ChartDatasetDataLabels { }

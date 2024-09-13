@@ -1,0 +1,153 @@
+﻿<LineChart Height="200" @ref="lineChart" Width="500" />
+
+<div class="mt-5">
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await NoFillAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> No fill</Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToNextAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to next (relative index +1)</Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToZeroAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to specific (absolute index 0) </Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToReferenceAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to specific (by object reference)</Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToStartAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to start </Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToEndAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to end</Button>
+    <Button Color="ButtonColor.Primary" Class="my-1 mr-1" @onclick="async () => await FillToValueAsync()" Size="ButtonSize.Small" Type="ButtonType.Button"> Fill to value 50</Button>
+</div>
+
+@code {
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
+
+    private int datasetsCount;
+    private int labelsCount;
+
+    private Random random = new();
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(4) };
+        lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task NoFillAsync()
+    {
+        var middle = chartData.Datasets[1] as LineChartDataset;
+        middle!.Fill = null;
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    public async Task FillToNextAsync()
+    {
+        var middle = chartData.Datasets[1] as LineChartDataset;
+        middle!.FillToDataset(1, true);
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    public async Task FillToZeroAsync()
+    {
+        var middle = chartData.Datasets[1] as LineChartDataset;
+        middle!.FillToDataset(0, false);
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    public async Task FillToReferenceAsync()
+    {
+        var middle = chartData.Datasets[1] as LineChartDataset;
+        var fillTo = chartData.Datasets[3] as LineChartDataset;
+
+        middle!.FillToDataset(chartData, fillTo!);
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    public async Task FillToStartAsync()
+    {
+        var middle = chartData.Datasets[1] as LineChartDataset;
+        middle!.FillToStart();
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    public async Task FillToEndAsync()
+    {
+        var middle = chartData.Datasets[1] as LineChartDataset;
+        middle!.FillToEnd();
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    public async Task FillToValueAsync()
+    {
+        var middle = chartData.Datasets[1] as LineChartDataset;
+        middle!.FillToValue(50.0);
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
+    }
+
+    #region Data Preparation
+
+    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
+    {
+        var datasets = new List<IChartDataset>();
+
+        for (var index = 0; index < numberOfDatasets; index++)
+        {
+            datasets.Add(GetRandomLineChartDataset());
+        }
+
+        return datasets;
+    }
+
+    private LineChartDataset GetRandomLineChartDataset()
+    {
+        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
+
+        datasetsCount += 1;
+
+        return new LineChartDataset
+            {
+                Label = $"Team {datasetsCount}",
+                Data = GetRandomData(),
+                BackgroundColor = [c.ToRgbaString()],
+                BorderCapStyle = "round",
+                BorderColor = [c.ToRgbString()],
+                BorderWidth = [2],
+                HoverBorderWidth = [4],
+                PointBackgroundColor = new List<string>() { c.ToRgbString() },
+                // PointRadius = 0, // hide points
+                PointHoverRadius = new List<double>() { 4 },
+            };
+    }
+
+    private List<double?> GetRandomData()
+    {
+        var data = new List<double?>();
+        for (var index = 0; index < labelsCount; index++)
+        {
+            data.Add(random.Next(200));
+        }
+
+        return data;
+    }
+
+    private List<string> GetDefaultDataLabels(int numberOfLabels)
+    {
+        var labels = new List<string>();
+        for (var index = 0; index < numberOfLabels; index++)
+        {
+            labels.Add(GetNextDataLabel());
+        }
+
+        return labels;
+    }
+
+    private string GetNextDataLabel()
+    {
+        labelsCount += 1;
+        return $"Day {labelsCount}";
+    }
+
+    #endregion Data Preparation
+}

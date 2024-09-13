@@ -92,7 +92,8 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
     }
 
     /// <summary>
-    /// Updates the chart with new data.
+    /// Update chart by reapplying all chart data and options.
+    /// If animation is enabled, this will animate the datasets from scratch.
     /// </summary>
     /// <param name="chartData">Data to populate the chart with. If left empty, no update will be invoked.</param>
     /// <param name="chartOptions">Options for chart behavior and styling</param>
@@ -102,18 +103,32 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
         {
             var data = GetChartDataObject(chartData);
 
-            switch (ChartType)
-            {
-                case ChartType.Bar:
-                    await JsRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
-                    break;
-                case ChartType.Line:
-                    await JsRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
-                    break;
-                default:
-                    await JsRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions);
-                    break;
-            }
+            if (ChartType == ChartType.Bar)
+                await JsRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
+            else if (ChartType == ChartType.Line)
+                await JsRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+            else
+                await JsRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions);
+        }
+    }
+
+    /// <summary>
+    /// Update only data labels and values. If animation is enabled, this will animate the datapoints.
+    /// Changes to the options will not be applied.
+    /// </summary>
+    /// <param name="chartData">The updated chart data. Only dataset labels and values will be applied.</param>
+    public virtual async Task UpdateValuesAsync(ChartData chartData)
+    {
+        if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
+        {
+            var data = GetChartDataObject(chartData);
+
+            if (ChartType == ChartType.Bar)
+                await JsRuntime.InvokeVoidAsync("window.blazorChart.bar.updateDataValues", Id, data);
+            else if (ChartType == ChartType.Line)
+                await JsRuntime.InvokeVoidAsync("window.blazorChart.line.updateDataValues", Id, data);
+            else
+                await JsRuntime.InvokeVoidAsync("window.blazorChart.updateDataValues", Id, data);
         }
     }
 

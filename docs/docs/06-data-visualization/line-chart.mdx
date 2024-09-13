@@ -35,7 +35,8 @@ A Blazor Bootstrap line chart component is a graphical representation of data th
 | AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) | `Task<ChartData>` | Adds dataset to chart. | 1.10.0 || InitializeAsync | Task | Initialize Bar Chart. | 1.0.0 |
 | InitializeAsync(ChartData chartData, IChartOptions chartOptions, `string[]?` plugins = null) | Task | Initialize the chat. | 1.0.0 |
 | ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px) | Task | Resize the chart. | 1.0.0 |
-| UpdateAsync(ChartData chartData, IChartOptions chartOptions) | Task | Update the chart. | 1.0.0 |
+| UpdateAsync(ChartData chartData, IChartOptions chartOptions) | Task | Update chart by reapplying all chart data and options. If animation is enabled, this will animate the datasets from scratch. | 1.0.0 |
+| UpdateValuesAsync(ChartData chartData) | Task | Update only data labels and values. If animation is enabled, this will animate the datapoints. Changes to the options will not be applied. | 3.0.0 |
 
 ## ChartData Members
 
@@ -141,16 +142,17 @@ These palettes offer a range of distinct and visually appealing colors that can 
 <img src="https://i.imgur.com/MMWdiyi.png" alt="Blazor Bootstrap: Line Chart Component - How it works" />
 
 ```cshtml {} showLineNumbers
-@using BlazorBootstrap.Extensions
-@using Color = System.Drawing.Color
+<div class="container-fluid overflow-x-auto">
+    <LineChart @ref="lineChart" Width="800" />
+</div>
 
-<LineChart @ref="lineChart" Width="800" Class="mb-4" />
-
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
-<Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="Size.Small" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
+<div class="mt-5">
+    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()" Disabled="@(datasetsCount >= 12)"> Add Dataset </Button>
+    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
+    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
+    <Button Type="ButtonType.Button" Class="mb-2" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
+</div>
 ```
 
 ```cs {} showLineNumbers
@@ -159,8 +161,8 @@ These palettes offer a range of distinct and visually appealing colors that can 
     private LineChartOptions lineChartOptions = default!;
     private ChartData chartData = default!;
 
-    private int datasetsCount = 0;
-    private int labelsCount = 0;
+    private int datasetsCount;
+    private int labelsCount;
 
     private Random random = new();
 
@@ -168,6 +170,7 @@ These palettes offer a range of distinct and visually appealing colors that can 
     {
         chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
         lineChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+        lineChartOptions.Scales.Y!.Max = 250;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -193,7 +196,7 @@ These palettes offer a range of distinct and visually appealing colors that can 
             {
                 var count = lineChartDataset.Data.Count;
 
-                var newData = new List<double>();
+                var newData = new List<double?>();
                 for (var i = 0; i < count; i++)
                 {
                     newData.Add(random.Next(200));
@@ -206,7 +209,7 @@ These palettes offer a range of distinct and visually appealing colors that can 
 
         chartData.Datasets = newDatasets;
 
-        await lineChart.UpdateAsync(chartData, lineChartOptions);
+        await lineChart.UpdateValuesAsync(chartData);
     }
 
     private async Task AddDatasetAsync()
@@ -260,27 +263,27 @@ These palettes offer a range of distinct and visually appealing colors that can 
 
     private LineChartDataset GetRandomLineChartDataset()
     {
-        var c = ColorBuilder.CategoricalTwelveColors[datasetsCount].ToColor();
+        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
 
         datasetsCount += 1;
 
-        return new LineChartDataset()
+        return new LineChartDataset
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = new List<string> { c.ToRgbString() },
-                BorderColor = new List<string> { c.ToRgbString() },
-                BorderWidth = new List<double> { 2 },
-                HoverBorderWidth = new List<double> { 4 },
-                PointBackgroundColor = new List<string> { c.ToRgbString() },
-                PointRadius = new List<int> { 0 }, // hide points
-                PointHoverRadius = new List<int> { 4 },
+                BackgroundColor = c.ToRgbString(),
+                BorderColor = c.ToRgbString(),
+                BorderWidth = 2,
+                HoverBorderWidth = 4,
+                // PointBackgroundColor = c.ToRgbString(),
+                // PointRadius = 0, // hide points
+                // PointHoverRadius = 4,
             };
     }
 
-    private List<double> GetRandomData()
+    private List<double?> GetRandomData()
     {
-        var data = new List<double>();
+        var data = new List<double?>();
         for (var index = 0; index < labelsCount; index++)
         {
             data.Add(random.Next(200));
@@ -307,6 +310,7 @@ These palettes offer a range of distinct and visually appealing colors that can 
     }
 
     #endregion Data Preparation
+
 }
 ```
 

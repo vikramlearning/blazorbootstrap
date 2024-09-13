@@ -5,7 +5,7 @@ public interface IChartDataset { }
 /// <summary>
 /// <See href="https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration" />
 /// </summary>
-public class ChartDataset : IChartDataset
+public class ChartDataset<TData> : IChartDataset
 {
     #region Constructors
 
@@ -42,7 +42,7 @@ public class ChartDataset : IChartDataset
     /// Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0}
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Clip { get; set; }
@@ -51,16 +51,16 @@ public class ChartDataset : IChartDataset
     /// Get or sets the Data.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double?>? Data { get; set; }
+    public List<TData>? Data { get; set; }
 
     /// <summary>
-    /// Configures the visibility state of the dataset. Set it to <see langword="true"/>, to hide the dataset from the chart.
+    /// Configures the visibility state of the dataset. Set it to <see langword="true" />, to hide the dataset from the chart.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="false"/>.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     public bool Hidden { get; set; }
 
@@ -72,12 +72,20 @@ public class ChartDataset : IChartDataset
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Label { get; set; }
+    
+    /// <summary>
+    /// The background color on hover
+    /// </summary>
     public IReadOnlyCollection<string>? HoverBackgroundColor { get; set; }
 
     /// <summary>
     /// Get unique object id.
     /// </summary>
     public Guid Oid { get; private set; }
+    
+    /// <summary>
+    /// The border color on hover
+    /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<string>? HoverBorderColor { get; set; }
 
@@ -86,6 +94,7 @@ public class ChartDataset : IChartDataset
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<double>? HoverBorderWidth { get; set; }
+    
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
@@ -98,7 +107,7 @@ public class ChartDataset : IChartDataset
     /// Gets or sets the chart type.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Type { get; protected set; }

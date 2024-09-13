@@ -5,7 +5,7 @@
 /// They are often useful for comparing the points of two or more different data sets.
 /// <see href="https://www.chartjs.org/docs/latest/charts/radar.html#dataset-properties" />.
 /// </summary>
-public class RadarChartDataset : ChartDataset
+public class RadarChartDataset : ChartDataset<double?>
 {
     #region Properties, Indexers
 
@@ -22,7 +22,7 @@ public class RadarChartDataset : ChartDataset
     /// Gets or sets the length and spacing of dashes.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<double>? BorderDash { get; set; }
@@ -36,7 +36,7 @@ public class RadarChartDataset : ChartDataset
     public double BorderDashOffset { get; set; }
 
     /// <summary>
-    /// Line joint style. 
+    /// Line joint style.
     /// There are three possible values for this property: 'round', 'bevel', and 'miter'.
     /// </summary>
     /// <remarks>
@@ -60,24 +60,42 @@ public class RadarChartDataset : ChartDataset
     /// How to fill the area under the line.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="false"/>.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     public bool Fill { get; set; }
+
+    /// <summary>
+    /// The line fill color when hovered.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? HoverBackgroundColor { get; set; }
 
     /// <summary>
     /// Cap style of the line when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? HoverBorderCapStyle { get; set; }
  
     /// <summary>
+    /// The line color when hovered.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? HoverBorderColor { get; set; }
+
+    /// <summary>
     /// Gets or sets the length and spacing of dashes when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<double>? HoverBorderDash { get; set; }
@@ -86,13 +104,13 @@ public class RadarChartDataset : ChartDataset
     /// Offset for line dashes when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? HoverBorderDashOffset { get; set; }
 
     /// <summary>
-    /// Line joint style. 
+    /// Line joint style.
     /// There are three possible values for this property: 'round', 'bevel', and 'miter'.
     /// </summary>
     /// <remarks>
@@ -140,7 +158,7 @@ public class RadarChartDataset : ChartDataset
     /// Point background color when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<string>? PointHoverBackgroundColor { get; set; }
@@ -149,7 +167,7 @@ public class RadarChartDataset : ChartDataset
     /// Point border color when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<string>? PointHoverBorderColor { get; set; }
@@ -192,7 +210,8 @@ public class RadarChartDataset : ChartDataset
 
     /// <summary>
     /// Style of the point.
-    /// Supported values are 'circle', 'cross', 'crossRot', 'dash', 'line', 'rect', 'rectRounded', 'rectRot', 'star', and 'triangle' to style.
+    /// Supported values are 'circle', 'cross', 'crossRot', 'dash', 'line', 'rect', 'rectRounded', 'rectRot', 'star', and
+    /// 'triangle' to style.
     /// the point.
     /// </summary>
     /// <remarks>
@@ -208,7 +227,7 @@ public class RadarChartDataset : ChartDataset
     /// The unit of the value depends on the scale used.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SpanGaps { get; set; }
@@ -225,6 +244,4 @@ public class RadarChartDataset : ChartDataset
     #endregion
 }
 
-public class RadarChartDatasetDataLabels : ChartDatasetDataLabels
-{
-}
+public class RadarChartDatasetDataLabels : ChartDatasetDataLabels { }

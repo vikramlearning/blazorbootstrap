@@ -13,7 +13,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <summary>
     /// The default content type for scripts.
     /// </summary>
-    private const string Type = "text/javascript";
+    private const string ScriptType = "text/javascript";
 
     /// <summary>
     /// A reference to this component instance for use in JavaScript calls.
@@ -28,7 +28,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, ScriptId, Source, Type, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, Defer, ScriptId, Source, ScriptType, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -106,8 +106,21 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets a value indicating whether the script should be loaded asynchronously.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="false" />.
+    /// </remarks>
     [Parameter]
     public bool Async { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the script is meant to be executed 
+    /// after the document has been parsed, but before firing DOMContentLoaded event..
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="false" />.
+    /// </remarks>
+    [Parameter]
+    public bool Defer { get; set; }
 
     /// <summary>
     /// An event that is fired when a script loading error occurs.
@@ -124,12 +137,18 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the ID of the script element.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [Parameter]
     public string? ScriptId { get; set; }
 
     /// <summary>
     /// Gets or sets the URI of the external script to load.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [Parameter]
     [EditorRequired]
     public string? Source { get; set; } = default!;

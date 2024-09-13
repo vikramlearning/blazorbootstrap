@@ -1,6 +1,6 @@
 ﻿<p align="center">
   <a href="https://getblazorbootstrap.com/">
-    <img src="https://github.com/vikramlearning/blazorbootstrap/blob/main/BlazorBootstrap.Demo.WebAssembly/wwwroot/images/logo/logo-color.svg" alt="Blazor Bootstrap logo" width="200" height="200">
+    <img src="https://demos.blazorbootstrap.com/images/logo/logo-color.svg" alt="Blazor Bootstrap logo" width="200" height="200">
   </a>
 </p>
 
@@ -41,7 +41,7 @@
 
 ## Install
 
-Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.0.0-preview.3`
+Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.0.0`
 
 ## Install Blazor Bootstrap templates
 
@@ -63,6 +63,7 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Buttons | [Docs](https://docs.blazorbootstrap.com/components/buttons) | [Demos](https://demos.blazorbootstrap.com/buttons) |
 | Callout | [Docs](https://docs.blazorbootstrap.com/components/callout) | [Demos](https://demos.blazorbootstrap.com/callout) |
 | Card | [Docs](https://docs.blazorbootstrap.com/components/card) | [Demos](https://demos.blazorbootstrap.com/card) |
+| Carousel | [Docs](https://docs.blazorbootstrap.com/components/carousel) | [Demos](https://demos.blazorbootstrap.com/carousel) |
 | Charts: Bar chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/bar-chart) | [Demos](https://demos.blazorbootstrap.com/charts/bar-chart) |
 | Charts: Doughnut chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/doughnut-chart) | [Demos](https://demos.blazorbootstrap.com/charts/doughnut-chart) |
 | Charts: Line chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/line-chart) | [Demos](https://demos.blazorbootstrap.com/charts/line-chart) |
@@ -75,6 +76,7 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Currency Input | [Docs](https://docs.blazorbootstrap.com/forms/currency-input) | [Demos](https://demos.blazorbootstrap.com/form/currency-input) |
 | Date Input | [Docs](https://docs.blazorbootstrap.com/forms/date-input) | [Demos](https://demos.blazorbootstrap.com/form/date-input) |
 | Dropdown | [Docs](https://docs.blazorbootstrap.com/components/dropdown) | [Demos](https://demos.blazorbootstrap.com/dropdown) |
+| Google Map | [Docs](https://docs.blazorbootstrap.com/components/google-map) | [Demos](https://demos.blazorbootstrap.com/google-map) |
 | Grid | [Docs](https://docs.blazorbootstrap.com/components/grid) | [Demos](https://demos.blazorbootstrap.com/grid) |
 | Icons | [Docs](https://docs.blazorbootstrap.com/content/icons) | [Demos](https://demos.blazorbootstrap.com/icons) |
 | Images | [Docs](https://docs.blazorbootstrap.com/content/images) | [Demos](https://demos.blazorbootstrap.com/images) |
@@ -131,6 +133,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Card
 ![Blazor Bootstrap - Card](https://i.imgur.com/RhytwPa.png "Blazor Bootstrap - Card")
 
+### Blazor Bootstrap - Carousel
+![Blazor Bootstrap - Carousel](https://i.imgur.com/YoZd9Hy.png "Blazor Bootstrap - Carousel")
+
 ### Blazor Bootstrap - Charts: Bar Chart
 ![Blazor Bootstrap - Charts: Bar Chart](https://i.imgur.com/JLV7oss.png "Blazor Bootstrap - Charts: Bar Chart")
 
@@ -160,6 +165,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Dropdown
 ![Blazor Bootstrap - Dropdown](https://i.imgur.com/beAr31J.png "Blazor Bootstrap - Dropdown")
+
+### Blazor Bootstrap - Google Map
+![Blazor Bootstrap - Google Map](https://i.imgur.com/AbyDP51.png "Blazor Bootstrap - Google Map")
 
 ### Blazor Bootstrap - Grid
 ![Blazor Bootstrap - Grid](https://i.imgur.com/36RsWZ3.png "Blazor Bootstrap - Grid")

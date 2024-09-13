@@ -1,13 +1,13 @@
 ﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// Scatter charts are based on basic line charts with the x-axis changed to a linear axis. 
+/// Scatter charts are based on basic line charts with the x-axis changed to a linear axis.
 /// To use a scatter chart, data must be passed as objects containing X and Y properties.
 /// <see href="https://www.chartjs.org/docs/latest/charts/scatter.html#dataset-properties" />.
-/// The scatter chart supports all the same properties as the line chart. 
-/// By default, the scatter chart will override the showLine property of the line chart to <see langword="false"/>.
+/// The scatter chart supports all the same properties as the line chart.
+/// By default, the scatter chart will override the showLine property of the line chart to <see langword="false" />.
 /// </summary>
-public class ScatterChartDataset : ChartDataset
+public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
 {
     #region Properties, Indexers
 
@@ -24,7 +24,7 @@ public class ScatterChartDataset : ChartDataset
     /// Gets or sets the length and spacing of dashes.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<double>? BorderDash { get; set; }
@@ -38,7 +38,7 @@ public class ScatterChartDataset : ChartDataset
     public double BorderDashOffset { get; set; }
 
     /// <summary>
-    /// Line joint style. 
+    /// Line joint style.
     /// There are three possible values for this property: 'round', 'bevel', and 'miter'.
     /// </summary>
     /// <remarks>
@@ -55,23 +55,14 @@ public class ScatterChartDataset : ChartDataset
     /// </remarks>
     public string CubicInterpolationMode { get; set; } = "default";
 
-    /// <summary>
-    /// Get or sets the Data.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null"/>.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public new List<ScatterChartDataPoint?>? Data { get; set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public LineChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
     /// <summary>
     /// Draw the active points of a dataset over the other points of the dataset.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<bool>? DrawActiveElementsOnTop { get; set; }
@@ -80,24 +71,42 @@ public class ScatterChartDataset : ChartDataset
     /// How to fill the area under the line.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="false"/>.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     public bool Fill { get; set; }
+
+    /// <summary>
+    /// The line fill color when hovered.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? HoverBackgroundColor { get; set; }
 
     /// <summary>
     /// Cap style of the line when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? HoverBorderCapStyle { get; set; }
 
     /// <summary>
+    /// The line color when hovered.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? HoverBorderColor { get; set; }
+
+    /// <summary>
     /// Gets or sets the length and spacing of dashes when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<double>? HoverBorderDash { get; set; }
@@ -106,13 +115,13 @@ public class ScatterChartDataset : ChartDataset
     /// Offset for line dashes when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? HoverBorderDashOffset { get; set; }
 
     /// <summary>
-    /// Line joint style. 
+    /// Line joint style.
     /// There are three possible values for this property: 'round', 'bevel', and 'miter'.
     /// </summary>
     /// <remarks>
@@ -169,7 +178,7 @@ public class ScatterChartDataset : ChartDataset
     /// Point background color when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<string>? PointHoverBackgroundColor { get; set; }
@@ -178,7 +187,7 @@ public class ScatterChartDataset : ChartDataset
     /// Point border color when hovered.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IReadOnlyCollection<string>? PointHoverBorderColor { get; set; }
@@ -221,7 +230,8 @@ public class ScatterChartDataset : ChartDataset
 
     /// <summary>
     /// Style of the point.
-    /// Supported values are 'circle', 'cross', 'crossRot', 'dash', 'line', 'rect', 'rectRounded', 'rectRot', 'star', and 'triangle' to style.
+    /// Supported values are 'circle', 'cross', 'crossRot', 'dash', 'line', 'rect', 'rectRounded', 'rectRot', 'star', and
+    /// 'triangle' to style.
     /// the point.
     /// </summary>
     /// <remarks>
@@ -238,7 +248,7 @@ public class ScatterChartDataset : ChartDataset
     /// By default, the scatter chart will override the showLine property of the line chart to false.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="false"/>.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     public bool ShowLine { get; } = false;
 
@@ -249,7 +259,7 @@ public class ScatterChartDataset : ChartDataset
     /// The unit of the value depends on the scale used.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SpanGaps { get; set; }
@@ -261,7 +271,7 @@ public class ScatterChartDataset : ChartDataset
     /// true to show the line as a stepped line (tension will be ignored).
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="false"/>.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     public bool Stepped { get; set; }
 
@@ -295,6 +305,4 @@ public class ScatterChartDataset : ChartDataset
     #endregion
 }
 
-public class ScatterChartDatasetDataLabels : ChartDatasetDataLabels
-{
-}
+public class ScatterChartDatasetDataLabels : ChartDatasetDataLabels { }
