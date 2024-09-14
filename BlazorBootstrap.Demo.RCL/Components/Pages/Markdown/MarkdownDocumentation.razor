@@ -1,0 +1,21 @@
+﻿@page "/markdown"
+
+<PageTitle>@title</PageTitle>
+
+<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<h1>Blazor Markdown</h1>
+<div class="lead mb-3">Provide contextual feedback messages for typical user actions with a handful of available and flexible alert messages.</div>
+
+<CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div class="mb-3">Alerts are available for any length of text, as well as an optional close button. For proper styling, use one of the eight colors.</div>
+<Demo Type="typeof(Markdown_Demo_01_Examples)" Tabs="true" />
+
+@code{
+    private string pageUrl = "/markdown";
+    private string title = "Blazor Markdown Component";
+    private string description = "Provide contextual feedback messages for typical user actions with the handful of available and flexible Blazor Bootstrap alert messages.";
+    private string imageUrl = "https://i.imgur.com/FGgEMp6.jpg"; // TODO: update
+}
