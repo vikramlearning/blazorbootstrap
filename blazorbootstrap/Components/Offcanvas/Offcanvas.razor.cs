@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Reflection.Metadata;
+
+namespace BlazorBootstrap;
 
 public partial class Offcanvas : BlazorBootstrapComponentBase
 {
@@ -40,7 +42,17 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
   protected override async Task OnAfterRenderAsync( bool firstRender )
   {
     if( firstRender )
-      await JSRuntime.InvokeVoidAsync( "window.blazorBootstrap.offcanvas.initialize", Id, UseStaticBackdrop, CloseOnEscape, IsScrollable, objRef );
+    {
+      object backdrop = Backdrop switch
+      {
+        BackdropType.None => false,
+        BackdropType.Visible => true,
+        BackdropType.Static => "static",
+        _ => throw new InvalidOperationException( "Invalid backdrop value" )
+      };
+
+      await JSRuntime.InvokeVoidAsync( "window.blazorBootstrap.offcanvas.initialize", Id, backdrop, CloseOnEscape, IsScrollable, objRef );
+    }
 
     await base.OnAfterRenderAsync( firstRender );
   }
@@ -284,24 +296,26 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
   [Parameter]
   public string Title { get; set; } = default!;
 
-  [Obsolete( "Use `UseStaticBackdrop` parameter." )]
-  /// <summary>
-  /// Indicates whether to apply a backdrop on body while offcanvas is open.
-  /// </summary>
-  /// <remarks>
-  /// Default value is true.
-  /// </remarks>
   [Parameter]
-  public bool UseBackdrop { get => this.UseStaticBackdrop; set => this.UseStaticBackdrop = value; }
+  public BackdropType Backdrop { get; set; } = BackdropType.Visible;
 
-  /// <summary>
-  /// When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it.
-  /// </summary>
-  /// <remarks>
-  /// Default value is false.
-  /// </remarks>
-  [Parameter]
-  public bool UseStaticBackdrop { get; set; } = true;
+  public enum BackdropType
+  {
+    /// <summary>
+    /// Do not use a backdrop, the page will stay visible.
+    /// </summary>
+    None,
+
+    /// <summary>
+    /// Visible backdrop, the page will be covered by a backdrop
+    /// </summary>
+    Visible,
+
+    /// <summary>
+    /// Static backdrop, the page will be covered by a backdrop and the offcanvas will not close when clicking outside of it.
+    /// </summary>
+    Static
+  }
 
   #endregion
 }
