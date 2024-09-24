@@ -1,0 +1,20 @@
+﻿<Offcanvas Title="IsVisible binding" @bind-IsVisible="IsVisible" Backdrop="Offcanvas.BackdropType.None">
+  <BodyTemplate>
+    <Switch @bind-Value="IsVisible" Label="Toggle offcanvas" />
+
+    Note that no @@ref is needed to bind the property.
+  </BodyTemplate>
+</Offcanvas>
+
+<div>
+  The offcanvas is <b>@(IsVisible ? "visible" : "hidden")</b>.
+
+  <Button Color="ButtonColor.Primary" @onclick="_ => IsVisible = true">Show Offcanvas</Button>
+</div>
+<div>
+  <Switch @bind-Value="IsVisible" Label="Toggle offcanvas" />
+</div>
+
+@code {
+  public bool IsVisible { get; set; }
+}
