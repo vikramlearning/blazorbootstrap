@@ -292,7 +292,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
   /// Default value is true.
   /// </remarks>
   [Parameter]
-  public bool UseBackdrop { get; set; } = true;
+  public bool UseBackdrop { get => this.UseStaticBackdrop; set => this.UseStaticBackdrop = value; }
 
   /// <summary>
   /// When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it.
@@ -301,7 +301,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
   /// Default value is false.
   /// </remarks>
   [Parameter]
-  public bool UseStaticBackdrop { get; set; }
+  public bool UseStaticBackdrop { get; set; } = true;
 
   #endregion
 }
