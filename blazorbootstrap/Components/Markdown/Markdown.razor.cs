@@ -60,13 +60,34 @@ public partial class Markdown : BlazorBootstrapComponentBase
     private List<MarkdownPattern> GetRules()
     {
         return new List<MarkdownPattern>{
-            // header rules
+            // Headers
             new(@"^#{6}\s?([^\n]+)", "<h6>$1</h6>"),
             new(@"^#{5}\s?([^\n]+)", "<h5>$1</h5>"),
             new(@"^#{4}\s?([^\n]+)", "<h4>$1</h4>"),
             new(@"^#{3}\s?([^\n]+)", "<h3>$1</h3>"),
             new(@"^#{2}\s?([^\n]+)", "<h2>$1</h2>"),
             new(@"^#{1}\s?([^\n]+)", "<h1>$1</h1>"),
+
+            // Paragragh
+            new(@"\n\n", "<p>$1</p>"),
+
+            // Blockquotes
+            new(@"^> (.*)$", "<blockquote>$1</blockquote>"),
+
+            // Horizontal rules
+            new(@"^\-{3,}$", "<hr>"),
+
+             // Emphasis (bold, italics, strikethrough)
+            new(@"\*\*(.*?)\*\*", "<b>$1</b>"),
+            new(@"__(.*?)__", "<b>$1</b>"),
+            new(@"\*(.*?)\*", "<i>$1</i>"),
+            new(@"_(.*?)_", "<i>$1</i>"),
+            new(@"~~(.*?)~~", "<s>$1</s>"),
+
+            // Code highlighting
+            new(@"\`(\w+)\n(.*?)\n```", "<pre><code class=\"$1\">$2</code></pre>"),
+
+            // Tables
         };
     }
 }
