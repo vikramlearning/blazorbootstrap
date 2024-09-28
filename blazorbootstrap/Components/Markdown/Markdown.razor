@@ -2,5 +2,5 @@
 @inherits BlazorBootstrapComponentBase
 
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="alert" @attributes="@AdditionalAttributes">
-    @ChildContent
+    @((MarkupString)html)
 </div>
