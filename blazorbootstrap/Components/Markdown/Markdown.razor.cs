@@ -85,7 +85,8 @@ public partial class Markdown : BlazorBootstrapComponentBase
             new(@"~~(.*?)~~", "<s>$1</s>"),
 
             // Code highlighting
-            new(@"\`(\w+)\n(.*?)\n```", "<pre><code class=\"$1\">$2</code></pre>"),
+            new(@"\```(\w+)", "<pre><code class=\"lang-$1\">"),
+            new(@"```", "</code></pre>"),
 
             // Tables
         };
