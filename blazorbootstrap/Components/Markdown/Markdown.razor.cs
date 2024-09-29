@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Rendering;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.Components.Rendering;
 using System.Text.RegularExpressions;
 
 namespace BlazorBootstrap;
@@ -52,14 +53,10 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
     private string ApplyFullMarkupRules(string markup)
     {
-        var outputMarkup = markup;
-
         var patterns = GetFullMarkupRules();
 
         foreach (var pattern in patterns)
-        {
             markup = Regex.Replace(markup, pattern.Rule, pattern.Template);
-        }
 
         return markup;
     }
@@ -101,7 +98,8 @@ public partial class Markdown : BlazorBootstrapComponentBase
             new(@"^#{1}\s?([^\n]+)", "<h1>$1</h1>"),
 
             // Blockquotes
-            new(@"^> (.*)$", "<blockquote>$1</blockquote>"),
+            new(@"^>{1}\s(.*)$", "<blockquote>$1</blockquote>"),
+            //new(@"^(>>)+ (.*)$", "<blockquote><p>$2</p></blockquote>"),
 
             // Horizontal rules
             new(@"^\-{3,}$", "<hr />"),
