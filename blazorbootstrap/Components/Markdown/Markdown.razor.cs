@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Rendering;
+﻿using Microsoft.AspNetCore.Components.Rendering;
 using System.Text.RegularExpressions;
 
 namespace BlazorBootstrap;
@@ -116,6 +115,27 @@ public partial class Markdown : BlazorBootstrapComponentBase
             new(@"```", "</code></pre>"),
 
             // Tables
+
+            // Lists
+            // Ordered or numbered lists
+
+            // Bulleted lists
+
+            // Nested lists
+
+            // Links
+
+            // Anchor links
+
+            // Images
+
+            // Checklist or task list
+
+            // Emoji
+
+            // Mathematical notation and characters
+
+            // Mermaid diagrams
         };
     }
 
