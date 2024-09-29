@@ -63,12 +63,13 @@ public partial class AIChat : BlazorBootstrapComponentBase
             conversationHistory.Add(new OpenAIChatMessage("system", currentCompletion!));
             currentCompletion = "";
             await InvokeAsync(StateHasChanged);
-
+            await JSRuntime.InvokeVoidAsync(BlazorBootstrapInterop.ScrollToElementBottom, Id);
             return;
         }
 
         currentCompletion += content;
         await InvokeAsync(StateHasChanged);
+        await JSRuntime.InvokeVoidAsync(BlazorBootstrapInterop.ScrollToElementBottom, Id);
     }
 
     private void ClearInput() => userPrompt = string.Empty;
@@ -109,6 +110,17 @@ public partial class AIChat : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames =>
+        BuildClassNames(Class,
+            (BootstrapClass.Container, true));
+
+    protected override string? StyleNames =>
+        BuildStyleNames(Style,
+            //("min-height:200px", true),
+            //("max-height:400px", true),
+            ("overflow-x:hidden", true),
+            ("overflow-y:auto", true));
 
     /// <summary>
     /// The maximum number of tokens to generate shared between the prompt and completion.

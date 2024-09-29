@@ -65,6 +65,8 @@ public static class BootstrapClass
 
     public const string ConfirmationModal = "modal-confirmation";
 
+    public const string Container = "container";
+
     public const string Disabled = "disabled";
     public const string DisplayNone = "d-none";
     public const string DisplayBlock = "d-block";

@@ -933,6 +933,16 @@ window.blazorBootstrap = {
 
         return false;
     },
+    scrollToElementBottom: (elementId) => {
+        let el = document.getElementById(elementId);
+        if (el)
+            el.scrollTop = el.scrollHeight;
+    },
+    scrollToElementTop: (elementId) => {
+        let el = document.getElementById(elementId);
+        if (el)
+            el.scrollTop = 0;
+    }
 }
 
 window.blazorChart = {

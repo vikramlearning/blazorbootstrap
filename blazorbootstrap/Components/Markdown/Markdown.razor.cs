@@ -22,6 +22,21 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
     protected override void OnInitialized()
     {
+        ParseMarkdown();
+
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (IsRenderComplete)
+            ParseMarkdown();
+
+        base.OnParametersSet();
+    }
+
+    private void ParseMarkdown()
+    {
         var lines = GetLines();
         if (lines.Any())
         {
@@ -35,7 +50,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
         var markup = ApplyRules(lines);
         html = ApplyFullMarkupRules(markup);
-        base.OnInitialized();
     }
 
     private string ApplyRules(List<string> lines)
