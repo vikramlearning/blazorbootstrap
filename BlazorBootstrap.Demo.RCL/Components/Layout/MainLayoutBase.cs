@@ -2,16 +2,16 @@
 
 public class MainLayoutBase : LayoutComponentBase
 {
-    private string version = default!;
-    private string docsUrl = default!;
-    private string blogUrl = default!;
-    private string githubUrl = default!;
-    private string twitterUrl = default!;
-    private string linkedInUrl = default!;
-    private string openCollectiveUrl = default!;
-    private string githubIssuesUrl = default!;
-    private string githubDiscussionsUrl = default!;
-    private string stackoverflowUrl = default!;
+    internal string version = default!;
+    internal string docsUrl = default!;
+    internal string blogUrl = default!;
+    internal string githubUrl = default!;
+    internal string twitterUrl = default!;
+    internal string linkedInUrl = default!;
+    internal string openCollectiveUrl = default!;
+    internal string githubIssuesUrl = default!;
+    internal string githubDiscussionsUrl = default!;
+    internal string stackoverflowUrl = default!;
 
     internal Sidebar2 sidebar2 = default!;
     internal IEnumerable<NavItem> navItems = default!;
@@ -19,6 +19,14 @@ public class MainLayoutBase : LayoutComponentBase
     [Inject] public IConfiguration Configuration { get; set; } = default!;
 
     [Inject] protected IJSRuntime JS { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await JS.InvokeVoidAsync("initializeTheme");
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     protected override void OnInitialized()
     {
@@ -34,6 +42,14 @@ public class MainLayoutBase : LayoutComponentBase
         stackoverflowUrl = $"{Configuration["urls:stackoverflow"]}";
         base.OnInitialized();
     }
+
+    internal Task SetAutoTheme() => SetTheme("system");
+
+    internal Task SetDarkTheme() => SetTheme("dark");
+
+    internal Task SetLightTheme() => SetTheme("light");
+
+    internal async Task SetTheme(string themeName) => await JS.InvokeVoidAsync("setTheme", themeName);
 
     internal virtual async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
     {

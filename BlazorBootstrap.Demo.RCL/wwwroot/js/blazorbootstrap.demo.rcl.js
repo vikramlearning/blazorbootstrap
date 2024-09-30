@@ -33,9 +33,8 @@ function navigateToHeading() {
     }
 }
 
-
 // THEMES
-const STORAGE_KEY = "be-bulma-theme";
+const STORAGE_KEY = "blazorbootstrap-theme";
 const DEFAULT_THEME = "light";
 const SYSTEM_THEME = "system";
 
@@ -45,24 +44,28 @@ const state = {
 };
 
 const showActiveTheme = () => {
-    let $themeIndicator = document.querySelector(".be-theme-indicator i");
-    if (state.appliedTheme === "light") {
-        $themeIndicator.className = "bi bi-sun";
-    } else if (state.appliedTheme === "dark") {
-        $themeIndicator.className = "bi bi-moon-stars-fill";
-    } else {
-        $themeIndicator.className = "bi bi-circle-half";
+    let $themeIndicator = document.querySelector(".blazorbootstrap-theme-indicator>i");
+    if ($themeIndicator) {
+        if (state.appliedTheme === "light") {
+            $themeIndicator.className = "bi bi-sun-fill";
+        } else if (state.appliedTheme === "dark") {
+            $themeIndicator.className = "bi bi-moon-stars-fill";
+        } else {
+            $themeIndicator.className = "bi bi-circle-half";
+        }
     }
 
-    let $themeSwitchers = document.querySelectorAll(".be-theme-item");
-    $themeSwitchers.forEach((el) => {
-        const dataScheme = el.dataset.scheme;
-        if (state.chosenTheme === dataScheme) {
-            el.classList.add("is-selected");
-        } else {
-            el.classList.remove("is-selected");
-        }
-    });
+    let $themeSwitchers = document.querySelectorAll(".blazorbootstrap-theme-item>button");
+    if ($themeSwitchers) {
+        $themeSwitchers.forEach((el) => {
+            const dataScheme = el.dataset.scheme;
+            if (state.chosenTheme === dataScheme) {
+                el.classList.add("active");
+            } else {
+                el.classList.remove("active");
+            }
+        });
+    }
 };
 
 function setTheme(theme, save = true) {
@@ -73,7 +76,7 @@ function setTheme(theme, save = true) {
         state.appliedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     }
 
-    document.documentElement.setAttribute("data-theme", state.appliedTheme);
+    document.documentElement.setAttribute("data-bs-theme", state.appliedTheme);
     if (save) {
         window.localStorage.setItem(STORAGE_KEY, state.chosenTheme);
     }
@@ -105,7 +108,7 @@ function updateDemoCodeThemeCss(theme) {
 
         let prismThemeDarkLinkEl = document.createElement("link");
         prismThemeDarkLinkEl.setAttribute("rel", "stylesheet");
-        prismThemeDarkLinkEl.setAttribute("href", "/_content/BlazorExpress.Bulma.Demo.RCL/css/prism-vsc-dark-plus.min.css");
+        prismThemeDarkLinkEl.setAttribute("href", "/_content/BlazorBootstrap.Demo.RCL/css/prism-vsc-dark-plus.min.css");
         prismThemeDarkLinkEl.setAttribute("id", "prismThemeDarkLink");
 
         document.head.append(prismThemeDarkLinkEl);
@@ -117,7 +120,7 @@ function updateDemoCodeThemeCss(theme) {
 
         let prismThemeLightLinkEl = document.createElement("link");
         prismThemeLightLinkEl.setAttribute("rel", "stylesheet");
-        prismThemeLightLinkEl.setAttribute("href", "/_content/BlazorExpress.Bulma.Demo.RCL/css/prism-vs.min.css");
+        prismThemeLightLinkEl.setAttribute("href", "/_content/BlazorBootstrap.Demo.RCL/css/prism-vs.min.css");
         prismThemeLightLinkEl.setAttribute("id", "prismThemeLightLink");
 
         document.head.append(prismThemeLightLinkEl);
