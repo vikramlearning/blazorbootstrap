@@ -1,6 +1,5 @@
 ﻿@namespace BlazorBootstrap.Demo.RCL
-
-@inherits LayoutComponentBase
+@inherits MainLayoutBase
 
 <Skippy Url="https://github.com/vikramlearning/blazorbootstrap">
     <i class="bi bi-star-fill"></i>
@@ -63,6 +62,39 @@
                             <i class="bi bi-opencollective"></i>
                             <small class="d-lg-none ms-2">Open Collective</small>
                         </a>
+                    </li>
+                    <li class="nav-item py-2 py-lg-1 col-12 col-lg-auto">
+                        <div class="vr d-none d-lg-flex h-100 mx-lg-2 text-white"></div>
+                        <hr class="d-lg-none my-2 text-white-50">
+                    </li>
+                    <li class="nav-item dropdown">
+                        <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="Toggle theme (light)">
+                            <i class="bi bi-sun-fill"></i>
+                            <span class="d-lg-none ms-2" id="bd-theme-text">Toggle theme</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+                            <li class="px-1">
+                                <button type="button" class="dropdown-item d-flex align-items-center active rounded" data-bs-theme-value="light" aria-pressed="true" @onclick="SetLightTheme">
+                                    <i class="bi bi-sun-fill me-2"></i>
+                                    Light
+                                    <i class="bi bi-check2 ms-auto"></i>
+                                </button>
+                            </li>
+                            <li class="px-1">
+                                <button type="button" class="dropdown-item d-flex align-items-center rounded" data-bs-theme-value="dark" aria-pressed="false" @onclick="SetDarkTheme">
+                                    <i class="bi bi-moon-stars-fill me-2"></i>
+                                    Dark
+                                    <i class="bi bi-check2 d-none ms-auto"></i>
+                                </button>
+                            </li>
+                            <li class="px-1">
+                                <button type="button" class="dropdown-item d-flex align-items-center rounded" data-bs-theme-value="auto" aria-pressed="false" @onclick="SetAutoTheme">
+                                    <i class="bi bi-circle-half me-2"></i>
+                                    Auto
+                                    <i class="bi bi-check2 d-none ms-auto"></i>
+                                </button>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>

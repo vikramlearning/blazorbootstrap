@@ -18,6 +18,8 @@ public class MainLayoutBase : LayoutComponentBase
 
     [Inject] public IConfiguration Configuration { get; set; } = default!;
 
+    [Inject] protected IJSRuntime JS { get; set; } = default!;
+
     protected override void OnInitialized()
     {
         version = $"v{Configuration["version"]}"; // example: v0.6.1
