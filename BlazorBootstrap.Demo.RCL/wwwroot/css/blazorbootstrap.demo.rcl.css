@@ -1,16 +1,24 @@
 /*** START: home ***/
-:root {
-    --bd-purple: #4c0bce;
-    --bd-violet: #712cf9;
+:root, [data-bs-theme="light"] {
     --bd-accent: #ffe484;
-    --bd-violet-rgb: 112.520718,44.062154,249.437846;
     --bd-accent-rgb: 255,228,132;
+    --bs-body-color: #212529;
+    --bs-body-color-rgb: 33, 37, 41;
+    --bs-emphasis-color: #000;
+    --bs-link-color: #0d6efd;
+    --bs-link-color-rgb: 13, 110, 253;
     --bd-pink-rgb: 214,51,132;
+    --bd-purple: #4c0bce;
+    --bs-secondary-color: rgba(33, 37, 41, 0.75);
     --bd-teal-rgb: 32,201,151;
+    --bs-tertiary-color: rgba(33, 37, 41, 0.5);
+    --bs-tertiary-color-rgb: 33, 37, 41;
+    --bs-tertiary-bg: #f8f9fa;
+    --bs-tertiary-bg-rgb: 248, 249, 250;
+    --bd-violet: #712cf9;
+    --bd-violet-rgb: 112.520718,44.062154,249.437846;
     --docsearch-primary-color: var(--bd-violet);
     --docsearch-logo-color: var(--bd-violet);
-    --bs-body-color: #212529;
-    --bs-tertiary-bg: #f8f9fa;
 }
 
 h1:focus-visible {
@@ -124,7 +132,8 @@ h1:focus-visible {
 
     .bd-masthead h1 {
         font-size: calc(1.525rem + 3.3vw);
-        line-height: 1
+        line-height: 1;
+        --bs-heading-color: var(--bs-emphasis-color);
     }
 
 @media (min-width: 1200px) {
@@ -136,7 +145,7 @@ h1:focus-visible {
 .bd-masthead .lead {
     font-size: 1rem;
     font-weight: 400;
-    color: #495057
+    color: var(--bs-secondary-color);
 }
 
 .bd-masthead .bd-code-snippet {
@@ -184,6 +193,14 @@ h1:focus-visible {
     }
 }
 
+.masthead-followup h2, .masthead-followup h3, .masthead-followup h4 {
+    --bs-heading-color: var(--bs-emphasis-color);
+}
+
+.masthead-followup h4 {
+    --bs-heading-color: var(--bs-link-color-rgb) !important;
+}
+
 .masthead-followup .lead {
     font-size: 1rem
 }
@@ -225,7 +242,7 @@ h1:focus-visible {
 }
 
 .bd-footer a {
-    color: #495057;
+    color: var(--bs-body-color);
     text-decoration: none
 }
 
@@ -414,4 +431,25 @@ h1:focus-visible {
     display: block;
     margin-top: .75rem;
     color: var(--bs-body-color) !important
+}
+
+.bg-body-tertiary {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-tertiary-bg-rgb), var(--bs-bg-opacity)) !important;
+}
+
+[data-bs-theme=dark] {
+    color-scheme: dark;
+    --bs-body-color: #dee2e6;
+    --bs-body-color-rgb: 222, 226, 230;
+    --bs-emphasis-color: #fff;
+    --bs-link-color: #6ea8fe;
+    --bs-link-hover-color: #8bb9fe;
+    --bs-link-color-rgb: 110, 168, 254;
+    --bs-link-hover-color-rgb: 139, 185, 254;
+    --bs-secondary-color: rgba(222, 226, 230, 0.75);
+    --bs-tertiary-color: rgba(222, 226, 230, 0.5);
+    --bs-tertiary-color-rgb: 222, 226, 230;
+    --bs-tertiary-bg: #2b3035;
+    --bs-tertiary-bg-rgb: 43, 48, 53;
 }
