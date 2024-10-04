@@ -48,8 +48,8 @@
     --bs-border-radius-xs: 0.125rem;
     --bs-border-radius-md: 0.375rem;
     /* table */
-    --bb-table-sticky-background-color: #fff;
-    --bb-table-freeze-column-background-color: #efefef;
+    --bb-table-sticky-background-color: var(--bs-body-bg);
+    --bb-table-freeze-column-background-color: var(--bs-body-bg);
     --bb-table-selected-row-color: #000;
     --bb-table-selected-row-hover-color: #000;
     --bb-table-selected-row-background-color: rgba(0,0,0,0.075);
