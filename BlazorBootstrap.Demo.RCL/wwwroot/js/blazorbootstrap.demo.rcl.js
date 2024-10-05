@@ -58,11 +58,16 @@ const showActiveTheme = () => {
     let $themeSwitchers = document.querySelectorAll(".blazorbootstrap-theme-item>button");
     if ($themeSwitchers) {
         $themeSwitchers.forEach((el) => {
-            const dataScheme = el.dataset.scheme;
-            if (state.chosenTheme === dataScheme) {
+            const bsThemeValue = el.dataset.bsThemeValue;
+            const iEl = el.querySelector(".bi.bi-check2");
+            if (state.chosenTheme === bsThemeValue) {
                 el.classList.add("active");
+                if (iEl)
+                    iEl.classList.remove("d-none");
             } else {
                 el.classList.remove("active");
+                if (iEl)
+                    iEl.classList.add("d-none");
             }
         });
     }
