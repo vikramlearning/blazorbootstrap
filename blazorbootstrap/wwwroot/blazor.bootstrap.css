@@ -51,8 +51,8 @@
     --bb-table-sticky-background-color: var(--bs-body-bg);
     --bb-table-freeze-column-background-color: var(--bs-body-bg);
     --bb-table-selected-row-color: #000;
-    --bb-table-selected-row-hover-color: #000;
     --bb-table-selected-row-background-color: rgba(0,0,0,0.075);
+    --bb-table-selected-row-hover-color: #000;
     --bb-table-selected-row-hover-background-color: rgba(0,0,0,0.075);
     /* enum filter */
     --bb-grid-filter-dropdown-max-height: 300px;

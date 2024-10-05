@@ -316,7 +316,8 @@ h1:focus-visible {
 .highlight {
     padding: 1rem;
     margin-bottom: 1rem;
-    background-color: #f8f9fa;
+    /*background-color: #f8f9fa;*/
+    background-color: var(--bs-body-bg);
     border: solid #dee2e6;
     border-width: 0 1px 1px 1px;
     border-bottom-left-radius: .25rem;
