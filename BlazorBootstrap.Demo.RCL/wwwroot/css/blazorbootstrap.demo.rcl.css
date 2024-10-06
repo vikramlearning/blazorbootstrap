@@ -342,7 +342,7 @@ h1:focus-visible {
 
     .highlight pre code {
         font-size: inherit;
-        color: #212529;
+        /*color: #212529;*/
         word-wrap: normal
     }
 
