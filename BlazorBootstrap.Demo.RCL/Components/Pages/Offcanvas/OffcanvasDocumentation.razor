@@ -6,7 +6,7 @@
 
 <h1>Blazor Offcanvas</h1>
 <div class="lead mb-3">
-    Build hidden sidebars into your project for navigation, shopping carts, and more with a offcanvas component.
+  Build hidden sidebars into your project for navigation, shopping carts, and more with a offcanvas component.
 </div>
 
 <CarbonAds />
@@ -19,7 +19,7 @@
 <SectionHeading Size="HeadingSize.H2" Text="Dynamic component as offcanvas" PageUrl="@pageUrl" HashTagName="dynamic-component-as-offcanvas" />
 <div class="mb-3">Render different components dynamically within the offcanvas without iterating through possible types or using conditional logic.</div>
 <div class="mb-3">
-    If dynamically-rendered components have component parameters, pass them as an <code>IDictionary</code>. The <code>string</code> is the parameter's name, and the <code>object</code> is the parameter's value.
+  If dynamically-rendered components have component parameters, pass them as an <code>IDictionary</code>. The <code>string</code> is the parameter's name, and the <code>object</code> is the parameter's value.
 </div>
 <Demo Type="typeof(Offcanvas_Demo_02_A_Show_Dynamic_Component)" />
 <b>EmployeeDemoComponent1.razor</b>
@@ -28,12 +28,12 @@
 <SectionHeading Size="HeadingSize.H2" Text="Pass event callbacks to a dynamic component" PageUrl="@pageUrl" HashTagName="pass-event-callbacks-to-a-dynamic-component" />
 <div class="mb-3">Event callbacks <code>(EventCallback)</code> can be passed in its parameter dictionary.</div>
 <div class="mb-3">
-    In the following parent component example, the <code>ShowDTMessage</code> method assigns a string with the current time to <code>message</code>, and the value of <code>message</code> is rendered.
-    The parent component passes the callback method, ShowDTMessage in the parameter dictionary:
-    <ul style="disc">
-        <li>The <code>string</code> key is the callback method's name, <code>OnClickCallback</code>.</li>
-        <li>The <code>object</code> value is created by <code>EventCallbackFactory.Create</code> for the parent callback method, <code>ShowDTMessage</code>.</li>
-    </ul>    
+  In the following parent component example, the <code>ShowDTMessage</code> method assigns a string with the current time to <code>message</code>, and the value of <code>message</code> is rendered.
+  The parent component passes the callback method, ShowDTMessage in the parameter dictionary:
+  <ul style="disc">
+    <li>The <code>string</code> key is the callback method's name, <code>OnClickCallback</code>.</li>
+    <li>The <code>object</code> value is created by <code>EventCallbackFactory.Create</code> for the parent callback method, <code>ShowDTMessage</code>.</li>
+  </ul>
 </div>
 <Demo Type="typeof(Offcanvas_Demo_02_B_Pass_Event_Callback_to_a_Dynamic_Component)" />
 <b>EmployeeDemoComponent2.razor</b>
@@ -45,9 +45,9 @@
 
 <Callout Type="CalloutColor.Info">Default placement for the offcanvas component is right.</Callout>
 
-<SectionHeading Size="HeadingSize.H2" Text="Static backdrop" PageUrl="@pageUrl" HashTagName="static-backdrop" />
-<div class="mb-3">When <b>UseStaticBackdrop</b> is set to <b>true</b>, the offcanvas will not close when clicking outside of it.</div>
-<Demo Type="typeof(Offcanvas_Demo_04_Static_Backdrop)" Tabs="true" />
+<SectionHeading Size="HeadingSize.H2" Text="Backdrop options" PageUrl="@pageUrl" HashTagName="backdrops" />
+<div class="mb-3">When <b>Backdrop</b> is set to <b>Offcanvas.BackdropType.Static</b>, the offcanvas will not close when clicking outside of it.</div>
+<Demo Type="typeof(Offcanvas_Demo_04_Backdrops)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Sizes" PageUrl="@pageUrl" HashTagName="sizes" />
 <div class="mb-3">Set the size of the <code>Offcanvas</code> with the Size parameter. The default value is <code>OffcanvasSize.Regular</code>.</div>
@@ -58,9 +58,21 @@
 <div class="mb-3">Blazor Bootstrap offcanvas component exposes a few events for hooking into offcanvas functionality.</div>
 <Demo Type="typeof(Offcanvas_Demo_06_Events)" Tabs="true" />
 
+<SectionHeading Size="HeadingSize.H2" Text="Scrollable" PageUrl="@pageUrl" HashTagName="static-backdrop" />
+<div class="mb-3">When <b>IsScrollable</b> to <b>true</b> the page will be scrollable and interactable below the offcanvas backdrop.</div>
+<div class="mb-3">
+  <Alert Color="AlertColor.Warning">Note: This demo does not work because the main viewport has <code>overflow: hidden</code> set in the CSS.</Alert>
+</div>
+<Demo Type="typeof(Offcanvas_Demo_07_Scrollable)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Bind IsVisible" PageUrl="@pageUrl" HashTagName="static-backdrop" />
+<div class="mb-3">You can read <code>IsVisible</code> to get the current status and use <code>@@bind-IsVisible</code> to toggle the offcanvas with a switch.</div>
+<Demo Type="typeof(Offcanvas_Demo_08_Bind_IsVisible)" Tabs="true" />
+
+
 @code {
-    private string pageUrl = "/offcanvas";
-    private string title = "Blazor Offcanvas Component";
-    private string description = "Build hidden sidebars into your project for navigation, shopping carts, and more with Blazor Bootstrap offcanvas component.";
-    private string imageUrl = "https://i.imgur.com/1vNz5Ci.jpg";
+  private string pageUrl = "/offcanvas";
+  private string title = "Blazor Offcanvas Component";
+  private string description = "Build hidden sidebars into your project for navigation, shopping carts, and more with Blazor Bootstrap offcanvas component.";
+  private string imageUrl = "https://i.imgur.com/1vNz5Ci.jpg";
 }
