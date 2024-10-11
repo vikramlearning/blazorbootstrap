@@ -3,7 +3,9 @@
 @typeparam TItem
 
 <CascadingValue Value="@(this)" IsFixed="true">
-    @ChildContent
+    <CascadingValue Value="@EnumFilterSelectText" Name="EnumFilterSelectText" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
 </CascadingValue>
 
 @if (columns.Any())
