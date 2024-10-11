@@ -663,6 +663,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public string EmptyText { get; set; } = "No records to display";
 
     /// <summary>
+    /// Gets or sets the enum filter select text.
+    /// </summary>
+    /// <remarks>
+    /// Default value is 'Select'.
+    /// </remarks>
+    [Parameter]
+    public string? EnumFilterSelectText { get; set; } = "Select";
+
+    /// <summary>
     /// Gets or sets the filters row css class.
     /// </summary>
     /// <remarks>

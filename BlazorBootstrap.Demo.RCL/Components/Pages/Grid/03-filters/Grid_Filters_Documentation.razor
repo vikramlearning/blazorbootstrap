@@ -27,18 +27,18 @@
 </div>
 <Callout Color="CalloutColor.Success">You can set the default filter on more than one GridColumn.</Callout>
 <div class="mb-3">The default sorting is enabled on the <b>Id</b> column in the below example.</div>
-<Demo Type="typeof(Grid_Demo_05_Set_Default_Filter)" Tabs="true" />
+<Demo Type="typeof(Grid_Demo_02_Set_Default_Filter)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Disable specific column filter" PageUrl="@pageUrl" HashTagName="disable-specific-column-filter" />
 <div class="mb-3">
     <code>Filterable</code> parameter is required to disable the filter on a specific column. Add <code>Filterable="false"</code> parameter to GridColumn. The column filter is disabled on the <b>Id</b> column in the below example.
 </div>
-<Demo Type="typeof(Grid_Demo_06_Disable_Specific_Column_Filter)" Tabs="true" />
+<Demo Type="typeof(Grid_Demo_03_Disable_Specific_Column_Filter)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Increase filter textbox width" PageUrl="@pageUrl" HashTagName="increase-filter-textbox-width" />
 <div class="mb-2">Add <code>FilterTextboxWidth</code> parameter to the GridColumn to increase or decrease the filter textbox width, <code>FilterTextboxWidth</code> parameter is optional.</div>
 <Callout>Filter textbox width measured in pixels.</Callout>
-<Demo Type="typeof(Grid_Demo_06_Increase_Filter_Textbox_Width)" Tabs="true" />
+<Demo Type="typeof(Grid_Demo_04_Increase_Filter_Textbox_Width)" Tabs="true" />
 
 <Callout Color="CalloutColor.Success" Heading="Important">
     <p>
@@ -51,10 +51,10 @@
 </Callout>
 
 <SectionHeading Size="HeadingSize.H2" Text="Enum filter" PageUrl="@pageUrl" HashTagName="enum-filter" />
-<Demo Type="typeof(Grid_Demo_35_Enum_Filters)" Tabs="true" />
+<Demo Type="typeof(Grid_Demo_05_Enum_Filters)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Guid filter" PageUrl="@pageUrl" HashTagName="guid-filter" />
-<Demo Type="typeof(Grid_Demo_36_Guid_Filters)" Tabs="true" />
+<Demo Type="typeof(Grid_Demo_06_Guid_Filters)" Tabs="true" />
 
 @code {
     private const string pageUrl = "/grid/filters";
