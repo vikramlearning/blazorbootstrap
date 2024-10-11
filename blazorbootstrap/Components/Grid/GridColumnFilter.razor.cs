@@ -147,8 +147,8 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
-    [CascadingParameter(Name= "EnumFilterSelectText")]
-    public string EnumFilterSelectText { get; set; } = "Select";
+    [Parameter]
+    public string? EnumFilterSelectText { get; set; }
 
     /// <summary>
     /// Gets or sets the filter button color.

@@ -2,10 +2,8 @@
 @inherits BlazorBootstrapComponentBase
 @typeparam TItem
 
-<CascadingValue Value="@(this)" IsFixed="true">
-    <CascadingValue Value="@EnumFilterSelectText" Name="EnumFilterSelectText" IsFixed="true">
-        @ChildContent
-    </CascadingValue>
+<CascadingValue Value="@(this)" Name="Parent" IsFixed="true">
+    @ChildContent
 </CascadingValue>
 
 @if (columns.Any())
@@ -60,7 +58,8 @@
                             <th class="@string.Join(" ", columnClassList)" style="@string.Join(";", columnStyleList)">
                                 @if (column.Filterable)
                                 {
-                                    <GridColumnFilter FilterButtonColor="@column.FilterButtonColor"
+                                    <GridColumnFilter EnumFilterSelectText="@EnumFilterSelectText"
+                                                      FilterButtonColor="@column.FilterButtonColor"
                                                       FilterButtonCSSClass="@column.FilterButtonCSSClass"
                                                       FilterOperator="@column.FilterOperator"
                                                       FilterValue="@column.FilterValue"
