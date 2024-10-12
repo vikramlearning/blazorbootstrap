@@ -51,9 +51,12 @@ public partial class Markdown : BlazorBootstrapComponentBase
                 lines.RemoveAt(lines.Count - 1);
         }
 
-        var markup = ApplyRules(lines);
-        markup = ConvertMarkdownTableToHtml(markup);
+        // do not change the sequence of these two lines
+        //var markup = ApplyRules(lines);
+        var markup = string.Join("\n", lines);
+        markup = ConvertMakdownHeadersToHtml(markup);
         markup = ConvertMarkdownListToHtml(markup);
+        markup = ConvertMarkdownTableToHtml(markup);
         html = ApplyFullMarkupRules(markup);
     }
 
@@ -63,10 +66,10 @@ public partial class Markdown : BlazorBootstrapComponentBase
         foreach (var pattern in patterns)
         {
             for (var i = 0; i < lines.Count; i++)
-                lines[i] = Regex.Replace(lines[i], pattern.Rule, pattern.Template);
+                lines[i] = Regex.Replace(lines[i].Trim(), pattern.Rule, pattern.Template);
         }
 
-        return string.Join("\n", lines);
+        return string.Join("<br />", lines);
     }
 
     private string ApplyFullMarkupRules(string markup)
@@ -77,7 +80,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             markup = Regex.Replace(markup, pattern.Rule, pattern.Template);
 
         return markup;
-    }    
+    }
 
     List<string> GetLines()
     {
@@ -95,7 +98,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
                 {
                     var lines = frame.MarkupContent.Split("\r\n");
                     foreach (var line in lines)
-                        inputs.Add(line.Trim());
+                        inputs.Add(line);
                 }
             }
         }
@@ -108,12 +111,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return new List<MarkdownPattern>
         {
             // Headers
-            new(@"^#{6}\s?([^\n]+)", "<h6>$1</h6>"),
-            new(@"^#{5}\s?([^\n]+)", "<h5>$1</h5>"),
-            new(@"^#{4}\s?([^\n]+)", "<h4>$1</h4>"),
-            new(@"^#{3}\s?([^\n]+)", "<h3>$1</h3>"),
-            new(@"^#{2}\s?([^\n]+)", "<h2>$1</h2>"),
-            new(@"^#{1}\s?([^\n]+)", "<h1>$1</h1>"),
+            // done
 
             // Blockquotes
             new(@"^>{1}\s(.*)$", "<blockquote>$1</blockquote>"),
@@ -167,6 +165,154 @@ public partial class Markdown : BlazorBootstrapComponentBase
             new(@"(?<!\n)\n(?!\n)", "<br />"),
             new(@"([^\n\n]+\n?)", "<p>$1</p>"),
         };
+    }
+
+    private string ConvertMakdownHeadersToHtml(string markup)
+    {
+        var lines = markup.Split("\n");
+        var parsedLines = new List<string>();
+
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                parsedLines.Add(line);
+                continue;
+            }
+
+            if (Regex.IsMatch(line.Trim(), @"^#{6}\s?([^\n]+)"))
+            {
+                parsedLines.Add(Regex.Replace(line.Trim(), @"^#{6}\s?([^\n]+)", "<h6>$1</h6>"));
+            }
+            else if (Regex.IsMatch(line.Trim(), @"^#{5}\s?([^\n]+)"))
+            {
+                parsedLines.Add(Regex.Replace(line.Trim(), @"^#{5}\s?([^\n]+)", "<h5>$1</h5>"));
+            }
+            else if (Regex.IsMatch(line.Trim(), @"^#{4}\s?([^\n]+)"))
+            {
+                parsedLines.Add(Regex.Replace(line.Trim(), @"^#{4}\s?([^\n]+)", "<h4>$1</h4>"));
+            }
+            else if (Regex.IsMatch(line.Trim(), @"^#{3}\s?([^\n]+)"))
+            {
+                parsedLines.Add(Regex.Replace(line.Trim(), @"^#{3}\s?([^\n]+)", "<h3>$1</h3>"));
+            }
+            else if (Regex.IsMatch(line.Trim(), @"^#{2}\s?([^\n]+)"))
+            {
+                parsedLines.Add(Regex.Replace(line.Trim(), @"^#{2}\s?([^\n]+)", "<h2>$1</h2>"));
+            }
+            else if (Regex.IsMatch(line.Trim(), @"^#{1}\s?([^\n]+)"))
+            {
+                parsedLines.Add(Regex.Replace(line.Trim(), @"^#{1}\s?([^\n]+)", "<h1>$1</h1>"));
+            }
+            else
+            {
+                parsedLines.Add(line);
+                parsedLines.Add(" \n ");
+            }
+        }
+
+        return string.Join("", parsedLines);
+    }
+
+    private string ConvertMarkdownListToHtml(string markup)
+    {
+        var lines = markup.Split("\n");
+        var htmlLines = new List<string>();
+        var listStack = new Stack<string>();
+        var indentStack = new Stack<int>();
+
+        foreach (var line in lines)
+        {
+            var indentLevel = line.TakeWhile(char.IsWhiteSpace).Count();
+
+            if (Regex.IsMatch(line, @"^\s*\d+\.\s"))
+            {
+                // Ordered list
+                if (listStack.Count == 0 || listStack.Peek() != "ol" || indentStack.Peek() < indentLevel)
+                {
+                    if (listStack.Count > 0 && indentStack.Peek() < indentLevel)
+                    {
+                        htmlLines.Add("<ol>");
+                        listStack.Push("ol");
+                        indentStack.Push(indentLevel);
+                    }
+                    else
+                    {
+                        while (listStack.Count > 0 && indentStack.Peek() > indentLevel)
+                        {
+                            htmlLines.Add($"</{listStack.Pop()}>");
+                            indentStack.Pop();
+                        }
+
+                        if (listStack.Count == 0 || listStack.Peek() != "ol")
+                        {
+                            htmlLines.Add("<ol>");
+                            listStack.Push("ol");
+                            indentStack.Push(indentLevel);
+                        }
+                    }
+                }
+                htmlLines.Add($"<li>{Regex.Replace(line, @"^\s*\d+\.\s", "")}");
+            }
+            else if (Regex.IsMatch(line, @"^\s*\-\s"))
+            {
+                // Unordered list
+                if (listStack.Count == 0 || listStack.Peek() != "ul" || indentStack.Peek() < indentLevel)
+                {
+                    if (listStack.Count > 0 && indentStack.Peek() < indentLevel)
+                    {
+                        htmlLines.Add("<ul>");
+                        listStack.Push("ul");
+                        indentStack.Push(indentLevel);
+                    }
+                    else
+                    {
+                        while (listStack.Count > 0 && indentStack.Peek() > indentLevel)
+                        {
+                            htmlLines.Add($"</{listStack.Pop()}>");
+                            indentStack.Pop();
+                        }
+
+                        if (listStack.Count == 0 || listStack.Peek() != "ul")
+                        {
+                            htmlLines.Add("<ul>");
+                            listStack.Push("ul");
+                            indentStack.Push(indentLevel);
+                        }
+                    }
+                }
+                htmlLines.Add($"<li>{Regex.Replace(line, @"^\s*\-\s", "")}");
+            }
+            else
+            {
+                // Close any open lists
+                while (listStack.Count > 0)
+                {
+                    htmlLines.Add($"</{listStack.Pop()}>");
+                    indentStack.Pop();
+                }
+
+                htmlLines.Add(line);
+            }
+        }
+
+        // Close any remaining open lists
+        while (listStack.Count > 0)
+        {
+            htmlLines.Add($"</{listStack.Pop()}>");
+            indentStack.Pop();
+        }
+
+        // Close any open list items
+        for (int i = 0; i < htmlLines.Count; i++)
+        {
+            if (htmlLines[i].StartsWith("<li>") && (i == htmlLines.Count - 1 || htmlLines[i + 1].StartsWith("<li>") || htmlLines[i + 1].StartsWith("</")))
+            {
+                htmlLines[i] += "</li>";
+            }
+        }
+
+        return string.Join("", htmlLines);
     }
 
     private string ConvertMarkdownTableToHtml(string markup)
@@ -243,59 +389,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
         }
 
         return string.Join("\n", parsedLines);
-    }
-
-    private string ConvertMarkdownListToHtml(string markup)
-    {
-        var lines = markup.Split("\n");
-        var htmlLines = new List<string>();
-        var listStack = new Stack<string>();
-
-        foreach (var line in lines)
-        {
-            var trimmedLine = line.Trim();
-
-            if (Regex.IsMatch(trimmedLine, @"^\d+\.\s"))
-            {
-                // Ordered list
-                if (listStack.Count == 0 || listStack.Peek() != "ol")
-                {
-                    if (listStack.Count > 0)
-                        htmlLines.Add($"</{listStack.Pop()}>");
-
-                    htmlLines.Add("<ol>");
-                    listStack.Push("ol");
-                }
-                htmlLines.Add($"<li>{Regex.Replace(trimmedLine, @"^\d+\.\s", "")}</li>");
-            }
-            else if (Regex.IsMatch(trimmedLine, @"^\-\s"))
-            {
-                // Unordered list
-                if (listStack.Count == 0 || listStack.Peek() != "ul")
-                {
-                    if (listStack.Count > 0)
-                        htmlLines.Add($"</{listStack.Pop()}>");
-
-                    htmlLines.Add("<ul>");
-                    listStack.Push("ul");
-                }
-                htmlLines.Add($"<li>{Regex.Replace(trimmedLine, @"^\-\s", "")}</li>");
-            }
-            else
-            {
-                // Close any open lists
-                while (listStack.Count > 0)
-                    htmlLines.Add($"</{listStack.Pop()}>");
-
-                htmlLines.Add(line);
-            }
-        }
-
-        // Close any remaining open lists
-        while (listStack.Count > 0)
-            htmlLines.Add($"</{listStack.Pop()}>");
-
-        return string.Join("", htmlLines);
     }
 
 }

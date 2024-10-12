@@ -22,8 +22,8 @@ public class MainLayoutBase : LayoutComponentBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-            await JS.InvokeVoidAsync("initializeTheme");
+        //if (firstRender)
+        //    await JS.InvokeVoidAsync("initializeTheme");
 
         await base.OnAfterRenderAsync(firstRender);
     }
