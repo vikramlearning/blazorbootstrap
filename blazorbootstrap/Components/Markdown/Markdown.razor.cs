@@ -122,12 +122,11 @@ public partial class Markdown : BlazorBootstrapComponentBase
             // Horizontal rules
             // done
 
-             // Emphasis (bold, italics, strikethrough)
-             // done
+            // Emphasis (bold, italics, strikethrough)
+            // done
 
             // Code highlighting
-            new(@"\```(\w+)", "<pre><code class=\"lang-$1\">"),
-            new(@"```", "</code></pre>"),
+            // done
 
             // Tables
             // done
@@ -279,28 +278,16 @@ public partial class Markdown : BlazorBootstrapComponentBase
                 continue;
             }
 
-            if (Regex.IsMatch(lines[i].Trim(), @"\*\*(.*?)\*\*"))
+            if (Regex.IsMatch(lines[i].Trim(), @"\*\*(.*?)\*\*")
+                || Regex.IsMatch(lines[i].Trim().Trim(), @"__(.*?)__")
+                || Regex.IsMatch(lines[i].Trim(), @"\*(.*?)\*")
+                || Regex.IsMatch(lines[i].Trim(), @"_(.*?)_")
+                || Regex.IsMatch(lines[i].Trim(), @"~~(.*?)~~"))
             {
                 lines[i] = Regex.Replace(lines[i].Trim(), @"\*\*(.*?)\*\*", "<b>$1</b>");
-            }
-
-            if (Regex.IsMatch(lines[i].Trim().Trim(), @"__(.*?)__"))
-            {
                 lines[i] = Regex.Replace(lines[i].Trim(), @"__(.*?)__", "<b>$1</b>");
-            }
-
-            if (Regex.IsMatch(lines[i].Trim(), @"\*(.*?)\*"))
-            {
                 lines[i] = Regex.Replace(lines[i].Trim(), @"\*(.*?)\*", "<i>$1</i>");
-            }
-
-            if (Regex.IsMatch(lines[i].Trim(), @"_(.*?)_"))
-            {
                 lines[i] = Regex.Replace(lines[i].Trim(), @"_(.*?)_", "<i>$1</i>");
-            }
-
-            if (Regex.IsMatch(lines[i].Trim(), @"~~(.*?)~~"))
-            {
                 lines[i] = Regex.Replace(lines[i].Trim(), @"~~(.*?)~~", "<s>$1</s>");
             }
 
@@ -308,6 +295,36 @@ public partial class Markdown : BlazorBootstrapComponentBase
         }
 
         return string.Join(" \n ", parsedLines);
+    }
+
+    private string ConvertMarkdownCodeHighlightingToHtml(string markup)
+    {
+        var lines = markup.Split("\n");
+        var parsedLines = new List<string>();
+
+        for (var i = 0; i < lines.Count(); i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i]))
+            {
+                parsedLines.Add(lines[i]);
+                continue;
+            }
+
+            if (Regex.IsMatch(lines[i].Trim(), @"\```(\w+)")
+                || Regex.IsMatch(lines[i].Trim().Trim(), @"```"))
+            {
+                lines[i] = Regex.Replace(lines[i].Trim(), @"\```(\w+)", "<pre><code class=\"lang-$1\">");
+                lines[i] = Regex.Replace(lines[i].Trim(), @"```", "</code></pre>");
+                parsedLines.Add(lines[i]);
+            }
+            else
+            {
+                parsedLines.Add(lines[i]);
+                parsedLines.Add(" \n ");
+            }
+        }
+
+        return string.Join("", parsedLines);
     }
 
     private string ConvertMarkdownListToHtml(string markup)
@@ -408,7 +425,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             }
         }
 
-        return string.Join("", htmlLines);
+        return string.Join(" \n ", htmlLines); // TODO: fix \n scenario
     }
 
     private string ConvertMarkdownTableToHtml(string markup)
