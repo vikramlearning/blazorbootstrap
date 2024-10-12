@@ -315,16 +315,12 @@ public partial class Markdown : BlazorBootstrapComponentBase
             {
                 lines[i] = Regex.Replace(lines[i].Trim(), @"\```(\w+)", "<pre><code class=\"lang-$1\">");
                 lines[i] = Regex.Replace(lines[i].Trim(), @"```", "</code></pre>");
-                parsedLines.Add(lines[i]);
             }
-            else
-            {
-                parsedLines.Add(lines[i]);
-                parsedLines.Add(" \n ");
-            }
+
+            parsedLines.Add(lines[i]);
         }
 
-        return string.Join("", parsedLines);
+        return string.Join(" \n ", parsedLines);
     }
 
     private string ConvertMarkdownListToHtml(string markup)
