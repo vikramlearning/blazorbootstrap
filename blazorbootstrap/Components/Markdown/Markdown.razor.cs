@@ -55,6 +55,9 @@ public partial class Markdown : BlazorBootstrapComponentBase
         //var markup = ApplyRules(lines);
         var markup = string.Join("\n", lines);
         markup = ConvertMakdownHeadersToHtml(markup);
+        markup = ConvertMarkdownBlockquotesToHtml(markup);
+        markup = ConvertMarkdownHorizontalRulesToHtml(markup);
+        markup = ConvertMarkdownEmphasisToHtml(markup);
         markup = ConvertMarkdownListToHtml(markup);
         markup = ConvertMarkdownTableToHtml(markup);
         html = ApplyFullMarkupRules(markup);
@@ -114,18 +117,13 @@ public partial class Markdown : BlazorBootstrapComponentBase
             // done
 
             // Blockquotes
-            new(@"^>{1}\s(.*)$", "<blockquote>$1</blockquote>"),
-            //new(@"^(>>)+ (.*)$", "<blockquote><p>$2</p></blockquote>"),
+            // done
 
             // Horizontal rules
-            new(@"^\-{3,}$", "<hr />"),
+            // done
 
              // Emphasis (bold, italics, strikethrough)
-            new(@"\*\*(.*?)\*\*", "<b>$1</b>"),
-            new(@"__(.*?)__", "<b>$1</b>"),
-            new(@"\*(.*?)\*", "<i>$1</i>"),
-            new(@"_(.*?)_", "<i>$1</i>"),
-            new(@"~~(.*?)~~", "<s>$1</s>"),
+             // done
 
             // Code highlighting
             new(@"\```(\w+)", "<pre><code class=\"lang-$1\">"),
@@ -212,6 +210,104 @@ public partial class Markdown : BlazorBootstrapComponentBase
         }
 
         return string.Join("", parsedLines);
+    }
+
+    private string ConvertMarkdownBlockquotesToHtml(string markup)
+    {
+        var lines = markup.Split("\n");
+        var parsedLines = new List<string>();
+
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                parsedLines.Add(line);
+                continue;
+            }
+
+            if (Regex.IsMatch(line.Trim(), @"^>{1}\s(.*)"))
+            {
+                parsedLines.Add(Regex.Replace(line.Trim(), @"^>{1}\s(.*)", "<blockquote>$1</blockquote>"));
+            }
+            else
+            {
+                parsedLines.Add(line);
+                parsedLines.Add(" \n ");
+            }
+        }
+
+        return string.Join("", parsedLines);
+    }
+
+    private string ConvertMarkdownHorizontalRulesToHtml(string markup)
+    {
+        var lines = markup.Split("\n");
+        var parsedLines = new List<string>();
+
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                parsedLines.Add(line);
+                continue;
+            }
+
+            if (Regex.IsMatch(line.Trim(), @"^\-{3,}$"))
+            {
+                parsedLines.Add(Regex.Replace(line.Trim(), @"^\-{3,}$", "<hr />"));
+            }
+            else
+            {
+                parsedLines.Add(line);
+                parsedLines.Add(" \n ");
+            }
+        }
+
+        return string.Join("", parsedLines);
+    }
+
+    private string ConvertMarkdownEmphasisToHtml(string markup)
+    {
+        var lines = markup.Split("\n");
+        var parsedLines = new List<string>();
+
+        for (var i = 0; i < lines.Count(); i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i]))
+            {
+                parsedLines.Add(lines[i]);
+                continue;
+            }
+
+            if (Regex.IsMatch(lines[i].Trim(), @"\*\*(.*?)\*\*"))
+            {
+                lines[i] = Regex.Replace(lines[i].Trim(), @"\*\*(.*?)\*\*", "<b>$1</b>");
+            }
+
+            if (Regex.IsMatch(lines[i].Trim().Trim(), @"__(.*?)__"))
+            {
+                lines[i] = Regex.Replace(lines[i].Trim(), @"__(.*?)__", "<b>$1</b>");
+            }
+
+            if (Regex.IsMatch(lines[i].Trim(), @"\*(.*?)\*"))
+            {
+                lines[i] = Regex.Replace(lines[i].Trim(), @"\*(.*?)\*", "<i>$1</i>");
+            }
+
+            if (Regex.IsMatch(lines[i].Trim(), @"_(.*?)_"))
+            {
+                lines[i] = Regex.Replace(lines[i].Trim(), @"_(.*?)_", "<i>$1</i>");
+            }
+
+            if (Regex.IsMatch(lines[i].Trim(), @"~~(.*?)~~"))
+            {
+                lines[i] = Regex.Replace(lines[i].Trim(), @"~~(.*?)~~", "<s>$1</s>");
+            }
+
+            parsedLines.Add(lines[i]);
+        }
+
+        return string.Join(" \n ", parsedLines);
     }
 
     private string ConvertMarkdownListToHtml(string markup)
