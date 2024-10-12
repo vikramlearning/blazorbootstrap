@@ -49,6 +49,7 @@
         filtersTranslation.Add(new(">=", "Groter dan of gelijk aan", FilterOperator.GreaterThanOrEquals));
         // string
         filtersTranslation.Add(new("*a*", "Bevat", FilterOperator.Contains));
+        filtersTranslation.Add(new("!*a*", "Bevat niet", FilterOperator.DoesNotContain));
         filtersTranslation.Add(new("a**", "Begint met", FilterOperator.StartsWith));
         filtersTranslation.Add(new("**a", "Eindigt met", FilterOperator.EndsWith));
         filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
