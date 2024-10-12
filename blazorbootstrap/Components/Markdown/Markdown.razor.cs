@@ -53,6 +53,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
         var markup = ApplyRules(lines);
         markup = ConvertMarkdownTableToHtml(markup);
+        markup = ConvertMarkdownListToHtml(markup);
         html = ApplyFullMarkupRules(markup);
     }
 
@@ -76,7 +77,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             markup = Regex.Replace(markup, pattern.Rule, pattern.Template);
 
         return markup;
-    }
+    }    
 
     List<string> GetLines()
     {
@@ -243,4 +244,58 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
         return string.Join("\n", parsedLines);
     }
+
+    private string ConvertMarkdownListToHtml(string markup)
+    {
+        var lines = markup.Split("\n");
+        var htmlLines = new List<string>();
+        var listStack = new Stack<string>();
+
+        foreach (var line in lines)
+        {
+            var trimmedLine = line.Trim();
+
+            if (Regex.IsMatch(trimmedLine, @"^\d+\.\s"))
+            {
+                // Ordered list
+                if (listStack.Count == 0 || listStack.Peek() != "ol")
+                {
+                    if (listStack.Count > 0)
+                        htmlLines.Add($"</{listStack.Pop()}>");
+
+                    htmlLines.Add("<ol>");
+                    listStack.Push("ol");
+                }
+                htmlLines.Add($"<li>{Regex.Replace(trimmedLine, @"^\d+\.\s", "")}</li>");
+            }
+            else if (Regex.IsMatch(trimmedLine, @"^\-\s"))
+            {
+                // Unordered list
+                if (listStack.Count == 0 || listStack.Peek() != "ul")
+                {
+                    if (listStack.Count > 0)
+                        htmlLines.Add($"</{listStack.Pop()}>");
+
+                    htmlLines.Add("<ul>");
+                    listStack.Push("ul");
+                }
+                htmlLines.Add($"<li>{Regex.Replace(trimmedLine, @"^\-\s", "")}</li>");
+            }
+            else
+            {
+                // Close any open lists
+                while (listStack.Count > 0)
+                    htmlLines.Add($"</{listStack.Pop()}>");
+
+                htmlLines.Add(line);
+            }
+        }
+
+        // Close any remaining open lists
+        while (listStack.Count > 0)
+            htmlLines.Add($"</{listStack.Pop()}>");
+
+        return string.Join("", htmlLines);
+    }
+
 }
