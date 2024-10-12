@@ -18,6 +18,9 @@ public partial class Markdown : BlazorBootstrapComponentBase
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    [Parameter]
+    public string? TableCssClass { get; set; } = "table";
+
     #endregion
 
     protected override void OnInitialized()
@@ -49,6 +52,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         }
 
         var markup = ApplyRules(lines);
+        markup = ConvertMarkdownTableToHtml(markup);
         html = ApplyFullMarkupRules(markup);
     }
 
@@ -86,7 +90,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             var frames = builder.GetFrames().Array;
             foreach (var frame in frames)
             {
-                if (frame.MarkupContent is not null)
+                if (frame.FrameType == Microsoft.AspNetCore.Components.RenderTree.RenderTreeFrameType.Markup) // .MarkupContent is not null)
                 {
                     var lines = frame.MarkupContent.Split("\r\n");
                     foreach (var line in lines)
@@ -129,6 +133,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             new(@"```", "</code></pre>"),
 
             // Tables
+            // done
 
             // Lists
             // Ordered or numbered lists
@@ -161,5 +166,81 @@ public partial class Markdown : BlazorBootstrapComponentBase
             new(@"(?<!\n)\n(?!\n)", "<br />"),
             new(@"([^\n\n]+\n?)", "<p>$1</p>"),
         };
+    }
+
+    private string ConvertMarkdownTableToHtml(string markup)
+    {
+        var lines = markup.Split("\n");
+        var parsedLines = new List<string>();
+        var htmlLines = new List<string>();
+
+        var isTableStart = false;
+        var isTableHeadingAdded = false;
+        // Read lines starting with '|'
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                parsedLines.Add(line);
+                continue;
+            }
+
+            // Trim row with spaces
+            var trimmedLine = line.Trim();
+            if (trimmedLine.StartsWith("| "))
+            {
+                if (!isTableStart)
+                    isTableStart = true;
+
+                // Remove '|' from the start and end of the line
+                trimmedLine = trimmedLine.TrimStart('|').TrimEnd('|');
+
+                // Convert markdown syntax to HTML
+                var cells = trimmedLine.Split("|", StringSplitOptions.RemoveEmptyEntries);
+                var tableRow = "<tr>";
+
+                foreach (var cell in cells)
+                {
+                    var tableCellTagName = !isTableHeadingAdded ? "th" : "td";
+                    var tableCell = $"<{tableCellTagName}>{cell.Trim()}</{tableCellTagName}>";
+                    tableRow += tableCell;
+                }
+
+                tableRow += "</tr>";
+                htmlLines.Add(tableRow);
+            }
+            else if (trimmedLine.StartsWith("|--") || trimmedLine.StartsWith("|:--"))
+            {
+                // Table heading row is over
+                if (!isTableHeadingAdded)
+                {
+                    isTableHeadingAdded = true;
+                    htmlLines.Add("</thead>");
+                    htmlLines.Add("<tbody>");
+                }
+            }
+            else
+            {
+                if (isTableStart)
+                {
+                    isTableStart = false;
+                    parsedLines.Add($"<table class=\"{TableCssClass}\"><thead>{string.Join("", htmlLines)}</tbody></table>");
+                    htmlLines.Clear();
+                }
+                else
+                {
+                    parsedLines.Add(line);
+                }
+            }
+        }
+
+        if (isTableStart && htmlLines.Any())
+        {
+            isTableStart = false;
+            parsedLines.Add($"<table class=\"{TableCssClass}\"><thead>{string.Join("", htmlLines)}</tbody></table>");
+            htmlLines.Clear();
+        }
+
+        return string.Join("\n", parsedLines);
     }
 }

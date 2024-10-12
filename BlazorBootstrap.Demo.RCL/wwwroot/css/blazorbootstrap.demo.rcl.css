@@ -19,6 +19,7 @@
     --bd-violet-rgb: 112.520718,44.062154,249.437846;
     --docsearch-primary-color: var(--bd-violet);
     --docsearch-logo-color: var(--bd-violet);
+    --bb-example-pre-background: #f5f2f0;
 }
 
 h1:focus-visible {
@@ -346,6 +347,10 @@ h1:focus-visible {
         word-wrap: normal
     }
 
+pre[class*=language-] {
+    background: var(--bb-example-pre-background) !important;
+}
+
 .tab-pane.fade.active.show .highlight {
     border: 1px solid #dee2e6;
     border-top-width: 0;
@@ -453,4 +458,5 @@ h1:focus-visible {
     --bs-tertiary-color-rgb: 222, 226, 230;
     --bs-tertiary-bg: #2b3035;
     --bs-tertiary-bg-rgb: 43, 48, 53;
+    --bb-example-pre-background: #1e1e1e;
 }
