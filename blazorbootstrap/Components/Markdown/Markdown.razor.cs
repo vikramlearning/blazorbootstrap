@@ -58,6 +58,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         markup = ConvertMarkdownBlockquotesToHtml(markup);
         markup = ConvertMarkdownHorizontalRulesToHtml(markup);
         markup = ConvertMarkdownEmphasisToHtml(markup);
+        markup = ConvertMarkdownCodeHighlightingToHtml(markup);
         markup = ConvertMarkdownListToHtml(markup);
         markup = ConvertMarkdownTableToHtml(markup);
         html = ApplyFullMarkupRules(markup);
