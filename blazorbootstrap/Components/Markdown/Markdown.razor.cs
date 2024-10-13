@@ -41,15 +41,8 @@ public partial class Markdown : BlazorBootstrapComponentBase
     private void ParseMarkdown()
     {
         var lines = GetLines();
-        if (lines.Any())
-        {
-            // remove start and end blank lines
-            if (lines[0] == "")
-                lines.RemoveAt(0);
-
-            if (lines[lines.Count - 1] == "")
-                lines.RemoveAt(lines.Count - 1);
-        }
+        if (lines is null)
+            return;
 
         // do not change the sequence of these two lines
         //var markup = ApplyRules(lines);
@@ -61,6 +54,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         markup = ConvertMarkdownCodeHighlightingToHtml(markup);
         markup = ConvertMarkdownListToHtml(markup);
         markup = ConvertMarkdownTableToHtml(markup);
+        markup = ConvertMarkdownParagraphsToHtml(markup);
         html = ApplyFullMarkupRules(markup);
     }
 
@@ -100,11 +94,33 @@ public partial class Markdown : BlazorBootstrapComponentBase
             {
                 if (frame.FrameType == Microsoft.AspNetCore.Components.RenderTree.RenderTreeFrameType.Markup) // .MarkupContent is not null)
                 {
-                    var lines = frame.MarkupContent.Split("\r\n");
-                    foreach (var line in lines)
-                        inputs.Add(line);
+                    var lines = frame.MarkupContent.Split("\r\n").ToList();
+
+                    if (lines.Any())
+                    {
+                        //// remove start blank line
+                        //if (string.IsNullOrWhiteSpace(lines[0]))
+                        //    lines.RemoveAt(0);
+
+                        //// remove end blank line
+                        //if (string.IsNullOrWhiteSpace(lines[^1]))
+                        //    lines.RemoveAt(lines.Count - 1);
+
+                        inputs.AddRange(lines);
+                    }
                 }
             }
+        }
+
+        if (inputs.Any())
+        {
+            // remove start blank line
+            if (string.IsNullOrWhiteSpace(inputs[0]))
+                inputs.RemoveAt(0);
+
+            // remove end blank line
+            if (string.IsNullOrWhiteSpace(inputs[^1]))
+                inputs.RemoveAt(inputs.Count - 1);
         }
 
         return inputs;
@@ -160,8 +176,9 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return new List<MarkdownPattern>
         {
             // Paragraphs and line breaks
-            new(@"(?<!\n)\n(?!\n)", "<br />"),
-            new(@"([^\n\n]+\n?)", "<p>$1</p>"),
+            //new(@"(?<!\n)\n(?!\n)", "<br />"),
+            //new(@"([^\n\n]+\n?)", "<p>$1</p>"),
+            //new(@"^(?!<.*>)([^\n]+)\n?", "<p>$1</p>"),
         };
     }
 
@@ -175,6 +192,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             if (string.IsNullOrWhiteSpace(line))
             {
                 parsedLines.Add(line);
+                parsedLines.Add("\n");
                 continue;
             }
 
@@ -205,9 +223,12 @@ public partial class Markdown : BlazorBootstrapComponentBase
             else
             {
                 parsedLines.Add(line);
-                parsedLines.Add(" \n ");
+                parsedLines.Add("\n");
             }
         }
+
+        if (parsedLines.Any() && parsedLines[^1] == "\n")
+            parsedLines.RemoveAt(parsedLines.Count - 1);
 
         return string.Join("", parsedLines);
     }
@@ -222,6 +243,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             if (string.IsNullOrWhiteSpace(line))
             {
                 parsedLines.Add(line);
+                parsedLines.Add("\n");
                 continue;
             }
 
@@ -232,7 +254,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             else
             {
                 parsedLines.Add(line);
-                parsedLines.Add(" \n ");
+                parsedLines.Add("\n");
             }
         }
 
@@ -249,6 +271,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             if (string.IsNullOrWhiteSpace(line))
             {
                 parsedLines.Add(line);
+                parsedLines.Add("\n");
                 continue;
             }
 
@@ -259,7 +282,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             else
             {
                 parsedLines.Add(line);
-                parsedLines.Add(" \n ");
+                parsedLines.Add("\n");
             }
         }
 
@@ -276,6 +299,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             if (string.IsNullOrWhiteSpace(lines[i]))
             {
                 parsedLines.Add(lines[i]);
+                parsedLines.Add("\n");
                 continue;
             }
 
@@ -290,38 +314,74 @@ public partial class Markdown : BlazorBootstrapComponentBase
                 lines[i] = Regex.Replace(lines[i].Trim(), @"\*(.*?)\*", "<i>$1</i>");
                 lines[i] = Regex.Replace(lines[i].Trim(), @"_(.*?)_", "<i>$1</i>");
                 lines[i] = Regex.Replace(lines[i].Trim(), @"~~(.*?)~~", "<s>$1</s>");
-            }
 
-            parsedLines.Add(lines[i]);
+                parsedLines.Add(lines[i]);
+            }
+            else
+            {
+                parsedLines.Add(lines[i]);
+                parsedLines.Add("\n");
+            }
         }
 
-        return string.Join(" \n ", parsedLines);
+        return string.Join("", parsedLines);
     }
 
     private string ConvertMarkdownCodeHighlightingToHtml(string markup)
     {
         var lines = markup.Split("\n");
         var parsedLines = new List<string>();
+        var isCodeBlockInprogress = false;
 
         for (var i = 0; i < lines.Count(); i++)
         {
             if (string.IsNullOrWhiteSpace(lines[i]))
             {
                 parsedLines.Add(lines[i]);
+                parsedLines.Add("\n");
                 continue;
             }
 
-            if (Regex.IsMatch(lines[i].Trim(), @"\```(\w+)")
-                || Regex.IsMatch(lines[i].Trim().Trim(), @"```"))
-            {
-                lines[i] = Regex.Replace(lines[i].Trim(), @"\```(\w+)", "<pre><code class=\"lang-$1\">");
-                lines[i] = Regex.Replace(lines[i].Trim(), @"```", "</code></pre>");
-            }
+            //if (Regex.IsMatch(lines[i].Trim(), @"\```(\w+)")
+            //    || Regex.IsMatch(lines[i].Trim().Trim(), @"```"))
+            //{
+            //    lines[i] = Regex.Replace(lines[i].Trim(), @"\```(\w+)", "<pre><code class=\"lang-$1\">");
+            //    lines[i] = Regex.Replace(lines[i].Trim(), @"```", "</code></pre>");
+            //    parsedLines.Add(lines[i]);
+            //}
 
-            parsedLines.Add(lines[i]);
+            if (Regex.IsMatch(lines[i].Trim(), @"\```(\w+)"))
+            {
+                if (!isCodeBlockInprogress)
+                    isCodeBlockInprogress = true;
+
+                lines[i] = Regex.Replace(lines[i].Trim(), @"\```(\w+)", "<pre><code class=\"lang-$1\">");
+                parsedLines.Add(lines[i]);
+            }
+            else if (Regex.IsMatch(lines[i].Trim().Trim(), @"```"))
+            {
+                if(isCodeBlockInprogress)
+                    isCodeBlockInprogress = false;
+
+                lines[i] = Regex.Replace(lines[i].Trim(), @"```", "</code></pre>");
+                parsedLines.Add(lines[i]);
+            }
+            else if(isCodeBlockInprogress)
+            {
+                parsedLines.Add(lines[i]);
+                parsedLines.Add(" @@@@ ");
+            }
+            else
+            {
+                parsedLines.Add(lines[i]);
+                parsedLines.Add("\n");
+            }
         }
 
-        return string.Join(" \n ", parsedLines);
+        if (parsedLines.Any() && parsedLines[^1] == "\n")
+            parsedLines.RemoveAt(parsedLines.Count - 1);
+
+        return string.Join("", parsedLines);
     }
 
     private string ConvertMarkdownListToHtml(string markup)
@@ -422,7 +482,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             }
         }
 
-        return string.Join(" \n ", htmlLines); // TODO: fix \n scenario
+        return string.Join("\n", htmlLines); // TODO: fix \n scenario
     }
 
     private string ConvertMarkdownTableToHtml(string markup)
@@ -501,4 +561,25 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("\n", parsedLines);
     }
 
+    private string ConvertMarkdownParagraphsToHtml(string markup)
+    {
+        var lines = markup.Split("\n\n\n");
+        var parsedLines = new List<string>();
+
+        if (lines.Length == 1)
+            return markup;
+
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                parsedLines.Add(line);
+                continue;
+            }
+
+            parsedLines.Add($"<p>{line}</p>");
+        }
+
+        return string.Join("", parsedLines);
+    }
 }
