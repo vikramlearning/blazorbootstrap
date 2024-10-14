@@ -26,7 +26,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
-    private void OnNotify(ToastMessage toastMessage)
+    private async void OnNotify(ToastMessage toastMessage)
     {
         if (toastMessage is null)
             return;
@@ -35,7 +35,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
 
         Messages.Add(toastMessage);
 
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     private void OnToastHiddenAsync(ToastEventArgs args)
