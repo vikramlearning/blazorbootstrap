@@ -429,8 +429,19 @@ public partial class Markdown : BlazorBootstrapComponentBase
                             indentStack.Push(indentLevel);
                         }
                     }
+                    htmlLines.Add($"<li>{Regex.Replace(line, @"^\s*\d+\.\s", "")}");
                 }
-                htmlLines.Add($"<li>{Regex.Replace(line, @"^\s*\d+\.\s", "")}");
+                else if (indentStack.Peek() > indentLevel)
+                {
+                    htmlLines.Add($"</{listStack.Pop()}>");
+                    indentStack.Pop();
+
+                    htmlLines.Add($"<li>{Regex.Replace(line, @"^\s*\-\s", "")}");
+                }
+                else if (indentStack.Peek() == indentLevel)
+                {
+                    htmlLines.Add($"<li>{Regex.Replace(line, @"^\s*\-\s", "")}");
+                }
             }
             else if (Regex.IsMatch(line, @"^\s*\-\s"))
             {
@@ -458,8 +469,19 @@ public partial class Markdown : BlazorBootstrapComponentBase
                             indentStack.Push(indentLevel);
                         }
                     }
+                    htmlLines.Add($"<li>{Regex.Replace(line, @"^\s*\-\s", "")}");
                 }
-                htmlLines.Add($"<li>{Regex.Replace(line, @"^\s*\-\s", "")}");
+                else if (indentStack.Peek() > indentLevel)
+                {
+                    htmlLines.Add($"</{listStack.Pop()}>");
+                    indentStack.Pop();
+
+                    htmlLines.Add($"<li>{Regex.Replace(line, @"^\s*\-\s", "")}");
+                }
+                else if (indentStack.Peek() == indentLevel)
+                {
+                    htmlLines.Add($"<li>{Regex.Replace(line, @"^\s*\-\s", "")}");
+                }
             }
             else
             {
@@ -471,6 +493,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
                 }
 
                 htmlLines.Add(line);
+                htmlLines.Add("\n");
             }
         }
 
@@ -490,7 +513,11 @@ public partial class Markdown : BlazorBootstrapComponentBase
             }
         }
 
-        return string.Join("\n", htmlLines); // TODO: fix \n scenario
+        // remove last line break
+        if(htmlLines.Any() && htmlLines[^1] == "\n")
+            htmlLines.RemoveAt(htmlLines.Count - 1);
+
+        return string.Join("", htmlLines); // TODO: fix \n scenario
     }
 
     private string ConvertMarkdownTableToHtml(string markup)
