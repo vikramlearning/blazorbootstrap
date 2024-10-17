@@ -377,7 +377,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             else if (isCodeBlockInprogress)
             {
                 parsedLines.Add(lines[i]);
-                parsedLines.Add(" @@@@ ");
+                //parsedLines.Add(" @@@@ ");
             }
             else
             {
@@ -517,7 +517,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         if(htmlLines.Any() && htmlLines[^1] == "\n")
             htmlLines.RemoveAt(htmlLines.Count - 1);
 
-        return string.Join("", htmlLines); // TODO: fix \n scenario
+        return string.Join("", htmlLines);
     }
 
     private string ConvertMarkdownTableToHtml(string markup)
