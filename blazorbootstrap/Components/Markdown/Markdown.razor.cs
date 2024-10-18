@@ -11,6 +11,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
     private const string PATTERN_ORDERED_LIST = @"^\s*\d+\.\s";
     private const string PATTERN_UNORDERED_LIST = @"^\s*\-\s";
     private const string PATTERN_HORIZONTAL_RULES = @"^\-{3,}$";
+    private const string PATTERN_BLOCKQUOTES = @"^>{1,}\s(.*)";
 
     #region Properties, Indexers
 
@@ -197,32 +198,106 @@ public partial class Markdown : BlazorBootstrapComponentBase
     // TODO: fix this method
     private string ConvertMarkdownBlockquotesToHtml(string markup)
     {
+        //var lines = markup.Split("\n");
+        //var parsedLines = new List<string>();
+
+        //foreach (var line in lines)
+        //{
+        //    if (string.IsNullOrWhiteSpace(line))
+        //    {
+        //        parsedLines.Add(line);
+        //        parsedLines.Add("\n");
+        //        continue;
+        //    }
+
+        //    if (Regex.IsMatch(line.Trim(), PATTERN_BLOCKQUOTES))
+        //    {
+        //        parsedLines.Add(Regex.Replace(line.Trim(), PATTERN_BLOCKQUOTES, "<blockquote><p>$1</p></blockquote>"));
+        //    }
+        //    else
+        //    {
+        //        parsedLines.Add(line);
+        //        parsedLines.Add("\n");
+        //    }
+        //}
+
+        //RemoveLastLineBreak(parsedLines);
+
+        //return string.Join("", parsedLines);
+
         var lines = markup.Split("\n");
-        var parsedLines = new List<string>();
+        var htmlLines = new List<string>();
+        var listStack = new Stack<string>();
+        var indentStack = new Stack<int>();
 
         foreach (var line in lines)
         {
-            if (string.IsNullOrWhiteSpace(line))
+            var trimmerLine = line.Trim();
+            var indentLevel = trimmerLine.TakeWhile((c) => c == '>').Count();
+            if (Regex.IsMatch(trimmerLine, PATTERN_BLOCKQUOTES))
             {
-                parsedLines.Add(line);
-                parsedLines.Add("\n");
-                continue;
-            }
+                if (listStack.Count == 0 || indentStack.Peek() < indentLevel)
+                {
+                    if (listStack.Count > 0 && indentStack.Peek() < indentLevel)
+                    {
+                        // close the `p` tag
+                        if (listStack.Peek() == "p")
+                            htmlLines.Add($"</{listStack.Pop()}>");
 
-            if (Regex.IsMatch(line.Trim(), @"^>{1}\s(.*)"))
-            {
-                parsedLines.Add(Regex.Replace(line.Trim(), @"^>{1}\s(.*)", "<blockquote><p>$1</p></blockquote>"));
+                        htmlLines.Add("<blockquote>");
+                        listStack.Push("blockquote");
+                        indentStack.Push(indentLevel);
+                    }
+                    else
+                    {
+                        while (listStack.Count > 0 && indentStack.Peek() > indentLevel)
+                        {
+                            htmlLines.Add($"</{listStack.Pop()}>");
+                            indentStack.Pop();
+                        }
+
+                        if (listStack.Count == 0 || listStack.Peek() != "blockquote")
+                        {
+                            htmlLines.Add("<blockquote>");
+                            listStack.Push("blockquote");
+                            indentStack.Push(indentLevel);
+                        }
+                    }
+
+                    htmlLines.Add($"<p>{Regex.Replace(trimmerLine, PATTERN_BLOCKQUOTES, "$1")}");
+                    listStack.Push("p");
+                }
+                else if (indentStack.Peek() >= indentLevel)
+                {
+                    htmlLines.Add($"<br />{Regex.Replace(trimmerLine, PATTERN_BLOCKQUOTES, "$1")}");
+                }
             }
             else
             {
-                parsedLines.Add(line);
-                parsedLines.Add("\n");
+                // Close any open lists
+                while (listStack.Count > 0)
+                {
+                    htmlLines.Add($"</{listStack.Pop()}>");
+
+                    if (indentStack.Count > 0)
+                        indentStack.Pop();
+                }
+
+                htmlLines.Add(line);
+                htmlLines.Add("\n");
             }
         }
 
-        RemoveLastLineBreak(parsedLines);
+        // Close any remaining open blockquotes
+        while (listStack.Count > 0)
+        {
+            htmlLines.Add($"</{listStack.Pop()}>");
 
-        return string.Join("", parsedLines);
+            if (indentStack.Count > 0)
+                indentStack.Pop();
+        }
+
+        return string.Join("", htmlLines);
     }
 
     private string ConvertMarkdownHorizontalRulesToHtml(string markup)
