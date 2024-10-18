@@ -8,9 +8,9 @@ public partial class Markdown : BlazorBootstrapComponentBase
     private string? html;
 
     private const string CODE_HIGHLIGHTING_LINE_SEPERATOR = " $$CHLS$$ ";
-    private const string Pattern_Ordered_List = @"^\s*\d+\.\s";
-    private const string Pattern_Unordered_List = @"^\s*\-\s";
-    private const string Pattern_Horizontal_Rules = @"^\-{3,}$";
+    private const string PATTERN_ORDERED_LIST = @"^\s*\d+\.\s";
+    private const string PATTERN_UNORDERED_LIST = @"^\s*\-\s";
+    private const string PATTERN_HORIZONTAL_RULES = @"^\-{3,}$";
 
     #region Properties, Indexers
 
@@ -211,7 +211,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
             if (Regex.IsMatch(line.Trim(), @"^>{1}\s(.*)"))
             {
-                parsedLines.Add(Regex.Replace(line.Trim(), @"^>{1}\s(.*)", "<blockquote>$1</blockquote>"));
+                parsedLines.Add(Regex.Replace(line.Trim(), @"^>{1}\s(.*)", "<blockquote><p>$1</p></blockquote>"));
             }
             else
             {
@@ -239,10 +239,10 @@ public partial class Markdown : BlazorBootstrapComponentBase
                 continue;
             }
 
-            if (Regex.IsMatch(line.Trim(), Pattern_Horizontal_Rules))
+            if (Regex.IsMatch(line.Trim(), PATTERN_HORIZONTAL_RULES))
             {
                 RemoveLastLineBreak(parsedLines);
-                parsedLines.Add(Regex.Replace(line.Trim(), Pattern_Horizontal_Rules, "<hr />"));
+                parsedLines.Add(Regex.Replace(line.Trim(), PATTERN_HORIZONTAL_RULES, "<hr />"));
             }
             else
             {
@@ -340,7 +340,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         {
             var indentLevel = line.TakeWhile(char.IsWhiteSpace).Count();
 
-            if (Regex.IsMatch(line, Pattern_Ordered_List))
+            if (Regex.IsMatch(line, PATTERN_ORDERED_LIST))
             {
                 // Ordered list
                 if (listStack.Count == 0 || listStack.Peek() != "ol" || indentStack.Peek() < indentLevel)
@@ -366,21 +366,21 @@ public partial class Markdown : BlazorBootstrapComponentBase
                             indentStack.Push(indentLevel);
                         }
                     }
-                    htmlLines.Add($"<li>{Regex.Replace(line, Pattern_Ordered_List, "")}");
+                    htmlLines.Add($"<li>{Regex.Replace(line, PATTERN_ORDERED_LIST, "")}");
                 }
                 else if (indentStack.Peek() > indentLevel)
                 {
                     htmlLines.Add($"</{listStack.Pop()}>");
                     indentStack.Pop();
 
-                    htmlLines.Add($"<li>{Regex.Replace(line, Pattern_Ordered_List, "")}");
+                    htmlLines.Add($"<li>{Regex.Replace(line, PATTERN_ORDERED_LIST, "")}");
                 }
                 else if (indentStack.Peek() == indentLevel)
                 {
-                    htmlLines.Add($"<li>{Regex.Replace(line, Pattern_Ordered_List, "")}");
+                    htmlLines.Add($"<li>{Regex.Replace(line, PATTERN_ORDERED_LIST, "")}");
                 }
             }
-            else if (Regex.IsMatch(line, Pattern_Unordered_List))
+            else if (Regex.IsMatch(line, PATTERN_UNORDERED_LIST))
             {
                 // Unordered list
                 if (listStack.Count == 0 || listStack.Peek() != "ul" || indentStack.Peek() < indentLevel)
@@ -406,18 +406,18 @@ public partial class Markdown : BlazorBootstrapComponentBase
                             indentStack.Push(indentLevel);
                         }
                     }
-                    htmlLines.Add($"<li>{Regex.Replace(line, Pattern_Unordered_List, "")}");
+                    htmlLines.Add($"<li>{Regex.Replace(line, PATTERN_UNORDERED_LIST, "")}");
                 }
                 else if (indentStack.Peek() > indentLevel)
                 {
                     htmlLines.Add($"</{listStack.Pop()}>");
                     indentStack.Pop();
 
-                    htmlLines.Add($"<li>{Regex.Replace(line, Pattern_Unordered_List, "")}");
+                    htmlLines.Add($"<li>{Regex.Replace(line, PATTERN_UNORDERED_LIST, "")}");
                 }
                 else if (indentStack.Peek() == indentLevel)
                 {
-                    htmlLines.Add($"<li>{Regex.Replace(line, Pattern_Unordered_List, "")}");
+                    htmlLines.Add($"<li>{Regex.Replace(line, PATTERN_UNORDERED_LIST, "")}");
                 }
             }
             else
