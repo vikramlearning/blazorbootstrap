@@ -49,8 +49,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         if (lines is null)
             return;
 
-        // do not change the sequence of these two lines
-        //var markup = ApplyRules(lines);
+        // NOTE: do not change the sequence of these two lines
         var markup = string.Join("\n", lines);
         markup = ConvertMakdownHeadersToHtml(markup);
         markup = ConvertMarkdownBlockquotesToHtml(markup);
@@ -61,30 +60,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         markup = ConvertMarkdownTableToHtml(markup);
         markup = ConvertMarkdownParagraphsToHtml(markup);
         markup = ConvertMarkdownLineBreaksToHtml(markup);
-        //html = ApplyFullMarkupRules(markup);
         html = markup.Replace(CODE_HIGHLIGHTING_LINE_SEPERATOR, "\n");
-    }
-
-    //private string ApplyRules(List<string> lines)
-    //{
-    //    var patterns = GetRules();
-    //    foreach (var pattern in patterns)
-    //    {
-    //        for (var i = 0; i < lines.Count; i++)
-    //            lines[i] = Regex.Replace(lines[i].Trim(), pattern.Rule, pattern.Template);
-    //    }
-
-    //    return string.Join("<br />", lines);
-    //}
-
-    private string ApplyFullMarkupRules(string markup)
-    {
-        var patterns = GetFullMarkupRules();
-
-        foreach (var pattern in patterns)
-            markup = Regex.Replace(markup, pattern.Rule, pattern.Template);
-
-        return markup;
     }
 
     List<string> GetLines()
@@ -104,28 +80,18 @@ public partial class Markdown : BlazorBootstrapComponentBase
                     var lines = frame.MarkupContent.Split("\r\n").ToList();
 
                     if (lines.Any())
-                    {
-                        //// remove start blank line
-                        //if (string.IsNullOrWhiteSpace(lines[0]))
-                        //    lines.RemoveAt(0);
-
-                        //// remove end blank line
-                        //if (string.IsNullOrWhiteSpace(lines[^1]))
-                        //    lines.RemoveAt(lines.Count - 1);
-
                         inputs.AddRange(lines);
-                    }
                 }
             }
         }
 
         if (inputs.Any())
         {
-            // remove start blank line
+            // remove first blank line
             if (string.IsNullOrWhiteSpace(inputs[0]))
                 inputs.RemoveAt(0);
 
-            // remove end blank line
+            // remove last blank line
             if (string.IsNullOrWhiteSpace(inputs[^1]))
                 inputs.RemoveAt(inputs.Count - 1);
         }
@@ -175,17 +141,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
             // Mathematical notation and characters
 
             // Mermaid diagrams
-        };
-    }
-
-    private List<MarkdownPattern> GetFullMarkupRules()
-    {
-        return new List<MarkdownPattern>
-        {
-            // Paragraphs and line breaks
-            //new(@"(?<!\n)\n(?!\n)", "<br />"),
-            //new(@"([^\n\n]+\n?)", "<p>$1</p>"),
-            //new(@"^(?!<.*>)([^\n]+)\n?", "<p>$1</p>"),
         };
     }
 
@@ -340,13 +295,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
         for (var i = 0; i < lines.Count(); i++)
         {
-            //if (string.IsNullOrWhiteSpace(lines[i]))
-            //{
-            //    parsedLines.Add(lines[i]);
-            //    parsedLines.Add("\n");
-            //    continue;
-            //}
-
             if (Regex.IsMatch(lines[i].Trim(), @"\```(\w+)"))
             {
                 if (!isCodeBlockInprogress)
@@ -514,6 +462,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
         var isTableStart = false;
         var isTableHeadingAdded = false;
+
         // Read lines starting with '|'
         foreach (var line in lines)
         {
