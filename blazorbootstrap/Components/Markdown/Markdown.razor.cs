@@ -194,6 +194,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("", parsedLines);
     }
 
+    // TODO: fix this method
     private string ConvertMarkdownBlockquotesToHtml(string markup)
     {
         var lines = markup.Split("\n");
