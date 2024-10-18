@@ -27,6 +27,9 @@ public partial class Markdown : BlazorBootstrapComponentBase
     [Parameter]
     public string? TableCssClass { get; set; } = "table";
 
+    [Parameter]
+    public string? BlockquotesCssClass { get; set; } = "blockquote";
+
     #endregion
 
     protected override void OnInitialized()
@@ -100,51 +103,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return inputs;
     }
 
-    private List<MarkdownPattern> GetRules()
-    {
-        return new List<MarkdownPattern>
-        {
-            // Headers
-            // done
-
-            // Blockquotes
-            // done
-
-            // Horizontal rules
-            // done
-
-            // Emphasis (bold, italics, strikethrough)
-            // done
-
-            // Code highlighting
-            // done
-
-            // Tables
-            // done
-
-            // Lists
-            // Ordered or numbered lists
-
-            // Bulleted lists
-
-            // Nested lists
-
-            // Links
-
-            // Anchor links
-
-            // Images
-
-            // Checklist or task list
-
-            // Emoji
-
-            // Mathematical notation and characters
-
-            // Mermaid diagrams
-        };
-    }
-
     private string ConvertMakdownHeadersToHtml(string markup)
     {
         var lines = markup.Split("\n");
@@ -216,7 +174,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
                         if (listStack.Peek() == "p")
                             htmlLines.Add($"</{listStack.Pop()}>");
 
-                        htmlLines.Add("<blockquote>");
+                        htmlLines.Add($"<blockquote class=\"{BlockquotesCssClass}\">");
                         listStack.Push("blockquote");
                         indentStack.Push(indentLevel);
                     }
@@ -230,7 +188,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
                         if (listStack.Count == 0 || listStack.Peek() != "blockquote")
                         {
-                            htmlLines.Add("<blockquote>");
+                            htmlLines.Add($"<blockquote class=\"{BlockquotesCssClass}\">");
                             listStack.Push("blockquote");
                             indentStack.Push(indentLevel);
                         }
@@ -603,10 +561,25 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
     private string ConvertMarkdownLineBreaksToHtml(string markup) => markup.Replace("\n", "<br />");
 
+    // Links
+
+    // Anchor links
+
+    // Images
+
+    // Checklist or task list
+
+    // Emoji
+
+    // Mathematical notation and characters
+
+    // Mermaid diagrams
+
     private static void RemoveLastLineBreak(List<string> htmlLines)
     {
         // remove last line break
         if (htmlLines.Any() && htmlLines[^1] == "\n")
             htmlLines.RemoveAt(htmlLines.Count - 1);
     }
+
 }
