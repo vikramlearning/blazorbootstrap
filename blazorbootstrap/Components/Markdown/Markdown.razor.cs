@@ -10,6 +10,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
     private const string CODE_HIGHLIGHTING_LINE_SEPERATOR = " $$CHLS$$ ";
     private const string Pattern_Ordered_List = @"^\s*\d+\.\s";
     private const string Pattern_Unordered_List = @"^\s*\-\s";
+    private const string Pattern_Horizontal_Rules = @"^\-{3,}$";
 
     #region Properties, Indexers
 
@@ -282,9 +283,10 @@ public partial class Markdown : BlazorBootstrapComponentBase
                 continue;
             }
 
-            if (Regex.IsMatch(line.Trim(), @"^\-{3,}$"))
+            if (Regex.IsMatch(line.Trim(), Pattern_Horizontal_Rules))
             {
-                parsedLines.Add(Regex.Replace(line.Trim(), @"^\-{3,}$", "<hr />"));
+                RemoveLastLineBreak(parsedLines);
+                parsedLines.Add(Regex.Replace(line.Trim(), Pattern_Horizontal_Rules, "<hr />"));
             }
             else
             {
