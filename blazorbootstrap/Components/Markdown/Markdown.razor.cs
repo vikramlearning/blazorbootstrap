@@ -7,6 +7,8 @@ public partial class Markdown : BlazorBootstrapComponentBase
 {
     private string? html;
 
+    private const string CODE_HIGHLIGHTING_LINE_SEPERATOR = " $$CHLS$$ ";
+
     #region Properties, Indexers
 
     /// <summary>
@@ -56,20 +58,21 @@ public partial class Markdown : BlazorBootstrapComponentBase
         markup = ConvertMarkdownTableToHtml(markup);
         markup = ConvertMarkdownParagraphsToHtml(markup);
         markup = ConvertMarkdownLineBreaksToHtml(markup);
-        html = ApplyFullMarkupRules(markup);
+        //html = ApplyFullMarkupRules(markup);
+        html = markup.Replace(CODE_HIGHLIGHTING_LINE_SEPERATOR, "\n");
     }
 
-    private string ApplyRules(List<string> lines)
-    {
-        var patterns = GetRules();
-        foreach (var pattern in patterns)
-        {
-            for (var i = 0; i < lines.Count; i++)
-                lines[i] = Regex.Replace(lines[i].Trim(), pattern.Rule, pattern.Template);
-        }
+    //private string ApplyRules(List<string> lines)
+    //{
+    //    var patterns = GetRules();
+    //    foreach (var pattern in patterns)
+    //    {
+    //        for (var i = 0; i < lines.Count; i++)
+    //            lines[i] = Regex.Replace(lines[i].Trim(), pattern.Rule, pattern.Template);
+    //    }
 
-        return string.Join("<br />", lines);
-    }
+    //    return string.Join("<br />", lines);
+    //}
 
     private string ApplyFullMarkupRules(string markup)
     {
@@ -343,19 +346,11 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
         for (var i = 0; i < lines.Count(); i++)
         {
-            if (string.IsNullOrWhiteSpace(lines[i]))
-            {
-                parsedLines.Add(lines[i]);
-                parsedLines.Add("\n");
-                continue;
-            }
-
-            //if (Regex.IsMatch(lines[i].Trim(), @"\```(\w+)")
-            //    || Regex.IsMatch(lines[i].Trim().Trim(), @"```"))
+            //if (string.IsNullOrWhiteSpace(lines[i]))
             //{
-            //    lines[i] = Regex.Replace(lines[i].Trim(), @"\```(\w+)", "<pre><code class=\"lang-$1\">");
-            //    lines[i] = Regex.Replace(lines[i].Trim(), @"```", "</code></pre>");
             //    parsedLines.Add(lines[i]);
+            //    parsedLines.Add("\n");
+            //    continue;
             //}
 
             if (Regex.IsMatch(lines[i].Trim(), @"\```(\w+)"))
@@ -377,7 +372,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             else if (isCodeBlockInprogress)
             {
                 parsedLines.Add(lines[i]);
-                //parsedLines.Add(" @@@@ ");
+                parsedLines.Add($"{CODE_HIGHLIGHTING_LINE_SEPERATOR}");
             }
             else
             {
