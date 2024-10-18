@@ -310,7 +310,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
             if (string.IsNullOrWhiteSpace(lines[i]))
             {
                 parsedLines.Add(lines[i]);
-                //parsedLines.Add("\n");
                 continue;
             }
 
@@ -325,14 +324,9 @@ public partial class Markdown : BlazorBootstrapComponentBase
                 lines[i] = Regex.Replace(lines[i].Trim(), @"\*(.*?)\*", "<i>$1</i>");
                 lines[i] = Regex.Replace(lines[i].Trim(), @"_(.*?)_", "<i>$1</i>");
                 lines[i] = Regex.Replace(lines[i].Trim(), @"~~(.*?)~~", "<s>$1</s>");
+            }
 
-                parsedLines.Add(lines[i]);
-            }
-            else
-            {
-                parsedLines.Add(lines[i]);
-                //parsedLines.Add("\n");
-            }
+            parsedLines.Add(lines[i]);
         }
 
         return string.Join("\n", parsedLines);
