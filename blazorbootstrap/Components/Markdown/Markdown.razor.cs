@@ -233,8 +233,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             }
         }
 
-        if (parsedLines.Any() && parsedLines[^1] == "\n")
-            parsedLines.RemoveAt(parsedLines.Count - 1);
+        RemoveLastLineBreak(parsedLines);
 
         return string.Join("", parsedLines);
     }
@@ -264,8 +263,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             }
         }
 
-        if (parsedLines.Any() && parsedLines[^1] == "\n")
-            parsedLines.RemoveAt(parsedLines.Count - 1);
+        RemoveLastLineBreak(parsedLines);
 
         return string.Join("", parsedLines);
     }
@@ -295,8 +293,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             }
         }
 
-        if (parsedLines.Any() && parsedLines[^1] == "\n")
-            parsedLines.RemoveAt(parsedLines.Count - 1);
+        RemoveLastLineBreak(parsedLines);
 
         return string.Join("", parsedLines);
     }
@@ -336,7 +333,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
             }
         }
 
-        //return string.Join("", parsedLines);
         return string.Join("\n", parsedLines);
     }
 
@@ -383,8 +379,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             }
         }
 
-        if (parsedLines.Any() && parsedLines[^1] == "\n")
-            parsedLines.RemoveAt(parsedLines.Count - 1);
+        RemoveLastLineBreak(parsedLines);
 
         return string.Join("", parsedLines);
     }
@@ -510,9 +505,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             }
         }
 
-        // remove last line break
-        if(htmlLines.Any() && htmlLines[^1] == "\n")
-            htmlLines.RemoveAt(htmlLines.Count - 1);
+        RemoveLastLineBreak(htmlLines);
 
         return string.Join("", htmlLines);
     }
@@ -615,20 +608,12 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("", parsedLines);
     }
 
-    private string ConvertMarkdownLineBreaksToHtml(string markup)
+    private string ConvertMarkdownLineBreaksToHtml(string markup) => markup.Replace("\n", "<br />");
+
+    private static void RemoveLastLineBreak(List<string> htmlLines)
     {
-        var lines = markup.Split("\n");
-        var parsedLines = new List<string>();
-
-        if (lines.Length == 1)
-            return markup;
-
-        foreach (var line in lines)
-        {
-            parsedLines.Add(line);
-            parsedLines.Add($"<br />");
-        }
-
-        return string.Join("", parsedLines);
+        // remove last line break
+        if (htmlLines.Any() && htmlLines[^1] == "\n")
+            htmlLines.RemoveAt(htmlLines.Count - 1);
     }
 }
