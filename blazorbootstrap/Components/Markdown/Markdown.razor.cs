@@ -195,36 +195,8 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("", parsedLines);
     }
 
-    // TODO: fix this method
     private string ConvertMarkdownBlockquotesToHtml(string markup)
     {
-        //var lines = markup.Split("\n");
-        //var parsedLines = new List<string>();
-
-        //foreach (var line in lines)
-        //{
-        //    if (string.IsNullOrWhiteSpace(line))
-        //    {
-        //        parsedLines.Add(line);
-        //        parsedLines.Add("\n");
-        //        continue;
-        //    }
-
-        //    if (Regex.IsMatch(line.Trim(), PATTERN_BLOCKQUOTES))
-        //    {
-        //        parsedLines.Add(Regex.Replace(line.Trim(), PATTERN_BLOCKQUOTES, "<blockquote><p>$1</p></blockquote>"));
-        //    }
-        //    else
-        //    {
-        //        parsedLines.Add(line);
-        //        parsedLines.Add("\n");
-        //    }
-        //}
-
-        //RemoveLastLineBreak(parsedLines);
-
-        //return string.Join("", parsedLines);
-
         var lines = markup.Split("\n");
         var htmlLines = new List<string>();
         var listStack = new Stack<string>();
