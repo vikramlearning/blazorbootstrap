@@ -65,6 +65,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         markup = ConvertMarkdownParagraphsToHtml(markup);
         markup = ConvertMarkdownLineBreaksToHtml(markup);
         markup = ConvertMarkdownImageToHtml(markup);
+        markup = ConvertMarkdownLinksToHtml(markup);
         html = markup.Replace(CODE_HIGHLIGHTING_LINE_SEPERATOR, "\n");
     }
 
@@ -104,6 +105,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return inputs;
     }
 
+    // Headers
     private string ConvertMakdownHeadersToHtml(string markup)
     {
         var lines = markup.Split("\n");
@@ -154,6 +156,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("", parsedLines);
     }
 
+    // Blockquotes
     private string ConvertMarkdownBlockquotesToHtml(string markup)
     {
         var lines = markup.Split("\n");
@@ -231,6 +234,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("", htmlLines);
     }
 
+    // HorizontalRules
     private string ConvertMarkdownHorizontalRulesToHtml(string markup)
     {
         var lines = markup.Split("\n");
@@ -262,6 +266,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("", parsedLines);
     }
 
+    // Emphasis
     private string ConvertMarkdownEmphasisToHtml(string markup)
     {
         var lines = markup.Split("\n");
@@ -294,6 +299,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("\n", parsedLines);
     }
 
+    // Code Highlighting
     private string ConvertMarkdownCodeHighlightingToHtml(string markup)
     {
         var lines = markup.Split("\n");
@@ -335,6 +341,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("", parsedLines);
     }
 
+    // Lists
     private string ConvertMarkdownListToHtml(string markup)
     {
         var lines = markup.Split("\n");
@@ -461,6 +468,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("", htmlLines);
     }
 
+    // Tables
     private string ConvertMarkdownTableToHtml(string markup)
     {
         var lines = markup.Split("\n");
@@ -538,6 +546,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("\n", parsedLines);
     }
 
+    // Paragraphs
     private string ConvertMarkdownParagraphsToHtml(string markup)
     {
         var lines = markup.Split("\n\n\n");
@@ -560,11 +569,26 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("", parsedLines);
     }
 
+    // Line breaks
     private string ConvertMarkdownLineBreaksToHtml(string markup) => markup.Replace("\n", "<br />");
 
     // Links
+    private string ConvertMarkdownLinksToHtml(string markup)
+    {
+        // Pattern to match Markdown link syntax: [Link Text](Link URL)
+        var pattern = @"\[(.*?)\]\((.*?)\)";
 
-    // Anchor links
+        // Replace Markdown link syntax with HTML <a> tag
+        var html = Regex.Replace(markup, pattern, match =>
+        {
+            var linkText = match.Groups[1].Value;
+            var linkUrl = match.Groups[2].Value;
+
+            return $"<a href=\"{linkUrl}\">{linkText}</a>";
+        });
+
+        return html;
+    }
 
     private string ConvertMarkdownImageToHtml(string markup)
     {
@@ -605,8 +629,26 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return html;
     }
 
+    //private string ConvertMarkdownChecklistToHtml(string markup)
+    //{
+    //    // Pattern to match Markdown checklist syntax: - [ ] or - [x] or 1. [ ] or 1. [x]
+    //    var pattern = @"^(\s*[-\d]+\.\s*\[([ xX])\])\s*(.*)";
 
-    // Checklist or task list
+    //    // Replace Markdown checklist syntax with HTML <input type="checkbox"> tag
+    //    var html = Regex.Replace(markup, pattern, match =>
+    //    {
+    //        var checkbox = match.Groups[2].Value.Trim().ToLower() == "x" ? "checked" : "";
+    //        var content = match.Groups[3].Value;
+
+    //        return $"<li><input type=\"checkbox\" {checkbox} disabled> {content}</li>";
+    //    }, RegexOptions.Multiline);
+
+    //    // Wrap the checkboxes in a <ul> or <ol> tag
+    //    html = Regex.Replace(html, @"((<li>.*?</li>\s*)+)", "<ul>$1</ul>", RegexOptions.Singleline);
+
+    //    return html;
+    //}
+
 
     // Emoji
 
