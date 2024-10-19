@@ -64,6 +64,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         markup = ConvertMarkdownTableToHtml(markup);
         markup = ConvertMarkdownParagraphsToHtml(markup);
         markup = ConvertMarkdownLineBreaksToHtml(markup);
+        markup = ConvertMarkdownImageToHtml(markup);
         html = markup.Replace(CODE_HIGHLIGHTING_LINE_SEPERATOR, "\n");
     }
 
@@ -565,7 +566,31 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
     // Anchor links
 
-    // Images
+    private string ConvertMarkdownImageToHtml(string markup)
+    {
+        // Pattern to match Markdown image syntax: ![alt text](url "optional title")
+        var pattern = @"!\[(.*?)\]\((.*?)\s*(""[^""]*"")?\)";
+
+        // Replace Markdown image syntax with HTML <img> tag
+        var html = Regex.Replace(markup, pattern, match =>
+        {
+            var altText = match.Groups[1].Value;
+            var url = match.Groups[2].Value;
+            var title = match.Groups[3].Value;
+
+            // If title is present, include it in the <img> tag
+            if (!string.IsNullOrEmpty(title))
+            {
+                return $"<img src=\"{url}\" alt=\"{altText}\" title={title} />";
+            }
+            else
+            {
+                return $"<img src=\"{url}\" alt=\"{altText}\" />";
+            }
+        });
+
+        return html;
+    }
 
     // Checklist or task list
 
