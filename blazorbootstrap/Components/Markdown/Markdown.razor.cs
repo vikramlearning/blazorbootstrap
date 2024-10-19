@@ -568,8 +568,8 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
     private string ConvertMarkdownImageToHtml(string markup)
     {
-        // Pattern to match Markdown image syntax: ![alt text](url "optional title")
-        var pattern = @"!\[(.*?)\]\((.*?)\s*(""[^""]*"")?\)";
+        // Pattern to match Markdown image syntax: ![alt text](url "optional title" =WIDTHxHEIGHT)
+        var pattern = @"!\[(.*?)\]\((.*?)(\s*""[^""]*"")?(\s*=\s*(\d*)x?(\d*))?\)";
 
         // Replace Markdown image syntax with HTML <img> tag
         var html = Regex.Replace(markup, pattern, match =>
@@ -577,20 +577,34 @@ public partial class Markdown : BlazorBootstrapComponentBase
             var altText = match.Groups[1].Value;
             var url = match.Groups[2].Value;
             var title = match.Groups[3].Value;
+            var width = match.Groups[5].Value;
+            var height = match.Groups[6].Value;
 
-            // If title is present, include it in the <img> tag
+            var imgTag = $"<img src=\"{url}\" alt=\"{altText}\"";
+
             if (!string.IsNullOrEmpty(title))
             {
-                return $"<img src=\"{url}\" alt=\"{altText}\" title={title} />";
+                imgTag += $" title={title}";
             }
-            else
+
+            if (!string.IsNullOrEmpty(width))
             {
-                return $"<img src=\"{url}\" alt=\"{altText}\" />";
+                imgTag += $" width=\"{width}\"";
             }
+
+            if (!string.IsNullOrEmpty(height))
+            {
+                imgTag += $" height=\"{height}\"";
+            }
+
+            imgTag += " />";
+
+            return imgTag;
         });
 
         return html;
     }
+
 
     // Checklist or task list
 
