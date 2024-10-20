@@ -81,7 +81,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             var frames = builder.GetFrames().Array;
             foreach (var frame in frames)
             {
-                if (frame.FrameType == Microsoft.AspNetCore.Components.RenderTree.RenderTreeFrameType.Markup) // .MarkupContent is not null)
+                if (frame.MarkupContent is not null)
                 {
                     var lines = frame.MarkupContent.Split("\r\n").ToList();
 

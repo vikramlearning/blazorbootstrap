@@ -4,10 +4,14 @@
 
 <MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
 
-<h1>Blazor Markdown</h1>
+<h1>Blazor Markdown <Badge Color="BadgeColor.Secondary">Preview</Badge></h1>
 <div class="lead mb-3">Use Blazor Bootstrap Markdown component to add formatting, tables, images, and more to your project pages.</div>
 
 <CarbonAds />
+
+<SectionHeading Size="HeadingSize.H2" Text="Live preview" PageUrl="@pageUrl" HashTagName="live-preview" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Markdown_Demo_00_Preview)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
 <div class="mb-3"></div>

@@ -1,0 +1,17 @@
+﻿<div class="row" style="max-height:486px;">
+    <div class="col">
+        <textarea class="form-control"
+                  rows="18"
+                  placeholder="Enter markdown here"
+                  @bind="markdown"
+                  @bind:event="oninput">
+        </textarea>
+    </div>
+    <div class="col">
+        <Markdown style="max-height: 437px;overflow-y:auto;">@markdown</Markdown>
+    </div>
+</div>
+
+@code {
+    private string markdown = "# Heading 1";
+}
