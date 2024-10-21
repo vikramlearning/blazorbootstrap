@@ -18,7 +18,7 @@
 Get started any way you want
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.0.0`
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.1.0`
 - Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with **.NET CLI**: `dotnet new install Blazor.Bootstrap.Templates::1.10.0`
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
@@ -59,6 +59,7 @@ Get started any way you want
 | Grid | [Docs](https://docs.blazorbootstrap.com/components/grid) | [Demos](https://demos.blazorbootstrap.com/grid) |
 | Icons | [Docs](https://docs.blazorbootstrap.com/content/icons) | [Demos](https://demos.blazorbootstrap.com/icons) |
 | Images | [Docs](https://docs.blazorbootstrap.com/content/images) | [Demos](https://demos.blazorbootstrap.com/images) |
+| Markdown | [Docs](https://docs.blazorbootstrap.com/components/markdown) | [Demos](https://demos.blazorbootstrap.com/markdown) |
 | Modals | [Docs](https://docs.blazorbootstrap.com/components/modal) | [Demos](https://demos.blazorbootstrap.com/modals) |
 | Number Input | [Docs](https://docs.blazorbootstrap.com/forms/number-input) | [Demos](https://demos.blazorbootstrap.com/form/number-input) |
 | Offcanvas | [Docs](https://docs.blazorbootstrap.com/components/offcanvas) | [Demos](https://demos.blazorbootstrap.com/offcanvas) |
