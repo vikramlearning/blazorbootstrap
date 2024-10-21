@@ -66,6 +66,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
         markup = ConvertMarkdownLineBreaksToHtml(markup);
         markup = ConvertMarkdownImageToHtml(markup);
         markup = ConvertMarkdownLinksToHtml(markup);
+        markup = ConvertMarkdownInlineCodeToHtml(markup);
         html = markup.Replace(CODE_HIGHLIGHTING_LINE_SEPERATOR, "\n");
     }
 
@@ -572,24 +573,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
     // Line breaks
     private string ConvertMarkdownLineBreaksToHtml(string markup) => markup.Replace("\n", "<br />");
 
-    // Links
-    private string ConvertMarkdownLinksToHtml(string markup)
-    {
-        // Pattern to match Markdown link syntax: [Link Text](Link URL)
-        var pattern = @"\[(.*?)\]\((.*?)\)";
-
-        // Replace Markdown link syntax with HTML <a> tag
-        var html = Regex.Replace(markup, pattern, match =>
-        {
-            var linkText = match.Groups[1].Value;
-            var linkUrl = match.Groups[2].Value;
-
-            return $"<a href=\"{linkUrl}\">{linkText}</a>";
-        });
-
-        return html;
-    }
-
+    // Image
     private string ConvertMarkdownImageToHtml(string markup)
     {
         // Pattern to match Markdown image syntax: ![alt text](url "optional title" =WIDTHxHEIGHT)
@@ -624,6 +608,41 @@ public partial class Markdown : BlazorBootstrapComponentBase
             imgTag += " />";
 
             return imgTag;
+        });
+
+        return html;
+    }
+
+    // Links
+    private string ConvertMarkdownLinksToHtml(string markup)
+    {
+        // Pattern to match Markdown link syntax: [Link Text](Link URL)
+        var pattern = @"\[(.*?)\]\((.*?)\)";
+
+        // Replace Markdown link syntax with HTML <a> tag
+        var html = Regex.Replace(markup, pattern, match =>
+        {
+            var linkText = match.Groups[1].Value;
+            var linkUrl = match.Groups[2].Value;
+
+            return $"<a href=\"{linkUrl}\">{linkText}</a>";
+        });
+
+        return html;
+    }
+
+    // Inline code
+    private string ConvertMarkdownInlineCodeToHtml(string markup)
+    {
+        // Pattern to match inline Markdown code syntax: `code`
+        var pattern = @"`([^`]+)`";
+
+        // Replace inline Markdown code syntax with HTML <code> tag
+        var html = Regex.Replace(markup, pattern, match =>
+        {
+            var codeText = match.Groups[1].Value;
+
+            return $"<code>{codeText}</code>";
         });
 
         return html;

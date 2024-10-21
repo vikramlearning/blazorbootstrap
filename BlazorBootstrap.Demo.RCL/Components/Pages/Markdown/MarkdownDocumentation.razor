@@ -11,30 +11,40 @@
 
 <SectionHeading Size="HeadingSize.H2" Text="Live preview" PageUrl="@pageUrl" HashTagName="live-preview" />
 <div class="mb-3"></div>
-<Demo Type="typeof(Markdown_Demo_00_Preview)" Tabs="true" />
-
-<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<div class="mb-3"></div>
-<Demo Type="typeof(Markdown_Demo_01_Examples)" Tabs="true" />
+<Demo Type="typeof(Markdown_Demo_01_Preview)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Headers" PageUrl="@pageUrl" HashTagName="headers" />
-<div class="mb-3"></div>
+<div class="mb-3">
+    Use headers to structure your content. Start a line with `#` for a heading. Add more `#` characters for subheadings, up to six levels.
+</div>
 <Demo Type="typeof(Markdown_Demo_02_Headers)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Paragraphs and line breaks" PageUrl="@pageUrl" HashTagName="paragraphs-and-line-breaks" />
-<div class="mb-3"></div>
+<div class="mb-3">
+    Break your text into paragraphs or line breaks for easier reading.
+</div>
 <Demo Type="typeof(Markdown_Demo_03_Paragraphs_and_Line_Breaks)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Blockquotes" PageUrl="@pageUrl" HashTagName="blockquotes" />
-<div class="mb-3"></div>
+<div class="mb-3">
+    Quote text with `>` before it. Use more `>` characters to nest quotes. For blocks of text, use `>` at the start of each line.
+</div>
 <Demo Type="typeof(Markdown_Demo_04_Blockquotes)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Horizontal rules" PageUrl="@pageUrl" HashTagName="horizontal-rules" />
-<div class="mb-3"></div>
+<div class="mb-3">
+    Add a horizontal rule with a line of `---`.
+</div>
 <Demo Type="typeof(Markdown_Demo_05_Horizontal_Rules)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Emphasis (bold, italics, strikethrough)" PageUrl="@pageUrl" HashTagName="emphasis-bold-italics-strikethrough" />
-<div class="mb-3"></div>
+<div class="mb-3">
+    Emphasize text with bold, italics, or strikethrough: <br />
+    - Italics: `*text*` or `_text_` <br />
+    - Bold: `**text**` <br />
+    - Strikethrough: `~~text~~` <br />
+    - Combine for more emphasis.
+</div>
 <Demo Type="typeof(Markdown_Demo_06_Emphasis_bold_italics_strikethrough)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Code highlighting" PageUrl="@pageUrl" HashTagName="code-highlighting" />
@@ -42,12 +52,25 @@
 <Demo Type="typeof(Markdown_Demo_07_Code_Highlighting)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Tables" PageUrl="@pageUrl" HashTagName="tables" />
-<div class="mb-3"></div>
+<div class="mb-3">
+    Tables help organize structured data. <br />
+    - Place each row on its own line. <br />
+    - Separate cells with `|`. Escape `|` with `\|` if used within a cell. <br />
+    - The first two lines set headers and alignment. <br />
+    - Use `<br />` for new lines within a cell. <br />
+    - End each row with a carriage return (CR) or line feed (LF). <br />
+</div>
 <Demo Type="typeof(Markdown_Demo_08_Tables_A_Example)" Tabs="true" />
 <div class="mb-3"></div>
 <Demo Type="typeof(Markdown_Demo_08_Tables_B_Custom_CssClass)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Lists" PageUrl="@pageUrl" HashTagName="lists" />
+<div class="mb-3">
+    Use lists to organize related items: <br />
+    - Ordered lists: start with a number followed by a period. <br />
+    - Unordered lists: start with a `-`. <br />
+    Begin each list item on a new line.
+</div>
 <SectionHeading Size="HeadingSize.H3" Text="Ordered list" PageUrl="@pageUrl" HashTagName="ordered-list" />
 <div class="mb-3"></div>
 <Demo Type="typeof(Markdown_Demo_09_Lists_A_Ordered)" Tabs="true" />
@@ -71,6 +94,10 @@
 <SectionHeading Size="HeadingSize.H2" Text="Images" PageUrl="@pageUrl" HashTagName="images" />
 <div class="mb-3"></div>
 <Demo Type="typeof(Markdown_Demo_11_Images)" Tabs="true" />
+
+<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
+<div class="mb-3"></div>
+<Demo Type="typeof(Markdown_Demo_99_Examples)" Tabs="true" />
 
 @code{
     private string pageUrl = "/markdown";
