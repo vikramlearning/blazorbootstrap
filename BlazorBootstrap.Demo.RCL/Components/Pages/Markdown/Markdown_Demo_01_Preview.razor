@@ -1,0 +1,21 @@
+﻿<div class="row border-bottom mb-3">
+    <div class="col"><b>Markdown</b></div>
+    <div class="col"><b>Preview</b></div>
+</div>
+<div class="row" style="max-height:486px;">
+    <div class="col">
+        <textarea class="form-control"
+                  rows="18"
+                  placeholder="Enter markdown here"
+                  @bind="markdown"
+                  @bind:event="oninput">
+        </textarea>
+    </div>
+    <div class="col">
+        <Markdown style="max-height: 437px;overflow-y:auto;">@markdown</Markdown>
+    </div>
+</div>
+
+@code {
+    private string markdown = "# Heading 1\n## Heading 2\n\n![BlazorBootstrap](https://demos.blazorbootstrap.com/images/logo/logo-color.svg =50)";
+}
