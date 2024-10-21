@@ -1,42 +1,21 @@
 ﻿using Microsoft.AspNetCore.Components.Rendering;
-using System.Text.RegularExpressions;
 
 namespace BlazorBootstrap;
 
 public partial class Markdown : BlazorBootstrapComponentBase
 {
-    private string? html;
+    #region Fields and Constants
 
     private const string CODE_HIGHLIGHTING_LINE_SEPERATOR = " $$CHLS$$ ";
     private const string PATTERN_ORDERED_LIST = @"^\s*\d+\.\s";
     private const string PATTERN_UNORDERED_LIST = @"^\s*\-\s";
     private const string PATTERN_HORIZONTAL_RULES = @"^\-{3,}$";
     private const string PATTERN_BLOCKQUOTES = @"^>{1,}\s(.*)";
-
-    #region Properties, Indexers
-
-    /// <summary>
-    /// Gets or sets the content to be rendered within the component.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null"/>.
-    /// </remarks>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-
-    /// <summary>
-    /// Gets or sets the CSS class for table.
-    /// </summary>
-    [Parameter]
-    public string? TableCssClass { get; set; } = "table";
-
-    /// <summary>
-    /// Gets or sets the CSS class for blockquotes.
-    /// </summary>
-    [Parameter]
-    public string? BlockquotesCssClass { get; set; } = "blockquote";
+    private string? html;
 
     #endregion
+
+    #region Methods
 
     protected override void OnInitialized()
     {
@@ -53,65 +32,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
         base.OnParametersSet();
     }
 
-    private void ParseMarkdown()
-    {
-        var lines = GetLines();
-        if (lines is null)
-            return;
-
-        // NOTE: do not change the sequence of these two lines
-        var markup = string.Join("\n", lines);
-        markup = ConvertMakdownHeadersToHtml(markup);
-        markup = ConvertMarkdownBlockquotesToHtml(markup);
-        markup = ConvertMarkdownHorizontalRulesToHtml(markup);
-        markup = ConvertMarkdownEmphasisToHtml(markup);
-        markup = ConvertMarkdownCodeHighlightingToHtml(markup);
-        markup = ConvertMarkdownListToHtml(markup);
-        markup = ConvertMarkdownTableToHtml(markup);
-        markup = ConvertMarkdownParagraphsToHtml(markup);
-        markup = ConvertMarkdownLineBreaksToHtml(markup);
-        markup = ConvertMarkdownImageToHtml(markup);
-        markup = ConvertMarkdownLinksToHtml(markup);
-        markup = ConvertMarkdownInlineCodeToHtml(markup);
-        html = markup.Replace(CODE_HIGHLIGHTING_LINE_SEPERATOR, "\n");
-    }
-
-    List<string> GetLines()
-    {
-        var inputs = new List<string>();
-
-        if (ChildContent is not null)
-        {
-            var builder = new RenderTreeBuilder();
-            ChildContent.Invoke(builder);
-
-            var frames = builder.GetFrames().Array;
-            foreach (var frame in frames)
-            {
-                if (frame.MarkupContent is not null)
-                {
-                    var lines = frame.MarkupContent.Split("\r\n").ToList();
-
-                    if (lines.Any())
-                        inputs.AddRange(lines);
-                }
-            }
-        }
-
-        if (inputs.Any())
-        {
-            // remove first blank line
-            if (string.IsNullOrWhiteSpace(inputs[0]))
-                inputs.RemoveAt(0);
-
-            // remove last blank line
-            if (string.IsNullOrWhiteSpace(inputs[^1]))
-                inputs.RemoveAt(inputs.Count - 1);
-        }
-
-        return inputs;
-    }
-
     // Headers
     private string ConvertMakdownHeadersToHtml(string markup)
     {
@@ -124,6 +44,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
             {
                 parsedLines.Add(line);
                 parsedLines.Add("\n");
+
                 continue;
             }
 
@@ -174,7 +95,8 @@ public partial class Markdown : BlazorBootstrapComponentBase
         foreach (var line in lines)
         {
             var trimmerLine = line.Trim();
-            var indentLevel = trimmerLine.TakeWhile((c) => c == '>').Count();
+            var indentLevel = trimmerLine.TakeWhile(c => c == '>').Count();
+
             if (Regex.IsMatch(trimmerLine, PATTERN_BLOCKQUOTES))
             {
                 if (listStack.Count == 0 || indentStack.Peek() < indentLevel)
@@ -241,71 +163,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("", htmlLines);
     }
 
-    // HorizontalRules
-    private string ConvertMarkdownHorizontalRulesToHtml(string markup)
-    {
-        var lines = markup.Split("\n");
-        var parsedLines = new List<string>();
-
-        foreach (var line in lines)
-        {
-            if (string.IsNullOrWhiteSpace(line))
-            {
-                parsedLines.Add(line);
-                parsedLines.Add("\n");
-                continue;
-            }
-
-            if (Regex.IsMatch(line.Trim(), PATTERN_HORIZONTAL_RULES))
-            {
-                RemoveLastLineBreak(parsedLines);
-                parsedLines.Add(Regex.Replace(line.Trim(), PATTERN_HORIZONTAL_RULES, "<hr />"));
-            }
-            else
-            {
-                parsedLines.Add(line);
-                parsedLines.Add("\n");
-            }
-        }
-
-        RemoveLastLineBreak(parsedLines);
-
-        return string.Join("", parsedLines);
-    }
-
-    // Emphasis
-    private string ConvertMarkdownEmphasisToHtml(string markup)
-    {
-        var lines = markup.Split("\n");
-        var parsedLines = new List<string>();
-
-        for (var i = 0; i < lines.Count(); i++)
-        {
-            if (string.IsNullOrWhiteSpace(lines[i]))
-            {
-                parsedLines.Add(lines[i]);
-                continue;
-            }
-
-            if (Regex.IsMatch(lines[i].Trim(), @"\*\*(.*?)\*\*")
-                || Regex.IsMatch(lines[i].Trim().Trim(), @"__(.*?)__")
-                || Regex.IsMatch(lines[i].Trim(), @"\*(.*?)\*")
-                || Regex.IsMatch(lines[i].Trim(), @"_(.*?)_")
-                || Regex.IsMatch(lines[i].Trim(), @"~~(.*?)~~"))
-            {
-                lines[i] = Regex.Replace(lines[i].Trim(), @"\*\*(.*?)\*\*", "<b>$1</b>");
-                lines[i] = Regex.Replace(lines[i].Trim(), @"__(.*?)__", "<b>$1</b>");
-                lines[i] = Regex.Replace(lines[i].Trim(), @"\*(.*?)\*", "<i>$1</i>");
-                lines[i] = Regex.Replace(lines[i].Trim(), @"_(.*?)_", "<i>$1</i>");
-                lines[i] = Regex.Replace(lines[i].Trim(), @"~~(.*?)~~", "<s>$1</s>");
-            }
-
-            parsedLines.Add(lines[i]);
-        }
-
-        return string.Join("\n", parsedLines);
-    }
-
     // Code Highlighting
     private string ConvertMarkdownCodeHighlightingToHtml(string markup)
     {
@@ -314,7 +171,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
         var isCodeBlockInprogress = false;
 
         for (var i = 0; i < lines.Count(); i++)
-        {
             if (Regex.IsMatch(lines[i].Trim(), @"\```(\w+)"))
             {
                 if (!isCodeBlockInprogress)
@@ -341,11 +197,158 @@ public partial class Markdown : BlazorBootstrapComponentBase
                 parsedLines.Add(lines[i]);
                 parsedLines.Add("\n");
             }
+
+        RemoveLastLineBreak(parsedLines);
+
+        return string.Join("", parsedLines);
+    }
+
+    // Emphasis
+    private string ConvertMarkdownEmphasisToHtml(string markup)
+    {
+        var lines = markup.Split("\n");
+        var parsedLines = new List<string>();
+
+        for (var i = 0; i < lines.Count(); i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i]))
+            {
+                parsedLines.Add(lines[i]);
+
+                continue;
+            }
+
+            if (Regex.IsMatch(lines[i].Trim(), @"\*\*(.*?)\*\*")
+                || Regex.IsMatch(lines[i].Trim().Trim(), @"__(.*?)__")
+                || Regex.IsMatch(lines[i].Trim(), @"\*(.*?)\*")
+                || Regex.IsMatch(lines[i].Trim(), @"_(.*?)_")
+                || Regex.IsMatch(lines[i].Trim(), @"~~(.*?)~~"))
+            {
+                lines[i] = Regex.Replace(lines[i].Trim(), @"\*\*(.*?)\*\*", "<b>$1</b>");
+                lines[i] = Regex.Replace(lines[i].Trim(), @"__(.*?)__", "<b>$1</b>");
+                lines[i] = Regex.Replace(lines[i].Trim(), @"\*(.*?)\*", "<i>$1</i>");
+                lines[i] = Regex.Replace(lines[i].Trim(), @"_(.*?)_", "<i>$1</i>");
+                lines[i] = Regex.Replace(lines[i].Trim(), @"~~(.*?)~~", "<s>$1</s>");
+            }
+
+            parsedLines.Add(lines[i]);
+        }
+
+        return string.Join("\n", parsedLines);
+    }
+
+    // HorizontalRules
+    private string ConvertMarkdownHorizontalRulesToHtml(string markup)
+    {
+        var lines = markup.Split("\n");
+        var parsedLines = new List<string>();
+
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                parsedLines.Add(line);
+                parsedLines.Add("\n");
+
+                continue;
+            }
+
+            if (Regex.IsMatch(line.Trim(), PATTERN_HORIZONTAL_RULES))
+            {
+                RemoveLastLineBreak(parsedLines);
+                parsedLines.Add(Regex.Replace(line.Trim(), PATTERN_HORIZONTAL_RULES, "<hr />"));
+            }
+            else
+            {
+                parsedLines.Add(line);
+                parsedLines.Add("\n");
+            }
         }
 
         RemoveLastLineBreak(parsedLines);
 
         return string.Join("", parsedLines);
+    }
+
+    // Image
+    private string ConvertMarkdownImageToHtml(string markup)
+    {
+        // Pattern to match Markdown image syntax: ![alt text](url "optional title" =WIDTHxHEIGHT)
+        var pattern = @"!\[(.*?)\]\((.*?)(\s*""[^""]*"")?(\s*=\s*(\d*)x?(\d*))?\)";
+
+        // Replace Markdown image syntax with HTML <img> tag
+        var html = Regex.Replace(
+            markup,
+            pattern,
+            match =>
+            {
+                var altText = match.Groups[1].Value;
+                var url = match.Groups[2].Value;
+                var title = match.Groups[3].Value;
+                var width = match.Groups[5].Value;
+                var height = match.Groups[6].Value;
+
+                var imgTag = $"<img src=\"{url}\" alt=\"{altText}\"";
+
+                if (!string.IsNullOrEmpty(title)) imgTag += $" title={title}";
+
+                if (!string.IsNullOrEmpty(width)) imgTag += $" width=\"{width}\"";
+
+                if (!string.IsNullOrEmpty(height)) imgTag += $" height=\"{height}\"";
+
+                imgTag += " />";
+
+                return imgTag;
+            }
+        );
+
+        return html;
+    }
+
+    // Inline code
+    private string ConvertMarkdownInlineCodeToHtml(string markup)
+    {
+        // Pattern to match inline Markdown code syntax: `code`
+        var pattern = @"`([^`]+)`";
+
+        // Replace inline Markdown code syntax with HTML <code> tag
+        var html = Regex.Replace(
+            markup,
+            pattern,
+            match =>
+            {
+                var codeText = match.Groups[1].Value;
+
+                return $"<code>{codeText}</code>";
+            }
+        );
+
+        return html;
+    }
+
+    // Line breaks
+    private string ConvertMarkdownLineBreaksToHtml(string markup) => markup.Replace("\n", "<br />");
+
+    // Links
+    private string ConvertMarkdownLinksToHtml(string markup)
+    {
+        // Pattern to match Markdown link syntax: [Link Text](Link URL)
+        var pattern = @"\[(.*?)\]\((.*?)\)";
+
+        // Replace Markdown link syntax with HTML <a> tag
+        var html = Regex.Replace(
+            markup,
+            pattern,
+            match =>
+            {
+                var linkText = match.Groups[1].Value;
+                var linkUrl = match.Groups[2].Value;
+
+                return $"<a href=\"{linkUrl}\">{linkText}</a>";
+            }
+        );
+
+        return html;
     }
 
     // Lists
@@ -386,6 +389,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
                             indentStack.Push(indentLevel);
                         }
                     }
+
                     htmlLines.Add($"<li>{Regex.Replace(line, PATTERN_ORDERED_LIST, "")}");
                 }
                 else if (indentStack.Peek() > indentLevel)
@@ -426,6 +430,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
                             indentStack.Push(indentLevel);
                         }
                     }
+
                     htmlLines.Add($"<li>{Regex.Replace(line, PATTERN_UNORDERED_LIST, "")}");
                 }
                 else if (indentStack.Peek() > indentLevel)
@@ -462,17 +467,37 @@ public partial class Markdown : BlazorBootstrapComponentBase
         }
 
         // Close any open list items
-        for (int i = 0; i < htmlLines.Count; i++)
-        {
+        for (var i = 0; i < htmlLines.Count; i++)
             if (htmlLines[i].StartsWith("<li>") && (i == htmlLines.Count - 1 || htmlLines[i + 1].StartsWith("<li>") || htmlLines[i + 1].StartsWith("</")))
-            {
                 htmlLines[i] += "</li>";
-            }
-        }
 
         RemoveLastLineBreak(htmlLines);
 
         return string.Join("", htmlLines);
+    }
+
+    // Paragraphs
+    private string ConvertMarkdownParagraphsToHtml(string markup)
+    {
+        var lines = markup.Split("\n\n\n");
+        var parsedLines = new List<string>();
+
+        if (lines.Length == 1)
+            return markup;
+
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                parsedLines.Add(line);
+
+                continue;
+            }
+
+            parsedLines.Add($"<p>{line}</p>");
+        }
+
+        return string.Join("", parsedLines);
     }
 
     // Tables
@@ -491,11 +516,13 @@ public partial class Markdown : BlazorBootstrapComponentBase
             if (string.IsNullOrWhiteSpace(line))
             {
                 parsedLines.Add(line);
+
                 continue;
             }
 
             // Trim row with spaces
             var trimmedLine = line.Trim();
+
             if (trimmedLine.StartsWith("| "))
             {
                 if (!isTableStart)
@@ -553,105 +580,63 @@ public partial class Markdown : BlazorBootstrapComponentBase
         return string.Join("\n", parsedLines);
     }
 
-    // Paragraphs
-    private string ConvertMarkdownParagraphsToHtml(string markup)
+    private List<string> GetLines()
     {
-        var lines = markup.Split("\n\n\n");
-        var parsedLines = new List<string>();
+        var inputs = new List<string>();
 
-        if (lines.Length == 1)
-            return markup;
-
-        foreach (var line in lines)
+        if (ChildContent is not null)
         {
-            if (string.IsNullOrWhiteSpace(line))
-            {
-                parsedLines.Add(line);
-                continue;
-            }
+            var builder = new RenderTreeBuilder();
+            ChildContent.Invoke(builder);
 
-            parsedLines.Add($"<p>{line}</p>");
+            var frames = builder.GetFrames().Array;
+
+            foreach (var frame in frames)
+                if (frame.MarkupContent is not null)
+                {
+                    var lines = frame.MarkupContent.Split("\r\n").ToList();
+
+                    if (lines.Any())
+                        inputs.AddRange(lines);
+                }
         }
 
-        return string.Join("", parsedLines);
+        if (inputs.Any())
+        {
+            // remove first blank line
+            if (string.IsNullOrWhiteSpace(inputs[0]))
+                inputs.RemoveAt(0);
+
+            // remove last blank line
+            if (string.IsNullOrWhiteSpace(inputs[^1]))
+                inputs.RemoveAt(inputs.Count - 1);
+        }
+
+        return inputs;
     }
 
-    // Line breaks
-    private string ConvertMarkdownLineBreaksToHtml(string markup) => markup.Replace("\n", "<br />");
-
-    // Image
-    private string ConvertMarkdownImageToHtml(string markup)
+    private void ParseMarkdown()
     {
-        // Pattern to match Markdown image syntax: ![alt text](url "optional title" =WIDTHxHEIGHT)
-        var pattern = @"!\[(.*?)\]\((.*?)(\s*""[^""]*"")?(\s*=\s*(\d*)x?(\d*))?\)";
+        var lines = GetLines();
 
-        // Replace Markdown image syntax with HTML <img> tag
-        var html = Regex.Replace(markup, pattern, match =>
-        {
-            var altText = match.Groups[1].Value;
-            var url = match.Groups[2].Value;
-            var title = match.Groups[3].Value;
-            var width = match.Groups[5].Value;
-            var height = match.Groups[6].Value;
+        if (lines is null)
+            return;
 
-            var imgTag = $"<img src=\"{url}\" alt=\"{altText}\"";
-
-            if (!string.IsNullOrEmpty(title))
-            {
-                imgTag += $" title={title}";
-            }
-
-            if (!string.IsNullOrEmpty(width))
-            {
-                imgTag += $" width=\"{width}\"";
-            }
-
-            if (!string.IsNullOrEmpty(height))
-            {
-                imgTag += $" height=\"{height}\"";
-            }
-
-            imgTag += " />";
-
-            return imgTag;
-        });
-
-        return html;
-    }
-
-    // Links
-    private string ConvertMarkdownLinksToHtml(string markup)
-    {
-        // Pattern to match Markdown link syntax: [Link Text](Link URL)
-        var pattern = @"\[(.*?)\]\((.*?)\)";
-
-        // Replace Markdown link syntax with HTML <a> tag
-        var html = Regex.Replace(markup, pattern, match =>
-        {
-            var linkText = match.Groups[1].Value;
-            var linkUrl = match.Groups[2].Value;
-
-            return $"<a href=\"{linkUrl}\">{linkText}</a>";
-        });
-
-        return html;
-    }
-
-    // Inline code
-    private string ConvertMarkdownInlineCodeToHtml(string markup)
-    {
-        // Pattern to match inline Markdown code syntax: `code`
-        var pattern = @"`([^`]+)`";
-
-        // Replace inline Markdown code syntax with HTML <code> tag
-        var html = Regex.Replace(markup, pattern, match =>
-        {
-            var codeText = match.Groups[1].Value;
-
-            return $"<code>{codeText}</code>";
-        });
-
-        return html;
+        // NOTE: do not change the sequence of these two lines
+        var markup = string.Join("\n", lines);
+        markup = ConvertMakdownHeadersToHtml(markup);
+        markup = ConvertMarkdownBlockquotesToHtml(markup);
+        markup = ConvertMarkdownHorizontalRulesToHtml(markup);
+        markup = ConvertMarkdownEmphasisToHtml(markup);
+        markup = ConvertMarkdownCodeHighlightingToHtml(markup);
+        markup = ConvertMarkdownListToHtml(markup);
+        markup = ConvertMarkdownTableToHtml(markup);
+        markup = ConvertMarkdownParagraphsToHtml(markup);
+        markup = ConvertMarkdownLineBreaksToHtml(markup);
+        markup = ConvertMarkdownImageToHtml(markup);
+        markup = ConvertMarkdownLinksToHtml(markup);
+        markup = ConvertMarkdownInlineCodeToHtml(markup);
+        html = markup.Replace(CODE_HIGHLIGHTING_LINE_SEPERATOR, "\n");
     }
 
     //private string ConvertMarkdownChecklistToHtml(string markup)
@@ -674,7 +659,6 @@ public partial class Markdown : BlazorBootstrapComponentBase
     //    return html;
     //}
 
-
     // Emoji
 
     // Mathematical notation and characters
@@ -687,4 +671,31 @@ public partial class Markdown : BlazorBootstrapComponentBase
         if (htmlLines.Any() && htmlLines[^1] == "\n")
             htmlLines.RemoveAt(htmlLines.Count - 1);
     }
+
+    #endregion
+
+    #region Properties, Indexers
+
+    /// <summary>
+    /// Gets or sets the CSS class for blockquotes.
+    /// </summary>
+    [Parameter]
+    public string? BlockquotesCssClass { get; set; } = "blockquote";
+
+    /// <summary>
+    /// Gets or sets the content to be rendered within the component.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the CSS class for table.
+    /// </summary>
+    [Parameter]
+    public string? TableCssClass { get; set; } = "table";
+
+    #endregion
 }
