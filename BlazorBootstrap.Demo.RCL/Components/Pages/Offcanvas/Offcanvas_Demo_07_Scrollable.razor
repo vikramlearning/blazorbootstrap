@@ -1,0 +1,12 @@
+﻿<Offcanvas @ref="offcanvas" Title="Scrollable offcanvas" IsScrollable="true">
+  <BodyTemplate>...</BodyTemplate>
+</Offcanvas>
+
+<Button Color="ButtonColor.Primary" @onclick="() => OnShowOffcanvasClick()">Show scrollable canvas</Button>
+<p>After showing the canvas, note how you can still scroll this page and interact with it.</p>
+
+@code {
+  private Offcanvas offcanvas = default!;
+
+  private async Task OnShowOffcanvasClick() => await offcanvas.ShowAsync();
+}
