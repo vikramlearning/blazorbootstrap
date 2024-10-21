@@ -19,14 +19,20 @@ public partial class Markdown : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null"/>.
     /// </remarks>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>
+    /// Gets or sets the CSS class for table.
+    /// </summary>
     [Parameter]
     public string? TableCssClass { get; set; } = "table";
 
+    /// <summary>
+    /// Gets or sets the CSS class for blockquotes.
+    /// </summary>
     [Parameter]
     public string? BlockquotesCssClass { get; set; } = "blockquote";
 
@@ -681,5 +687,4 @@ public partial class Markdown : BlazorBootstrapComponentBase
         if (htmlLines.Any() && htmlLines[^1] == "\n")
             htmlLines.RemoveAt(htmlLines.Count - 1);
     }
-
 }
