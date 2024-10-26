@@ -1,0 +1,32 @@
+@namespace BlazorBootstrap
+@inherits LayoutComponentBase
+
+<div class="bb-page">
+
+    @SidebarSection
+
+    <main>
+        @if (HeaderSection is not null)
+        {
+            <div class="bb-top-row px-4 d-flex justify-content-end">
+                @HeaderSection
+            </div>
+        }
+
+        <article class="content px-4">
+            <div class="py-2">
+                @ContentSection
+            </div>
+        </article>
+    
+        @if (FooterSection is not null)
+        {
+            <div class="bd-footer pt-4 pt-md-5 mt-5 pb-2 pb-md-3 bg-body-tertiary">
+                <div class="container px-4 px-md-3">
+                    @FooterSection
+                </div>
+            </div>
+        }
+
+    </main>
+</div>
