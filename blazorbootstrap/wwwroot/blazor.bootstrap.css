@@ -627,3 +627,14 @@ main {
 .pdf-viewer-dropdown-toggle::after {
     content: inherit !important;
 }
+
+/* layout */
+.bb-footer a {
+    color: var(--bs-body-color);
+    text-decoration: none
+}
+
+.bb-footer a:hover, .bb-footer a:focus {
+    color: var(--bs-link-hover-color);
+    text-decoration: underline;
+}

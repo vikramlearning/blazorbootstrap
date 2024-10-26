@@ -1,32 +1,27 @@
 @namespace BlazorBootstrap
-@inherits LayoutComponentBase
+@inherits BlazorBootstrapLayoutComponentBase
 
-<div class="bb-page">
+<div class="@ClassNames">
 
     @SidebarSection
 
-    <main>
+    <main class="bb-scrollbar">
         @if (HeaderSection is not null)
         {
-            <div class="bb-top-row px-4 d-flex justify-content-end">
+            <div class="@HeaderSectionCssClassNames">
                 @HeaderSection
             </div>
         }
 
-        <article class="content px-4">
-            <div class="py-2">
-                @ContentSection
-            </div>
+        <article class="@ContentSectionCssClassNames">
+            @ContentSection
         </article>
-    
+
         @if (FooterSection is not null)
         {
-            <div class="bd-footer pt-4 pt-md-5 mt-5 pb-2 pb-md-3 bg-body-tertiary">
-                <div class="container px-4 px-md-3">
-                    @FooterSection
-                </div>
+            <div class="@FooterSectionCssClassNames">
+                @FooterSection
             </div>
         }
-
     </main>
 </div>
