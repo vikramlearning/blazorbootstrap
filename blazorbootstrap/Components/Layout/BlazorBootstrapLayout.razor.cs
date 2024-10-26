@@ -11,11 +11,11 @@ public partial class BlazorBootstrapLayout : BlazorBootstrapLayoutComponentBase
     protected string? ContentSectionCssClassNames => BuildClassNames(ContentSectionCssClass, ("p-4", true));
 
     [Parameter] public RenderFragment? FooterSection { get; set; }
-    [Parameter] public string? FooterSectionCssClass { get; set; }
+    [Parameter] public string? FooterSectionCssClass { get; set; } = "bg-body-tertiary";
     protected string? FooterSectionCssClassNames => BuildClassNames(FooterSectionCssClass, ("bb-footer p-4", true));
     
     [Parameter] public RenderFragment? HeaderSection { get; set; }
-    [Parameter] public string? HeaderSectionCssClass { get; set; }
+    [Parameter] public string? HeaderSectionCssClass { get; set; } = "d-flex justify-content-end";
     protected string? HeaderSectionCssClassNames => BuildClassNames(HeaderSectionCssClass, ("bb-top-row px-4", true));
 
     [Parameter] public RenderFragment? SidebarSection { get; set; }

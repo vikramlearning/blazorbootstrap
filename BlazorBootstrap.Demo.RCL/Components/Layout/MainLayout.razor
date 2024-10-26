@@ -1,8 +1,7 @@
 ﻿@namespace BlazorBootstrap.Demo.RCL
 @inherits MainLayoutBase
 
-<BlazorBootstrapLayout HeaderSectionCssClass="d-flex justify-content-end"
-                       FooterSectionCssClass="bg-body-tertiary">
+<BlazorBootstrapLayout>
     <HeaderSection>
 
     </HeaderSection>
@@ -71,40 +70,4 @@
     </FooterSection>
 </BlazorBootstrapLayout>
 
-@* <div class="bb-page">
-
-    <Sidebar2 Href="/"
-              ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
-              Title="Blazor Bootstrap"
-              BadgeText="@Version"
-              DataProvider="Sidebar2DataProvider"
-              WidthUnit="Unit.Px" />
-
-    <main class="bb-scrollbar">
-        <div class="content my-4 my-md-4 px-4">
-            @Body
-
-            <Callout Class="text-center text-bold skippy border-0" HideHeading="true">
-                <a href="@GithubUrl" class="text-decoration-none" b-09pcjsuuk4="">
-                    <i class="bi bi-star-fill" b-09pcjsuuk4=""></i>
-                    <span b-09pcjsuuk4="">If you like Blazor Bootstrap, give it a star on GitHub!</span>
-                    <i class="bi bi-star-fill" b-09pcjsuuk4=""></i>
-                </a>
-            </Callout>
-        </div>
-
-        <MainLayoutBaseFooter Version="@Version"
-                              DocsUrl="@DocsUrl"
-                              BlogUrl="@BlogUrl"
-                              GithubUrl="@GithubUrl"
-                              TwitterUrl="@TwitterUrl"
-                              LinkedInUrl="@LinkedInUrl"
-                              OpenCollectiveUrl="@OpenCollectiveUrl"
-                              GithubIssuesUrl="@GithubIssuesUrl"
-                              GithubDiscussionsUrl="@GithubDiscussionsUrl"
-                              StackoverflowUrl="@StackoverflowUrl" />
-
-    </main>
-</div>
-
-<MainLayoutBaseServices /> *@
+<MainLayoutBaseServices />
