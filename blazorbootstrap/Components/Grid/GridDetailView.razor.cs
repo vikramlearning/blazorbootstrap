@@ -29,6 +29,6 @@ public partial class GridDetailView<TItem> : BlazorBootstrapComponentBase
             builder.AddContent(100, ChildContent, rowData);
         };
 
-    [CascadingParameter] 
+    [CascadingParameter(Name = "Parent")]
     public Grid<TItem> Parent { get; set; } = default!;
 }
