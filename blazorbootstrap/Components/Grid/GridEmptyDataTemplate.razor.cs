@@ -29,6 +29,6 @@ public partial class GridEmptyDataTemplate<TItem> : BlazorBootstrapComponentBase
             builder.AddContent(100, ChildContent);
         };
 
-    [CascadingParameter]
+    [CascadingParameter(Name = "Parent")]
     public Grid<TItem> Parent { get; set; } = default!;
 }
