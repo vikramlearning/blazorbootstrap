@@ -20,14 +20,6 @@ public class MainLayoutBase : LayoutComponentBase
 
     [Inject] protected IJSRuntime JS { get; set; } = default!;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-            await JS.InvokeVoidAsync("initializeTheme");
-
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
     protected override void OnInitialized()
     {
         version = $"v{Configuration["version"]}"; // example: v0.6.1
@@ -42,14 +34,6 @@ public class MainLayoutBase : LayoutComponentBase
         stackoverflowUrl = $"{Configuration["urls:stackoverflow"]}";
         base.OnInitialized();
     }
-
-    internal Task SetAutoTheme() => SetTheme("system");
-
-    internal Task SetDarkTheme() => SetTheme("dark");
-
-    internal Task SetLightTheme() => SetTheme("light");
-
-    internal async Task SetTheme(string themeName) => await JS.InvokeVoidAsync("setTheme", themeName);
 
     internal virtual async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
     {

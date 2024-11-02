@@ -98,4 +98,9 @@ public partial class MainLayout : MainLayoutBase
 
         return navItems;
     }
+
+    private void OnThemeChanged(string themeName)
+    {
+        JS.InvokeVoidAsync("updateDemoCodeThemeCss", themeName);
+    }
 }
