@@ -3,7 +3,30 @@
 
 <BlazorBootstrapLayout>
     <HeaderSection>
-        <ThemeSwitcher OnThemeChanged="OnThemeChanged" />
+        <div>
+            <a class="nav-link py-2 px-2" href="@githubUrl" target="_blank" rel="noopener">
+                <i class="bi bi-github"></i>
+            </a>
+        </div>
+        <div>
+            <a class="nav-link py-2 px-2" href="@twitterUrl" target="_blank" rel="noopener">
+                <i class="bi bi-twitter-x"></i>
+            </a>
+        </div>
+        <div>
+            <a class="nav-link py-2 px-2" href="@linkedInUrl" target="_blank" rel="noopener">
+                <i class="bi bi-linkedin"></i>
+            </a>
+        </div>
+        <div>
+            <a class="nav-link py-2 px-2 pe-3" href="@openCollectiveUrl" target="_blank" rel="noopener">
+                <i class="bi bi-opencollective"></i>
+            </a>
+        </div>
+        <div>
+            <div class="vr mt-2"></div>
+        </div>
+        <ThemeSwitcher Class="ps-3 ps-lg-2" OnThemeChanged="OnThemeChanged" />
     </HeaderSection>
     <SidebarSection>
         <Sidebar2 Href="/"
@@ -11,7 +34,7 @@
                   Title="Blazor Bootstrap"
                   BadgeText="@Version"
                   DataProvider="Sidebar2DataProvider"
-                  WidthUnit="Unit.Px"/>
+                  WidthUnit="Unit.Px" />
     </SidebarSection>
 
     <ContentSection>
