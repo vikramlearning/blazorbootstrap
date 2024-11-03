@@ -84,8 +84,16 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// </summary>
     public void ToggleSidebar()
     {
-        collapseSidebar = !collapseSidebar;
-        StateHasChanged();
+        ToggleTo(!collapseSidebar);
+    }
+
+    private void ToggleTo(bool isCollapsed)
+    {
+        if (collapseSidebar != isCollapsed)
+        {
+            collapseSidebar = isCollapsed;
+            StateHasChanged();
+        }
     }
 
     internal void HideNavMenuOnMobile()
@@ -122,7 +130,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
             ("expanded", !collapseSidebar));
 
     protected override string? StyleNames =>
-        BuildStyleNames(Style, 
+        BuildStyleNames(Style,
             ($"--bb-sidebar-width: {Width.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};", Width > 0));
 
     /// <summary>
@@ -179,6 +187,15 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public string? ImageSrc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the current collapsed state of the sidebar.
+    /// </summary>
+    public bool IsCollapsed
+    {
+        get => collapseSidebar;
+        set => ToggleTo(value);
+    }
 
     private string? navMenuCssClass => GetNavMenuCssClass();
 

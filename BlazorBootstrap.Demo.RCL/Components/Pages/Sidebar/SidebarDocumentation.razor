@@ -6,7 +6,7 @@
 
 <h1>Blazor Sidebar</h1>
 <div class="lead mb-3">
-    Use the Blazor Bootstrap <code>Sidebar</code> component to show consistent cross-browser, responsive and cross-device navigation links, additional information, or other content.
+  Use the Blazor Bootstrap <code>Sidebar</code> component to show consistent cross-browser, responsive and cross-device navigation links, additional information, or other content.
 </div>
 
 <CarbonAds />
@@ -28,7 +28,7 @@
 <Demo Type="typeof(Sidebar_Demo_04_Full_layout_with_sidebar)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Toggle sidebar to show icons only" PageUrl="@pageUrl" HashTagName="toggle-sidebar-to-show-icons-only" />
-<div class="mb-3">Call <code>ToggleSidebar()</code> method to toggle the Sidebar to show the icons only.</div>
+<div class="mb-3">Call <code>ToggleSidebar()</code> method to toggle the Sidebar to show the icons only, or set <code>IsCollapsed</code> directly.</div>
 <Demo Type="typeof(Sidebar_Demo_05_Toggle_Sidebar_to_Show_Icons_Only)" Tabs="true" />
 
 <SectionHeading Size="HeadingSize.H2" Text="Show badge" PageUrl="@pageUrl" HashTagName="show-badge" />
@@ -56,8 +56,8 @@
 <Demo Type="typeof(Sidebar_Demo_11_Width)" Tabs="true" />
 
 @code {
-    private string pageUrl = "/sidebar";
-    private string title = "Blazor Sidebar Component";
-    private string description = "Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, responsive and cross-device navigation links, additional information, or other content.";
-    private string imageUrl = "https://i.imgur.com/d91Q9Zt.png";
+  private string pageUrl = "/sidebar";
+  private string title = "Blazor Sidebar Component";
+  private string description = "Use the Blazor Bootstrap Sidebar component to show consistent cross-browser, responsive and cross-device navigation links, additional information, or other content.";
+  private string imageUrl = "https://i.imgur.com/d91Q9Zt.png";
 }
