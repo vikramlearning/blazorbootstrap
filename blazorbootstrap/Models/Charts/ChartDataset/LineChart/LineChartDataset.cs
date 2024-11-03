@@ -283,6 +283,12 @@ public class LineChartDataset : ChartDataset<double?>
     public string? IndexAxis { get; set; }
 
     /// <summary>
+    /// Determines if the dataset is plotted on the secondary y-axis.
+    /// </summary>
+    [JsonIgnore]
+    public bool OnSecondaryYAxis { get; set; }
+
+    /// <summary>
     /// The fill color for points.
     /// </summary>
     /// <remarks>
@@ -438,12 +444,13 @@ public class LineChartDataset : ChartDataset<double?>
 
     /// <summary>
     /// The ID of the y axis to plot this dataset on.
+    /// Change this through the <see cref="OnSecondaryYAxis" /> property.
     /// </summary>
     /// <remarks>
     /// Default value is 'first y axis'.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? YAxisID { get; set; }
+    public string? YAxisID => OnSecondaryYAxis ? "Y1" : null;
 
     #endregion
 }

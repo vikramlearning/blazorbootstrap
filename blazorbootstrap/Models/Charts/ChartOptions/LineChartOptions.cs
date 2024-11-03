@@ -12,7 +12,7 @@ public class LineChartOptions : ChartOptions
     /// The base axis of the dataset. 'x' for horizontal lines and 'y' for vertical lines.
     /// </summary>
     /// <remarks>
-    /// Default value is <see langword="null"/>.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? IndexAxis { get; set; }
@@ -23,7 +23,7 @@ public class LineChartOptions : ChartOptions
 
     public LineChartPlugins Plugins { get; set; } = new();
 
-    public Scales Scales { get; set; } = new();
+    public LineChartScales Scales { get; set; } = new();
 
     #endregion
 

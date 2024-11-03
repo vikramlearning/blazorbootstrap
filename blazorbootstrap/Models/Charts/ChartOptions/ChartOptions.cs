@@ -3,7 +3,7 @@
 public interface IChartOptions { }
 
 /// <summary>
-///     <see href="https://www.chartjs.org/docs/latest/general/options.html" />
+/// <see href="https://www.chartjs.org/docs/latest/general/options.html" />
 /// </summary>
 public class ChartOptions : IChartOptions
 {
@@ -183,9 +183,13 @@ public class Scales
 {
     #region Properties, Indexers
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartAxes? X { get; set; } = new();
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyOrder(0)]
+    public ChartAxes? X { get; set; } = new();
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartAxes? Y { get; set; } = new();
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyOrder(1)]
+    public ChartAxes? Y { get; set; } = new();
 
     #endregion
 }
@@ -216,6 +220,11 @@ public class ChartAxes
     public ChartAxesBorder? Border { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the axis is displayed.
+    /// </summary>
+    public bool Display { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the grid configuration.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -232,6 +241,11 @@ public class ChartAxes
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Min { get; set; }
+
+    /// <summary>
+    /// Gets or sets the position of the axis.
+    /// </summary>
+    public string Position { get; set; } = "left";
 
     /// <summary>
     /// Should the data be stacked.
