@@ -13,17 +13,17 @@
 
 <CarbonAds />
 
-<Section Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage">
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage">
     <div class="mb-3">By default, <code>e + -</code> are blocked. For all integral numeric types, dot <code>.</code> is blocked.</div>
     <Demo Type="typeof(NumberInput_Demo_01_Basic_Usage)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Generic type" PageUrl="@pageUrl" HashTagName="generic-type">
+<Section Size="HeadingSize.H2" Name="Generic type" PageUrl="@pageUrl" HashTagName="generic-type">
     <div class="mb-3"><code>NumberInput</code> is a generic component. Always specify the exact type. In the below example <b>TValue</b> is set to <code>int</code>, <code>int?</code>, <code>float</code>, <code>float?</code>, <code>double</code>, <code>double?</code>, <code>decimal</code>, and <code>decimal?</code>.</div>
     <Demo Type="typeof(NumberInput_Demo_02_Generic_Type)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Enable min and max" PageUrl="@pageUrl" HashTagName="enable-min-and-max">
+<Section Size="HeadingSize.H2" Name="Enable min and max" PageUrl="@pageUrl" HashTagName="enable-min-and-max">
     <div class="mb-3">
         Set <code>EnableMinMax="true"</code> and set the <code>Min</code> and <code>Max</code> parameters to restrict the user input between the Min and Max range.
     </div>
@@ -34,22 +34,22 @@
     <Demo Type="typeof(NumberInput_Demo_03_Enable_Min_Max)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Step" PageUrl="@pageUrl" HashTagName="step">
+<Section Size="HeadingSize.H2" Name="Step" PageUrl="@pageUrl" HashTagName="step">
     <div class="mb-3">The <code>Step</code> sets the stepping interval when clicking the up and down spinner buttons. If not explicitly included, <code>Step</code> defaults to <b>1</b>.</div>
     <Demo Type="typeof(NumberInput_Demo_04_Step)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Text alignment" PageUrl="@pageUrl" HashTagName="text-alignment">
+<Section Size="HeadingSize.H2" Name="Text alignment" PageUrl="@pageUrl" HashTagName="text-alignment">
     <div class="mb-3">You can change the text alignment according to your need. Use the <code>TextAlignment</code> parameter to set the alignment. In the below example, alignment is set to center and end.</div>
     <Demo Type="typeof(NumberInput_Demo_05_Text_Alignment)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Allow negative numbers" PageUrl="@pageUrl" HashTagName="allow-negative-numbers">
+<Section Size="HeadingSize.H2" Name="Allow negative numbers" PageUrl="@pageUrl" HashTagName="allow-negative-numbers">
     <div class="mb-3">By default, negative numbers are not allowed. Set the <code>AllowNegativeNumbers</code> parameter to true to allow the negative numbers.</div>
     <Demo Type="typeof(NumberInput_Demo_06_Allow_Negative_Numbers)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Disable" PageUrl="@pageUrl" HashTagName="disable">
+<Section Size="HeadingSize.H2" Name="Disable" PageUrl="@pageUrl" HashTagName="disable">
     <div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>NumberInput</code>.</div>
     <Demo Type="typeof(NumberInput_Demo_07_A_Disable_Number_Input)" Tabs="false" />
     <div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>NumberInput</code>.</div>
@@ -59,7 +59,7 @@
     <Demo Type="typeof(NumberInput_Demo_07_B_Disable_Number_Input)" Tabs="false" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Validations" PageUrl="@pageUrl" HashTagName="validations">
+<Section Size="HeadingSize.H2" Name="Validations" PageUrl="@pageUrl" HashTagName="validations">
     <div class="mb-3">
         Like any other blazor input component, <code>NumberInput</code> supports validations.
         Add the DataAnnotations on the <code>NumberInput</code> component to validate the user input before submitting the form.
@@ -68,7 +68,7 @@
     <Demo Type="typeof(NumberInput_Demo_08_Validations)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Events: ValueChanged" PageUrl="@pageUrl" HashTagName="event-value-changed">
+<Section Size="HeadingSize.H2" Name="Events: ValueChanged" PageUrl="@pageUrl" HashTagName="event-value-changed">
     <div class="mb-3">This event fires on every user keystroke that changes the <code>NumberInput</code> value.</div>
     <Demo Type="typeof(NumberInput_Demo_09_Events_Value_Changed)" Tabs="true" />
 </Section>

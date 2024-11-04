@@ -13,7 +13,7 @@
 
 <CarbonAds />
 
-<Section Size="HeadingSize.H2" Text="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage">
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" HashTagName="basic-usage">
     <Callout Color="CalloutColor.Warning" Heading="NOTE">
         The input UI generally varies from browser to browser.
         In unsupported browsers, the control degrades gracefully to <code>type="text"</code>.
@@ -22,7 +22,7 @@
     <Demo Type="typeof(DateInput_Demo_01_Basic_Usage)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Generic type" PageUrl="@pageUrl" HashTagName="generic-type">
+<Section Size="HeadingSize.H2" Name="Generic type" PageUrl="@pageUrl" HashTagName="generic-type">
     <div class="mb-3">
         <p>
             The Blazor Bootstrap DateInput component supports several data types: <code>DateOnly</code>, <code>DateOnly?</code>, <code>DateTime</code>, and <code>DateTime?</code>.
@@ -35,7 +35,7 @@
     <Demo Type="typeof(DateInput_Demo_02_Generic_Type)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Enable max min" PageUrl="@pageUrl" HashTagName="enable-max-min">
+<Section Size="HeadingSize.H2" Name="Enable max min" PageUrl="@pageUrl" HashTagName="enable-max-min">
     <div class="mb-3">
         Set <code>EnableMinMax="true"</code> and set the <code>Max</code> and <code>Min</code> parameters to restrict the user input between the Min and Max range.
     </div>
@@ -46,7 +46,7 @@
     <Demo Type="typeof(DateInput_Demo_03_Max_Min)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Disable" PageUrl="@pageUrl" HashTagName="disable">
+<Section Size="HeadingSize.H2" Name="Disable" PageUrl="@pageUrl" HashTagName="disable">
     <div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>DateInput</code>.</div>
     <Demo Type="typeof(DateInput_Demo_04_A_Disable_Date_Input)" Tabs="false" />
     <div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>DateInput</code>.</div>
@@ -56,21 +56,21 @@
     <Demo Type="typeof(DateInput_Demo_04_B_Disable_Date_Input)" Tabs="false" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Validations" PageUrl="@pageUrl" HashTagName="validations">
+<Section Size="HeadingSize.H2" Name="Validations" PageUrl="@pageUrl" HashTagName="validations">
     <div class="mb-3">
         Like any other blazor input component, <b>DateInput</b> component supports validations. Use the <b>DataAnnotations</b> to validate the user input before submitting the form. In the below example, we used the <code>Required</code> attributes.
     </div>
     <Demo Type="typeof(DateInput_Demo_05_Validations)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Events: ValueChanged" PageUrl="@pageUrl" HashTagName="event-value-changed">
+<Section Size="HeadingSize.H2" Name="Events: ValueChanged" PageUrl="@pageUrl" HashTagName="event-value-changed">
     <div class="mb-3">
         This event fires on every user keystroke/selection that changes the <b>DateInput</b> value.
     </div>
     <Demo Type="typeof(DateInput_Demo_06_Events_Value_Changed)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Text="Restrict the date field based on the entry in another date field" PageUrl="@pageUrl" HashTagName="restrict-the-date-field-based-on-the-entry-in-another-date-field">
+<Section Size="HeadingSize.H2" Name="Restrict the date field based on the entry in another date field" PageUrl="@pageUrl" HashTagName="restrict-the-date-field-based-on-the-entry-in-another-date-field">
     <div class="mb-3">
         One common scenario is that the date fields are restricted based on the entry in another date field.
         In the example below, we restrict the course end time based on the selection of course start date.
