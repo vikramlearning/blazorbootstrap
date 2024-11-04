@@ -13,11 +13,11 @@
 
 <Callout Color="CalloutColor.Danger" Heading="NOTE">Similar to modals, only one offcanvas can be shown at a time.</Callout>
 
-<Section Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" HashTagName="examples">
+<Section Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" Link="examples">
     <Demo Type="typeof(Offcanvas_Demo_01_Examples)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Dynamic component as offcanvas" PageUrl="@pageUrl" HashTagName="dynamic-component-as-offcanvas">
+<Section Size="HeadingSize.H2" Name="Dynamic component as offcanvas" PageUrl="@pageUrl" Link="dynamic-component-as-offcanvas">
     <div class="mb-3">Render different components dynamically within the offcanvas without iterating through possible types or using conditional logic.</div>
     <div class="mb-3">
         If dynamically-rendered components have component parameters, pass them as an <code>IDictionary</code>. The <code>string</code> is the parameter's name, and the <code>object</code> is the parameter's value.
@@ -27,7 +27,7 @@
     <Demo Type="typeof(EmployeeDemoComponent1)" ShowCodeOnly="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Pass event callbacks to a dynamic component" PageUrl="@pageUrl" HashTagName="pass-event-callbacks-to-a-dynamic-component">
+<Section Size="HeadingSize.H2" Name="Pass event callbacks to a dynamic component" PageUrl="@pageUrl" Link="pass-event-callbacks-to-a-dynamic-component">
     <div class="mb-3">Event callbacks <code>(EventCallback)</code> can be passed in its parameter dictionary.</div>
     <div class="mb-3">
         In the following parent component example, the <code>ShowDTMessage</code> method assigns a string with the current time to <code>message</code>, and the value of <code>message</code> is rendered.
@@ -42,25 +42,25 @@
     <Demo Type="typeof(EmployeeDemoComponent2)" ShowCodeOnly="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Placement" PageUrl="@pageUrl" HashTagName="placement">
+<Section Size="HeadingSize.H2" Name="Placement" PageUrl="@pageUrl" Link="placement">
     <div class="mb-3">Try the top, bottom, and left examples out below.</div>
     <Demo Type="typeof(Offcanvas_Demo_03_Placement)" Tabs="true" />
 </Section>
 
 <Callout Type="CalloutColor.Info">Default placement for the offcanvas component is right.</Callout>
 
-<Section Size="HeadingSize.H2" Name="Static backdrop" PageUrl="@pageUrl" HashTagName="static-backdrop">
+<Section Size="HeadingSize.H2" Name="Static backdrop" PageUrl="@pageUrl" Link="static-backdrop">
     <div class="mb-3">When <b>UseStaticBackdrop</b> is set to <b>true</b>, the offcanvas will not close when clicking outside of it.</div>
     <Demo Type="typeof(Offcanvas_Demo_04_Static_Backdrop)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Sizes" PageUrl="@pageUrl" HashTagName="sizes">
+<Section Size="HeadingSize.H2" Name="Sizes" PageUrl="@pageUrl" Link="sizes">
     <div class="mb-3">Set the size of the <code>Offcanvas</code> with the Size parameter. The default value is <code>OffcanvasSize.Regular</code>.</div>
     <Demo Type="typeof(Offcanvas_Demo_05_Sizes_A_Small)" Tabs="true" />
     <Demo Type="typeof(Offcanvas_Demo_05_Sizes_B_Large)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Events" PageUrl="@pageUrl" HashTagName="events">
+<Section Size="HeadingSize.H2" Name="Events" PageUrl="@pageUrl" Link="events">
     <div class="mb-3">Blazor Bootstrap offcanvas component exposes a few events for hooking into offcanvas functionality.</div>
     <Demo Type="typeof(Offcanvas_Demo_06_Events)" Tabs="true" />
 </Section>

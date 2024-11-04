@@ -11,13 +11,13 @@
 
 <CarbonAds />
 
-<Section Size="HeadingSize.H2" Name="Client side filtering" PageUrl="@pageUrl" HashTagName="client-side-filtering">
+<Section Size="HeadingSize.H2" Name="Client side filtering" PageUrl="@pageUrl" Link="client-side-filtering">
     <div>For filtering, <code>AllowFiltering</code> and <code>PropertyName</code> parameters are required.</div>
     <div class="mb-3">Add <code>AllowFiltering="true"</code> parameter to Grid and <code>PropertyName</code> parameter to all the GridColumns.</div>
     <Demo Type="typeof(Grid_Demo_01_A_Client_Side_Filtering)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Client side filtering with StringComparision" PageUrl="@pageUrl" HashTagName="client-side-filtering-with-string-comparision">
+<Section Size="HeadingSize.H2" Name="Client side filtering with StringComparision" PageUrl="@pageUrl" Link="client-side-filtering-with-string-comparision">
     <div>In the below example, <code>StringComparision.Ordinal</code> is used on the <strong>Employee Name</strong> column to make the filter <b>case-sensitive</b>.</div>
     <Callout Color="CalloutColor.Danger" Heading="IMPORTANT">
         <div>By default, <code>StringComparison.OrdinalIgnoreCase</code> is used to compare culture-agnostic and case-insensitive string matching.</div>
@@ -25,7 +25,7 @@
     <Demo Type="typeof(Grid_Demo_01_B_Client_Side_Filtering_With_StringComparision)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Set default filter" PageUrl="@pageUrl" HashTagName="set-default-filter">
+<Section Size="HeadingSize.H2" Name="Set default filter" PageUrl="@pageUrl" Link="set-default-filter">
     <div class="mb-2">
         <code>FilterOperator</code> and <code>FilterValue</code> parameters are required to set the default filter.
     </div>
@@ -34,14 +34,14 @@
     <Demo Type="typeof(Grid_Demo_02_Set_Default_Filter)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Disable specific column filter" PageUrl="@pageUrl" HashTagName="disable-specific-column-filter">
+<Section Size="HeadingSize.H2" Name="Disable specific column filter" PageUrl="@pageUrl" Link="disable-specific-column-filter">
     <div class="mb-3">
         <code>Filterable</code> parameter is required to disable the filter on a specific column. Add <code>Filterable="false"</code> parameter to GridColumn. The column filter is disabled on the <b>Id</b> column in the below example.
     </div>
     <Demo Type="typeof(Grid_Demo_03_Disable_Specific_Column_Filter)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Increase filter textbox width" PageUrl="@pageUrl" HashTagName="increase-filter-textbox-width">
+<Section Size="HeadingSize.H2" Name="Increase filter textbox width" PageUrl="@pageUrl" Link="increase-filter-textbox-width">
     <div class="mb-2">Add <code>FilterTextboxWidth</code> parameter to the GridColumn to increase or decrease the filter textbox width, <code>FilterTextboxWidth</code> parameter is optional.</div>
     <Callout>Filter textbox width measured in pixels.</Callout>
     <Demo Type="typeof(Grid_Demo_04_Increase_Filter_Textbox_Width)" Tabs="true" />
@@ -57,11 +57,11 @@
     </Callout>
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Enum filter" PageUrl="@pageUrl" HashTagName="enum-filter">
+<Section Size="HeadingSize.H2" Name="Enum filter" PageUrl="@pageUrl" Link="enum-filter">
     <Demo Type="typeof(Grid_Demo_05_Enum_Filters)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Guid filter" PageUrl="@pageUrl" HashTagName="guid-filter">
+<Section Size="HeadingSize.H2" Name="Guid filter" PageUrl="@pageUrl" Link="guid-filter">
     <Demo Type="typeof(Grid_Demo_06_Guid_Filters)" Tabs="true" />
 </Section>
 
