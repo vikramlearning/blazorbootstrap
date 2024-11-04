@@ -1,3 +1,5 @@
+@page "/range-input"
+
 @attribute [Route(pageUrl)]
 
 <PageMetaTags PageUrl="@pageUrl"
@@ -55,8 +57,10 @@
 </div>
 <Demo Type="typeof(RangeInput_Demo_06_Tick_Marks)" Tabs="true" />
 @code {
-    private string pageUrl = "/form/range-input";
-    private string title = "Blazor RangeInput Component";
-    private string description = "Blazor Bootstrap RangeInput component is built around HTML input of type=\"range\".";
-    private string imageUrl = "https://i.imgur.com/rWDDHaf.png";
+    private const string pageUrl = RouteConstants.Demos_RangeInput_Documentation;
+    private const string pageTitle = "Blazor RangeInput";
+    private const string pageDescription = "Blazor Bootstrap RangeInput component is built around HTML input of type=\"range\".";
+    private const string metaTitle = "Blazor RangeInput Component";
+    private const string metaDescription = "Blazor Bootstrap RangeInput component is built around HTML input of type=\"range\".";
+    private const string imageUrl = "https://i.imgur.com/rWDDHaf.png";
 }

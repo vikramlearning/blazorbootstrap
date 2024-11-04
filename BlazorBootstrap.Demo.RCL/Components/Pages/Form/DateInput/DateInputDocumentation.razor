@@ -1,4 +1,6 @@
-﻿@attribute [Route(pageUrl)]
+﻿@page "/date-input"
+
+@attribute [Route(pageUrl)]
 
 <PageMetaTags PageUrl="@pageUrl"
               Title="@metaTitle"
@@ -70,8 +72,10 @@
 <Demo Type="typeof(DateInput_Demo_07_Restrict_The_Date_Field_Based_On_The_Entry_In_Another_Date_Field)" Tabs="true" />
 
 @code {
-    private string pageUrl = "/form/date-input";
-    private string title = "Blazor DateInput Component";
-    private string description = "The Blazor Bootstrap DateInput component is constructed using an HTML input of type 'date' which limits user input based on pre-defined parameters. This component enables users to input a date using a text box with validation or a special date picker interface.";
-    private string imageUrl = "https://i.imgur.com/1mVjqQv.png";
+    private const string pageUrl = RouteConstants.Demos_DateInput_Documentation;
+    private const string pageTitle = "Blazor DateInput";
+    private const string pageDescription = "The Blazor Bootstrap DateInput component is constructed using an HTML input of type 'date' which limits user input based on pre-defined parameters. This component enables users to input a date using a text box with validation or a special date picker interface.";
+    private const string metaTitle = "Blazor DateInput Component";
+    private const string metaDescription = "The Blazor Bootstrap DateInput component is constructed using an HTML input of type 'date' which limits user input based on pre-defined parameters. This component enables users to input a date using a text box with validation or a special date picker interface.";
+    private const string imageUrl = "https://i.imgur.com/1mVjqQv.png";
 }

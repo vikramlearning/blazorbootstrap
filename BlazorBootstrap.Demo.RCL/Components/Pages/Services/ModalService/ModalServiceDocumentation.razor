@@ -1,4 +1,6 @@
-﻿@attribute [Route(pageUrl)]
+﻿@page "/modal-service"
+
+@attribute [Route(pageUrl)]
 
 <PageMetaTags PageUrl="@pageUrl"
               Title="@metaTitle"
@@ -37,8 +39,10 @@
 <Demo Type="typeof(ModalService_Demo_100_Global_Modal_Service_For_Application_02)" ShowCodeOnly="true" />
 
 @code {
-    private string pageUrl = "/modal-service";
-    private string title = "Blazor Modal Service";
-    private string description = "Use Blazor Bootstrap modal service to show quick dialogs to your site for lightboxes, user notifications, or completely custom content.";
-    private string imageUrl = "https://i.imgur.com/Tze7msN.png";
+    private const string pageUrl = RouteConstants.Demos_ModalService_Documentation;
+    private const string pageTitle = "Blazor Modal Service";
+    private const string pageDescription = "Use Blazor Bootstrap modal service to show quick dialogs to your site for lightboxes, user notifications, or completely custom content.";
+    private const string metaTitle = "Blazor Modal Service";
+    private const string metaDescription = "Use Blazor Bootstrap modal service to show quick dialogs to your site for lightboxes, user notifications, or completely custom content.";
+    private const string imageUrl = "https://i.imgur.com/Tze7msN.png";
 }

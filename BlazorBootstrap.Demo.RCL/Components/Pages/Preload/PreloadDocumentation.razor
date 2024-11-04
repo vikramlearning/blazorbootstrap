@@ -39,10 +39,12 @@
 <Demo Type="typeof(Preload_Demo_03_Change_Spinner_Color)" />
 
 @code {
-    private string pageUrl = "/preload";
-    private string title = "Blazor Preload Component";
-    private string description = "Indicate the loading state of a page with Blazor Bootstrap preload component.";
-    private string imageUrl = "https://i.imgur.com/2cPuqFa.png";
+    private const string pageUrl = RouteConstants.Demos_Preload_Documentation;
+    private const string pageTitle = "Blazor Preload";
+    private const string pageDescription = "Indicate the loading state of a page with Blazor Bootstrap preload component.";
+    private const string metaTitle = "Blazor Preload Component";
+    private const string metaDescription = "Indicate the loading state of a page with Blazor Bootstrap preload component.";
+    private const string imageUrl = "https://i.imgur.com/2cPuqFa.png";
 
     [Inject] PreloadService PreloadService { get; set; } = default!;
 

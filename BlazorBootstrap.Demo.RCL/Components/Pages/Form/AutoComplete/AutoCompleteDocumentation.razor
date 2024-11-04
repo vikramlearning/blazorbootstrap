@@ -1,4 +1,6 @@
-﻿@attribute [Route(pageUrl)]
+﻿@page "/autocomplete"
+
+@attribute [Route(pageUrl)]
 
 <PageMetaTags PageUrl="@pageUrl"
               Title="@metaTitle"
@@ -86,8 +88,10 @@
 <Demo Type="typeof(AutoComplete_Demo_06_Sizing)" Tabs="true" />
 
 @code {
-    private string pageUrl = "/autocomplete";
-    private string title = "Blazor AutoComplete Component";
-    private string description = "Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.";
-    private string imageUrl = "https://i.imgur.com/36RsWZ3.png";
+    private const string pageUrl = RouteConstants.Demos_AutoComplete_Documentation;
+    private const string pageTitle = "Blazor AutoComplete";
+    private const string pageDescription = "Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.";
+    private const string metaTitle = "Blazor AutoComplete Component";
+    private const string metaDescription = "Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.";
+    private const string imageUrl = "https://i.imgur.com/36RsWZ3.png";
 }

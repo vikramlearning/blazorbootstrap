@@ -4,9 +4,12 @@ public static class RouteConstants
 {
     public const string Blog_Prefix = "/blog";
     public const string Docs_Prefix = "/docs";
-    public const string Demos_Prefix = "/demos";
+    public const string Demos_Prefix = "";
 
     #region Demos
+
+    // Getting Started
+    public const string Demos_GettingStarted_Documentation = Demos_Prefix + "/getting-started";
 
     // AI
     public const string Demos_AI_Prefix = Demos_Prefix + "/ai";
@@ -90,7 +93,8 @@ public static class RouteConstants
     public const string Demos_ScatterChart_Documentation = Demos_Charts_Prefix + "/scatter-chart";
 
     // Services
-    public const string Demos_ModalService_Documentation = Demos_Prefix + "/modal-service";
+    public const string Demos_Services_Prefix = Demos_Prefix + "/services";
+    public const string Demos_ModalService_Documentation = Demos_Services_Prefix + "/modal-service";
 
     // Utilities
     public const string Demos_Utils_Prefix = Demos_Prefix + "/utils";

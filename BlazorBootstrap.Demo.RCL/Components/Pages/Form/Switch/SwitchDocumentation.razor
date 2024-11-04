@@ -1,4 +1,6 @@
-﻿@attribute [Route(pageUrl)]
+﻿@page "/switch"
+
+@attribute [Route(pageUrl)]
 
 <PageMetaTags PageUrl="@pageUrl"
               Title="@metaTitle"
@@ -39,8 +41,10 @@
 <Demo Type="typeof(Switch_Demo_05_Form)" Tabs="true" />
 
 @code {
-    private string pageUrl = "/form/switch";
-    private string title = "Blazor Switch Component";
-    private string description = "Create consistent cross-browser and cross-device checkboxes with our blazor switches. A switch has the markup of a custom checkbox.";
-    private string imageUrl = "https://i.imgur.com/ALKzreq.png";
+    private const string pageUrl = RouteConstants.Demos_Switch_Documentation;
+    private const string pageTitle = "Blazor Switch";
+    private const string pageDescription = "Create consistent cross-browser and cross-device checkboxes with our blazor switches. A switch has the markup of a custom checkbox.";
+    private const string metaTitle = "Blazor Switch Component";
+    private const string metaDescription = "Create consistent cross-browser and cross-device checkboxes with our blazor switches. A switch has the markup of a custom checkbox.";
+    private const string imageUrl = "https://i.imgur.com/ALKzreq.png";
 }

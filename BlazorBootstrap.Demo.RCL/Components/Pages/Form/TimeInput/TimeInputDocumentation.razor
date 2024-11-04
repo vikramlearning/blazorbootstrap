@@ -1,4 +1,6 @@
-﻿@attribute [Route(pageUrl)]
+﻿@page "/time-input"
+
+@attribute [Route(pageUrl)]
 
 <PageMetaTags PageUrl="@pageUrl"
               Title="@metaTitle"
@@ -67,8 +69,10 @@
 <Demo Type="typeof(TimeInput_Demo_07_Restrict_The_Time_Field_Based_On_The_Entry_In_Another_Time_Field)" Tabs="true" />
 
 @code {
-    private string pageUrl = "/form/time-input";
-    private string title = "Blazor TimeInput Component";
-    private string description = "The Blazor Bootstrap TimeInput component is constructed using an HTML input of type 'time' which limits user input based on pre-defined parameters. This component enables users to input a time using a text box with validation or a special time picker interface.";
-    private string imageUrl = "https://i.imgur.com/1mVjqQv.png";
+    private const string pageUrl = RouteConstants.Demos_TimeInput_Documentation;
+    private const string pageTitle = "Blazor TimeInput";
+    private const string pageDescription = "The Blazor Bootstrap TimeInput component is constructed using an HTML input of type 'time' which limits user input based on pre-defined parameters. This component enables users to input a time using a text box with validation or a special time picker interface.";
+    private const string metaTitle = "Blazor TimeInput Component";
+    private const string metaDescription = "The Blazor Bootstrap TimeInput component is constructed using an HTML input of type 'time' which limits user input based on pre-defined parameters. This component enables users to input a time using a text box with validation or a special time picker interface.";
+    private const string imageUrl = "https://i.imgur.com/1mVjqQv.png";
 }

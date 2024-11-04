@@ -1,4 +1,6 @@
-﻿@attribute [Route(pageUrl)]
+﻿@page "/currency-input"
+
+@attribute [Route(pageUrl)]
 
 <PageMetaTags PageUrl="@pageUrl"
               Title="@metaTitle"
@@ -81,8 +83,10 @@
 <Demo Type="typeof(CurrencyInput_Demo_13_Events_Value_Changed)" Tabs="true" />
 
 @code {
-    private string pageUrl = "/form/currency-input";
-    private string title = "Blazor CurrencyInput Component";
-    private string description = "Use the Blazor Bootstrap CurrencyInput component to show the numbers in the user's locale format, including the currency symbol.";
-    private string imageUrl = "https://i.imgur.com/iUNBkki.png";
+    private const string pageUrl = RouteConstants.Demos_CurrencyInput_Documentation;
+    private const string pageTitle = "Blazor CurrencyInput";
+    private const string pageDescription = "Use the Blazor Bootstrap CurrencyInput component to show the numbers in the user's locale format, including the currency symbol.";
+    private const string metaTitle = "Blazor CurrencyInput Component";
+    private const string metaDescription = "Use the Blazor Bootstrap CurrencyInput component to show the numbers in the user's locale format, including the currency symbol.";
+    private const string imageUrl = "https://i.imgur.com/iUNBkki.png";
 }
