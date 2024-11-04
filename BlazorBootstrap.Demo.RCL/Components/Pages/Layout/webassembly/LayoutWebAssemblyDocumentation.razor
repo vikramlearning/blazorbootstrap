@@ -1,12 +1,13 @@
-﻿@page "/layout"
-@page "/layout-setup/blazor-webassembly"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Layout Setup - Blazor WebAssembly </h1>
-<div class="lead mb-3">Get started with the Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

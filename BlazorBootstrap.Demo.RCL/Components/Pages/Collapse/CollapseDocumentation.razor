@@ -1,13 +1,13 @@
-﻿@page "/collapse"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Collapse</h1>
-<div class="lead mb-3">
-    Toggle the visibility of content across your project with the Blazor Bootstrap <code>Collapse</code> component.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

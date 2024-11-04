@@ -1,14 +1,13 @@
-﻿@page "/charts/scatter-chart"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl"/>
-
-<h1>Blazor Scatter Chart</h1>
-<div class="lead mb-3">
-    A Blazor Bootstrap scatter chart components are based on basic line charts with the x-axis changed to a linear axis. 
-    To use a scatter chart, data must be passed as objects containing X and Y properties.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

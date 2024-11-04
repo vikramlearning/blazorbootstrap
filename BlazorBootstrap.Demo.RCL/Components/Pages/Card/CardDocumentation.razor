@@ -1,13 +1,13 @@
-﻿@page "/card"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Card</h1>
-<div class="lead mb-3">
-    BootstrapBootstrap's cards provide a flexible and extensible content container with multiple variants and options.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

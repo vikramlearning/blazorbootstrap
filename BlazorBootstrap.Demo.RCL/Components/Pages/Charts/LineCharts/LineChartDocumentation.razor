@@ -1,14 +1,13 @@
-﻿@page "/charts/line-chart"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Line Chart</h1>
-<div class="lead mb-3">
-    A Blazor Bootstrap line chart component is a graphical representation of data that uses a series of connected points to show how the data changes over time.
-    It is a type of x-y chart, where the x-axis represents the independent variable, such as time, and the y-axis represents the dependent variable, such as the value.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

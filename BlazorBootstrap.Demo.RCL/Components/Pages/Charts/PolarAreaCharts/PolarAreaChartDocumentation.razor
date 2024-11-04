@@ -1,13 +1,13 @@
-﻿@page "/charts/polar-area-chart"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Polar Area Chart</h1>
-<div class="lead mb-3">
-    A Blazor Bootstrap polar area charts are similar to pie charts, but each segment has the same angle - the radius of the segment differs depending on the value.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

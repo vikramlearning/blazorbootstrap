@@ -1,11 +1,13 @@
-﻿@page "/markdown"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Markdown <Badge Color="BadgeColor.Secondary">Preview</Badge></h1>
-<div class="lead mb-3">Use Blazor Bootstrap Markdown component to add formatting, tables, images, and more to your project pages.</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

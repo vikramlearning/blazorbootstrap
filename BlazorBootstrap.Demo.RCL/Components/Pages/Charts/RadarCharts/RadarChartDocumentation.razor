@@ -1,14 +1,13 @@
-﻿@page "/charts/radar-chart"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl"/>
-
-<h1>Blazor Radar Chart</h1>
-<div class="lead mb-3">
-    A Blazor Bootstrap radar chart component is a way of showing multiple data points and the variation between them.
-    They are often useful for comparing the points of two or more different data sets.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

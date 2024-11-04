@@ -1,15 +1,13 @@
-﻿@page "/date-input"
-@page "/form/date-input"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Date Input</h1>
-<div class="lead mb-3">
-    The Blazor Bootstrap <code>DateInput</code> component is constructed using an HTML input of <code>type="date"</code> which limits user input based on pre-defined parameters.
-    This component enables users to input a date using a text box with validation or a special date picker interface.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

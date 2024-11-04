@@ -8,6 +8,10 @@ public static class RouteConstants
 
     #region Demos
 
+    // AI
+    public const string Demos_AI_Prefix = Demos_Prefix + "/ai";
+    public const string Demos_AI_Chat_Documentation = Demos_AI_Prefix + "/open-ai-chat";
+
     // Content
     public const string Demos_Icons_Documentation = Demos_Prefix + "/icons";
     public const string Demos_Images_Documentation = Demos_Prefix + "/images";

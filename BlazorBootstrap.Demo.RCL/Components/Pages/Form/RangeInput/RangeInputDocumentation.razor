@@ -1,14 +1,13 @@
-@page "/range-input"
-@page "/form/range-input"
+@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Range Input</h1>
-<div class="lead mb-3">
-    Blazor Bootstrap <code>RangeInput</code> component is built around HTML input of <code>type="range"</code>.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

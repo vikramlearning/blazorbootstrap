@@ -1,13 +1,13 @@
-﻿@page "/sidebar"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Sidebar</h1>
-<div class="lead mb-3">
-    Use the Blazor Bootstrap <code>Sidebar</code> component to show consistent cross-browser, responsive and cross-device navigation links, additional information, or other content.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

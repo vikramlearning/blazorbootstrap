@@ -1,15 +1,13 @@
-﻿@page "/time-input"
-@page "/form/time-input"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Time Input</h1>
-<div class="lead mb-3">
-    The Blazor Bootstrap <code>TimeInput</code> component is constructed using an HTML input of <code>type="time"</code> which limits user input based on pre-defined parameters.
-    This component enables users to input a time using a text box with validation or a special time picker interface.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 

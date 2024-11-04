@@ -1,14 +1,13 @@
-﻿@page "/currency-input"
-@page "/form/currency-input"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Currency Input</h1>
-<div class="lead mb-3">
-    Use the Blazor Bootstrap <code>CurrencyInput</code> component to show the numbers in the user's locale format, including the currency symbol.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 
