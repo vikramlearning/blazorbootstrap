@@ -15,20 +15,20 @@
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Documentation" PageUrl="@pageUrl" HashTagName="documentation" />
-<div class="mb-3">
-    Please find the getting started documentation links, corresponding to each .NET version and project type, listed below:
-</div>
+<Section Size="HeadingSize.H2" Text="Documentation" PageUrl="@pageUrl" HashTagName="documentation">
+    <div class="mb-3">
+        Please find the getting started documentation links, corresponding to each .NET version and project type, listed below:
+    </div>
 
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th scope="col" style="width:20px;">#</th>
             <th scope="col" style="width:115px;">.NET Version</th>
             <th scope="col">Documentation Link</th>
         </tr>
-    </thead>
-    <tbody class="table-group-divider">
+        </thead>
+        <tbody class="table-group-divider">
         <tr>
             <td>1</td>
             <td>.NET 8</td>
@@ -49,19 +49,19 @@
             <td>.NET 8</td>
             <td><a href="https://docs.blazorbootstrap.com/getting-started/maui-blazor-net-8" target="_blank">MAUI Blazor Hybrid App (.NET 8)</a></td>
         </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
 
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th scope="col" style="width:20px;">#</th>
             <th scope="col" style="width:115px;">.NET Version</th>
             <th scope="col">Documentation Link</th>
         </tr>
-    </thead>
-    <tbody class="table-group-divider">
+        </thead>
+        <tbody class="table-group-divider">
         <tr>
             <td>1</td>
             <td>.NET 7</td>
@@ -77,20 +77,19 @@
             <td>.NET 7</td>
             <td><a href="https://docs.blazorbootstrap.com/getting-started/maui-blazor-net-7" target="_blank">MAUI Blazor Hybrid App (.NET 7)</a></td>
         </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
 
-
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th scope="col" style="width:20px;">#</th>
             <th scope="col" style="width:115px;">.NET Version</th>
             <th scope="col">Documentation Link</th>
         </tr>
-    </thead>
-    <tbody class="table-group-divider">
+        </thead>
+        <tbody class="table-group-divider">
         <tr>
             <td>1</td>
             <td>.NET 6</td>
@@ -101,9 +100,9 @@
             <td>.NET 6</td>
             <td><a href="https://docs.blazorbootstrap.com/getting-started/blazor-server-net-6" target="_blank">Blazor Server (.NET 6)</a></td>
         </tr>
-    </tbody>
-</table>
-
+        </tbody>
+    </table>
+</Section>
 
 @code {
     private const string pageUrl = RouteConstants.Demos_GettingStarted_Documentation;

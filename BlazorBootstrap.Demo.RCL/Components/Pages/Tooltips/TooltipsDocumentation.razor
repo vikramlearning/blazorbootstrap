@@ -11,40 +11,48 @@
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<Demo Type="typeof(Tooltips_Demo_01_Examples)" />
+<Section Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples">
+    <Demo Type="typeof(Tooltips_Demo_01_Examples)" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Disabled button with tootip" PageUrl="@pageUrl" HashTagName="disabled-button-with-tootip" />
-<Demo Type="typeof(Tooltips_Demo_02_Disabled_Button_With_Tooltip)" />
+<Section Size="HeadingSize.H2" Text="Disabled button with tootip" PageUrl="@pageUrl" HashTagName="disabled-button-with-tootip">
+    <Demo Type="typeof(Tooltips_Demo_02_Disabled_Button_With_Tooltip)" />
+</Section>
 
 <Callout Color="CalloutColor.Success">
     By default, <code>Button</code> supports tooltips via <code>TooltipTitle</code> and <code>TooltipPlacement</code> parameters.
     See <a href="/buttons#tooltip">Buttons - Tooltip</a>.
 </Callout>
 
-<SectionHeading Size="HeadingSize.H2" Text="Icon with click event" PageUrl="@pageUrl" HashTagName="icon-with-click-event" />
-<Demo Type="typeof(Tooltips_Demo_03_Icon_With_Click_Event)" />
+<Section Size="HeadingSize.H2" Text="Icon with click event" PageUrl="@pageUrl" HashTagName="icon-with-click-event">
+    <Demo Type="typeof(Tooltips_Demo_03_Icon_With_Click_Event)" />
+</Section>
 
 @* START: Commented Examples *@
-@*<SectionHeading Size="HeadingSize.H2" Text="Dynamically update the tooltip text" PageUrl="@pageUrl" HashTagName="dynamically-update-the-tooltip-text" />
-<Demo Type="typeof(Tooltips_Demo_04_Dynamically_Update_Tooltip_Text)" />
+@*<Section Size="HeadingSize.H2" Text="Dynamically update the tooltip text" PageUrl="@pageUrl" HashTagName="dynamically-update-the-tooltip-text">
+    <Demo Type="typeof(Tooltips_Demo_04_Dynamically_Update_Tooltip_Text)" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Tooltip with link" PageUrl="@pageUrl" HashTagName="tooltip-with-link" />
-<Demo Type="typeof(Tooltips_Demo_05_Tooltip_With_Navigation_Link)" />*@
+<Section Size="HeadingSize.H2" Text="Tooltip with link" PageUrl="@pageUrl" HashTagName="tooltip-with-link">
+    <Demo Type="typeof(Tooltips_Demo_05_Tooltip_With_Navigation_Link)" />
+</Section>*@
 @* END: Commented Examples *@
 
-<SectionHeading Size="HeadingSize.H2" Text="Custom tooltips" PageUrl="@pageUrl" HashTagName="custom-tooltips" />
-<div class="mb-3">
-    Blazor Bootstrap includes several predefined tooltip styles, each serving its own semantic purpose. 
-    The <b>Color</b> parameter can be used to customize the color of the tooltip.
-</div>
-<Demo Type="typeof(Tooltips_Demo_06_Colors)" Tabs="true" />
+<Section Size="HeadingSize.H2" Text="Custom tooltips" PageUrl="@pageUrl" HashTagName="custom-tooltips">
+    <div class="mb-3">
+        Blazor Bootstrap includes several predefined tooltip styles, each serving its own semantic purpose. 
+        The <b>Color</b> parameter can be used to customize the color of the tooltip.
+    </div>
+    <Demo Type="typeof(Tooltips_Demo_06_Colors)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Dynamically change the tooltip color" PageUrl="@pageUrl" HashTagName="dynamically-change-the-tooltip-color" />
-<Demo Type="typeof(Tooltips_Demo_07_Dynamically_Change_Color)" />
+<Section Size="HeadingSize.H2" Text="Dynamically change the tooltip color" PageUrl="@pageUrl" HashTagName="dynamically-change-the-tooltip-color">
+    <Demo Type="typeof(Tooltips_Demo_07_Dynamically_Change_Color)" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Tooltip with HTML" PageUrl="@pageUrl" HashTagName="tooltip-with-html" />
-<Demo Type="typeof(Tooltips_Demo_08_HTML)" />
+<Section Size="HeadingSize.H2" Text="Tooltip with HTML" PageUrl="@pageUrl" HashTagName="tooltip-with-html">
+    <Demo Type="typeof(Tooltips_Demo_08_HTML)" />
+</Section>
 
 @code {
     private const string pageUrl = RouteConstants.Demos_Tooltips_Documentation;

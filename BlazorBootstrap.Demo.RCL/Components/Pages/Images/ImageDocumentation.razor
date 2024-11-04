@@ -11,22 +11,25 @@
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Example" PageUrl="@pageUrl" HashTagName="example" />
-<div class="mb-3">
-    By default images are responsive. The default value of the <b>IsResponsive</b> parameter is <b>true</b>.
-</div>
-<Demo Type="typeof(Image_Demo_01_Examples)" Tabs="false" />
+<Section Size="HeadingSize.H2" Text="Example" PageUrl="@pageUrl" HashTagName="example">
+    <div class="mb-3">
+        By default images are responsive. The default value of the <b>IsResponsive</b> parameter is <b>true</b>.
+    </div>
+    <Demo Type="typeof(Image_Demo_01_Examples)" Tabs="false" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Image thumbnails" PageUrl="@pageUrl" HashTagName="image-thumbnails" />
-<div class="mb-3">
-    To set the image to have a rounded 1px border appearance, set the <b>IsThumbnail</b> parameter to <b>true</b>.
-</div>
-<Demo Type="typeof(Image_Demo_02_Thumbnail)" Tabs="false" />
+<Section Size="HeadingSize.H2" Text="Image thumbnails" PageUrl="@pageUrl" HashTagName="image-thumbnails">
+    <div class="mb-3">
+        To set the image to have a rounded 1px border appearance, set the <b>IsThumbnail</b> parameter to <b>true</b>.
+    </div>
+    <Demo Type="typeof(Image_Demo_02_Thumbnail)" Tabs="false" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Aligning images" PageUrl="@pageUrl" HashTagName="aligning-images" />
-<Demo Type="typeof(Image_Demo_03_Aligning_Images_A)" Tabs="false" />
-<Demo Type="typeof(Image_Demo_03_Aligning_Images_B)" Tabs="false" />
-<Demo Type="typeof(Image_Demo_03_Aligning_Images_C)" Tabs="false" />
+<Section Size="HeadingSize.H2" Text="Aligning images" PageUrl="@pageUrl" HashTagName="aligning-images">
+    <Demo Type="typeof(Image_Demo_03_Aligning_Images_A)" Tabs="false" />
+    <Demo Type="typeof(Image_Demo_03_Aligning_Images_B)" Tabs="false" />
+    <Demo Type="typeof(Image_Demo_03_Aligning_Images_C)" Tabs="false" />
+</Section>
 
 @code {
     private const string pageUrl = RouteConstants.Demos_Images_Documentation;

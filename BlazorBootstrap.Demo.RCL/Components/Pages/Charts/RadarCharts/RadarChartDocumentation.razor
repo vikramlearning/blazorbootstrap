@@ -11,20 +11,22 @@
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H4" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites" />
-<div class="mb-3">
-    Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
-</div>
+<Section Size="HeadingSize.H4" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites">
+    <div class="mb-3">
+        Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
+    </div>
+</Section>
 
-<SectionHeading Size="HeadingSize.H4" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works"/>
-<div class="mb-3">
-    In the following example, a <a href="/utils/color-utility#categorical-12-color">categorical 12-color</a> palette is used.
-</div>
-<Callout Heading="TIP" Color="CalloutColor.Success">
-    For data visualization, you can use the predefined palettes <code>ColorUtility.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorUtility.CategoricalSixColors</code> for a 6-color palette.
-    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
-</Callout>
-<Demo Type="typeof(RadarChart_Demo_01_Examples)" Tabs="true"/>
+<Section Size="HeadingSize.H4" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works">
+    <div class="mb-3">
+        In the following example, a <a href="/utils/color-utility#categorical-12-color">categorical 12-color</a> palette is used.
+    </div>
+    <Callout Heading="TIP" Color="CalloutColor.Success">
+        For data visualization, you can use the predefined palettes <code>ColorUtility.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorUtility.CategoricalSixColors</code> for a 6-color palette.
+        These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
+    </Callout>
+    <Demo Type="typeof(RadarChart_Demo_01_Examples)" Tabs="true"/>
+</Section>
 
 @code {
     private const string pageUrl = RouteConstants.Demos_RadarChart_Documentation;

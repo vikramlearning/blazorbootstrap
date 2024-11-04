@@ -11,21 +11,24 @@
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<Demo Type="typeof(PdfViewer_Demo_01_Examples)" Tabs="true" />
+<Section Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples">
+    <Demo Type="typeof(PdfViewer_Demo_01_Examples)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Orientation" PageUrl="@pageUrl" HashTagName="orientation" />
-<div class="mb-3">
-    Set the <code>Orientation</code> parameter to <code>Orientation.Landscape</code> to change the default orientation from <b>Portrait</b> to <b>Landscape</b>.
-</div>
-<Demo Type="typeof(PdfViewer_Demo_02_Orientation)" Tabs="true" />
+<Section Size="HeadingSize.H2" Text="Orientation" PageUrl="@pageUrl" HashTagName="orientation">
+    <div class="mb-3">
+        Set the <code>Orientation</code> parameter to <code>Orientation.Landscape</code> to change the default orientation from <b>Portrait</b> to <b>Landscape</b>.
+    </div>
+    <Demo Type="typeof(PdfViewer_Demo_02_Orientation)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Base64String" PageUrl="@pageUrl" HashTagName="base64-string" />
-<div class="mb-3">PDF Viewer component supports <b>base64</b> string as a URL.</div>
-<Callout Heading="Example">
-    Url="@@string.Format("data:application/pdf;base64,{0}", pdfBase64String)"
-</Callout>
-<Demo Type="typeof(PdfViewer_Demo_03_Base64String)" Tabs="true" />
+<Section Size="HeadingSize.H2" Text="Base64String" PageUrl="@pageUrl" HashTagName="base64-string">
+    <div class="mb-3">PDF Viewer component supports <b>base64</b> string as a URL.</div>
+    <Callout Heading="Example">
+        Url="@@string.Format("data:application/pdf;base64,{0}", pdfBase64String)"
+    </Callout>
+    <Demo Type="typeof(PdfViewer_Demo_03_Base64String)" Tabs="true" />
+</Section>
 
 @code {
     private const string pageUrl = RouteConstants.Demos_PDFViewer_Documentation;

@@ -11,29 +11,35 @@
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="About" PageUrl="@pageUrl" HashTagName="about" />
-<div class="mb-3">
-    Placeholders can be used to enhance the experience of your application.
-</div>
+<Section Size="HeadingSize.H2" Text="About" PageUrl="@pageUrl" HashTagName="about">
+    <div class="mb-3">
+        Placeholders can be used to enhance the experience of your application.
+    </div>
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<Demo Type="typeof(Placeholder_Demo_01_Examples)" />
+<Section Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples">
+    <Demo Type="typeof(Placeholder_Demo_01_Examples)" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Width" PageUrl="@pageUrl" HashTagName="width" />
-<div>You can change the width through <code>PlaceholderWidth</code>, width utilities, or inline styles.</div>
-<Demo Type="typeof(Placeholder_Demo_02_Width)" />
+<Section Size="HeadingSize.H2" Text="Width" PageUrl="@pageUrl" HashTagName="width">
+    <div>You can change the width through <code>PlaceholderWidth</code>, width utilities, or inline styles.</div>
+    <Demo Type="typeof(Placeholder_Demo_02_Width)" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Color" PageUrl="@pageUrl" HashTagName="color" />
-<div>By default, the placeholder uses currentColor. This can be overridden with the <code>Color</code> property of type enum.</div>
-<Demo Type="typeof(Placeholder_Demo_03_Color)" />
+<Section Size="HeadingSize.H2" Text="Color" PageUrl="@pageUrl" HashTagName="color">
+    <div>By default, the placeholder uses currentColor. This can be overridden with the <code>Color</code> property of type enum.</div>
+    <Demo Type="typeof(Placeholder_Demo_03_Color)" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Sizing" PageUrl="@pageUrl" HashTagName="sizing" />
-<div>The size of placeholders are based on the typographic style of the parent element. Customize them with <code>Size</code> property of type enum.</div>
-<Demo Type="typeof(Placeholder_Demo_04_Sizing)" />
+<Section Size="HeadingSize.H2" Text="Sizing" PageUrl="@pageUrl" HashTagName="sizing">
+    <div>The size of placeholders are based on the typographic style of the parent element. Customize them with <code>Size</code> property of type enum.</div>
+    <Demo Type="typeof(Placeholder_Demo_04_Sizing)" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Animation" PageUrl="@pageUrl" HashTagName="animation" />
-<div>Animate placeholders with <code>PlaceholderAnimation.Glow</code> or <code>PlaceholderAnimation.Wave</code> to better convey the perception of something being actively loaded.</div>
-<Demo Type="typeof(Placeholder_Demo_05_Animation)" />
+<Section Size="HeadingSize.H2" Text="Animation" PageUrl="@pageUrl" HashTagName="animation">
+    <div>Animate placeholders with <code>PlaceholderAnimation.Glow</code> or <code>PlaceholderAnimation.Wave</code> to better convey the perception of something being actively loaded.</div>
+    <Demo Type="typeof(Placeholder_Demo_05_Animation)" />
+</Section>
 
 @code {
     private const string pageUrl = RouteConstants.Demos_Placeholders_Documentation;

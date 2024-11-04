@@ -11,41 +11,48 @@
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H4" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites" />
-<div class="mb-3">
-    Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
-</div>
+<Section Size="HeadingSize.H4" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites">
+    <div class="mb-3">
+        Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
+    </div>
+</Section>
 
-<SectionHeading Size="HeadingSize.H4" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works" />
-<div class="mb-3">
-    In the following example, a <a href="/utils/color-utility#categorical-12-color">categorical 12-color</a> palette is used.
-</div>
-<Callout Heading="TIP" Color="CalloutColor.Success">
-    For data visualization, you can use the predefined palettes <code>ColorUtility.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorUtility.CategoricalSixColors</code> for a 6-color palette.
-    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
-</Callout>
-<Demo Type="typeof(LineChart_Demo_01_A_Examples)" Tabs="true" />
-<div class="my-3"></div>
-<Demo Type="typeof(LineChart_Demo_01_B_Examples)" Tabs="true" />
+<Section Size="HeadingSize.H4" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works">
+    <div class="mb-3">
+        In the following example, a <a href="/utils/color-utility#categorical-12-color">categorical 12-color</a> palette is used.
+    </div>
+    <Callout Heading="TIP" Color="CalloutColor.Success">
+        For data visualization, you can use the predefined palettes <code>ColorUtility.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorUtility.CategoricalSixColors</code> for a 6-color palette.
+        These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
+    </Callout>
+    <Demo Type="typeof(LineChart_Demo_01_A_Examples)" Tabs="true" />
+    <div class="my-3"></div>
+    <Demo Type="typeof(LineChart_Demo_01_B_Examples)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H4" Text="Locale" PageUrl="@pageUrl" HashTagName="locale" />
-<div class="my-3">
-    By default, the chart is using the default locale of the platform on which it is running.
-    In the following example, you will see the chart in the <b>German</b> locale (<b>de_DE</b>).
-</div>
-<Demo Type="typeof(LineChart_Demo_02_Locale)" Tabs="true" />
+<Section Size="HeadingSize.H4" Text="Locale" PageUrl="@pageUrl" HashTagName="locale">
+    <div class="my-3">
+        By default, the chart is using the default locale of the platform on which it is running.
+        In the following example, you will see the chart in the <b>German</b> locale (<b>de_DE</b>).
+    </div>
+    <Demo Type="typeof(LineChart_Demo_02_Locale)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H4" Text="Add data dynamically for a specific dataset" PageUrl="@pageUrl" HashTagName="add-data-dynamically-for-a-specific-dataset" />
-<Demo Type="typeof(LineChart_Demo_03_Dynamically_add_data)" Tabs="true" />
+<Section Size="HeadingSize.H4" Text="Add data dynamically for a specific dataset" PageUrl="@pageUrl" HashTagName="add-data-dynamically-for-a-specific-dataset">
+    <Demo Type="typeof(LineChart_Demo_03_Dynamically_add_data)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H4" Text="Data labels" PageUrl="@pageUrl" HashTagName="data-labels" />
-<Demo Type="typeof(LineChart_Demo_04_Datalabels)" Tabs="true" />
+<Section Size="HeadingSize.H4" Text="Data labels" PageUrl="@pageUrl" HashTagName="data-labels">
+    <Demo Type="typeof(LineChart_Demo_04_Datalabels)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H4" Text="Tick Configuration" PageUrl="@pageUrl" HashTagName="tick-configuration" />
-<Demo Type="typeof(LineChart_Demo_05_Tick_Configuration)" Tabs="true" />
+<Section Size="HeadingSize.H4" Text="Tick Configuration" PageUrl="@pageUrl" HashTagName="tick-configuration">
+    <Demo Type="typeof(LineChart_Demo_05_Tick_Configuration)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H4" Text="Fill between datasets" PageUrl="@pageUrl" HashTagName="dataset-fill" />
-<Demo Type="typeof(LineChart_Demo_06_Dataset_Fill)" Tabs="true" />
+<Section Size="HeadingSize.H4" Text="Fill between datasets" PageUrl="@pageUrl" HashTagName="dataset-fill">
+    <Demo Type="typeof(LineChart_Demo_06_Dataset_Fill)" Tabs="true" />
+</Section>
 
 @code {
     private const string pageUrl = RouteConstants.Demos_LineChart_Documentation;

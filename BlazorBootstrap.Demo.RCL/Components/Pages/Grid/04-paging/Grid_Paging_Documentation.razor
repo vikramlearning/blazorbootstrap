@@ -11,22 +11,26 @@
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Client side paging" PageUrl="@pageUrl" HashTagName="client-side-paging" />
-<div>For paging, <code>AllowPaging</code> and <code>PageSize</code> parameters are required.</div>
-<div class="mb-2">Add <code>AllowPaging="true"</code> and <code>PageSize="20"</code> parameters to the Grid. <code>PageSize</code> parameter is optional.</div>
-<Callout Color="CalloutColor.Info">The default page size is 10.</Callout>
-<Demo Type="typeof(Grid_Demo_02_Client_Side_Paging)" Tabs="true" />
+<Section Size="HeadingSize.H2" Text="Client side paging" PageUrl="@pageUrl" HashTagName="client-side-paging">
+    <div>For paging, <code>AllowPaging</code> and <code>PageSize</code> parameters are required.</div>
+    <div class="mb-2">Add <code>AllowPaging="true"</code> and <code>PageSize="20"</code> parameters to the Grid. <code>PageSize</code> parameter is optional.</div>
+    <Callout Color="CalloutColor.Info">The default page size is 10.</Callout>
+    <Demo Type="typeof(Grid_Demo_02_Client_Side_Paging)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Dynamic page size" PageUrl="@pageUrl" HashTagName="dynamic-page-size" />
-<div class="mb-3"></div>
-<Demo Type="typeof(Grid_Demo_25_Dynamic_Page_Size)" Tabs="true" />
+<Section Size="HeadingSize.H2" Text="Dynamic page size" PageUrl="@pageUrl" HashTagName="dynamic-page-size">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Grid_Demo_25_Dynamic_Page_Size)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Page size selection" PageUrl="@pageUrl" HashTagName="page-size-selection" />
-<div class="mb-3"></div>
-<Demo Type="typeof(Grid_Demo_26_Page_Size_Selection)" Tabs="true" />
+<Section Size="HeadingSize.H2" Text="Page size selection" PageUrl="@pageUrl" HashTagName="page-size-selection">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Grid_Demo_26_Page_Size_Selection)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Auto hide paging" PageUrl="@pageUrl" HashTagName="auto-hide-paging" />
-<Demo Type="typeof(Grid_Demo_34_AutoHide_Paging)" Tabs="true" />
+<Section Size="HeadingSize.H2" Text="Auto hide paging" PageUrl="@pageUrl" HashTagName="auto-hide-paging">
+    <Demo Type="typeof(Grid_Demo_34_AutoHide_Paging)" Tabs="true" />
+</Section>
 
 @code {
     private const string pageUrl = RouteConstants.Demos_Grid_Paging_Documentation;

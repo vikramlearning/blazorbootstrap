@@ -11,24 +11,26 @@
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites" />
-<div class="mb-3">
-    Assuming you followed the getting started docs for the initial setup.
-    <ol class="mt-2">
-        <li><b>Blazor WebAssembly Project:</b> Follow the <a href="/getting-started/blazor-webassembly">getting started</a> steps for the initial setup.</li>
-        <li><b>Blazor Server Project:</b> Follow the <a href="/getting-started/blazor-server">getting started</a> steps for the initial setup.</li>
-    </ol>
-</div>
+<Section Size="HeadingSize.H2" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites">
+    <div class="mb-3">
+        Assuming you followed the getting started docs for the initial setup.
+        <ol class="mt-2">
+            <li><b>Blazor WebAssembly Project:</b> Follow the <a href="/getting-started/blazor-webassembly">getting started</a> steps for the initial setup.</li>
+            <li><b>Blazor Server Project:</b> Follow the <a href="/getting-started/blazor-server">getting started</a> steps for the initial setup.</li>
+        </ol>
+    </div>
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Steps" PageUrl="@pageUrl" HashTagName="steps" />
-<div class="mb-3">
-    1. Replace <b>MainLayout.razor</b> page code with the below code.
-</div>
-<Callout Color="CalloutColor.Danger" Heading="NOTE">
-    Remove all the CSS content from the <b>Shared/MainLayout.razor.css</b> file.
-</Callout>
+<Section Size="HeadingSize.H2" Text="Steps" PageUrl="@pageUrl" HashTagName="steps">
+    <div class="mb-3">
+        1. Replace <b>MainLayout.razor</b> page code with the below code.
+    </div>
+    <Callout Color="CalloutColor.Danger" Heading="NOTE">
+        Remove all the CSS content from the <b>Shared/MainLayout.razor.css</b> file.
+    </Callout>
 
-<Snippet FilePath="~\Components\Pages\Layout\webassembly\Layout_WebAssembly_Demo_01.razor" />
+    <Snippet FilePath="~\Components\Pages\Layout\webassembly\Layout_WebAssembly_Demo_01.razor" />
+</Section>
 
 @code {
     private const string pageUrl = "/layout-setup/blazor-webassembly";
