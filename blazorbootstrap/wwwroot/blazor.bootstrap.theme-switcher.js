@@ -1,6 +1,8 @@
 // THEMES
 const STORAGE_KEY = "blazorbootstrap-theme";
 const DEFAULT_THEME = "light";
+const LIGHT_THEME = "light";
+const DARK_THEME = "dark";
 const SYSTEM_THEME = "system";
 
 const state = {
@@ -11,9 +13,14 @@ const state = {
 const showActiveTheme = () => {
     let $themeIndicator = document.querySelector(".blazorbootstrap-theme-indicator>i");
     if ($themeIndicator) {
-        if (state.appliedTheme === "light") {
+
+        if (state.chosenTheme === SYSTEM_THEME
+            && state.chosenTheme !== state.appliedTheme) {
+            $themeIndicator.className = "bi bi-circle-half";
+        }
+        else if (state.appliedTheme === LIGHT_THEME) {
             $themeIndicator.className = "bi bi-sun-fill";
-        } else if (state.appliedTheme === "dark") {
+        } else if (state.appliedTheme === DARK_THEME) {
             $themeIndicator.className = "bi bi-moon-stars-fill";
         } else {
             $themeIndicator.className = "bi bi-circle-half";
@@ -38,12 +45,12 @@ const showActiveTheme = () => {
     }
 };
 
-export function setTheme(theme, save = true) {
+export function setTheme(dotNetHelper, theme, save = true) {
     state.chosenTheme = theme;
     state.appliedTheme = theme;
 
     if (theme === SYSTEM_THEME) {
-        state.appliedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        state.appliedTheme = window.matchMedia(`(prefers-color-scheme: ${DARK_THEME})`).matches ? DARK_THEME : LIGHT_THEME;
     }
 
     document.documentElement.setAttribute("data-bs-theme", state.appliedTheme);
@@ -51,49 +58,24 @@ export function setTheme(theme, save = true) {
         window.localStorage.setItem(STORAGE_KEY, state.chosenTheme);
     }
     showActiveTheme();
-    updateDemoCodeThemeCss(state.appliedTheme);
+    if (dotNetHelper)
+        dotNetHelper.invokeMethodAsync("OnThemeChangedJS", state.appliedTheme);
 };
 
-export function initializeTheme() {
+export function initializeTheme(dotNetHelper) {
     const localTheme = window.localStorage.getItem(STORAGE_KEY);
     if (localTheme) {
-        setTheme(localTheme, false);
+        setTheme(dotNetHelper, localTheme, false);
     } else {
-        setTheme(SYSTEM_THEME);
+        setTheme(dotNetHelper, SYSTEM_THEME);
     }
 
     // register events
     window
-        .matchMedia("(prefers-color-scheme: dark)")
+        .matchMedia(`(prefers-color-scheme: ${DARK_THEME})`)
         .addEventListener("change", (event) => {
-            const theme = event.matches ? "dark" : "light";
-            setTheme(theme);
+            //const theme = event.matches ? DARK_THEME : LIGHT_THEME;
+            //setTheme(theme);
+            setTheme(dotNetHelper, SYSTEM_THEME);
         });
-}
-
-export function updateDemoCodeThemeCss(theme) {
-    if (theme === "dark") {
-        let prismThemeLightLinkEl = document.getElementById('prismThemeLightLink');
-        if (prismThemeLightLinkEl)
-            prismThemeLightLinkEl?.remove();
-
-        let prismThemeDarkLinkEl = document.createElement("link");
-        prismThemeDarkLinkEl.setAttribute("rel", "stylesheet");
-        prismThemeDarkLinkEl.setAttribute("href", "/_content/BlazorBootstrap.Demo.RCL/css/prism-vsc-dark-plus.min.css");
-        prismThemeDarkLinkEl.setAttribute("id", "prismThemeDarkLink");
-
-        document.head.append(prismThemeDarkLinkEl);
-    }
-    else if (theme === "light") {
-        let prismThemeDarkLinkEl = document.getElementById('prismThemeDarkLink');
-        if (prismThemeDarkLinkEl)
-            prismThemeDarkLinkEl?.remove();
-
-        let prismThemeLightLinkEl = document.createElement("link");
-        prismThemeLightLinkEl.setAttribute("rel", "stylesheet");
-        prismThemeLightLinkEl.setAttribute("href", "/_content/BlazorBootstrap.Demo.RCL/css/prism-vs.min.css");
-        prismThemeLightLinkEl.setAttribute("id", "prismThemeLightLink");
-
-        document.head.append(prismThemeLightLinkEl);
-    }
 }

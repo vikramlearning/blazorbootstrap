@@ -28,22 +28,22 @@ public class ThemeSwitcherJsInterop : IAsyncDisposable
         }
     }
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync(DotNetObjectReference<ThemeSwitcher>? objRef)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("initializeTheme");
+        await module.InvokeVoidAsync("initializeTheme", objRef);
     }
 
-    internal Task SetAutoThemeAsync() => SetThemeAsync("system");
+    internal Task SetAutoThemeAsync(DotNetObjectReference<ThemeSwitcher>? objRef) => SetThemeAsync(objRef, "system");
 
-    internal Task SetDarkThemeAsync() => SetThemeAsync("dark");
+    internal Task SetDarkThemeAsync(DotNetObjectReference<ThemeSwitcher>? objRef) => SetThemeAsync(objRef, "dark");
 
-    internal Task SetLightThemeAsync() => SetThemeAsync("light");
+    internal Task SetLightThemeAsync(DotNetObjectReference<ThemeSwitcher>? objRef) => SetThemeAsync(objRef, "light");
 
-    internal async Task SetThemeAsync(string themeName)
+    internal async Task SetThemeAsync(DotNetObjectReference<ThemeSwitcher>? objRef, string themeName)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("setTheme", themeName);
+        await module.InvokeVoidAsync("setTheme", objRef, themeName);
     }
 
     #endregion

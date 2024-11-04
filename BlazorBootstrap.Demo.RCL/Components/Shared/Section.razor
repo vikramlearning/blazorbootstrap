@@ -1,0 +1,48 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inherits BlazorBootstrapComponentBase
+
+<section @ref="@Element"
+         id="@Id"
+         class="@ClassNames"
+         style="@StyleNames"
+         @attributes="@AdditionalAttributes">
+
+    @if (Size == HeadingSize.H2)
+    {
+        <h2 id="@Link!.ToLower()" class="@headerClassNames">
+            <span class="anchor-name">@Name</span>
+            <a class="be-doc-anchor-link ml-1" href="@link" @onclick="OnClick">#</a>
+        </h2>
+    }
+    else if (Size == HeadingSize.H3)
+    {
+        <h3 id="@Link!.ToLower()" class="@headerClassNames">
+            <span class="anchor-name">@Name</span>
+            <a class="be-doc-anchor-link ml-1" href="@link" @onclick="OnClick">#</a>
+        </h3>
+    }
+    else if (Size == HeadingSize.H4)
+    {
+        <h4 id="@Link!.ToLower()" class="@headerClassNames">
+            <span class="anchor-name">@Name</span>
+            <a class="be-doc-anchor-link ml-1" href="@link" @onclick="OnClick">#</a>
+        </h4>
+    }
+    else if (Size == HeadingSize.H5)
+    {
+        <h5 id="@Link!.ToLower()" class="@headerClassNames">
+            <span class="anchor-name">@Name</span>
+            <a class="be-doc-anchor-link ml-1" href="@link" @onclick="OnClick">#</a>
+        </h5>
+    }
+    else if (Size == HeadingSize.H6)
+    {
+        <h6 id="@Link!.ToLower()" class="@headerClassNames">
+            <span class="anchor-name">@Name</span>
+            <a class="be-doc-anchor-link ml-1" href="@link" @onclick="OnClick">#</a>
+        </h6>
+    }
+
+    @ChildContent
+
+</section>

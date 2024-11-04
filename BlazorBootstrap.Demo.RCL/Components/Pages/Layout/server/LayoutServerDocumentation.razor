@@ -1,38 +1,44 @@
-﻿@page "/layout-setup/blazor-server"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Layout Setup - Blazor Server</h1>
-<div class="lead mb-3">Get started with the Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites" />
-<div class="mb-3">
-    Assuming you followed the getting started docs for the initial setup.
-    <ol class="mt-2">
-        <li><b>Blazor WebAssembly Project:</b> Follow the <a href="/getting-started/blazor-webassembly">getting started</a> steps for the initial setup.</li>
-        <li><b>Blazor Server Project:</b> Follow the <a href="/getting-started/blazor-server">getting started</a> steps for the initial setup.</li>
-    </ol>
-</div>
+<Section Size="HeadingSize.H2" Name="Prerequisites" PageUrl="@pageUrl" Link="prerequisites">
+    <div class="mb-3">
+        Assuming you followed the getting started docs for the initial setup.
+        <ol class="mt-2">
+            <li><b>Blazor WebAssembly Project:</b> Follow the <a href="/getting-started/blazor-webassembly">getting started</a> steps for the initial setup.</li>
+            <li><b>Blazor Server Project:</b> Follow the <a href="/getting-started/blazor-server">getting started</a> steps for the initial setup.</li>
+        </ol>
+    </div>
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Steps" PageUrl="@pageUrl" HashTagName="steps" />
-<div class="mb-3">
-    1. Replace <b>MainLayout.razor</b> page code with the below code.
-</div>
-<Callout Color="CalloutColor.Danger" Heading="NOTE">
-    Remove all the CSS content from the <b>Shared/MainLayout.razor.css</b> file.
-</Callout>
+<Section Size="HeadingSize.H2" Name="Steps" PageUrl="@pageUrl" Link="steps">
+    <div class="mb-3">
+        1. Replace <b>MainLayout.razor</b> page code with the below code.
+    </div>
+    <Callout Color="CalloutColor.Danger" Heading="NOTE">
+        Remove all the CSS content from the <b>Shared/MainLayout.razor.css</b> file.
+    </Callout>
 
-<Snippet FilePath="~\Components\Pages\Layout\server\Layout_Server_Demo_01.razor" />
+    <Snippet FilePath="~\Components\Pages\Layout\server\Layout_Server_Demo_01.razor" />
+</Section>
 
 @code {
-    private string pageUrl = "/layout-setup/blazor-server";
-    private string title = "Blazor Bootstrap Layout Setup - Blazor Server";
-    private string description = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
-    private string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
+    private const string pageUrl = "/layout-setup/blazor-server";
+    private const string pageTitle = "Blazor Bootstrap Layout Setup - Blazor Server";
+    private const string pageDescription = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
+    private const string metaTitle = "Blazor Bootstrap Layout Setup - Blazor Server";
+    private const string metaDescription = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
+    private const string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
 
     private string version = default!;
 

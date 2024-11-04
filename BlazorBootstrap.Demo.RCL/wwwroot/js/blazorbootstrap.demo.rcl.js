@@ -1,4 +1,9 @@
-﻿async function copyToClipboard(text, dotNetHelper) {
+﻿/**
+ * Copies the provided text to the clipboard and invokes .NET methods based on the success or failure of the operation.
+ * @param {string} text - The text to be copied to the clipboard.
+ * @param {object} dotNetHelper - The .NET helper object to invoke methods on.
+ */
+async function copyToClipboard(text, dotNetHelper) {
     let isCopied = true;
 
     try {
@@ -15,6 +20,10 @@
     );
 }
 
+/**
+ * Highlights all code blocks on the page using the Prism.js library.
+ * If the Prism.js custom class plugin is available, it prefixes all classes with 'prism-'.
+ */
 function highlightCode() {
     if (Prism) {
         Prism.plugins.customClass.prefix('prism-');
@@ -22,6 +31,10 @@ function highlightCode() {
     }
 };
 
+/**
+ * Scrolls the page to the heading element specified by the URL hash.
+ * If a hash is present in the URL, it finds the corresponding element by ID and scrolls it into view.
+ */
 function navigateToHeading() {
     if (window.location.hash) {
         // get hash tag in URL
@@ -34,78 +47,11 @@ function navigateToHeading() {
     }
 }
 
-// THEMES
-const STORAGE_KEY = "blazorbootstrap-theme";
-const DEFAULT_THEME = "light";
-const SYSTEM_THEME = "system";
-
-const state = {
-    chosenTheme: SYSTEM_THEME, // light|dark|system
-    appliedTheme: DEFAULT_THEME // light|dark
-};
-
-const showActiveTheme = () => {
-    let $themeIndicator = document.querySelector(".blazorbootstrap-theme-indicator>i");
-    if ($themeIndicator) {
-        if (state.appliedTheme === "light") {
-            $themeIndicator.className = "bi bi-sun-fill";
-        } else if (state.appliedTheme === "dark") {
-            $themeIndicator.className = "bi bi-moon-stars-fill";
-        } else {
-            $themeIndicator.className = "bi bi-circle-half";
-        }
-    }
-
-    let $themeSwitchers = document.querySelectorAll(".blazorbootstrap-theme-item>button");
-    if ($themeSwitchers) {
-        $themeSwitchers.forEach((el) => {
-            const bsThemeValue = el.dataset.bsThemeValue;
-            const iEl = el.querySelector(".bi.bi-check2");
-            if (state.chosenTheme === bsThemeValue) {
-                el.classList.add("active");
-                if (iEl)
-                    iEl.classList.remove("d-none");
-            } else {
-                el.classList.remove("active");
-                if (iEl)
-                    iEl.classList.add("d-none");
-            }
-        });
-    }
-};
-
-function setTheme(theme, save = true) {
-    state.chosenTheme = theme;
-    state.appliedTheme = theme;
-
-    if (theme === SYSTEM_THEME) {
-        state.appliedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-
-    document.documentElement.setAttribute("data-bs-theme", state.appliedTheme);
-    if (save) {
-        window.localStorage.setItem(STORAGE_KEY, state.chosenTheme);
-    }
-    showActiveTheme();
-    updateDemoCodeThemeCss(state.appliedTheme);
-};
-
-function initializeTheme() {
-    const localTheme = window.localStorage.getItem(STORAGE_KEY);
-    if (localTheme) {
-        setTheme(localTheme, false);
-    } else {
-        setTheme(SYSTEM_THEME);
-    }
-}
-
-window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", (event) => {
-        const theme = event.matches ? "dark" : "light";
-        setTheme(theme);
-    });
-
+/**
+ * Update the theme of the demo code
+ * @param {} theme 
+ * @returns {} 
+ */
 function updateDemoCodeThemeCss(theme) {
     if (theme === "dark") {
         let prismThemeLightLinkEl = document.getElementById('prismThemeLightLink');
