@@ -498,21 +498,36 @@ window.blazorBootstrap = {
                         dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
                     });
                 }
+                console.info(mapInstance.markerCluster);
+                if (mapInstance.markerCluster) {
+                    // Check if the marker is already in the cluster
+                    console.info("We are here");
+                    const markers = mapInstance.markerCluster.markers;
+                    const markerExists = markers.includes(markerEl);
+
+                    if (!markerExists) {
+                        mapInstance.markerCluster.markers.add(markerEl);
+                    } else {
+                        mapInstance.markerCluster.render();
+                    }
+                }
+                
             }
         },
-        create: (elementId, map, zoom, center, markers, clickable) => {
+        create: (elementId, map, zoom, center, markers, clickable, enableClustering) => {
             window.blazorBootstrap.googlemaps.instances[elementId] = {
                 map: map,
                 zoom: zoom,
                 center: center,
                 markers: markers,
-                clickable: clickable
+                clickable: clickable,
+                enableClustering : enableClustering
             };
         },
         get: (elementId) => {
             return window.blazorBootstrap.googlemaps.instances[elementId];
         },
-        initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
+        initialize: (elementId, zoom, center, markers, clickable, enableClustering, dotNetHelper) => {
             window.blazorBootstrap.googlemaps.markerEls[elementId] = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
 
             let mapOptions = { center: center, zoom: zoom, mapId: elementId };
@@ -524,6 +539,19 @@ window.blazorBootstrap = {
                 for (const marker of markers) {
                     window.blazorBootstrap.googlemaps.addMarker(elementId, marker, dotNetHelper);
                 }
+            }
+            // Initialize marker clustering after all markers are added
+            if(enableClustering) {
+                const mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
+                mapInstance.markerCluster = new markerClusterer.MarkerClusterer({
+                    map: mapInstance.map,
+                    markers: window.blazorBootstrap.googlemaps.markerEls[elementId],
+                    // You can change the clustering algorithm like so:
+                    // algorithm: new markerClusterer.SuperClusterAlgorithm({
+                    //     radius: 100,
+                    //     maxZoom: 15
+                    // })
+                });
             }
         },
         instances: {},
@@ -542,6 +570,10 @@ window.blazorBootstrap = {
                 for (const marker of markers) {
                     window.blazorBootstrap.googlemaps.addMarker(elementId, marker, dotNetHelper);
                 }
+            }
+            const mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
+            if(mapInstance.markerCluster) {
+                mapInstance.markerCluster.markers = markers;
             }
         }
     },

@@ -42,7 +42,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// <returns>A completed task.</returns>
     public ValueTask RefreshAsync()
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef);
+        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, EnableClustering, objRef);
 
         return ValueTask.CompletedTask;
     }
@@ -60,7 +60,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
 
     private void OnScriptLoad()
     {
-        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef));
+        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, EnableClustering, objRef));
     }
 
     #endregion
@@ -151,6 +151,17 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public int Zoom { get; set; } = 14;
+    
+    /// <summary>
+    /// Determines whether markers on the map should be clustered when they are close together.
+    /// When enabled, multiple markers in proximity will be combined into a single cluster marker showing the count of points.
+    /// This helps reduce visual clutter when there are many markers in a small area.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [Parameter]
+    public bool EnableClustering { get; set; } = true;
 
     #endregion
 }
