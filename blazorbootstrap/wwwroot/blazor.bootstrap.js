@@ -498,15 +498,12 @@ window.blazorBootstrap = {
                         dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
                     });
                 }
-                console.info(mapInstance.markerCluster);
                 if (mapInstance.markerCluster) {
-                    // Check if the marker is already in the cluster
-                    console.info("We are here");
                     const markers = mapInstance.markerCluster.markers;
                     const markerExists = markers.includes(markerEl);
 
                     if (!markerExists) {
-                        mapInstance.markerCluster.markers.add(markerEl);
+                        mapInstance.markerCluster.addMarker(markerEl);
                     } else {
                         mapInstance.markerCluster.render();
                     }
@@ -528,29 +525,38 @@ window.blazorBootstrap = {
             return window.blazorBootstrap.googlemaps.instances[elementId];
         },
         initialize: (elementId, zoom, center, markers, clickable, enableClustering, dotNetHelper) => {
-            window.blazorBootstrap.googlemaps.markerEls[elementId] = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
-
+            window.blazorBootstrap.googlemaps.markerEls[elementId] ??= [];
+            
+            // clean up just the clustering if it exists
+            const existingInstance = window.blazorBootstrap.googlemaps.get(elementId);
+            if (existingInstance?.markerCluster) {
+                existingInstance.markerCluster.setMap(null);
+                existingInstance.markerCluster = null;
+            } 
+            
             let mapOptions = { center: center, zoom: zoom, mapId: elementId };
             let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
             window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable);
 
-            if (markers) {
+            
+            if(!enableClustering)
+                window.blazorBootstrap.googlemaps.markerEls[elementId].forEach(marker => {
+                    marker.map = map;
+                });
+            
+            // don't recreate markers if they already exist
+            if (markers && window.blazorBootstrap.googlemaps.markerEls[elementId].length === 0) {
                 for (const marker of markers) {
                     window.blazorBootstrap.googlemaps.addMarker(elementId, marker, dotNetHelper);
                 }
             }
-            // Initialize marker clustering after all markers are added
+
             if(enableClustering) {
                 const mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
                 mapInstance.markerCluster = new markerClusterer.MarkerClusterer({
-                    map: mapInstance.map,
-                    markers: window.blazorBootstrap.googlemaps.markerEls[elementId],
-                    // You can change the clustering algorithm like so:
-                    // algorithm: new markerClusterer.SuperClusterAlgorithm({
-                    //     radius: 100,
-                    //     maxZoom: 15
-                    // })
+                    map: map,
+                    markers: window.blazorBootstrap.googlemaps.markerEls[elementId]
                 });
             }
         },
@@ -558,22 +564,32 @@ window.blazorBootstrap = {
         markerEls: {},
         updateMarkers: (elementId, markers, dotNetHelper) => {
             let markerEls = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
-
-            // delete the markers
-            if (markerEls.length > 0) {
-                for (const markerEl of markerEls) {
-                    markerEl.setMap(null);
-                }
+            const mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
+            const clusteringEnabled = !!mapInstance.markerCluster;
+            // Clean up cluster first if it exists
+            if (clusteringEnabled) {
+                mapInstance.markerCluster.clearMarkers();
+                mapInstance.markerCluster.setMap(null);
             }
 
+            // Clear all existing markers from the map
+            for (const markerEl of markerEls) {
+                markerEl.map = null;
+            }
+
+            // Reset marker array and add new markers
+            window.blazorBootstrap.googlemaps.markerEls[elementId] = [];
             if (markers) {
                 for (const marker of markers) {
                     window.blazorBootstrap.googlemaps.addMarker(elementId, marker, dotNetHelper);
                 }
             }
-            const mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
-            if(mapInstance.markerCluster) {
-                mapInstance.markerCluster.markers = markers;
+
+            if (clusteringEnabled) {
+                mapInstance.markerCluster = new markerClusterer.MarkerClusterer({
+                    map: mapInstance.map,
+                    markers: window.blazorBootstrap.googlemaps.markerEls[elementId]
+                });
             }
         }
     },
