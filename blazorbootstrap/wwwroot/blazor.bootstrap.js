@@ -526,25 +526,19 @@ window.blazorBootstrap = {
         },
         initialize: (elementId, zoom, center, markers, clickable, enableClustering, dotNetHelper) => {
             window.blazorBootstrap.googlemaps.markerEls[elementId] ??= [];
-            
-            // clean up just the clustering if it exists
-            const existingInstance = window.blazorBootstrap.googlemaps.get(elementId);
-            if (existingInstance?.markerCluster) {
-                existingInstance.markerCluster.setMap(null);
-                existingInstance.markerCluster = null;
-            } 
-            
+                        
             let mapOptions = { center: center, zoom: zoom, mapId: elementId };
             let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
             window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable);
 
-            
-            if(!enableClustering)
-                window.blazorBootstrap.googlemaps.markerEls[elementId].forEach(marker => {
-                    marker.map = map;
-                });
-            
+            // clean up just the clustering if it exists
+            const existingInstance = window.blazorBootstrap.googlemaps.get(elementId);
+            if (existingInstance?.markerCluster) {
+                existingInstance.markerCluster.setMap(null);
+                existingInstance.markerCluster = null;
+            }
+
             // don't recreate markers if they already exist
             if (markers && window.blazorBootstrap.googlemaps.markerEls[elementId].length === 0) {
                 for (const marker of markers) {
@@ -557,6 +551,10 @@ window.blazorBootstrap = {
                 mapInstance.markerCluster = new markerClusterer.MarkerClusterer({
                     map: map,
                     markers: window.blazorBootstrap.googlemaps.markerEls[elementId]
+                });
+            } else {
+                window.blazorBootstrap.googlemaps.markerEls[elementId].forEach(marker => {
+                    marker.map = map;
                 });
             }
         },
