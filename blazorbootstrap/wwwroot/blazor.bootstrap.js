@@ -474,6 +474,13 @@ window.blazorBootstrap = {
                 else if (marker.content) {
                     _content = document.createElement("div");
                     _content.classList.add("bb-google-marker-content");
+
+                    // fixes SVG misalignment on zoom out - Adlei
+                    const hasSVG = marker.content.includes('<svg');
+                    if (hasSVG) {
+                        _content.classList.add("bb-googlemaps-marker-fix");
+                    }
+                    
                     _content.innerHTML = marker.content;
                 }
 
@@ -511,20 +518,20 @@ window.blazorBootstrap = {
                 
             }
         },
-        create: (elementId, map, zoom, center, markers, clickable, enableClustering) => {
+        create: (elementId, map, zoom, center, markers, clickable, clusterOptions) => {
             window.blazorBootstrap.googlemaps.instances[elementId] = {
                 map: map,
                 zoom: zoom,
                 center: center,
                 markers: markers,
                 clickable: clickable,
-                enableClustering : enableClustering
+                clusterOptions : clusterOptions
             };
         },
         get: (elementId) => {
             return window.blazorBootstrap.googlemaps.instances[elementId];
         },
-        initialize: (elementId, zoom, center, markers, clickable, enableClustering, dotNetHelper) => {
+        initialize: (elementId, zoom, center, markers, clickable, clusterOptions, dotNetHelper) => {
             window.blazorBootstrap.googlemaps.markerEls[elementId] ??= [];
                         
             let mapOptions = { center: center, zoom: zoom, mapId: elementId };
@@ -545,13 +552,63 @@ window.blazorBootstrap = {
                     window.blazorBootstrap.googlemaps.addMarker(elementId, marker, dotNetHelper);
                 }
             }
-
-            if(enableClustering) {
+            
+            // add clustering if enabled, if not keep the markers as it is
+            if(clusterOptions?.clusteringEnabled) {
                 const mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
-                mapInstance.markerCluster = new markerClusterer.MarkerClusterer({
+                const clusterConfig = {
                     map: map,
                     markers: window.blazorBootstrap.googlemaps.markerEls[elementId]
-                });
+                };
+                
+                
+                if (clusterOptions?.renderer) {
+                    clusterConfig.renderer = {
+                        render: ({ count, position }) => {
+                            // Create custom marker element
+                            const div = document.createElement("div");
+                            if (clusterOptions.renderer.svgIcon) {
+                                const countStyle = `position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)` +
+                                    (clusterOptions.renderer.textColor ? `;color:${clusterOptions.renderer.textColor}` : '') +
+                                    (clusterOptions.renderer.textFontSize ? `;font-size:${clusterOptions.renderer.textFontSize}` : '');
+
+                                div.innerHTML = `
+                                    <div style="position:relative;">
+                                        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">${clusterOptions.renderer.svgIcon}</div>
+                                        ${clusterOptions.renderer.showMarkerCount ? `<div style="${countStyle}">${count}</div>` : ''}
+                                    </div>`;
+                            }
+                            // Return as an advanced marker element
+                            return new google.maps.marker.AdvancedMarkerElement({
+                                position,
+                                content: div
+                            });
+                        }
+                    };
+                }
+                if (clusterOptions?.algorithm) {
+                    console.info('Algorithm is changed');
+                    clusterConfig.algorithm = new markerClusterer[clusterOptions.algorithm.type]({
+                        ...clusterOptions.algorithm.options
+                    });
+                }
+                // set marker cluster to the instance with the configuration
+                mapInstance.markerCluster = new markerClusterer.MarkerClusterer(clusterConfig);
+
+                if (clusterOptions?.enableClusterClick) {
+                    console.info('Cluster click enabled');
+                    mapInstance.markerCluster.addListener("click", (cluster) => {
+                        dotNetHelper.invokeMethodAsync('OnClusterClickJS', {
+                            position: cluster.position,
+                            markers: cluster.markers.map(m => ({
+                                position: m.position,
+                                title: m.title
+                            }))
+                        });
+                    });
+                }
+                
+                
             } else {
                 window.blazorBootstrap.googlemaps.markerEls[elementId].forEach(marker => {
                     marker.map = map;

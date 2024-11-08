@@ -35,6 +35,13 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
         if (OnMarkerClick.HasDelegate)
             await OnMarkerClick.InvokeAsync(marker);
     }
+    
+    [JSInvokable]
+    public async Task OnClusterClickJS(GoogleMapClusterClickEvent clusterEvent)
+    {
+        if (OnClusterClick.HasDelegate)
+            await OnClusterClick.InvokeAsync(clusterEvent);
+    }
 
     /// <summary>
     /// Refreshes the Google Map component.
@@ -42,7 +49,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// <returns>A completed task.</returns>
     public ValueTask RefreshAsync()
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, EnableClustering, objRef);
+        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, objRef);
 
         return ValueTask.CompletedTask;
     }
@@ -60,7 +67,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
 
     private void OnScriptLoad()
     {
-        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, EnableClustering, objRef));
+        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, objRef));
     }
 
     #endregion
@@ -151,17 +158,19 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public int Zoom { get; set; } = 14;
-    
-    /// <summary>
-    /// Determines whether markers on the map should be clustered when they are close together.
-    /// When enabled, multiple markers in proximity will be combined into a single cluster marker showing the count of points.
-    /// This helps reduce visual clutter when there are many markers in a small area.
-    /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
-    [Parameter]
-    public bool EnableClustering { get; set; } = true;
 
+    /// <summary>
+    /// Gets or sets the clustering options for the map.
+    /// </summary>
+    [Parameter]
+    public GoogleMapClusterOptions? ClusterOptions { get; set; } = new();
+
+    /// <summary>
+    /// Event fired when a user clicks on a cluster.
+    /// This event fires only when EnableClustering is true and ClusterOptions.EnableClusterClick is true.
+    /// </summary>
+    [Parameter]
+    public EventCallback<GoogleMapClusterClickEvent> OnClusterClick { get; set; }
+    
     #endregion
 }
