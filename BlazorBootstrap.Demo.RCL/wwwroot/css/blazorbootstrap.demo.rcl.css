@@ -254,28 +254,28 @@ h1:focus-visible {
 
 /*** END: home ***/
 
-.anchor-link {
+.bb-anchor-link {
     font-weight: 400;
     color: rgba(13,110,253,0.5);
     transition: color 0.15s ease-in-out;
     opacity: 0;
-    padding-left: 0.375em;
+    /*padding-left: 0.375em;*/
     text-decoration: none;
     -webkit-font-smoothing: antialiased;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .anchor-link {
+    .bb-anchor-link {
         transition: none
     }
 }
 
-.anchor-link:focus, .anchor-link:hover {
+.bb-anchor-link:focus, .bb-anchor-link:hover {
     color: #0d6efd;
     text-decoration: none
 }
 
-:hover > .anchor-link, .anchor-link:focus {
+:hover > .bb-anchor-link, .bb-anchor-link:focus {
     opacity: 1;
 }
 
