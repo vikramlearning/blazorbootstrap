@@ -587,7 +587,6 @@ window.blazorBootstrap = {
                     };
                 }
                 if (clusterOptions?.algorithm) {
-                    console.info('Algorithm is changed');
                     clusterConfig.algorithm = new markerClusterer[clusterOptions.algorithm.type]({
                         ...clusterOptions.algorithm.options
                     });
@@ -596,7 +595,6 @@ window.blazorBootstrap = {
                 mapInstance.markerCluster = new markerClusterer.MarkerClusterer(clusterConfig);
 
                 if (clusterOptions?.enableClusterClick) {
-                    console.info('Cluster click enabled');
                     mapInstance.markerCluster.addListener("click", (cluster) => {
                         dotNetHelper.invokeMethodAsync('OnClusterClickJS', {
                             position: cluster.position,
