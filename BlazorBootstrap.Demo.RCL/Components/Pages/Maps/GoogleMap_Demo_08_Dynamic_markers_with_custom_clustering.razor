@@ -20,7 +20,8 @@
            Zoom="10"
            Markers="markers"
            ClusterOptions="clusterOptions"
-           OnMarkerClick="OnGoogleMapMarkerClick" />
+           OnMarkerClick="OnGoogleMapMarkerClick"
+           OnClusterClick="OnGoogleMapClusterClick"/>
 
 @code {
     Random random = new Random(2000000000);
@@ -29,15 +30,14 @@
     {
         ClusteringEnabled = true,
         EnableClusterClick = true,
-        // Algorithm = new GoogleMapClusterAlgorithm
-        // {
-        //     Type = "SuperClusterAlgorithm",
-        //     Options = new Dictionary<string, object>
-        //     {
-        //         { "radius", 100 },
-        //         { "maxZoom", 15 }
-        //     }
-        // },
+        Algorithm = new GoogleMapClusterAlgorithm
+        {
+            Type = GoogleMapAlgorithmTypes.SuperClusterAlgorithm.ToString(),
+            Options = new GoogleMapClusterAlgorithmOptions()
+            {
+                MaxZoom = 16,
+            }
+        },
         Renderer = new GoogleMapClusterRenderer
         {
             TextColor = "#ff0000",
@@ -48,7 +48,24 @@
     };
     
     [Inject] public ToastService ToastService { get; set; } = default!;
+    
+    private void OnGoogleMapClusterClick(GoogleMapClusterClickEvent clusterEvent)
+    {
+        var weatherTypes = clusterEvent.Markers
+            .Select(m => m.Title)
+            .GroupBy(title => title)
+            .Select(g => $"{g.Key}: {g.Count()}")
+            .ToList();
 
+        var summary = string.Join(", ", weatherTypes);
+        
+        ToastService.Notify(new ToastMessage(
+            ToastType.Info,
+            $"Cluster clicked: {clusterEvent.Markers.Count()} markers",
+            $"Weather summary: {summary}\nPosition: ({clusterEvent.Position.Latitude:F6}, {clusterEvent.Position.Longitude:F6})"
+        ));
+    }
+    
     private async ValueTask AddWeatherMarkerAsync() => await googleMapRef.AddMarkerAsync(GetRandomMarker());
 
     private async Task UpdateWeatherMarkersAsync()

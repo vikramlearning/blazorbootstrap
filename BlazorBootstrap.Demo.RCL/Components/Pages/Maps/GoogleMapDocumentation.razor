@@ -72,11 +72,19 @@
 </Section>
 
 <Section Size="HeadingSize.H2" Name="Dynamic markers with clustering" PageUrl="@pageUrl" Link="dynamic-markers-with-clusters">
+    <div class="mb-3">
+        This example shows how to enable clustering, so that nearby markers group together. By using <b>GoogleMapClusterOptions</b>
+        and by setting <b>ClusteringEnabled</b> to <b>true</b>, and by setting the options to the GoogleMaps component, clustering will be enabled.
+    </div>
     <Demo Type="typeof(GoogleMap_Demo_07_Dynamic_markers_with_clustering)" Tabs="true" />
 </Section>
 
 <Section Size="HeadingSize.H2" Name="Dynamic markers with custom clusters" PageUrl="@pageUrl" Link="dynamic-markers-with-custom-clusters">
-    <Demo Type="typeof(GoogleMap_Demo_08_Dynamic_markers_with_custom_clustering)" Tabs="true" />
+    <div class="mb-3">
+        This example expands on clustering, showing how to customize the cluster markers to your own design, by using the <b>GoogleMapClusterOptions</b>. The cluster marker can be customized by changing the <b>GoogleMapClusterRenderer
+        </b>. You can also change the Algorithm's as well as the <b>MaxZoom</b> level. See https://googlemaps.github.io/js-markerclusterer/public/algorithms/ for the showcase of the different algorithms available. You can define a ClusterClick event the same way you would do markers too.
+    </div>
+    <Demo Type="typeof(GoogleMap_Demo_08_Dynamic_markers_with_custom_clustering)" Tabs="true"/>
 </Section>
 
 @code {

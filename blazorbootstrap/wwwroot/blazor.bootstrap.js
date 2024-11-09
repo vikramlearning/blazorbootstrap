@@ -537,7 +537,7 @@ window.blazorBootstrap = {
             let mapOptions = { center: center, zoom: zoom, mapId: elementId };
             let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
-            window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable);
+            window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable, clusterOptions);
 
             // clean up just the clustering if it exists
             const existingInstance = window.blazorBootstrap.googlemaps.get(elementId);
@@ -618,33 +618,75 @@ window.blazorBootstrap = {
         instances: {},
         markerEls: {},
         updateMarkers: (elementId, markers, dotNetHelper) => {
-            let markerEls = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
             const mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
-            const clusteringEnabled = !!mapInstance.markerCluster;
-            // Clean up cluster first if it exists
-            if (clusteringEnabled) {
+            let markerEls = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
+            const clusterOptions = mapInstance.clusterOptions;
+
+            // clean up existing cluster
+            if (mapInstance.markerCluster) {
                 mapInstance.markerCluster.clearMarkers();
                 mapInstance.markerCluster.setMap(null);
             }
+            
+            // clean up old and keep already existing markers
+            markerEls = markerEls.filter(existing => {
+                const shouldKeep = markers?.some(m => m.title === existing.title && m.pinElement === existing.pinElement);
+                if (!shouldKeep) existing.map = null;
+                return shouldKeep;
+            });
+            window.blazorBootstrap.googlemaps.markerEls[elementId] = markerEls;
 
-            // Clear all existing markers from the map
-            for (const markerEl of markerEls) {
-                markerEl.map = null;
-            }
-
-            // Reset marker array and add new markers
-            window.blazorBootstrap.googlemaps.markerEls[elementId] = [];
-            if (markers) {
-                for (const marker of markers) {
+            // add only new markers
+            markers?.forEach(marker => {
+                if (!markerEls.some(m => m.title === marker.title && m.pinElement === marker.pinElement))
                     window.blazorBootstrap.googlemaps.addMarker(elementId, marker, dotNetHelper);
-                }
-            }
+            });
 
-            if (clusteringEnabled) {
-                mapInstance.markerCluster = new markerClusterer.MarkerClusterer({
+            if (clusterOptions?.clusteringEnabled) {
+                const clusterConfig = {
                     map: mapInstance.map,
                     markers: window.blazorBootstrap.googlemaps.markerEls[elementId]
-                });
+                };
+
+                // add renderer if configured
+                if (clusterOptions.renderer) {
+                    clusterConfig.renderer = {
+                        render: ({ count, position }) => {
+                            const div = document.createElement("div");
+                            if (clusterOptions.renderer.svgIcon) {
+                                const countStyle = `position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)` +
+                                    (clusterOptions.renderer.textColor ? `;color:${clusterOptions.renderer.textColor}` : '') +
+                                    (clusterOptions.renderer.textFontSize ? `;font-size:${clusterOptions.renderer.textFontSize}` : '');
+
+                                div.innerHTML = `
+                            <div style="position:relative;">
+                                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">${clusterOptions.renderer.svgIcon}</div>
+                                ${clusterOptions.renderer.showMarkerCount ? `<div style="${countStyle}">${count}</div>` : ''}
+                            </div>`;
+                            }
+                            return new google.maps.marker.AdvancedMarkerElement({ position, content: div });
+                        }
+                    };
+                }
+
+                // add algorithm if configured
+                if (clusterOptions.algorithm) {
+                    clusterConfig.algorithm = new markerClusterer[clusterOptions.algorithm.type]({
+                        ...clusterOptions.algorithm.options
+                    });
+                }
+
+                // create cluster and add click handler
+                mapInstance.markerCluster = new markerClusterer.MarkerClusterer(clusterConfig);
+
+                if (clusterOptions.enableClusterClick) {
+                    mapInstance.markerCluster.addListener("click", (cluster) => {
+                        dotNetHelper.invokeMethodAsync('OnClusterClickJS', {
+                            position: cluster.position,
+                            markers: cluster.markers.map(m => ({ position: m.position, title: m.title }))
+                        });
+                    });
+                }
             }
         }
     },
