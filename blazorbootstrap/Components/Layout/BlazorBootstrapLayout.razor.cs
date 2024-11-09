@@ -21,11 +21,11 @@ public partial class BlazorBootstrapLayout : BlazorBootstrapLayoutComponentBase
         BuildClassNames(
             HeaderSectionCssClass,
             ("bb-top-row", true),
-            ("bb-top-row-sticky", HeaderSectionSticky),
+            ("bb-top-row-sticky", StickyHeader),
             ("px-4", true)
         );
 
-    [Parameter] public bool HeaderSectionSticky { get; set; }
+    [Parameter] public bool StickyHeader { get; set; }
 
     [Parameter] public RenderFragment? SidebarSection { get; set; }
 
