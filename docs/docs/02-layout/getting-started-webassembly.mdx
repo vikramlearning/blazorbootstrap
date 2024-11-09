@@ -17,8 +17,8 @@ Get started with the Enterprise-class Blazor Bootstrap Component library built o
 
 Assuming you followed the getting started docs for the initial setup.
 
-1. **Blazor WebAssembly Project:** Follow the [getting started](/getting-started/blazor-webassembly) steps for the initial setup.
-1. **Blazor Server Project:** Follow the [getting started](/getting-started/blazor-server) steps for the initial setup.
+1. **Blazor WebAssembly Project:** Follow the [getting started](/getting-started/blazor-webassembly-net-8) steps for the initial setup.
+1. **Blazor Server Project:** Follow the [getting started](/getting-started/blazor-webapp-server-global-net-8) steps for the initial setup.
 
 ## Steps
 
@@ -31,33 +31,33 @@ Remove all the CSS content from the **Shared/MainLayout.razor.css** file.
 ```cshtml {} showLineNumbers
 @inherits LayoutComponentBase
 
-<div class="bb-page">
+<BlazorBootstrapLayout StickyHeader="true">
+    <HeaderSection>
+        <ThemeSwitcher Class="ps-3 ps-lg-2" />
+    </HeaderSection>
 
-    <Sidebar @ref="sidebar"
-             Href="/"
-             IconName="IconName.BootstrapFill"
-             Title="Blazor Bootstrap"
-             DataProvider="SidebarDataProvider" />
+    <SidebarSection>
+        <Sidebar2 Href="/"
+                  ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
+                  Title="Blazor Bootstrap"
+                  BadgeText="3.3.1"
+                  DataProvider="Sidebar2DataProvider"
+                  WidthUnit="Unit.Px" />
+    </SidebarSection>
 
-    <main>
-        <div class="bb-top-row px-4 d-flex justify-content-end">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+    <ContentSection>
+        @Body
+    </ContentSection>
 
-        <article class="content px-4">
-            <div class="py-2">
-                @Body
-            </div>
-        </article>
-    </main>
-
-</div>
+    <FooterSection>
+        Footer links...
+    </FooterSection>
+</BlazorBootstrapLayout>
 
 @code {
-    private Sidebar sidebar = default!;
     private IEnumerable<NavItem> navItems = default!;
 
-    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
     {
         if (navItems is null)
             navItems = GetNavItems();
@@ -81,11 +81,9 @@ Remove all the CSS content from the **Shared/MainLayout.razor.css** file.
 
 ## Starter templates
 
-### .NET 6
+### .NET 8
 
-1. [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
-
-   <img src="https://i.imgur.com/aRV3rJm.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
+TODO
 
 ### .NET 7
 
@@ -96,3 +94,9 @@ Remove all the CSS content from the **Shared/MainLayout.razor.css** file.
 1. [Blazor Bootstrap - Blazor Empty WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET7.BlazorWebAssemblyAppEmpty)
 
    <img src="https://i.imgur.com/CBEoZ6P.png" alt="Blazor Bootstrap - Blazor Empty WebAssembly App" />
+
+### .NET 6
+
+1. [Blazor Bootstrap - Blazor WebAssembly App](https://github.com/vikramlearning/blazorbootstrap-starter-templates/tree/master/src/BlazorBootstrap.Templates.Starter/NET6.BlazorWebAssemblyApp)
+
+   <img src="https://i.imgur.com/aRV3rJm.png" alt="Blazor Bootstrap - Blazor WebAssembly App" />
