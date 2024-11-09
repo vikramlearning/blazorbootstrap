@@ -56,7 +56,7 @@ The Blazor PDF Viewer component allows users to view PDF files directly in the b
 }
 ```
 
-[See demo here.](https://demos.blazorbootstrap.com/pagination#examples)
+[See demo here.](https://demos.blazorbootstrap.com/pdf-viewer#examples)
 
 ### Orientation
 
@@ -85,7 +85,7 @@ Set the `Orientation` parameter to `Orientation.Landscape` to change the default
 }
 ```
 
-[See demo here.](https://demos.blazorbootstrap.com/pagination#orientation)
+[See demo here.](https://demos.blazorbootstrap.com/pdf-viewer#orientation)
 
 ### Base64String
 
@@ -120,4 +120,28 @@ Pdf Viewer component supports **base64** string as a URL.
 }
 ```
 
-[See demo here.](https://demos.blazorbootstrap.com/pagination#base64-string)
+[See demo here.](https://demos.blazorbootstrap.com/pdf-viewer#base64-string)
+
+### RTL doc
+
+<img src="https://github.com/user-attachments/assets/2a2afd0d-9065-456c-9866-db10f81b7780" alt="Blazor Bootstrap: Blazor PDF Viewer Component - RTL doc" />
+
+```cshtml {} showLineNumbers
+<p>@eventLog</p>
+
+<PdfViewer Class="mb-3"
+           Url="_content/BlazorBootstrap.Demo.RCL/docs/persian-sample-doc-919.pdf"
+           OnDocumentLoaded="OnDocumentLoaded"
+           OnPageChanged="OnPageChanged" />
+
+@code {
+    private string eventLog { get; set; } = $"Last event: ..., CurrentPage: 0, TotalPages: 0";
+
+    private void OnDocumentLoaded(PdfViewerEventArgs args)
+        => eventLog = $"Last event: OnDocumentLoaded, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
+
+    private void OnPageChanged(PdfViewerEventArgs args)
+        => eventLog = $"Last event: OnPageChanged, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
+}
+```
+[See demo here.](https://demos.blazorbootstrap.com/pdf-viewer#rtl-doc)
