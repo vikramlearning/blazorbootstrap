@@ -1,16 +1,17 @@
 ﻿<Grid TItem="Product"
       Class="table table-hover border-top"
       Data="products"
-      AllowDetailView="true">
+      AllowDetailView="true"
+      AllowSorting="true">
 
     <GridColumns>
-        <GridColumn TItem="Product" HeaderText="Id" PropertyName="Id">
+        <GridColumn TItem="Product" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
             @context.Id
         </GridColumn>
-        <GridColumn TItem="Product" HeaderText="Employee Name" PropertyName="Name">
+        <GridColumn TItem="Product" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
             @context.Name
         </GridColumn>
-        <GridColumn TItem="Product" HeaderText="Active" PropertyName="IsActive">
+        <GridColumn TItem="Product" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
             @context.IsActive
         </GridColumn>
     </GridColumns>
@@ -44,25 +45,25 @@
 
 @code {
     private List<Product> products = new List<Product> {
-        new Product { Id = 1, Name = "Product 1", IsActive = true },
-        new Product { Id = 2, Name = "Product 2", IsActive = true },
-        new Product { Id = 3, Name = "Product 3", IsActive = true },
-        new Product { Id = 4, Name = "Product 4", IsActive = true },
-        new Product { Id = 5, Name = "Product 5", IsActive = true }
+        new Product { Id = 10, Name = "Product 10", IsActive = true },
+        new Product { Id = 20, Name = "Product 20", IsActive = true },
+        new Product { Id = 30, Name = "Product 30", IsActive = true },
+        new Product { Id = 40, Name = "Product 40", IsActive = true },
+        new Product { Id = 50, Name = "Product 50", IsActive = true }
     };
 
     private List<Ingredient> ingredients = new List<Ingredient> {
-       new Ingredient { Id = 105, ProductId = 1, Description = "Ingredient 1", Unit = "UNIT1", Quantity = 350 },
-       new Ingredient { Id = 106, ProductId = 1, Description = "Ingredient 2", Unit = "UNIT1", Quantity = 600 },
-       new Ingredient { Id = 107, ProductId = 1, Description = "Ingredient 3", Unit = "UNIT2", Quantity = 13 },
-       new Ingredient { Id = 108, ProductId = 1, Description = "Ingredient 4", Unit = "UNIT3", Quantity = 25 },
-       new Ingredient { Id = 109, ProductId = 2, Description = "Ingredient 5", Unit = "UNIT1", Quantity = 750 },
-       new Ingredient { Id = 110, ProductId = 2, Description = "Ingredient 3", Unit = "UNIT2", Quantity = 13 },
-       new Ingredient { Id = 111, ProductId = 1, Description = "Ingredient 4", Unit = "UNIT3", Quantity = 25 },
-       new Ingredient { Id = 112, ProductId = 2, Description = "Ingredient 5", Unit = "UNIT1", Quantity = 750 },
-       new Ingredient { Id = 113, ProductId = 4, Description = "Ingredient 3", Unit = "UNIT2", Quantity = 13 },
-       new Ingredient { Id = 114, ProductId = 5, Description = "Ingredient 4", Unit = "UNIT3", Quantity = 25 },
-       new Ingredient { Id = 115, ProductId = 2, Description = "Ingredient 5", Unit = "UNIT1", Quantity = 750 },
+       new Ingredient { Id = 10105, ProductId = 10, Description = "Ingredient 1", Unit = "UNIT1", Quantity = 350 },
+       new Ingredient { Id = 10106, ProductId = 10, Description = "Ingredient 2", Unit = "UNIT1", Quantity = 600 },
+       new Ingredient { Id = 10107, ProductId = 10, Description = "Ingredient 3", Unit = "UNIT2", Quantity = 13 },
+       new Ingredient { Id = 10108, ProductId = 10, Description = "Ingredient 4", Unit = "UNIT3", Quantity = 25 },
+       new Ingredient { Id = 20109, ProductId = 20, Description = "Ingredient 5", Unit = "UNIT1", Quantity = 750 },
+       new Ingredient { Id = 20110, ProductId = 20, Description = "Ingredient 3", Unit = "UNIT2", Quantity = 13 },
+       new Ingredient { Id = 10111, ProductId = 10, Description = "Ingredient 4", Unit = "UNIT3", Quantity = 25 },
+       new Ingredient { Id = 20112, ProductId = 20, Description = "Ingredient 5", Unit = "UNIT1", Quantity = 750 },
+       new Ingredient { Id = 40113, ProductId = 40, Description = "Ingredient 3", Unit = "UNIT2", Quantity = 13 },
+       new Ingredient { Id = 50114, ProductId = 50, Description = "Ingredient 4", Unit = "UNIT3", Quantity = 25 },
+       new Ingredient { Id = 20115, ProductId = 20, Description = "Ingredient 5", Unit = "UNIT1", Quantity = 750 },
     };
 
     private IEnumerable<Ingredient> GetIngredients(int productId) => ingredients.Where(i => i.ProductId == productId);
