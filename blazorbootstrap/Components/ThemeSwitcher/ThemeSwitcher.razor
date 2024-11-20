@@ -6,7 +6,7 @@
         <span class="blazorbootstrap-theme-indicator"><i class="bi bi-sun-fill"></i></span>
         <small class="d-lg-none ms-2" id="bb-theme-text">Toggle theme</small>
     </button>
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bb-theme-text">
+    <ul class="@DropdownMenuClassNames" aria-labelledby="bb-theme-text">
         <li class="blazorbootstrap-theme-item px-1">
             <button type="button" class="dropdown-item d-flex align-items-center active rounded" data-bs-theme-value="light" aria-pressed="true" @onclick="SetLightTheme">
                 <i class="bi bi-sun-fill me-2"></i>Light<i class="bi bi-check2 ms-auto"></i>

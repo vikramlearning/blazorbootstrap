@@ -79,6 +79,7 @@ public static class RouteConstants
     public const string Demos_SortableList_Documentation = Demos_Prefix + "/sortable-list";
     public const string Demos_Spinners_Documentation = Demos_Prefix + "/spinners";
     public const string Demos_Tabs_Documentation = Demos_Prefix + "/tabs";
+    public const string Demos_ThemeSwitcher_Documentation = Demos_Prefix + "/theme-switcher";
     public const string Demos_Toasts_Documentation = Demos_Prefix + "/toasts";
     public const string Demos_Tooltips_Documentation = Demos_Prefix + "/tooltips";
 
