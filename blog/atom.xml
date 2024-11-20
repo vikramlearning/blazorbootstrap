@@ -2,11 +2,32 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://docs.blazorbootstrap.com/blog</id>
     <title>Blazor Bootstrap Docs Blog</title>
-    <updated>2024-11-02T00:00:00.000Z</updated>
+    <updated>2024-11-20T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://docs.blazorbootstrap.com/blog"/>
     <subtitle>Blazor Bootstrap Docs Blog</subtitle>
     <icon>https://docs.blazorbootstrap.com/img/logo/logo-color.svg</icon>
+    <entry>
+        <title type="html"><![CDATA[Blazor Bootstrap v3.2.0]]></title>
+        <id>https://docs.blazorbootstrap.com/blog/2024/11/20/blazorbootstrap-3.2.0</id>
+        <link href="https://docs.blazorbootstrap.com/blog/2024/11/20/blazorbootstrap-3.2.0"/>
+        <updated>2024-11-20T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[We are excited to release version 3.2.0, which includes new BlazorBootstrapLayout and ThemeSwitcher components, and .NET 9 support!]]></summary>
+        <content type="html"><![CDATA[<p>We are excited to release version 3.2.0, which includes new BlazorBootstrapLayout and ThemeSwitcher components, and .NET 9 support!</p><p><img loading="lazy" src="https://i.imgur.com/2eixWho.png" alt="image" title="Blazor Bootstrap: ThemeSwitcher Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's new<a href="#whats-new" class="hash-link" aria-label="Direct link to What's new" title="Direct link to What's new">​</a></h2><ul><li>BlazorBootstrapLayout component</li><li>ThemeSwitcher component</li><li>.NET 9 support</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li>Grid: Demos updated</li><li>PDF Viewer: demos updated</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://docs.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Docs Website - Blazor Bootstrap</a></li><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demos Website - Blazor Bootstrap</a></li></ul>]]></content>
+        <author>
+            <name>Vikram Reddy</name>
+            <uri>https://github.com/gvreddy04</uri>
+        </author>
+        <category label="v3.2.0" term="v3.2.0"/>
+        <category label="blazor" term="blazor"/>
+        <category label="bootstrap" term="bootstrap"/>
+        <category label="blazorbootstrap" term="blazorbootstrap"/>
+        <category label="grid" term="grid"/>
+        <category label="pdfviewer" term="pdfviewer"/>
+        <category label="theme" term="theme"/>
+        <category label="themeswitcher" term="themeswitcher"/>
+        <category label="layout" term="layout"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Blazor Bootstrap v3.1.1]]></title>
         <id>https://docs.blazorbootstrap.com/blog/2024/11/02/blazorbootstrap-3.1.1</id>

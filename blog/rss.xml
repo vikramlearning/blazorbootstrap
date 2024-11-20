@@ -4,10 +4,27 @@
         <title>Blazor Bootstrap Docs Blog</title>
         <link>https://docs.blazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Docs Blog</description>
-        <lastBuildDate>Sat, 02 Nov 2024 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 20 Nov 2024 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v3.2.0]]></title>
+            <link>https://docs.blazorbootstrap.com/blog/2024/11/20/blazorbootstrap-3.2.0</link>
+            <guid>https://docs.blazorbootstrap.com/blog/2024/11/20/blazorbootstrap-3.2.0</guid>
+            <pubDate>Wed, 20 Nov 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[We are excited to release version 3.2.0, which includes new BlazorBootstrapLayout and ThemeSwitcher components, and .NET 9 support!]]></description>
+            <content:encoded><![CDATA[<p>We are excited to release version 3.2.0, which includes new BlazorBootstrapLayout and ThemeSwitcher components, and .NET 9 support!</p><p><img loading="lazy" src="https://i.imgur.com/2eixWho.png" alt="image" title="Blazor Bootstrap: ThemeSwitcher Component" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-new">What's new<a href="#whats-new" class="hash-link" aria-label="Direct link to What's new" title="Direct link to What's new">​</a></h2><ul><li>BlazorBootstrapLayout component</li><li>ThemeSwitcher component</li><li>.NET 9 support</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li>Grid: Demos updated</li><li>PDF Viewer: demos updated</li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://docs.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Docs Website - Blazor Bootstrap</a></li><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demos Website - Blazor Bootstrap</a></li></ul>]]></content:encoded>
+            <category>v3.2.0</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>blazorbootstrap</category>
+            <category>grid</category>
+            <category>pdfviewer</category>
+            <category>theme</category>
+            <category>themeswitcher</category>
+            <category>layout</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v3.1.1]]></title>
             <link>https://docs.blazorbootstrap.com/blog/2024/11/02/blazorbootstrap-3.1.1</link>
