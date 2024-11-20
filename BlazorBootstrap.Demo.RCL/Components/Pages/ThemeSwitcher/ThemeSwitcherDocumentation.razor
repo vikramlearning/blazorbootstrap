@@ -30,6 +30,13 @@
     <Demo Type="typeof(ThemeSwitcher_Demo_02_Position_B)" Tabs="false" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Events" PageUrl="@pageUrl" Link="events">
+    <div class="mb-3">
+        If you want to perform an action when the theme changes, you can use the <code>OnThemeChanged</code> event.
+    </div>
+    <Demo Type="typeof(ThemeSwitcher_Demo_03_Events)" Tabs="false" />
+</Section>
+
 @code {
     private const string pageUrl = RouteConstants.Demos_ThemeSwitcher_Documentation;
     private const string pageTitle = "Blazor Theme Switcher";
