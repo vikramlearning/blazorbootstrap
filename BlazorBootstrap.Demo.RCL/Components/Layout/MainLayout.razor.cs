@@ -77,8 +77,9 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "525", Text = "Sortable List", Href = "/sortable-list", IconName = IconName.ArrowsMove, ParentId = "5" },
             new (){ Id = "526", Text = "Spinner", Href = "/spinners", IconName = IconName.ArrowRepeat, ParentId = "5" },
             new (){ Id = "527", Text = "Tabs", Href = "/tabs", IconName = IconName.WindowPlus, ParentId = "5" },
-            new (){ Id = "528", Text = "Toasts", Href = "/toasts", IconName = IconName.ExclamationTriangleFill, ParentId = "5" },
-            new (){ Id = "529", Text = "Tooltips", Href = "/tooltips", IconName = IconName.ChatSquareDotsFill, ParentId = "5" },
+            new (){ Id = "528", Text = "Theme Switcher", Href = "/theme-switcher", IconName = IconName.NintendoSwitch, ParentId = "5" },
+            new (){ Id = "529", Text = "Toasts", Href = "/toasts", IconName = IconName.ExclamationTriangleFill, ParentId = "5" },
+            new (){ Id = "530", Text = "Tooltips", Href = "/tooltips", IconName = IconName.ChatSquareDotsFill, ParentId = "5" },
 
             new (){ Id = "6", Text = "Data Visualization", IconName = IconName.BarChartFill, IconColor = IconColor.Warning },
             new (){ Id = "600", Text = "Bar Chart", Href = "/charts/bar-chart", IconName = IconName.BarChartFill, ParentId = "6", Match = NavLinkMatch.All },
@@ -99,8 +100,6 @@ public partial class MainLayout : MainLayoutBase
         return navItems;
     }
 
-    private void OnThemeChanged(string themeName)
-    {
-        JS.InvokeVoidAsync("updateDemoCodeThemeCss", themeName);
-    }
+    private async ValueTask OnThemeChanged(string themeName) 
+        => await JS.InvokeVoidAsync("updateDemoCodeThemeCss", themeName);
 }

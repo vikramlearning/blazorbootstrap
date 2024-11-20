@@ -26,7 +26,11 @@
         <div>
             <div class="vr mt-2"></div>
         </div>
-        <ThemeSwitcher Class="ps-3 ps-lg-2" OnThemeChanged="OnThemeChanged" />
+        
+        <ThemeSwitcher Class="ps-3 ps-lg-2"
+                       Position="DropdownMenuPosition.End"
+                       OnThemeChanged="@(async(string themeName) => await OnThemeChanged(themeName))" />
+
     </HeaderSection>
     <SidebarSection>
         <Sidebar2 Href="/"
