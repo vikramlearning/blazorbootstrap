@@ -25,6 +25,8 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private string zoomPercentage = "100%";
 
+
+
     #endregion
 
     #region Methods
@@ -57,6 +59,15 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             }
 
         await base.OnParametersSetAsync();
+    }
+
+    public async Task SetManualZoomPercentage(PdfViewerManualZoomPercentage manualZoomLevel)
+    {
+        zoomLevel = (int)manualZoomLevel;
+        var zp = GetZoomPercentage(zoomLevel);
+        zoomPercentage = $"{zp}%";
+        scale = 0.01 * zp;
+        await PdfViewerJsInterop.ZoomInOutAsync(objRef!, Id!, scale);
     }
 
     [JSInvokable]
