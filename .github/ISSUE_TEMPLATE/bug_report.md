@@ -6,6 +6,8 @@ labels: ''
 assignees: ''
 ---
 
+> NOTE: We do not look at .zip attachments for issue investigation.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
@@ -23,7 +25,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Versions (please complete the following information):**
- - .NET Version: [e.g. .NET 6, .NET 7, .NET 8]
+ - .NET Version: [e.g. .NET 6, .NET 7, .NET 8, .NET 9]
  - BlazorBootstrap: [e.g. 2.0.0, 2.1.0, 2.2.0]
  - Blazor WebAssembly / Server: [e.g. WebAssembly, Server]
  - Blazor Interactive Render Mode: [e.g. Auto, Server, WebAssembly, None]
