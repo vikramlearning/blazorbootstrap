@@ -186,10 +186,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (AllowSelection)
         {
-            PrepareCheckboxIds();
-
-            if (!firstRender)
-                await RefreshSelectionAsync();
+            PrepareCheckboxIds(); 
+            await RefreshSelectionAsync();
         }
 
         requestInProgress = false;
