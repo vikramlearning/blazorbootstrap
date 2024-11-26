@@ -53,7 +53,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         {
             await RefreshDataAsync(firstRender);
             isFirstRenderComplete = true;
-        } 
+        }
 
         await base.OnAfterRenderAsync(firstRender);
     }
