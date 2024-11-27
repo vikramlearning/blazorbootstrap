@@ -1,4 +1,4 @@
-﻿<PieChart @ref="pieChart" Width="500" />
+﻿<PieChart @ref="pieChart" Width="500" OnClick="OnClickTest" />
 
 <div class="mt-5">
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
@@ -154,4 +154,9 @@
     private string GetNextDataBackgrounfColor() => backgroundColors![dataLabelsCount];
 
     #endregion  Data Preparation
+
+    private void OnClickTest(string clickedItem) {
+        Console.WriteLine($"Clicked on {clickedItem}");
+    }
+
 }

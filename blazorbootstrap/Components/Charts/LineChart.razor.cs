@@ -2,6 +2,12 @@
 
 public partial class LineChart : BlazorBootstrapChart
 {
+    #region Fields and Constants
+    
+    private DotNetObjectReference<LineChart> objRef;
+    
+    #endregion
+    
     #region Constructors
 
     public LineChart()
@@ -12,6 +18,12 @@ public partial class LineChart : BlazorBootstrapChart
     #endregion
 
     #region Methods
+    
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        objRef ??= DotNetObjectReference.Create(this);
+    }
 
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {

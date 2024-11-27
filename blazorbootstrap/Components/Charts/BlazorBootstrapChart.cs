@@ -5,6 +5,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     #region Fields and Constants
 
     internal ChartType chartType;
+    
+    protected DotNetObjectReference<PieChart> objRef;
 
     #endregion
 
@@ -46,12 +48,13 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
         {
             var _data = GetChartDataObject(chartData);
 
+            var dotNetReference = DotNetObjectReference.Create(this);
             if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins);
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins, dotNetReference);
             else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), _data, (LineChartOptions)chartOptions, plugins);
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), _data, (LineChartOptions)chartOptions, plugins, dotNetReference);
             else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.initialize", Id, GetChartType(), _data, chartOptions, plugins);
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.initialize", Id, GetChartType(), _data, chartOptions, plugins, dotNetReference);
         }
     }
 
@@ -163,6 +166,11 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
         return data;
     }
 
+    [JSInvokable]
+    public async Task ClickEvent(string item) {
+        await OnClick.InvokeAsync(item);
+    }
+
     #endregion
 
     #region Properties, Indexers
@@ -209,5 +217,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     [Parameter]
     public Unit WidthUnit { get; set; } = Unit.Px;
 
+    
+    [Parameter]
+    public EventCallback<string> OnClick { get; set; }
     #endregion
 }

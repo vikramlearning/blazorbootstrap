@@ -148,18 +148,14 @@ window.blazorBootstrap = {
             if (key === window.blazorBootstrap.fe.ARROWDOWN) {
                 if (nextSelectedIndex < childNodes.length - 1)
                     nextSelectedIndex++;
-            }
-            else if (key === window.blazorBootstrap.fe.ARROWUP) {
+            } else if (key === window.blazorBootstrap.fe.ARROWUP) {
                 if (nextSelectedIndex > 0 && nextSelectedIndex <= childNodes.length - 1)
                     nextSelectedIndex--;
-            }
-            else if (key === window.blazorBootstrap.fe.HOME) {
+            } else if (key === window.blazorBootstrap.fe.HOME) {
                 nextSelectedIndex = 0;
-            }
-            else if (key === window.blazorBootstrap.fe.END) {
+            } else if (key === window.blazorBootstrap.fe.END) {
                 nextSelectedIndex = childNodes.length - 1;
-            }
-            else
+            } else
                 return;
 
             // reset li element focus
@@ -198,7 +194,7 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenCollapse');
             });
 
-            let options = { parent: parent, toggle: toggle };
+            let options = {parent: parent, toggle: toggle};
             bootstrap?.Collapse?.getOrCreateInstance(collapseEl, options);
         },
         show: (elementId) => {
@@ -470,8 +466,7 @@ window.blazorBootstrap = {
                         scale: marker.pinElement.scale,
                     });
                     _content = pin.element;
-                }
-                else if (marker.content) {
+                } else if (marker.content) {
                     _content = document.createElement("div");
                     _content.classList.add("bb-google-marker-content");
                     _content.innerHTML = marker.content;
@@ -489,8 +484,8 @@ window.blazorBootstrap = {
 
                 // add a click listener for each marker, and set up the info window.
                 if (clickable) {
-                    markerEl.addListener("click", ({ domEvent, latLng }) => {
-                        const { target } = domEvent;
+                    markerEl.addListener("click", ({domEvent, latLng}) => {
+                        const {target} = domEvent;
                         const infoWindow = new google.maps.InfoWindow();
                         infoWindow.close();
                         infoWindow.setContent(markerEl.title);
@@ -515,7 +510,7 @@ window.blazorBootstrap = {
         initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
             window.blazorBootstrap.googlemaps.markerEls[elementId] = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
 
-            let mapOptions = { center: center, zoom: zoom, mapId: elementId };
+            let mapOptions = {center: center, zoom: zoom, mapId: elementId};
             let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
             window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable);
@@ -568,8 +563,7 @@ window.blazorBootstrap = {
                 colEls.forEach((e, i) => {
                     e.classList.remove('freeze-column-active');
                 });
-            }
-            else if (tableEl.parentElement.scrollLeft > 0) {
+            } else if (tableEl.parentElement.scrollLeft > 0) {
                 let colEls = tableEl.querySelectorAll('.freeze-column');
                 if (colEls.length === 0)
                     return;
@@ -585,12 +579,10 @@ window.blazorBootstrap = {
                 if (state === 1) { // checked 
                     checkboxEl.checked = true;
                     checkboxEl.indeterminate = false;
-                }
-                else if (state === 2) { // unchecked
+                } else if (state === 2) { // unchecked
                     checkboxEl.checked = false;
                     checkboxEl.indeterminate = false;
-                }
-                else if (state === 3) { // indeterminate 
+                } else if (state === 3) { // indeterminate 
                     checkboxEl.checked = false;
                     checkboxEl.indeterminate = true;
                 }
@@ -619,7 +611,7 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHidePreventedModal');
             });
 
-            let options = { backdrop: useStaticBackdrop ? 'static' : true, keyboard: closeOnEscape };
+            let options = {backdrop: useStaticBackdrop ? 'static' : true, keyboard: closeOnEscape};
             bootstrap?.Modal?.getOrCreateInstance(modalEl, options);
         },
         show: (elementId) => {
@@ -705,7 +697,11 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenOffcanvas');
             });
 
-            let options = { backdrop: useStaticBackdrop ? 'static' : true, keyboard: closeOnEscape, scroll: isScrollable };
+            let options = {
+                backdrop: useStaticBackdrop ? 'static' : true,
+                keyboard: closeOnEscape,
+                scroll: isScrollable
+            };
             bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl, options);
         },
         show: (elementId) => {
@@ -877,7 +873,7 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsHiddenToast');
             });
 
-            let options = { animation: true, autohide: autohide, delay: delay };
+            let options = {animation: true, autohide: autohide, delay: delay};
             bootstrap?.Toast?.getOrCreateInstance(toastEl, options)?.show();
         },
         hide: (elementId) => {
@@ -979,11 +975,21 @@ window.blazorChart = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotnetReference) => {
         let chart = window.blazorChart.get(elementId);
         if (chart) return;
-        else
-            window.blazorChart.create(elementId, type, data, options, plugins);
+        
+        window.blazorChart.create(elementId, type, data, options, plugins);
+        chart = window.blazorChart.pie.get(elementId);
+        options.onClick = (e, array) => {
+            if (array.length <= 0) {
+                return;
+            }
+
+            const rawItem = array[0];
+            const item = chart.data.labels[rawItem.index];
+            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+        }
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.get(elementId);
@@ -1005,8 +1011,7 @@ window.blazorChart = {
             chart.data = data;
             chart.options = options;
             chart.update();
-        }
-        else {
+        } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
@@ -1108,11 +1113,21 @@ window.blazorChart.bar = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) return;
-        else
-            window.blazorChart.bar.create(elementId, type, data, options, plugins);
+
+        window.blazorChart.bar.create(elementId, type, data, options, plugins);
+        chart = window.blazorChart.pie.get(elementId);
+        options.onClick = (e, array) => {
+            if (array.length <= 0) {
+                return;
+            }
+
+            const rawItem = array[0];
+            const item = chart.data.labels[rawItem.index];
+            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+        }
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.bar.get(elementId);
@@ -1134,8 +1149,7 @@ window.blazorChart.bar = {
             chart.data = data;
             chart.options = options;
             chart.update();
-        }
-        else {
+        } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
@@ -1243,11 +1257,22 @@ window.blazorChart.doughnut = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) return;
-        else
-            window.blazorChart.doughnut.create(elementId, type, data, options, plugins);
+
+        window.blazorChart.doughnut.create(elementId, type, data, options, plugins);
+        chart = window.blazorChart.pie.get(elementId);
+        options.onClick = (e, array) => {
+            if (array.length <= 0) {
+                return;
+            }
+
+            const rawItem = array[0];
+            const item = chart.data.labels[rawItem.index];
+            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+
+        }
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.doughnut.get(elementId);
@@ -1269,8 +1294,7 @@ window.blazorChart.doughnut = {
             chart.data = data;
             chart.options = options;
             chart.update();
-        }
-        else {
+        } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
@@ -1411,12 +1435,24 @@ window.blazorChart.line = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart)
             return;
-        else
-            window.blazorChart.line.create(elementId, type, data, options, plugins);
+
+        window.blazorChart.line.create(elementId, type, data, options, plugins);
+
+        chart = window.blazorChart.pie.get(elementId);
+        options.onClick = (e, array) => {
+            if (array.length <= 0) {
+                return;
+            }
+
+            const rawItem = array[0];
+            const item = chart.data.labels[rawItem.index];
+            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+
+        }
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.line.get(elementId);
@@ -1438,8 +1474,7 @@ window.blazorChart.line = {
             chart.data = data;
             chart.options = options;
             chart.update();
-        }
-        else {
+        } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
@@ -1529,7 +1564,7 @@ window.blazorChart.pie = {
             type: type,
             data: data,
             options: options,
-            plugins: _plugins
+            plugins: _plugins,
         };
 
         const chart = new Chart(
@@ -1547,11 +1582,22 @@ window.blazorChart.pie = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.pie.get(elementId);
         if (chart) return;
-        else
-            window.blazorChart.pie.create(elementId, type, data, options, plugins);
+
+        window.blazorChart.pie.create(elementId, type, data, options, plugins);
+        chart = window.blazorChart.pie.get(elementId);
+        options.onClick = (e, array) => {
+            if (array.length <= 0) {
+                return;
+            }
+
+            const rawItem = array[0];
+            const item = chart.data.labels[rawItem.index];
+            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+
+        }
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.pie.get(elementId);
@@ -1573,8 +1619,7 @@ window.blazorChart.pie = {
             chart.data = data;
             chart.options = options;
             chart.update();
-        }
-        else {
+        } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
@@ -1683,11 +1728,21 @@ window.blazorChart.polarArea = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.polarArea.get(elementId);
         if (chart) return;
-        else
-            window.blazorChart.polarArea.create(elementId, type, data, options, plugins);
+
+        window.blazorChart.polarArea.create(elementId, type, data, options, plugins);
+        chart = window.blazorChart.pie.get(elementId);
+        options.onClick = (e, array) => {
+            if (array.length <= 0) {
+                return;
+            }
+
+            const rawItem = array[0];
+            const item = chart.data.labels[rawItem.index];
+            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+        }
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.polarArea.get(elementId);
@@ -1709,8 +1764,7 @@ window.blazorChart.polarArea = {
             chart.data = data;
             chart.options = options;
             chart.update();
-        }
-        else {
+        } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
@@ -1818,11 +1872,21 @@ window.blazorChart.radar = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.radar.get(elementId);
         if (chart) return;
-        else
-            window.blazorChart.radar.create(elementId, type, data, options, plugins);
+
+        window.blazorChart.radar.create(elementId, type, data, options, plugins);
+        chart = window.blazorChart.pie.get(elementId);
+        options.onClick = (e, array) => {
+            if (array.length <= 0) {
+                return;
+            }
+
+            const rawItem = array[0];
+            const item = chart.data.labels[rawItem.index];
+            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+        }
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.radar.get(elementId);
@@ -1844,8 +1908,7 @@ window.blazorChart.radar = {
             chart.data = data;
             chart.options = options;
             chart.update();
-        }
-        else {
+        } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
@@ -1953,11 +2016,21 @@ window.blazorChart.scatter = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.scatter.get(elementId);
         if (chart) return;
-        else
-            window.blazorChart.scatter.create(elementId, type, data, options, plugins);
+
+        window.blazorChart.scatter.create(elementId, type, data, options, plugins);
+        chart = window.blazorChart.pie.get(elementId);
+        options.onClick = (e, array) => {
+            if (array.length <= 0) {
+                return;
+            }
+
+            const rawItem = array[0];
+            const item = chart.data.labels[rawItem.index];
+            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+        }
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.scatter.get(elementId);
@@ -1979,8 +2052,7 @@ window.blazorChart.scatter = {
             chart.data = data;
             chart.options = options;
             chart.update();
-        }
-        else {
+        } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     },
@@ -2030,7 +2102,7 @@ window.blazorBootstrap.ai = {
                     const decoder = new TextDecoder("utf-8");
                     let i = 0;
                     while (true) {
-                        const { done, value } = await reader.read();
+                        const {done, value} = await reader.read();
                         if (done) {
                             break;
                         }
