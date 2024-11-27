@@ -5,7 +5,9 @@ public partial class DoughnutChart : BlazorBootstrapChart
     #region Fields and Constants
 
     private const string _jsObjectName = "window.blazorChart.doughnut";
-
+    
+    private DotNetObjectReference<DoughnutChart> objRef;
+    
     #endregion
 
     #region Constructors
@@ -18,6 +20,12 @@ public partial class DoughnutChart : BlazorBootstrapChart
     #endregion
 
     #region Methods
+    
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        objRef ??= DotNetObjectReference.Create(this);
+    }
 
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
