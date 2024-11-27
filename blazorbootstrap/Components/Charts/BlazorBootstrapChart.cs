@@ -167,8 +167,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     }
 
     [JSInvokable]
-    public async Task ClickEvent(string item) {
-        await OnClick.InvokeAsync(item);
+    public async Task ClickEvent(string item, int index) {
+        await OnClick.InvokeAsync(new ChartClickArgs(item, index));
     }
 
     #endregion
@@ -219,6 +219,6 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     
     [Parameter]
-    public EventCallback<string> OnClick { get; set; }
+    public EventCallback<ChartClickArgs> OnClick { get; set; }
     #endregion
 }

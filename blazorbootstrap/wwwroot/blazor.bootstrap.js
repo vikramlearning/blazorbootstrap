@@ -988,7 +988,7 @@ window.blazorChart = {
 
             const rawItem = array[0];
             const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
         }
     },
     resize: (elementId, width, height) => {
@@ -1126,7 +1126,7 @@ window.blazorChart.bar = {
 
             const rawItem = array[0];
             const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
         }
     },
     resize: (elementId, width, height) => {
@@ -1270,7 +1270,7 @@ window.blazorChart.doughnut = {
 
             const rawItem = array[0];
             const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
 
         }
     },
@@ -1450,7 +1450,7 @@ window.blazorChart.line = {
 
             const rawItem = array[0];
             const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
 
         }
     },
@@ -1595,7 +1595,7 @@ window.blazorChart.pie = {
 
             const rawItem = array[0];
             const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
 
         }
     },
@@ -1741,7 +1741,7 @@ window.blazorChart.polarArea = {
 
             const rawItem = array[0];
             const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
         }
     },
     resize: (elementId, width, height) => {
@@ -1885,7 +1885,7 @@ window.blazorChart.radar = {
 
             const rawItem = array[0];
             const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
         }
     },
     resize: (elementId, width, height) => {
@@ -2029,7 +2029,7 @@ window.blazorChart.scatter = {
 
             const rawItem = array[0];
             const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item);
+            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
         }
     },
     resize: (elementId, width, height) => {
