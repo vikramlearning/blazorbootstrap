@@ -1,0 +1,14 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<input @ref="@Element"
+       type="text"
+       id="@Id"
+       class="@ClassNames @fieldCssClasses"
+       style="@StyleNames"
+       value="@Value"
+       disabled="@Disabled"
+       placeholder="@Placeholder"
+       autocomplete="@autoComplete"
+       @attributes="@AdditionalAttributes"
+       @onchange="OnChange" />

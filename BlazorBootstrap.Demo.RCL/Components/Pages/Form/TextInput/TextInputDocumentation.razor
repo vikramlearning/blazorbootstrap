@@ -1,0 +1,30 @@
+﻿@attribute [Route(pageUrl)]
+
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
+
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
+
+<CarbonAds />
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <Callout Color="CalloutColor.Warning" Heading="NOTE">
+        The input UI generally varies from browser to browser.
+        In unsupported browsers, the control degrades gracefully to <code>type="text"</code>.
+    </Callout>
+
+    <Demo Type="typeof(TextInput_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = RouteConstants.Demos_TextInput_Documentation;
+    private const string pageTitle = "Blazor TextInput";
+    private const string pageDescription = "The Blazor Bootstrap TextInput component is constructed using an HTML input of type 'text' which limits user input based on pre-defined parameters.";
+    private const string metaTitle = "Blazor TextInput Component";
+    private const string metaDescription = "The Blazor Bootstrap TextInput component is constructed using an HTML input of type 'time' which limits user input based on pre-defined parameters.";
+    private const string imageUrl = "https://i.imgur.com/1mVjqQv.png"; // TODO: Update image URL
+}
