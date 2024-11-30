@@ -1,8 +1,15 @@
 ﻿<div class="mb-3">
-    <TextInput @bind-Value="@enteredText" />
+    <TextInput Value="@employeeName" ValueExpression="() => employeeName" ValueChanged="(value) => EmployeeNameChanged(value)" />
 </div>
-<div class="mb-3">Entered text: @enteredText</div>
+<div class="mb-3">Entered employee name: @employeeName</div>
 
 @code {
-    private string? enteredText = null;
+    private string? employeeName = null;
+
+    private void EmployeeNameChanged(string? value)
+    {
+        employeeName = value;
+
+        // do something
+    }
 }

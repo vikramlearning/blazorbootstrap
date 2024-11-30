@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Globalization;
+
+namespace BlazorBootstrap;
 
 public partial class TextInput : BlazorBootstrapComponentBase
 {
@@ -34,21 +36,17 @@ public partial class TextInput : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
+    protected override void OnInitialized()
+    {
+        fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+    }
+
     protected override string? ClassNames =>
         BuildClassNames(
             Class,
             (BootstrapClass.FormControl, true),
             (TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None)
         );
-
-    /// <summary>
-    /// If <see langword="true" />, allows negative numbers.
-    /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
-    [Parameter]
-    public bool AllowNegativeNumbers { get; set; }
 
     private string autoComplete => AutoComplete ? "true" : "false";
 
