@@ -75,6 +75,12 @@ public partial class TextInput : BlazorBootstrapComponentBase
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
+    /// Gets or sets the maximum length of the input.
+    /// </summary>
+    [Parameter]
+    public int? MaxLength { get; set; }
+
+    /// <summary>
     /// Gets or sets the placeholder.
     /// </summary>
     /// <remarks>
