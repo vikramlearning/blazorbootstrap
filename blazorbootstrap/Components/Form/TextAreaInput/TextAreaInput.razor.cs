@@ -1,10 +1,10 @@
 ﻿namespace BlazorBootstrap;
 
-public partial class TextInput : BlazorBootstrapComponentBase
+public partial class TextAreaInput : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private FieldIdentifier fieldIdentifier = default!;
+    private FieldIdentifier fieldIdentifier;
 
     #endregion
 
@@ -58,6 +58,12 @@ public partial class TextInput : BlazorBootstrapComponentBase
     public bool AutoComplete { get; set; }
 
     /// <summary>
+    /// Gets or sets the number of columns.
+    /// </summary>
+    [Parameter]
+    public int? Cols { get; set; }
+
+    /// <summary>
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
@@ -84,6 +90,12 @@ public partial class TextInput : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of rows.
+    /// </summary>
+    [Parameter]
+    public int? Rows { get; set; }
 
     /// <summary>
     /// Gets or sets the text alignment.

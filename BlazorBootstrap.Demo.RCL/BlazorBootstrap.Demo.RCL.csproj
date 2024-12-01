@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Components\Pages\Form\TextAreaInput\" />
     <Folder Include="Components\Pages\Form\TextInput\" />
   </ItemGroup>
 

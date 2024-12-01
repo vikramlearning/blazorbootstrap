@@ -18,18 +18,18 @@
     <DataAnnotationsValidator />
 
     <div class="form-group row mb-3">
-        <label class="col-md-2 col-form-label">First Name: <span class="text-danger">*</span></label>
+        <label class="col-md-2 col-form-label">Name: <span class="text-danger">*</span></label>
         <div class="col-md-10">
-            <TextInput @bind-Value="@employee.FirstName" Placeholder="Enter first name" />
-            <ValidationMessage For="@(() => employee.FirstName)" />
+            <TextInput @bind-Value="@product.Name" Rows="3" Placeholder="Enter product name" />
+            <ValidationMessage For="@(() => product.Name)" />
         </div>
     </div>
 
     <div class="form-group row mb-3">
-        <label class="col-md-2 col-form-label">Last Name: <span class="text-danger">*</span></label>
+        <label class="col-md-2 col-form-label">Description: <span class="text-danger">*</span></label>
         <div class="col-md-10">
-            <TextInput @bind-Value="@employee.LastName" Placeholder="Enter last name" />
-            <ValidationMessage For="@(() => employee.LastName)" />
+            <TextAreaInput @bind-Value="@product.Description" Rows="3" Placeholder="Enter product description" />
+            <ValidationMessage For="@(() => product.Description)" />
         </div>
     </div>
 
@@ -43,12 +43,12 @@
 </EditForm>
 
 @code {
-    private Employee employee = new();
+    private Product product = new();
     private EditContext? editContext;
 
     protected override void OnInitialized()
     {
-        editContext = new EditContext(employee);
+        editContext = new EditContext(product);
         base.OnInitialized();
     }
 
@@ -65,16 +65,16 @@
 
     private void ResetForm()
     {
-        employee = new();
-        editContext = new EditContext(employee);
+        product = new();
+        editContext = new EditContext(product);
     }
 
-    public class Employee
+    public class Product
     {
-        [Required(ErrorMessage = "First name required.")]
-        public string? FirstName { get; set; }
+        [Required(ErrorMessage = "Product name required.")]
+        public string? Name { get; set; }
 
-        [Required(ErrorMessage = "Last name required.")]
-        public string? LastName { get; set; }
+        [Required(ErrorMessage = "Product description required.")]
+        public string? Description { get; set; }
     }
 }

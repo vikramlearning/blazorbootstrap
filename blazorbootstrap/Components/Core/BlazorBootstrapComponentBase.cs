@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.Extensions.Configuration;
 
 namespace BlazorBootstrap;
 

@@ -1,0 +1,17 @@
+﻿<div class="mb-3">
+    <TextAreaInput @ref="textAreaInputRef" @bind-Value="@enteredText" Rows="3" Placeholder="Enter text" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+
+@code {
+    private TextAreaInput? textAreaInputRef;
+
+    private string? enteredText = null;
+
+    private void Disable() => textAreaInputRef.Disable();
+
+    private void Enable() => textAreaInputRef.Enable();
+}

@@ -28,6 +28,7 @@ public static class RouteConstants
     public const string Demos_RangeInput_Documentation = Demos_Forms_Prefix + "/range-input";
     public const string Demos_Switch_Documentation = Demos_Forms_Prefix + "/switch";
     public const string Demos_TextInput_Documentation = Demos_Forms_Prefix + "/text-input";
+    public const string Demos_TextAreaInput_Documentation = Demos_Forms_Prefix + "/text-area-input";
     public const string Demos_TimeInput_Documentation = Demos_Forms_Prefix + "/time-input";
 
     // Components

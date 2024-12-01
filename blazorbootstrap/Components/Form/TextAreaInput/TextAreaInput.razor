@@ -1,0 +1,17 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<textarea @ref="@Element"
+          type="text"
+          id="@Id"
+          class="@ClassNames @fieldCssClasses"
+          style="@StyleNames"
+          value="@Value"
+          disabled="@Disabled"
+          placeholder="@Placeholder"
+          maxlength="@MaxLength"
+          autocomplete="@autoComplete"
+          rows="@Rows"
+          cols="@Cols"
+          @attributes="@AdditionalAttributes"
+          @onchange="OnChange"></textarea>
