@@ -1,0 +1,16 @@
+﻿<Toasts class="p-3" Messages="messages" />
+
+<Button Class="btn btn-primary" @onclick="ShowToast">Toast with Content</Button>
+
+@code {
+    List<ToastMessage> messages = [];
+
+    private void ShowToast() =>
+        messages.Add(
+            new ToastMessage
+            {
+                Type = ToastType.Info,
+                Title = "Blazor Bootstrap",
+                Content = @<div>Hello, world! This is a toast message. <button class="btn btn-primary" @onclick="ShowToast">Show more toast</button></div>,
+            });
+}

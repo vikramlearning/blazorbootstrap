@@ -102,6 +102,8 @@ public class ToastMessage : IEquatable<ToastMessage>
 
     public string? Message { get; set; }
 
+    public RenderFragment? Content { get; set; }
+
     public string? Title { get; set; }
 
     public ToastType Type { get; set; }
