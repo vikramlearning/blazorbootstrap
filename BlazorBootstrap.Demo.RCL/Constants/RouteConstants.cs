@@ -22,10 +22,13 @@ public static class RouteConstants
     // Forms
     public const string Demos_Forms_Prefix = Demos_Prefix + "/form";
     public const string Demos_AutoComplete_Documentation = Demos_Forms_Prefix + "/autocomplete";
+    public const string Demos_CheckboxInput_Documentation = Demos_Forms_Prefix + "/checkbox-input";
     public const string Demos_CurrencyInput_Documentation = Demos_Forms_Prefix + "/currency-input";
     public const string Demos_DateInput_Documentation = Demos_Forms_Prefix + "/date-input";
     public const string Demos_NumberInput_Documentation = Demos_Forms_Prefix + "/number-input";
+    public const string Demos_RadioInput_Documentation = Demos_Forms_Prefix + "/radio-input";
     public const string Demos_RangeInput_Documentation = Demos_Forms_Prefix + "/range-input";
+    public const string Demos_SelectInput_Documentation = Demos_Forms_Prefix + "/select-input";
     public const string Demos_Switch_Documentation = Demos_Forms_Prefix + "/switch";
     public const string Demos_TextInput_Documentation = Demos_Forms_Prefix + "/text-input";
     public const string Demos_TextAreaInput_Documentation = Demos_Forms_Prefix + "/text-area-input";
