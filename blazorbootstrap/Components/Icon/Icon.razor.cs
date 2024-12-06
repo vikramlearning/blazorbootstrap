@@ -13,7 +13,7 @@ public partial class Icon : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
-            (BootstrapIconUtility.Icon(), string.IsNullOrWhiteSpace(CustomIconName)),
+            (BootstrapIconUtility.IconPrefix, string.IsNullOrWhiteSpace(CustomIconName)),
             (BootstrapIconUtility.Icon(Name), string.IsNullOrWhiteSpace(CustomIconName)),
             (CustomIconName!, !string.IsNullOrWhiteSpace(CustomIconName)),
             (BootstrapIconUtility.IconSize(Size)!, Size != IconSize.None),
