@@ -18,10 +18,13 @@ public partial class MainLayout : MainLayoutBase
 
             new (){ Id = "4", Text = "Forms", IconName = IconName.InputCursorText, IconColor = IconColor.Success },
             new (){ Id = "400", Text = "Auto Complete", Href = RouteConstants.Demos_AutoComplete_Documentation, IconName = IconName.InputCursorText, ParentId = "4" },
+            new (){ Id = "400", Text = "Checkbox Input", Href = RouteConstants.Demos_CheckboxInput_Documentation, IconName = IconName.InputCursorText, ParentId = "4" },
             new (){ Id = "401", Text = "Currency Input", Href = RouteConstants.Demos_CurrencyInput_Documentation, IconName = IconName.CurrencyDollar, ParentId = "4" },
             new (){ Id = "402", Text = "Date Input", Href = RouteConstants.Demos_DateInput_Documentation, IconName = IconName.CalendarDate, ParentId = "4" },
             new (){ Id = "403", Text = "Number Input", Href = RouteConstants.Demos_NumberInput_Documentation, IconName = IconName.InputCursor, ParentId = "4" },
+            new (){ Id = "403", Text = "Radio Input", Href = RouteConstants.Demos_RadioInput_Documentation, IconName = IconName.InputCursor, ParentId = "4" },
             new (){ Id = "404", Text = "Range Input", Href = RouteConstants.Demos_RangeInput_Documentation, IconName = IconName.Sliders, ParentId = "4" },
+            new (){ Id = "404", Text = "Select Input", Href = RouteConstants.Demos_SelectInput_Documentation, IconName = IconName.Sliders, ParentId = "4" },
             new (){ Id = "405", Text = "Switch", Href = RouteConstants.Demos_Switch_Documentation, IconName = IconName.ToggleOn, ParentId = "4" },
             new (){ Id = "406", Text = "Text Input", Href = RouteConstants.Demos_TextInput_Documentation, IconName = IconName.InputCursorText, ParentId = "4" },
             new (){ Id = "407", Text = "Text Area Input", Href = RouteConstants.Demos_TextAreaInput_Documentation, IconName = IconName.InputCursorText, ParentId = "4" },
@@ -45,22 +48,22 @@ public partial class MainLayout : MainLayoutBase
             #region Grid
 
             new (){ Id = "513", Text = "Grid", IconName = IconName.Grid, ParentId = "5" },            
-            new (){ Id = "51101", Text = "Overview", Href = "/grid/overview", IconName = IconName.Grid, ParentId = "513" }, // first item - do not change
-            new (){ Id = "51102", Text = "Alignment", Href = "/grid/alignment", IconName = IconName.Justify, ParentId = "513" },
-            new (){ Id = "51103", Text = "Custom CSS Class", Href = "/grid/custom-css-class", IconName = IconName.FileTypeCss, ParentId = "513" },
-            new (){ Id = "51104", Text = "Data Binding", Href = "/grid/data-binding", IconName = IconName.GridFill, ParentId = "513" },
-            new (){ Id = "51106", Text = "Detail View", Href = "/grid/detail-view", IconName = IconName.ListNested, ParentId = "513" },
-            new (){ Id = "51107", Text = "Events", Href = "/grid/events", IconName = IconName.LightningChargeFill, ParentId = "513" },
-            new (){ Id = "51107", Text = "Filters", Href = "/grid/filters", IconName = IconName.FunnelFill, ParentId = "513" },
-            new (){ Id = "51108", Text = "Fixed Header", Href = "/grid/fixed-header", IconName = IconName.Table, ParentId = "513" },
-            new (){ Id = "51109", Text = "Freeze Columns", Href = "/grid/freeze-columns", IconName = IconName.LayoutThreeColumns, ParentId = "513" },
-            new (){ Id = "51110", Text = "Grid Settings", Href = "/grid/settings", IconName = IconName.GearFill, ParentId = "513" },
-            new (){ Id = "51111", Text = "Nested Grid", Href = "/grid/nested-grid", IconName = IconName.Pip, ParentId = "513" },
-            new (){ Id = "51112", Text = "Paging", Href = "/grid/paging", IconName = IconName.ChevronBarRight, ParentId = "513" },
-            new (){ Id = "51113", Text = "Selection", Href = "/grid/selection", IconName = IconName.CheckSquareFill, ParentId = "513" },
-            new (){ Id = "51114", Text = "Sorting", Href = "/grid/sorting", IconName = IconName.ArrowDownUp, ParentId = "513" },            
-            new (){ Id = "51115", Text = "Translations", Href = "/grid/translations", IconName = IconName.Translate, ParentId = "513" },            
-            new (){ Id = "51199", Text = "Other", Href = "/grid/other", IconName = IconName.PlusSquareFill, ParentId = "513" }, // last item - do not change
+            new (){ Id = "51101", Text = "Overview", Href = RouteConstants.Demos_Grid_Overview_Documentation, IconName = IconName.Grid, ParentId = "513" }, // first item - do not change
+            new (){ Id = "51102", Text = "Alignment", Href = RouteConstants.Demos_Grid_Alignment_Documentation, IconName = IconName.Justify, ParentId = "513" },
+            new (){ Id = "51103", Text = "Custom CSS Class", Href = RouteConstants.Demos_Grid_CustomCSSClass_Documentation, IconName = IconName.FileTypeCss, ParentId = "513" },
+            new (){ Id = "51104", Text = "Data Binding", Href = RouteConstants.Demos_Grid_DataBinding_Documentation, IconName = IconName.GridFill, ParentId = "513" },
+            new (){ Id = "51106", Text = "Detail View", Href = RouteConstants.Demos_Grid_DetailView_Documentation, IconName = IconName.ListNested, ParentId = "513" },
+            new (){ Id = "51107", Text = "Events", Href = RouteConstants.Demos_Grid_Events_Documentation, IconName = IconName.LightningChargeFill, ParentId = "513" },
+            new (){ Id = "51107", Text = "Filters", Href = RouteConstants.Demos_Grid_Filters_Documentation, IconName = IconName.FunnelFill, ParentId = "513" },
+            new (){ Id = "51108", Text = "Fixed Header", Href = RouteConstants.Demos_Grid_FixedHeader_Documentation, IconName = IconName.Table, ParentId = "513" },
+            new (){ Id = "51109", Text = "Freeze Columns", Href = RouteConstants.Demos_Grid_FreezeColumns_Documentation, IconName = IconName.LayoutThreeColumns, ParentId = "513" },
+            new (){ Id = "51110", Text = "Grid Settings", Href = RouteConstants.Demos_Grid_Settings_Documentation, IconName = IconName.GearFill, ParentId = "513" },
+            new (){ Id = "51111", Text = "Nested Grid", Href = RouteConstants.Demos_Grid_NestedGrid_Documentation, IconName = IconName.Pip, ParentId = "513" },
+            new (){ Id = "51112", Text = "Paging", Href = RouteConstants.Demos_Grid_Paging_Documentation, IconName = IconName.ChevronBarRight, ParentId = "513" },
+            new (){ Id = "51113", Text = "Selection", Href = RouteConstants.Demos_Grid_Selection_Documentation, IconName = IconName.CheckSquareFill, ParentId = "513" },
+            new (){ Id = "51114", Text = "Sorting", Href = RouteConstants.Demos_Grid_Sorting_Documentation, IconName = IconName.ArrowDownUp, ParentId = "513" },            
+            new (){ Id = "51115", Text = "Translations", Href = RouteConstants.Demos_Grid_Translations_Documentation, IconName = IconName.Translate, ParentId = "513" },            
+            new (){ Id = "51199", Text = "Other", Href = RouteConstants.Demos_Grid_OtherExamples_Documentation, IconName = IconName.PlusSquareFill, ParentId = "513" }, // last item - do not change
 
             #endregion Grid
                         
