@@ -933,6 +933,16 @@ window.blazorBootstrap = {
 
         return false;
     },
+    scrollToElementBottom: (elementId) => {
+        let el = document.getElementById(elementId);
+        if (el)
+            el.scrollTop = el.scrollHeight;
+    },
+    scrollToElementTop: (elementId) => {
+        let el = document.getElementById(elementId);
+        if (el)
+            el.scrollTop = 0;
+    }
 }
 
 window.blazorChart = {
@@ -1989,6 +1999,86 @@ window.blazorChart.scatter = {
             }
 
             chart.update();
+        }
+    }
+}
+
+if (!window.blazorBootstrap.ai) {
+    window.blazorBootstrap.ai = {};
+}
+
+window.blazorBootstrap.ai = {
+    azureOpenAI: {
+        chat: {
+            completions: async (url, key, payload, dotNetHelper) => {
+                let contentArray = [];
+                let notificationTriggered = false;
+                let streamComplete = false;
+
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "api-key": `${key}`,
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    // Read the response as a stream of data
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder("utf-8");
+                    let i = 0;
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) {
+                            break;
+                        }
+
+                        // Message and parse the chunk of data
+                        const chunk = decoder.decode(value);
+                        const lines = chunk.split("\n");
+
+                        for (const line of lines) {
+
+                            if (line.includes('[DONE]')) {
+                                streamComplete = true;
+                                return;
+                            }
+
+                            if (line.startsWith("data:")) {
+                                const data = JSON.parse(line.replace("data:", ""));
+                                const content = data.choices[0]?.delta?.content;
+                                if (content) {
+                                    contentArray.push(content);
+                                    if (!notificationTriggered) {
+                                        notificationTriggered = true;
+                                        triggerNotify();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    function triggerNotify() {
+                        let handler = setInterval(() => {
+                            const content = contentArray.shift();
+                            if (content && content.length > 0)
+                                dotNetHelper.invokeMethodAsync('ChartCompletetionsStreamJs', content, false);
+
+                            if (streamComplete && contentArray.length === 0) {
+                                clearInterval(handler);
+                                dotNetHelper.invokeMethodAsync('ChartCompletetionsStreamJs', '', true);
+                            }
+                        }, 100);
+                    }
+
+                } catch (error) {
+                    console.log(error);
+                } finally {
+                    // TODO: cleanup
+                }
+            }
         }
     }
 }

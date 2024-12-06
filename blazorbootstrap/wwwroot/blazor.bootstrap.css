@@ -11,28 +11,6 @@
     --bb-offcanvas-footer-padding-x: 1rem;
     --bb-offcanvas-horizontal-width-sm: 300px;
     --bb-offcanvas-horizontal-width-lg: 800px;
-    /* sidebar */
-    --bb-violet: #712cf9;
-    --bb-sidebar-width: 270px;
-    --bb-sidebar-collapsed-width: 50px;
-    --bb-sidebar-background-color: rgba(255, 255, 255, 1);
-    --bb-sidebar-top-row-background-color: var(--bb-violet);
-    --bb-sidebar-top-row-border-color: var(--bb-violet);
-    --bb-sidebar-title-text-color: rgb(255,255,255);
-    --bb-sidebar-brand-icon-color: rgb(255,255,255);
-    --bb-sidebar-brand-image-width: 24px;
-    --bb-sidebar-brand-image-height: 24px;
-    --bb-sidebar-title-badge-text-color: var(--bb-violet);
-    --bb-sidebar-title-badge-background-color: rgb(255,255,255);
-    --bb-sidebar-navbar-toggler-icon-color: var(--bb-violet);
-    --bb-sidebar-navbar-toggler-background-color: rgb(255,255,255);
-    --bb-sidebar-content-border-color: rgb(214,213,213);
-    --bb-sidebar-nav-item-text-color: rgba(0,0,0,0.9);
-    --bb-sidebar-nav-item-text-active-color-rgb: 112.520718,44.062154,249.437846;
-    --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
-    --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
-    --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
-    --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
     /* custom tooltip */
     --bb-tooltip-primary: var(--bs-primary);
     --bb-tooltip-secondary: var(--bs-secondary);
@@ -48,30 +26,54 @@
     --bs-border-radius-xs: 0.125rem;
     --bs-border-radius-md: 0.375rem;
     /* table */
-    --bb-table-sticky-background-color: #fff;
-    --bb-table-freeze-column-background-color: #efefef;
+    --bb-table-sticky-background-color: var(--bs-body-bg);
+    --bb-table-freeze-column-background-color: var(--bs-body-bg);
     --bb-table-selected-row-color: #000;
-    --bb-table-selected-row-hover-color: #000;
     --bb-table-selected-row-background-color: rgba(0,0,0,0.075);
+    --bb-table-selected-row-hover-color: #000;
     --bb-table-selected-row-hover-background-color: rgba(0,0,0,0.075);
     /* enum filter */
     --bb-grid-filter-dropdown-max-height: 300px;
     /* callout */
     --bb-callout-link: 10, 88, 202;
     --bb-callout-code-color: #ab296a;
+    /* sidebar */
+    --bb-violet: #9461fb;
+    --bb-violet-bg: #712cf9;
+    --bb-violet-bg-rgb: 113,44,249;
+    --bb-sidebar-width: 270px;
+    --bb-sidebar-collapsed-width: 50px;
+    --bb-sidebar-background-color: rgba(255, 255, 255, 1);
+    --bb-sidebar-top-row-background-color: var(--bb-violet-bg);
+    --bb-sidebar-top-row-border-color: var(--bb-violet-bg);
+    --bb-sidebar-title-text-color: rgb(255,255,255);
+    --bb-sidebar-brand-icon-color: rgb(255,255,255);
+    --bb-sidebar-brand-image-width: 24px;
+    --bb-sidebar-brand-image-height: 24px;
+    --bb-sidebar-title-badge-text-color: var(--bb-violet-bg);
+    --bb-sidebar-title-badge-background-color: rgb(255,255,255);
+    --bb-sidebar-navbar-toggler-icon-color: var(--bb-violet-bg);
+    --bb-sidebar-navbar-toggler-background-color: rgb(255,255,255);
+    --bb-sidebar-content-border-color: rgb(214,213,213);
+    --bb-sidebar-nav-item-text-color: rgba(0,0,0,0.9);
+    --bb-sidebar-nav-item-text-active-color-rgb: 112.520718,44.062154,249.437846;
+    --bb-sidebar-nav-item-text-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
+    --bb-sidebar-nav-item-text-active-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.9);
+    --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
+    --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-sidebar-nav-item-text-active-color-rgb),0.08);
     /* sidebar2 */
     --bb-sidebar2-width: 270px;
     --bb-sidebar2-collapsed-width: 50px;
     --bb-sidebar2-background-color: rgba(255, 255, 255, 1);
-    --bb-sidebar2-top-row-background-color: var(--bb-violet);
-    --bb-sidebar2-top-row-border-color: var(--bb-violet);
+    --bb-sidebar2-top-row-background-color: var(--bb-violet-bg);
+    --bb-sidebar2-top-row-border-color: var(--bb-violet-bg);
     --bb-sidebar2-title-text-color: rgb(255,255,255);
     --bb-sidebar2-brand-icon-color: rgb(255,255,255);
     --bb-sidebar2-brand-image-width: 24px;
     --bb-sidebar2-brand-image-height: 24px;
-    --bb-sidebar2-title-badge-text-color: var(--bb-violet);
+    --bb-sidebar2-title-badge-text-color: var(--bb-violet-bg);
     --bb-sidebar2-title-badge-background-color: rgb(255,255,255);
-    --bb-sidebar2-navbar-toggler-icon-color: var(--bb-violet);
+    --bb-sidebar2-navbar-toggler-icon-color: var(--bb-violet-bg);
     --bb-sidebar2-navbar-toggler-background-color: rgb(255,255,255);
     --bb-sidebar2-content-border-color: rgb(214,213,213);
     --bb-sidebar2-nav-item-text-color: rgba(0,0,0,0.9);
@@ -80,6 +82,43 @@
     --bb-sidebar2-nav-item-text-active-color: rgba(var(--bb-sidebar2-nav-item-text-active-color-rgb),0.9);
     --bb-sidebar2-nav-item-background-hover-color: rgba(var(--bb-sidebar2-nav-item-text-active-color-rgb),0.08);
     --bb-sidebar2-nav-item-group-background-color: rgba(var(--bb-sidebar2-nav-item-text-active-color-rgb),0.08);
+}
+
+[data-bs-theme=dark] {
+    /* sidebar */
+    --bb-sidebar-background-color: var(--bs-body-bg);
+    --bb-sidebar-top-row-background-color: var(--bs-body-bg);
+    --bb-sidebar-top-row-border-color: var(--bs-border-color);
+    --bb-sidebar-title-text-color: var(--bs-body-color);
+    --bb-sidebar-brand-icon-color: var(--bs-body-color);
+    --bb-sidebar-title-badge-text-color: var(--bs-body-color);
+    --bb-sidebar-title-badge-background-color: var(--bs-border-color);
+    --bb-sidebar-navbar-toggler-icon-color: var(--bs-body-color);
+    --bb-sidebar-navbar-toggler-background-color: var(--bs-body-bg);
+    --bb-sidebar-content-border-color: var(--bs-border-color);
+    --bb-sidebar-nav-item-text-color: var(--bs-body-color);
+    --bb-sidebar-nav-item-text-active-color-rgb: 112.520718,44.062154,249.437846;
+    --bb-sidebar-nav-item-text-hover-color: var(--bs-emphasis-color);
+    --bb-sidebar-nav-item-text-active-color: var(--bs-emphasis-color);
+    --bb-sidebar-nav-item-background-hover-color: rgba(var(--bb-violet-bg-rgb),0.5);
+    --bb-sidebar-nav-item-group-background-color: rgba(var(--bb-violet-bg-rgb),0.2);
+    /* sidebar2 */
+    --bb-sidebar2-background-color: var(--bs-body-bg);
+    --bb-sidebar2-top-row-background-color: var(--bs-body-bg);
+    --bb-sidebar2-top-row-border-color: var(--bs-border-color);
+    --bb-sidebar2-title-text-color: var(--bs-body-color);
+    --bb-sidebar2-brand-icon-color: var(--bs-body-color);
+    --bb-sidebar2-title-badge-text-color: var(--bs-body-color);
+    --bb-sidebar2-title-badge-background-color: var(--bs-border-color);
+    --bb-sidebar2-navbar-toggler-icon-color: var(--bs-body-color);
+    --bb-sidebar2-navbar-toggler-background-color: var(--bs-body-bg);
+    --bb-sidebar2-content-border-color: var(--bs-border-color);
+    --bb-sidebar2-nav-item-text-color: var(--bs-body-color);
+    --bb-sidebar2-nav-item-text-active-color-rgb: 112.520718,44.062154,249.437846;
+    --bb-sidebar2-nav-item-text-hover-color: var(--bs-emphasis-color);
+    --bb-sidebar2-nav-item-text-active-color: var(--bs-emphasis-color);
+    --bb-sidebar2-nav-item-background-hover-color: rgba(var(--bb-violet-bg-rgb),0.5);
+    --bb-sidebar2-nav-item-group-background-color: rgba(var(--bb-violet-bg-rgb),0.2);
 }
 
 /* grid - enum dropdown */
@@ -419,7 +458,7 @@ table > tbody > tr > td:is(.freeze-column-right).freeze-column-active {
         flex-direction: row !important;
     }
 
-    .bb-top-row {
+    .bb-top-row-sticky {
         position: sticky;
         top: 0;
         z-index: 1;
@@ -450,8 +489,8 @@ main {
 }
 
 .bb-top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
+    background-color: var(--bs-body-bg);
+    border-bottom: 1px solid var(--bs-border-color);
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;
@@ -587,4 +626,15 @@ main {
 /* pdf viewer */
 .pdf-viewer-dropdown-toggle::after {
     content: inherit !important;
+}
+
+/* layout */
+.bb-footer a {
+    color: var(--bs-body-color);
+    text-decoration: none
+}
+
+.bb-footer a:hover, .bb-footer a:focus {
+    color: var(--bs-link-hover-color);
+    text-decoration: underline;
 }

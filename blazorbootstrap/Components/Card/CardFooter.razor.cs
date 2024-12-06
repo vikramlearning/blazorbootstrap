@@ -19,7 +19,7 @@ public partial class CardFooter : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; } = default!;
 
     #endregion
 

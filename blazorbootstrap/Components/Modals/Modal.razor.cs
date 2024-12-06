@@ -130,8 +130,7 @@ public partial class Modal : BlazorBootstrapComponentBase
 
     private Task OnShowAsync(ModalOption modalOption)
     {
-        if (modalOption is null)
-            throw new ArgumentNullException(nameof(modalOption));
+        ArgumentNullException.ThrowIfNull(nameof(modalOption)); 
 
         ModalType = modalOption.Type;
 
@@ -307,7 +306,7 @@ public partial class Modal : BlazorBootstrapComponentBase
 
     // Modal close "X" button with bootstrap 5.3.3 - https://github.com/vikramlearning/blazorbootstrap/issues/714
     // Review this fix after bootstrap 5.3.4 or 5.4 release. Ref: https://github.com/twbs/bootstrap/issues/39798
-    private string HeaderCssClassInternal => $"justify-content-between {ModalType.ToModalHeaderColorClass()}";
+    private string HeaderCssClassInternal => $"justify-content-between {ModalType.ToModalHeaderColorClass()}".Trim();
 
     /// <summary>
     /// Gets or sets the header template.
@@ -316,7 +315,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment HeaderTemplate { get; set; } = default!;
+    public RenderFragment? HeaderTemplate { get; set; } = default!;
 
     /// <summary>
     /// If <see langword="true" />, scroll will be enabled on the modal body.
@@ -364,10 +363,10 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// Gets or sets the modal type.
     /// </summary>
     /// <remarks>
-    /// Default value is <see cref="ModalType.Light" />.
+    /// Default value is <see cref="ModalType.None" />.
     /// </remarks>
     [Parameter]
-    public ModalType ModalType { get; set; } = ModalType.Light;
+    public ModalType ModalType { get; set; } = ModalType.None;
 
     /// <summary>
     /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to

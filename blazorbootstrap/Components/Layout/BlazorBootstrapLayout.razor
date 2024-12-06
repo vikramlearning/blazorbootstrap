@@ -1,0 +1,27 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapLayoutComponentBase
+
+<div class="@Class">
+
+    @SidebarSection
+
+    <main class="bb-scrollbar">
+        @if (HeaderSection is not null)
+        {
+            <div class="@HeaderSectionCssClassNames">
+                @HeaderSection
+            </div>
+        }
+
+        <article class="@ContentSectionCssClassNames">
+            @ContentSection
+        </article>
+
+        @if (FooterSection is not null)
+        {
+            <div class="@FooterSectionCssClassNames">
+                @FooterSection
+            </div>
+        }
+    </main>
+</div>

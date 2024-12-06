@@ -1,28 +1,33 @@
-﻿@page "/breadcrumb"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
-
-<h1>Blazor Breadcrumb</h1>
-<div class="lead mb-3">
-    Indicate the current page's location within a navigational hierarchy that automatically adds separators.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Examples" PageUrl="@pageUrl" HashTagName="examples" />
-<Demo Type="typeof(Breadcrumb_Demo_01_Examples)" />
+<Section Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" Link="examples">
+    <Demo Type="typeof(Breadcrumb_Demo_01_Examples)" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Dividers" PageUrl="@pageUrl" HashTagName="dividers" />
-<Demo Type="typeof(Breadcrumb_Demo_02_Dividers)" />
+<Section Size="HeadingSize.H2" Name="Dividers" PageUrl="@pageUrl" Link="dividers">
+    <Demo Type="typeof(Breadcrumb_Demo_02_Dividers)" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Embedded SVG icon" PageUrl="@pageUrl" HashTagName="embedded-svg-icon" />
-<Demo Type="typeof(Breadcrumb_Demo_03_Embedded_SVG)" />
+<Section Size="HeadingSize.H2" Name="Embedded SVG icon" PageUrl="@pageUrl" Link="embedded-svg-icon">
+    <Demo Type="typeof(Breadcrumb_Demo_03_Embedded_SVG)" />
+</Section>
 
 @code {
-    private string pageUrl = "/breadcrumb";
-    private string title = "Blazor Breadcrumb Component";
-    private string description = "Indicate the current page's location within a navigational hierarchy that automatically adds separators.";
-    private string imageUrl = "https://i.imgur.com/hO90HoC.jpg";
+    private const string pageUrl = RouteConstants.Demos_Breadcrumb_Documentation;
+    private const string pageTitle = "Blazor Breadcrumb";
+    private const string pageDescription = "Indicate the current page's location within a navigational hierarchy that automatically adds separators.";
+    private const string metaTitle = "Blazor Breadcrumb Component";
+    private const string metaDescription = "Indicate the current page's location within a navigational hierarchy that automatically adds separators.";
+    private const string imageUrl = "https://i.imgur.com/hO90HoC.jpg";
 }

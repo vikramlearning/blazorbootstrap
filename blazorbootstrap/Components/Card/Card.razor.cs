@@ -22,7 +22,7 @@ public partial class Card : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the card color.

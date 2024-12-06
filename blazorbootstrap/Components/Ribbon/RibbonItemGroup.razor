@@ -4,7 +4,10 @@
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
     <div class="flex-grow-1">
         <div class="d-flex flex-row">
-            @ChildContent
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
         </div>
     </div>
     <div class="mb-1">@Text</div>

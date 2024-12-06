@@ -675,7 +675,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the grid data.
@@ -725,6 +725,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public string EmptyText { get; set; } = "No records to display";
+
+    /// <summary>
+    /// Gets or sets the enum filter select text.
+    /// </summary>
+    /// <remarks>
+    /// Default value is 'Select'.
+    /// </remarks>
+    [Parameter]
+    public string? EnumFilterSelectText { get; set; } = "Select";
 
     /// <summary>
     /// Gets or sets the filters row css class.

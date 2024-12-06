@@ -35,6 +35,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | DisableRowSelection | `Func<TItem, bool>?` | | | Enable or disable the row level checkbox selection. | 1.8.0 |
 | EmptyDataTemplate | RenderFragment | null | ✔️ | Template to render when there are no rows to display. | 1.0.0 |
 | EmptyText | string | `No records to display` | | Shows text on no records. | 1.0.0 |
+| EnumFilterSelectText | string | `Select` | | Gets or sets the enum filter select text. | 3.1.0 |
 | FiltersRowCssClass | string | null | | Gets or sets the filters row css class. | 1.9.2 |
 | FiltersTranslationProvider | `GridFiltersTranslationDelegate` | null | | Filters transalation is for grid filters to render. The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed. | 1.10.0 |
 | FixedHeader | bool | false | | Gets or sets the grid fixed header. | 1.10.3 |
@@ -2972,15 +2973,15 @@ Please see the following example where the row text color is set to **#fff (whit
 
 In the example below, you will see translations related to pagination and filters in **Dutch**.
 
-<img src="https://i.imgur.com/kKNgo2I.png" alt="Blazor Bootstrap: Grid Component - Translations" />
+<img src="https://i.imgur.com/CukDBGH.png" alt="Blazor Bootstrap: Grid Component - Translations" />
 
 ```cshtml {8,13-14} showLineNumbers
-<Grid TItem="Employee1"
+<Grid TItem="User"
       AllowFiltering="true"
       AllowPaging="true"
       AllowSorting="true"
       Class="table table-hover"
-      DataProvider="EmployeesDataProvider"
+      DataProvider="UsersDataProvider"
       FiltersRowCssClass="bg-dark text-white bg-opacity-25 border-bottom-0"
       FiltersTranslationProvider="GridFiltersTranslationProvider"
       HeaderRowCssClass="bg-dark text-white border-bottom-0"
@@ -2989,23 +2990,21 @@ In the example below, you will see translations related to pagination and filter
       PageSizeSelectorItems="@(new int[] { 5,10,20 })"
       PaginationItemsTextFormat="{0} - {1} van {2} artikelen"
       ItemsPerPageText="Artikelen per pagina"
+      EnumFilterSelectText="Selecteer"
       Responsive="true">
 
     <GridColumns>
-        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+        <GridColumn TItem="User" HeaderText="Id" PropertyName="Id">
             @context.Id
         </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name">
             @context.Name
         </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
-            @context.Designation
+        <GridColumn TItem="User" HeaderText="DOB" PropertyName="DOB">
+            @context.DOB
         </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
-            @context.DOJ
-        </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
-            @context.IsActive
+        <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
+            @context.Status
         </GridColumn>
     </GridColumns>
 
@@ -3014,7 +3013,7 @@ In the example below, you will see translations related to pagination and filter
 
 ```cs {4-25} showLineNumbers
 @code {
-    private IEnumerable<Employee1> employees = default!;
+    private IEnumerable<User> users = default!;
 
     private async Task<IEnumerable<FilterOperatorInfo>> GridFiltersTranslationProvider()
     {
@@ -3039,31 +3038,45 @@ In the example below, you will see translations related to pagination and filter
         return await Task.FromResult(filtersTranslation);
     }
 
-    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
-    {
-        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
-            employees = GetEmployees(); // call a service or an API to pull the employees
 
-        return await Task.FromResult(request.ApplyTo(employees));
+    private async Task<GridDataProviderResult<User>> UsersDataProvider(GridDataProviderRequest<User> request)
+    {
+        if (users is null) // pull employees only one time for client-side filtering, sorting, and paging
+            users = GetUsers(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(users));
     }
 
-    private IEnumerable<Employee1> GetEmployees()
+    private IEnumerable<User> GetUsers()
     {
-        return new List<Employee1>
+        return new List<User>
         {
-            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
-            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
-            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
-            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
-            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
-            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
-            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
-            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
-            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
-            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
-            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
-            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
+            new User { Id = 107, Name = "Alice", DOB = new DateOnly(1998, 11, 17), Status = UserStatus.Registered },
+            new User { Id = null, Name = "Bob", DOB = new DateOnly(1985, 1, 5), Status = UserStatus.Verified },
+            new User { Id = 106, Name = "John", DOB = new DateOnly(1995, 4, 17), Status = UserStatus.Registered },
+            new User { Id = 104, Name = "Pop", DOB = new DateOnly(1985, 6, 8), Status = UserStatus.Registered },
+            new User { Id = 105, Name = "Ronald", DOB = new DateOnly(1991, 8, 23), Status = UserStatus.VerificationPending },
+            new User { Id = 102, Name = "Line", DOB = new DateOnly(1977, 1, 12), Status = UserStatus.VerificationPending },
+            new User { Id = 101, Name = "Daniel", DOB = new DateOnly(1977, 1, 12), Status = UserStatus.Registered },
+            new User { Id = 108, Name = "Zayne", DOB = new DateOnly(1991, 1, 1), Status = UserStatus.Verified },
+            new User { Id = 109, Name = "Isha", DOB = null, Status = UserStatus.Verified },
+            new User { Id = 110, Name = "Vijay", DOB = new DateOnly(1990, 7, 1), Status = UserStatus.Verified },
         };
+    }
+
+    public record class User
+    {
+        public int? Id { get; set; }
+        public string? Name { get; set; }
+        public DateOnly? DOB { get; set; }
+        public UserStatus Status { get; set; }
+    }
+
+    public enum UserStatus
+    {
+        Registered,
+        VerificationPending,
+        Verified
     }
 }
 ```
@@ -3673,55 +3686,52 @@ Automatically hides the paging controls when the grid item count is less than or
 
 ### Detail View
 
-To enable detail view, set the `AllowDetailView` parameter to true. In the following example, existing `<GridColumn>` tags are nested under `<GridColumns>` tag to distinguish them from `<GridDetailView>`.
+To enable detail view, set the `AllowDetailView` parameter to **true**. In the following example, existing `<GridColumn>` tags are nested under `<GridColumns>` tag to distinguish them from `<GridDetailView>`.
 
-<img src="https://i.imgur.com/eetvhBB.png" alt="Blazor Bootstrap: Grid Component - Detail View" />
+<img src="https://i.imgur.com/iDKhgqC.png" alt="Blazor Bootstrap: Grid Component - Detail View" />
 
-```cshtml {4,24-45} showLineNumbers
-<Grid TItem="Employee1"
+```cshtml {4,19-42} showLineNumbers
+<Grid TItem="Product"
       Class="table table-hover border-top"
-      Data="employees"
-      AllowDetailView="true">
+      Data="products"
+      AllowDetailView="true"
+      AllowSorting="true">
 
     <GridColumns>
-        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+        <GridColumn TItem="Product" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
             @context.Id
         </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+        <GridColumn TItem="Product" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
             @context.Name
         </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
-            @context.Designation
-        </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
-            @context.DOJ
-        </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+        <GridColumn TItem="Product" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
             @context.IsActive
         </GridColumn>
     </GridColumns>
 
-    <GridDetailView TItem="Employee1">
-        <div class="row">
-            <div class="col-2 fw-bold">Id</div>
-            <div class="col">@context.Id</div>
-        </div>
-        <div class="row">
-            <div class="col-2 fw-bold">Name</div>
-            <div class="col">@context.Name</div>
-        </div>
-        <div class="row">
-            <div class="col-2 fw-bold">Designation</div>
-            <div class="col">@context.Designation</div>
-        </div>
-        <div class="row">
-            <div class="col-2 fw-bold">DOJ</div>
-            <div class="col">@context.DOJ</div>
-        </div>
-        <div class="row">
-            <div class="col-2 fw-bold">IsActive</div>
-            <div class="col">@context.IsActive</div>
-        </div>
+    <GridDetailView TItem="Product">
+
+        <Grid TItem="Ingredient"
+              Class="table table-hover border-top"
+              Data="GetIngredients(context.Id)">
+
+            <GridColumns>
+                <GridColumn TItem="Ingredient" Context="emp1" HeaderText="Id" PropertyName="Id">
+                    @emp1.Id
+                </GridColumn>
+                <GridColumn TItem="Ingredient" Context="emp1" HeaderText="Description" PropertyName="Description">
+                    @emp1.Description
+                </GridColumn>
+                <GridColumn TItem="Ingredient" Context="emp1" HeaderText="Unit" PropertyName="Unit">
+                    @emp1.Unit
+                </GridColumn>
+                <GridColumn TItem="Ingredient" Context="emp1" HeaderText="Quantity" PropertyName="Quantity">
+                    @emp1.Quantity
+                </GridColumn>
+            </GridColumns>
+
+        </Grid>
+
     </GridDetailView>
 
 </Grid>
@@ -3729,21 +3739,44 @@ To enable detail view, set the `AllowDetailView` parameter to true. In the follo
 
 ```cshtml {} showLineNumbers
 @code {
-    private List<Employee1> employees = new List<Employee1> {
-        new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
-        new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
-        new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
-        new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
-        new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true }
+    private List<Product> products = new List<Product> {
+        new Product { Id = 10, Name = "Product 10", IsActive = true },
+        new Product { Id = 20, Name = "Product 20", IsActive = true },
+        new Product { Id = 30, Name = "Product 30", IsActive = true },
+        new Product { Id = 40, Name = "Product 40", IsActive = true },
+        new Product { Id = 50, Name = "Product 50", IsActive = true }
     };
 
-    public record class Employee1
+    private List<Ingredient> ingredients = new List<Ingredient> {
+       new Ingredient { Id = 10105, ProductId = 10, Description = "Ingredient 1", Unit = "UNIT1", Quantity = 350 },
+       new Ingredient { Id = 10106, ProductId = 10, Description = "Ingredient 2", Unit = "UNIT1", Quantity = 600 },
+       new Ingredient { Id = 10107, ProductId = 10, Description = "Ingredient 3", Unit = "UNIT2", Quantity = 13 },
+       new Ingredient { Id = 10108, ProductId = 10, Description = "Ingredient 4", Unit = "UNIT3", Quantity = 25 },
+       new Ingredient { Id = 20109, ProductId = 20, Description = "Ingredient 5", Unit = "UNIT1", Quantity = 750 },
+       new Ingredient { Id = 20110, ProductId = 20, Description = "Ingredient 3", Unit = "UNIT2", Quantity = 13 },
+       new Ingredient { Id = 10111, ProductId = 10, Description = "Ingredient 4", Unit = "UNIT3", Quantity = 25 },
+       new Ingredient { Id = 20112, ProductId = 20, Description = "Ingredient 5", Unit = "UNIT1", Quantity = 750 },
+       new Ingredient { Id = 40113, ProductId = 40, Description = "Ingredient 3", Unit = "UNIT2", Quantity = 13 },
+       new Ingredient { Id = 50114, ProductId = 50, Description = "Ingredient 4", Unit = "UNIT3", Quantity = 25 },
+       new Ingredient { Id = 20115, ProductId = 20, Description = "Ingredient 5", Unit = "UNIT1", Quantity = 750 },
+    };
+
+    private IEnumerable<Ingredient> GetIngredients(int productId) => ingredients.Where(i => i.ProductId == productId);
+
+    public record class Product
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public string? Designation { get; set; }
-        public DateOnly DOJ { get; set; }
         public bool IsActive { get; set; }
+    }
+
+    public record class Ingredient
+    {
+        public int Id { get; set; }
+        public int ProductId { get; set; }
+        public string? Description { get; set; }
+        public string? Unit { get; set; }
+        public int Quantity { get; set; }
     }
 }
 ```
@@ -3833,7 +3866,7 @@ To create a nested grid, we first need to enable the detail view. To enable the 
 </Grid>
 ```
 
-```cshtml {} showLineNumbers
+```cshtml {24} showLineNumbers
 @code {
     private List<Employee1> employees = new List<Employee1> {
         new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },

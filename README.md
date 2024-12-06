@@ -41,7 +41,7 @@
 
 ## Install
 
-Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.0.0`
+Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.2.0`
 
 ## Install Blazor Bootstrap templates
 
@@ -80,6 +80,7 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Grid | [Docs](https://docs.blazorbootstrap.com/components/grid) | [Demos](https://demos.blazorbootstrap.com/grid) |
 | Icons | [Docs](https://docs.blazorbootstrap.com/content/icons) | [Demos](https://demos.blazorbootstrap.com/icons) |
 | Images | [Docs](https://docs.blazorbootstrap.com/content/images) | [Demos](https://demos.blazorbootstrap.com/images) |
+| Markdown | [Docs](https://docs.blazorbootstrap.com/content/markdown) | [Demos](https://demos.blazorbootstrap.com/markdown) |
 | Modals | [Docs](https://docs.blazorbootstrap.com/components/modal) | [Demos](https://demos.blazorbootstrap.com/modals) |
 | Number Input | [Docs](https://docs.blazorbootstrap.com/forms/number-input) | [Demos](https://demos.blazorbootstrap.com/form/number-input) |
 | Offcanvas | [Docs](https://docs.blazorbootstrap.com/components/offcanvas) | [Demos](https://demos.blazorbootstrap.com/offcanvas) |
@@ -97,6 +98,7 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Spinners | [Docs](https://docs.blazorbootstrap.com/components/spinners) | [Demos](https://demos.blazorbootstrap.com/spinners) |
 | Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/form/switch) |
 | Tabs | [Docs](https://docs.blazorbootstrap.com/components/tabs) | [Demos](https://demos.blazorbootstrap.com/tabs) |
+| Theme Switcher | [Docs](https://docs.blazorbootstrap.com/components/theme-switcher) | [Demos](https://demos.blazorbootstrap.com/theme-switcher) |
 | Time Input | [Docs](https://docs.blazorbootstrap.com/forms/time-input) | [Demos](https://demos.blazorbootstrap.com/form/time-input) |
 | Toasts | [Docs](https://docs.blazorbootstrap.com/components/toasts) | [Demos](https://demos.blazorbootstrap.com/toasts) |
 | Tooltips | [Docs](https://docs.blazorbootstrap.com/components/tooltips) | [Demos](https://demos.blazorbootstrap.com/tooltips) |
@@ -178,6 +180,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Image
 ![Blazor Bootstrap - Image](https://i.imgur.com/eiSTmvO.png "Blazor Bootstrap - Image")
 
+### Blazor Bootstrap - Markdown
+![Blazor Bootstrap - Markdown](https://i.imgur.com/FhN1caj.png "Blazor Bootstrap - Markdown")
+
 ### Blazor Bootstrap - Modal
 ![Blazor Bootstrap - Modal](https://i.imgur.com/n0m4Fhq.jpg "Blazor Bootstrap - Modal")
 
@@ -225,6 +230,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Tabs
 ![Blazor Bootstrap - Tabs](https://i.imgur.com/NdE5oqH.png "Blazor Bootstrap - Tabs")
+
+### Blazor Bootstrap - Theme Switcher
+![Blazor Bootstrap - Theme Switcher](https://i.imgur.com/2eixWho.png "Blazor Bootstrap - Theme Switcher")
 
 ### Blazor Bootstrap - Time Input
 ![Blazor Bootstrap - Time Input](https://i.imgur.com/TlvjRlP.png "Blazor Bootstrap - Time Input")

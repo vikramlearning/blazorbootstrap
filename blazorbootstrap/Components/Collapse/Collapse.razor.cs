@@ -139,7 +139,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }  
 
     /// <summary>
     /// Gets or sets the horizontal collapsing.

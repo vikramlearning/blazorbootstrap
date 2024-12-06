@@ -3,6 +3,9 @@
 
 <li>
     <h6 @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-        @ChildContent
+        @if (ChildContent != null)
+        {
+            @ChildContent
+        }
     </h6>
 </li>

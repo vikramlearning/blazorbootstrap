@@ -2,6 +2,7 @@
 
 public enum ModalType
 {
+    None,
     Primary,
     Secondary,
     Success,

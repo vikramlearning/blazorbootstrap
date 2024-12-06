@@ -169,7 +169,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; } 
 
     /// <summary>
     /// Gets or sets the dropdown color.

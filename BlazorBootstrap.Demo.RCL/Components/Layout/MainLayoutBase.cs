@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap.Demo.RCL;
+﻿using System.Runtime.InteropServices;
+
+namespace BlazorBootstrap.Demo.RCL;
 
 public class MainLayoutBase : LayoutComponentBase
 {
@@ -6,6 +8,8 @@ public class MainLayoutBase : LayoutComponentBase
     internal IReadOnlyCollection<NavItem>? NavItems;
 
     [Inject] public IConfiguration Configuration { get; set; } = default!;
+
+    [Inject] protected IJSRuntime JS { get; set; } = default!;
 
     protected override void OnInitialized()
     {
@@ -47,4 +51,6 @@ public class MainLayoutBase : LayoutComponentBase
     public string GithubDiscussionsUrl { get; private set; } = default!;
 
     public string StackoverflowUrl { get; private set; } = default!;
+    
+    public string DotNetVersion => RuntimeInformation.FrameworkDescription;
 }

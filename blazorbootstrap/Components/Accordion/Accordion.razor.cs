@@ -225,7 +225,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, removes borders and rounded corners to render accordions edge-to-edge with their parent container.

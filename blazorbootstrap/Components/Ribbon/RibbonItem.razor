@@ -34,7 +34,12 @@
     }
     else
     {
-        <div class="text-center">@ChildContent</div>
+        <div class="text-center">    
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
+        </div>
     }
 
 </div>

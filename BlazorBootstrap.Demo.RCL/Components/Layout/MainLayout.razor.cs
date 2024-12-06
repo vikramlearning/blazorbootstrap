@@ -18,7 +18,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "302", Text = "CSS Generator", Href = "/customcss", IconName = IconName.WrenchAdjustableCircle, ParentId = "3" },
 
             new (){ Id = "4", Text = "Forms", IconName = IconName.InputCursorText, IconColor = IconColor.Success },
-            new (){ Id = "400", Text = "Auto Complete", Href = "/autocomplete", IconName = IconName.InputCursorText, ParentId = "4" },
+            new (){ Id = "400", Text = "Auto Complete", Href = "/form/autocomplete", IconName = IconName.InputCursorText, ParentId = "4" },
             new (){ Id = "401", Text = "Currency Input", Href = "/form/currency-input", IconName = IconName.CurrencyDollar, ParentId = "4" },
             new (){ Id = "402", Text = "Date Input", Href = "/form/date-input", IconName = IconName.CalendarDate, ParentId = "4" },
             new (){ Id = "403", Text = "Number Input", Href = "/form/number-input", IconName = IconName.InputCursor, ParentId = "4" },
@@ -63,6 +63,7 @@ public partial class MainLayout : MainLayoutBase
 
             #endregion Grid
                         
+            new (){ Id = "514", Text = "Markdown", Href = "/markdown", IconName = IconName.MarkdownFill, ParentId = "5" },
             new (){ Id = "514", Text = "Modals", Href = "/modals", IconName = IconName.WindowStack, ParentId = "5" },
             new (){ Id = "515", Text = "Offcanvas", Href = "/offcanvas", IconName = IconName.LayoutSidebarReverse, ParentId = "5" },
             new (){ Id = "516", Text = "Pagination", Href = "/pagination", IconName = IconName.ThreeDots, ParentId = "5" },
@@ -77,8 +78,9 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "525", Text = "Sortable List", Href = "/sortable-list", IconName = IconName.ArrowsMove, ParentId = "5" },
             new (){ Id = "526", Text = "Spinner", Href = "/spinners", IconName = IconName.ArrowRepeat, ParentId = "5" },
             new (){ Id = "527", Text = "Tabs", Href = "/tabs", IconName = IconName.WindowPlus, ParentId = "5" },
-            new (){ Id = "528", Text = "Toasts", Href = "/toasts", IconName = IconName.ExclamationTriangleFill, ParentId = "5" },
-            new (){ Id = "529", Text = "Tooltips", Href = "/tooltips", IconName = IconName.ChatSquareDotsFill, ParentId = "5" },
+            new (){ Id = "528", Text = "Theme Switcher", Href = "/theme-switcher", IconName = IconName.NintendoSwitch, ParentId = "5" },
+            new (){ Id = "529", Text = "Toasts", Href = "/toasts", IconName = IconName.ExclamationTriangleFill, ParentId = "5" },
+            new (){ Id = "530", Text = "Tooltips", Href = "/tooltips", IconName = IconName.ChatSquareDotsFill, ParentId = "5" },
 
             new (){ Id = "6", Text = "Data Visualization", IconName = IconName.BarChartFill, IconColor = IconColor.Warning },
             new (){ Id = "600", Text = "Bar Chart", Href = "/charts/bar-chart", IconName = IconName.BarChartFill, ParentId = "6", Match = NavLinkMatch.All },
@@ -90,7 +92,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "605", Text = "Scatter Chart", Href = "/charts/scatter-chart", IconName = IconName.GraphUpArrow, ParentId = "6", Match = NavLinkMatch.All },
 
             new(){ Id = "7", Text = "Services", IconName = IconName.WrenchAdjustableCircleFill, IconColor = IconColor.Success },
-            new (){ Id = "700", Text = "Modal Service", Href = "/modal-service", IconName = IconName.WindowStack, ParentId = "7" },
+            new (){ Id = "700", Text = "Modal Service", Href = "/services/modal-service", IconName = IconName.WindowStack, ParentId = "7" },
 
             new(){ Id = "19", Text = "Utilities", IconName = IconName.GearWideConnected, IconColor = IconColor.Info },
             new (){ Id = "1900", Text = "Color Utility", Href = "/utils/color-utility", IconName = IconName.Palette2, ParentId = "19" },
@@ -98,4 +100,7 @@ public partial class MainLayout : MainLayoutBase
 
         return NavItems;
     }
+
+    private async ValueTask OnThemeChanged(string themeName) 
+        => await JS.InvokeVoidAsync("updateDemoCodeThemeCss", themeName);
 }

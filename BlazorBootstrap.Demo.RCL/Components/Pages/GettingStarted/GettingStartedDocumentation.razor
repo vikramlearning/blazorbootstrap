@@ -1,31 +1,34 @@
-﻿@page "/getting-started"
-@page "/getting-started/blazor-webassembly"
+﻿@page "/getting-started/blazor-webassembly"
 @page "/getting-started/blazor-server"
 @page "/getting-started/maui-blazor"
 
-<PageTitle>@title</PageTitle>
+@attribute [Route(pageUrl)]
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<h1>Getting started - Blazor Bootstrap</h1>
-<div class="lead mb-3">Get started with the Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Documentation" PageUrl="@pageUrl" HashTagName="documentation" />
-<div class="mb-3">
-    Please find the getting started documentation links, corresponding to each .NET version and project type, listed below:
-</div>
+<Section Size="HeadingSize.H2" Name="Documentation" PageUrl="@pageUrl" Link="documentation">
+    <div class="mb-3">
+        Please find the getting started documentation links, corresponding to each .NET version and project type, listed below:
+    </div>
 
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th scope="col" style="width:20px;">#</th>
             <th scope="col" style="width:115px;">.NET Version</th>
             <th scope="col">Documentation Link</th>
         </tr>
-    </thead>
-    <tbody class="table-group-divider">
+        </thead>
+        <tbody class="table-group-divider">
         <tr>
             <td>1</td>
             <td>.NET 8</td>
@@ -46,19 +49,19 @@
             <td>.NET 8</td>
             <td><a href="https://docs.blazorbootstrap.com/getting-started/maui-blazor-net-8" target="_blank">MAUI Blazor Hybrid App (.NET 8)</a></td>
         </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
 
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th scope="col" style="width:20px;">#</th>
             <th scope="col" style="width:115px;">.NET Version</th>
             <th scope="col">Documentation Link</th>
         </tr>
-    </thead>
-    <tbody class="table-group-divider">
+        </thead>
+        <tbody class="table-group-divider">
         <tr>
             <td>1</td>
             <td>.NET 7</td>
@@ -74,20 +77,19 @@
             <td>.NET 7</td>
             <td><a href="https://docs.blazorbootstrap.com/getting-started/maui-blazor-net-7" target="_blank">MAUI Blazor Hybrid App (.NET 7)</a></td>
         </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
 
 
-
-<table class="table">
-    <thead>
+    <table class="table">
+        <thead>
         <tr>
             <th scope="col" style="width:20px;">#</th>
             <th scope="col" style="width:115px;">.NET Version</th>
             <th scope="col">Documentation Link</th>
         </tr>
-    </thead>
-    <tbody class="table-group-divider">
+        </thead>
+        <tbody class="table-group-divider">
         <tr>
             <td>1</td>
             <td>.NET 6</td>
@@ -98,15 +100,17 @@
             <td>.NET 6</td>
             <td><a href="https://docs.blazorbootstrap.com/getting-started/blazor-server-net-6" target="_blank">Blazor Server (.NET 6)</a></td>
         </tr>
-    </tbody>
-</table>
-
+        </tbody>
+    </table>
+</Section>
 
 @code {
-    private string pageUrl = "/getting-started/blazor-webassembly";
-    private string title = "Getting started with Blazor Bootstrap - Blazor WebAssembly Project Setup";
-    private string description = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
-    private string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
+    private const string pageUrl = RouteConstants.Demos_GettingStarted_Documentation;
+    private const string pageTitle = "Getting started with Blazor Bootstrap - Blazor Project Setup";
+    private const string pageDescription = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
+    private const string metaTitle = "Getting started with Blazor Bootstrap - Blazor Project Setup";
+    private const string metaDescription = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
+    private const string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
 
     private string? version;
     [Inject] public IConfiguration Configuration { get; set; } = default!;

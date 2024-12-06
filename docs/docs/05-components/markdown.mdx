@@ -1,0 +1,309 @@
+---
+title: Blazor Markdown Component **Preview**
+description: Use Blazor Bootstrap Markdown component to add formatting, tables, images, and more to your project pages.
+image: https://i.imgur.com/FhN1caj.png
+
+sidebar_label: Markdown
+sidebar_position: 14
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Markdown <code>&nbsp;Preview&nbsp;</code>
+
+Use Blazor Bootstrap Markdown component to add formatting, tables, images, and more to your project pages.
+
+<CarbonAd />
+
+## Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 3.1.0 |
+| TableCssClass | string? | `table` | | Gets or sets the CSS class for table. | 3.1.0 |
+| BlockquotesCssClass | string? | `blockquote` | | Gets or sets the CSS class for blockquotes. | 3.1.0 |
+
+## Live preview
+
+<img src="https://i.imgur.com/FhN1caj.png" alt="Blazor Markdown Component" />
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#live-preview)
+
+## Examples
+
+### Headers
+
+Use headers to structure your content. Start a line with `#` for a heading. Add more `#` characters for subheadings, up to six levels.
+
+<img src="https://i.imgur.com/p3qtk8F.png" alt="Blazor Markdown Component - Headers" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+# This is a H1 header
+## This is a H2 header
+### This is a H3 header
+#### This is a H4 header
+##### This is a H5 header
+###### This is a H6 header
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#headers)
+
+### Paragraphs and line breaks
+
+Break your text into paragraphs or line breaks for easier reading.
+
+<img src="https://i.imgur.com/wBbnAZ1.png" alt="Blazor Markdown Component - Paragraphs and line breaks" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+Add lines between your text with the **Enter** key.    
+Your text gets better spaced and makes it easier to read.
+
+
+Add lines between your text with the **Enter** key.
+Your text gets better spaced and makes it easier to read.
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#paragraphs-and-line-breaks)
+
+### Blockquotes
+
+Quote text with `>` before it. Use more `>` characters to nest quotes. For blocks of text, use `>` at the start of each line.
+
+<img src="https://i.imgur.com/XiW88op.png" alt="Blazor Markdown Component - Blockquotes" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+> A well-known quote, contained in a blockquote element.
+</Markdown>
+
+<Markdown>
+> Single line quote
+>> Nested quote
+>> multiple line
+>> quote
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#blockquotes)
+
+### Horizontal rules
+
+Add a horizontal rule with a line of `---`.
+
+<img src="https://i.imgur.com/tpEuzaD.png" alt="Blazor Markdown Component - Horizontal rules" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+above
+---
+below
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#horizontal-rules)
+
+### Emphasis (bold, italics, strikethrough)
+
+Emphasize text with bold, italics, or strikethrough:
+- Italics: `*text*` or `_text_`
+- Bold: `**text**`
+- Strikethrough: `~~text~~`
+- Combine for more emphasis.
+
+<img src="https://i.imgur.com/rnSOx8j.png" alt="Blazor Markdown Component - Emphasis (bold, italics, strikethrough)" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+Use _emphasis_ in comments to express **strong** opinions and point out ~~corrections~~
+**_Bold, italicized text_**
+**~~Bold, strike-through text~~**
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#emphasis-bold-italics-strikethrough)
+
+### Code highlighting
+
+<img src="https://i.imgur.com/MLZ2YkG.png" alt="Blazor Markdown Component - Code highlighting" />
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#code-highlighting)
+
+### Tables
+
+Tables help organize structured data.
+- Use `|` to separate cells.
+- Escape `|` with `\|` if used within a cell.
+- Use `<br />` for new lines within a cell.
+- End each row with a carriage return (CR) or line feed (LF).
+
+<img src="https://i.imgur.com/aMT8L2A.png" alt="Blazor Markdown Component - Tables" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+| Heading 1 | Heading 2 | Heading 3 |
+|--|--|--|
+| Cell A1 | Cell A2 | Cell A3 |
+| Cell B1 | Cell B2 | Cell B3<br />second line of text |
+</Markdown>
+```
+
+<img src="https://i.imgur.com/xabVOTG.png" alt="Blazor Markdown Component - Tables with Css class" />
+
+```cshtml {} showLineNumbers
+<Markdown TableCssClass="table table-striped table-hover table-bordered">
+| Heading 1 | Heading 2 | Heading 3 |
+|--|--|--|
+| Cell A1 | Cell A2 | Cell A3 |
+| Cell B1 | Cell B2 | Cell B3 |
+| Cell C1 | Cell C2 | Cell C3 |
+| Cell D1 | Cell D2 | Cell D3 |
+| Cell E1 | Cell E2 | Cell E3 |
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#)
+
+### Lists
+
+Use lists to organize related items:
+- Ordered lists: start with a number followed by a period.
+- Unordered lists: start with a `-`.
+- Begin each list item on a new line.
+
+<img src="https://i.imgur.com/vBIXViL.png" alt="Blazor Markdown Component - Lists" />
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#lists)
+
+#### Ordered list
+
+<img src="https://i.imgur.com/6OTYc7Z.png" alt="Blazor Markdown Component - Ordered list" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+1. First item
+1. Second item
+1. Third item
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#ordered-list)
+
+#### Unordered list
+
+<img src="https://i.imgur.com/PkPf8jH.png" alt="Blazor Markdown Component - Unordered list" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+- Item 1
+- Item 2
+- Item 3
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#unordered-list)
+
+#### Nested list
+
+<img src="https://i.imgur.com/eOvzBra.png" alt="Blazor Markdown Component - Nested list" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+1. First item
+    1. Item 1
+    1. Item 2
+    1. Item 3
+1. Second item
+    1. Nested item 1
+        1. Further nested item 1
+        1. Further nested item 2
+        1. Further nested item 3
+    1. Nested item 2
+    1. Nested item 3
+1. Third item
+</Markdown>
+```
+
+<img src="https://i.imgur.com/QbgboNn.png" alt="Blazor Markdown Component - Nested list" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+- First item
+    - Item 1
+    - Item 2
+    - Item 3
+- Second item
+    - Nested item 1
+        - Further nested item 1
+        - Further nested item 2
+        - Further nested item 3
+    - Nested item 2
+    - Nested item 3
+- Third item
+</Markdown>
+```
+
+<img src="https://i.imgur.com/qATjqrP.png" alt="Blazor Markdown Component - Nested list" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+1. First item
+    - Item 1
+    - Item 2
+    - Item 3
+1. Second item
+    - Nested item 1
+        - Further nested item 1
+        - Further nested item 2
+        - Further nested item 3
+    - Nested item 2
+    - Nested item 3
+1. Third item
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#nested-list)
+
+### Links
+
+<img src="https://i.imgur.com/ZnCLVVd.png" alt="Blazor Markdown Component - Links" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+[BlazorBootstrap - Docs](https://docs.blazorbootstrap.com/)
+[BlazorBootstrap - Demos](https://demos.blazorbootstrap.com/)
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#links)
+
+### Images
+
+<img src="https://i.imgur.com/c3gF5yT.png" alt="Blazor Markdown Component - Images" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+![BlazorBootstrap](https://demos.blazorbootstrap.com/images/logo/logo-color.svg)
+</Markdown>
+```
+
+<img src="https://i.imgur.com/zcm7MHp.png" alt="Blazor Markdown Component - Images" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+![BlazorBootstrap](https://demos.blazorbootstrap.com/images/logo/logo-color.svg =200x200)
+</Markdown>
+```
+
+<img src="https://i.imgur.com/mfCgiHS.png" alt="Blazor Markdown Component - Images" />
+
+```cshtml {} showLineNumbers
+<Markdown>
+![BlazorBootstrap](https://demos.blazorbootstrap.com/images/logo/logo-color.svg =50)
+</Markdown>
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/markdown#)

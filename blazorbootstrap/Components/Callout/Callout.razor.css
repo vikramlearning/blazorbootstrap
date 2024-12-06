@@ -1,6 +1,9 @@
 .bb-callout {
-    --bs-link-color-rgb: var(--bb-callout-link);
+    --bb-callout-color: var(--bs-secondary-text-emphasis);
+    --bb-callout-bg: var(--bs-secondary-bg-subtle);
+    --bb-callout-border: var(--bs-secondary-border-subtle);
     --bs-code-color: var(--bb-callout-code-color);
+    --bs-link-color-rgb: var(--bb-callout-link);
     padding: 1.25rem;
     margin-top: 1.25rem;
     margin-bottom: 1.25rem;

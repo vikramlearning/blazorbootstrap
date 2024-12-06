@@ -1,50 +1,56 @@
 ﻿@page "/autocomplete"
-@page "/form/autocomplete"
 
-<PageTitle>@title</PageTitle>
+@attribute [Route(pageUrl)]
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<h1>Blazor Auto Complete</h1>
-<div class="lead mb-3">
-    Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H2" Text="Client side data" PageUrl="@pageUrl" HashTagName="client-side-data" />
-<Demo Type="typeof(AutoComplete_Demo_01_A_Client_Side_Filtering)" Tabs="true" />
+<Section Size="HeadingSize.H2" Name="Client side data" PageUrl="@pageUrl" Link="client-side-data">
+    <Demo Type="typeof(AutoComplete_Demo_01_A_Client_Side_Filtering)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Client side data with StringComparision" PageUrl="@pageUrl" HashTagName="client-side-data-with-string-comparision" />
-<div class="mb-3">In the below example, <code>StringComparision.Ordinal</code> is used to make the filter case-sensitive.</div>
-<Demo Type="typeof(AutoComplete_Demo_01_B_Client_Side_Filtering_With_StringComparision)" Tabs="true" />
-<Callout Color="CalloutColor.Info">
-    <div>By default, <code>StringComparison.OrdinalIgnoreCase</code> is used to compare culture-agnostic and case-insensitive string matching.</div>
-</Callout>
+<Section Size="HeadingSize.H2" Name="Client side data with StringComparision" PageUrl="@pageUrl" Link="client-side-data-with-string-comparision">
+    <div class="mb-3">In the below example, <code>StringComparision.Ordinal</code> is used to make the filter case-sensitive.</div>
+    <Demo Type="typeof(AutoComplete_Demo_01_B_Client_Side_Filtering_With_StringComparision)" Tabs="true" />
+    <Callout Color="CalloutColor.Info">
+        <div>By default, <code>StringComparison.OrdinalIgnoreCase</code> is used to compare culture-agnostic and case-insensitive string matching.</div>
+    </Callout>
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Server side data" PageUrl="@pageUrl" HashTagName="server-side-data" />
-<Demo Type="typeof(AutoComplete_Demo_02_Server_Side_Filtering)" Tabs="true" />
+<Section Size="HeadingSize.H2" Name="Server side data" PageUrl="@pageUrl" Link="server-side-data">
+    <Demo Type="typeof(AutoComplete_Demo_02_Server_Side_Filtering)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Set default value" PageUrl="@pageUrl" HashTagName="set-default-value" />
-<Demo Type="typeof(AutoComplete_Demo_03_Set_Default_Value)" Tabs="true" />
+<Section Size="HeadingSize.H2" Name="Set default value" PageUrl="@pageUrl" Link="set-default-value">
+    <Demo Type="typeof(AutoComplete_Demo_03_Set_Default_Value)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Validations" PageUrl="@pageUrl" HashTagName="validations" />
-<Demo Type="typeof(AutoComplete_Demo_04_Validations)" Tabs="true" />
+<Section Size="HeadingSize.H2" Name="Validations" PageUrl="@pageUrl" Link="validations">
+    <Demo Type="typeof(AutoComplete_Demo_04_Validations)" Tabs="true" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Keyboard Navigation" PageUrl="@pageUrl" HashTagName="keyboard-navigation" />
-<div>
-    Blazor Bootstrap autocomplete component supports the following keyboard shortcuts to initiate various actions.
-</div>
-<div class="mb-3">
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
+<Section Size="HeadingSize.H2" Name="Keyboard Navigation" PageUrl="@pageUrl" Link="keyboard-navigation">
+    <div>
+        Blazor Bootstrap autocomplete component supports the following keyboard shortcuts to initiate various actions.
+    </div>
+    <div class="mb-3">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
                 <tr>
                     <th>Key</th>
                     <th>Description</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 <tr>
                     <td><kbd>Esc</kbd></td>
                     <td>Closes the popup list when it is in an open state.</td>
@@ -69,26 +75,31 @@
                     <td><kbd>Enter</kbd></td>
                     <td>Selects the currently focused item.</td>
                 </tr>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Disable" PageUrl="@pageUrl" HashTagName="disable" />
-<div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>AutoComplete</code>.</div>
-<Demo Type="typeof(AutoComplete_Demo_05_A_Disable)" Tabs="false" />
-<div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>AutoComplete</code>.</div>
-<Callout Color="CalloutColor.Warning" Heading="NOTE">
-    Do not use both the <b>Disabled</b> parameter and <b>Enable()</b> &amp; <b>Disable()</b> methods.
-</Callout>
-<Demo Type="typeof(AutoComplete_Demo_05_B_Disable)" Tabs="false" />
+<Section Size="HeadingSize.H2" Name="Disable" PageUrl="@pageUrl" Link="disable">
+    <div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>AutoComplete</code>.</div>
+    <Demo Type="typeof(AutoComplete_Demo_05_A_Disable)" Tabs="false" />
+    <div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>AutoComplete</code>.</div>
+    <Callout Color="CalloutColor.Warning" Heading="NOTE">
+        Do not use both the <b>Disabled</b> parameter and <b>Enable()</b> &amp; <b>Disable()</b> methods.
+    </Callout>
+    <Demo Type="typeof(AutoComplete_Demo_05_B_Disable)" Tabs="false" />
+</Section>
 
-<SectionHeading Size="HeadingSize.H2" Text="Sizing" PageUrl="@pageUrl" HashTagName="sizing" />
-<Demo Type="typeof(AutoComplete_Demo_06_Sizing)" Tabs="true" />
+<Section Size="HeadingSize.H2" Name="Sizing" PageUrl="@pageUrl" Link="sizing">
+    <Demo Type="typeof(AutoComplete_Demo_06_Sizing)" Tabs="true" />
+</Section>
 
 @code {
-    private string pageUrl = "/autocomplete";
-    private string title = "Blazor AutoComplete Component";
-    private string description = "Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.";
-    private string imageUrl = "https://i.imgur.com/36RsWZ3.png";
+    private const string pageUrl = RouteConstants.Demos_AutoComplete_Documentation;
+    private const string pageTitle = "Blazor AutoComplete";
+    private const string pageDescription = "Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.";
+    private const string metaTitle = "Blazor AutoComplete Component";
+    private const string metaDescription = "Blazor Bootstrap autocomplete component is a textbox that offers the users suggestions as they type from the data source. And it supports client-side and server-side filtering.";
+    private const string imageUrl = "https://i.imgur.com/36RsWZ3.png";
 }

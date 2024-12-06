@@ -7,5 +7,8 @@
      style="@StyleNames"
      data-bs-interval="@Interval"
      @attributes="@AdditionalAttributes">
-    @ChildContent
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </div>

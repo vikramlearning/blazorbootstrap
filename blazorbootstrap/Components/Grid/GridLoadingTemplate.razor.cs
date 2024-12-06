@@ -21,6 +21,7 @@ public partial class GridLoadingTemplate<TItem> : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [Parameter]
+    [EditorRequired]
     public RenderFragment ChildContent { get; set; } = default!;
 
     internal RenderFragment Template =>
@@ -29,6 +30,6 @@ public partial class GridLoadingTemplate<TItem> : BlazorBootstrapComponentBase
             builder.AddContent(100, ChildContent);
         };
 
-    [CascadingParameter]
-    public Grid<TItem>? Parent { get; set; }
+    [CascadingParameter(Name = "Parent")]
+    public Grid<TItem> Parent { get; set; } = default!;
 }

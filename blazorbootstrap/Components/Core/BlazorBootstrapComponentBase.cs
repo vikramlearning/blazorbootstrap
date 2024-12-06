@@ -32,14 +32,14 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     {
         var list = new HashSet<string>();
 
-        if (cssClassList is not null && cssClassList.Any())
+        if (cssClassList is not null && cssClassList.Length > 0)
             foreach (var (cssClass, when) in cssClassList)
             {
                 if (!string.IsNullOrWhiteSpace(cssClass) && when)
                     list.Add(cssClass);
             }
 
-        if (list.Any())
+        if (list.Count > 0)
             return string.Join(" ", list);
         else
             return string.Empty;
@@ -55,7 +55,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     {
         var list = new HashSet<string>();
 
-        if (cssClassList is not null && cssClassList.Any())
+        if (cssClassList is not null && cssClassList.Length > 0)
             foreach (var (cssClass, when) in cssClassList)
             {
                 if (!String.IsNullOrWhiteSpace(cssClass) && when)
@@ -65,7 +65,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
         if (!String.IsNullOrWhiteSpace(userDefinedCssClass))
             list.Add(userDefinedCssClass.Trim());
 
-        if (list.Any())
+        if (list.Count > 0)
             return String.Join(" ", list);
         
         return String.Empty;
@@ -81,7 +81,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     {
         var list = new HashSet<string>();
 
-        if (cssStyleList is not null && cssStyleList.Any())
+        if (cssStyleList is not null && cssStyleList.Length > 0)
             foreach (var (cssStyle, when) in cssStyleList)
             {
                 if (!String.IsNullOrWhiteSpace(cssStyle) && when)
@@ -91,7 +91,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
         if (!String.IsNullOrWhiteSpace(userDefinedCssStyle))
             list.Add(userDefinedCssStyle.Trim());
 
-        if (list.Any())
+        if (list.Count > 0)
             return String.Join(';', list);
         
         return String.Empty;

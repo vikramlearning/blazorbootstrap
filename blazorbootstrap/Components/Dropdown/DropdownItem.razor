@@ -9,7 +9,10 @@
            class="@ClassNames" 
            style="@StyleNames"
            @attributes="@AdditionalAttributes">
-            @ChildContent
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
         </a>
     }
     else
@@ -21,7 +24,10 @@
                 style="@StyleNames"
                 disabled="@Disabled"
                 @attributes="@AdditionalAttributes">
-            @ChildContent
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
         </button>
     }
 </li>

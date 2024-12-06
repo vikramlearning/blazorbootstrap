@@ -83,7 +83,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; } = default!;
 
     /// <summary>
     /// If <see langword="true" />, disables the card link.

@@ -24,7 +24,10 @@
               OnHiding="OnCollapseHidingAsync"
               OnHidden="OnCollapseHiddenAsync">
         <div class="accordion-body">
-            @ChildContent
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
         </div>
     </Collapse>
 </div>

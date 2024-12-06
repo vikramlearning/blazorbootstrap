@@ -1,5 +1,5 @@
 @namespace BlazorBootstrap.Demo.RCL
-@inherits ComponentBase
+@inherits BlazorBootstrapComponentBase
 
 @if (ShowCodeOnly)
 {
@@ -12,12 +12,12 @@
                 </Tooltip>
             </div>
         </div>
-         <div class="highlight">
+        <div class="highlight border border-top-0">
              <pre>
                 <code class="@LanguageCode.ToLanguageCssClass()">
-                    @if (snippet is not null)
+                    @if (ProvidedCode is not null)
                     {
-                        <text>@snippet.Trim()</text>
+                        <text>@ProvidedCode.Trim()</text>
                     }
                 </code>
             </pre>
@@ -27,7 +27,7 @@
 else if (!Tabs)
 {
     <div class="bd-example-snippet bd-code-snippet">
-        <div class="bb-example">
+        <div class="bb-example border">
             <DynamicComponent Type="this.Type"/>
         </div>
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border border-top-0">
@@ -38,12 +38,12 @@ else if (!Tabs)
                 </Tooltip>
             </div>
         </div>
-        <div class="highlight">
+        <div class="highlight border border-top-0">
             <pre>
                 <code class="@LanguageCode.ToLanguageCssClass()">
-                    @if (snippet is not null)
+                    @if (ProvidedCode is not null)
                     {
-                        <text>@snippet.Trim()</text>
+                        <text>@ProvidedCode.Trim()</text>
                     }
                 </code>
             </pre>
@@ -73,12 +73,12 @@ else // Tabs = true
                         <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
                     </Tooltip>
                 </div>
-                <div class="highlight">
+                <div class="highlight border border-top-0">
                     <pre class="mt-0 me-4">
                         <code class="@LanguageCode.ToLanguageCssClass()">
-                            @if (snippet is not null)
+                            @if (ProvidedCode is not null)
                             {
-                                <text>@snippet.Trim()</text>
+                                <text>@ProvidedCode.Trim()</text>
                             }
                         </code>
                     </pre>

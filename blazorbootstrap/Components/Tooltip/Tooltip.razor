@@ -11,5 +11,8 @@
       data-bs-html="@(IsHtml ? "true" : "false")"
       title="@Title"
       @attributes="@AdditionalAttributes">
-    @ChildContent
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </span>

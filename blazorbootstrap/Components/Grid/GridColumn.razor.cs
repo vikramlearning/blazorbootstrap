@@ -247,7 +247,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
+    [Parameter] [EditorRequired]
     public RenderFragment<TItem> ChildContent { get; set; } = default!;
 
     /// <summary>
@@ -465,7 +465,8 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public bool IsDefaultSortColumn { get; set; } = false;
 
-    [CascadingParameter] public Grid<TItem> Parent { get; set; } = default!;
+    [CascadingParameter(Name = "Parent")]
+    public Grid<TItem> Parent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the property name.

@@ -11,6 +11,9 @@
         </div>
     }
     <div>
-        @ChildContent
+        @if (ChildContent != null)
+        {
+            @ChildContent
+        }
     </div>
 </div>

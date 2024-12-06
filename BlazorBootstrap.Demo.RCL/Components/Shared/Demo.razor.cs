@@ -1,16 +1,14 @@
 ﻿namespace BlazorBootstrap.Demo.RCL;
 
-public partial class Demo : ComponentBase
+public partial class Demo : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private IconColor clipboardTooltipIconColor = IconColor.Dark;
+    private IconColor clipboardTooltipIconColor = IconColor.None;
 
     private IconName clipboardTooltipIconName = IconName.Clipboard;
 
     private string? clipboardTooltipTitle = "Copy to clipboard";
-
-    private string? snippet;
 
     /// <summary>
     /// A reference to this component instance for use in JavaScript calls.
@@ -42,33 +40,22 @@ public partial class Demo : ComponentBase
 
     protected override async Task OnParametersSetAsync()
     {
-        if (snippet is null)
-        {
-            if (ProvidedCode != null)
+        if (ProvidedCode is null)
+        { 
+            var resourceName = Type.FullName + ".razor";
+
+            await using var stream = Type.Assembly.GetManifestResourceStream(resourceName);
+            try
             {
-                snippet = ProvidedCode;
+                if (stream is null)
+                    return;
+
+                using var reader = new StreamReader(stream);
+                ProvidedCode = await reader.ReadToEndAsync();
             }
-            else
+            catch (Exception ex)
             {
-                var resourceName = Type.FullName + ".razor";
-
-                using (var stream = Type.Assembly.GetManifestResourceStream(resourceName)!)
-                {
-                    try
-                    {
-                        if (stream is null)
-                            return;
-
-                        using (var reader = new StreamReader(stream))
-                        {
-                            snippet = await reader.ReadToEndAsync();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
+                Console.WriteLine(ex.Message);
             }
         }
     }
@@ -104,16 +91,18 @@ public partial class Demo : ComponentBase
     {
         clipboardTooltipTitle = "Copy to clipboard";
         clipboardTooltipIconName = IconName.Clipboard;
-        clipboardTooltipIconColor = IconColor.Dark;
+        clipboardTooltipIconColor = IconColor.None;
 
         StateHasChanged();
     }
 
-    private ValueTask CopyToClipboardAsync() => JS.InvokeVoidAsync("copyToClipboard", snippet, objRef);
+    private ValueTask CopyToClipboardAsync() => JS.InvokeVoidAsync("copyToClipboard", ProvidedCode, objRef);
 
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames => BuildClassNames(Class, ("bd-example-snippet bd-code-snippet", true));
 
     [Inject] protected IJSRuntime JS { get; set; } = default!;
 

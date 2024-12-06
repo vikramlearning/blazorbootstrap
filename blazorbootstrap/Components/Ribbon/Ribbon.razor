@@ -2,7 +2,10 @@
 @inherits BlazorBootstrapComponentBase
 
 <CascadingValue Value="this" Name="Ribbon1" IsFixed="true">
-    @ChildContent
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </CascadingValue>
 
 @if (tabs?.Any() ?? false)

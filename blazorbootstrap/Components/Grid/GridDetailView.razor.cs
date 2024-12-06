@@ -20,7 +20,7 @@ public partial class GridDetailView<TItem> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is null.
     /// </remarks>
-    [Parameter]
+    [Parameter] [EditorRequired]
     public RenderFragment<TItem> ChildContent { get; set; } = default!;
 
     internal RenderFragment<TItem> GetTemplate =>
@@ -29,6 +29,6 @@ public partial class GridDetailView<TItem> : BlazorBootstrapComponentBase
             builder.AddContent(100, ChildContent, rowData);
         };
 
-    [CascadingParameter] 
+    [CascadingParameter(Name = "Parent")]
     public Grid<TItem> Parent { get; set; } = default!;
 }

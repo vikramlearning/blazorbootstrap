@@ -50,15 +50,15 @@ public class GridDataProviderRequest<TItem>
                 if (index == 1)
                 {
                     orderedData = sortItem.SortDirection == SortDirection.Ascending
-                        ? resultData.OrderBy(sortItem.SortKeySelector.Compile())
-                                      : resultData.OrderByDescending(sortItem.SortKeySelector.Compile());
+                                    ? resultData.OrderBy(sortItem.SortKeySelector.Compile())
+                                    : resultData.OrderByDescending(sortItem.SortKeySelector.Compile());
                 }
                 else
                 {
                     if (orderedData != null)
                         orderedData = sortItem.SortDirection == SortDirection.Ascending
-                                          ? orderedData.ThenBy(sortItem.SortKeySelector.Compile())
-                                          : orderedData.ThenByDescending(sortItem.SortKeySelector.Compile());
+                                        ? orderedData.ThenBy(sortItem.SortKeySelector.Compile())
+                                        : orderedData.ThenByDescending(sortItem.SortKeySelector.Compile());
                 }
 
                 index++;
@@ -69,12 +69,10 @@ public class GridDataProviderRequest<TItem>
 
         // apply paging
         var totalCount = resultData!.Count(); // before paging
-
         if (PageNumber > 0 && PageSize > 0)
         {
-            var skip = (PageNumber - 1) * PageSize;
-            var take = PageSize;
-            resultData = resultData!.Skip(skip).Take(take);
+            int skip = (PageNumber - 1) * PageSize;
+            resultData = resultData!.Skip(skip).Take(PageSize);
         }
 
         return new GridDataProviderResult<TItem> { Data = resultData!.ToImmutableList(), TotalCount = totalCount };
