@@ -3,21 +3,23 @@
       OnShown="@(args => OnTabShownAsync(args))"
       OnHiding="@(args => OnTabHidingAsync(args))"
       OnHidden="@(args => OnTabHiddenAsync(args))">
-    <Tab Title="Home" Name="HomeTab" Active="true">
-        <Content>
+    
+    <Tab Title="Home" Active="true">
+        <ChildContent>
             <p class="mt-3">This is the placeholder content for the <b>Home</b> tab.</p>
-        </Content>
+        </ChildContent>
     </Tab>
-    <Tab Title="Profile" Name="ProfileTab">
-        <Content>
+    <Tab Title="Profile">
+        <ChildContent>
             <p class="mt-3">This is the placeholder content for the <b>Profile</b> tab.</p>
-        </Content>
+        </ChildContent>
     </Tab>
-    <Tab Title="Contact" Name="ContactTab">
-        <Content>
+    <Tab Title="Contact">
+        <ChildContent>
             <p class="mt-3">This is the placeholder content for the <b>Contact</b> tab.</p>
-        </Content>
+        </ChildContent>
     </Tab>
+    
 </Tabs>
 
 <p>Current Active Tab Name: <strong>@activeTabName</strong></p>

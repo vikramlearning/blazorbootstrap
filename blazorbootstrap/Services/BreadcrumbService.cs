@@ -4,13 +4,13 @@ public class BreadcrumbService
 {
     #region Events
 
-    internal event Action<List<BreadcrumbItem>> OnNotify = default!;
+    internal event Action<IReadOnlyCollection<BreadcrumbItem>> OnNotify = default!;
 
     #endregion
 
     #region Methods
 
-    public void Notify(List<BreadcrumbItem> items) => OnNotify?.Invoke(items);
+    public void Notify(IReadOnlyCollection<BreadcrumbItem> items) => OnNotify?.Invoke(items);
 
     #endregion
 }

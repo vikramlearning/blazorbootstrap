@@ -2,7 +2,10 @@
 @inherits BlazorBootstrapComponentBase
 
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="alert" @attributes="@AdditionalAttributes">
-    @ChildContent
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
     @if (Dismissable)
     {
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Type of CSS unit to specify the size of an element.
+/// </summary>
 public enum Unit
 {
     /// <summary>

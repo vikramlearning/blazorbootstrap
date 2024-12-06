@@ -9,5 +9,5 @@ public partial class GridColumns : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [Parameter]
-    public RenderFragment? ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }  
 }

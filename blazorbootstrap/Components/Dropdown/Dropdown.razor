@@ -8,7 +8,10 @@
                 <CascadingValue IsFixed="true" Value="@Size" Name="Size">
                     <CascadingValue IsFixed="true" Value="@Split" Name="Split">
                         <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-                            @ChildContent
+                            @if (ChildContent != null)
+                            {
+                                @ChildContent
+                            }
                         </div>
                     </CascadingValue>
                 </CascadingValue>

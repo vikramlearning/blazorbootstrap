@@ -1,9 +1,13 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a sidebar item within a <see cref="Sidebar2"/> component, or those within a <see cref="Sidebar2ItemGroup"/> component.
+/// </summary>
 public partial class Sidebar2Item : BlazorBootstrapComponentBase
 {
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         if (NavLinkExtensions.ShouldExpand(NavigationManager, ChildItems!, Match))
@@ -28,9 +32,9 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
 
         var level = Level + 1 + Level * 0.5;
 
-        if (HasChilds && !NavItemGroupExpanded)
+        if (HasChildren && !NavItemGroupExpanded)
             level += 0.25;
-        else if (!HasChilds && Level == 0)
+        else if (!HasChildren && Level == 0)
             level += 0.25;
 
         return $"padding-left:{level.ToString(CultureInfo.InvariantCulture)}rem;";
@@ -38,25 +42,63 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
 
     private void ToggleNavItemGroup() => NavItemGroupExpanded = !NavItemGroupExpanded;
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(ChildItems): ChildItems = (IReadOnlyCollection<NavItem>)parameter.Value; break;
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(CollapseSidebar): CollapseSidebar = (bool)parameter.Value; break;
+                case nameof(CustomIconName): CustomIconName = (string)parameter.Value; break;
+                case nameof(HasChildren): HasChildren = (bool)parameter.Value; break;
+                case nameof(Href): Href = (string)parameter.Value; break;
+                case nameof(IconName): IconName = (IconName)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Level): Level = (int)parameter.Value; break;
+                case nameof(Match): Match = (NavLinkMatch)parameter.Value; break;
+                case nameof(NavItemGroupExpanded): NavItemGroupExpanded = (bool)parameter.Value; break;
+                case nameof(OnNavItemGroupExpanded): OnNavItemGroupExpanded = (Action<bool>)parameter.Value; break;
+                case nameof(Root): Root = (Sidebar2)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Target): Target = (Target)parameter.Value; break;
+                case nameof(Text): Text = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             ("nav-item", true),
             ($"nav-item-level-{Level}", true),
-            ("nav-item-group", HasChilds),
+            ("nav-item-group", HasChildren),
             ("active", NavItemGroupExpanded));
 
     /// <summary>
     /// Gets or sets the child items.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public IEnumerable<NavItem>? ChildItems { get; set; }
+    public IReadOnlyCollection<NavItem>? ChildItems { get; set; }
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 
@@ -64,7 +106,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// Gets or sets the custom icon name.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? CustomIconName { get; set; }
@@ -73,16 +115,16 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// Gets or sets the has child items state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
-    public bool HasChilds { get; set; }
+    public bool HasChildren { get; set; }
 
     /// <summary>
     /// Gets or sets the link href attribute.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Href { get; set; }
@@ -96,7 +138,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     [Parameter]
     public IconColor IconColor { get; set; }
 
-    private string iconColorCssClass => IconColor.ToIconColorClass();
+    private string IconColorCssClass => IconColor.ToIconColorClass();
 
     /// <summary>
     /// Gets or sets the icon name.
@@ -132,7 +174,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// <summary>
     /// Get nav link style.
     /// </summary>
-    private string navLinkStyle => GetNavLinkStyle();
+    private string NavLinkStyle => GetNavLinkStyle();
 
     [Parameter] public Action<bool> OnNavItemGroupExpanded { get; set; } = default!;
 
@@ -151,13 +193,13 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     [Parameter]
     public Target Target { get; set; } = Target.None;
 
-    private string targetString => Target.ToTargetString()!;
+    private string TargetString => Target.ToTargetString()!;
 
     /// <summary>
     /// Gets or sets the sidebar item text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Text { get; set; }

@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents an item in a <see cref="DropDown"/>
+/// </summary>
 public partial class DropdownItem : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -22,6 +25,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
@@ -30,10 +34,9 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
         base.OnAfterRender(firstRender);
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
         previousActive = Active;
         previousDisabled = Disabled;
         previousTabIndex = TabIndex;
@@ -45,6 +48,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (isFirstRenderComplete)
@@ -88,18 +92,16 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     }
 
     private void SetAttributes()
-    {
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
-        if (Active && !AdditionalAttributes.TryGetValue("aria-current", out _))
+    { 
+        if (Active && !AdditionalAttributes!.TryGetValue("aria-current", out _))
             AdditionalAttributes.Add("aria-current", "true");
-        else if (!Active && AdditionalAttributes.TryGetValue("aria-current", out _))
-            AdditionalAttributes.Remove("aria-current");
+        else if (!Active)
+            AdditionalAttributes!.Remove("aria-current");
 
         // 'a' tag
         if (Type == DropdownItemType.Link)
         {
-            if (!AdditionalAttributes.TryGetValue("role", out _))
+            if (!AdditionalAttributes!.TryGetValue("role", out _))
                 AdditionalAttributes.Add("role", "button");
 
             if (!AdditionalAttributes.TryGetValue("href", out _))
@@ -123,46 +125,61 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
             }
             else
             {
-                if (AdditionalAttributes.TryGetValue("aria-disabled", out _))
-                    AdditionalAttributes.Remove("aria-disabled");
+                AdditionalAttributes.Remove("aria-disabled", out _);
 
                 if (TabIndex is not null && !AdditionalAttributes.TryGetValue("tabindex", out _))
                     AdditionalAttributes.Add("tabindex", TabIndex);
-                else if (TabIndex is null && AdditionalAttributes.TryGetValue("tabindex", out _))
+                else if (TabIndex is null)
                     AdditionalAttributes.Remove("tabindex");
             }
         }
         else // button
         {
-            if (AdditionalAttributes.TryGetValue("role", out _))
-                AdditionalAttributes.Remove("role");
-
-            if (AdditionalAttributes.TryGetValue("href", out _))
-                AdditionalAttributes.Remove("href");
-
-            if (AdditionalAttributes.TryGetValue("target", out _))
-                AdditionalAttributes.Remove("target");
-
-            if (AdditionalAttributes.TryGetValue("aria-disabled", out _))
-                AdditionalAttributes.Remove("aria-disabled");
-
-            // NOTE: This is handled in .razor page - #182
-            //if (this.Disabled && !Attributes.TryGetValue("disabled", out _))
-            //    Attributes.Add("disabled", "disabled");
-            //else if (!this.Disabled && Attributes.TryGetValue("disabled", out _))
-            //    Attributes.Remove("disabled");
+            AdditionalAttributes!.Remove("role", out _);
+            AdditionalAttributes.Remove("href", out _);
+            AdditionalAttributes.Remove("target", out _);
+            AdditionalAttributes.Remove("aria-disabled", out _);
 
             if (TabIndex is not null && !AdditionalAttributes.TryGetValue("tabindex", out _))
                 AdditionalAttributes.Add("tabindex", TabIndex);
-            else if (TabIndex is null && AdditionalAttributes.TryGetValue("tabindex", out _))
+            else if (TabIndex is null)
                 AdditionalAttributes.Remove("tabindex");
         }
+    }
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Active): Active = (bool)parameter.Value!; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Style): Style = (string)parameter.Value!; break;
+                case nameof(TabIndex): TabIndex = (int?)parameter.Value!; break;
+                case nameof(Target): Target = (Target)parameter.Value!; break;
+                case nameof(To): To = (string?)parameter.Value!; break;
+                case nameof(Type): Type = (DropdownItemType)parameter.Value!; break;
+                default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
+            }
+        }
+        // SetAttributes() is handled in OnParametersSet()
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
-
+    
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.DropdownItem, true),
@@ -173,7 +190,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// Gets or sets the dropdown item active state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Active { get; set; }
@@ -182,16 +199,16 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; } 
 
     /// <summary>
     /// If <see langword="true" />, dropdown item will be disabled.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
@@ -200,13 +217,13 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// Gets or sets the dropdown item tab index.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }
 
     /// <summary>
-    /// Gets or sets the target of dropdown item (if the type is link).
+    /// Gets or sets the target of dropdown item (if <see cref="Type"/> is <see cref="DropdownItemType.Link"/>).
     /// </summary>
     /// <remarks>
     /// Default value is <see cref="Target.None" />.
@@ -215,10 +232,10 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     public Target Target { get; set; } = Target.None;
 
     /// <summary>
-    /// Get or sets the link href attribute (if the type is link).
+    /// Get or sets the link href attribute (if <see cref="Type"/> is <see cref="DropdownItemType.Link"/>).
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? To { get; set; }

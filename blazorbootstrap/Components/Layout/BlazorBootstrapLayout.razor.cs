@@ -4,7 +4,7 @@ public partial class BlazorBootstrapLayout : BlazorBootstrapLayoutComponentBase
 {
     #region Properties, Indexers
 
-    protected override string? ClassNames => BuildClassNames(Class, ("bb-page", true));
+    protected string? ClassNames => BuildClassNames(Class, ("bb-page", true));
 
     [Parameter] public RenderFragment? ContentSection { get; set; }
     [Parameter] public string? ContentSectionCssClass { get; set; }

@@ -33,9 +33,9 @@
 </Grid>
 
 @code {
-    private IEnumerable<User> users = default!;
+    private IReadOnlyCollection<User> users = default!;
 
-    private async Task<IEnumerable<FilterOperatorInfo>> GridFiltersTranslationProvider()
+    private IReadOnlyCollection<FilterOperatorInfo> GridFiltersTranslationProvider()
     {
         var filtersTranslation = new List<FilterOperatorInfo>();
 
@@ -56,7 +56,7 @@
         // common
         filtersTranslation.Add(new("x", "Duidelijk", FilterOperator.Clear));
 
-        return await Task.FromResult(filtersTranslation);
+        return filtersTranslation;
     }
 
 
@@ -68,7 +68,7 @@
         return await Task.FromResult(request.ApplyTo(users));
     }
 
-    private IEnumerable<User> GetUsers()
+    private IReadOnlyCollection<User> GetUsers()
     {
         return new List<User>
         {

@@ -37,17 +37,17 @@
     private string? customerName1;
     private string? customerName2;
     private string? customerName3;
-    public IEnumerable<Customer>? customers;
+    public IReadOnlyCollection<Customer>? customers;
 
     private async Task<AutoCompleteDataProviderResult<Customer>> CustomersDataProvider(AutoCompleteDataProviderRequest<Customer> request)
     {
         if (customers is null) // pull customers only one time for client-side autocomplete
             customers = GetCustomers(); // call a service or an API to pull the customers
 
-        return await Task.FromResult(request.ApplyTo(customers.OrderBy(customer => customer.CustomerName)));
+        return await Task.FromResult(request.ApplyTo(customers.OrderBy(customer => customer.CustomerName).ToArray()));
     }
 
-    private IEnumerable<Customer> GetCustomers()
+    private IReadOnlyCollection<Customer> GetCustomers()
     {
         return new List<Customer> {
             new(1, "Pich S"),

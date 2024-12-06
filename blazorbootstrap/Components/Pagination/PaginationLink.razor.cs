@@ -1,21 +1,50 @@
-﻿namespace BlazorBootstrap;
+﻿using System;
 
+namespace BlazorBootstrap;
+
+/// <summary>
+/// Represents a pagination link within a <see cref="Pagination"/> component.
+/// </summary>
 public partial class PaginationLink : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected override void OnParametersSet()
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
     {
-        if (!string.IsNullOrWhiteSpace(LinkAriaLabel))
-            AdditionalAttributes?.Add("aria-label", LinkAriaLabel); // TODO: this is not working revisit again
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Class): Class = (string)parameter.Value; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(LinkAriaLabel): 
+                    LinkAriaLabel = (string)parameter.Value;
+                    if (!String.IsNullOrWhiteSpace(LinkAriaLabel))
+                        AdditionalAttributes["aria-label"] = LinkAriaLabel; // TODO: this is not working revisit again
+                    break;
+                case nameof(LinkIcon): LinkIcon = (IconName)parameter.Value; break;
+                case nameof(LinkText): LinkText = (string)parameter.Value; break;
+                case nameof(Style): Style = (string)parameter.Value; break;
+                case nameof(Text): Text = (string)parameter.Value; break;
 
-        base.OnParametersSet();
+                default:
+                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
 
+    /// <inheritdoc />
     protected override string? ClassNames =>
         BuildClassNames(Class, (BootstrapClass.PaginationLink, true));
 
@@ -23,7 +52,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
     /// Gets or sets the link aria-label attribute.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? LinkAriaLabel { get; set; }
@@ -41,7 +70,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
     /// Gets or sets the link text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? LinkText { get; set; }
@@ -50,7 +79,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
     /// Gets or sets the text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Text { get; set; }

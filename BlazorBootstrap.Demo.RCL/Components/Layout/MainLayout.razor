@@ -4,22 +4,22 @@
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
         <div>
-            <a class="nav-link py-2 px-2" href="@githubUrl" target="_blank" rel="noopener">
+            <a class="nav-link py-2 px-2" href="@GithubUrl" target="_blank" rel="noopener">
                 <i class="bi bi-github"></i>
             </a>
         </div>
         <div>
-            <a class="nav-link py-2 px-2" href="@twitterUrl" target="_blank" rel="noopener">
+            <a class="nav-link py-2 px-2" href="@TwitterUrl" target="_blank" rel="noopener">
                 <i class="bi bi-twitter-x"></i>
             </a>
         </div>
         <div>
-            <a class="nav-link py-2 px-2" href="@linkedInUrl" target="_blank" rel="noopener">
+            <a class="nav-link py-2 px-2" href="@LinkedInUrl" target="_blank" rel="noopener">
                 <i class="bi bi-linkedin"></i>
             </a>
         </div>
         <div>
-            <a class="nav-link py-2 px-2 pe-3" href="@openCollectiveUrl" target="_blank" rel="noopener">
+            <a class="nav-link py-2 px-2 pe-3" href="@OpenCollectiveUrl" target="_blank" rel="noopener">
                 <i class="bi bi-opencollective"></i>
             </a>
         </div>
@@ -64,10 +64,7 @@
                     <li class="mb-2">Designed and built with all the love in the world by the <strong><a href="https://www.nuget.org/packages/Blazor.Bootstrap">Blazor Bootstrap</a></strong> team with the help of our contributors.</li>
                     <li class="mb-2">Code licensed <a href="https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt" target="_blank" rel="license noopener">Apache License 2.0</a>.</li>
                     <li class="mb-2">Currently @Version.</li>
-                    @if (!string.IsNullOrWhiteSpace(DotNetVersion))
-                    {
-                        <li class="mb-2">Powered by @DotNetVersion</li>
-                    }
+                    <li class="mb-2">Powered by @DotNetVersion</li>
                 </ul>
             </div>
             <div class="col-6 col-lg-2 offset-lg-1 mb-3">

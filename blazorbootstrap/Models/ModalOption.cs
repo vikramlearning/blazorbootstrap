@@ -12,7 +12,7 @@ public class ModalOption
     /// <summary>
     /// Gets or sets the footer button custom CSS class.
     /// </summary>
-    public string FooterButtonCSSClass { get; set; } = default!;
+    public string FooterButtonCssClass { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the footer button text. Default text is `OK`.

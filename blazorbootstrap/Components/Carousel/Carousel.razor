@@ -28,7 +28,10 @@
         }
 
         <div class="@BootstrapClass.CarouselInner">
-            @ChildContent
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
         </div>
 
         @if (ShowPreviousNextControls)

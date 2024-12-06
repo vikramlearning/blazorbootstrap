@@ -29,7 +29,7 @@
 </Grid>
 
 @code {
-    private IEnumerable<Employee1>? employees;
+    private IReadOnlyCollection<Employee1>? employees;
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
@@ -43,13 +43,13 @@
     {
         if (!emp.IsActive)
             return "table-danger";
-        else if (emp.Designation == "Architect")
+        if (emp.Designation == "Architect")
             return "table-success";
 
         return string.Empty;
     }
 
-    private IEnumerable<Employee1> GetEmployees()
+    private IReadOnlyCollection<Employee1> GetEmployees()
     {
         return new List<Employee1>
         {

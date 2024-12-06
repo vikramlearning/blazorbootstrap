@@ -2,5 +2,8 @@
 @inherits BlazorBootstrapComponentBase
 
 <a @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-    @ChildContent
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </a>
