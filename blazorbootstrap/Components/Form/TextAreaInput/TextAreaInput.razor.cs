@@ -12,7 +12,11 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
 
     protected override void OnInitialized()
     {
+        AdditionalAttributes ??= new Dictionary<string, object>();
+
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+
+        base.OnInitialized();
     }
 
     /// <summary>

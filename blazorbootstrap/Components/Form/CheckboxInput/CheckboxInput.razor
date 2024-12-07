@@ -1,18 +1,20 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<input @ref="@Element"
-       type="checkbox"
-       id="@Id"
-       class="@ClassNames"
-       style="@StyleNames"
-       checked="@Value"
-       value="@Value"
-       disabled="@Disabled"
-       @attributes="@AdditionalAttributes"
-       @onchange="OnChange" />
+<div class="@BootstrapClass.FormCheck">
+    <input @ref="@Element"
+           type="checkbox"
+           id="@Id"
+           class="@ClassNames"
+           style="@StyleNames"
+           checked="@Value"
+           value="@Value"
+           disabled="@Disabled"
+           @attributes="@AdditionalAttributes"
+           @onchange="OnChange" />
 
-@if (!string.IsNullOrWhiteSpace(Label))
-{
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
         <label class="@BootstrapClass.FormCheckLabel" for="@Id">@Label</label>
-}
+    }
+</div>

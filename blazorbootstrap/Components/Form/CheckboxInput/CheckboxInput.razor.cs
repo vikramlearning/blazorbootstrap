@@ -12,7 +12,11 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
 
     protected override void OnInitialized()
     {
+        AdditionalAttributes ??= new Dictionary<string, object>();
+
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+
+        base.OnInitialized();
     }
 
     /// <summary>
@@ -59,7 +63,7 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     /// Gets the associated <see cref="Microsoft.AspNetCore.Components.Forms.EditContext" />.
     /// </summary>
     [CascadingParameter]
-    private EditContext EditContext { get; set; } = default!;
+    private EditContext? EditContext { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the label.
