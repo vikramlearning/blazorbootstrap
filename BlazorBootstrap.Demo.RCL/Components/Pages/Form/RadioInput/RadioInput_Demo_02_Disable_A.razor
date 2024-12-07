@@ -1,0 +1,22 @@
+﻿<RadioInput Label="Default checkbox" @bind-Value="isChecked" Disabled="disabled" />
+<RadioInput Label="Checked checkbox" @bind-Value="isChecked2" Disabled="disabled" />
+
+<div class="mt-3">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.ExtraSmall" @onclick="Enable"> Enable </Button>
+    <Button Color="ButtonColor.Secondary" Size="ButtonSize.ExtraSmall" @onclick="Disable"> Disable </Button>
+    <Button Color="ButtonColor.Warning" Size="ButtonSize.ExtraSmall" @onclick="Toggle"> Toggle </Button>
+</div>
+
+@code
+{
+    private bool isChecked;
+    private bool isChecked2 = true;
+
+    private bool disabled = true;
+
+    private void Enable() => disabled = false;
+
+    private void Disable() => disabled = true;
+
+    private void Toggle() => disabled = !disabled;
+}

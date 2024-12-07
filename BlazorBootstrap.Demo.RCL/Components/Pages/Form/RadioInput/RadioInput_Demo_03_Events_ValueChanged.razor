@@ -1,0 +1,13 @@
+﻿<RadioInput Label="Default checkbox" Value="isChecked" ValueExpression="() => isChecked" ValueChanged="(value) => CheckboxValueChanged(value)" />
+Current value: @isChecked
+@code
+{
+    private bool isChecked;
+
+    private void CheckboxValueChanged(bool value)
+    {
+        isChecked = value;
+
+        // do something
+    }
+}

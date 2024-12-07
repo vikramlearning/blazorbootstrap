@@ -32,7 +32,7 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     private async Task OnChange(ChangeEventArgs e)
     {
         var oldValue = Value;
-        var newValue = e.Value?.ToString() ?? string.Empty; // object
+        var newValue = e.Value is not null && (bool)e.Value;
 
         await ValueChanged.InvokeAsync(newValue);
 
@@ -46,20 +46,9 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     protected override string? ClassNames =>
         BuildClassNames(
             Class,
-            (BootstrapClass.FormControl, true),
-            (TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None)
+            (BootstrapClass.FormCheckInput, true),
+            (EditContext?.FieldCssClass(fieldIdentifier) ?? string.Empty, true)
         );
-
-    private string autoComplete => AutoComplete ? "true" : "false";
-
-    /// <summary>
-    /// If <see langword="true" />, NumberInput can complete the values automatically by the browser.
-    /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
-    [Parameter]
-    public bool AutoComplete { get; set; }
 
     /// <summary>
     /// Gets or sets the disabled state.
@@ -70,47 +59,37 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     [Parameter]
     public bool Disabled { get; set; }
 
-    [CascadingParameter] private EditContext EditContext { get; set; } = default!;
-
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    /// <summary>
+    /// Gets the associated <see cref="Microsoft.AspNetCore.Components.Forms.EditContext" />.
+    /// </summary>
+    [CascadingParameter]
+    private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the maximum length of the input.
+    /// Gets or sets the label.
     /// </summary>
     [Parameter]
-    public int? MaxLength { get; set; }
+    public string? Label { get; set; }
 
     /// <summary>
-    /// Gets or sets the placeholder.
+    /// Gets or sets the name.
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
     [Parameter]
-    public string? Placeholder { get; set; }
-
-    /// <summary>
-    /// Gets or sets the text alignment.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Alignment.None" />.
-    /// </remarks>
-    [Parameter]
-    public Alignment TextAlignment { get; set; } = Alignment.None;
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
     [Parameter]
-    public string Value { get; set; } = default!;
+    public bool Value { get; set; } = default!;
 
     /// <summary>
     /// This event fired on every user keystroke that changes the NumberInput value.
     /// </summary>
     [Parameter]
-    public EventCallback<string> ValueChanged { get; set; }
+    public EventCallback<bool> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<string>> ValueExpression { get; set; } = default!;
+    [Parameter] public Expression<Func<bool>> ValueExpression { get; set; } = default!;
 
     #endregion
 }
