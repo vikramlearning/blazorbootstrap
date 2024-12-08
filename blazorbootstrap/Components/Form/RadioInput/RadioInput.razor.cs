@@ -32,7 +32,7 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     private async Task OnChange(ChangeEventArgs e)
     {
         var oldValue = Value;
-        var newValue = e.Value is not null && (bool)e.Value;
+        var newValue = bool.TryParse(e.Value?.ToString(), out bool result) ? result : result;
 
         await ValueChanged.InvokeAsync(newValue);
 

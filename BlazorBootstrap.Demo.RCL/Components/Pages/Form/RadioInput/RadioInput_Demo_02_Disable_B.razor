@@ -1,5 +1,6 @@
-﻿<RadioInput @ref="radioInputRef1" Label="Default checkbox" @bind-Value="isChecked" />
-<RadioInput @ref="radioInputRef2" Label="Checked checkbox" @bind-Value="isChecked2" />
+﻿<p>Would you like to receive notifications?</p>
+<RadioInput @ref="radioInputRef" Name="EnableNotifications" Label="Yes" @bind-Value="isChecked" />
+<RadioInput @ref="radioInputRef2" Name="EnableNotifications" Label="No" @bind-Value="isChecked2" />
 
 <div class="mt-3">
     <Button Color="ButtonColor.Primary" Size="ButtonSize.ExtraSmall" @onclick="Enable"> Enable </Button>
@@ -8,7 +9,7 @@
 
 @code
 {
-    private RadioInput? radioInputRef1;
+    private RadioInput? radioInputRef;
     private RadioInput? radioInputRef2;
 
     private bool isChecked;
@@ -16,13 +17,13 @@
 
     private void Disable()
     {
-        radioInputRef1.Disable();
+        radioInputRef.Disable();
         radioInputRef2.Disable();
     }
 
     private void Enable()
     {
-        radioInputRef1.Enable();
+        radioInputRef.Enable();
         radioInputRef2.Enable();
     }
 }

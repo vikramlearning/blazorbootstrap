@@ -1,5 +1,6 @@
-﻿<RadioInput Label="Default checkbox" @bind-Value="isChecked" />
-<RadioInput Label="Checked checkbox" @bind-Value="isChecked2" />
+﻿<p>Would you like to receive notifications?</p>
+<RadioInput Name="EnableNotifications" Label="Yes" @bind-Value="isChecked" />
+<RadioInput Name="EnableNotifications" Label="No" @bind-Value="isChecked2" />
 
 @code
 {
