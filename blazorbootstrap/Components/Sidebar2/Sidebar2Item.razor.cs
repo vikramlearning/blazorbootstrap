@@ -66,7 +66,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
                 case nameof(NavItemGroupExpanded): NavItemGroupExpanded = (bool)parameter.Value; break;
                 case nameof(OnNavItemGroupExpanded): OnNavItemGroupExpanded = (Action<bool>)parameter.Value; break;
                 case nameof(Root): Root = (Sidebar2)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 case nameof(Target): Target = (Target)parameter.Value; break;
                 case nameof(Text): Text = (string)parameter.Value; break;
 
@@ -82,23 +82,14 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            ("nav-item", true),
-            ($"nav-item-level-{Level}", true),
-            ("nav-item-group", HasChildren),
-            ("active", NavItemGroupExpanded));
-
+     
     /// <summary>
     /// Gets or sets the child items.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public IReadOnlyCollection<NavItem>? ChildItems { get; set; }
+    [Parameter] public IReadOnlyCollection<NavItem>? ChildItems { get; set; }
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 
@@ -108,8 +99,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? CustomIconName { get; set; }
+    [Parameter] public string? CustomIconName { get; set; }
 
     /// <summary>
     /// Gets or sets the has child items state.
@@ -117,8 +107,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool HasChildren { get; set; }
+    [Parameter] public bool HasChildren { get; set; }
 
     /// <summary>
     /// Gets or sets the link href attribute.
@@ -126,8 +115,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? Href { get; set; }
+    [Parameter] public string? Href { get; set; }
 
     /// <summary>
     /// Gets or sets the icon color.
@@ -135,10 +123,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconColor.None" />.
     /// </remarks>
-    [Parameter]
-    public IconColor IconColor { get; set; }
-
-    private string IconColorCssClass => IconColor.ToIconColorClass();
+    [Parameter] public IconColor IconColor { get; set; } 
 
     /// <summary>
     /// Gets or sets the icon name.
@@ -146,8 +131,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconName.None" />.
     /// </remarks>
-    [Parameter]
-    public IconName IconName { get; set; }
+    [Parameter] public IconName IconName { get; set; }
 
     /// <summary>
     /// Gets or sets the nested level.
@@ -155,8 +139,7 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
-    [Parameter]
-    public int Level { get; set; } = 0;
+    [Parameter] public int Level { get; set; }  
 
     /// <summary>
     /// Gets or sets a value representing the URL matching behavior.
@@ -164,12 +147,11 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="NavLinkMatch.Prefix" />.
     /// </remarks>
-    [Parameter]
-    public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
+    [Parameter] public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
-    [Parameter] public bool NavItemGroupExpanded { get; set; } = false;
+    [Parameter] public bool NavItemGroupExpanded { get; set; }
 
     /// <summary>
     /// Get nav link style.
@@ -190,19 +172,15 @@ public partial class Sidebar2Item : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Target.None" />.
     /// </remarks>
-    [Parameter]
-    public Target Target { get; set; } = Target.None;
-
-    private string TargetString => Target.ToTargetString()!;
-
+    [Parameter] public Target Target { get; set; } = Target.None;
+      
     /// <summary>
     /// Gets or sets the sidebar item text.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? Text { get; set; }
+    [Parameter] public string? Text { get; set; }
 
     #endregion
 }

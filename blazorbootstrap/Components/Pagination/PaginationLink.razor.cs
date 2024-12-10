@@ -28,7 +28,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
                     break;
                 case nameof(LinkIcon): LinkIcon = (IconName)parameter.Value; break;
                 case nameof(LinkText): LinkText = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 case nameof(Text): Text = (string)parameter.Value; break;
 
                 default:
@@ -42,11 +42,7 @@ public partial class PaginationLink : BlazorBootstrapComponentBase
 
     #endregion
 
-    #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class, (BootstrapClass.PaginationLink, true));
+    #region Properties, Indexers 
 
     /// <summary>
     /// Gets or sets the link aria-label attribute.

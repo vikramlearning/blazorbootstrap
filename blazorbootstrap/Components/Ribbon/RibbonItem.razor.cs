@@ -52,25 +52,12 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
 
     #endregion
 
-    #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            ("bb-ribbon-item", true),
-            (BootstrapClass.Flex, true),
-            (BootstrapClass.FlexColumn, true),
-            (BootstrapClass.AlignItemsCenter, true),
-            ("ms-1", IsFirstItem),
-            ("me-1", IsLastItem),
-            ("mx-1", !IsFirstItem && !IsLastItem),
-            ("p-1", true));
+    #region Properties, Indexers 
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the custom icon name.
@@ -78,8 +65,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? CustomIconName { get; set; }
+    [Parameter] public string? CustomIconName { get; set; }
 
     /// <summary>
     /// Gets or sets the icon color.
@@ -87,8 +73,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconColor.None" />.
     /// </remarks>
-    [Parameter]
-    public IconColor IconColor { get; set; } = IconColor.None;
+    [Parameter] public IconColor IconColor { get; set; } = IconColor.None;
 
     /// <summary>
     /// Gets or sets the icon CSS class.
@@ -96,8 +81,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? IconCssClass { get; set; }
+    [Parameter] public string? IconCssClass { get; set; }
 
     /// <summary>
     /// Gets or sets the icon name.
@@ -105,8 +89,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconName.None" />.
     /// </remarks>
-    [Parameter]
-    public IconName IconName { get; set; } = IconName.None;
+    [Parameter] public IconName IconName { get; set; } = IconName.None;
 
     /// <summary>
     /// Gets or sets the icon size.
@@ -114,17 +97,15 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="BlazorBootstrap.IconSize.x3" />.
     /// </remarks>
-    [Parameter]
-    public IconSize IconSize { get; set; } = IconSize.x3;
+    [Parameter] public IconSize IconSize { get; set; } = IconSize.x3;
 
     /// <summary>
-    /// Gets or sets the image hieght. The height of the image in pixels.
+    /// Gets or sets the image height. The height of the image in pixels.
     /// </summary>
     /// <remarks>
     /// Default value is 28.
     /// </remarks>
-    [Parameter]
-    public double ImgHeight { get; set; } = 28;
+    [Parameter] public double ImgHeight { get; set; } = 28;
 
     /// <summary>
     /// Gets or sets the image source.
@@ -132,8 +113,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? ImgSrc { get; set; }
+    [Parameter] public string? ImgSrc { get; set; }
 
     /// <summary>
     /// Gets or sets the image width. The width of the image in pixels.
@@ -141,8 +121,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 28.
     /// </remarks>
-    [Parameter]
-    public double ImgWidth { get; set; } = 28;
+    [Parameter] public double ImgWidth { get; set; } = 28;
 
     /// <summary>
     /// Gets or sets the first item in the RibbonItemGroup.
@@ -150,8 +129,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool IsFirstItem { get; set; } = false;
+    [Parameter] public bool IsFirstItem { get; set; }
 
     /// <summary>
     /// Gets or sets the last item in the RibbonItemGroup.
@@ -159,14 +137,12 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool IsLastItem { get; set; } = false;
+    [Parameter] public bool IsLastItem { get; set; }
 
     /// <summary>
     /// Gets or sets the RibbonItem name.
     /// </summary>
-    [Parameter]
-    public string? Name { get; set; }
+    [Parameter] public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the parent.
@@ -177,8 +153,7 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the text to be displayed inside the RibbonItem.
     /// </summary>
-    [Parameter]
-    public string? Text { get; set; }
+    [Parameter] public string? Text { get; set; }
 
     #endregion
 }

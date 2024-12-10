@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<span @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<span @ref="@Element" id="@Id" class="@BootstrapClass.Badge @(ChildContent is null ? "p-2" : "") @EnumExtensions.BadgeColorClassMap[Color] @EnumExtensions.BadgeIndicatorClassMap[IndicatorType] @EnumExtensions.PositionClassMap[Position] @EnumExtensions.BadgePlacementClassMap[Placement] @Class" @attributes="@AdditionalAttributes">
     @if (ChildContent != null)
     {
         @ChildContent

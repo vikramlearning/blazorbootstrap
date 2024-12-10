@@ -86,8 +86,8 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
     /// <param name="heightUnit"></param>
     public async Task ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px)
     {
-        var widthWithUnit = $"width:{width.ToString(CultureInfo.InvariantCulture)}{widthUnit.ToCssString()}";
-        var heightWithUnit = $"height:{height.ToString(CultureInfo.InvariantCulture)}{heightUnit.ToCssString()}";
+        var widthWithUnit = $"width:{width.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[widthUnit]}";
+        var heightWithUnit = $"height:{height.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[heightUnit]}";
         await JsRuntime.InvokeVoidAsync("window.blazorChart.resize", Id, widthWithUnit, heightWithUnit);
     }
 
@@ -154,10 +154,10 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
         var style = "";
 
         if (Width > 0)
-            style += $"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};";
+            style += $"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[WidthUnit]};";
 
         if (Height > 0)
-            style += $"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()};";
+            style += $"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[HeightUnit]};";
 
         return style;
     }
@@ -196,7 +196,6 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
                 case nameof(Height): Height = (int?)parameter.Value; break;
                 case nameof(HeightUnit): HeightUnit = (Unit)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
                 case nameof(Width): Width = (int?)parameter.Value; break;
                 case nameof(WidthUnit): WidthUnit = (Unit)parameter.Value; break;
                 default: AdditionalAttributes![parameter.Name] = parameter.Value; break;

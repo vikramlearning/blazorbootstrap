@@ -221,7 +221,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
                 case nameof(OnDocumentLoaded): OnDocumentLoaded = (EventCallback<PdfViewerEventArgs>)parameter.Value; break;
                 case nameof(OnPageChanged): OnPageChanged = (EventCallback<PdfViewerEventArgs>)parameter.Value; break;
                 case nameof(Orientation): Orientation = (Orientation)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 case nameof(Url): Url = (string)parameter.Value; break;
 
                 default:

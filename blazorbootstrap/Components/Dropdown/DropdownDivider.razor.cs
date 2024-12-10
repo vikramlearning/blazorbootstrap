@@ -6,15 +6,7 @@ namespace BlazorBootstrap;
 /// Renders a divider within a <see cref="Dropdown"/> component, to separate different sections.
 /// </summary> 
 public partial class DropdownDivider : BlazorBootstrapComponentBase
-{
-    #region Properties, Indexers
-    
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class, (BootstrapClass.DropdownDivider, true));
-
-    #endregion
-
+{ 
     #region Methods
 
     /// <summary>
@@ -29,7 +21,6 @@ public partial class DropdownDivider : BlazorBootstrapComponentBase
             { 
                 case nameof(Class): Class = (string)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value; break; 
                 default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
         }

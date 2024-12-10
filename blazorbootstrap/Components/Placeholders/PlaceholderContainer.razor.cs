@@ -22,8 +22,7 @@ public partial class PlaceholderContainer : BlazorBootstrapComponentBase
                 case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
                 case nameof(Class): Class = (string)parameter.Value!; break;
                 case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
-
+                
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;
@@ -36,19 +35,14 @@ public partial class PlaceholderContainer : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class, (Animation.ToPlaceholderAnimationClass(), true));
-
+     
     /// <summary>
     /// Gets or sets the placeholder animation.
     /// </summary>
     /// <remarks>
     /// Default value is <see cref="PlaceholderAnimation.Glow" />.
     /// </remarks>
-    [Parameter]
-    public PlaceholderAnimation Animation { get; set; } = PlaceholderAnimation.Glow;
+    [Parameter] public PlaceholderAnimation Animation { get; set; } = PlaceholderAnimation.Glow;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
@@ -56,8 +50,7 @@ public partial class PlaceholderContainer : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     #endregion
 }

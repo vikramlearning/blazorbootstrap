@@ -7,7 +7,7 @@
             <CascadingValue IsFixed="true" Value="@Disabled" Name="Disabled">
                 <CascadingValue IsFixed="true" Value="@Size" Name="Size">
                     <CascadingValue IsFixed="true" Value="@Split" Name="Split">
-                        <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+                        <div @ref="@Element" id="@Id" class="@BootstrapClass.ButtonGroup @EnumExtensions.DropdownDirectionClassMap[Direction] @Class" @attributes="@AdditionalAttributes">
                             @if (ChildContent != null)
                             {
                                 @ChildContent

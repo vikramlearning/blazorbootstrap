@@ -21,7 +21,6 @@ public partial class CardLink : BlazorBootstrapComponentBase
                 case nameof(Class): Class = (string)parameter.Value; break;
                 case nameof(Disabled): Disabled = (bool)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
                 case nameof(TabIndex): TabIndex = (int?)parameter.Value; break;
                 case nameof(Target): Target = (Target)parameter.Value; break;
                 case nameof(To): To = (string)parameter.Value; break;
@@ -43,7 +42,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
 
         if (Target != Target.None)
             if (!AdditionalAttributes.TryGetValue("target", out _))
-                AdditionalAttributes.Add("target", Target.ToTargetString()!);
+                AdditionalAttributes.Add("target", EnumExtensions.TargetStringMap[Target]);
 
         if (Disabled)
         {
@@ -72,18 +71,11 @@ public partial class CardLink : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.CardLink, true),
-            (BootstrapClass.Disabled, Disabled));
-
+      
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; } = default!;
+    [Parameter] public RenderFragment? ChildContent { get; set; }  
 
     /// <summary>
     /// If <see langword="true" />, disables the card link.
@@ -91,8 +83,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
     /// Gets or sets the card link tab index.
@@ -100,8 +91,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public int? TabIndex { get; set; }
+    [Parameter] public int? TabIndex { get; set; }
 
     /// <summary>
     /// Gets or sets the card link target.
@@ -109,8 +99,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Target.None" />.
     /// </remarks>
-    [Parameter]
-    public Target Target { get; set; } = Target.None;
+    [Parameter] public Target Target { get; set; } = Target.None;
 
     /// <summary>
     /// Gets or sets the link href attribute.
@@ -118,8 +107,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? To { get; set; }
+    [Parameter] public string? To { get; set; }
 
     #endregion
     

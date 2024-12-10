@@ -101,9 +101,7 @@ public partial class Demo : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames => BuildClassNames(Class, ("bd-example-snippet bd-code-snippet", true));
-
+     
     [Inject] protected IJSRuntime JS { get; set; } = default!;
 
     [Parameter] public LanguageCode LanguageCode { get; set; } = LanguageCode.Razor;

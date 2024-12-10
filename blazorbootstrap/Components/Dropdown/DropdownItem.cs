@@ -1,9 +1,12 @@
-﻿namespace BlazorBootstrap;
+﻿using Microsoft.AspNetCore.Components.Rendering;
+using System.Text;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Represents an item in a <see cref="DropDown"/>
 /// </summary>
-public partial class DropdownItem : BlazorBootstrapComponentBase
+public sealed class DropdownItem : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -109,7 +112,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
 
             if (Target != Target.None)
                 if (!AdditionalAttributes.TryGetValue("target", out _))
-                    AdditionalAttributes.Add("target", Target.ToTargetString()!);
+                    AdditionalAttributes.Add("target", EnumExtensions.TargetStringMap[Target]);
 
             if (Disabled)
             {
@@ -162,7 +165,6 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
                 case nameof(Class): Class = (string)parameter.Value!; break;
                 case nameof(Disabled): Disabled = (bool)parameter.Value!; break;
                 case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
                 case nameof(TabIndex): TabIndex = (int?)parameter.Value!; break;
                 case nameof(Target): Target = (Target)parameter.Value!; break;
                 case nameof(To): To = (string?)parameter.Value!; break;
@@ -177,14 +179,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
 
     #endregion
 
-    #region Properties, Indexers
-    
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.DropdownItem, true),
-            (BootstrapClass.Active, Active),
-            (BootstrapClass.Disabled, Disabled));
+    #region Properties, Indexers 
 
     /// <summary>
     /// Gets or sets the dropdown item active state.
@@ -192,8 +187,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Active { get; set; }
+    [Parameter] public bool Active { get; set; }
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
@@ -201,8 +195,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; } 
+    [Parameter] public RenderFragment? ChildContent { get; set; } 
 
     /// <summary>
     /// If <see langword="true" />, dropdown item will be disabled.
@@ -210,8 +203,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown item tab index.
@@ -219,8 +211,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public int? TabIndex { get; set; }
+    [Parameter] public int? TabIndex { get; set; }
 
     /// <summary>
     /// Gets or sets the target of dropdown item (if <see cref="Type"/> is <see cref="DropdownItemType.Link"/>).
@@ -228,8 +219,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Target.None" />.
     /// </remarks>
-    [Parameter]
-    public Target Target { get; set; } = Target.None;
+    [Parameter] public Target Target { get; set; } = Target.None;
 
     /// <summary>
     /// Get or sets the link href attribute (if <see cref="Type"/> is <see cref="DropdownItemType.Link"/>).
@@ -237,8 +227,7 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? To { get; set; }
+    [Parameter] public string? To { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown item type.
@@ -246,8 +235,37 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="DropdownItemType.Button" />.
     /// </remarks>
-    [Parameter]
-    public DropdownItemType Type { get; set; } = DropdownItemType.Button;
+    [Parameter] public DropdownItemType Type { get; set; } = DropdownItemType.Button;
 
     #endregion
+
+    /// <inheritdoc />
+    protected override void BuildRenderTree(RenderTreeBuilder builder)
+    {
+        var classBuilder = new StringBuilder(BootstrapClass.DropdownItem);
+        if (Active)
+        {
+            classBuilder.Append(' ').Append(BootstrapClass.Active);
+        }
+
+        if (Disabled)
+        {
+            classBuilder.Append(' ').Append(BootstrapClass.Disabled);
+        }
+
+        classBuilder.Append(' ').Append(Class);
+
+        builder.OpenElement(0, "li");
+        builder.OpenElement(1, Type == DropdownItemType.Link ? "a" : "button");
+        builder.AddAttribute(2, "id", Id);
+        builder.AddAttribute(3, "class", classBuilder.ToString());
+        builder.AddMultipleAttributes(4, AdditionalAttributes);
+        builder.AddElementReferenceCapture(5, value => Element = value);
+        if (ChildContent != null)
+        {
+            builder.AddContent(6, ChildContent);
+        }
+        builder.CloseElement();
+        builder.CloseElement();
+    }
 }

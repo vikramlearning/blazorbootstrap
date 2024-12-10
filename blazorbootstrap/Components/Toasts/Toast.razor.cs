@@ -107,14 +107,14 @@ public partial class Toast : BlazorBootstrapComponentBase
     private string GetIconClass() =>
         ToastMessage.Type switch
         {
-            ToastType.Primary => TextColor.Primary.ToTextColorClass(),
-            ToastType.Secondary => TextColor.Secondary.ToTextColorClass(),
-            ToastType.Success => TextColor.Success.ToTextColorClass(),
-            ToastType.Danger => TextColor.Danger.ToTextColorClass(),
-            ToastType.Warning => TextColor.Warning.ToTextColorClass(),
-            ToastType.Info => TextColor.Info.ToTextColorClass(),
-            ToastType.Light => TextColor.Light.ToTextColorClass(),
-            ToastType.Dark => TextColor.Dark.ToTextColorClass(),
+            ToastType.Primary => EnumExtensions.TextColorClassMap[TextColor.Primary],
+            ToastType.Secondary => EnumExtensions.TextColorClassMap[TextColor.Secondary],
+            ToastType.Success => EnumExtensions.TextColorClassMap[TextColor.Success],
+            ToastType.Danger => EnumExtensions.TextColorClassMap[TextColor.Danger],
+            ToastType.Warning => EnumExtensions.TextColorClassMap[TextColor.Warning],
+            ToastType.Info => EnumExtensions.TextColorClassMap[TextColor.Info],
+            ToastType.Light => EnumExtensions.TextColorClassMap[TextColor.Light],
+            ToastType.Dark => EnumExtensions.TextColorClassMap[TextColor.Dark],
             _ => ""
         };
 
@@ -168,7 +168,7 @@ public partial class Toast : BlazorBootstrapComponentBase
                 case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value; break;
                 case nameof(Showing): Showing = (EventCallback<ToastEventArgs>)parameter.Value; break;
                 case nameof(Shown): Shown = (EventCallback<ToastEventArgs>)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 case nameof(ToastMessage): ToastMessage = (ToastMessage)parameter.Value; break;
 
                 default:
@@ -183,19 +183,14 @@ public partial class Toast : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class, (BootstrapClass.Toast, true));
-
+     
     /// <summary>
     /// Gets or sets the auto hide state.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AutoHide { get; set; }
+    [Parameter] public bool AutoHide { get; set; }
 
     /// <summary>
     /// Gets or sets the delay in milliseconds before hiding the toast.
@@ -203,20 +198,17 @@ public partial class Toast : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 5000.
     /// </remarks>
-    [Parameter]
-    public int Delay { get; set; } = 5000;
+    [Parameter] public int Delay { get; set; } = 5000;
 
     /// <summary>
     /// This event is fired when the toast has finished being hidden from the user.
     /// </summary>
-    [Parameter]
-    public EventCallback<ToastEventArgs> Hidden { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Hidden { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide instance method has been called.
     /// </summary>
-    [Parameter]
-    public EventCallback<ToastEventArgs> Hiding { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Hiding { get; set; }
 
     private string IconClass => $"{GetIconClass()} me-2".Trim();
 

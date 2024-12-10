@@ -1,7 +1,7 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<div @ref="@Element" id="@Id" class="bb-ribbon-item-group my-1 @BootstrapClass.AlignItemsCenter @BootstrapClass.BorderEnd @BootstrapClass.Flex @BootstrapClass.FlexColumn @Class" @attributes="@AdditionalAttributes">
     <div class="flex-grow-1">
         <div class="d-flex flex-row">
             @if (ChildContent != null)

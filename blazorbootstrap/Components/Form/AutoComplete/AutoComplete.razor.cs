@@ -312,7 +312,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
                 case nameof(Size): Size = (AutoCompleteSize)parameter.Value; break;
                 case nameof(StringComparison): StringComparison = (StringComparison)parameter.Value; break;
                 case nameof(StringFilterOperator): StringFilterOperator = (StringFilterOperator)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
                 case nameof(Value): Value = (string)parameter.Value; break;
                 case nameof(ValueChanged): ValueChanged = (EventCallback<string>)parameter.Value; break;
                 case nameof(ValueExpression): ValueExpression = (Expression<Func<string?>>)parameter.Value; break;
@@ -326,13 +326,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.FormControl, true),
-            (Size.ToAutoCompleteSizeClass(), true));
-
+      
     /// <summary>
     /// Gets or sets the data provider.
     /// </summary>
@@ -341,7 +335,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public AutoCompleteDataProviderDelegate<TItem>? DataProvider { get; set; } = null!;
+    public AutoCompleteDataProviderDelegate<TItem>? DataProvider { get; set; } 
 
     /// <summary>
     /// Gets all Style attributes for the autocomplete delete button.

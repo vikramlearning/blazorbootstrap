@@ -23,7 +23,7 @@ public partial class Image: BlazorBootstrapComponentBase
                 case nameof(IsResponsive): IsResponsive = (bool)parameter.Value!; break;
                 case nameof(IsThumbnail): IsThumbnail = (bool)parameter.Value!; break;
                 case nameof(Src): Src = (string)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
 
                 default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
@@ -35,13 +35,7 @@ public partial class Image: BlazorBootstrapComponentBase
 
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.ImageFluid, IsResponsive),
-            (BootstrapClass.ImageThumbnail, IsThumbnail));
-
+     
     /// <summary>
     /// Gets or sets the alternate text for the image.
     /// </summary>

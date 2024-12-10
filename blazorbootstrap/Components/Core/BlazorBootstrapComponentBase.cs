@@ -1,4 +1,5 @@
-﻿namespace BlazorBootstrap;
+﻿
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Root component for all Blazor Bootstrap components.
@@ -21,80 +22,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
         Id ??= IdUtility.GetNextId();
 
         base.OnInitialized();
-    }
-
-    /// <summary>
-    /// Builds the HTML class attribute string based on the list of classes that belong to the component.
-    /// </summary>
-    /// <param name="cssClassList">Classes that will be added based on conditions</param>
-    /// <returns>string to place in the class attribute of the html element</returns>
-    public static string BuildClassNames(params (string? cssClass, bool when)[] cssClassList)
-    {
-        var list = new HashSet<string>();
-
-        if (cssClassList is not null && cssClassList.Length > 0)
-            foreach (var (cssClass, when) in cssClassList)
-            {
-                if (!string.IsNullOrWhiteSpace(cssClass) && when)
-                    list.Add(cssClass);
-            }
-
-        if (list.Count > 0)
-            return string.Join(" ", list);
-        else
-            return string.Empty;
-    }
-
-    /// <summary>
-    /// Builds the HTML class attribute string based on the user-defined class and the list of classes that belong to the component.
-    /// </summary>
-    /// <param name="userDefinedCssClass">User defined classes</param>
-    /// <param name="cssClassList">Classes that will be added based on conditions</param>
-    /// <returns>string to place in the class attribute of the html element</returns>
-    public static string BuildClassNames(string? userDefinedCssClass, params (string? cssClass, bool when)[]? cssClassList)
-    {
-        var list = new HashSet<string>();
-
-        if (cssClassList is not null && cssClassList.Length > 0)
-            foreach (var (cssClass, when) in cssClassList)
-            {
-                if (!String.IsNullOrWhiteSpace(cssClass) && when)
-                    list.Add(cssClass);
-            }
-
-        if (!String.IsNullOrWhiteSpace(userDefinedCssClass))
-            list.Add(userDefinedCssClass.Trim());
-
-        if (list.Count > 0)
-            return String.Join(" ", list);
-        
-        return String.Empty;
-    }
-
-    /// <summary>
-    /// Builds the HTML style attribute string based on the user-defined style and the list of styles that belong to the component.
-    /// </summary>
-    /// <param name="userDefinedCssStyle">User defined styles</param>
-    /// <param name="cssStyleList">Styles that will be added based on conditions</param>
-    /// <returns>string to place in the style attribute of the html element</returns>
-    public static string BuildStyleNames(string? userDefinedCssStyle, params (string? cssStyle, bool when)[]? cssStyleList)
-    {
-        var list = new HashSet<string>();
-
-        if (cssStyleList is not null && cssStyleList.Length > 0)
-            foreach (var (cssStyle, when) in cssStyleList)
-            {
-                if (!String.IsNullOrWhiteSpace(cssStyle) && when)
-                    list.Add(cssStyle);
-            }
-
-        if (!String.IsNullOrWhiteSpace(userDefinedCssStyle))
-            list.Add(userDefinedCssStyle.Trim());
-
-        if (list.Count > 0)
-            return String.Join(';', list);
-        
-        return String.Empty;
     } 
     
     /// <inheritdoc />
@@ -149,27 +76,17 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// Additional HTML attributes to be added to the component.
     /// </summary>
-    public Dictionary<string, object> AdditionalAttributes { get; set; } = new();
+    protected Dictionary<string, object> AdditionalAttributes { get; } = new();
 
     /// <summary>
     /// class attribute to be applied in the Html render, for usages such as CSS.
     /// </summary>
     [Parameter] public string? Class { get; set; }
-
-    /// <summary>
-    /// Represents a collection of CSS classes in a tidy string format,
-    /// This is used to add CSS classes to the HTML/Razor element in the markup.
-    /// </summary>
-    /// <remarks>
-    /// The property returns <see langword="null" /> if no CSS classes were specified.
-    /// Otherwise, it returns the collection of CSS classes separated by a single whitespace.
-    /// </remarks>
-    protected virtual string? ClassNames => Class;
-    
+      
     /// <summary>
     /// Element reference for the component, to use in code when interfacing with the component.
     /// </summary>
-    public ElementReference Element { get; set; }
+    public ElementReference Element { get; protected set; }
 
     /// <summary>
     /// The HTML id of the component. If left empty, a unique id will be generated. <br/>
@@ -190,22 +107,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// Dependency injected Javascript Runtime
     /// </summary>
     [Inject] protected IJSRuntime JsRuntime { get; set; } = default!;
-
-    /// <summary>
-    /// the CSS style to be applied to the component
-    /// </summary>
-    [Parameter] public string? Style { get; set; }
-
-
-    /// <summary>
-    /// Represents a collection of CSS styling in a tidy string format,
-    /// This is used to add styling to the HTML/Razor element in the markup.
-    /// </summary>
-    /// <remarks>
-    /// The property returns <see langword="null" /> if no CSS styling items were specified.
-    /// Otherwise, it returns the collection of CSS classes separated by a single whitespace.
-    /// </remarks>
-    protected virtual string? StyleNames => Style;
 
     #endregion
 

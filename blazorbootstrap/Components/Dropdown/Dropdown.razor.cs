@@ -126,7 +126,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
                 case nameof(OnShown): OnShown = (EventCallback)parameter.Value!; break;
                 case nameof(Size): Size = (DropdownSize)parameter.Value!; break;
                 case nameof(Split): Split = (bool)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
             }
         }
@@ -137,21 +137,14 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.ButtonGroup, true),
-            (Direction.ToDropdownDirectionClass(), true));
-
+     
     /// <summary>
     /// If <see langword="true" />, enables the auto close.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool AutoClose { get; set; } = true;
+    [Parameter] public bool AutoClose { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the auto close behavior of the dropdown.
@@ -159,8 +152,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="DropdownAutoCloseBehavior.Both" />.
     /// </remarks>
-    [Parameter]
-    public DropdownAutoCloseBehavior AutoCloseBehavior { get; set; } = DropdownAutoCloseBehavior.Both;
+    [Parameter] public DropdownAutoCloseBehavior AutoCloseBehavior { get; set; } = DropdownAutoCloseBehavior.Both;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
@@ -168,8 +160,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; } 
+    [Parameter] public RenderFragment? ChildContent { get; set; } 
 
     /// <summary>
     /// Gets or sets the dropdown color.
@@ -177,8 +168,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="DropdownColor.None" />.
     /// </remarks>
-    [Parameter]
-    public DropdownColor Color { get; set; } = DropdownColor.None;
+    [Parameter] public DropdownColor Color { get; set; } = DropdownColor.None;
 
     /// <summary>
     /// Gets or sets the direction of the dropdown menu.
@@ -186,8 +176,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="DropdownDirection.Dropdown" />.
     /// </remarks>
-    [Parameter]
-    public DropdownDirection Direction { get; set; } = DropdownDirection.Dropdown;
+    [Parameter] public DropdownDirection Direction { get; set; } = DropdownDirection.Dropdown;
 
     /// <summary>
     /// If <see langword="true" />, dropdown will be disabled.
@@ -195,33 +184,28 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
     /// This event is fired when a dropdown element has been hidden from the user (will wait for CSS transitions to complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnHidden { get; set; }
+    [Parameter] public EventCallback OnHidden { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide method has been called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnHiding { get; set; }
+    [Parameter] public EventCallback OnHiding { get; set; }
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnShowing { get; set; }
+    [Parameter] public EventCallback OnShowing { get; set; }
 
     /// <summary>
     /// This event is fired when a dropdown element has been made visible to the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnShown { get; set; }
+    [Parameter] public EventCallback OnShown { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown size.
@@ -229,8 +213,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="DropdownSize.None" />.
     /// </remarks>
-    [Parameter]
-    public DropdownSize Size { get; set; } = DropdownSize.None;
+    [Parameter] public DropdownSize Size { get; set; } = DropdownSize.None;
 
     /// <summary>
     /// Gets or sets the toggle button split behavior.
@@ -238,8 +221,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Split { get; set; }
+    [Parameter] public bool Split { get; set; }
 
     #endregion
 }

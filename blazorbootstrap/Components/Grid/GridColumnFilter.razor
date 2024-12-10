@@ -2,7 +2,7 @@
 @inherits BlazorBootstrapComponentBase
 
 <div class="d-flex">
-    <button type="button" class="btn @(FilterButtonColor.ToButtonColorClass()) me-1 d-flex dropdown-toggle bb-grid-filter @FilterButtonCssClass" data-bs-toggle="dropdown" aria-expanded="false">
+    <button type="button" class="btn @(EnumExtensions.ButtonColorClassMap[FilterButtonColor]) me-1 d-flex dropdown-toggle bb-grid-filter @FilterButtonCssClass" data-bs-toggle="dropdown" aria-expanded="false">
         <span class="me-2">
             <Icon Name="@(String.IsNullOrWhiteSpace(FilterValue) ? IconName.Funnel : IconName.FunnelFill)" />
         </span>

@@ -84,7 +84,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
                 case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value; break;
                 case nameof(Showing): Showing = (EventCallback<ToastEventArgs>)parameter.Value; break;
                 case nameof(Shown): Shown = (EventCallback<ToastEventArgs>)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 case nameof(ToastMessage): ToastMessage = (ToastMessage)parameter.Value; break;
 
                 default:
@@ -99,22 +99,14 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Toast, true),
-            (ToastMessage!.Type.ToToastTextColorClass(), ToastMessage is not null),
-            (ToastMessage!.Type.ToToastBackgroundColorClass(), ToastMessage is not null));
-
+     
     /// <summary>
     /// Gets or sets the auto hide state.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool AutoHide { get; set; } = true;
+    [Parameter] public bool AutoHide { get; set; } = true;
 
     private string CloseButtonClass => $"btn-close-{ToastMessage!.Type.ToToastTextColorClass()}";
 
@@ -124,20 +116,17 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 5000.
     /// </remarks>
-    [Parameter]
-    public int Delay { get; set; } = 5000;
+    [Parameter] public int Delay { get; set; } = 5000;
 
     /// <summary>
     /// This event is fired when the toast has finished being hidden from the user.
     /// </summary>
-    [Parameter]
-    public EventCallback<ToastEventArgs> Hidden { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Hidden { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide instance method has been called.
     /// </summary>
-    [Parameter]
-    public EventCallback<ToastEventArgs> Hiding { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Hiding { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, shows the close button.
@@ -145,20 +134,17 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool ShowCloseButton { get; set; } = true;
+    [Parameter] public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
-    [Parameter]
-    public EventCallback<ToastEventArgs> Showing { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Showing { get; set; }
 
     /// <summary>
     /// This event is fired when the toast has been made visible to the user.
     /// </summary>
-    [Parameter]
-    public EventCallback<ToastEventArgs> Shown { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Shown { get; set; }
 
     /// <summary>
     /// Gets or sets the toast message.
@@ -166,8 +152,7 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public ToastMessage? ToastMessage { get; set; }
+    [Parameter] public ToastMessage? ToastMessage { get; set; }
 
     #endregion
 }

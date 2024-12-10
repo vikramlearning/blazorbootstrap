@@ -101,7 +101,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
                 case nameof(Placement): Placement = (ToastsPlacement)parameter.Value; break;
                 case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value; break;
                 case nameof(StackLength): StackLength = (int)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break; 
+ 
 
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
@@ -115,22 +115,14 @@ public partial class Toasts : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.ToastContainer, true),
-            (BootstrapClass.PositionFixed, true),
-            (Placement.ToToastsPlacementClass(), true));
-
+     
     /// <summary>
     /// Gets or sets the auto hide state.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AutoHide { get; set; }
+    [Parameter] public bool AutoHide { get; set; }
 
     /// <summary>
     /// Gets or sets the delay in milliseconds before hiding the toast.
@@ -138,8 +130,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 5000.
     /// </remarks>
-    [Parameter]
-    public int Delay { get; set; } = 5000;
+    [Parameter] public int Delay { get; set; } = 5000;
 
     /// <summary>
     /// Gets or sets the toast messages.
@@ -147,8 +138,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public List<ToastMessage>? Messages { get; set; } = default!;
+    [Parameter] public List<ToastMessage>? Messages { get; set; }
 
     /// <summary>
     /// Gets or sets the toast placement.
@@ -156,8 +146,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="ToastsPlacement.TopRight" />.
     /// </remarks>
-    [Parameter]
-    public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
+    [Parameter] public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
 
     /// <summary>
     /// If <see langword="true" />, shows the close button.
@@ -165,8 +154,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool ShowCloseButton { get; set; } = true;
+    [Parameter] public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the toast container maximum capacity.
@@ -174,8 +162,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 5.
     /// </remarks>
-    [Parameter]
-    public int StackLength { get; set; } = 5;
+    [Parameter] public int StackLength { get; set; } = 5;
 
     /// <summary>
     /// Dependency injected Toast Service

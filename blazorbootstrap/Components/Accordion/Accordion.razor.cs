@@ -13,15 +13,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     #endregion
 
     #region Methods
-
-    /// <inheritdoc />
-    protected override async ValueTask DisposeAsyncCore(bool disposing)
-    {
-        if (disposing) items = null;
-
-        await base.DisposeAsyncCore(disposing);
-    }
-
+      
     /// <summary>
     /// Hides the <see cref="AccordionItem" /> by index.
     /// </summary>
@@ -188,7 +180,6 @@ public partial class Accordion : BlazorBootstrapComponentBase
                 case nameof(OnHiding): OnHiding = (EventCallback<AccordionEventArgs>)parameter.Value; break;
                 case nameof(OnShowing): OnShowing = (EventCallback<AccordionEventArgs>)parameter.Value; break;
                 case nameof(OnShown): OnShown = (EventCallback<AccordionEventArgs>)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;
@@ -200,13 +191,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
 
     #endregion
 
-    #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Accordion, true),
-            (BootstrapClass.AccordionFlush, Flush));
+    #region Properties, Indexers 
 
     /// <summary>
     /// If <see langword="true" />, accordion items stay open when another item is opened.
@@ -233,8 +218,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Flush { get; set; }
+    [Parameter] public bool Flush { get; set; }
 
     /// <summary>
     /// This event is fired when an accordion item has been hidden from the user (will wait for CSS transitions to complete).

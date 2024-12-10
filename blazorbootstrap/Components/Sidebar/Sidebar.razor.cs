@@ -119,7 +119,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
                 case nameof(IconName): IconName = (IconName)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value!; break;
                 case nameof(ImageSrc): ImageSrc = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+                case "style": Style = (string)parameter.Value!; break;
                 case nameof(Title): Title = (string)parameter.Value; break;
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
@@ -145,27 +145,15 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
     #endregion
 
-    #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            ("bb-sidebar", true),
-            ("collapsed", collapseSidebar),
-            ("expanded", !collapseSidebar));
-
-    protected override string? StyleNames =>
-        BuildStyleNames(Style, 
-            ($"--bb-sidebar-width: {Width.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};", Width > 0));
-
+    #region Properties, Indexers 
+             
     /// <summary>
     /// Gets or sets the badge text.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? BadgeText { get; set; }
+    [Parameter] public string? BadgeText { get; set; }
 
     /// <summary>
     /// Gets or sets the custom icon name.
@@ -173,8 +161,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? CustomIconName { get; set; }
+    [Parameter] public string? CustomIconName { get; set; }
 
     /// <summary>
     /// Gets or sets the data provider.
@@ -184,7 +171,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public SidebarDataProviderDelegate? DataProvider { get; set; } = default!;
+    public SidebarDataProviderDelegate? DataProvider { get; set; } 
 
     /// <summary>
     /// Gets or sets the Href.
@@ -192,8 +179,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? Href { get; set; } = string.Empty;
+    [Parameter] public string? Href { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the IconName.
@@ -201,8 +187,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconName.None" />.
     /// </remarks>
-    [Parameter]
-    public IconName IconName { get; set; } = IconName.None;
+    [Parameter] public IconName IconName { get; set; } = IconName.None;
 
     /// <summary>
     /// Gets or sets the sidebar logo.
@@ -210,8 +195,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? ImageSrc { get; set; }
+    [Parameter] public string? ImageSrc { get; set; }
 
     private string? NavMenuCssClass { get; set; }
 
@@ -223,21 +207,22 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public string? Title { get; set; } = default!;
+    public string? Title { get; set; } 
 
     /// <summary>
     /// Gets or sets the sidebar width.
     /// </summary>
     /// <remarks>Default value is 270.</remarks>
-    [Parameter]
-    public float Width { get; set; } = 270;
+    [Parameter] public float Width { get; set; } = 270f;
 
     /// <summary>
     /// Gets or sets the sidebar width unit.
     /// </summary>
     /// <remarks>Default value is <see cref="Unit.Px" />.</remarks>
-    [Parameter]
-    public Unit WidthUnit { get; set; } = Unit.Px;
+    [Parameter] public Unit WidthUnit { get; set; } = Unit.Px;
+
+
+    private string Style { get; set; } = "";
 
     #endregion
 }

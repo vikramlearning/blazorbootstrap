@@ -304,7 +304,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     {
         var styleAttributes = new HashSet<string>();
 
-        if (FixedHeader) styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
+        if (FixedHeader) styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[Unit]}");
 
         return string.Join(";", styleAttributes);
     }
@@ -449,8 +449,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     }
 
     private void PrepareCheckboxIds()
-    {
-        checkboxIds ??= new Dictionary<int, string>();
+    { 
         var currentLength = checkboxIds.Count;
         var itemsCount = items?.Count ?? 0;
 
@@ -583,7 +582,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                 case nameof(SelectedItemsChanged): SelectedItemsChanged = (EventCallback<HashSet<TItem>>)parameter.Value!; break;
                 case nameof(SelectionMode): SelectionMode = (GridSelectionMode)parameter.Value!; break;
                 case nameof(SettingsProvider): SettingsProvider = (GridSettingsProviderDelegate)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
                 case nameof(TableHeaderCssClass): TableHeaderCssClass = (string)parameter.Value!; break;
                 case nameof(Unit): Unit = (Unit)parameter.Value!; break;
                 
@@ -596,14 +595,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            ("bb-table", true),
-            (BootstrapClass.TableSticky, FixedHeader));
-
-
+     
     /// <summary>
     /// Gets or sets adding a column for detailed view.
     /// </summary>
@@ -874,8 +866,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is '{ 10, 20, 50 }'.
     /// </remarks>
-    [Parameter]
-    //[EditorRequired]
+    [Parameter] 
     public int[] PageSizeSelectorItems { get; set; } = { 10, 20, 50 };
 
     /// <summary>

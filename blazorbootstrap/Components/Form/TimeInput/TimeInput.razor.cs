@@ -271,7 +271,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
                 case nameof(Max): Max = (TValue)parameter.Value; break;
                 case nameof(Min): Min = (TValue)parameter.Value; break;
                 case nameof(Placeholder): Placeholder = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
                 case nameof(Value): Value = (TValue)parameter.Value; break;
                 case nameof(ValueChanged): ValueChanged = (EventCallback<TValue>)parameter.Value; break;
                 case nameof(ValueExpression): ValueExpression = (Expression<Func<TValue>>)parameter.Value; break;
@@ -284,11 +284,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class, (BootstrapClass.FormControl, true));
-
+     
     /// <summary>
     /// If <see langword="true" />, DateInput can complete the values automatically by the browser.
     /// </summary>

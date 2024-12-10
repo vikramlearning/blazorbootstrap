@@ -287,23 +287,14 @@ public partial class Tabs : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Nav, true),
-            (BootstrapClass.NavTabs, NavStyle == NavStyle.Tabs),
-            (BootstrapClass.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills)),
-            (BootstrapClass.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline)),
-            (BootstrapClass.FlexColumn, IsVertical));
-
+     
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter] public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the tabs fade effect.
@@ -311,8 +302,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool EnableFadeEffect { get; set; }
+    [Parameter] public bool EnableFadeEffect { get; set; }
 
     private bool IsVertical =>
         NavStyle == NavStyle.Vertical
@@ -327,32 +317,27 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="NavStyle.Tabs" />.
     /// </remarks>
-    [Parameter]
-    public NavStyle NavStyle { get; set; } = NavStyle.Tabs;
+    [Parameter] public NavStyle NavStyle { get; set; } = NavStyle.Tabs;
 
     /// <summary>
     /// This event fires after a new tab is shown (and thus the previous active tab is hidden).
     /// </summary>
-    [Parameter]
-    public EventCallback<TabsEventArgs> OnHidden { get; set; }
+    [Parameter] public EventCallback<TabsEventArgs> OnHidden { get; set; }
 
     /// <summary>
     /// This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).
     /// </summary>
-    [Parameter]
-    public EventCallback<TabsEventArgs> OnHiding { get; set; }
+    [Parameter] public EventCallback<TabsEventArgs> OnHiding { get; set; }
 
     /// <summary>
     /// This event fires on tab show, but before the new tab has been shown.
     /// </summary>
-    [Parameter]
-    public EventCallback<TabsEventArgs> OnShowing { get; set; }
+    [Parameter] public EventCallback<TabsEventArgs> OnShowing { get; set; }
 
     /// <summary>
     /// This event fires on tab show after a tab has been shown.
     /// </summary>
-    [Parameter]
-    public EventCallback<TabsEventArgs> OnShown { get; set; }
+    [Parameter] public EventCallback<TabsEventArgs> OnShown { get; set; }
 
     private string? TabContentCssClass => IsVertical ? "tab-content flex-grow-1" : "tab-content";
 

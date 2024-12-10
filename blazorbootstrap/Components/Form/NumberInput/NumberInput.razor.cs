@@ -359,7 +359,6 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
                 case nameof(Min): Min = (TValue)parameter.Value; break;
                 case nameof(Placeholder): Placeholder = (string)parameter.Value; break;
                 case nameof(Step): Step = (double?)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
                 case nameof(TextAlignment): TextAlignment = (Alignment)parameter.Value; break;
                 case nameof(Value): Value = (TValue)parameter.Value; break;
                 case nameof(ValueChanged): ValueChanged = (EventCallback<TValue>)parameter.Value; break;
@@ -373,22 +372,14 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.FormControl, true),
-            (TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None));
-
+     
     /// <summary>
     /// If <see langword="true" />, allows negative numbers.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AllowNegativeNumbers { get; set; }
+    [Parameter] public bool AllowNegativeNumbers { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, NumberInput can complete the values automatically by the browser.
@@ -396,8 +387,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AutoComplete { get; set; }
+    [Parameter] public bool AutoComplete { get; set; }
 
     /// <summary>
     /// Gets or sets the disabled state .
@@ -405,8 +395,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 

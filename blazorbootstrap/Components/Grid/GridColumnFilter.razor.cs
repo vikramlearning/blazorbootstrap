@@ -156,7 +156,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
                 case nameof(Id): Id = (string)parameter.Value!; break;
                 case nameof(PropertyType): PropertyType = (Type)parameter.Value!; break;
                 case nameof(PropertyTypeName): PropertyTypeName = (string)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
                 case nameof(Unit): Unit = (Unit)parameter.Value!; break;
 
                 default: AdditionalAttributes[parameter.Name] = parameter.Value; break;

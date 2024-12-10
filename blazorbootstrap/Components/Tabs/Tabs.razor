@@ -7,9 +7,16 @@
 
 @if (tabs?.Any() ?? false)
 {
+    var cssClass = NavStyle switch
+    {
+        NavStyle.Tabs => BootstrapClass.NavTabs,
+        NavStyle.Pills or NavStyle.VerticalPills => BootstrapClass.NavPills,
+        NavStyle.Underline or NavStyle.VerticalUnderline => BootstrapClass.NavUnderline,
+        _ => ""
+    };
     <div class="@NavParentDivCssClass">
         <nav>
-            <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" role="tablist">
+            <div @ref="@Element" id="@Id" class="@BootstrapClass.Nav @cssClass @(IsVertical ? BootstrapClass.FlexColumn : "") @Class" @attributes="@AdditionalAttributes" role="tablist">
                 @foreach (var t in tabs)
                 {
                     var tabElementId = t.Id;

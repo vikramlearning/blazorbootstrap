@@ -7,14 +7,7 @@
 public partial class Card : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers
-    
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Card, true),
-            (TextAlignment.ToTextAlignmentClass(), true),
-            (Color.ToCardColorClass(), true));
-
+      
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
@@ -22,7 +15,7 @@ public partial class Card : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment? ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; } 
 
     /// <summary>
     /// Gets or sets the card color.
@@ -61,7 +54,6 @@ public partial class Card : BlazorBootstrapComponentBase
                 case nameof(Class): Class = (string)parameter.Value; break;
                 case nameof(Color): Color = (CardColor)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
                 case nameof(TextAlignment): TextAlignment = (Alignment)parameter.Value; break;
                 
                 default:

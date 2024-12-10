@@ -62,7 +62,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     {
         objRef ??= DotNetObjectReference.Create(this);
         
-        if (IsVertical)
+        if (NavStyle is NavStyle.Vertical or NavStyle.VerticalPills or NavStyle.VerticalUnderline)
             AdditionalAttributes.Add("aria-orientation", "vertical");
 
         await base.OnInitializedAsync();
@@ -291,7 +291,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
                 case nameof(OnHiding): OnHiding = (EventCallback<RibbonEventArgs>)parameter.Value; break;
                 case nameof(OnShowing): OnShowing = (EventCallback<RibbonEventArgs>)parameter.Value; break;
                 case nameof(OnShown): OnShown = (EventCallback<RibbonEventArgs>)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
 
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
@@ -311,21 +311,11 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Nav, true),
-            (BootstrapClass.NavTabs, NavStyle == NavStyle.Tabs),
-            (BootstrapClass.NavPills, NavStyle is (NavStyle.Pills or NavStyle.VerticalPills)),
-            (BootstrapClass.NavUnderline, NavStyle is (NavStyle.Underline or NavStyle.VerticalUnderline)),
-            (BootstrapClass.FlexColumn, IsVertical));
-
+     
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the tabs fade effect.
@@ -333,60 +323,40 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool EnableFadeEffect { get; set; }
-
-    /// <summary>
-    /// If <see langword="true" />, Ribbon will be rendered vertically.
-    /// </summary>
-    private bool IsVertical =>
-        NavStyle == NavStyle.Vertical
-        || NavStyle == NavStyle.VerticalPills
-        || NavStyle == NavStyle.VerticalUnderline;
-
-    /// <summary>
-    /// CSS class applied to the parent div of the tab content when vertical.
-    /// </summary>
-    private string? NavParentDivCssClass => IsVertical ? "d-flex" : default;
-
+    [Parameter] public bool EnableFadeEffect { get; set; }
+     
     /// <summary>
     /// Get or sets the nav style.
     /// </summary>
     /// <remarks>
     /// Default value is <see cref="NavStyle.Underline" />.
     /// </remarks>
-    [Parameter]
-    public NavStyle NavStyle { get; set; } = NavStyle.Underline;
+    [Parameter] public NavStyle NavStyle { get; set; } = NavStyle.Underline;
 
     /// <summary>
     /// This event fires when the user clicks the corresponding <see cref="RibbonItem" />.
     /// </summary>
-    [Parameter]
-    public EventCallback<RibbonItemEventArgs> OnClick { get; set; }
+    [Parameter] public EventCallback<RibbonItemEventArgs> OnClick { get; set; }
 
     /// <summary>
     /// This event fires after a new tab is shown (and thus the previous active tab is hidden).
     /// </summary>
-    [Parameter]
-    public EventCallback<RibbonEventArgs> OnHidden { get; set; }
+    [Parameter] public EventCallback<RibbonEventArgs> OnHidden { get; set; }
 
     /// <summary>
     /// This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).
     /// </summary>
-    [Parameter]
-    public EventCallback<RibbonEventArgs> OnHiding { get; set; }
+    [Parameter] public EventCallback<RibbonEventArgs> OnHiding { get; set; }
 
     /// <summary>
     /// This event fires on tab show, but before the new tab has been shown.
     /// </summary>
-    [Parameter]
-    public EventCallback<RibbonEventArgs> OnShowing { get; set; }
+    [Parameter] public EventCallback<RibbonEventArgs> OnShowing { get; set; }
 
     /// <summary>
     /// This event fires on tab show after a tab has been shown.
     /// </summary>
-    [Parameter]
-    public EventCallback<RibbonEventArgs> OnShown { get; set; }
+    [Parameter] public EventCallback<RibbonEventArgs> OnShown { get; set; }
 
     /// <summary>
     /// CSS class applied to the tab content container.

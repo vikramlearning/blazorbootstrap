@@ -1,10 +1,13 @@
-﻿namespace BlazorBootstrap;
+﻿using Microsoft.AspNetCore.Components.Rendering;
+using System.Text;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Use Blazor Bootstrap button styles for actions in forms, dialogs, and more with support for multiple sizes, states, etc. <br/>
 /// This component is based on the <see href="https://getbootstrap.com/docs/5.0/components/buttons/">Bootstrap Button</see> component.
 /// </summary>
-public partial class Button : BlazorBootstrapComponentBase
+public sealed class Button : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -159,9 +162,9 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Default <see cref="LoadingTemplate"/> for a button in case the user does not provide one.
     /// </summary>
     /// <returns>The default loading template</returns>
-    protected virtual RenderFragment ProvideDefaultLoadingTemplate() => builder =>
+    private RenderFragment ProvideDefaultLoadingTemplate() => builder =>
     {
-        builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-{(Size == ButtonSize.None ? ButtonSize.Medium : Size).ToButtonSpinnerSizeClass()}\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}");
+        builder.AddMarkupContent(0, $"<span class=\"spinner-border spinner-border-{EnumExtensions.ButtonSpinnerSizeClassMap[Size]}\" role=\"status\" aria-hidden=\"true\"></span> {LoadingText}");
     };
 
     private void SetAttributes()
@@ -185,9 +188,9 @@ public partial class Button : BlazorBootstrapComponentBase
 
             if (Target != Target.None)
                 if (!AdditionalAttributes.TryGetValue("target", out _))
-                    AdditionalAttributes.Add("target", Target.ToTargetString()!);
+                    AdditionalAttributes.Add("target", EnumExtensions.TargetStringMap[Target]);
                 else
-                    AdditionalAttributes["target"] = Target.ToTargetString()!;
+                    AdditionalAttributes["target"] = EnumExtensions.TargetStringMap[Target];
 
             if (Disabled)
             {
@@ -218,25 +221,24 @@ public partial class Button : BlazorBootstrapComponentBase
         }
 
         // button enabled (and) tooltip text not empty
-        if (!Disabled && !string.IsNullOrWhiteSpace(TooltipTitle))
+        if (!Disabled && !String.IsNullOrWhiteSpace(TooltipTitle))
         {
             // Ref: https://getbootstrap.com/docs/5.2/components/buttons/#toggle-states
             // The below code creates an issue when the `button` or `a` element has a tooltip.
 
             if (!AdditionalAttributes.TryGetValue("data-bs-placement", out _))
-                AdditionalAttributes.Add("data-bs-placement", TooltipPlacement.ToTooltipPlacementName());
+                AdditionalAttributes.Add("data-bs-placement", EnumExtensions.TooltipPlacementNameMap[TooltipPlacement]);
 
             AdditionalAttributes["title"] = TooltipTitle;
 
-            AdditionalAttributes["data-bs-custom-class"] = TooltipColor.ToTooltipColorClass()!;
+            AdditionalAttributes["data-bs-custom-class"] = EnumExtensions.TooltipColorClassMap[TooltipColor]!;
         }
-        // button disabled (or) tooltip text empty
-        else
+        else // button disabled (or) tooltip text empty
         {
             AdditionalAttributes.Remove("data-bs-toggle");
             AdditionalAttributes.Remove("data-bs-placement");
             AdditionalAttributes.Remove("title");
-            AdditionalAttributes.Remove("data-bs-custom-class", out _);
+            AdditionalAttributes.Remove("data-bs-custom-class");
         }
     }
 
@@ -264,7 +266,6 @@ public partial class Button : BlazorBootstrapComponentBase
                 case nameof(Outline): Outline = (bool)parameter.Value; break;
                 case nameof(Position): Position = (Position)parameter.Value; break;
                 case nameof(Size): Size = (ButtonSize)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
                 case nameof(TabIndex): TabIndex = (int?)parameter.Value; break;
                 case nameof(Target): Target = (Target)parameter.Value; break;
                 case nameof(To): To = (string?)parameter.Value; break;
@@ -273,10 +274,10 @@ public partial class Button : BlazorBootstrapComponentBase
                 case nameof(TooltipTitle): TooltipTitle = (string)parameter.Value; break;
                 case nameof(Type): 
                     Type = (ButtonType)parameter.Value;
-                    ButtonTypeString = Type.ToButtonTypeString();
+                    ButtonTypeString = EnumExtensions.ButtonTypeStringMap[Type];
                     break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -300,20 +301,7 @@ public partial class Button : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Button, true),
-            (Color.ToButtonColorClass(), Color != ButtonColor.None && !Outline),
-            (Color.ToButtonOutlineColorClass(), Color != ButtonColor.None && Outline),
-            (Size.ToButtonSizeClass(), Size != ButtonSize.None),
-            (BootstrapClass.ButtonDisabled, Disabled && Type == ButtonType.Link),
-            (BootstrapClass.ButtonActive, Active),
-            (BootstrapClass.ButtonBlock, Block),
-            (BootstrapClass.ButtonLoading!, Loading && LoadingTemplate is not null),
-            (Position.ToPositionClass(), Position != Position.None));
-
+     
     /// <summary>
     /// Gets or sets the button active state.
     /// </summary>
@@ -341,7 +329,7 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment? ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }  
 
     /// <summary>
     /// Gets or sets the button color.
@@ -377,7 +365,7 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment? LoadingTemplate { get; set; } = default!;
+    public RenderFragment? LoadingTemplate { get; set; }  
 
     /// <summary>
     /// Gets or sets the loading text.
@@ -481,6 +469,59 @@ public partial class Button : BlazorBootstrapComponentBase
     public ButtonType Type { get; set; } = ButtonType.Button;
 
     #endregion
+     
+
+    /// <inheritdoc />
+    protected override void BuildRenderTree(RenderTreeBuilder builder)
+    {
+        var btnClasses = new StringBuilder(BootstrapClass.Button);
+        btnClasses.Append(' ').Append(Outline ? EnumExtensions.ButtonOutlineColorClassMap[Color] : EnumExtensions.ButtonColorClassMap[Color]);
+
+        btnClasses.Append(' ').Append(EnumExtensions.ButtonSizeClassMap[Size]);
+        if (Disabled && Type == ButtonType.Link)
+        {
+            btnClasses.Append(' ').Append(BootstrapClass.ButtonDisabled);
+        }
+
+        if (Active)
+        {
+            btnClasses.Append(' ').Append(BootstrapClass.ButtonActive);
+        }
+
+        if (Block)
+        {
+            btnClasses.Append(' ').Append(BootstrapClass.ButtonBlock);
+        }
+        
+        if (Loading && LoadingTemplate is not null)
+        {
+            btnClasses.Append(' ').Append(BootstrapClass.ButtonLoading);
+        }
+
+        btnClasses.Append(' ').Append(EnumExtensions.PositionClassMap[Position]);
+        btnClasses.Append(' ').Append(Class);
+
+
+        builder.OpenElement(0, Type == ButtonType.Link ? "a" : "button");
+        builder.AddAttribute(1, "type", ButtonTypeString);
+        builder.AddAttribute(2, "id", Id);
+        builder.AddAttribute(3, "class", btnClasses.ToString());
+        builder.AddAttribute(4, "disabled", Disabled);
+        builder.AddMultipleAttributes(5, AdditionalAttributes);
+
+        builder.AddElementReferenceCapture(6, (value) => { Element = value; });
+        if (Loading && LoadingTemplate is not null)
+        { 
+            builder.AddContent(7, LoadingTemplate);
+        }
+        else if (ChildContent != null)
+        {
+            builder.AddContent(16, ChildContent); 
+        } 
+        builder.CloseElement();
+    }
+
+
 
     // TODO: Review
     // - Disable text wrapping: https://getbootstrap.com/docs/5.1/components/buttons/#disable-text-wrapping

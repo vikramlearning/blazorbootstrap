@@ -130,7 +130,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
                 case nameof(Placement): Placement = (Placement)parameter.Value!; break;
                 case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value!; break;
                 case nameof(Size): Size = (OffcanvasSize)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
                 case nameof(TabIndex): TabIndex = (int)parameter.Value!; break;
                 case nameof(Title): Title = (string)parameter.Value!; break;
                 case nameof(UseStaticBackdrop): UseStaticBackdrop = (bool)parameter.Value!; break;
@@ -147,22 +147,14 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Offcanvas, true),
-            (Placement.ToOffcanvasPlacementClass(), true),
-            (Size.ToOffcanvasSizeClass(), true));
-
+     
     /// <summary>
     /// Gets or sets the body CSS class.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string BodyCssClass { get; set; } = default!;
+    [Parameter] public string BodyCssClass { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the body template.
@@ -170,8 +162,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment BodyTemplate { get; set; } = default!;
+    [Parameter] public RenderFragment? BodyTemplate { get; set; } 
 
     /// <summary>
     /// If <see langword="true" />, offcanvas closes when escape key is pressed.
@@ -179,8 +170,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool CloseOnEscape { get; set; } = true;
+    [Parameter] public bool CloseOnEscape { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the footer CSS class.
@@ -188,8 +178,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string FooterCssClass { get; set; } = default!;
+    [Parameter] public string FooterCssClass { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the footer template.
@@ -197,8 +186,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment FooterTemplate { get; set; } = default!;
+    [Parameter] public RenderFragment? FooterTemplate { get; set; } 
 
     /// <summary>
     /// Gets or sets the header CSS class.
@@ -206,8 +194,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string HeaderCssClass { get; set; } = default!;
+    [Parameter] public string HeaderCssClass { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the header template.
@@ -215,8 +202,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment HeaderTemplate { get; set; } = default!;
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; } 
 
     /// <summary>
     /// Indicates whether body scrolling is allowed while offcanvas is open.
@@ -224,34 +210,29 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool IsScrollable { get; set; }
+    [Parameter] public bool IsScrollable { get; set; }
 
     /// <summary>
     /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnHidden { get; set; }
+    [Parameter] public EventCallback OnHidden { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide method has been called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnHiding { get; set; }
+    [Parameter] public EventCallback OnHiding { get; set; }
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnShowing { get; set; }
+    [Parameter] public EventCallback OnShowing { get; set; }
 
     /// <summary>
     /// This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnShown { get; set; }
+    [Parameter] public EventCallback OnShown { get; set; }
 
     /// <summary>
     /// Gets or sets the offcanvas placement.
@@ -259,8 +240,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Placement.End" />.
     /// </remarks>
-    [Parameter]
-    public Placement Placement { get; set; } = Placement.End;
+    [Parameter] public Placement Placement { get; set; } = Placement.End;
 
     /// <summary>
     /// If <see langword="true" />, modal shows close button in the header.
@@ -268,8 +248,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool ShowCloseButton { get; set; } = true;
+    [Parameter] public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the offcanvas size.
@@ -277,8 +256,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="OffcanvasSize.Regular" />.
     /// </remarks>
-    [Parameter]
-    public OffcanvasSize Size { get; set; } = OffcanvasSize.Regular;
+    [Parameter] public OffcanvasSize Size { get; set; } = OffcanvasSize.Regular;
 
     /// <summary>
     /// Gets or sets the tab index.
@@ -286,8 +264,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is -1.
     /// </remarks>
-    [Parameter]
-    public int TabIndex { get; set; } = -1;
+    [Parameter] public int TabIndex { get; set; } = -1;
 
     /// <summary>
     /// Gets or sets the offcanvas title.
@@ -295,8 +272,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string Title { get; set; } = default!;
+    [Parameter] public string Title { get; set; } = default!;
     
     /// <summary>
     /// When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it.
@@ -304,8 +280,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool UseStaticBackdrop { get; set; }
+    [Parameter] public bool UseStaticBackdrop { get; set; }
 
     #endregion
 }

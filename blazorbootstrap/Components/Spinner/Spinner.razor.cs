@@ -70,7 +70,7 @@ public partial class Spinner : BlazorBootstrapComponentBase
                 case nameof(Color): Color = (SpinnerColor)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value!; break;
                 case nameof(Size): Size = (SpinnerSize)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 case nameof(Title): Title = (string)parameter.Value; break;
                 case nameof(Type): Type = (SpinnerType)parameter.Value; break;
                 case nameof(Visible): Visible = (bool)parameter.Value; break;
@@ -88,22 +88,14 @@ public partial class Spinner : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (Type.ToSpinnerTypeClass(), true),
-            (Color.ToSpinnerColorClass(), true),
-            ($"{Type.ToSpinnerTypeClass()}-{Size.ToSpinnerSizeClass()}", Type is (SpinnerType.Border or SpinnerType.Grow)));
-
+     
     /// <summary>
     /// Gets or sets the color of the spinner.
     /// </summary>
     /// <remarks>
     /// Default value is <see cref="SpinnerColor.None" />.
     /// </remarks>
-    [Parameter]
-    public SpinnerColor Color { get; set; } = SpinnerColor.None;
+    [Parameter] public SpinnerColor Color { get; set; } = SpinnerColor.None;
 
     /// <summary>
     /// Gets or sets the size of the spinner.
@@ -111,22 +103,15 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="SpinnerSize.Medium" />.
     /// </remarks>
-    [Parameter]
-    public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
-
-    /// <summary>
-    /// Gets the width, height, and circles information for the spinner SVG.
-    /// </summary>
-    private (int Width, int Height, IReadOnlyList<SpinnerCircle> Circles) SpinnerSvg => GetSpinnerSvgInfo();
-
+    [Parameter] public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
+     
     /// <summary>
     /// Gets or sets the title text used as an accessibility attribute.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? Title { get; set; }
+    [Parameter] public string? Title { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the spinner.
@@ -134,8 +119,7 @@ public partial class Spinner : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="SpinnerType.Border" />.
     /// </remarks>
-    [Parameter]
-    public SpinnerType Type { get; set; } = SpinnerType.Border;
+    [Parameter] public SpinnerType Type { get; set; } = SpinnerType.Border;
 
     /// <summary>
     /// Gets or sets whether the spinner is visible or not.

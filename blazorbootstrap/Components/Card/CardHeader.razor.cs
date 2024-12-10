@@ -7,18 +7,12 @@
 public partial class CardHeader : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.CardHeader, true),
-            (Color.ToCardColorClass(), true));
-
+      
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     [Parameter]
-    public RenderFragment? ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; } 
 
     /// <summary>
     /// Gets or sets the card header color.
@@ -47,7 +41,6 @@ public partial class CardHeader : BlazorBootstrapComponentBase
                 case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
                 case nameof(Color): Color = (CardColor)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;

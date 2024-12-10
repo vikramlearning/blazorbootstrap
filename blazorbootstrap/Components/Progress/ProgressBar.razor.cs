@@ -66,9 +66,10 @@ public partial class ProgressBar
 
                 case nameof(Class): Class = (string)parameter.Value!; break;
                 case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
                 case nameof(Label): Label = (string)parameter.Value; break;
                 case nameof(Type): Type = (ProgressType)parameter.Value; break;
+                case "style": Style = (string)parameter.Value!; break;
 
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
@@ -82,21 +83,7 @@ public partial class ProgressBar
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.ProgressBar, true),
-            (BootstrapClass.ProgressBarStriped, Type is ProgressType.Striped or ProgressType.StripedAndAnimated),
-            (BootstrapClass.ProgressBarAnimated, Type == ProgressType.StripedAndAnimated),
-            (Color.ToProgressColorClass(), Color != ProgressColor.None));
-
-    /// <inheritdoc />
-    protected override string? StyleNames =>
-        BuildStyleNames(Style,
-            // FIX: Toast progressbar not showing: https://github.com/vikramlearning/blazorbootstrap/issues/155
-            ($"width:{Width.ToString(CultureInfo.InvariantCulture)}%", Width is >= 0 and <= 100));
-
+     
     /*
      * StateHasChanged() needed to be invoked in .NET 6 to re-render a component when a property got altered.
      * In .NET 7 and later, this is no longer necessary, and having a set/get body is considered bad practice.
@@ -131,8 +118,7 @@ public partial class ProgressBar
     /// <remarks>
     /// Default value is <see cref="ProgressColor.None" />.
     /// </remarks>
-    [Parameter]
-    public ProgressColor Color { get; set; } 
+    [Parameter] public ProgressColor Color { get; set; } 
 #endif
 
 
@@ -142,8 +128,7 @@ public partial class ProgressBar
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string Label { get; set; } = default!;
+    [Parameter] public string Label { get; set; } = default!;
 
 
 #if NET6_0
@@ -171,8 +156,8 @@ public partial class ProgressBar
     /// <remarks>
     /// Default value is <see cref="ProgressType.Default" />.
     /// </remarks>
-    [Parameter]
-    public ProgressType Type { get; set; } 
+    [Parameter] public ProgressType Type { get; set; } 
+    
 #endif
 
 #if NET6_0
@@ -201,9 +186,10 @@ public partial class ProgressBar
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
-    [Parameter]
-    public double Width { get; set; } 
+    [Parameter] public double Width { get; set; }
+    
 #endif
 
+    private string Style { get; set; } = "";
     #endregion
 }

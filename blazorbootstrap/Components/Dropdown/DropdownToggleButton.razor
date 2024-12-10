@@ -3,8 +3,7 @@
 
 <button @ref="@Element"
         id="@Id"
-        class="@ClassNames" 
-        style="@StyleNames"
+        class="@BootstrapClass.Button @EnumExtensions.DropdownButtonColorClassMap[Color] @EnumExtensions.DropdownButtonSizeClassMap[Size] @BootstrapClass.DropdownToggle @(Split ? BootstrapClass.DropdownToggleSplit : "") @Class"
         disabled="@Disabled"
         @attributes="@AdditionalAttributes">
     @if (ChildContent != null)

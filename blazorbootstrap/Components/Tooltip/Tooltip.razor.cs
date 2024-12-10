@@ -103,7 +103,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
                 case nameof(Id): Id = (string)parameter.Value!; break;
                 case nameof(IsHtml): IsHtml = (bool)parameter.Value; break;
                 case nameof(Placement): Placement = (TooltipPlacement)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 case nameof(Title): Title = (string)parameter.Value; break;
 
                 default:

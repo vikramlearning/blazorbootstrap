@@ -7,17 +7,7 @@ namespace BlazorBootstrap;
 /// </summary>
 public partial class Badge : BlazorBootstrapComponentBase
 {
-    #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Badge, true),
-            (Color.ToBadgeColorClass(), Color != BadgeColor.None),
-            (IndicatorType.ToBadgeIndicatorClass(), IndicatorType != BadgeIndicatorType.None),
-            (Position.ToPositionClass(), Position != Position.None),
-            (Placement.ToBadgePlacementClass(), Placement != BadgePlacement.None),
-            ("p-2", ChildContent is null));
+    #region Properties, Indexers 
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
@@ -25,8 +15,7 @@ public partial class Badge : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the badge color.
@@ -34,8 +23,7 @@ public partial class Badge : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="BadgeColor.Secondary" />.
     /// </remarks>
-    [Parameter]
-    public BadgeColor Color { get; set; } = BadgeColor.Secondary;
+    [Parameter] public BadgeColor Color { get; set; } = BadgeColor.Secondary;
 
     /// <summary>
     /// Gets or sets the badge indicator.
@@ -43,8 +31,7 @@ public partial class Badge : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="BadgeIndicatorType.None" />.
     /// </remarks>
-    [Parameter]
-    public BadgeIndicatorType IndicatorType { get; set; } = BadgeIndicatorType.None;
+    [Parameter] public BadgeIndicatorType IndicatorType { get; set; } = BadgeIndicatorType.None;
 
     /// <summary>
     /// Gets or sets the badge placement.
@@ -52,8 +39,7 @@ public partial class Badge : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="BadgePlacement.None" />.
     /// </remarks>
-    [Parameter]
-    public BadgePlacement Placement { get; set; } = BadgePlacement.None;
+    [Parameter] public BadgePlacement Placement { get; set; } = BadgePlacement.None;
 
     /// <summary>
     /// Gets or sets the badge position.
@@ -61,8 +47,7 @@ public partial class Badge : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Position.None" />.
     /// </remarks>
-    [Parameter]
-    public Position Position { get; set; } = Position.None;
+    [Parameter] public Position Position { get; set; } = Position.None;
 
     /// <summary>
     /// Gets or sets the visually hidden text.
@@ -70,8 +55,7 @@ public partial class Badge : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string VisuallyHiddenText { get; set; } = default!;
+    [Parameter] public string VisuallyHiddenText { get; set; } = default!;
 
     #endregion
 
@@ -95,7 +79,6 @@ public partial class Badge : BlazorBootstrapComponentBase
                 case nameof(IndicatorType): IndicatorType = (BadgeIndicatorType)parameter.Value; break;
                 case nameof(Placement): Placement = (BadgePlacement)parameter.Value; break;
                 case nameof(Position): Position = (Position)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
                 case nameof(VisuallyHiddenText): VisuallyHiddenText = (string)parameter.Value; break;
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;

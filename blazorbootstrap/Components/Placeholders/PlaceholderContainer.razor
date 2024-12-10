@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<span @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@AdditionalAttributes">
+<span @ref="@Element" id="@Id" class="@Animation.ToPlaceholderAnimationClass() @Class" tabindex="-1" @attributes="@AdditionalAttributes">
     @if (ChildContent != null)
     {
         @ChildContent

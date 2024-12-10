@@ -3,8 +3,7 @@
 
 <div @ref="@Element"
      id="@Id"
-     class="@ClassNames"
-     style="@StyleNames"
+     class="@BootstrapClass.CarouselItem @(Active ? BootstrapClass.Active : "") @Class"
      data-bs-interval="@Interval"
      @attributes="@AdditionalAttributes">
     @if (ChildContent != null)

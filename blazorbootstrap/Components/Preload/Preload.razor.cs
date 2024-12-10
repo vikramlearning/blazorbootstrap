@@ -45,7 +45,7 @@ public partial class Preload : BlazorBootstrapComponentBase
 
     private void OnShow(SpinnerColor newSpinnerColor, string? newLoadingText)
     {
-        this.spinnerColor = newSpinnerColor.ToSpinnerColorClass();
+        this.spinnerColor = EnumExtensions.SpinnerColorClassMap[newSpinnerColor];
 
         showBackdrop = true;
 
@@ -67,7 +67,7 @@ public partial class Preload : BlazorBootstrapComponentBase
                 case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
                 case nameof(Class): Class = (string)parameter.Value!; break;
                 case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                case "style": Style = (string)parameter.Value!; break;
                 case nameof(LoadingText): LoadingText = (string)parameter.Value; break;
 
                 default:
@@ -82,38 +82,23 @@ public partial class Preload : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Modal, true),
-            (BootstrapClass.PageLoadingModal, true),
-            (BootstrapClass.ModalFade, true),
-            (BootstrapClass.Show, showBackdrop));
-
-    /// <inheritdoc />
-    protected override string? StyleNames =>
-        BuildStyleNames(Style,
-            ("display:block", showBackdrop),
-            ("display:none", !showBackdrop));
-
+     
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the loading text.
     /// </summary>
-    [Parameter]
-    public string? LoadingText { get; set; }
+    [Parameter] public string? LoadingText { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="PageLoadingService" /> instance.
     /// </summary>
-    [Inject]
-    private PreloadService PageLoadingService { get; set; } = default!;
+    [Inject] private PreloadService PageLoadingService { get; set; } = default!;
+
+    private string Style { get; set; } = "";
 
     #endregion
 }

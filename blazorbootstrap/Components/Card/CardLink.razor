@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<a @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<a @ref="@Element" id="@Id" class="@BootstrapClass.CardLink @(Disabled ? BootstrapClass.Disabled : "") @Class" @attributes="@AdditionalAttributes">
     @if (ChildContent != null)
     {
         @ChildContent

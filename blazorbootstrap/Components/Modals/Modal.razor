@@ -1,8 +1,8 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" tabindex="@TabIndex">
-    <div class="modal-dialog @Scrollable @VerticallyCentered @ModalSize @ModalFullscreen @DialogCssClass">
+<div @ref="@Element" id="@Id" class="@BootstrapClass.Modal @BootstrapClass.ModalFade @Class" @attributes="@AdditionalAttributes" tabindex="@TabIndex">
+    <div class="modal-dialog @Scrollable @VerticallyCentered @EnumExtensions.ModalSizeClassMap[Size] @EnumExtensions.ModalFullscreenClassMap[Fullscreen] @DialogCssClass">
         <div class="modal-content">
             @if (isVisible)
             {

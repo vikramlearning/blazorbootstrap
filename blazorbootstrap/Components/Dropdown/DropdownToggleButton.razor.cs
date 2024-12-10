@@ -22,7 +22,6 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
                 case nameof(Id): Id = (string)parameter.Value!; break;
                 case nameof(Size): Size = (DropdownSize)parameter.Value!; break;
                 case nameof(Split): Split = (bool)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
                 case nameof(TabIndex): TabIndex = (int?)parameter.Value!; break;
                 default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
             }
@@ -59,16 +58,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Button, true),
-            (Color.ToDropdownButtonColorClass(), Color != DropdownColor.None),
-            (Size.ToDropdownButtonSizeClass(), Size != DropdownSize.None),
-            (BootstrapClass.DropdownToggle, true),
-            (BootstrapClass.DropdownToggleSplit, Split));
-
+     
     /// <summary>
     /// If <see langword="true" />, enables the auto close.
     /// </summary>
@@ -93,8 +83,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown toggle button color.
@@ -123,6 +112,9 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     [CascadingParameter(Name = "Size")]
     public DropdownSize Size { get; set; } = DropdownSize.None;
 
+    /// <summary>
+    /// If true, the css class 'dropdown-toggle-split' will be added to the button.
+    /// </summary>
     [CascadingParameter(Name = "Split")] 
     public bool Split { get; set; }
 

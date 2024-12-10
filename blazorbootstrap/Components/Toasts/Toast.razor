@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<div @ref="@Element" id="@Id" class="@BootstrapClass.Toast @Class" @attributes="@AdditionalAttributes">
     <div class="toast-header">
         <Icon Name="@IconName" CustomIconName="@ToastMessage.CustomIconName" class="@IconClass"></Icon>
         <strong class="me-auto">@ToastMessage.Title</strong>

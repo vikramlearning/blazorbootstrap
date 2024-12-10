@@ -83,7 +83,7 @@ public partial class Switch : BlazorBootstrapComponentBase
                 case nameof(Id): Id = (string)parameter.Value!; break;
                 case nameof(Label): Label = (string)parameter.Value; break;
                 case nameof(Reverse): Reverse = (bool)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
                 case nameof(Value): Value = (bool)parameter.Value; break;
                 case nameof(ValueChanged): ValueChanged = (EventCallback<bool>)parameter.Value; break;
                 case nameof(ValueExpression): ValueExpression = (Expression<Func<bool>>)parameter.Value; break;
@@ -96,22 +96,14 @@ public partial class Switch : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.FormCheck, true),
-            (BootstrapClass.FormSwitch, true),
-            (BootstrapClass.FormCheckReverse, Reverse));
-
+     
     /// <summary>
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
@@ -123,8 +115,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string Label { get; set; } = default!;
+    [Parameter] public string Label { get; set; } = default!;
 
     /// <summary>
     /// Determines whether to put the switch on the opposite side.
@@ -132,8 +123,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Reverse { get; set; }
+    [Parameter] public bool Reverse { get; set; }
 
     /// <summary>
     /// Gets or sets the value.
@@ -141,14 +131,12 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Value { get; set; }
+    [Parameter] public bool Value { get; set; }
 
     /// <summary>
     /// This event is fired when the switch selection changes.
     /// </summary>
-    [Parameter]
-    public EventCallback<bool> ValueChanged { get; set; } = default!;
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; } 
 
     /// <summary>
     /// An expression that identifies the bound value.

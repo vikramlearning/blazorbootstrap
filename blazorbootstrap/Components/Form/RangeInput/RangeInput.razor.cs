@@ -389,7 +389,6 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
                 case nameof(Max): Max = (TValue)parameter.Value; break;
                 case nameof(Min): Min = (TValue)parameter.Value; break;
                 case nameof(Step): Step = (double)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
                 case nameof(TickMarks): TickMarks = (IReadOnlyCollection<TickMark>)parameter.Value; break;
                 case nameof(Value): Value = (TValue)parameter.Value; break;
                 case nameof(ValueChanged): ValueChanged = (EventCallback<TValue>)parameter.Value; break;
@@ -403,11 +402,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class, (BootstrapClass.FormRange, true));
-
+     
     /// <summary>
     /// Gets or sets the disabled state.
     /// </summary>

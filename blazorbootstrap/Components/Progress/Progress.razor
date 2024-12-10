@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<div @ref="@Element" id="@Id" class="@BootstrapClass.Progress @Class" style="@($"height:{Math.Clamp(Height, 0d, 100d).ToString(CultureInfo.InvariantCulture)}px;") @Style" @attributes="@AdditionalAttributes">
     @if (ChildContent != null)
     {
         @ChildContent

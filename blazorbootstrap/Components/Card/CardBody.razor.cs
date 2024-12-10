@@ -6,11 +6,7 @@
 public partial class CardBody : BlazorBootstrapComponentBase
 {
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class, (BootstrapClass.CardBody, true));
-
+      
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
@@ -18,7 +14,7 @@ public partial class CardBody : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment? ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }  
 
     #endregion
 
@@ -37,7 +33,6 @@ public partial class CardBody : BlazorBootstrapComponentBase
                 case nameof(Class): Class = (string)parameter.Value; break;
                 case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;

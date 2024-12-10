@@ -9,7 +9,7 @@
 @if (columns.Any())
 {
     <div class="@ResponsiveCssClass" style="@GetGridContainerStyle()" onscroll="@OnScroll">
-        <table @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+        <table @ref="@Element" id="@Id" class="bb-table @(FixedHeader ? BootstrapClass.TableSticky : "") @Class" @attributes="@AdditionalAttributes">
             <thead class="@TableHeaderCssClass">
                 <tr class="@(FixedHeader ? BootstrapClass.TextNoWrap : "") @HeaderRowCssClass">
                     @if (AllowDetailView)
@@ -47,10 +47,10 @@
                                 columnClassList.Add("freeze-column");
 
                                 if (column.FreezeDirection == FreezeDirection.Left)
-                                    columnStyleList.Add($"left:{column.FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
+                                    columnStyleList.Add($"left:{column.FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[Unit]}");
                                 else
                                 {
-                                    columnStyleList.Add($"right:{column.FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
+                                    columnStyleList.Add($"right:{column.FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[Unit]}");
                                     columnClassList.Add("freeze-column-right");
                                 }
                             }
@@ -194,7 +194,7 @@
                         LastLinkIcon="IconName.ChevronDoubleRight"
                         Alignment="Alignment.Start" />
 
-            @if (PageSizeSelectorVisible && PageSizeSelectorItems is not null && PageSizeSelectorItems.Any())
+            @if (PageSizeSelectorVisible && PageSizeSelectorItems.Any())
             {
                 <div>
                     <div class="d-flex justify-content-center align-middle">

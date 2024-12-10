@@ -23,7 +23,7 @@ public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
                 case nameof(Id): Id = (string)parameter.Value!; break;
                  case nameof(Match): Match = (NavLinkMatch)parameter.Value; break;
                 case nameof(NavItems): NavItems = (IReadOnlyCollection<NavItem>)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break; 
+ 
 
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
@@ -37,11 +37,7 @@ public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
     #endregion
 
 
-    #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class, (BootstrapClass.FlexColumn, true));
+    #region Properties, Indexers 
 
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 

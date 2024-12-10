@@ -54,13 +54,13 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
                 case nameof(Href): Href = (string)parameter.Value; break;
                 case nameof(IconColor): 
                     IconColor = (IconColor)parameter.Value;
-                    IconColorCssClass = IconColor.ToIconColorClass();
+                    IconColorCssClass = EnumExtensions.IconColorClassMap[IconColor];
                     break;
                 case nameof(IconName): IconName = (IconName)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value!; break;
                 case nameof(Match): Match = (NavLinkMatch)parameter.Value; break;
                 case nameof(Parent): Parent = (Sidebar)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 case nameof(Target): Target = (Target)parameter.Value; break;
                 case nameof(Text): Text = (string)parameter.Value; break;
                 
@@ -76,14 +76,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     #endregion
 
-    #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            ("nav-item", true),
-            ("nav-item-group", HasChildren),
-            ("active", navitemGroupExpanded));
+    #region Properties, Indexer
 
     /// <summary>
     /// Gets or sets the child items.
@@ -105,8 +98,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? CustomIconName { get; set; }
+    [Parameter] public string? CustomIconName { get; set; }
 
     /// <summary>
     /// Gets or sets the has child items state.
@@ -114,8 +106,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool HasChildren { get; set; }
+    [Parameter] public bool HasChildren { get; set; }
 
     /// <summary>
     /// Gets or sets the link href attribute.
@@ -123,8 +114,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? Href { get; set; }
+    [Parameter] public string? Href { get; set; }
 
     /// <summary>
     /// Gets or sets the icon color.
@@ -132,8 +122,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconColor.None" />.
     /// </remarks>
-    [Parameter]
-    public IconColor IconColor { get; set; } = IconColor.None;
+    [Parameter] public IconColor IconColor { get; set; } = IconColor.None;
 
     private string IconColorCssClass { get; set; } = "";
 
@@ -143,8 +132,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconName.None" />.
     /// </remarks>
-    [Parameter]
-    public IconName IconName { get; set; } = IconName.None;
+    [Parameter] public IconName IconName { get; set; } = IconName.None;
 
     /// <summary>
     /// Gets or sets a value representing the URL matching behavior.
@@ -170,9 +158,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// Default value is <see cref="Target.None" />.
     /// </remarks>
     [Parameter]
-    public Target Target { get; set; } = Target.None;
-
-    private string TargetString => Target.ToTargetString()!;
+    public Target Target { get; set; } = Target.None; 
 
     /// <summary>
     /// Gets or sets the sidebar item text.

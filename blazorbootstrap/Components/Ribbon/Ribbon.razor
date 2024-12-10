@@ -10,12 +10,20 @@
 
 @if (tabs?.Any() ?? false)
 {
-    <div class="@NavParentDivCssClass">
+    var ribbonClass = NavStyle switch
+    {
+        NavStyle.Pills or NavStyle.VerticalPills => BootstrapClass.NavPills,
+        NavStyle.Tabs => BootstrapClass.NavTabs,
+        NavStyle.Underline or NavStyle.VerticalUnderline => BootstrapClass.NavUnderline,
+        _ => ""
+    };
+    var isVertical = NavStyle is NavStyle.Vertical or NavStyle.VerticalPills or NavStyle.VerticalUnderline;
+
+    <div class="@(isVertical ? "d-flex" : "")">
         <nav>
-            <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" role="tablist">
+            <div @ref="@Element" id="@Id" class="@BootstrapClass.Nav @ribbonClass @(isVertical ? BootstrapClass.FlexColumn : "") @Class" @attributes="@AdditionalAttributes" role="tablist">
                 @foreach (var t in tabs)
-                {
-                    var tabElementId = t.Id;
+                { 
                     <button class="nav-link @(t.Disabled ? "disabled" : "")" id="@t.Id" data-bs-target="#nav-@t.Id" type="button" role="tab" aria-selected="false" @onclick="async () => await OnTabClickAsync(t)">
                         @if (t.TitleTemplate != null)
                         {

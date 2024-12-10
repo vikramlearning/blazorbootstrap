@@ -102,7 +102,7 @@ public partial class Tab : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment TitleTemplate { get; set; } = default!;
+    public RenderFragment? TitleTemplate { get; set; } 
 
     #endregion
 }

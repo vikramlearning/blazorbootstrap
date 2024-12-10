@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@AdditionalAttributes">
+<div @ref="@Element" id="@Id" class="@BootstrapClass.Callout @EnumExtensions.CalloutColorClassMap[Color] @Class" tabindex="-1" @attributes="@AdditionalAttributes">
     @if (!HideHeading)
     {
         <div class="@(BootstrapClass.CalloutHeading) mb-2">

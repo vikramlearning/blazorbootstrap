@@ -51,8 +51,6 @@ public partial class Breadcrumb : BlazorBootstrapComponentBase
                 case nameof(Class): Class = (string)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value; break;
                 case nameof(Items): Items = (IReadOnlyCollection<BreadcrumbItem>?)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
-
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;

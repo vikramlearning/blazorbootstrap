@@ -28,7 +28,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
                 case nameof(Id): Id = (string)parameter.Value!; break;
                 case nameof(LinkIcon): LinkIcon = (IconName)parameter.Value; break;
                 case nameof(LinkText): LinkText = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 case nameof(Text): Text = (string)parameter.Value; break;
 
                 default: AdditionalAttributes![parameter.Name] = parameter.Value; break;
@@ -42,22 +42,14 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.PaginationItem, true),
-            (BootstrapClass.PaginationItemActive, Active),
-            (BootstrapClass.PaginationItemDisabled, Disabled));
-
+     
     /// <summary>
     /// Gets or sets the pagination item active state.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Active { get; set; }
+    [Parameter] public bool Active { get; set; }
 
     /// <summary>
     /// Gets or sets the pagination item aria-label attribute.
@@ -65,8 +57,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? AriaLabel { get; set; }
+    [Parameter] public string? AriaLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the pagination item disable state.
@@ -74,8 +65,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
     /// Gets or sets the link icon.
@@ -83,8 +73,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconName.None" />.
     /// </remarks>
-    [Parameter]
-    public IconName LinkIcon { get; set; } = IconName.None;
+    [Parameter] public IconName LinkIcon { get; set; } = IconName.None;
 
     /// <summary>
     /// Gets or sets the link text.
@@ -92,8 +81,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? LinkText { get; set; }
+    [Parameter] public string? LinkText { get; set; }
 
     /// <summary>
     /// Gets or sets the text.
@@ -101,8 +89,7 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? Text { get; set; }
+    [Parameter] public string? Text { get; set; }
 
     #endregion
 }

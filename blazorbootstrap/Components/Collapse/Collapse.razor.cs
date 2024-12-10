@@ -110,7 +110,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
                 case nameof(OnShowing): OnShowing = (EventCallback)parameter.Value; break;
                 case nameof(OnShown): OnShown = (EventCallback)parameter.Value; break;
                 case nameof(Parent): Parent = parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+
                 case nameof(Toggle): Toggle = (bool)parameter.Value; break;
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
@@ -124,13 +124,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Collapse, true),
-            (BootstrapClass.CollapseHorizontal, Horizontal));
-
+      
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
@@ -147,33 +141,28 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Horizontal { get; set; }
+    [Parameter] public bool Horizontal { get; set; }
 
     /// <summary>
     /// This event is fired when a collapse element has been hidden from the user (will wait for CSS transitions to complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnHidden { get; set; }
+    [Parameter] public EventCallback OnHidden { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide method has been called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnHiding { get; set; }
+    [Parameter] public EventCallback OnHiding { get; set; }
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnShowing { get; set; }
+    [Parameter] public EventCallback OnShowing { get; set; }
 
     /// <summary>
     /// This event is fired when a collapse element has been made visible to the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnShown { get; set; }
+    [Parameter] public EventCallback OnShown { get; set; }
 
     /// <summary>
     /// Gets or sets the parent selector, DOM element.
@@ -181,8 +170,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// item is shown. (similar to traditional accordion behavior - this is dependent on the card class).
     /// The attribute has to be set on the target collapsible area.
     /// </summary>
-    [Parameter]
-    public object Parent { get; set; } = default!;
+    [Parameter] public object? Parent { get; set; } 
 
     /// <summary>
     /// Toggles the collapsible element on invocation.
@@ -190,8 +178,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Toggle { get; set; } = false;
+    [Parameter] public bool Toggle { get; set; }
 
     #endregion
 }

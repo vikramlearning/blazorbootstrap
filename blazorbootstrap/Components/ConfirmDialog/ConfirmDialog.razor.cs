@@ -108,10 +108,10 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
         headerCssClass = confirmDialogOptions.HeaderCssClass;
         scrollable = confirmDialogOptions.IsScrollable ? "modal-dialog-scrollable" : "";
         verticallyCentered = confirmDialogOptions.IsVerticallyCentered ? "modal-dialog-centered" : "";
-        noButtonColor = $"{BootstrapClass.Button} {confirmDialogOptions.NoButtonColor.ToButtonColorClass()}";
+        noButtonColor = $"{BootstrapClass.Button} {EnumExtensions.ButtonColorClassMap[confirmDialogOptions.NoButtonColor]}";
         noButtonText = confirmDialogOptions.NoButtonText;
-        modalSize = confirmDialogOptions.Size.ToDialogSizeClass();
-        yesButtonColor = $"{BootstrapClass.Button} {confirmDialogOptions.YesButtonColor.ToButtonColorClass()}";
+        modalSize = EnumExtensions.DialogSizeClassMap[confirmDialogOptions.Size];
+        yesButtonColor = $"{BootstrapClass.Button} {EnumExtensions.ButtonColorClassMap[confirmDialogOptions.YesButtonColor]}";
         yesButtonText = confirmDialogOptions.YesButtonText;
 
         isVisible = true;
@@ -136,7 +136,8 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
             {
                 case nameof(Class): Class = (string)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
+                case "style": Style = (string)parameter.Value; break;
+
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;
@@ -148,20 +149,9 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
     #endregion
 
-    #region Properties, Indexers
+    #region Properties, Indexers 
 
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Modal, true),
-            (BootstrapClass.ConfirmationModal, true),
-            (BootstrapClass.ModalFade, true));
-
-    /// <inheritdoc />
-    protected override string? StyleNames =>
-        BuildStyleNames(Style,
-            ("display:block", showBackdrop),
-            ("display:none", !showBackdrop));
+    private string Style { get; set; } = "";
 
     #endregion
 }

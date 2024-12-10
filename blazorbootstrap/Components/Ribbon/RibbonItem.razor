@@ -1,10 +1,25 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
+@{
+    string cssClass;
+    if (IsFirstItem)
+    {
+        cssClass = "ms-1";
+    }
+    else if (IsLastItem)
+    {
+        cssClass = "me-1";
+    }
+    else
+    {
+        cssClass = "mx-1";
+    }
+}
+
 <div @ref="@Element"
      id="@Id"
-     class="@ClassNames" 
-     style="@StyleNames"
+     class="bb-ribbon-item p-1 @cssClass @BootstrapClass.Flex @BootstrapClass.FlexColumn @BootstrapClass.AlignItemsCenter @Class"
      @attributes="@AdditionalAttributes"
      @onclick="OnRibbonItemClickAsync">
 
@@ -28,7 +43,7 @@
         </div>
     }
     
-    @if (!string.IsNullOrEmpty(Text))
+    @if (!String.IsNullOrEmpty(Text))
     {
         <div class="text-center">@Text</div>
     }

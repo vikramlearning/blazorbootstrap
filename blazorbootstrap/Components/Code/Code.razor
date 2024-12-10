@@ -1,0 +1,10 @@
+﻿@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@{
+    var language = Language.GetCodeLanguage();
+}
+<pre class="@language @Class" @attributes="@AdditionalAttributes">
+<code class="@language">
+        @CodeString
+</code>
+</pre>

@@ -94,7 +94,7 @@ public partial class Pagination : BlazorBootstrapComponentBase
                 case nameof(PreviousLinkIcon): PreviousLinkIcon = (IconName)parameter.Value; break;
                 case nameof(PreviousLinkText): PreviousLinkText = (string)parameter.Value; break;
                 case nameof(Size): Size = (PaginationSize)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
                 case nameof(TotalPages): TotalPages = (int)parameter.Value; break;
 
                 default:
@@ -108,15 +108,8 @@ public partial class Pagination : BlazorBootstrapComponentBase
 
     #endregion
 
-    #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Pagination, true),
-            (Size.ToPaginationSizeClass(), Size != PaginationSize.None),
-            (Alignment.ToPaginationAlignmentClass(), Alignment != Alignment.None));
-
+    #region Properties, Indexers 
+    
     /// <summary>
     /// Gets or sets the active page number.
     /// </summary>

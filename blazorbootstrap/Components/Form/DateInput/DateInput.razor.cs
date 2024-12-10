@@ -302,7 +302,6 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
                 case nameof(Max): Max = (TValue)parameter.Value; break;
                  case nameof(Min): Min = (TValue)parameter.Value; break; 
                 case nameof(Placeholder): Placeholder = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
                 case nameof(Value): Value = (TValue)parameter.Value; break;
                 case nameof(ValueChanged): ValueChanged = (EventCallback<TValue>)parameter.Value; break;
                 case nameof(ValueExpression): ValueExpression = (Expression<Func<TValue>>)parameter.Value; break;
@@ -315,19 +314,14 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class, (BootstrapClass.FormControl, true));
-
+      
     /// <summary>
     /// If <see langword="true" />, DateInput can complete the values automatically by the browser.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AutoComplete { get; set; }
+    [Parameter] public bool AutoComplete { get; set; }
 
     /// <summary>
     /// Gets or sets the disabled state.
@@ -335,8 +329,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
@@ -347,8 +340,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool EnableMinMax { get; set; }
+    [Parameter] public bool EnableMinMax { get; set; }
 
     private string FieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
@@ -356,15 +348,13 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the max.
     /// Allowed format is yyyy-mm-dd.
     /// </summary>
-    [Parameter]
-    public TValue Max { get; set; } = default!;
+    [Parameter] public TValue Max { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the min.
     /// Allowed format is yyyy-mm-dd.
     /// </summary>
-    [Parameter]
-    public TValue Min { get; set; } = default!;
+    [Parameter] public TValue Min { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the placeholder.
@@ -372,26 +362,22 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? Placeholder { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
-    [Parameter]
-    public TValue Value { get; set; } = default!;
+    [Parameter] public TValue Value { get; set; } = default!;
 
     /// <summary>
     /// This event fired on every user keystroke that changes the DateInput value.
     /// </summary>
-    [Parameter]
-    public EventCallback<TValue> ValueChanged { get; set; }
+    [Parameter] public EventCallback<TValue> ValueChanged { get; set; }
 
     /// <summary>
     /// An expression that identifies the bound value.
     /// </summary>
-    [Parameter]
-    public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
+    [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

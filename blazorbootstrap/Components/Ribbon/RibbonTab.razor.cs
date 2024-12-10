@@ -50,7 +50,6 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
                 case nameof(Disabled): Disabled = (bool)parameter.Value; break;
                 case nameof(Id): Id = (string)parameter.Value!; break;
                 case nameof(Name): Name = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
                 case nameof(OnClick): OnClick = (EventCallback<TabEventArgs>)parameter.Value; break;
                 case nameof(Parent): Parent = (Ribbon)parameter.Value!; break;
                 case nameof(Title): Title = (string)parameter.Value; break;
@@ -129,7 +128,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// Gets or sets the tab title template.
     /// </summary>
     [Parameter]
-    public RenderFragment TitleTemplate { get; set; } = default!;
+    public RenderFragment? TitleTemplate { get; set; } 
 
     #endregion
 }

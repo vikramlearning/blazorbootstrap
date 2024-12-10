@@ -199,7 +199,7 @@ public partial class Modal : BlazorBootstrapComponentBase
                 case nameof(Message): Message = (string)parameter.Value!; break;
                 case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value!; break;
                 case nameof(Size): Size = (ModalSize)parameter.Value!; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
+                
                 case nameof(TabIndex): TabIndex = (int)parameter.Value!; break;
                 case nameof(Title): Title = (string)parameter.Value!; break;
                 case nameof(UseStaticBackdrop): UseStaticBackdrop = (bool)parameter.Value!; break;
@@ -216,21 +216,14 @@ public partial class Modal : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Modal, true),
-            (BootstrapClass.ModalFade, true));
-
+     
     /// <summary>
     /// Gets or sets the body CSS class.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string BodyCssClass { get; set; } = default!;
+    [Parameter] public string BodyCssClass { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the body template.
@@ -238,8 +231,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment BodyTemplate { get; set; } = default!;
+    [Parameter] public RenderFragment? BodyTemplate { get; set; } 
 
     /// <summary>
     /// Gets or sets the close icon color.
@@ -247,8 +239,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconColor.None" />.
     /// </remarks>
-    [Parameter]
-    public IconColor CloseIconColor { get; set; } = IconColor.None;
+    [Parameter] public IconColor CloseIconColor { get; set; } = IconColor.None;
 
     /// <summary>
     /// Indicates whether the modal closes when escape key is pressed.
@@ -256,8 +247,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool CloseOnEscape { get; set; } = true;
+    [Parameter] public bool CloseOnEscape { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the modal dialog (div.modal-dialog) CSS class.
@@ -265,8 +255,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string DialogCssClass { get; set; } = default!;
+    [Parameter] public string DialogCssClass { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the footer CSS class.
@@ -274,8 +263,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string FooterCssClass { get; set; } = default!;
+    [Parameter] public string FooterCssClass { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the footer template.
@@ -283,8 +271,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment FooterTemplate { get; set; } = default!;
+    [Parameter] public RenderFragment? FooterTemplate { get; set; } 
 
     /// <summary>
     /// Gets or sets the fullscreen behavior of the modal.
@@ -292,8 +279,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="ModalFullscreen.Disabled" />.
     /// </remarks>
-    [Parameter]
-    public ModalFullscreen Fullscreen { get; set; } = BlazorBootstrap.ModalFullscreen.Disabled;
+    [Parameter] public ModalFullscreen Fullscreen { get; set; } = BlazorBootstrap.ModalFullscreen.Disabled;
 
     /// <summary>
     /// Gets or sets the header CSS class.
@@ -301,12 +287,11 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string HeaderCssClass { get; set; } = default!;
+    [Parameter] public string HeaderCssClass { get; set; } = default!;
 
     // Modal close "X" button with bootstrap 5.3.3 - https://github.com/vikramlearning/blazorbootstrap/issues/714
     // Review this fix after bootstrap 5.3.4 or 5.4 release. Ref: https://github.com/twbs/bootstrap/issues/39798
-    private string HeaderCssClassInternal => $"justify-content-between {ModalType.ToModalHeaderColorClass()}".Trim();
+    private string HeaderCssClassInternal => $"justify-content-between {EnumExtensions.ModalHeaderColorClassMap[ModalType]}".Trim();
 
     /// <summary>
     /// Gets or sets the header template.
@@ -314,8 +299,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? HeaderTemplate { get; set; } = default!;
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, scroll will be enabled on the modal body.
@@ -323,8 +307,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool IsScrollable { get; set; }
+    [Parameter] public bool IsScrollable { get; set; }
 
     /// <summary>
     /// Indicates whether the modal is related to a modal service or not.
@@ -332,8 +315,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool IsServiceModal { get; set; }
+    [Parameter] public bool IsServiceModal { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, shows the modal vertically in the center.
@@ -341,8 +323,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool IsVerticallyCentered { get; set; }
+    [Parameter] public bool IsVerticallyCentered { get; set; }
 
     /// <summary>
     /// Gets or sets the message.
@@ -350,56 +331,45 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string Message { get; set; } = default!;
-
-    private string ModalFullscreen => Fullscreen.ToModalFullscreenClass();
+    [Parameter] public string Message { get; set; } = default!; 
 
     [Inject] private ModalService? ModalService { get; set; }
-
-    private string ModalSize => Size.ToModalSizeClass();
-
+      
     /// <summary>
     /// Gets or sets the modal type.
     /// </summary>
     /// <remarks>
     /// Default value is <see cref="ModalType.None" />.
     /// </remarks>
-    [Parameter]
-    public ModalType ModalType { get; set; } = ModalType.None;
+    [Parameter] public ModalType ModalType { get; set; } = ModalType.None;
 
     /// <summary>
     /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnHidden { get; set; }
+    [Parameter] public EventCallback OnHidden { get; set; }
 
     /// <summary>
     /// This event is fired when the modal is shown, its backdrop is static and a click outside the modal or an escape key
     /// press is performed with the keyboard option or data-bs-keyboard set to <see langword="false" />.
     /// </summary>
-    [Parameter]
-    public EventCallback OnHidePrevented { get; set; }
+    [Parameter] public EventCallback OnHidePrevented { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide method has been called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnHiding { get; set; }
+    [Parameter] public EventCallback OnHiding { get; set; }
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnShowing { get; set; }
+    [Parameter] public EventCallback OnShowing { get; set; }
 
     /// <summary>
     /// This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnShown { get; set; }
+    [Parameter] public EventCallback OnShown { get; set; }
 
     private string Scrollable => IsScrollable ? "modal-dialog-scrollable" : "";
 
@@ -409,8 +379,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool ShowCloseButton { get; set; } = true;
+    [Parameter] public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the modal size.
@@ -418,8 +387,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="ModalSize.Regular" />.
     /// </remarks>
-    [Parameter]
-    public ModalSize Size { get; set; } = BlazorBootstrap.ModalSize.Regular;
+    [Parameter] public ModalSize Size { get; set; } = BlazorBootstrap.ModalSize.Regular;
 
     /// <summary>
     /// Gets or sets the modal tab index.
@@ -427,14 +395,12 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is -1.
     /// </remarks>
-    [Parameter]
-    public int TabIndex { get; set; } = -1;
+    [Parameter] public int TabIndex { get; set; } = -1;
 
     /// <summary>
     /// Gets or sets the modal header title.
     /// </summary>
-    [Parameter]
-    public string Title { get; set; } = default!;
+    [Parameter] public string Title { get; set; } = default!;
 
     /// <summary>
     /// Indicates whether the modal uses a static backdrop.
@@ -442,8 +408,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool UseStaticBackdrop { get; set; }
+    [Parameter] public bool UseStaticBackdrop { get; set; }
 
     private string VerticallyCentered => IsVerticallyCentered ? "modal-dialog-centered" : "";
 

@@ -5,8 +5,8 @@
 <input @ref="@Element"
        type="range"
        id="@Id"
-       class="@($"{ClassNames} {FieldCssClasses} {(ShowTickMarks ? "bb-form-range-input" : "")}".Trim())"
-       style="@StyleNames"
+       class="@($"{BootstrapClass.FormRange} {Class} {FieldCssClasses} {(ShowTickMarks ? "bb-form-range-input" : "")}")"
+       
        min="@GetInvariantNumber(Min)"
        max="@GetInvariantNumber(Max)"
        step="@Step.ToString(CultureInfo.InvariantCulture)"

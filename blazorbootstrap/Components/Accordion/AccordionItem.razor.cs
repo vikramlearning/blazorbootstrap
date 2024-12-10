@@ -78,7 +78,6 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
                 case nameof(Id): Id = (string)parameter.Value; break;
                 case nameof(Name): Name = (string)parameter.Value; break;
                 case nameof(Parent): Parent = (Accordion)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
                 case nameof(Title): Title = (string)parameter.Value; break;
                 case nameof(TitleTemplate): TitleTemplate = (RenderFragment)parameter.Value; break;
                 default:
@@ -95,19 +94,14 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames => 
-        BuildClassNames(Class, (BootstrapClass.AccordionItem, true));
-
+     
     /// <summary>
     /// Gets or sets the active state.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Active { get; set; }
+    [Parameter] public bool Active { get; set; }
     
     private string ButtonCollapsedStateCssClass => isCollapsed ? "collapsed" : string.Empty;
 

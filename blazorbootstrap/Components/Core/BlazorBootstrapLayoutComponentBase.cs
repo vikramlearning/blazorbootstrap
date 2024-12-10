@@ -28,7 +28,7 @@ public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, 
         base.OnInitialized();
     }
 
-    public static string BuildClassNames(params (string? cssClass, bool when)[] cssClassList)
+    public static string BuildClass(params (string? cssClass, bool when)[] cssClassList)
     {
         var list = new HashSet<string>();
 
@@ -43,7 +43,7 @@ public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, 
         return string.Empty;
     }
 
-    public static string BuildClassNames(string? userDefinedCssClass, params (string? cssClass, bool when)[] cssClassList)
+    public static string BuildClass(string? userDefinedCssClass, params (string? cssClass, bool when)[] cssClassList)
     {
         var list = new HashSet<string>();
 

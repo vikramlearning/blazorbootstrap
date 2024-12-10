@@ -1,7 +1,7 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<div @ref="@Element" id="@Id" class="nav-item nav-item-level-@(Level) @(HasChildren ? "nav-item-group" : "") @(NavItemGroupExpanded ? "active" : "")  @Class" @attributes="@AdditionalAttributes">
     @if (HasChildren)
     {
         <NavLink class="nav-link" style="@NavLinkStyle" role="button" @onclick="ToggleNavItemGroup">
@@ -17,35 +17,20 @@
             <span class="nav-link-arrow @navLinkArrowCssClass expanded-only">
                 <Icon Name="@(NavItemGroupExpanded ? IconName.ChevronDown : IconName.ChevronRight)"/>
             </span>
-
-            @* <span class="nav-link-icon ms-2">
-                <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
-            </span> *@
-
-            @{
-                var navLinkTextCssClass = "ms-2";
-                if (NavItemGroupExpanded)
-                    navLinkTextCssClass += " fw-semibold";
-            }
-            <span class="nav-link-text @navLinkTextCssClass expanded-only">@Text</span>
+              
+            <span class="nav-link-text ms-2 @(NavItemGroupExpanded ? "fw-semibold" : "") expanded-only">@Text</span>
         </NavLink>
     }
     else
     {
-        <NavLink class="nav-link" style="@NavLinkStyle" href="@Href" target="@TargetString" Match="@Match" @onclick="AutoHideNavMenu">
+        <NavLink class="nav-link" style="@NavLinkStyle" href="@Href" target="@EnumExtensions.TargetStringMap[Target]" Match="@Match" @onclick="AutoHideNavMenu">
             @{
-                var navLinkArrowCssClass = "ps-2";
-                if (Level == 0)
-                    navLinkArrowCssClass = "";
+                var navLinkArrowCssClass = Level == 0 ? "" : "ps-2";
             }
             <span class="nav-link-icon @navLinkArrowCssClass">
-                <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
-            </span>
-
-            @{
-                var navLinkTextCssClass = "ms-2";
-            }
-            <span class="nav-link-text @navLinkTextCssClass expanded-only">@Text</span>
+                <Icon Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+            </span> 
+            <span class="nav-link-text ms-2 expanded-only">@Text</span>
         </NavLink>
     }
 

@@ -99,8 +99,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
                 case nameof(OnUpdate): OnUpdate = (EventCallback<SortableListEventArgs>)parameter.Value; break;
                 case nameof(Pull): Pull = (SortableListPullMode)parameter.Value; break;
                 case nameof(Put): Put = (SortableListPutMode)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
-
+                
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;
@@ -113,11 +112,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class, ("list-group", true));
-
+     
     /// <summary>
     /// Gets or sets a value indicating whether sorting is allowed for the list.
     /// </summary>
@@ -152,7 +147,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Default value is  <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public string? DisabledItemCssClass { get; set; } = default!;
+    public string? DisabledItemCssClass { get; set; } 
 
     /// <summary>
     /// Gets or sets a delegate that determines whether an item should be disabled.
@@ -167,7 +162,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment EmptyDataTemplate { get; set; } = default!;
+    public RenderFragment? EmptyDataTemplate { get; set; }  
 
     /// <summary>
     /// Gets or sets the text to display when there are no records in the list.
@@ -221,7 +216,7 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment LoadingTemplate { get; set; } = default!;
+    public RenderFragment? LoadingTemplate { get; set; }  
 
     /// <summary>
     /// Gets or sets the name of the <see cref="SortableList{TItem}" /> component.

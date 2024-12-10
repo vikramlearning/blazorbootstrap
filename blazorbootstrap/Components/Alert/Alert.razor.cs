@@ -87,8 +87,6 @@ public partial class Alert : BlazorBootstrapComponentBase
                 case nameof(Id): Id = (string)parameter.Value; break;
                 case nameof(OnClose): OnClose = (EventCallback)parameter.Value; break;
                 case nameof(OnClosed): OnClosed = (EventCallback)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value; break;
-
                 default:
                     AdditionalAttributes![parameter.Name] = parameter.Value;
                     break;
@@ -101,14 +99,7 @@ public partial class Alert : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    /// <inheritdoc />
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Alert, true),
-            (Color.ToAlertColorClass(), Color != AlertColor.None),
-            (BootstrapClass.AlertDismisable, Dismissable));
-
+     
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>

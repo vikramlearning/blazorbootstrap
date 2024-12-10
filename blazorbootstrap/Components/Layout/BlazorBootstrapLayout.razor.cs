@@ -4,26 +4,20 @@ public partial class BlazorBootstrapLayout : BlazorBootstrapLayoutComponentBase
 {
     #region Properties, Indexers
 
-    protected string? ClassNames => BuildClassNames(Class, ("bb-page", true));
+    protected string? ClassNames => Class + " bb-page";
 
     [Parameter] public RenderFragment? ContentSection { get; set; }
     [Parameter] public string? ContentSectionCssClass { get; set; }
-    protected string? ContentSectionCssClassNames => BuildClassNames(ContentSectionCssClass, ("p-4", true));
+    protected string? ContentSectionCssClassNames => ContentSectionCssClass + " p-4";
 
     [Parameter] public RenderFragment? FooterSection { get; set; }
     [Parameter] public string? FooterSectionCssClass { get; set; } = "bg-body-tertiary";
-    protected string? FooterSectionCssClassNames => BuildClassNames(FooterSectionCssClass, ("bb-footer p-4", true));
+    protected string? FooterSectionCssClassNames => FooterSectionCssClass + " bb-footer p-4";
 
     [Parameter] public RenderFragment? HeaderSection { get; set; }
     [Parameter] public string? HeaderSectionCssClass { get; set; } = "d-flex justify-content-end";
 
-    protected string? HeaderSectionCssClassNames =>
-        BuildClassNames(
-            HeaderSectionCssClass,
-            ("bb-top-row", true),
-            ("bb-top-row-sticky", StickyHeader),
-            ("px-4", true)
-        );
+    protected string? HeaderSectionCssClassNames => HeaderSectionCssClass + " bb-top-row bb-top-row-sticky px-4"; 
 
     [Parameter] public bool StickyHeader { get; set; }
 

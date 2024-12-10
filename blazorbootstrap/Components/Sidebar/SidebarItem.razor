@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<div @ref="@Element" id="@Id" class="nav-item @(HasChildren ? "nav-item-group" : "") @(navitemGroupExpanded ? "active" : "") @Class" @attributes="@AdditionalAttributes">
     @if (HasChildren)
     {
         <NavLink class="nav-link" role="button" @onclick="ToggleNavItemGroup">
@@ -36,7 +36,7 @@
     }
     else
     {
-        <NavLink class="nav-link" href="@Href" target="@TargetString" Match="@Match" @onclick="AutoHideNavMenu">
+        <NavLink class="nav-link" href="@Href" target="@EnumExtensions.TargetStringMap[Target]" Match="@Match" @onclick="AutoHideNavMenu">
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">

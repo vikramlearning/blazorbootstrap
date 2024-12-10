@@ -88,7 +88,6 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
                 case nameof(OnError): OnError = (EventCallback<string>)parameter.Value; break;
                 case nameof(OnLoad): OnLoad = (EventCallback)parameter.Value; break;
                 case nameof(ScriptId): ScriptId = (string)parameter.Value; break;
-                case nameof(Style): Style = (string)parameter.Value!; break;
                 case nameof(Source): Source = (string)parameter.Value; break;
                 
                 default:
