@@ -304,7 +304,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     {
         var styleAttributes = new HashSet<string>();
 
-        if (FixedHeader) styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[Unit]}");
+        if (FixedHeader) styleAttributes.Add($"height:{Height.ToString()}");
 
         return string.Join(";", styleAttributes);
     }
@@ -548,43 +548,42 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(AllowFiltering): AllowFiltering = (bool)parameter.Value!; break;
-                case nameof(AllowPaging): AllowPaging = (bool)parameter.Value!; break;
-                case nameof(AllowRowClick): AllowRowClick = (bool)parameter.Value!; break;
-                case nameof(AllowSelection): AllowSelection = (bool)parameter.Value!; break;
-                case nameof(AllowSorting): AllowSorting = (bool)parameter.Value!; break;
-                case nameof(AutoHidePaging): AutoHidePaging = (bool)parameter.Value!; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(Data): Data = (IReadOnlyCollection<TItem>)parameter.Value!; break;
-                case nameof(DataProvider): DataProvider = (GridDataProviderDelegate<TItem>)parameter.Value!; break;
-                case nameof(DisableAllRowsSelection): DisableAllRowsSelection = (Func<IReadOnlyCollection<TItem>, bool>)parameter.Value!; break;
-                case nameof(DisableRowSelection): DisableRowSelection = (Func<TItem, bool>)parameter.Value!; break;
-                case nameof(EmptyDataTemplate): EmptyDataTemplate = (RenderFragment)parameter.Value!; break;
-                case nameof(EmptyText): EmptyText = (string)parameter.Value!; break;
-                case nameof(FiltersRowCssClass): FiltersRowCssClass = (string)parameter.Value!; break;
-                case nameof(FiltersTranslationProvider): FiltersTranslationProvider = (GridFiltersTranslationDelegate)parameter.Value!; break;
-                case nameof(FixedHeader): FixedHeader = (bool)parameter.Value!; break;
-                case nameof(GridSettingsChanged): GridSettingsChanged = (EventCallback<GridSettings>)parameter.Value!; break;
-                case nameof(HeaderRowCssClass): HeaderRowCssClass = (string)parameter.Value!; break;
-                case nameof(Height): Height = (float)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(IsResponsive): IsResponsive = (bool)parameter.Value!; break;
-                case nameof(ItemsPerPageText): ItemsPerPageText = (string)parameter.Value!; break;
-                case nameof(LoadingTemplate): LoadingTemplate = (RenderFragment)parameter.Value!; break;
-                case nameof(OnRowClick): OnRowClick = (EventCallback<GridRowEventArgs<TItem>>)parameter.Value!; break;
-                case nameof(OnRowDoubleClick): OnRowDoubleClick = (EventCallback<GridRowEventArgs<TItem>>)parameter.Value!; break;
-                case nameof(PageSize): PageSize = (int)parameter.Value!; break;
-                case nameof(PageSizeSelectorItems): PageSizeSelectorItems = (int[])parameter.Value!; break;
-                case nameof(PageSizeSelectorVisible): PageSizeSelectorVisible = (bool)parameter.Value!; break;
-                case nameof(PaginationItemsTextFormat): PaginationItemsTextFormat = (string)parameter.Value!; break;
-                case nameof(RowClass): RowClass = (Func<TItem, string>)parameter.Value!; break;
-                case nameof(SelectedItemsChanged): SelectedItemsChanged = (EventCallback<HashSet<TItem>>)parameter.Value!; break;
-                case nameof(SelectionMode): SelectionMode = (GridSelectionMode)parameter.Value!; break;
-                case nameof(SettingsProvider): SettingsProvider = (GridSettingsProviderDelegate)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowFiltering), StringComparison.OrdinalIgnoreCase): AllowFiltering = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowPaging), StringComparison.OrdinalIgnoreCase): AllowPaging = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowRowClick), StringComparison.OrdinalIgnoreCase): AllowRowClick = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowSelection), StringComparison.OrdinalIgnoreCase): AllowSelection = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowSorting), StringComparison.OrdinalIgnoreCase): AllowSorting = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoHidePaging), StringComparison.OrdinalIgnoreCase): AutoHidePaging = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Data), StringComparison.OrdinalIgnoreCase): Data = (IReadOnlyCollection<TItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DataProvider), StringComparison.OrdinalIgnoreCase): DataProvider = (GridDataProviderDelegate<TItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DisableAllRowsSelection), StringComparison.OrdinalIgnoreCase): DisableAllRowsSelection = (Func<IReadOnlyCollection<TItem>, bool>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DisableRowSelection), StringComparison.OrdinalIgnoreCase): DisableRowSelection = (Func<TItem, bool>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EmptyDataTemplate), StringComparison.OrdinalIgnoreCase): EmptyDataTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EmptyText), StringComparison.OrdinalIgnoreCase): EmptyText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FiltersRowCssClass), StringComparison.OrdinalIgnoreCase): FiltersRowCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FiltersTranslationProvider), StringComparison.OrdinalIgnoreCase): FiltersTranslationProvider = (GridFiltersTranslationDelegate)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FixedHeader), StringComparison.OrdinalIgnoreCase): FixedHeader = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(GridSettingsChanged), StringComparison.OrdinalIgnoreCase): GridSettingsChanged = (EventCallback<GridSettings>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HeaderRowCssClass), StringComparison.OrdinalIgnoreCase): HeaderRowCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Height), StringComparison.OrdinalIgnoreCase): Height = (CssPropertyValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsResponsive), StringComparison.OrdinalIgnoreCase): IsResponsive = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ItemsPerPageText), StringComparison.OrdinalIgnoreCase): ItemsPerPageText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LoadingTemplate), StringComparison.OrdinalIgnoreCase): LoadingTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnRowClick), StringComparison.OrdinalIgnoreCase): OnRowClick = (EventCallback<GridRowEventArgs<TItem>>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnRowDoubleClick), StringComparison.OrdinalIgnoreCase): OnRowDoubleClick = (EventCallback<GridRowEventArgs<TItem>>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PageSize), StringComparison.OrdinalIgnoreCase): PageSize = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PageSizeSelectorItems), StringComparison.OrdinalIgnoreCase): PageSizeSelectorItems = (int[])parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PageSizeSelectorVisible), StringComparison.OrdinalIgnoreCase): PageSizeSelectorVisible = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PaginationItemsTextFormat), StringComparison.OrdinalIgnoreCase): PaginationItemsTextFormat = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(RowClass), StringComparison.OrdinalIgnoreCase): RowClass = (Func<TItem, string>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(SelectedItemsChanged), StringComparison.OrdinalIgnoreCase): SelectedItemsChanged = (EventCallback<HashSet<TItem>>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(SelectionMode), StringComparison.OrdinalIgnoreCase): SelectionMode = (GridSelectionMode)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(SettingsProvider), StringComparison.OrdinalIgnoreCase): SettingsProvider = (GridSettingsProviderDelegate)parameter.Value; break;
                 
-                case nameof(TableHeaderCssClass): TableHeaderCssClass = (string)parameter.Value!; break;
-                case nameof(Unit): Unit = (Unit)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(TableHeaderCssClass), StringComparison.OrdinalIgnoreCase): TableHeaderCssClass = (string)parameter.Value; break;
                 
                 default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
@@ -676,7 +675,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public IReadOnlyCollection<TItem>? Data { get; set; } = default!;
+    public IReadOnlyCollection<TItem>? Data { get; set; }
 
     /// <summary>
     /// DataProvider is for items to render.
@@ -686,7 +685,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public GridDataProviderDelegate<TItem>? DataProvider { get; set; } = default!;
+    public GridDataProviderDelegate<TItem>? DataProvider { get; set; }
 
     /// <summary>
     /// Enable or disable the header checkbox selection.
@@ -743,7 +742,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public GridFiltersTranslationDelegate? FiltersTranslationProvider { get; set; } = default!;
+    public GridFiltersTranslationDelegate? FiltersTranslationProvider { get; set; } 
 
     /// <summary>
     /// Gets or sets the grid fixed header.
@@ -814,10 +813,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the grid height.
     /// </summary>
     /// <remarks>
-    /// Default value is 320 <see cref="Unit.Px" />.
+    /// Default value is 320px.
     /// </remarks>
-    [Parameter]
-    public float Height { get; set; } = 320;
+    [Parameter] public CssPropertyValue Height { get; set; } = CssPropertyValue.Pixels(320);
 
     /// <summary>
     /// Gets or sets the items per page text.
@@ -827,7 +825,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     //[EditorRequired] 
-    public string ItemsPerPageText { get; set; } = "Items per page"!;
+    public string ItemsPerPageText { get; set; } = "Items per page";
 
     /// <summary>
     /// Gets or sets the loading template.
@@ -835,7 +833,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    public RenderFragment? LoadingTemplate { get; set; } = default!;
+    public RenderFragment? LoadingTemplate { get; set; } 
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.
@@ -886,7 +884,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     //[EditorRequired]
-    public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items"!;
+    public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items";
 
     /// <summary>
     /// Gets or sets a value indicating whether the grid is responsive.
@@ -928,7 +926,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public GridSettingsProviderDelegate? SettingsProvider { get; set; } = default!;
+    public GridSettingsProviderDelegate? SettingsProvider { get; set; } 
 
     /// <summary>
     /// Gets or sets the thead css class.
@@ -936,17 +934,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? TableHeaderCssClass { get; set; }
+    [Parameter] public string? TableHeaderCssClass { get; set; }
 
     /// <summary>
-    /// Gets or sets the units.
+    /// Dependency injected Javascript Runtime
     /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Unit.Px" />.
-    /// </remarks>
-    [Parameter]
-    public Unit Unit { get; set; } = Unit.Px;
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

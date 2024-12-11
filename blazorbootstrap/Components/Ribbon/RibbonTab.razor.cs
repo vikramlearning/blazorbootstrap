@@ -44,18 +44,18 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Active): Active = (bool)parameter.Value; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Name): Name = (string)parameter.Value; break;
-                case nameof(OnClick): OnClick = (EventCallback<TabEventArgs>)parameter.Value; break;
-                case nameof(Parent): Parent = (Ribbon)parameter.Value!; break;
-                case nameof(Title): Title = (string)parameter.Value; break;
-                case nameof(TitleTemplate): TitleTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Active), StringComparison.OrdinalIgnoreCase): Active = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Name), StringComparison.OrdinalIgnoreCase): Name = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnClick), StringComparison.OrdinalIgnoreCase): OnClick = (EventCallback<TabEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Parent), StringComparison.OrdinalIgnoreCase): Parent = (Ribbon)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Title), StringComparison.OrdinalIgnoreCase): Title = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TitleTemplate), StringComparison.OrdinalIgnoreCase): TitleTemplate = (RenderFragment)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -91,8 +91,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
     /// Gets or sets the tab name.
@@ -100,14 +99,12 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string Name { get; set; } = default!;
+    [Parameter] [EditorRequired] public string Name { get; set; } = default!;
 
     /// <summary>
     /// This event fires when the user clicks the corresponding tab button and the tab is displayed.
     /// </summary>
-    [Parameter]
-    public EventCallback<TabEventArgs> OnClick { get; set; }
+    [Parameter] public EventCallback<TabEventArgs> OnClick { get; set; }
 
     /// <summary>
     /// Gets or sets the parent ribbon.
@@ -121,14 +118,18 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string Title { get; set; } = default!;
+    [Parameter] public string Title { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the tab title template.
     /// </summary>
-    [Parameter]
-    public RenderFragment? TitleTemplate { get; set; } 
+    [Parameter] public RenderFragment? TitleTemplate { get; set; }
+
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

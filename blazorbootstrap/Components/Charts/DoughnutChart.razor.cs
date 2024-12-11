@@ -143,6 +143,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
             await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions);
         }
     }
+    
 
     #endregion
 }

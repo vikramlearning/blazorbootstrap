@@ -52,5 +52,11 @@ public partial class Section : BlazorBootstrapComponentBase
 
     [Parameter] public HeadingSize Size { get; set; }
 
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+
     #endregion
 }

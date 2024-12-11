@@ -10,7 +10,7 @@ public partial class BarChart : BlazorBootstrapChart
     #region Fields and Constants
 
     private const string _jsObjectName = "window.blazorChart.bar";
-
+    
     #endregion
 
     #region Constructors

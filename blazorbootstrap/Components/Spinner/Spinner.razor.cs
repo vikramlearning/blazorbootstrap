@@ -66,18 +66,18 @@ public partial class Spinner : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Color): Color = (SpinnerColor)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Size): Size = (SpinnerSize)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (SpinnerColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (SpinnerSize)parameter.Value; break;
 
-                case nameof(Title): Title = (string)parameter.Value; break;
-                case nameof(Type): Type = (SpinnerType)parameter.Value; break;
-                case nameof(Visible): Visible = (bool)parameter.Value; break;
-                case nameof(VisuallyHiddenText): VisuallyHiddenText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Title), StringComparison.OrdinalIgnoreCase): Title = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Type), StringComparison.OrdinalIgnoreCase): Type = (SpinnerType)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Visible), StringComparison.OrdinalIgnoreCase): Visible = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(VisuallyHiddenText), StringComparison.OrdinalIgnoreCase): VisuallyHiddenText = (string)parameter.Value; break;
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

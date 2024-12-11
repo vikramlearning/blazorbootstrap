@@ -112,22 +112,22 @@ public partial class Dropdown : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(AutoClose): AutoClose = (bool)parameter.Value!; break;
-                case nameof(AutoCloseBehavior): AutoCloseBehavior = (DropdownAutoCloseBehavior)parameter.Value!; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Color): Color = (DropdownColor)parameter.Value!; break;
-                case nameof(Direction): Direction = (DropdownDirection)parameter.Value!; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(OnHidden): OnHidden = (EventCallback)parameter.Value!; break;
-                case nameof(OnHiding): OnHiding = (EventCallback)parameter.Value!; break;
-                case nameof(OnShowing): OnShowing = (EventCallback)parameter.Value!; break;
-                case nameof(OnShown): OnShown = (EventCallback)parameter.Value!; break;
-                case nameof(Size): Size = (DropdownSize)parameter.Value!; break;
-                case nameof(Split): Split = (bool)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoClose), StringComparison.OrdinalIgnoreCase): AutoClose = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoCloseBehavior), StringComparison.OrdinalIgnoreCase): AutoCloseBehavior = (DropdownAutoCloseBehavior)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (DropdownColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Direction), StringComparison.OrdinalIgnoreCase): Direction = (DropdownDirection)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHidden), StringComparison.OrdinalIgnoreCase): OnHidden = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHiding), StringComparison.OrdinalIgnoreCase): OnHiding = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShowing), StringComparison.OrdinalIgnoreCase): OnShowing = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShown), StringComparison.OrdinalIgnoreCase): OnShown = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (DropdownSize)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Split), StringComparison.OrdinalIgnoreCase): Split = (bool)parameter.Value; break;
 
-                default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
         }
         
@@ -222,6 +222,11 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter] public bool Split { get; set; }
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

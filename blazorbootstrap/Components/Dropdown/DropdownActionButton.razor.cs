@@ -29,14 +29,14 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Color): Color = (DropdownColor)parameter.Value!; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Size): Size = (DropdownSize)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (DropdownColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (DropdownSize)parameter.Value; break;
 
-                case nameof(TabIndex): TabIndex = (int?)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(TabIndex), StringComparison.OrdinalIgnoreCase): TabIndex = (int?)parameter.Value; break;
                 default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
         }

@@ -27,23 +27,23 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(CustomIconName): CustomIconName = (string)parameter.Value; break;
-                case nameof(IconColor): IconColor = (IconColor)parameter.Value; break;
-                case nameof(IconCssClass): IconCssClass = (string)parameter.Value; break;
-                case nameof(IconName): IconName = (IconName)parameter.Value; break;
-                case nameof(IconSize): IconSize = (IconSize)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(ImgHeight): ImgHeight = (double)parameter.Value; break;
-                case nameof(ImgSrc): ImgSrc = (string)parameter.Value; break;
-                case nameof(ImgWidth): ImgWidth = (double)parameter.Value; break;
-                case nameof(IsFirstItem): IsFirstItem = (bool)parameter.Value; break;
-                case nameof(IsLastItem): IsLastItem = (bool)parameter.Value; break;
-                case nameof(Name): Name = (string)parameter.Value; break;
-                case nameof(Parent): Parent = (Ribbon)parameter.Value!; break;
-                case nameof(Text): Text = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CustomIconName), StringComparison.OrdinalIgnoreCase): CustomIconName = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IconColor), StringComparison.OrdinalIgnoreCase): IconColor = (IconColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IconCssClass), StringComparison.OrdinalIgnoreCase): IconCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IconName), StringComparison.OrdinalIgnoreCase): IconName = (IconName)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IconSize), StringComparison.OrdinalIgnoreCase): IconSize = (IconSize)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ImgHeight), StringComparison.OrdinalIgnoreCase): ImgHeight = (double)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ImgSrc), StringComparison.OrdinalIgnoreCase): ImgSrc = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ImgWidth), StringComparison.OrdinalIgnoreCase): ImgWidth = (double)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsFirstItem), StringComparison.OrdinalIgnoreCase): IsFirstItem = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsLastItem), StringComparison.OrdinalIgnoreCase): IsLastItem = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Name), StringComparison.OrdinalIgnoreCase): Name = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Parent), StringComparison.OrdinalIgnoreCase): Parent = (Ribbon)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Text), StringComparison.OrdinalIgnoreCase): Text = (string)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

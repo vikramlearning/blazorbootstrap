@@ -17,9 +17,9 @@ public partial class Callout : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Color): 
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): 
                     Color = (CalloutColor)parameter.Value;
                     IconName = Color switch
                     {
@@ -31,11 +31,11 @@ public partial class Callout : BlazorBootstrapComponentBase
                         _ => IconName.InfoCircleFill
                     };
                     break;
-                case nameof(Heading): Heading = (string)parameter.Value; break;
-                case nameof(HideHeading): HideHeading = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Heading), StringComparison.OrdinalIgnoreCase): Heading = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HideHeading), StringComparison.OrdinalIgnoreCase): HideHeading = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

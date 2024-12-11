@@ -13,21 +13,21 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(AutoClose): AutoClose = (bool)parameter.Value!; break;
-                case nameof(AutoCloseBehavior): AutoCloseBehavior = (DropdownAutoCloseBehavior)parameter.Value!; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(Color): Color = (DropdownColor)parameter.Value!; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Size): Size = (DropdownSize)parameter.Value!; break;
-                case nameof(Split): Split = (bool)parameter.Value!; break;
-                case nameof(TabIndex): TabIndex = (int?)parameter.Value!; break;
-                default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoClose), StringComparison.OrdinalIgnoreCase): AutoClose = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoCloseBehavior), StringComparison.OrdinalIgnoreCase): AutoCloseBehavior = (DropdownAutoCloseBehavior)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (DropdownColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (DropdownSize)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Split), StringComparison.OrdinalIgnoreCase): Split = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TabIndex), StringComparison.OrdinalIgnoreCase): TabIndex = (int?)parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
         }
 
-        if (!AdditionalAttributes!.TryGetValue("type", out _))
+        if (!AdditionalAttributes.TryGetValue("type", out _))
             AdditionalAttributes.Add("type", "button");
 
         if (!AdditionalAttributes.TryGetValue("data-bs-toggle", out _))

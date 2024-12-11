@@ -75,20 +75,20 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(AutoHide): AutoHide = (bool)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Delay): Delay = (int)parameter.Value; break;
-                case nameof(Hidden): Hidden = (EventCallback<ToastEventArgs>)parameter.Value; break;
-                case nameof(Hiding): Hiding = (EventCallback<ToastEventArgs>)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value; break;
-                case nameof(Showing): Showing = (EventCallback<ToastEventArgs>)parameter.Value; break;
-                case nameof(Shown): Shown = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoHide), StringComparison.OrdinalIgnoreCase): AutoHide = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Delay), StringComparison.OrdinalIgnoreCase): Delay = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Hidden), StringComparison.OrdinalIgnoreCase): Hidden = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Hiding), StringComparison.OrdinalIgnoreCase): Hiding = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ShowCloseButton), StringComparison.OrdinalIgnoreCase): ShowCloseButton = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Showing), StringComparison.OrdinalIgnoreCase): Showing = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Shown), StringComparison.OrdinalIgnoreCase): Shown = (EventCallback<ToastEventArgs>)parameter.Value; break;
 
-                case nameof(ToastMessage): ToastMessage = (ToastMessage)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ToastMessage), StringComparison.OrdinalIgnoreCase): ToastMessage = (ToastMessage)parameter.Value; break;
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -154,5 +154,10 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter] public ToastMessage? ToastMessage { get; set; }
 
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+    
     #endregion
 }

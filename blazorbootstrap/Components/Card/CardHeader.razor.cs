@@ -37,12 +37,12 @@ public partial class CardHeader : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Color): Color = (CardColor)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (CardColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

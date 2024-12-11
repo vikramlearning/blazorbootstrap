@@ -62,17 +62,17 @@ public partial class ProgressBar
         {
             switch (parameter.Name)
             {
-                case nameof(Color): Color = (ProgressColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (ProgressColor)parameter.Value; break;
 
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
                 
-                case nameof(Label): Label = (string)parameter.Value; break;
-                case nameof(Type): Type = (ProgressType)parameter.Value; break;
-                case "style": Style = (string)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(Label), StringComparison.OrdinalIgnoreCase): Label = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Type), StringComparison.OrdinalIgnoreCase): Type = (ProgressType)parameter.Value; break;
+                case "style": Style = (string)parameter.Value; break;
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

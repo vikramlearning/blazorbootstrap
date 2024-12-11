@@ -21,11 +21,11 @@ public sealed class Button : BlazorBootstrapComponentBase
 
     private Target previousTarget;
 
-    private string? previousTo = default!;
+    private string? previousTo;
 
-    private TooltipColor previousTooltipColor = default!;
+    private TooltipColor previousTooltipColor;
 
-    private string previousTooltipTitle = default!;
+    private string? previousTooltipTitle;
 
     private ButtonType previousType;
 
@@ -233,7 +233,7 @@ public sealed class Button : BlazorBootstrapComponentBase
 
             if (TooltipColor != TooltipColor.None)
             {
-                AdditionalAttributes["data-bs-custom-class"] = EnumExtensions.TooltipColorClassMap[TooltipColor]!;
+                AdditionalAttributes["data-bs-custom-class"] = EnumExtensions.TooltipColorClassMap[TooltipColor];
             }
         }
         else // button disabled (or) tooltip text empty
@@ -256,26 +256,26 @@ public sealed class Button : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Active): Active = (bool)parameter.Value; break;
-                case nameof(Block): Block = (bool)parameter.Value; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Color): Color = (ButtonColor)parameter.Value; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(Loading): Loading = (bool)parameter.Value; break;
-                case nameof(LoadingTemplate): LoadingTemplate = (RenderFragment?)parameter.Value; break;
-                case nameof(LoadingText): LoadingText = (string)parameter.Value; break;
-                case nameof(Outline): Outline = (bool)parameter.Value; break;
-                case nameof(Position): Position = (Position)parameter.Value; break;
-                case nameof(Size): Size = (ButtonSize)parameter.Value; break;
-                case nameof(TabIndex): TabIndex = (int?)parameter.Value; break;
-                case nameof(Target): Target = (Target)parameter.Value; break;
-                case nameof(To): To = (string?)parameter.Value; break;
-                case nameof(TooltipColor): TooltipColor = (TooltipColor)parameter.Value; break;
-                case nameof(TooltipPlacement): TooltipPlacement = (TooltipPlacement)parameter.Value; break;
-                case nameof(TooltipTitle): TooltipTitle = (string)parameter.Value; break;
-                case nameof(Type): 
+                case var _ when String.Equals(parameter.Name, nameof(Active), StringComparison.OrdinalIgnoreCase): Active = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Block), StringComparison.OrdinalIgnoreCase): Block = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (ButtonColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Loading), StringComparison.OrdinalIgnoreCase): Loading = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LoadingTemplate), StringComparison.OrdinalIgnoreCase): LoadingTemplate = (RenderFragment?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LoadingText), StringComparison.OrdinalIgnoreCase): LoadingText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Outline), StringComparison.OrdinalIgnoreCase): Outline = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Position), StringComparison.OrdinalIgnoreCase): Position = (Position)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (ButtonSize)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TabIndex), StringComparison.OrdinalIgnoreCase): TabIndex = (int?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Target), StringComparison.OrdinalIgnoreCase): Target = (Target)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(To), StringComparison.OrdinalIgnoreCase): To = (string?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TooltipColor), StringComparison.OrdinalIgnoreCase): TooltipColor = (TooltipColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TooltipPlacement), StringComparison.OrdinalIgnoreCase): TooltipPlacement = (TooltipPlacement)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TooltipTitle), StringComparison.OrdinalIgnoreCase): TooltipTitle = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Type), StringComparison.OrdinalIgnoreCase): 
                     Type = (ButtonType)parameter.Value;
                     ButtonTypeString = EnumExtensions.ButtonTypeStringMap[Type];
                     break;
@@ -311,8 +311,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Active { get; set; }
+    [Parameter] public bool Active { get; set; }
 
     /// <summary>
     /// Gets or sets the block level button.
@@ -454,8 +453,13 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter] public ButtonType Type { get; set; } = ButtonType.Button;
 
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+
     #endregion
-     
+
 
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)

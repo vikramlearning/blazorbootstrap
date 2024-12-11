@@ -96,15 +96,15 @@ public sealed class DropdownItem : BlazorBootstrapComponentBase
 
     private void SetAttributes()
     { 
-        if (Active && !AdditionalAttributes!.TryGetValue("aria-current", out _))
+        if (Active && !AdditionalAttributes.TryGetValue("aria-current", out _))
             AdditionalAttributes.Add("aria-current", "true");
         else if (!Active)
-            AdditionalAttributes!.Remove("aria-current");
+            AdditionalAttributes.Remove("aria-current");
 
         // 'a' tag
         if (Type == DropdownItemType.Link)
         {
-            if (!AdditionalAttributes!.TryGetValue("role", out _))
+            if (!AdditionalAttributes.TryGetValue("role", out _))
                 AdditionalAttributes.Add("role", "button");
 
             if (!AdditionalAttributes.TryGetValue("href", out _))
@@ -138,7 +138,7 @@ public sealed class DropdownItem : BlazorBootstrapComponentBase
         }
         else // button
         {
-            AdditionalAttributes!.Remove("role", out _);
+            AdditionalAttributes.Remove("role", out _);
             AdditionalAttributes.Remove("href", out _);
             AdditionalAttributes.Remove("target", out _);
             AdditionalAttributes.Remove("aria-disabled", out _);
@@ -160,16 +160,16 @@ public sealed class DropdownItem : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Active): Active = (bool)parameter.Value!; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(TabIndex): TabIndex = (int?)parameter.Value!; break;
-                case nameof(Target): Target = (Target)parameter.Value!; break;
-                case nameof(To): To = (string?)parameter.Value!; break;
-                case nameof(Type): Type = (DropdownItemType)parameter.Value!; break;
-                default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(Active), StringComparison.OrdinalIgnoreCase): Active = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TabIndex), StringComparison.OrdinalIgnoreCase): TabIndex = (int?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Target), StringComparison.OrdinalIgnoreCase): Target = (Target)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(To), StringComparison.OrdinalIgnoreCase): To = (string?)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(Type), StringComparison.OrdinalIgnoreCase): Type = (DropdownItemType)parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
         }
         // SetAttributes() is handled in OnParametersSet()

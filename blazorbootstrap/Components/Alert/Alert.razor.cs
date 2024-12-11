@@ -80,15 +80,15 @@ public partial class Alert : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             { 
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Color): Color = (AlertColor)parameter.Value; break;
-                case nameof(Dismissable): Dismissable = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(OnClose): OnClose = (EventCallback)parameter.Value; break;
-                case nameof(OnClosed): OnClosed = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (AlertColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Dismissable), StringComparison.OrdinalIgnoreCase): Dismissable = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnClose), StringComparison.OrdinalIgnoreCase): OnClose = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnClosed), StringComparison.OrdinalIgnoreCase): OnClosed = (EventCallback)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -106,8 +106,7 @@ public partial class Alert : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the alert color.
@@ -115,8 +114,7 @@ public partial class Alert : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="AlertColor.None" />.
     /// </remarks>
-    [Parameter]
-    public AlertColor Color { get; set; } = AlertColor.None;
+    [Parameter] public AlertColor Color { get; set; } = AlertColor.None;
 
     /// <summary>
     /// If <see langword="true" />, shows an inline close button.
@@ -124,20 +122,23 @@ public partial class Alert : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Dismissable { get; set; }
+    [Parameter] public bool Dismissable { get; set; }
 
     /// <summary>
     /// Fires immediately when the close instance method is called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
 
     /// <summary>
     /// Fired when the alert has been closed and CSS transitions have completed.
     /// </summary>
-    [Parameter]
-    public EventCallback OnClosed { get; set; }
+    [Parameter] public EventCallback OnClosed { get; set; }
+
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 

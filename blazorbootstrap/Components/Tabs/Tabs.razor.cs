@@ -281,7 +281,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.Id);
 
         if (tab?.OnClick.HasDelegate ?? false)
-            await tab.OnClick.InvokeAsync(new TabEventArgs(tab!.Name, tab.Title));
+            await tab.OnClick.InvokeAsync(new TabEventArgs(tab.Name, tab.Title));
     }
 
     #endregion
@@ -305,11 +305,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     [Parameter] public bool EnableFadeEffect { get; set; }
 
     private bool IsVertical =>
-        NavStyle == NavStyle.Vertical
-        || NavStyle == NavStyle.VerticalPills
-        || NavStyle == NavStyle.VerticalUnderline;
-
-    private string? NavParentDivCssClass => IsVertical ? "d-flex" : default;
+        NavStyle is NavStyle.Vertical or NavStyle.VerticalPills or NavStyle.VerticalUnderline; 
 
     /// <summary>
     /// Get or sets the nav style.
@@ -339,7 +335,11 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter] public EventCallback<TabsEventArgs> OnShown { get; set; }
 
-    private string? TabContentCssClass => IsVertical ? "tab-content flex-grow-1" : "tab-content";
-
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+    
+    
     #endregion
 }

@@ -97,17 +97,17 @@ public partial class Tooltip : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Color): Color = (TooltipColor)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(IsHtml): IsHtml = (bool)parameter.Value; break;
-                case nameof(Placement): Placement = (TooltipPlacement)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (TooltipColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsHtml), StringComparison.OrdinalIgnoreCase): IsHtml = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Placement), StringComparison.OrdinalIgnoreCase): Placement = (TooltipPlacement)parameter.Value; break;
 
-                case nameof(Title): Title = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Title), StringComparison.OrdinalIgnoreCase): Title = (string)parameter.Value; break;
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -165,5 +165,10 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     [EditorRequired]
     public string Title { get; set; } = default!;
 
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+    
     #endregion
 }

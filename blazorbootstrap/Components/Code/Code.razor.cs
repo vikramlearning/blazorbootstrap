@@ -42,4 +42,9 @@ public partial class Code : BlazorBootstrapComponentBase
             await InvokeAsync(StateHasChanged);
         });
     }
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 }

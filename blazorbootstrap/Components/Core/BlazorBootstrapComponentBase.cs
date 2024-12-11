@@ -52,6 +52,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <param name="disposing">User-invoked disposing</param>
     protected virtual void Dispose(bool disposing)
     {
+        DisposeAsyncCore(disposing).AsTask().Wait(); 
     }
 
     /// <summary>
@@ -102,11 +103,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// This is useful for Javascript interop, to ensure the element is rendered before attempting to interact with it.
     /// </summary>
     protected bool IsRenderComplete { get; private set; }
-
-    /// <summary>
-    /// Dependency injected Javascript Runtime
-    /// </summary>
-    [Inject] protected IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 

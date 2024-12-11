@@ -79,26 +79,26 @@ public partial class Pagination : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(ActivePageNumber): ActivePageNumber = (int)parameter.Value; break;
-                case nameof(Alignment): Alignment = (Alignment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(DisplayPages): DisplayPages = (int)parameter.Value; break;
-                case nameof(FirstLinkIcon): FirstLinkIcon = (IconName)parameter.Value; break;
-                case nameof(FirstLinkText): FirstLinkText = (string)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(LastLinkIcon): LastLinkIcon = (IconName)parameter.Value; break;
-                case nameof(LastLinkText): LastLinkText = (string)parameter.Value; break;
-                case nameof(NextLinkIcon): NextLinkIcon = (IconName)parameter.Value; break;
-                case nameof(NextLinkText): NextLinkText = (string)parameter.Value; break;
-                case nameof(PageChanged): PageChanged = (EventCallback<int>)parameter.Value; break;
-                case nameof(PreviousLinkIcon): PreviousLinkIcon = (IconName)parameter.Value; break;
-                case nameof(PreviousLinkText): PreviousLinkText = (string)parameter.Value; break;
-                case nameof(Size): Size = (PaginationSize)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ActivePageNumber), StringComparison.OrdinalIgnoreCase): ActivePageNumber = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Alignment), StringComparison.OrdinalIgnoreCase): Alignment = (Alignment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DisplayPages), StringComparison.OrdinalIgnoreCase): DisplayPages = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FirstLinkIcon), StringComparison.OrdinalIgnoreCase): FirstLinkIcon = (IconName)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FirstLinkText), StringComparison.OrdinalIgnoreCase): FirstLinkText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LastLinkIcon), StringComparison.OrdinalIgnoreCase): LastLinkIcon = (IconName)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LastLinkText), StringComparison.OrdinalIgnoreCase): LastLinkText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(NextLinkIcon), StringComparison.OrdinalIgnoreCase): NextLinkIcon = (IconName)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(NextLinkText), StringComparison.OrdinalIgnoreCase): NextLinkText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PageChanged), StringComparison.OrdinalIgnoreCase): PageChanged = (EventCallback<int>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PreviousLinkIcon), StringComparison.OrdinalIgnoreCase): PreviousLinkIcon = (IconName)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PreviousLinkText), StringComparison.OrdinalIgnoreCase): PreviousLinkText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (PaginationSize)parameter.Value; break;
                 
-                case nameof(TotalPages): TotalPages = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TotalPages), StringComparison.OrdinalIgnoreCase): TotalPages = (int)parameter.Value; break;
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

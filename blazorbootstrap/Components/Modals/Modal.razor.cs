@@ -181,31 +181,31 @@ public partial class Modal : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(BodyCssClass): BodyCssClass = (string)parameter.Value!; break;
-                case nameof(BodyTemplate): BodyTemplate = (RenderFragment)parameter.Value!; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(CloseIconColor): CloseIconColor = (IconColor)parameter.Value!; break;
-                case nameof(CloseOnEscape): CloseOnEscape = (bool)parameter.Value!; break;
-                case nameof(DialogCssClass): DialogCssClass = (string)parameter.Value!; break;
-                case nameof(FooterCssClass): FooterCssClass = (string)parameter.Value!; break;
-                case nameof(FooterTemplate): FooterTemplate = (RenderFragment)parameter.Value!; break;
-                case nameof(Fullscreen): Fullscreen = (ModalFullscreen)parameter.Value!; break;
-                case nameof(HeaderCssClass): HeaderCssClass = (string)parameter.Value!; break;
-                case nameof(HeaderTemplate): HeaderTemplate = (RenderFragment)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(IsScrollable): IsScrollable = (bool)parameter.Value!; break;
-                case nameof(IsServiceModal): IsServiceModal = (bool)parameter.Value!; break;
-                case nameof(IsVerticallyCentered): IsVerticallyCentered = (bool)parameter.Value!; break;
-                case nameof(Message): Message = (string)parameter.Value!; break;
-                case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value!; break;
-                case nameof(Size): Size = (ModalSize)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(BodyCssClass), StringComparison.OrdinalIgnoreCase): BodyCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(BodyTemplate), StringComparison.OrdinalIgnoreCase): BodyTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CloseIconColor), StringComparison.OrdinalIgnoreCase): CloseIconColor = (IconColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CloseOnEscape), StringComparison.OrdinalIgnoreCase): CloseOnEscape = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DialogCssClass), StringComparison.OrdinalIgnoreCase): DialogCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FooterCssClass), StringComparison.OrdinalIgnoreCase): FooterCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FooterTemplate), StringComparison.OrdinalIgnoreCase): FooterTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Fullscreen), StringComparison.OrdinalIgnoreCase): Fullscreen = (ModalFullscreen)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HeaderCssClass), StringComparison.OrdinalIgnoreCase): HeaderCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HeaderTemplate), StringComparison.OrdinalIgnoreCase): HeaderTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsScrollable), StringComparison.OrdinalIgnoreCase): IsScrollable = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsServiceModal), StringComparison.OrdinalIgnoreCase): IsServiceModal = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsVerticallyCentered), StringComparison.OrdinalIgnoreCase): IsVerticallyCentered = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Message), StringComparison.OrdinalIgnoreCase): Message = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ShowCloseButton), StringComparison.OrdinalIgnoreCase): ShowCloseButton = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (ModalSize)parameter.Value; break;
                 
-                case nameof(TabIndex): TabIndex = (int)parameter.Value!; break;
-                case nameof(Title): Title = (string)parameter.Value!; break;
-                case nameof(UseStaticBackdrop): UseStaticBackdrop = (bool)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(TabIndex), StringComparison.OrdinalIgnoreCase): TabIndex = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Title), StringComparison.OrdinalIgnoreCase): Title = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(UseStaticBackdrop), StringComparison.OrdinalIgnoreCase): UseStaticBackdrop = (bool)parameter.Value; break;
                 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -411,6 +411,11 @@ public partial class Modal : BlazorBootstrapComponentBase
     [Parameter] public bool UseStaticBackdrop { get; set; }
 
     private string VerticallyCentered => IsVerticallyCentered ? "modal-dialog-centered" : "";
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

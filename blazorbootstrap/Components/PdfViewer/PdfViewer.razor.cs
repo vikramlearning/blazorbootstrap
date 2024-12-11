@@ -216,16 +216,16 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(OnDocumentLoaded): OnDocumentLoaded = (EventCallback<PdfViewerEventArgs>)parameter.Value; break;
-                case nameof(OnPageChanged): OnPageChanged = (EventCallback<PdfViewerEventArgs>)parameter.Value; break;
-                case nameof(Orientation): Orientation = (Orientation)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnDocumentLoaded), StringComparison.OrdinalIgnoreCase): OnDocumentLoaded = (EventCallback<PdfViewerEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnPageChanged), StringComparison.OrdinalIgnoreCase): OnPageChanged = (EventCallback<PdfViewerEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Orientation), StringComparison.OrdinalIgnoreCase): Orientation = (Orientation)parameter.Value; break;
 
-                case nameof(Url): Url = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Url), StringComparison.OrdinalIgnoreCase): Url = (string)parameter.Value; break;
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

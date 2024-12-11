@@ -79,29 +79,29 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(AllowSorting): AllowSorting = (bool)parameter.Value; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Data): Data = (IReadOnlyCollection<TItem>)parameter.Value; break;
-                case nameof(DisabledItemCssClass): DisabledItemCssClass = (string)parameter.Value; break;
-                case nameof(DisableItem): DisableItem = (Func<TItem, bool>)parameter.Value; break;
-                case nameof(EmptyDataTemplate): EmptyDataTemplate = (RenderFragment)parameter.Value; break;
-                case nameof(EmptyText): EmptyText = (string)parameter.Value; break;
-                case nameof(Group): Group = (string)parameter.Value; break;
-                case nameof(Handle): Handle = (string)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(IsLoading): IsLoading = (bool)parameter.Value; break;
-                case nameof(ItemTemplate): ItemTemplate = (RenderFragment<TItem>)parameter.Value; break;
-                case nameof(LoadingTemplate): LoadingTemplate = (RenderFragment)parameter.Value; break;
-                case nameof(Name): Name = (string)parameter.Value; break;
-                case nameof(OnAdd): OnAdd = (EventCallback<SortableListEventArgs>)parameter.Value; break;
-                case nameof(OnRemove): OnRemove = (EventCallback<SortableListEventArgs>)parameter.Value; break;
-                case nameof(OnUpdate): OnUpdate = (EventCallback<SortableListEventArgs>)parameter.Value; break;
-                case nameof(Pull): Pull = (SortableListPullMode)parameter.Value; break;
-                case nameof(Put): Put = (SortableListPutMode)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowSorting), StringComparison.OrdinalIgnoreCase): AllowSorting = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Data), StringComparison.OrdinalIgnoreCase): Data = (IReadOnlyCollection<TItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DisabledItemCssClass), StringComparison.OrdinalIgnoreCase): DisabledItemCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DisableItem), StringComparison.OrdinalIgnoreCase): DisableItem = (Func<TItem, bool>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EmptyDataTemplate), StringComparison.OrdinalIgnoreCase): EmptyDataTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EmptyText), StringComparison.OrdinalIgnoreCase): EmptyText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Group), StringComparison.OrdinalIgnoreCase): Group = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Handle), StringComparison.OrdinalIgnoreCase): Handle = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsLoading), StringComparison.OrdinalIgnoreCase): IsLoading = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ItemTemplate), StringComparison.OrdinalIgnoreCase): ItemTemplate = (RenderFragment<TItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LoadingTemplate), StringComparison.OrdinalIgnoreCase): LoadingTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Name), StringComparison.OrdinalIgnoreCase): Name = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnAdd), StringComparison.OrdinalIgnoreCase): OnAdd = (EventCallback<SortableListEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnRemove), StringComparison.OrdinalIgnoreCase): OnRemove = (EventCallback<SortableListEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnUpdate), StringComparison.OrdinalIgnoreCase): OnUpdate = (EventCallback<SortableListEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Pull), StringComparison.OrdinalIgnoreCase): Pull = (SortableListPullMode)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Put), StringComparison.OrdinalIgnoreCase): Put = (SortableListPutMode)parameter.Value; break;
                 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

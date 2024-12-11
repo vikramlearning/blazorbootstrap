@@ -17,21 +17,21 @@ public partial class PaginationItem : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Active): 
+                case var _ when String.Equals(parameter.Name, nameof(Active), StringComparison.OrdinalIgnoreCase): 
                     Active = (bool)parameter.Value;
                     if (Active)
                         AdditionalAttributes["aria-current"] = "page";
                     break;
-                case nameof(AriaLabel): AriaLabel = (string)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(LinkIcon): LinkIcon = (IconName)parameter.Value; break;
-                case nameof(LinkText): LinkText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AriaLabel), StringComparison.OrdinalIgnoreCase): AriaLabel = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LinkIcon), StringComparison.OrdinalIgnoreCase): LinkIcon = (IconName)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LinkText), StringComparison.OrdinalIgnoreCase): LinkText = (string)parameter.Value; break;
 
-                case nameof(Text): Text = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Text), StringComparison.OrdinalIgnoreCase): Text = (string)parameter.Value; break;
 
-                default: AdditionalAttributes![parameter.Name] = parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
         }
          

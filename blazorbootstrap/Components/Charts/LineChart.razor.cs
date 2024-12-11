@@ -142,6 +142,6 @@ public partial class LineChart : BlazorBootstrapChart
         var data = new { chartData.Labels, Datasets = datasets };
         await JsRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
     }
-
+    
     #endregion
 }

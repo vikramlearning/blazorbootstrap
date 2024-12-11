@@ -410,26 +410,26 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(AllowNegativeNumbers): AllowNegativeNumbers = (bool)parameter.Value; break;
-                case nameof(AutoComplete): AutoComplete = (bool)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(CurrencySign): CurrencySign = (CurrencySign)parameter.Value; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
-                case nameof(EditContext): EditContext = (EditContext)parameter.Value!; break;
-                case nameof(EnableMinMax): EnableMinMax = (bool)parameter.Value; break;
-                case nameof(HideCurrencySymbol): HideCurrencySymbol = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Locale): Locale = (string)parameter.Value; break;
-                case nameof(Max): Max = (TValue)parameter.Value; break;
-                case nameof(MaximumFractionDigits): MaximumFractionDigits = (byte?)parameter.Value; break;
-                case nameof(Min): Min = (TValue)parameter.Value; break;
-                case nameof(MinimumFractionDigits): MinimumFractionDigits = (byte?)parameter.Value; break;
-                case nameof(MinimumIntegerDigits): MinimumIntegerDigits = (byte)parameter.Value; break;
-                case nameof(Placeholder): Placeholder = (string)parameter.Value; break;
-                case nameof(TextAlignment): TextAlignment = (Alignment)parameter.Value; break;
-                case nameof(Value): Value = (TValue)parameter.Value; break;
-                case nameof(ValueChanged): ValueChanged = (EventCallback<TValue>)parameter.Value; break;
-                case nameof(ValueExpression): ValueExpression = (Expression<Func<TValue>>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowNegativeNumbers), StringComparison.OrdinalIgnoreCase): AllowNegativeNumbers = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoComplete), StringComparison.OrdinalIgnoreCase): AutoComplete = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CurrencySign), StringComparison.OrdinalIgnoreCase): CurrencySign = (CurrencySign)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EditContext), StringComparison.OrdinalIgnoreCase): EditContext = (EditContext)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EnableMinMax), StringComparison.OrdinalIgnoreCase): EnableMinMax = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HideCurrencySymbol), StringComparison.OrdinalIgnoreCase): HideCurrencySymbol = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Locale), StringComparison.OrdinalIgnoreCase): Locale = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Max), StringComparison.OrdinalIgnoreCase): Max = (TValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(MaximumFractionDigits), StringComparison.OrdinalIgnoreCase): MaximumFractionDigits = (byte?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Min), StringComparison.OrdinalIgnoreCase): Min = (TValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(MinimumFractionDigits), StringComparison.OrdinalIgnoreCase): MinimumFractionDigits = (byte?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(MinimumIntegerDigits), StringComparison.OrdinalIgnoreCase): MinimumIntegerDigits = (byte)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Placeholder), StringComparison.OrdinalIgnoreCase): Placeholder = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TextAlignment), StringComparison.OrdinalIgnoreCase): TextAlignment = (Alignment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Value), StringComparison.OrdinalIgnoreCase): Value = (TValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ValueChanged), StringComparison.OrdinalIgnoreCase): ValueChanged = (EventCallback<TValue>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ValueExpression), StringComparison.OrdinalIgnoreCase): ValueExpression = (Expression<Func<TValue>>)parameter.Value; break;
                 default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
         }
@@ -581,6 +581,11 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// An expression that identifies the bound value.
     /// </summary>
     [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

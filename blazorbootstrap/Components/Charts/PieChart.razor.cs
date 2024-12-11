@@ -142,7 +142,7 @@ public partial class PieChart : BlazorBootstrapChart
             var data = new { chartData.Labels, Datasets = datasets };
             await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PieChartOptions)chartOptions);
         }
-    }
+    } 
 
     #endregion
 }

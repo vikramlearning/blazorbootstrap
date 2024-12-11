@@ -82,12 +82,10 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
     /// </summary>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    /// <param name="widthUnit"></param>
-    /// <param name="heightUnit"></param>
-    public async Task ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px)
+    public async Task ResizeAsync(CssPropertyValue width, CssPropertyValue height)
     {
-        var widthWithUnit = $"width:{width.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[widthUnit]}";
-        var heightWithUnit = $"height:{height.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[heightUnit]}";
+        var widthWithUnit = $"width:{width.ToString()}";
+        var heightWithUnit = $"height:{height.ToString()}";
         await JsRuntime.InvokeVoidAsync("window.blazorChart.resize", Id, widthWithUnit, heightWithUnit);
     }
 
@@ -153,11 +151,11 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
     {
         var style = "";
 
-        if (Width > 0)
-            style += $"width:{Width.Value.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[WidthUnit]};";
+        if (Width.HasValue)
+            style += $"width:{Width.ToString()};";
 
-        if (Height > 0)
-            style += $"height:{Height.Value.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[HeightUnit]};";
+        if (Height.HasValue)
+            style += $"height:{Height.ToString()};";
 
         return style;
     }
@@ -192,13 +190,11 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
         {
             switch (parameter.Name)
             {
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Height): Height = (int?)parameter.Value; break;
-                case nameof(HeightUnit): HeightUnit = (Unit)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(Width): Width = (int?)parameter.Value; break;
-                case nameof(WidthUnit): WidthUnit = (Unit)parameter.Value; break;
-                default: AdditionalAttributes![parameter.Name] = parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Height), StringComparison.OrdinalIgnoreCase): Height = (CssPropertyValue?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Width), StringComparison.OrdinalIgnoreCase): Width = (CssPropertyValue?)parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
         }
         
@@ -213,43 +209,24 @@ public abstract class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisp
 
     /// <summary>
     /// Gets or sets chart container height.
-    /// The default unit of measure is <see cref="Unit.Px" />.
-    /// To change the unit of measure see <see cref="HeightUnit" />.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public int? Height { get; set; }
-
-    /// <summary>
-    /// Gets or sets chart container height unit of measure.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Unit.Px" />.
-    /// </remarks>
-    [Parameter]
-    public Unit HeightUnit { get; set; } = Unit.Px;
-
+    [Parameter] public CssPropertyValue? Height { get; set; }
+    
     /// <summary>
     /// Get or sets chart container width.
-    /// The default unit of measure is <see cref="Unit.Px" />.
-    /// To change the unit of measure see <see cref="WidthUnit" />.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public int? Width { get; set; }
+    [Parameter] public CssPropertyValue? Width { get; set; }
 
     /// <summary>
-    /// Gets or sets chart container width unit of measure.
+    /// Dependency injected Javascript Runtime
     /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Unit.Px" />.
-    /// </remarks>
-    [Parameter]
-    public Unit WidthUnit { get; set; } = Unit.Px;
+    [Inject] protected IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

@@ -17,7 +17,7 @@ public class Sidebar2DataProviderRequest
         if (parentNavItems == null || parentNavItems.Count == 0)
             return new Sidebar2DataProviderResult { Data = Array.Empty<NavItem>() };
 
-        result.AddRange(parentNavItems!);
+        result.AddRange(parentNavItems);
 
         foreach (var navItem in result)
         {

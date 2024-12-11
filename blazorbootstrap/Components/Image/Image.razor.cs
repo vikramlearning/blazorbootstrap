@@ -17,12 +17,12 @@ public partial class Image: BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Alt): Alt = (string)parameter.Value!; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(IsResponsive): IsResponsive = (bool)parameter.Value!; break;
-                case nameof(IsThumbnail): IsThumbnail = (bool)parameter.Value!; break;
-                case nameof(Src): Src = (string)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(Alt), StringComparison.OrdinalIgnoreCase): Alt = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsResponsive), StringComparison.OrdinalIgnoreCase): IsResponsive = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsThumbnail), StringComparison.OrdinalIgnoreCase): IsThumbnail = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Src), StringComparison.OrdinalIgnoreCase): Src = (string)parameter.Value; break;
                 
 
                 default: AdditionalAttributes[parameter.Name] = parameter.Value; break;

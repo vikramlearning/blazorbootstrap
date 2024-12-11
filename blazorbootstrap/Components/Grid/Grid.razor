@@ -47,10 +47,10 @@
                                 columnClassList.Add("freeze-column");
 
                                 if (column.FreezeDirection == FreezeDirection.Left)
-                                    columnStyleList.Add($"left:{column.FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[Unit]}");
+                                    columnStyleList.Add($"left:{column.FreezeLeftPosition.ToString()}");
                                 else
                                 {
-                                    columnStyleList.Add($"right:{column.FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[Unit]}");
+                                    columnStyleList.Add($"right:{column.FreezeRightPosition.ToString()}");
                                     columnClassList.Add("freeze-column-right");
                                 }
                             }
@@ -64,12 +64,11 @@
                                                       FilterOperator="@column.FilterOperator"
                                                       FilterValue="@column.FilterValue"
                                                       FilterWidth="@column.FilterTextboxWidth"
-                                                      FiltersTranslationProvider="GridFiltersTranslationProviderAsync!"
+                                                      FiltersTranslationProvider="GridFiltersTranslationProviderAsync"
                                                       FixedHeader="@FixedHeader"
                                                       GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args)"
                                                       PropertyType="@column.GetPropertyType()"
-                                                      PropertyTypeName="@column.GetPropertyTypeName()"
-                                                      Unit="@Unit" />
+                                                      PropertyTypeName="@column.GetPropertyTypeName()" />
                                 }
                             </th>
                         }

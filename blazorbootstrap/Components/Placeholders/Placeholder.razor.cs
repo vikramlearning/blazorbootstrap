@@ -19,15 +19,15 @@ public partial class Placeholder : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(Color): Color = (PlaceholderColor)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Size): Size = (PlaceholderSize)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (PlaceholderColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (PlaceholderSize)parameter.Value; break;
                 
-                case nameof(Width): Width = (PlaceholderWidth)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Width), StringComparison.OrdinalIgnoreCase): Width = (PlaceholderWidth)parameter.Value; break;
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

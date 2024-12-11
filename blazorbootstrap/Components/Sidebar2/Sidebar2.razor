@@ -3,7 +3,7 @@
 
 <CascadingValue IsFixed="true" Value="this">
     <CascadingValue Value="@collapseSidebar">
-        <aside @ref="@Element" id="@Id" class="bb-sidebar2 @(collapseSidebar ? "collapsed" : "expanded") @Class" role="navigation" style="--bb-sidebar2-width: @($"{Math.Max(Width, 0d).ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[WidthUnit]}"); @Style" @attributes="@AdditionalAttributes">
+        <aside @ref="@Element" id="@Id" class="bb-sidebar2 @(collapseSidebar ? "collapsed" : "expanded") @Class" role="navigation" style="--bb-sidebar2-width: @(Width.ToString()); @Style" @attributes="@AdditionalAttributes">
             <div class="bb-sidebar2-top-row navbar">
                 <div class="container-fluid ps-3">
                     <a class="navbar-brand d-flex align-items-center" href="@Href">

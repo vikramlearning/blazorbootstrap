@@ -18,15 +18,15 @@ public partial class Sidebar2ItemGroup : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             { 
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(CollapseSidebar): CollapseSidebar = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                 case nameof(Match): Match = (NavLinkMatch)parameter.Value; break;
-                case nameof(NavItems): NavItems = (IReadOnlyCollection<NavItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CollapseSidebar), StringComparison.OrdinalIgnoreCase): CollapseSidebar = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                 case var _ when String.Equals(parameter.Name, nameof(Match), StringComparison.OrdinalIgnoreCase): Match = (NavLinkMatch)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(NavItems), StringComparison.OrdinalIgnoreCase): NavItems = (IReadOnlyCollection<NavItem>)parameter.Value; break;
  
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

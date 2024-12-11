@@ -18,13 +18,13 @@ public partial class PlaceholderContainer : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Animation): Animation = (PlaceholderAnimation)parameter.Value; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(Animation), StringComparison.OrdinalIgnoreCase): Animation = (PlaceholderAnimation)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
                 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

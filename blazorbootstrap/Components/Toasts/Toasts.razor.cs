@@ -93,18 +93,18 @@ public partial class Toasts : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(AutoHide): AutoHide = (bool)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Delay): Delay = (int)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Messages): Messages = (List<ToastMessage>)parameter.Value; break;
-                case nameof(Placement): Placement = (ToastsPlacement)parameter.Value; break;
-                case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value; break;
-                case nameof(StackLength): StackLength = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoHide), StringComparison.OrdinalIgnoreCase): AutoHide = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Delay), StringComparison.OrdinalIgnoreCase): Delay = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Messages), StringComparison.OrdinalIgnoreCase): Messages = (List<ToastMessage>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Placement), StringComparison.OrdinalIgnoreCase): Placement = (ToastsPlacement)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ShowCloseButton), StringComparison.OrdinalIgnoreCase): ShowCloseButton = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(StackLength), StringComparison.OrdinalIgnoreCase): StackLength = (int)parameter.Value; break;
  
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -168,6 +168,12 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// Dependency injected Toast Service
     /// </summary>
     [Inject] public ToastService ToastService { get; set; } = default!;
+
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

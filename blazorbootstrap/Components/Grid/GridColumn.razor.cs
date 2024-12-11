@@ -147,34 +147,34 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent): ChildContent = (RenderFragment<TItem>)parameter.Value!; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(ColumnClass): ColumnClass = (Func<TItem, string>)parameter.Value!; break;
-                case nameof(Filterable): Filterable = (bool)parameter.Value!; break;
-                case nameof(FilterButtonColor): FilterButtonColor = (ButtonColor)parameter.Value!; break;
-                case nameof(FilterButtonCssClass): FilterButtonCssClass = (string)parameter.Value!; break;
-                case nameof(FilterOperator): FilterOperator = (FilterOperator)parameter.Value!; break;
-                case nameof(FilterTextboxWidth): FilterTextboxWidth = (int)parameter.Value!; break;
-                case nameof(FilterValue): FilterValue = (string)parameter.Value!; break;
-                case nameof(Freeze): Freeze = (bool)parameter.Value!; break;
-                case nameof(FreezeDirection): FreezeDirection = (FreezeDirection)parameter.Value!; break;
-                case nameof(FreezeLeftPosition): FreezeLeftPosition = (double)parameter.Value!; break;
-                case nameof(FreezeRightPosition): FreezeRightPosition = (double)parameter.Value!; break;
-                case nameof(HeaderContent): HeaderContent = (RenderFragment)parameter.Value!; break;
-                case nameof(HeaderText): HeaderText = (string)parameter.Value!; break;
-                case nameof(HeaderTextAlignment): HeaderTextAlignment = (Alignment)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(IsDefaultSortColumn): IsDefaultSortColumn = (bool)parameter.Value!; break;
-                case nameof(Parent): Parent = (Grid<TItem>)parameter.Value!; break;
-                case nameof(PropertyName): PropertyName = (string)parameter.Value!; break;
-                case nameof(Sortable): Sortable = (bool)parameter.Value!; break;
-                case nameof(SortDirection): SortDirection = (SortDirection)parameter.Value!; break;
-                case nameof(SortKeySelector): SortKeySelector = (Expression<Func<TItem, IComparable>>)parameter.Value!; break;
-                case nameof(SortString): SortString = (string)parameter.Value!; break;
-                case nameof(StringComparison): StringComparison = (StringComparison)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment<TItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ColumnClass), StringComparison.OrdinalIgnoreCase): ColumnClass = (Func<TItem, string>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Filterable), StringComparison.OrdinalIgnoreCase): Filterable = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FilterButtonColor), StringComparison.OrdinalIgnoreCase): FilterButtonColor = (ButtonColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FilterButtonCssClass), StringComparison.OrdinalIgnoreCase): FilterButtonCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FilterOperator), StringComparison.OrdinalIgnoreCase): FilterOperator = (FilterOperator)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FilterTextboxWidth), StringComparison.OrdinalIgnoreCase): FilterTextboxWidth = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FilterValue), StringComparison.OrdinalIgnoreCase): FilterValue = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Freeze), StringComparison.OrdinalIgnoreCase): Freeze = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FreezeDirection), StringComparison.OrdinalIgnoreCase): FreezeDirection = (FreezeDirection)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FreezeLeftPosition), StringComparison.OrdinalIgnoreCase): FreezeLeftPosition = (CssPropertyValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FreezeRightPosition), StringComparison.OrdinalIgnoreCase): FreezeRightPosition = (CssPropertyValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HeaderContent), StringComparison.OrdinalIgnoreCase): HeaderContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HeaderText), StringComparison.OrdinalIgnoreCase): HeaderText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HeaderTextAlignment), StringComparison.OrdinalIgnoreCase): HeaderTextAlignment = (Alignment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsDefaultSortColumn), StringComparison.OrdinalIgnoreCase): IsDefaultSortColumn = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Parent), StringComparison.OrdinalIgnoreCase): Parent = (Grid<TItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PropertyName), StringComparison.OrdinalIgnoreCase): PropertyName = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Sortable), StringComparison.OrdinalIgnoreCase): Sortable = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(SortDirection), StringComparison.OrdinalIgnoreCase): SortDirection = (SortDirection)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(SortKeySelector), StringComparison.OrdinalIgnoreCase): SortKeySelector = (Expression<Func<TItem, IComparable>>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(SortString), StringComparison.OrdinalIgnoreCase): SortString = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(StringComparison), StringComparison.OrdinalIgnoreCase): StringComparison = (StringComparison)parameter.Value; break;
                 
-                case nameof(TextAlignment): TextAlignment = (Alignment)parameter.Value!; break;
-                case nameof(TextNoWrap): TextNoWrap = (bool)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(TextAlignment), StringComparison.OrdinalIgnoreCase): TextAlignment = (Alignment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TextNoWrap), StringComparison.OrdinalIgnoreCase): TextNoWrap = (bool)parameter.Value; break;
 
                 default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
@@ -220,11 +220,11 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
                                             if (FreezeDirection == FreezeDirection.Left)
                                             {
-                                                styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[Parent.Unit]}");
+                                                styleList.Add($"left:{FreezeLeftPosition.ToString()}");
                                             }
                                             else
                                             {
-                                                styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[Parent.Unit]}");
+                                                styleList.Add($"right:{FreezeRightPosition.ToString()}");
 
                                                 classList.Add("freeze-column-right");
                                             }
@@ -324,8 +324,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="FreezeDirection.Left" />.
     /// </remarks>
-    [Parameter]
-    public FreezeDirection FreezeDirection { get; set; } = FreezeDirection.Left;
+    [Parameter] public FreezeDirection FreezeDirection { get; set; } = FreezeDirection.Left;
 
     /// <summary>
     /// Gets or sets the horizontal position of the column from left. It has no effect on non-positioned columns.
@@ -333,8 +332,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="0"/>.
     /// </remarks>
-    [Parameter]
-    public double FreezeLeftPosition { get; set; }
+    [Parameter] public CssPropertyValue FreezeLeftPosition { get; set; } = 0;
 
     /// <summary>
     /// Gets or sets the horizontal position of the column from right. It has no effect on non-positioned columns.
@@ -342,8 +340,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="0"/>.
     /// </remarks>
-    [Parameter]
-    public double FreezeRightPosition { get; set; }
+    [Parameter] public CssPropertyValue FreezeRightPosition { get; set; } = 0;
 
     /// <summary>
     /// Gets or sets the header content.
@@ -382,11 +379,11 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
                                    if (FreezeDirection == FreezeDirection.Left)
                                    {
-                                       styleList.Add($"left:{FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[Parent.Unit]}");
+                                       styleList.Add($"left:{FreezeLeftPosition.ToString()}");
                                    }
                                    else
                                    {
-                                       styleList.Add($"right:{FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{EnumExtensions.UnitCssStringMap[Parent.Unit]}");
+                                       styleList.Add($"right:{FreezeRightPosition.ToString()}");
 
                                        classList.Add("freeze-column-right");
                                    }

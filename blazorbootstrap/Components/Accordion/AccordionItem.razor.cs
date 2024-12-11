@@ -72,16 +72,16 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Active): Active = (bool)parameter.Value; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(Name): Name = (string)parameter.Value; break;
-                case nameof(Parent): Parent = (Accordion)parameter.Value; break;
-                case nameof(Title): Title = (string)parameter.Value; break;
-                case nameof(TitleTemplate): TitleTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Active), StringComparison.OrdinalIgnoreCase): Active = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Name), StringComparison.OrdinalIgnoreCase): Name = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Parent), StringComparison.OrdinalIgnoreCase): Parent = (Accordion)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Title), StringComparison.OrdinalIgnoreCase): Title = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TitleTemplate), StringComparison.OrdinalIgnoreCase): TitleTemplate = (RenderFragment)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

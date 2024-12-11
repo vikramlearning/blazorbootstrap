@@ -72,16 +72,16 @@ public partial class Badge : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Color): Color = (BadgeColor)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(IndicatorType): IndicatorType = (BadgeIndicatorType)parameter.Value; break;
-                case nameof(Placement): Placement = (BadgePlacement)parameter.Value; break;
-                case nameof(Position): Position = (Position)parameter.Value; break;
-                case nameof(VisuallyHiddenText): VisuallyHiddenText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (BadgeColor)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IndicatorType), StringComparison.OrdinalIgnoreCase): IndicatorType = (BadgeIndicatorType)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Placement), StringComparison.OrdinalIgnoreCase): Placement = (BadgePlacement)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Position), StringComparison.OrdinalIgnoreCase): Position = (Position)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(VisuallyHiddenText), StringComparison.OrdinalIgnoreCase): VisuallyHiddenText = (string)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

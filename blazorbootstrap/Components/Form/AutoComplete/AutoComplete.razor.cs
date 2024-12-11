@@ -299,23 +299,23 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(DataProvider): DataProvider = (AutoCompleteDataProviderDelegate<TItem>)parameter.Value; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
-                case nameof(EditContext): EditContext = (EditContext)parameter.Value!; break;  
-                case nameof(EmptyText): EmptyText = (string)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(LoadingText): LoadingText = (string)parameter.Value; break;
-                case nameof(OnChanged): OnChanged = (EventCallback<TItem>)parameter.Value; break;
-                case nameof(Placeholder): Placeholder = (string)parameter.Value; break;
-                case nameof(PropertyName): PropertyName = (string)parameter.Value; break;
-                case nameof(Size): Size = (AutoCompleteSize)parameter.Value; break;
-                case nameof(StringComparison): StringComparison = (StringComparison)parameter.Value; break;
-                case nameof(StringFilterOperator): StringFilterOperator = (StringFilterOperator)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DataProvider), StringComparison.OrdinalIgnoreCase): DataProvider = (AutoCompleteDataProviderDelegate<TItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EditContext), StringComparison.OrdinalIgnoreCase): EditContext = (EditContext)parameter.Value; break;  
+                case var _ when String.Equals(parameter.Name, nameof(EmptyText), StringComparison.OrdinalIgnoreCase): EmptyText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LoadingText), StringComparison.OrdinalIgnoreCase): LoadingText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnChanged), StringComparison.OrdinalIgnoreCase): OnChanged = (EventCallback<TItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Placeholder), StringComparison.OrdinalIgnoreCase): Placeholder = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PropertyName), StringComparison.OrdinalIgnoreCase): PropertyName = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (AutoCompleteSize)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(StringComparison), StringComparison.OrdinalIgnoreCase): StringComparison = (StringComparison)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(StringFilterOperator), StringComparison.OrdinalIgnoreCase): StringFilterOperator = (StringFilterOperator)parameter.Value; break;
                 
-                case nameof(Value): Value = (string)parameter.Value; break;
-                case nameof(ValueChanged): ValueChanged = (EventCallback<string>)parameter.Value; break;
-                case nameof(ValueExpression): ValueExpression = (Expression<Func<string?>>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Value), StringComparison.OrdinalIgnoreCase): Value = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ValueChanged), StringComparison.OrdinalIgnoreCase): ValueChanged = (EventCallback<string>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ValueExpression), StringComparison.OrdinalIgnoreCase): ValueExpression = (Expression<Func<string?>>)parameter.Value; break;
                 default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
         }
@@ -457,6 +457,11 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter] 
     public Expression<Func<string?>> ValueExpression { get; set; } = default!;
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

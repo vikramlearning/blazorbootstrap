@@ -17,15 +17,15 @@ public partial class CardLink : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(TabIndex): TabIndex = (int?)parameter.Value; break;
-                case nameof(Target): Target = (Target)parameter.Value; break;
-                case nameof(To): To = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TabIndex), StringComparison.OrdinalIgnoreCase): TabIndex = (int?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Target), StringComparison.OrdinalIgnoreCase): Target = (Target)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(To), StringComparison.OrdinalIgnoreCase): To = (string)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -37,7 +37,7 @@ public partial class CardLink : BlazorBootstrapComponentBase
 
     private void SetAttributes()
     {
-        if (!AdditionalAttributes!.TryGetValue("href", out _))
+        if (!AdditionalAttributes.TryGetValue("href", out _))
             AdditionalAttributes.Add("href", To!);
 
         if (Target != Target.None)

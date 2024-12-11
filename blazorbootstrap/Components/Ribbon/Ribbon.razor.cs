@@ -266,7 +266,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.Id);
 
         if (tab?.OnClick.HasDelegate ?? false)
-            await tab.OnClick.InvokeAsync(new TabEventArgs(tab!.Name, tab.Title));
+            await tab.OnClick.InvokeAsync(new TabEventArgs(tab.Name, tab.Title));
     }
 
 
@@ -280,21 +280,21 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
 
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(EnableFadeEffect): EnableFadeEffect = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(NavStyle): NavStyle = (NavStyle)parameter.Value; break;
-                case nameof(OnClick): OnClick = (EventCallback<RibbonItemEventArgs>)parameter.Value; break;
-                case nameof(OnHidden): OnHidden = (EventCallback<RibbonEventArgs>)parameter.Value; break;
-                case nameof(OnHiding): OnHiding = (EventCallback<RibbonEventArgs>)parameter.Value; break;
-                case nameof(OnShowing): OnShowing = (EventCallback<RibbonEventArgs>)parameter.Value; break;
-                case nameof(OnShown): OnShown = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EnableFadeEffect), StringComparison.OrdinalIgnoreCase): EnableFadeEffect = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(NavStyle), StringComparison.OrdinalIgnoreCase): NavStyle = (NavStyle)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnClick), StringComparison.OrdinalIgnoreCase): OnClick = (EventCallback<RibbonItemEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHidden), StringComparison.OrdinalIgnoreCase): OnHidden = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHiding), StringComparison.OrdinalIgnoreCase): OnHiding = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShowing), StringComparison.OrdinalIgnoreCase): OnShowing = (EventCallback<RibbonEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShown), StringComparison.OrdinalIgnoreCase): OnShown = (EventCallback<RibbonEventArgs>)parameter.Value; break;
                 
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -362,6 +362,12 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// CSS class applied to the tab content container.
     /// </summary>
     private string TabContentCssClass { get; set; } = "tab-content";
+
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

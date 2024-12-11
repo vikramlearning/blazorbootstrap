@@ -46,26 +46,26 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(ChildItems): ChildItems = (IReadOnlyCollection<NavItem>)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(CollapseSidebar): CollapseSidebar = (bool)parameter.Value; break;
-                case nameof(CustomIconName): CustomIconName = (string)parameter.Value; break;
-                case nameof(HasChildren): HasChildren = (bool)parameter.Value; break;
-                case nameof(Href): Href = (string)parameter.Value; break;
-                case nameof(IconColor): 
+                case var _ when String.Equals(parameter.Name, nameof(ChildItems), StringComparison.OrdinalIgnoreCase): ChildItems = (IReadOnlyCollection<NavItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CollapseSidebar), StringComparison.OrdinalIgnoreCase): CollapseSidebar = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CustomIconName), StringComparison.OrdinalIgnoreCase): CustomIconName = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HasChildren), StringComparison.OrdinalIgnoreCase): HasChildren = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Href), StringComparison.OrdinalIgnoreCase): Href = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IconColor), StringComparison.OrdinalIgnoreCase): 
                     IconColor = (IconColor)parameter.Value;
                     IconColorCssClass = EnumExtensions.IconColorClassMap[IconColor];
                     break;
-                case nameof(IconName): IconName = (IconName)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Match): Match = (NavLinkMatch)parameter.Value; break;
-                case nameof(Parent): Parent = (Sidebar)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(IconName), StringComparison.OrdinalIgnoreCase): IconName = (IconName)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Match), StringComparison.OrdinalIgnoreCase): Match = (NavLinkMatch)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Parent), StringComparison.OrdinalIgnoreCase): Parent = (Sidebar)parameter.Value; break;
 
-                case nameof(Target): Target = (Target)parameter.Value; break;
-                case nameof(Text): Text = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Target), StringComparison.OrdinalIgnoreCase): Target = (Target)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Text), StringComparison.OrdinalIgnoreCase): Text = (string)parameter.Value; break;
                 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         } 

@@ -207,5 +207,10 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter] public bool Touch { get; set; } = true;
 
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+
     #endregion
 }

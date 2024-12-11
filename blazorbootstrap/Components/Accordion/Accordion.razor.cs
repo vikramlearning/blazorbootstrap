@@ -171,17 +171,17 @@ public partial class Accordion : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(AlwaysOpen): AlwaysOpen = (bool)parameter.Value; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(Flush): Flush = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(OnHidden): OnHidden = (EventCallback<AccordionEventArgs>)parameter.Value; break;
-                case nameof(OnHiding): OnHiding = (EventCallback<AccordionEventArgs>)parameter.Value; break;
-                case nameof(OnShowing): OnShowing = (EventCallback<AccordionEventArgs>)parameter.Value; break;
-                case nameof(OnShown): OnShown = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AlwaysOpen), StringComparison.OrdinalIgnoreCase): AlwaysOpen = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Flush), StringComparison.OrdinalIgnoreCase): Flush = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHidden), StringComparison.OrdinalIgnoreCase): OnHidden = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHiding), StringComparison.OrdinalIgnoreCase): OnHiding = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShowing), StringComparison.OrdinalIgnoreCase): OnShowing = (EventCallback<AccordionEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShown), StringComparison.OrdinalIgnoreCase): OnShown = (EventCallback<AccordionEventArgs>)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }

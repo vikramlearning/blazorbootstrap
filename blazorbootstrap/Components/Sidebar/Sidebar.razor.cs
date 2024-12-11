@@ -111,18 +111,19 @@ public partial class Sidebar : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             { 
-                case nameof(BadgeText): BadgeText = (string)parameter.Value; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(CustomIconName): CustomIconName = (string)parameter.Value; break;
-                case nameof(DataProvider): DataProvider = (SidebarDataProviderDelegate)parameter.Value; break;
-                case nameof(Href): Href = (string)parameter.Value; break;
-                case nameof(IconName): IconName = (IconName)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(ImageSrc): ImageSrc = (string)parameter.Value; break;
-                case "style": Style = (string)parameter.Value!; break;
-                case nameof(Title): Title = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(BadgeText), StringComparison.OrdinalIgnoreCase): BadgeText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CustomIconName), StringComparison.OrdinalIgnoreCase): CustomIconName = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DataProvider), StringComparison.OrdinalIgnoreCase): DataProvider = (SidebarDataProviderDelegate)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Href), StringComparison.OrdinalIgnoreCase): Href = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IconName), StringComparison.OrdinalIgnoreCase): IconName = (IconName)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ImageSrc), StringComparison.OrdinalIgnoreCase): ImageSrc = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Style), StringComparison.OrdinalIgnoreCase): Style = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Title), StringComparison.OrdinalIgnoreCase): Title = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Width), StringComparison.OrdinalIgnoreCase): Width = (CssPropertyValue)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -213,15 +214,13 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// Gets or sets the sidebar width.
     /// </summary>
     /// <remarks>Default value is 270.</remarks>
-    [Parameter] public float Width { get; set; } = 270f;
+    [Parameter] public CssPropertyValue Width { get; set; } = CssPropertyValue.Pixels(270);
+
 
     /// <summary>
-    /// Gets or sets the sidebar width unit.
+    /// Dependency injected Javascript Runtime
     /// </summary>
-    /// <remarks>Default value is <see cref="Unit.Px" />.</remarks>
-    [Parameter] public Unit WidthUnit { get; set; } = Unit.Px;
-
-
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
     private string Style { get; set; } = "";
 
     #endregion

@@ -102,7 +102,12 @@ public partial class Tab : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment? TitleTemplate { get; set; } 
+    public RenderFragment? TitleTemplate { get; set; }
 
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+    
     #endregion
 }

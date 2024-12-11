@@ -77,16 +77,16 @@ public partial class Switch : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(Disabled): Disabled = (bool)parameter.Value; break;
-                case nameof(EditContext): EditContext = (EditContext)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(Label): Label = (string)parameter.Value; break;
-                case nameof(Reverse): Reverse = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EditContext), StringComparison.OrdinalIgnoreCase): EditContext = (EditContext)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Label), StringComparison.OrdinalIgnoreCase): Label = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Reverse), StringComparison.OrdinalIgnoreCase): Reverse = (bool)parameter.Value; break;
                 
-                case nameof(Value): Value = (bool)parameter.Value; break;
-                case nameof(ValueChanged): ValueChanged = (EventCallback<bool>)parameter.Value; break;
-                case nameof(ValueExpression): ValueExpression = (Expression<Func<bool>>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Value), StringComparison.OrdinalIgnoreCase): Value = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ValueChanged), StringComparison.OrdinalIgnoreCase): ValueChanged = (EventCallback<bool>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ValueExpression), StringComparison.OrdinalIgnoreCase): ValueExpression = (Expression<Func<bool>>)parameter.Value; break;
                 default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
             }
         }

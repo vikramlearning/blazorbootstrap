@@ -101,19 +101,19 @@ public partial class Collapse : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(Class): Class = (string)parameter.Value; break;
-                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value; break;
-                case nameof(Horizontal): Horizontal = (bool)parameter.Value; break;
-                case nameof(Id): Id = (string)parameter.Value; break;
-                case nameof(OnHidden): OnHidden = (EventCallback)parameter.Value; break;
-                case nameof(OnHiding): OnHiding = (EventCallback)parameter.Value; break;
-                case nameof(OnShowing): OnShowing = (EventCallback)parameter.Value; break;
-                case nameof(OnShown): OnShown = (EventCallback)parameter.Value; break;
-                case nameof(Parent): Parent = parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Horizontal), StringComparison.OrdinalIgnoreCase): Horizontal = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHidden), StringComparison.OrdinalIgnoreCase): OnHidden = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHiding), StringComparison.OrdinalIgnoreCase): OnHiding = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShowing), StringComparison.OrdinalIgnoreCase): OnShowing = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShown), StringComparison.OrdinalIgnoreCase): OnShown = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Parent), StringComparison.OrdinalIgnoreCase): Parent = parameter.Value; break;
 
-                case nameof(Toggle): Toggle = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Toggle), StringComparison.OrdinalIgnoreCase): Toggle = (bool)parameter.Value; break;
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -179,6 +179,11 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter] public bool Toggle { get; set; }
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

@@ -35,11 +35,11 @@ public readonly struct CssPropertyValue
 
     private CssPropertyValue(CssStyleEnum cssStyle)
     {
-               Value = 0;
-                      Unit = 0;
-                             IsInteger = false;
-                                    this.cssStyle = (byte)cssStyle;
-                                       }
+        Value = 0;
+        Unit = 0;
+        IsInteger = false;
+        this.cssStyle = (byte)cssStyle;
+    }
 
     /// <inheritdoc />
     public override string ToString()
@@ -55,7 +55,7 @@ public readonly struct CssPropertyValue
     /// <summary>
     /// Converts <see cref="CssPropertyValue"/> to a value string, or an empty string if null.
     /// </summary>
-    public static implicit operator string(CssPropertyValue? value) => value?.ToString() ?? "";
+    public static implicit operator string(CssPropertyValue? value) => value?.ToString() ?? String.Empty;
     /// <summary>
     /// Converts <see cref="CssPropertyValue"/> to a CSS value string.
     /// </summary> 
@@ -134,17 +134,17 @@ public readonly struct CssPropertyValue
         {CssStyleEnum.Start, "start"},
         {CssStyleEnum.End, "end"},
 
-                                                            }; 
+    };
 
     /// <summary>
     /// Angle value
     /// </summary>
-    public static CssPropertyValue Angle(float value) => new(value, AngleUnit, false);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static CssPropertyValue Angle(float value) => new(value, AngleUnit, false);
 
     /// <summary>
     /// Angle value
     /// </summary>
-    public static CssPropertyValue Angle(int value) => new(value, AngleUnit, true);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static CssPropertyValue Angle(int value) => new(value, AngleUnit, true);
 
     /// <summary>
     /// Raw number value
@@ -154,7 +154,7 @@ public readonly struct CssPropertyValue
     /// <summary>
     /// Raw number value
     /// </summary>
-[MethodImpl(MethodImplOptions.AggressiveInlining)] public static CssPropertyValue RawNumber(int value) => new(value, NumberUnit, true);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)] public static CssPropertyValue RawNumber(int value) => new(value, NumberUnit, true);
 
     /// <summary>
     /// Creates value based on percentage (%) value

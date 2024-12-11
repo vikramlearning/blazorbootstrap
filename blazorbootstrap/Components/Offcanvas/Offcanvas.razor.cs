@@ -113,30 +113,30 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
-                case nameof(BodyCssClass): BodyCssClass = (string)parameter.Value!; break;
-                case nameof(BodyTemplate): BodyTemplate = (RenderFragment)parameter.Value!; break;
-                case nameof(Class): Class = (string)parameter.Value!; break;
-                case nameof(CloseOnEscape): CloseOnEscape = (bool)parameter.Value!; break;
-                 case nameof(FooterCssClass): FooterCssClass = (string)parameter.Value!; break;
-                case nameof(FooterTemplate): FooterTemplate = (RenderFragment)parameter.Value!; break;
-                 case nameof(HeaderCssClass): HeaderCssClass = (string)parameter.Value!; break;
-                case nameof(HeaderTemplate): HeaderTemplate = (RenderFragment)parameter.Value!; break;
-                case nameof(Id): Id = (string)parameter.Value!; break;
-                case nameof(IsScrollable): IsScrollable = (bool)parameter.Value!; break;
-                case nameof(OnHidden): OnHidden = (EventCallback)parameter.Value!; break;
-                case nameof(OnHiding): OnHiding = (EventCallback)parameter.Value!; break;
-                case nameof(OnShowing): OnShowing = (EventCallback)parameter.Value!; break;
-                case nameof(OnShown): OnShown = (EventCallback)parameter.Value!; break;
-                case nameof(Placement): Placement = (Placement)parameter.Value!; break;
-                case nameof(ShowCloseButton): ShowCloseButton = (bool)parameter.Value!; break;
-                case nameof(Size): Size = (OffcanvasSize)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(BodyCssClass), StringComparison.OrdinalIgnoreCase): BodyCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(BodyTemplate), StringComparison.OrdinalIgnoreCase): BodyTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CloseOnEscape), StringComparison.OrdinalIgnoreCase): CloseOnEscape = (bool)parameter.Value; break;
+                 case var _ when String.Equals(parameter.Name, nameof(FooterCssClass), StringComparison.OrdinalIgnoreCase): FooterCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FooterTemplate), StringComparison.OrdinalIgnoreCase): FooterTemplate = (RenderFragment)parameter.Value; break;
+                 case var _ when String.Equals(parameter.Name, nameof(HeaderCssClass), StringComparison.OrdinalIgnoreCase): HeaderCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HeaderTemplate), StringComparison.OrdinalIgnoreCase): HeaderTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsScrollable), StringComparison.OrdinalIgnoreCase): IsScrollable = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHidden), StringComparison.OrdinalIgnoreCase): OnHidden = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHiding), StringComparison.OrdinalIgnoreCase): OnHiding = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShowing), StringComparison.OrdinalIgnoreCase): OnShowing = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShown), StringComparison.OrdinalIgnoreCase): OnShown = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Placement), StringComparison.OrdinalIgnoreCase): Placement = (Placement)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ShowCloseButton), StringComparison.OrdinalIgnoreCase): ShowCloseButton = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (OffcanvasSize)parameter.Value; break;
                 
-                case nameof(TabIndex): TabIndex = (int)parameter.Value!; break;
-                case nameof(Title): Title = (string)parameter.Value!; break;
-                case nameof(UseStaticBackdrop): UseStaticBackdrop = (bool)parameter.Value!; break;
+                case var _ when String.Equals(parameter.Name, nameof(TabIndex), StringComparison.OrdinalIgnoreCase): TabIndex = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Title), StringComparison.OrdinalIgnoreCase): Title = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(UseStaticBackdrop), StringComparison.OrdinalIgnoreCase): UseStaticBackdrop = (bool)parameter.Value; break;
 
                 default:
-                    AdditionalAttributes![parameter.Name] = parameter.Value;
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
                     break;
             }
         }
@@ -281,6 +281,11 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter] public bool UseStaticBackdrop { get; set; }
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }
