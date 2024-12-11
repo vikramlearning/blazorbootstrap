@@ -43,7 +43,7 @@
     else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum)
     {
         <Dropdown>
-            <DropdownToggleButton Class="px-1" Style="@FilterStyle">
+            <DropdownToggleButton Class="px-1" style="@FilterStyle">
                 @if (string.IsNullOrWhiteSpace(FilterValue))
                 {
                     <span class="px-2">@EnumFilterSelectText</span>
@@ -53,7 +53,7 @@
                     <span class="px-2">@FilterValue</span>
                 }
             </DropdownToggleButton>
-            <DropdownMenu Class="bb-dropdown-menu-enum" Style="max-height: var(--bb-grid-filter-dropdown-max-height); overflow-x: hidden; overflow-y: auto;">
+            <DropdownMenu Class="bb-dropdown-menu-enum" style="max-height: var(--bb-grid-filter-dropdown-max-height); overflow-x: hidden; overflow-y: auto;">
                 @if (PropertyType is not null)
                 {
                     @foreach (var item in Enum.GetValues(PropertyType!))

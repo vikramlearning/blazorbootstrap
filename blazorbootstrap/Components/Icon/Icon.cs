@@ -58,6 +58,7 @@ public sealed class Icon : BlazorBootstrapComponentBase
         {
             switch (parameter.Name)
             {
+                case "class": Class = (string)parameter.Value!; break;
                 case nameof(Class): Class = (string)parameter.Value!; break;
                 case nameof(Color): Color = (IconColor)parameter.Value; break;
                 case nameof(CustomIconName): CustomIconName = (string)parameter.Value; break;
@@ -79,10 +80,14 @@ public sealed class Icon : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
-        var cssClasses = $"{Class} {BootstrapIconUtility.IconSize(Size)} {EnumExtensions.IconColorClassMap[Color]}";
-        if (!String.IsNullOrWhiteSpace(CustomIconName))
+        var cssClasses = $"{Class} {BootstrapIconUtility.IconSizeClassMap[Size]} {EnumExtensions.IconColorClassMap[Color]}";
+        if (String.IsNullOrEmpty(CustomIconName))
         {
-            cssClasses += $" {BootstrapIconUtility.IconPrefix} {BootstrapIconUtility.Icon(Name)} {CustomIconName}"; 
+            cssClasses += $" {BootstrapIconUtility.IconPrefix} {BootstrapIconUtility.Icon(Name)}"; 
+        }
+        else
+        {
+            cssClasses += $" {CustomIconName}";
         }
         builder.OpenElement(0, "i");
         builder.AddAttribute(1, "id", Id);

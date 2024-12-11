@@ -28,24 +28,17 @@ public static class BootstrapIconUtility
 
     /// <summary>
     /// Returns the CSS class for the specified icon size.
-    /// </summary>
-    /// <param name="iconSize">The icon size.</param>
-    /// <returns>The CSS class for the icon size, or <see langword="null" /> if the size is not supported.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string? IconSize(IconSize iconSize)
+    /// </summary>  
+    internal static readonly Dictionary<IconSize, string> IconSizeClassMap = new()
     {
-        return iconSize switch
-        {
-            BlazorBootstrap.IconSize.None => String.Empty,
-            BlazorBootstrap.IconSize.x1 => "fs-1",
-            BlazorBootstrap.IconSize.x2 => "fs-2",
-            BlazorBootstrap.IconSize.x3 => "fs-3",
-            BlazorBootstrap.IconSize.x4 => "fs-4",
-            BlazorBootstrap.IconSize.x5 => "fs-5",
-            BlazorBootstrap.IconSize.x6 => "fs-6",
-            _ => throw new NotImplementedException()
-        };
-    }
+        { IconSize.None, string.Empty },
+        { IconSize.x1, "fs-1" },
+        { IconSize.x2, "fs-2" },
+        { IconSize.x3, "fs-3" },
+        { IconSize.x4, "fs-4" },
+        { IconSize.x5, "fs-5" },
+        { IconSize.x6, "fs-6" }
+    };
 
     /// <summary>
     /// All available Bootstrap icons and their respective CSS class names.

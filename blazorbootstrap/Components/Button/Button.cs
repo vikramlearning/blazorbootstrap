@@ -231,7 +231,10 @@ public sealed class Button : BlazorBootstrapComponentBase
 
             AdditionalAttributes["title"] = TooltipTitle;
 
-            AdditionalAttributes["data-bs-custom-class"] = EnumExtensions.TooltipColorClassMap[TooltipColor]!;
+            if (TooltipColor != TooltipColor.None)
+            {
+                AdditionalAttributes["data-bs-custom-class"] = EnumExtensions.TooltipColorClassMap[TooltipColor]!;
+            }
         }
         else // button disabled (or) tooltip text empty
         {
@@ -317,8 +320,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Block { get; set; }
+    [Parameter] public bool Block { get; set; }
 
     private string ButtonTypeString { get; set; } = "";
 
@@ -328,8 +330,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }  
+    [Parameter] public RenderFragment? ChildContent { get; set; }  
 
     /// <summary>
     /// Gets or sets the button color.
@@ -337,8 +338,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="ButtonColor.None" />.
     /// </remarks>
-    [Parameter]
-    public ButtonColor Color { get; set; } = ButtonColor.None;
+    [Parameter] public ButtonColor Color { get; set; } = ButtonColor.None;
 
     /// <summary>
     /// Gets or sets the button disabled state.
@@ -346,8 +346,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, shows the loading spinner or a <see cref="LoadingTemplate" />.
@@ -355,8 +354,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Loading { get; set; }
+    [Parameter] public bool Loading { get; set; }
 
     /// <summary>
     /// Gets or sets the button loading template.
@@ -364,8 +362,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? LoadingTemplate { get; set; }  
+    [Parameter] public RenderFragment? LoadingTemplate { get; set; }  
 
     /// <summary>
     /// Gets or sets the loading text.
@@ -374,8 +371,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 'Loading...'.
     /// </remarks>
-    [Parameter]
-    public string LoadingText { get; set; } = "Loading...";
+    [Parameter] public string LoadingText { get; set; } = "Loading...";
     
     /// <summary>
     /// Gets or sets the button outline.
@@ -383,8 +379,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Outline { get; set; }
+    [Parameter] public bool Outline { get; set; }
 
     /// <summary>
     /// Gets or sets the position.
@@ -393,8 +388,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Position.None" />.
     /// </remarks>
-    [Parameter]
-    public Position Position { get; set; } = Position.None;
+    [Parameter] public Position Position { get; set; } = Position.None;
 
     /// <summary>
     /// Gets or sets the button size.
@@ -402,8 +396,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="ButtonSize.None" />.
     /// </remarks>
-    [Parameter]
-    public ButtonSize Size { get; set; } = ButtonSize.None;
+    [Parameter] public ButtonSize Size { get; set; } = ButtonSize.None;
 
     /// <summary>
     /// Gets or sets the button tab index.
@@ -411,8 +404,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public int? TabIndex { get; set; }
+    [Parameter] public int? TabIndex { get; set; }
 
     /// <summary>
     /// Gets or sets the link button target.
@@ -420,8 +412,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Target.None" />
     /// </remarks>
-    [Parameter]
-    public Target Target { get; set; } = Target.None;
+    [Parameter] public Target Target { get; set; } = Target.None;
 
     /// <summary>
     /// Gets or sets the link button href attribute.
@@ -429,8 +420,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? To { get; set; }
+    [Parameter] public string? To { get; set; }
 
     /// <summary>
     /// Gets or sets the button tooltip color.
@@ -438,8 +428,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="TooltipColor.None" />.
     /// </remarks>
-    [Parameter]
-    public TooltipColor TooltipColor { get; set; } = TooltipColor.None;
+    [Parameter] public TooltipColor TooltipColor { get; set; } = TooltipColor.None;
 
     /// <summary>
     /// Gets or sets the button tooltip placement.
@@ -447,8 +436,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="TooltipPlacement.Top" />.
     /// </remarks>
-    [Parameter]
-    public TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
+    [Parameter] public TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
 
     /// <summary>
     /// Gets or sets the button tooltip title.
@@ -456,8 +444,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string TooltipTitle { get; set; } = default!;
+    [Parameter] public string? TooltipTitle { get; set; } 
 
     /// <summary>
     /// Gets or sets the button type.
@@ -465,8 +452,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="ButtonType.Button" />.
     /// </remarks>
-    [Parameter]
-    public ButtonType Type { get; set; } = ButtonType.Button;
+    [Parameter] public ButtonType Type { get; set; } = ButtonType.Button;
 
     #endregion
      
@@ -516,7 +502,7 @@ public sealed class Button : BlazorBootstrapComponentBase
         }
         else if (ChildContent != null)
         {
-            builder.AddContent(16, ChildContent); 
+            builder.AddContent(8, ChildContent); 
         } 
         builder.CloseElement();
     }

@@ -25,7 +25,7 @@ public static class EnumExtensions
     {
         { AutoCompleteSize.Large, "form-control-lg" },
         { AutoCompleteSize.Small, "form-control-sm" },
-        { AutoCompleteSize.Default, "" }
+        { AutoCompleteSize.Default, String.Empty }
     };
 
 
@@ -39,14 +39,14 @@ public static class EnumExtensions
         { BadgeColor.Info, "text-bg-info" },
         { BadgeColor.Light, "text-bg-light" },
         { BadgeColor.Dark, "text-bg-dark" },
-        { BadgeColor.None, "" }
+        { BadgeColor.None, String.Empty }
     };
 
     internal static readonly Dictionary<BadgeIndicatorType, string> BadgeIndicatorClassMap = new()
     {
         { BadgeIndicatorType.RoundedPill, "rounded-pill" },
         { BadgeIndicatorType.RoundedCircle, "rounded-circle" },
-        { BadgeIndicatorType.None, "" }
+        { BadgeIndicatorType.None, String.Empty }
     };
 
 
@@ -61,7 +61,7 @@ public static class EnumExtensions
         { BadgePlacement.BottomLeft, "top-100 start-0 translate-middle" },
         { BadgePlacement.BottomCenter, "top-100 start-50 translate-middle" },
         { BadgePlacement.BottomRight, "top-100 start-100 translate-middle" },
-        { BadgePlacement.None, "top-0 start-100 translate-middle" }
+        { BadgePlacement.None, String.Empty }
     };
      
     internal static readonly Dictionary<ButtonColor, string> ButtonColorClassMap = new()
@@ -75,7 +75,7 @@ public static class EnumExtensions
         { ButtonColor.Light, "btn-light" },
         { ButtonColor.Dark, "btn-dark" },
         { ButtonColor.Link, "btn-link" },
-        { ButtonColor.None, "" }
+        { ButtonColor.None, String.Empty }
     };
 
     internal static readonly Dictionary<Alignment, string> ChartDatasetDataLabelAlignmentMap = new()
@@ -106,7 +106,7 @@ public static class EnumExtensions
         { DropdownColor.Light, "btn-light" },
         { DropdownColor.Dark, "btn-dark" },
         { DropdownColor.Link, "btn-link" },
-        { DropdownColor.None, "" }
+        { DropdownColor.None, String.Empty }
     };
 
     internal static readonly Dictionary<ButtonColor, string> ButtonOutlineColorClassMap = new()
@@ -120,7 +120,7 @@ public static class EnumExtensions
         { ButtonColor.Light, "btn-outline-light" },
         { ButtonColor.Dark, "btn-outline-dark" },
         { ButtonColor.Link, "btn-outline-link" },
-        { ButtonColor.None, "" }
+        { ButtonColor.None, String.Empty }
     };
 
     internal static readonly Dictionary<ButtonSize, string> ButtonSizeClassMap = new()
@@ -130,7 +130,7 @@ public static class EnumExtensions
         { ButtonSize.Medium, "btn-md" },
         { ButtonSize.Large, "btn-lg" },
         { ButtonSize.ExtraLarge, "btn-xl" },
-        { ButtonSize.None, "" }
+        { ButtonSize.None, String.Empty }
     };
 
     internal static readonly Dictionary<ButtonSize, string> ButtonSpinnerSizeClassMap = new()
@@ -140,7 +140,7 @@ public static class EnumExtensions
         { ButtonSize.Medium, "md" },
         { ButtonSize.Large, "lg" },
         { ButtonSize.ExtraLarge, "xl" },
-        { ButtonSize.None, "" }
+        { ButtonSize.None, String.Empty }
     };
 
     internal static readonly Dictionary<ButtonType, string> ButtonTypeStringMap = new()
@@ -154,7 +154,7 @@ public static class EnumExtensions
      
     internal static readonly Dictionary<CalloutColor, string> CalloutColorClassMap = new()
     {
-        { CalloutColor.Default, "" },
+        { CalloutColor.Default, String.Empty },
         { CalloutColor.Danger, "bb-callout-danger" },
         { CalloutColor.Warning, "bb-callout-warning" },
         { CalloutColor.Info, "bb-callout-info" },
@@ -171,14 +171,14 @@ public static class EnumExtensions
         { CardColor.Info, "text-bg-info" },
         { CardColor.Light, "text-bg-light" },
         { CardColor.Dark, "text-bg-dark" },
-        { CardColor.None, "" }
+        { CardColor.None, String.Empty }
     };
 
     internal static readonly Dictionary<CarouselAutoPlay, string> CarouselAutoPlayStringMap = new()
     {
         { CarouselAutoPlay.StartOnPageLoad, "carousel" },
         { CarouselAutoPlay.StartAfterUserInteraction, "true" },
-        { CarouselAutoPlay.None, "" }
+        { CarouselAutoPlay.None, String.Empty }
     };
 
     internal static readonly Dictionary<Unit, string> UnitCssStringMap = new()
@@ -192,12 +192,12 @@ public static class EnumExtensions
         { Unit.VMax, "vmax" },
         { Unit.VMin, "vmin" },
         { Unit.Vw, "vw" },
-        { Unit.None, "" }
+        { Unit.None, String.Empty }
     };
 
     internal static readonly Dictionary<DialogSize, string> DialogSizeClassMap = new()
     {
-        { DialogSize.Regular, "" },
+        { DialogSize.Regular, String.Empty },
         { DialogSize.Small, "modal-sm" },
         { DialogSize.Large, "modal-lg" },
         { DialogSize.ExtraLarge, "modal-xl" }
@@ -222,7 +222,7 @@ public static class EnumExtensions
     {
         { DropdownSize.Small, "btn-sm" },
         { DropdownSize.Large, "btn-lg" },
-        { DropdownSize.None, "" }
+        { DropdownSize.None, String.Empty }
     };
 
      
@@ -239,12 +239,12 @@ public static class EnumExtensions
         { IconColor.Body, "text-body" },
         { IconColor.Muted, "text-muted" },
         { IconColor.White, "text-white" },
-        { IconColor.None, "" }
+        { IconColor.None, String.Empty }
     };
 
     internal static readonly Dictionary<ModalFullscreen, string> ModalFullscreenClassMap = new()
     {
-        { ModalFullscreen.Disabled, "" },
+        { ModalFullscreen.Disabled, String.Empty },
         { ModalFullscreen.Always, "modal-fullscreen" },
         { ModalFullscreen.SmallDown, "modal-fullscreen-sm-down" },
         { ModalFullscreen.MediumDown, "modal-fullscreen-md-down" },
@@ -263,12 +263,12 @@ public static class EnumExtensions
         { ModalType.Info, "text-bg-info border-bottom border-info" },
         { ModalType.Light, "text-bg-light border-bottom" },
         { ModalType.Dark, "text-bg-dark border-bottom border-dark" },
-        { ModalType.None, "" }
+        { ModalType.None, String.Empty }
     };
 
     internal static readonly Dictionary<ModalSize, string> ModalSizeClassMap = new()
     {
-        { ModalSize.Regular, "" },
+        { ModalSize.Regular, String.Empty },
         { ModalSize.Small, "modal-sm" },
         { ModalSize.Large, "modal-lg" },
         { ModalSize.ExtraLarge, "modal-xl" }
@@ -284,7 +284,7 @@ public static class EnumExtensions
 
     internal static readonly Dictionary<OffcanvasSize, string> OffcanvasSizeClassMap = new()
     {
-        { OffcanvasSize.Regular, "" },
+        { OffcanvasSize.Regular, String.Empty },
         { OffcanvasSize.Small, "bb-offcanvas-sm" },
         { OffcanvasSize.Large, "bb-offcanvas-lg" }
     };
@@ -294,14 +294,14 @@ public static class EnumExtensions
         { Alignment.Start, "justify-content-start" },
         { Alignment.Center, "justify-content-center" },
         { Alignment.End, "justify-content-end" },
-        { Alignment.None, "" }
+        { Alignment.None, String.Empty }
     };
 
     internal static readonly Dictionary<PaginationSize, string> PaginationSizeClassMap = new()
     {
         { PaginationSize.Small, "pagination-sm" },
         { PaginationSize.Large, "pagination-lg" },
-        { PaginationSize.None, "" }
+        { PaginationSize.None, String.Empty }
     };
     
     public static string ToPlaceholderAnimationClass(this PlaceholderAnimation placeholderAnimation)
@@ -317,7 +317,7 @@ public static class EnumExtensions
         { PlaceholderColor.Info, "bg-info" },
         { PlaceholderColor.Light, "bg-light" },
         { PlaceholderColor.Dark, "bg-dark" },
-        { PlaceholderColor.None, "" }
+        { PlaceholderColor.None, String.Empty }
     };
 
     internal static readonly Dictionary<PlaceholderSize, string> PlaceholderSizeClassMap = new()
@@ -325,7 +325,7 @@ public static class EnumExtensions
         { PlaceholderSize.ExtraSmall, "placeholder-xs" },
         { PlaceholderSize.Small, "placeholder-sm" },
         { PlaceholderSize.Large, "placeholder-lg" },
-        { PlaceholderSize.None, "" }
+        { PlaceholderSize.None, String.Empty }
     };
 
     internal static readonly Dictionary<PlaceholderWidth, string> PlaceholderWidthClassMap = new()
@@ -351,7 +351,7 @@ public static class EnumExtensions
         { Position.Absolute, BootstrapClass.PositionAbsolute },
         { Position.Fixed, BootstrapClass.PositionFixed },
         { Position.Sticky, BootstrapClass.PositionSticky },
-        { Position.None, "" }
+        { Position.None, String.Empty }
     };
 
     internal static readonly Dictionary<ProgressColor, string> ProgressColorClassMap = new()
@@ -363,7 +363,7 @@ public static class EnumExtensions
         { ProgressColor.Warning, "bg-warning" },
         { ProgressColor.Info, "bg-info" },
         { ProgressColor.Dark, "bg-dark" },
-        { ProgressColor.None, "" }
+        { ProgressColor.None, String.Empty }
     };
 
     public static object ToSortableListPullMode(this SortableListPullMode sortableListPullMode) =>
@@ -411,7 +411,7 @@ public static class EnumExtensions
         { Target.Parent, "_parent" },
         { Target.Top, "_top" },
         { Target.Self, "_self" },
-        { Target.None, "" }
+        { Target.None, String.Empty }
     };
 
     internal static readonly Dictionary<Alignment, string> TextAlignmentClassMap = new()
@@ -419,7 +419,7 @@ public static class EnumExtensions
         { Alignment.Start, "text-start" },
         { Alignment.Center, "text-center" },
         { Alignment.End, "text-end" }, 
-        { Alignment.None, "" }
+        { Alignment.None, String.Empty }
     };
 
     internal static readonly Dictionary<TextColor, string> TextColorClassMap = new()
@@ -435,20 +435,20 @@ public static class EnumExtensions
         { TextColor.Body, "text-body" },
         { TextColor.Muted, "text-muted" },
         { TextColor.White, "text-white" },
-        { TextColor.None, "" }
+        { TextColor.None, String.Empty }
     };
 
-    internal static readonly Dictionary<TooltipColor, string?> TooltipColorClassMap = new()
+    internal static readonly Dictionary<TooltipColor, string> TooltipColorClassMap = new()
     {
         { TooltipColor.Primary, "bb-tooltip-primary" },
-        { TooltipColor.Secondary, "bb-tooltip-tooltip-secondary" },
+        { TooltipColor.Secondary, "bb-tooltip-secondary" },
         { TooltipColor.Success, "bb-tooltip-success" },
         { TooltipColor.Danger, "bb-tooltip-danger" },
         { TooltipColor.Warning, "bb-tooltip-warning" },
         { TooltipColor.Info, "bb-tooltip-info" },
         { TooltipColor.Light, "bb-tooltip-light" },
         { TooltipColor.Dark, "bb-tooltip-dark" },
-        { TooltipColor.None, "" }
+        { TooltipColor.None, String.Empty }
     };
      
     internal static readonly Dictionary<TooltipPlacement, string> TooltipPlacementNameMap = new()
