@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Polar Area charts are similar to pie charts, but each segment has the same angle - the radius of the segment differs depending on the value.
+/// </summary>
 public partial class PolarAreaChart : BlazorBootstrapChart
 {
     #region Fields and Constants
@@ -8,18 +11,10 @@ public partial class PolarAreaChart : BlazorBootstrapChart
 
     #endregion
 
-    #region Constructors
-
-    public PolarAreaChart()
-    {
-        chartType = ChartType.PolarArea;
-    }
-
-    #endregion
-
     #region Methods
 
     // TODO: May be this method is not required
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
@@ -36,11 +31,12 @@ public partial class PolarAreaChart : BlazorBootstrapChart
                 if (data is PolarAreaChartDatasetData barChartDatasetData)
                     barChartDataset.Data?.Add(barChartDatasetData.Data as double?);
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data)
     {
         if (chartData is null)
@@ -75,17 +71,18 @@ public partial class PolarAreaChart : BlazorBootstrapChart
         foreach (var dataset in chartData.Datasets)
             if (dataset is PolarAreaChartDataset barChartDataset)
             {
-                var chartDatasetData = data.FirstOrDefault(x => x is PolarAreaChartDatasetData barChartDatasetData && barChartDatasetData.DatasetLabel == barChartDataset.Label);
+                var chartDatasetData = data.FirstOrDefault(x => x is PolarAreaChartDatasetData polarAreaChartDatasetData && polarAreaChartDatasetData.DatasetLabel == barChartDataset.Label);
 
                 if (chartDatasetData is PolarAreaChartDatasetData barChartDatasetData)
                     barChartDataset.Data?.Add(barChartDatasetData.Data as double?);
             }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (PolarAreaChartDatasetData)x));
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (PolarAreaChartDatasetData)x));
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions)
     {
         if (chartData is null)
@@ -100,29 +97,31 @@ public partial class PolarAreaChart : BlazorBootstrapChart
         if (chartDataset is PolarAreaChartDataset)
         {
             chartData.Datasets.Add(chartDataset);
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (PolarAreaChartDataset)chartDataset);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (PolarAreaChartDataset)chartDataset);
         }
 
         return chartData;
     }
 
-    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
+    /// <inheritdoc />
+    public override async Task InitializeAsync(ChartData? chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
-        if (chartData is not null && chartData.Datasets is not null)
+        if (chartData?.Datasets != null)
         {
             var datasets = chartData.Datasets.OfType<PolarAreaChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions, plugins);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions, plugins);
         }
     }
 
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
+    /// <inheritdoc />
+    public override async Task UpdateAsync(ChartData? chartData, IChartOptions chartOptions)
     {
-        if (chartData is not null && chartData.Datasets is not null)
+        if (chartData?.Datasets != null)
         {
             var datasets = chartData.Datasets.OfType<PolarAreaChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions);
         }
     }
 

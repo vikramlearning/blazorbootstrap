@@ -10,7 +10,7 @@
                   ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
                   Title="Blazor Bootstrap"
                   BadgeText="3.3.1"
-                  DataProvider="Sidebar2DataProvider"
+                  DataProvider="SidebarDataProvider"
                   WidthUnit="Unit.Px" />
     </SidebarSection>
 
@@ -24,17 +24,18 @@
 </BlazorBootstrapLayout>
 
 @code {
-    private IEnumerable<NavItem> navItems = default!;
+    private Sidebar sidebar = default!;
+    private IReadOnlyCollection<NavItem>? navItems;
 
-    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
+    private Task<Sidebar2DataProviderResult?> SidebarDataProvider()
     {
         if (navItems is null)
             navItems = GetNavItems();
 
-        return await Task.FromResult(request.ApplyTo(navItems));
+        return Task.FromResult(Sidebar2DataProviderRequest.ApplyTo(navItems));
     }
 
-    private IEnumerable<NavItem> GetNavItems()
+    private IReadOnlyCollection<NavItem> GetNavItems()
     {
         navItems = new List<NavItem>
                    {

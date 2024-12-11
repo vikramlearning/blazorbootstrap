@@ -46,8 +46,7 @@
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is PieChartDataset pieChartDataset
-                && pieChartDataset is not null
-                && pieChartDataset.Data is not null)
+                && pieChartDataset?.Data != null)
             {
                 var count = pieChartDataset.Data.Count;
 

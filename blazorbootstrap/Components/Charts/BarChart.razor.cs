@@ -1,31 +1,40 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// A bar chart provides a way of showing data values represented as vertical bars. <br/>
+/// It is sometimes used to show trend data, and the comparison of multiple data sets side by side. <br/>
+/// For more information, visit <see href="https://www.chartjs.org/docs/latest/charts/bar.html"/>
+/// </summary>
 public partial class BarChart : BlazorBootstrapChart
 {
     #region Fields and Constants
 
     private const string _jsObjectName = "window.blazorChart.bar";
-
+    
     #endregion
 
     #region Constructors
 
+    /// <summary>
+    /// Default constructor
+    /// </summary>
     public BarChart()
     {
-        chartType = ChartType.Bar;
+        ChartType = ChartType.Bar;
     }
 
     #endregion
 
     #region Methods
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets cannot be null", nameof(chartData));
 
         if (data is null)
             throw new ArgumentNullException(nameof(data));
@@ -35,21 +44,22 @@ public partial class BarChart : BlazorBootstrapChart
                 if (data is BarChartDatasetData barChartDatasetData)
                     barChartDataset.Data?.Add(barChartDatasetData.Data as double?);
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets cannot be null", nameof(chartData));
 
         if (chartData.Labels is null)
-            throw new ArgumentNullException(nameof(chartData.Labels));
+            throw new ArgumentException("chartData.Labels cannot be null", nameof(chartData));
 
         if (dataLabel is null)
             throw new ArgumentNullException(nameof(dataLabel));
@@ -80,48 +90,51 @@ public partial class BarChart : BlazorBootstrapChart
                     barChartDataset.Data?.Add(barChartDatasetData.Data as double?);
             }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (BarChartDatasetData)x));
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (BarChartDatasetData)x));
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets cannot be null", nameof(chartData));
 
         if (chartDataset is null)
             throw new ArgumentNullException(nameof(chartDataset));
 
-        if (chartDataset is BarChartDataset)
+        if (chartDataset is BarChartDataset barChartDataset)
         {
             chartData.Datasets.Add(chartDataset);
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (BarChartDataset)chartDataset);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (BarChartDataset)chartDataset);
         }
 
         return chartData;
     }
 
-    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
+    /// <inheritdoc />
+    public override async Task InitializeAsync(ChartData? chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
-        if (chartData is not null && chartData.Datasets is not null)
+        if (chartData?.Datasets != null)
         {
             var datasets = chartData.Datasets.OfType<BarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (BarChartOptions)chartOptions, plugins);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (BarChartOptions)chartOptions, plugins);
         }
     }
 
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
+    /// <inheritdoc />
+    public override async Task UpdateAsync(ChartData? chartData, IChartOptions chartOptions)
     {
-        if (chartData is not null && chartData.Datasets is not null)
+        if (chartData?.Datasets != null)
         {
             var datasets = chartData.Datasets.OfType<BarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
         }
     }
 

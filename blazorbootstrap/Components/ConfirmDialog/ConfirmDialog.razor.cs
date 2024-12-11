@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// A modal dialog to display if you want the user to verify or accept something. 
+/// </summary>
 public partial class ConfirmDialog : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -71,7 +74,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(() => JSRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", Id));
+        Task.Run(() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", Id));
     }
 
     private void OnNoClick()
@@ -105,10 +108,10 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
         headerCssClass = confirmDialogOptions.HeaderCssClass;
         scrollable = confirmDialogOptions.IsScrollable ? "modal-dialog-scrollable" : "";
         verticallyCentered = confirmDialogOptions.IsVerticallyCentered ? "modal-dialog-centered" : "";
-        noButtonColor = $"{BootstrapClass.Button} {confirmDialogOptions.NoButtonColor.ToButtonColorClass()}";
+        noButtonColor = $"{BootstrapClass.Button} {EnumExtensions.ButtonColorClassMap[confirmDialogOptions.NoButtonColor]}";
         noButtonText = confirmDialogOptions.NoButtonText;
-        modalSize = confirmDialogOptions.Size.ToDialogSizeClass();
-        yesButtonColor = $"{BootstrapClass.Button} {confirmDialogOptions.YesButtonColor.ToButtonColorClass()}";
+        modalSize = EnumExtensions.DialogSizeClassMap[confirmDialogOptions.Size];
+        yesButtonColor = $"{BootstrapClass.Button} {EnumExtensions.ButtonColorClassMap[confirmDialogOptions.YesButtonColor]}";
         yesButtonText = confirmDialogOptions.YesButtonText;
 
         isVisible = true;
@@ -116,25 +119,44 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(() => JSRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
+        Task.Run(() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
 
         return task;
     }
 
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case "style": Style = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
-    #region Properties, Indexers
+    #region Properties, Indexers 
 
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Modal, true),
-            (BootstrapClass.ConfirmationModal, true),
-            (BootstrapClass.ModalFade, true));
+    private string Style { get; set; } = "";
 
-    protected override string? StyleNames =>
-        BuildStyleNames(Style,
-            ("display:block", showBackdrop),
-            ("display:none", !showBackdrop));
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

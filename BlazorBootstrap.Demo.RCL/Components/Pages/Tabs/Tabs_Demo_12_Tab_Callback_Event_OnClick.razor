@@ -1,16 +1,18 @@
 ﻿<Tabs>
+    
     @foreach (var customer in customers)
     {
         <Tab Title="@customer.CustomerName"
              Active="selectedCustomer.CustomerId == customer.CustomerId"
              OnClick="(args) => OnTabClick(args, customer)">
-            <Content>
+            <ChildContent>
                 <div class="mt-3">
                     This is the placeholder content for the <b>@customer.CustomerName</b> tab.
                 </div>
-            </Content>
+            </ChildContent>
         </Tab>
     }
+    
 </Tabs>
 
 @if (selectedCustomer is not null)

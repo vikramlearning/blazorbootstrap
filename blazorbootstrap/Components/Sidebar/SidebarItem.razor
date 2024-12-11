@@ -1,21 +1,21 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-    @if (HasChilds)
+<div @ref="@Element" id="@Id" class="nav-item @(HasChildren ? "nav-item-group" : "") @(navitemGroupExpanded ? "active" : "") @Class" @attributes="@AdditionalAttributes">
+    @if (HasChildren)
     {
         <NavLink class="nav-link" role="button" @onclick="ToggleNavItemGroup">
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                    <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                        <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                     </span>
                 </Tooltip>
             }
@@ -36,18 +36,18 @@
     }
     else
     {
-        <NavLink class="nav-link" href="@Href" target="@targetString" Match="@Match" @onclick="AutoHideNavMenu">
+        <NavLink class="nav-link" href="@Href" target="@EnumExtensions.TargetStringMap[Target]" Match="@Match" @onclick="AutoHideNavMenu">
             @if (!CollapseSidebar)
             {
                 <span class="nav-link-icon me-3">
-                    <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                    <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                 </span>
             }
             else
             {
                 <Tooltip Title="@Text" Placement="TooltipPlacement.Right" role="button">
                     <span class="nav-link-icon me-3">
-                        <Icon Class="@iconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
+                        <Icon Class="@IconColorCssClass" Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true"/>
                     </span>
                 </Tooltip>
             }
@@ -55,7 +55,7 @@
         </NavLink>
     }
 
-    @if (navitemGroupExpanded && HasChilds && ChildItems is not null && ChildItems.Any())
+    @if (navitemGroupExpanded && HasChildren && ChildItems is not null && ChildItems.Any())
     {
         @foreach (var childItem in ChildItems)
         {

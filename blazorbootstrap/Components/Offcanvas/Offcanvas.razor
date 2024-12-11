@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" tabindex="@TabIndex">
+<div @ref="@Element" id="@Id" class="@BootstrapClass.Offcanvas @EnumExtensions.OffcanvasPlacementClassMap[Placement] @EnumExtensions.OffcanvasSizeClassMap[Size] @Class" @attributes="@AdditionalAttributes" tabindex="@TabIndex">
     @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
     {
         <div class="offcanvas-header @HeaderCssClass">
@@ -23,7 +23,7 @@
     @if (childComponent is not null)
     {
         <div class="offcanvas-body @BodyCssClass">
-            <DynamicComponent Type="@childComponent" Parameters="@parameters"/>
+            <DynamicComponent Type="@childComponent" Parameters="@offcanvasParameters"/>
         </div>
     }
     else if (BodyTemplate != null)

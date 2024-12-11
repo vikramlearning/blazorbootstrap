@@ -1,4 +1,4 @@
-﻿﻿<Grid  TItem="User"
+﻿﻿<Grid TItem="User"
        Class="table table-hover table-bordered table-striped"
        DataProvider="UsersDataProvider"
        AllowFiltering="true"
@@ -22,7 +22,7 @@
 </Grid>
 
 @code {
-    private IEnumerable<User> users = default!;
+    private IReadOnlyCollection<User> users = default!;
 
     private async Task<GridDataProviderResult<User>> UsersDataProvider(GridDataProviderRequest<User> request)
     {
@@ -32,7 +32,7 @@
         return await Task.FromResult(request.ApplyTo(users));
     }
 
-    private IEnumerable<User> GetUsers()
+    private IReadOnlyCollection<User> GetUsers()
     {
         return new List<User>
         {

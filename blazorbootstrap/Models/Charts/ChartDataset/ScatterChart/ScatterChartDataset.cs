@@ -12,14 +12,6 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     #region Properties, Indexers
 
     /// <summary>
-    /// Get or sets the line fill color.
-    /// </summary>
-    /// <remarks>
-    /// Default value is 'rgba(0, 0, 0, 0.1)'.
-    /// </remarks>
-    public string BackgroundColor { get; set; } = "rgba(0, 0, 0, 0.1)";
-
-    /// <summary>
     /// Cap style of the line.
     /// Supported values are 'butt', 'round', and 'square'.
     /// </summary>
@@ -29,21 +21,13 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     public string BorderCapStyle { get; set; } = "butt";
 
     /// <summary>
-    /// Get or sets the line color.
-    /// </summary>
-    /// <remarks>
-    /// Default value is 'rgba(0, 0, 0, 0.1)'.
-    /// </remarks>
-    public string BorderColor { get; set; } = "rgba(0, 0, 0, 0.1)";
-
-    /// <summary>
     /// Gets or sets the length and spacing of dashes.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? BorderDash { get; set; }
+    public IReadOnlyCollection<double>? BorderDash { get; set; }
 
     /// <summary>
     /// Offset for line dashes.
@@ -61,14 +45,6 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is 'miter'.
     /// </remarks>
     public string BorderJoinStyle { get; set; } = "miter";
-
-    /// <summary>
-    /// Gets or sets the line width (in pixels).
-    /// </summary>
-    /// <remarks>
-    /// Default value is 3.
-    /// </remarks>
-    public double BorderWidth { get; set; } = 3;
 
     /// <summary>
     /// <see href="https://www.chartjs.org/docs/latest/charts/line.html#cubicinterpolationmode" />.
@@ -89,7 +65,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<bool>? DrawActiveElementsOnTop { get; set; }
+    public IReadOnlyCollection<bool>? DrawActiveElementsOnTop { get; set; }
 
     /// <summary>
     /// How to fill the area under the line.
@@ -133,7 +109,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? HoverBorderDash { get; set; }
+    public IReadOnlyCollection<double>? HoverBorderDash { get; set; }
 
     /// <summary>
     /// Offset for line dashes when hovered.
@@ -154,15 +130,6 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     public string HoverBorderJoinStyle { get; set; } = "miter";
 
     /// <summary>
-    /// The bar border width when hovered (in pixels) when hovered.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="null" />.
-    /// </remarks>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public double? HoverBorderWidth { get; set; }
-
-    /// <summary>
     /// The base axis of the dataset. 'x' for horizontal lines and 'y' for vertical lines.
     /// </summary>
     /// <remarks>
@@ -178,7 +145,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? PointBackgroundColor { get; set; }
+    public IReadOnlyCollection<string>? PointBackgroundColor { get; set; }
 
     /// <summary>
     /// The border color for points.
@@ -187,7 +154,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? PointBorderColor { get; set; }
+    public IReadOnlyCollection<string>? PointBorderColor { get; set; }
 
     /// <summary>
     /// The width of the point border in pixels.
@@ -196,7 +163,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is 1.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? PointBorderWidth { get; set; }
+    public IReadOnlyCollection<double>? PointBorderWidth { get; set; }
 
     /// <summary>
     /// The pixel size of the non-displayed point that reacts to mouse events.
@@ -205,7 +172,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is 1.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? PointHitRadius { get; set; }
+    public IReadOnlyCollection<double>? PointHitRadius { get; set; }
 
     /// <summary>
     /// Point background color when hovered.
@@ -214,7 +181,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? PointHoverBackgroundColor { get; set; }
+    public IReadOnlyCollection<string>? PointHoverBackgroundColor { get; set; }
 
     /// <summary>
     /// Point border color when hovered.
@@ -223,7 +190,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? PointHoverBorderColor { get; set; }
+    public IReadOnlyCollection<string>? PointHoverBorderColor { get; set; }
 
     /// <summary>
     /// Border width of point when hovered.
@@ -232,7 +199,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is 1.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? PointHoverBorderWidth { get; set; }
+    public IReadOnlyCollection<double>? PointHoverBorderWidth { get; set; }
 
     /// <summary>
     /// The radius of the point when hovered.
@@ -241,7 +208,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is 4.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? PointHoverRadius { get; set; }
+    public IReadOnlyCollection<double>? PointHoverRadius { get; set; }
 
     /// <summary>
     /// The radius of the point shape. If set to 0, the point is not rendered.
@@ -250,7 +217,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is 3.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? PointRadius { get; set; }
+    public IReadOnlyCollection<double>? PointRadius { get; set; }
 
     /// <summary>
     /// The rotation of the point in degrees.
@@ -259,7 +226,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is 0.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<double>? PointRotation { get; set; }
+    public IReadOnlyCollection<double>? PointRotation { get; set; }
 
     /// <summary>
     /// Style of the point.
@@ -271,7 +238,7 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// Default value is 'circle'.
     /// </remarks>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<string>? PointStyle { get; set; }
+    public IReadOnlyCollection<string>? PointStyle { get; set; }
 
     //segment
     //https://www.chartjs.org/docs/latest/charts/line.html#segment

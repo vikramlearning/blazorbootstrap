@@ -1,5 +1,4 @@
-﻿<Grid @ref="grid"
-      TItem="Employee4"
+﻿<Grid TItem="Employee4"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
       FixedHeader="true"
@@ -48,9 +47,8 @@
 
 </Grid>
 
-@code {
-    BlazorBootstrap.Grid<Employee4> grid = default!;
-    private IEnumerable<Employee4> employees = default!;
+@code { 
+    private IReadOnlyCollection<Employee4> employees = default!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -65,7 +63,7 @@
         return await Task.FromResult(request.ApplyTo(employees));
     }
 
-    private IEnumerable<Employee4> GetEmployees()
+    private IReadOnlyCollection<Employee4> GetEmployees()
     {
         return new List<Employee4>
         {

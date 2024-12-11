@@ -1,37 +1,60 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
+@{
+    string cssClass;
+    if (IsFirstItem)
+    {
+        cssClass = "ms-1";
+    }
+    else if (IsLastItem)
+    {
+        cssClass = "me-1";
+    }
+    else
+    {
+        cssClass = "mx-1";
+    }
+}
+
 <div @ref="@Element"
      id="@Id"
-     class="@ClassNames" 
-     style="@StyleNames"
+     class="bb-ribbon-item p-1 @cssClass @BootstrapClass.Flex @BootstrapClass.FlexColumn @BootstrapClass.AlignItemsCenter @Class"
      @attributes="@AdditionalAttributes"
      @onclick="OnRibbonItemClickAsync">
 
-    <div>
-        @if (!string.IsNullOrEmpty(ImgSrc))
-        {
+    @if (!string.IsNullOrEmpty(ImgSrc))
+    {
+        <div>
             <img class="my-2"
                  src="@ImgSrc"
                  width="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px"
                  height="@($"{ImgWidth.ToString(CultureInfo.InvariantCulture)}")px" />
-        }
-        else
-        {
+        </div>
+    }
+    else if (IconName != IconName.None)
+    {
+        <div>
             <Icon Class="@IconCssClass"
                   Color="@IconColor"
                   Name="@IconName"
                   CustomIconName="@CustomIconName"
                   Size="@IconSize" />
-        }
-    </div>
-    @if (!string.IsNullOrEmpty(Text))
+        </div>
+    }
+    
+    @if (!String.IsNullOrEmpty(Text))
     {
         <div class="text-center">@Text</div>
     }
     else
     {
-        <div class="text-center">@ChildContent</div>
+        <div class="text-center">    
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
+        </div>
     }
 
 </div>

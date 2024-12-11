@@ -9,7 +9,7 @@
 @code {
     float temperature1 = 10;
 
-    IEnumerable<TickMark> list = new List<TickMark>
+    IReadOnlyCollection<TickMark> list = new List<TickMark>
     {
         new(){ Label = "very cold!", Value = "0"},
         new(){ Label = "cool", Value = "25"},

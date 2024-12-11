@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Toggle the visibility of content across your project with the Blazor Bootstrap Collapse component.
+/// This component is based on the <see href="https://getbootstrap.com/docs/5.0/components/collapse/">Bootstrap Collapse</see> component.
+/// </summary>
 public partial class Collapse : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -18,7 +22,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.dispose", Id);
+                    await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -30,15 +34,17 @@ public partial class Collapse : BlazorBootstrapComponentBase
 
         await base.DisposeAsyncCore(disposing);
     }
-
+    
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", Id, Parent, Toggle, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", Id, Parent, Toggle, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -46,85 +52,117 @@ public partial class Collapse : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public async Task bsHiddenCollapse() => await OnHidden.InvokeAsync();
+    /// <summary>
+    /// Invoked when a collapse element has been hidden from the user (will wait for CSS transitions to complete).
+    /// </summary> 
+    [JSInvokable("bsHiddenCollapse")]
+    public Task BsHiddenCollapse() => OnHidden.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsHideCollapse() => await OnHiding.InvokeAsync();
+    /// <summary>
+    /// Invoked immediately when the hide method has been called.
+    /// </summary> 
+    [JSInvokable("bsHideCollapse")]
+    public Task BsHideCollapse() => OnHiding.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsShowCollapse() => await OnShowing.InvokeAsync();
+    /// <summary>
+    /// Invoked immediately when the show method has been called.
+    /// </summary> 
+    [JSInvokable("bsShowCollapse")]
+    public Task BsShowCollapse() => OnShowing.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsShownCollapse() => await OnShown.InvokeAsync();
+    /// <summary>
+    /// Invoked when a collapse element has been made visible to the user (will wait for CSS transitions to complete).
+    /// </summary> 
+    [JSInvokable("bsShownCollapse")]
+    public Task BsShownCollapse() => OnShown.InvokeAsync();
 
     /// <summary>
     /// Hides a collapsible element.
     /// </summary>
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.hide", Id);
+    public ValueTask HideAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.hide", Id);
 
     /// <summary>
     /// Shows a collapsible element.
     /// </summary>
-    public async Task ShowAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.show", Id);
+    public ValueTask ShowAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.show", Id);
 
     /// <summary>
     /// Toggles a collapsible element to shown or hidden.
     /// </summary>
-    public async Task ToggleAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.toggle", Id);
+    public ValueTask ToggleAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.toggle", Id);
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Horizontal), StringComparison.OrdinalIgnoreCase): Horizontal = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHidden), StringComparison.OrdinalIgnoreCase): OnHidden = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHiding), StringComparison.OrdinalIgnoreCase): OnHiding = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShowing), StringComparison.OrdinalIgnoreCase): OnShowing = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShown), StringComparison.OrdinalIgnoreCase): OnShown = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Parent), StringComparison.OrdinalIgnoreCase): Parent = parameter.Value; break;
+
+                case var _ when String.Equals(parameter.Name, nameof(Toggle), StringComparison.OrdinalIgnoreCase): Toggle = (bool)parameter.Value; break;
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+        
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
 
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Collapse, true),
-            (BootstrapClass.CollapseHorizontal, Horizontal));
-
+      
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }  
 
     /// <summary>
     /// Gets or sets the horizontal collapsing.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Horizontal { get; set; }
+    [Parameter] public bool Horizontal { get; set; }
 
     /// <summary>
     /// This event is fired when a collapse element has been hidden from the user (will wait for CSS transitions to complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnHidden { get; set; }
+    [Parameter] public EventCallback OnHidden { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide method has been called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnHiding { get; set; }
+    [Parameter] public EventCallback OnHiding { get; set; }
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnShowing { get; set; }
+    [Parameter] public EventCallback OnShowing { get; set; }
 
     /// <summary>
     /// This event is fired when a collapse element has been made visible to the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnShown { get; set; }
+    [Parameter] public EventCallback OnShown { get; set; }
 
     /// <summary>
     /// Gets or sets the parent selector, DOM element.
@@ -132,17 +170,20 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// item is shown. (similar to traditional accordion behavior - this is dependent on the card class).
     /// The attribute has to be set on the target collapsible area.
     /// </summary>
-    [Parameter]
-    public object Parent { get; set; } = default!;
+    [Parameter] public object? Parent { get; set; } 
 
     /// <summary>
     /// Toggles the collapsible element on invocation.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Toggle { get; set; } = false;
+    [Parameter] public bool Toggle { get; set; }
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

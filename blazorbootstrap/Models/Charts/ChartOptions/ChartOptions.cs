@@ -84,6 +84,9 @@ public class Interaction
 
     #region Constructors
 
+    /// <summary>
+    /// Default constructor
+    /// </summary>
     public Interaction()
     {
         Mode = InteractionMode.Nearest;
@@ -116,7 +119,7 @@ public class Interaction
     /// Sets which elements appear in the interaction.
     /// </summary>
     [JsonPropertyName("mode")]
-    public string ChartInteractionMode { get; private set; }
+    public string ChartInteractionMode { get; private set; } = default!;
 
     /// <summary>
     /// if <see langword="true" />, the interaction mode only applies when the mouse position intersects an item on the chart.
@@ -206,7 +209,8 @@ public class ChartAxesType
 public class ChartAxes
 {
     #region Properties, Indexers
-
+    
+    // Stacked
     public bool BeginAtZero { get; set; } = true;
 
     /// <summary>
@@ -276,142 +280,6 @@ public class ChartAxes
 
     #endregion
 }
-
-/// <summary>
-/// Define options for the border that run perpendicular to the axis.
-/// <see href="https://www.chartjs.org/docs/latest/axes/styling.html" />
-/// </summary>
-public class ChartAxesBorder
-{
-    #region Properties, Indexers
-
-    /// <summary>
-    /// The color of the border line.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Color { get; set; }
-
-    /// <summary>
-    /// Length and spacing of dashes on grid lines
-    /// <see href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash" />
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int>? Dash { get; set; }
-
-    /// <summary>
-    /// Offset for line dashes.
-    /// <see href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset" />
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? DashOffset { get; set; }
-
-    /// <summary>
-    /// If <see langword="true" />, draw a border at the edge between the axis and the chart area.
-    /// </summary>
-    public bool Display { get; set; } = true;
-
-    /// <summary>
-    /// The width of the border line.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? Width { get; set; }
-
-    /// <summary>
-    /// z-index of the border layer. Values <= 0 are drawn under datasets, > 0 on top.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? Z { get; set; }
-
-    #endregion
-}
-
-/// <summary>
-/// Defines options for the grid lines that run perpendicular to the axis.
-/// <see href="https://www.chartjs.org/docs/latest/samples/scale-options/grid.html" />
-/// </summary>
-public class ChartAxesGrid
-{
-    #region Properties, Indexers
-
-    /// <summary>
-    /// If <see langword="true" />, gridlines are circular (on radar and polar area charts only).
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public bool? Circular { get; set; }
-
-    /// <summary>
-    /// Color of the grid axis lines. Here one can write a CSS method or even a JavaScript method for a dynamic color.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Color { get; set; }
-
-    /// <summary>
-    /// If false, do not display grid lines for this axis.
-    /// </summary>
-    public bool Display { get; set; } = true;
-
-    /// <summary>
-    /// If <see langword="true" />, draw lines on the chart area inside the axis lines. This is useful when there are multiple
-    /// axes and you need to control which grid lines are drawn.
-    /// </summary>
-    public bool DrawOnChartArea { get; set; } = true;
-
-    /// <summary>
-    /// If <see langword="true" />, draw lines beside the ticks in the axis area beside the chart.
-    /// </summary>
-    public bool DrawTicks { get; set; } = true;
-
-    /// <summary>
-    /// Stroke width of grid lines.
-    /// </summary>
-    public int LineWidth { get; set; } = 1;
-
-    /// <summary>
-    /// If <see langword="true" />, grid lines will be shifted to be between labels. This is set to true for a bar chart by
-    /// default.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public bool? Offset { get; set; } = false;
-
-    /// <summary>
-    /// Length and spacing of the tick mark line.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int>? TickBorderDash { get; set; }
-
-    /// <summary>
-    /// Offset for the line dash of the tick mark.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? TickBorderDashOffset { get; set; }
-
-    /// <summary>
-    /// Color of the tick line. If unset, defaults to the grid line color.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? TickColor { get; set; }
-
-    /// <summary>
-    /// Length in pixels that the grid lines will draw into the axis area.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? TickLength { get; set; }
-
-    /// <summary>
-    /// Width of the tick mark in pixels.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? TickWidth { get; set; }
-
-    /// <summary>
-    /// z-index of the gridline layer. Values <= 0 are drawn under datasets, > 0 on top.
-    /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? Z { get; set; }
-
-    #endregion
-}
-
 public enum TicksAlignment
 {
     Center, // default
@@ -537,9 +405,139 @@ public class ChartAxesTicksMajor
     /// </summary>
     public bool Enabled { get; set; } = false;
 
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ChartAxesTitle? Title { get; set; }
+
     #endregion
 }
 
+
+/// <summary>
+/// Define options for the border that run perpendicular to the axis.
+/// <see href="https://www.chartjs.org/docs/latest/axes/styling.html" />
+/// </summary>
+public class ChartAxesBorder
+{
+
+    /// <summary>
+    ///  The color of the border line.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Color { get; set; }
+
+    /// <summary>
+    /// Length and spacing of dashes on grid lines
+    /// <see href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash" />
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<int>? Dash { get; set; }
+
+    /// <summary>
+    /// Offset for line dashes.
+    /// <see href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset" />
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? DashOffset { get; set; }
+
+    /// <summary>
+    /// If <see langword="true" />, draw a border at the edge between the axis and the chart area.
+    /// </summary>
+    public bool Display { get; set; } = true;
+
+    /// <summary>
+    /// The width of the border line.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Width { get; set; }
+
+    /// <summary>
+    /// z-index of the border layer. Values smaller or equal to 0 are drawn under datasets, larger than 0 on top.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Z { get; set; }
+}
+
+/// <summary>
+///  Defines options for the grid lines that run perpendicular to the axis.
+/// <see href="https://www.chartjs.org/docs/latest/samples/scale-options/grid.html" />
+/// </summary>
+public class ChartAxesGrid
+{
+    /// <summary>
+    /// If <see langword="true" />, gridlines are circular (on radar and polar area charts only).
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Circular { get; set; }
+    
+    /// <summary>
+    ///  Color of the grid axis lines. Here one can write a CSS method or even a JavaScript method for a dynamic color.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Color { get; set; }
+
+    /// <summary>
+    /// If false, do not display grid lines for this axis.
+    /// </summary>
+    public bool Display { get; set; } = true;
+
+    /// <summary>
+    /// If <see langword="true" />, draw lines on the chart area inside the axis lines. This is useful when there are multiple axes, and you need to control which grid lines are drawn.
+    /// </summary>
+    public bool DrawOnChartArea { get; set; } = true;
+
+    /// <summary>
+    /// If <see langword="true" />, draw lines beside the ticks in the axis area beside the chart.
+    /// </summary>
+    public bool DrawTicks { get; set; } = true;
+
+    /// <summary>
+    /// Stroke width of grid lines.
+    /// </summary>
+    public int LineWidth { get; set; } = 1;
+
+    /// <summary>
+    /// If <see langword="true" />, grid lines will be shifted to be between labels. This is set to  <see langword="true" /> for a bar chart by default.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Offset { get; set; } = false;
+
+    /// <summary>
+    /// Length and spacing of the tick mark line. 
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyCollection<int>? TickBorderDash { get; set; }
+
+    /// <summary>
+    /// Offset for the line dash of the tick mark. 
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? TickBorderDashOffset { get; set; }
+
+    /// <summary>
+    /// Color of the tick line. If unset, defaults to the grid line color.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? TickColor { get; set; }
+
+    /// <summary>
+    /// Length in pixels that the grid lines will draw into the axis area.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? TickLength { get; set; }
+
+
+    /// <summary>
+    /// Width of the tick mark in pixels.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? TickWidth { get; set; }
+
+    /// <summary>
+    /// z-index of the gridline layer. Values smaller or equal to 0 are drawn under datasets, above 0 on top.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Z { get; set; }
+}
 /// <summary>
 /// The chart title defines text to draw at the top of the chart.
 /// <see href="https://www.chartjs.org/docs/latest/configuration/title.html" />

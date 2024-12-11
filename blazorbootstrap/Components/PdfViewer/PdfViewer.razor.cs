@@ -1,14 +1,20 @@
-﻿namespace BlazorBootstrap;
+﻿using static System.Net.Mime.MediaTypeNames;
 
+namespace BlazorBootstrap;
+
+/// <summary>
+/// The Blazor PDF Viewer component allows users to view PDF files directly in the browser, without relying on third-party browser tools or extensions. <br/>
+/// The <see cref="Url"/> element can contain a URL or a base64 string of type "application/pdf".
+/// </summary>
 public partial class PdfViewer : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private int defaultZoomLevel = 8;
+    private const int DefaultZoomLevel = 8;
 
-    private int maxZoomLevel = 17;
+    private const int MaxZoomLevel = 17;
 
-    private int minZoomLevel = 1;
+    private const int MinZoomLevel = 1;
 
     private DotNetObjectReference<PdfViewer>? objRef;
 
@@ -29,6 +35,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -37,6 +44,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -46,6 +54,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override async Task OnParametersSetAsync()
     {
         if (IsRenderComplete)
@@ -60,7 +69,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public void DocumentLoaded(PdfViewerModel pdfViewerModel)
+    public void DocumentLoaded(PdfViewerModel? pdfViewerModel)
     {
         if (pdfViewerModel is null) return;
 
@@ -74,7 +83,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public void SetPdfViewerMetaData(PdfViewerModel pdfViewerModel)
+    public void SetPdfViewerMetaData(PdfViewerModel? pdfViewerModel)
     {
         if (pdfViewerModel is null) return;
 
@@ -85,9 +94,9 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             OnPageChanged.InvokeAsync(new PdfViewerEventArgs(pageNumber, pagesCount));
     }
 
-    private async Task FirstPageAsync() => await PdfViewerJsInterop.FirstPageAsync(objRef!, Id!);
+    private Task FirstPageAsync() => PdfViewerJsInterop.FirstPageAsync(objRef!, Id!);
 
-    private int GetZoomPercentage(int zoomLevel) =>
+    private static int GetZoomPercentage(int zoomLevel) =>
         zoomLevel switch
         {
             1 => 25,
@@ -110,28 +119,28 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             _ => 100
         };
 
-    private async Task LastPageAsync() => await PdfViewerJsInterop.LastPageAsync(objRef!, Id!);
+    private Task LastPageAsync() => PdfViewerJsInterop.LastPageAsync(objRef!, Id!);
 
-    private async Task NextPageAsync() => await PdfViewerJsInterop.NextPageAsync(objRef!, Id!);
+    private Task NextPageAsync() => PdfViewerJsInterop.NextPageAsync(objRef!, Id!);
 
-    private async Task PageNumberChangedAsync(int value)
+    private Task PageNumberChangedAsync(int value)
     {
         if (value < 1 || value > pagesCount)
             pageNumber = 1;
         else
             pageNumber = value;
 
-        await PdfViewerJsInterop.GotoPageAsync(objRef!, Id!, pageNumber);
+        return PdfViewerJsInterop.GotoPageAsync(objRef!, Id!, pageNumber);
     }
 
-    private async Task PreviousPageAsync() => await PdfViewerJsInterop.PreviousPageAsync(objRef!, Id!);
+    private Task PreviousPageAsync() => PdfViewerJsInterop.PreviousPageAsync(objRef!, Id!);
 
-    private async Task PrintAsync() => await PdfViewerJsInterop.PrintAsync(objRef!, Id!, Url!);
+    private Task PrintAsync() => PdfViewerJsInterop.PrintAsync(objRef!, Id!, Url!);
 
     private async Task ResetZoomAsync()
     {
-        zoomLevel = defaultZoomLevel;
-        var zp = GetZoomPercentage(defaultZoomLevel);
+        zoomLevel = DefaultZoomLevel;
+        var zp = GetZoomPercentage(DefaultZoomLevel);
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
         await PdfViewerJsInterop.ZoomInOutAsync(objRef!, Id!, scale);
@@ -161,7 +170,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     {
         if (rotation == 0)
             oldOrientation = Orientation = Orientation.Portrait;
-        else if (rotation == -90)
+        else if (Math.Abs(rotation - (-90)) < Single.Epsilon)
             oldOrientation = Orientation = Orientation.Landscape;
     }
 
@@ -175,7 +184,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private async Task ZoomInAsync()
     {
-        if (zoomLevel == maxZoomLevel)
+        if (zoomLevel == MaxZoomLevel)
             return;
 
         zoomLevel += 1;
@@ -187,7 +196,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private async Task ZoomOutAsync()
     {
-        if (zoomLevel == minZoomLevel)
+        if (zoomLevel == MinZoomLevel)
             return;
 
         zoomLevel -= 1;
@@ -195,6 +204,33 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
         await PdfViewerJsInterop.ZoomInOutAsync(objRef!, Id!, scale);
+    }
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnDocumentLoaded), StringComparison.OrdinalIgnoreCase): OnDocumentLoaded = (EventCallback<PdfViewerEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnPageChanged), StringComparison.OrdinalIgnoreCase): OnPageChanged = (EventCallback<PdfViewerEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Orientation), StringComparison.OrdinalIgnoreCase): Orientation = (Orientation)parameter.Value; break;
+
+                case var _ when String.Equals(parameter.Name, nameof(Url), StringComparison.OrdinalIgnoreCase): Url = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
@@ -233,7 +269,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     /// PDF Viewer component supports base64 string as a URL.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Url { get; set; }

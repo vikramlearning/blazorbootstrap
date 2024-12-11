@@ -48,12 +48,19 @@
         barChartOptions.Responsive = true;
         barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
         barChartOptions.IndexAxis = "y";
-
-        barChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "Visitors", Display = true };
-        barChartOptions.Scales.Y!.Title = new ChartAxesTitle { Text = "Browser", Display = true };
-
-        barChartOptions.Scales.X.Stacked = true;
-        barChartOptions.Scales.Y.Stacked = true;
+        barChartOptions.Scales = new Scales
+        {
+            X = new ChartAxes()
+            {
+                Stacked = true,
+                Title = new ChartAxesTitle() { Text = "Visitors", Display = true }
+            },
+            Y = new ChartAxes()
+            {
+                Stacked = true,
+                Title = new ChartAxesTitle() { Text = "Browser", Display = true }
+            },
+        };
 
         barChartOptions.Plugins.Title!.Text = "Operating system";
         barChartOptions.Plugins.Title.Display = true;

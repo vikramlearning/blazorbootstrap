@@ -4,29 +4,28 @@
       AllowPaging="true"
       AllowSorting="true"
       FixedHeader="true"
-      Responsive="true"
-      Unit="Unit.Px">
+      Responsive="true">
 
     <GridColumns>
-        <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="0" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="50" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+        <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="CssPropertyValue.Pixels(0)" HeaderText="Id" PropertyName="CustomerId" SortString="CustomerId" SortKeySelector="item => item.CustomerId" FilterTextboxWidth="CssPropertyValue.Pixels(50)" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
             @context.CustomerId
         </GridColumn>
-        <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="54.98" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="80">
+        <GridColumn TItem="Customer2" Freeze="true" FreezeLeftPosition="CssPropertyValue.Pixels(54.98f)" HeaderText="Customer Name" PropertyName="CustomerName" SortString="CustomerName" SortKeySelector="item => item.CustomerName" FilterTextboxWidth="CssPropertyValue.Pixels(80)">
             @context.CustomerName
         </GridColumn>
-        <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="100">
+        <GridColumn TItem="Customer2" HeaderText="Phone" PropertyName="Phone" SortString="Phone" SortKeySelector="item => item.Phone" FilterTextboxWidth="CssPropertyValue.Pixels(100)">
             @context.Phone
         </GridColumn>
-        <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="120">
+        <GridColumn TItem="Customer2" HeaderText="Email" PropertyName="Email" SortString="Email" SortKeySelector="item => item.Email" FilterTextboxWidth="CssPropertyValue.Pixels(120)">
             @context.Email
         </GridColumn>
-        <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="150">
+        <GridColumn TItem="Customer2" HeaderText="Address" PropertyName="Address" SortString="Address" SortKeySelector="item => item.Address" FilterTextboxWidth="CssPropertyValue.Pixels(150)">
             @context.Address
         </GridColumn>
-        <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="80">
+        <GridColumn TItem="Customer2" HeaderText="Postal Zip" PropertyName="PostalZip" SortString="PostalZip" SortKeySelector="item => item.PostalZip" FilterTextboxWidth="CssPropertyValue.Pixels(80)">
             @context.PostalZip
         </GridColumn>
-        <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="80">
+        <GridColumn TItem="Customer2" Freeze="true" FreezeDirection="FreezeDirection.Right" FreezeRightPosition="0" HeaderText="Country" PropertyName="Country" SortString="Country" SortKeySelector="item => item.Country" FilterTextboxWidth="CssPropertyValue.Pixels(80)">
             @context.Country
         </GridColumn>
     </GridColumns>

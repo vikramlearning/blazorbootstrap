@@ -15,7 +15,10 @@ public partial class Demo : BlazorBootstrapComponentBase
     /// </summary>
     private DotNetObjectReference<Demo> objRef = default!;
 
-    private string? snippet;
+    /// <summary>
+    /// Can be used if the code snippet is provided directly, rather than from a .razor file
+    /// </summary>
+    [Parameter] public string? ProvidedCode { get; set; }
 
     #endregion
 
@@ -37,26 +40,22 @@ public partial class Demo : BlazorBootstrapComponentBase
 
     protected override async Task OnParametersSetAsync()
     {
-        if (snippet is null)
-        {
-            var resourceFullName = Type.FullName + ".razor";
+        if (ProvidedCode is null)
+        { 
+            var resourceName = Type.FullName + ".razor";
 
-            using (var stream = Type.Assembly.GetManifestResourceStream(resourceFullName)!)
+            await using var stream = Type.Assembly.GetManifestResourceStream(resourceName);
+            try
             {
-                try
-                {
-                    if (stream is null)
-                        return;
+                if (stream is null)
+                    return;
 
-                    using (var reader = new StreamReader(stream))
-                    {
-                        snippet = await reader.ReadToEndAsync();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                using var reader = new StreamReader(stream);
+                ProvidedCode = await reader.ReadToEndAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
     }
@@ -97,14 +96,12 @@ public partial class Demo : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
-    private async Task CopyToClipboardAsync() => await JS.InvokeVoidAsync("copyToClipboard", snippet, objRef);
+    private ValueTask CopyToClipboardAsync() => JS.InvokeVoidAsync("copyToClipboard", ProvidedCode, objRef);
 
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames => BuildClassNames(Class, ("bd-example-snippet bd-code-snippet", true));
-
+     
     [Inject] protected IJSRuntime JS { get; set; } = default!;
 
     [Parameter] public LanguageCode LanguageCode { get; set; } = LanguageCode.Razor;

@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a sidebar item within a <see cref="Sidebar"/> component.
+/// </summary>
 public partial class SidebarItem : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -10,9 +13,10 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
-        if (!HasChilds || !(ChildItems?.Any() ?? false))
+        if (!HasChildren || !(ChildItems?.Any() ?? false))
             return;
 
         foreach (var childItem in ChildItems)
@@ -31,53 +35,86 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
 
     private void ToggleNavItemGroup() => navitemGroupExpanded = !navitemGroupExpanded;
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(ChildItems), StringComparison.OrdinalIgnoreCase): ChildItems = (IReadOnlyCollection<NavItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CollapseSidebar), StringComparison.OrdinalIgnoreCase): CollapseSidebar = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CustomIconName), StringComparison.OrdinalIgnoreCase): CustomIconName = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HasChildren), StringComparison.OrdinalIgnoreCase): HasChildren = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Href), StringComparison.OrdinalIgnoreCase): Href = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IconColor), StringComparison.OrdinalIgnoreCase): 
+                    IconColor = (IconColor)parameter.Value;
+                    IconColorCssClass = EnumExtensions.IconColorClassMap[IconColor];
+                    break;
+                case var _ when String.Equals(parameter.Name, nameof(IconName), StringComparison.OrdinalIgnoreCase): IconName = (IconName)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Match), StringComparison.OrdinalIgnoreCase): Match = (NavLinkMatch)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Parent), StringComparison.OrdinalIgnoreCase): Parent = (Sidebar)parameter.Value; break;
+
+                case var _ when String.Equals(parameter.Name, nameof(Target), StringComparison.OrdinalIgnoreCase): Target = (Target)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Text), StringComparison.OrdinalIgnoreCase): Text = (string)parameter.Value; break;
+                
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        } 
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+
     #endregion
 
-    #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            ("nav-item", true),
-            ("nav-item-group", HasChilds),
-            ("active", navitemGroupExpanded));
+    #region Properties, Indexer
 
     /// <summary>
     /// Gets or sets the child items.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public IEnumerable<NavItem>? ChildItems { get; set; }
+    public IReadOnlyCollection<NavItem>? ChildItems { get; set; }
 
+    /// <summary>
+    /// The <see cref="Sidebar"/> sets if this sidebar item should be collapsed.
+    /// </summary>
     [CascadingParameter] public bool CollapseSidebar { get; set; }
 
     /// <summary>
     /// Gets or sets the custom icon name.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? CustomIconName { get; set; }
+    [Parameter] public string? CustomIconName { get; set; }
 
     /// <summary>
     /// Gets or sets the has child items state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool HasChilds { get; set; }
+    [Parameter] public bool HasChildren { get; set; }
 
     /// <summary>
     /// Gets or sets the link href attribute.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? Href { get; set; }
+    [Parameter] public string? Href { get; set; }
 
     /// <summary>
     /// Gets or sets the icon color.
@@ -85,10 +122,9 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconColor.None" />.
     /// </remarks>
-    [Parameter]
-    public IconColor IconColor { get; set; } = IconColor.None;
+    [Parameter] public IconColor IconColor { get; set; } = IconColor.None;
 
-    private string iconColorCssClass => IconColor.ToIconColorClass();
+    private string IconColorCssClass { get; set; } = "";
 
     /// <summary>
     /// Gets or sets the icon name.
@@ -96,8 +132,7 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconName.None" />.
     /// </remarks>
-    [Parameter]
-    public IconName IconName { get; set; } = IconName.None;
+    [Parameter] public IconName IconName { get; set; } = IconName.None;
 
     /// <summary>
     /// Gets or sets a value representing the URL matching behavior.
@@ -123,15 +158,13 @@ public partial class SidebarItem : BlazorBootstrapComponentBase
     /// Default value is <see cref="Target.None" />.
     /// </remarks>
     [Parameter]
-    public Target Target { get; set; } = Target.None;
-
-    private string targetString => Target.ToTargetString()!;
+    public Target Target { get; set; } = Target.None; 
 
     /// <summary>
     /// Gets or sets the sidebar item text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Text { get; set; }

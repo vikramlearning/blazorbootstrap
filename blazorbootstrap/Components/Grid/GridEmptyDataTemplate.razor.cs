@@ -4,6 +4,7 @@ public partial class GridEmptyDataTemplate<TItem> : BlazorBootstrapComponentBase
 {
     private RenderFragment? template;
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         Id = IdUtility.GetNextId(); // Required
@@ -21,6 +22,7 @@ public partial class GridEmptyDataTemplate<TItem> : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [Parameter]
+    [EditorRequired]
     public RenderFragment ChildContent { get; set; } = default!;
 
     internal RenderFragment Template =>

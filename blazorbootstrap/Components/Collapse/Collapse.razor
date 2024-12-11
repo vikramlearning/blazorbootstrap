@@ -1,6 +1,9 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-    @ChildContent
+<div @ref="@Element" id="@Id" class="@BootstrapClass.Collapse @(Horizontal ? BootstrapClass.CollapseHorizontal : "") @Class" @attributes="@AdditionalAttributes">
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </div>

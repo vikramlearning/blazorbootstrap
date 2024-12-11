@@ -1,6 +1,9 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<p @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-    @ChildContent
+<p @ref="@Element" id="@Id" class="@BootstrapClass.CardText @Class" @attributes="@AdditionalAttributes">
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </p>

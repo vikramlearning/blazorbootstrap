@@ -46,8 +46,7 @@
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is DoughnutChartDataset doughnutChartDataset
-                && doughnutChartDataset is not null
-                && doughnutChartDataset.Data is not null)
+                && doughnutChartDataset?.Data != null)
             {
                 var count = doughnutChartDataset.Data.Count;
 

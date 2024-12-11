@@ -2,7 +2,10 @@
 @inherits BlazorBootstrapComponentBase
 
 <CascadingValue Value="@(this)" IsFixed="true">
-    <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-        @ChildContent
+    <div @ref="@Element" id="@Id" class="@BootstrapClass.Accordion @(Flush ? BootstrapClass.AccordionFlush : "") @Class" @attributes="@AdditionalAttributes">
+        @if (ChildContent != null)
+        {
+            @ChildContent
+        }
     </div>
 </CascadingValue>

@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Input form for currency values, such as dollars, euros or pounds.
+/// </summary>
+/// <typeparam name="TValue">Number type to store the value in. (<see langword="float"/>, <see langword="int"/>, etc.)</typeparam>
 public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -16,11 +20,12 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.currencyInput.initialize", Id, isFloatingNumber(), AllowNegativeNumbers, cultureInfo.NumberFormat.CurrencyDecimalSeparator);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.currencyInput.initialize", Id, IsFloatingNumber(), AllowNegativeNumbers, cultureInfo.NumberFormat.CurrencyDecimalSeparator);
 
             var currentValue = Value; // object
 
@@ -45,6 +50,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         if (IsLeftGreaterThanRight(Min, Max))
@@ -66,8 +72,6 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
               || typeof(TValue) == typeof(decimal?)
              ))
             throw new InvalidOperationException($"{typeof(TValue)} is not supported.");
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
@@ -100,14 +104,14 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </summary>
     public void Enable() => Disabled = false;
 
-    private string ExtractValue(object value, CultureInfo cultureInfo)
+    private string ExtractValue(object value)
     {
         if (value is null || string.IsNullOrWhiteSpace(value.ToString()))
             return string.Empty;
 
         var validChars = "0123456789";
 
-        if (isFloatingNumber())
+        if (IsFloatingNumber())
             validChars = string.Concat(validChars, ".");
 
         if (AllowNegativeNumbers)
@@ -116,7 +120,11 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
         return string.Concat(value?.ToString()?.Replace(",", ".")?.Where(c => validChars.Contains(c))!);
     }
 
-    private bool isFloatingNumber() =>
+    /// <summary>
+    /// Returns <see langword="true" /> if <typeparamref name="TValue" /> is a type that represents a floating number.
+    /// </summary>
+    /// <returns><see langword="true" /> if <typeparamref name="TValue" />  is a type that represents a floating number.</returns>
+    private static bool IsFloatingNumber() =>
         typeof(TValue) == typeof(float)
         || typeof(TValue) == typeof(float?)
         || typeof(TValue) == typeof(double)
@@ -124,13 +132,15 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
         || typeof(TValue) == typeof(decimal)
         || typeof(TValue) == typeof(decimal?);
 
+
+
     /// <summary>
-    /// Determines where the left input is greater than the right input.
+    /// Determines whether the <paramref name="left"/>> value is greater than the <paramref name="right"/> value.
     /// </summary>
-    /// <param name="left"></param>
-    /// <param name="right"></param>
-    /// <returns>bool</returns>
-    private bool IsLeftGreaterThanRight(TValue left, TValue right)
+    /// <param name="left">Left-hand value</param>
+    /// <param name="right">Right-hand value</param>
+    /// <returns><see langword="true" /> if <paramref name="left"/> is greater than <paramref name="right"/></returns>
+    private static bool IsLeftGreaterThanRight(TValue left, TValue right)
     {
         // sbyte
         if (typeof(TValue) == typeof(sbyte))
@@ -147,7 +157,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             var l = left as sbyte?;
             var r = right as sbyte?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // short / int16
 
@@ -165,7 +175,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             var l = left as short?;
             var r = right as short?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // int
 
@@ -183,7 +193,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             var l = left as int?;
             var r = right as int?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // long
 
@@ -201,7 +211,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             var l = left as long?;
             var r = right as long?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // float / single
 
@@ -219,7 +229,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             var l = left as float?;
             var r = right as float?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // double
 
@@ -237,7 +247,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             var l = left as double?;
             var r = right as double?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // decimal
 
@@ -255,7 +265,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             var l = left as decimal?;
             var r = right as decimal?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
 
         return false;
@@ -263,7 +273,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
     private async Task OnChange(ChangeEventArgs e)
     {
-        var newValue = ExtractValue(e.Value!, cultureInfo);
+        var newValue = ExtractValue(e.Value!);
 
         if (newValue is null || !TryParseValue(newValue, out var value))
             Value = default!;
@@ -300,7 +310,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 
         options.MinimumIntegerDigits = MinimumIntegerDigits;
 
-        if (isFloatingNumber())
+        if (IsFloatingNumber())
         {
             if (MinimumFractionDigits.HasValue)
                 options.MinimumFractionDigits = MinimumFractionDigits.Value;
@@ -314,10 +324,10 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             options.MaximumFractionDigits = 0;
         }
 
-        formattedValue = await JSRuntime.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", Value is null ? "" : Value, Locale, options);
+        formattedValue = await JsRuntime.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", Value is null ? "" : Value, Locale, options);
     }
 
-    private bool TryParseValue(object value, out TValue newValue)
+    private static bool TryParseValue(object value, out TValue newValue)
     {
         try
         {
@@ -390,34 +400,62 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
         }
     }
 
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(AllowNegativeNumbers), StringComparison.OrdinalIgnoreCase): AllowNegativeNumbers = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoComplete), StringComparison.OrdinalIgnoreCase): AutoComplete = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CurrencySign), StringComparison.OrdinalIgnoreCase): CurrencySign = (CurrencySign)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EditContext), StringComparison.OrdinalIgnoreCase): EditContext = (EditContext)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EnableMinMax), StringComparison.OrdinalIgnoreCase): EnableMinMax = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HideCurrencySymbol), StringComparison.OrdinalIgnoreCase): HideCurrencySymbol = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Locale), StringComparison.OrdinalIgnoreCase): Locale = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Max), StringComparison.OrdinalIgnoreCase): Max = (TValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(MaximumFractionDigits), StringComparison.OrdinalIgnoreCase): MaximumFractionDigits = (byte?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Min), StringComparison.OrdinalIgnoreCase): Min = (TValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(MinimumFractionDigits), StringComparison.OrdinalIgnoreCase): MinimumFractionDigits = (byte?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(MinimumIntegerDigits), StringComparison.OrdinalIgnoreCase): MinimumIntegerDigits = (byte)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Placeholder), StringComparison.OrdinalIgnoreCase): Placeholder = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TextAlignment), StringComparison.OrdinalIgnoreCase): TextAlignment = (Alignment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Value), StringComparison.OrdinalIgnoreCase): Value = (TValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ValueChanged), StringComparison.OrdinalIgnoreCase): ValueChanged = (EventCallback<TValue>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ValueExpression), StringComparison.OrdinalIgnoreCase): ValueExpression = (Expression<Func<TValue>>)parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.FormControl, true),
-            (TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None));
-
+     
     /// <summary>
     /// If <see langword="true" />, allows negative numbers.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AllowNegativeNumbers { get; set; }
-
-    private string autoComplete => AutoComplete ? "true" : "false";
-
+    [Parameter] public bool AllowNegativeNumbers { get; set; }
+ 
     /// <summary>
     /// If <see langword="true" />, CurrencyInput can complete the values automatically by the browser.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AutoComplete { get; set; }
+    [Parameter] public bool AutoComplete { get; set; }
 
     /// <summary>
     /// Gets or sets the currency sign.
@@ -425,17 +463,15 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="CurrencySign.Standard" />.
     /// </remarks>
-    [Parameter]
-    public CurrencySign CurrencySign { get; set; } = CurrencySign.Standard;
+    [Parameter] public CurrencySign CurrencySign { get; set; } = CurrencySign.Standard;
 
     /// <summary>
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
@@ -444,18 +480,17 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// If <see langword="true" />, restricts the user input between the Min and Max range. Else accepts the user input.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool EnableMinMax { get; set; }
+    [Parameter] public bool EnableMinMax { get; set; }
 
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string FieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
     /// Determines whether to hide the currency symbol are not.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool HideCurrencySymbol { get; set; }
@@ -481,7 +516,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// The maximum number of fraction digits to use.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public byte? MaximumFractionDigits { get; set; }
@@ -497,7 +532,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// The minimum number of fraction digits to use.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public byte? MinimumFractionDigits { get; set; }
@@ -516,7 +551,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the placeholder.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Placeholder { get; set; }
@@ -542,7 +577,15 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
 
+    /// <summary>
+    /// An expression that identifies the bound value.
+    /// </summary>
     [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

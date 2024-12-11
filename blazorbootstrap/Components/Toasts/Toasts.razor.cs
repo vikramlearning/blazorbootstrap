@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Push notifications to your visitors with a toast, a lightweight and easily customizable alert message. <br/>
+/// For more information, visit the <see href="https://getbootstrap.com/docs/5.0/components/toasts/">Bootstrap Toasts</see> documentation.
+/// </summary>
 public partial class Toasts : BlazorBootstrapComponentBase
 {
     #region Methods
@@ -18,6 +22,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         if (ToastService is not null)
@@ -26,7 +31,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
-    private void OnNotify(ToastMessage toastMessage)
+    private void OnNotify(ToastMessage? toastMessage)
     {
         if (toastMessage is null)
             return;
@@ -40,7 +45,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
 
     private void OnToastHiddenAsync(ToastEventArgs args)
     {
-        if (Messages is null || !Messages.Any())
+        if (Messages is null || Messages.Count == 0)
             return;
 
         var message = Messages.FirstOrDefault(x => x.Id == args.ToastId);
@@ -51,7 +56,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
 
     private async Task OnToastShownAsync(ToastEventArgs args)
     {
-        if (Messages is null || !Messages.Any())
+        if (Messages is null || Messages.Count == 0)
             return;
 
         Messages.ForEach(
@@ -72,29 +77,52 @@ public partial class Toasts : BlazorBootstrapComponentBase
                     Messages.Remove(message);
 
                 if (string.IsNullOrWhiteSpace(message!.ElementId))
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
+                    await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
             }
         }
+    }
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(AutoHide), StringComparison.OrdinalIgnoreCase): AutoHide = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Delay), StringComparison.OrdinalIgnoreCase): Delay = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Messages), StringComparison.OrdinalIgnoreCase): Messages = (List<ToastMessage>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Placement), StringComparison.OrdinalIgnoreCase): Placement = (ToastsPlacement)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ShowCloseButton), StringComparison.OrdinalIgnoreCase): ShowCloseButton = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(StackLength), StringComparison.OrdinalIgnoreCase): StackLength = (int)parameter.Value; break;
+ 
+
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.ToastContainer, true),
-            (BootstrapClass.PositionFixed, true),
-            (Placement.ToToastsPlacementClass(), true));
-
+     
     /// <summary>
     /// Gets or sets the auto hide state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AutoHide { get; set; }
+    [Parameter] public bool AutoHide { get; set; }
 
     /// <summary>
     /// Gets or sets the delay in milliseconds before hiding the toast.
@@ -102,17 +130,15 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 5000.
     /// </remarks>
-    [Parameter]
-    public int Delay { get; set; } = 5000;
+    [Parameter] public int Delay { get; set; } = 5000;
 
     /// <summary>
     /// Gets or sets the toast messages.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public List<ToastMessage>? Messages { get; set; } = default!;
+    [Parameter] public List<ToastMessage>? Messages { get; set; }
 
     /// <summary>
     /// Gets or sets the toast placement.
@@ -120,17 +146,15 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="ToastsPlacement.TopRight" />.
     /// </remarks>
-    [Parameter]
-    public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
+    [Parameter] public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
 
     /// <summary>
     /// If <see langword="true" />, shows the close button.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool ShowCloseButton { get; set; } = true;
+    [Parameter] public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the toast container maximum capacity.
@@ -138,10 +162,18 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 5.
     /// </remarks>
-    [Parameter]
-    public int StackLength { get; set; } = 5;
+    [Parameter] public int StackLength { get; set; } = 5;
 
+    /// <summary>
+    /// Dependency injected Toast Service
+    /// </summary>
     [Inject] public ToastService ToastService { get; set; } = default!;
+
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

@@ -3,7 +3,7 @@
 
 <CascadingValue IsFixed="true" Value="this">
     <CascadingValue Value="@collapseSidebar">
-        <aside @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="navigation" @attributes="@AdditionalAttributes">
+        <aside @ref="@Element" id="@Id" class="bb-sidebar @(collapseSidebar ? "collapsed" : "expanded") @Class" role="navigation" style="--bb-sidebar-width: @(Width.ToString()); @Style" @attributes="@AdditionalAttributes">
 
             <div class="bb-sidebar-top-row navbar">
                 <div class="container-fluid ps-3">
@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <div class="@navMenuCssClass">
+            <div class="@NavMenuCssClass">
                 @if (items is null)
                 {
                     <div class="text-center my-2">

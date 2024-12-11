@@ -8,9 +8,9 @@
 
 @if (columns.Any())
 {
-    <div class="@GridContainerClassNames" style="@GridContainerStyleNames" onscroll="@OnScroll">
-        <table @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-            <thead class="@THeadCssClass">
+    <div class="@ResponsiveCssClass" style="@GetGridContainerStyle()" onscroll="@OnScroll">
+        <table @ref="@Element" id="@Id" class="bb-table @(FixedHeader ? BootstrapClass.TableSticky : "") @Class" @attributes="@AdditionalAttributes">
+            <thead class="@TableHeaderCssClass">
                 <tr class="@(FixedHeader ? BootstrapClass.TextNoWrap : "") @HeaderRowCssClass">
                     @if (AllowDetailView)
                     {
@@ -47,10 +47,10 @@
                                 columnClassList.Add("freeze-column");
 
                                 if (column.FreezeDirection == FreezeDirection.Left)
-                                    columnStyleList.Add($"left:{column.FreezeLeftPosition.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
+                                    columnStyleList.Add($"left:{column.FreezeLeftPosition.ToString()}");
                                 else
                                 {
-                                    columnStyleList.Add($"right:{column.FreezeRightPosition.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
+                                    columnStyleList.Add($"right:{column.FreezeRightPosition.ToString()}");
                                     columnClassList.Add("freeze-column-right");
                                 }
                             }
@@ -60,16 +60,15 @@
                                 {
                                     <GridColumnFilter EnumFilterSelectText="@EnumFilterSelectText"
                                                       FilterButtonColor="@column.FilterButtonColor"
-                                                      FilterButtonCSSClass="@column.FilterButtonCSSClass"
+                                                      FilterButtonCssClass="@column.FilterButtonCssClass"
                                                       FilterOperator="@column.FilterOperator"
                                                       FilterValue="@column.FilterValue"
                                                       FilterWidth="@column.FilterTextboxWidth"
-                                                      FiltersTranslationProvider="GridFiltersTranslationProviderAsync!"
+                                                      FiltersTranslationProvider="GridFiltersTranslationProviderAsync"
                                                       FixedHeader="@FixedHeader"
-                                                      GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
+                                                      GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args)"
                                                       PropertyType="@column.GetPropertyType()"
-                                                      PropertyTypeName="@column.GetPropertyTypeName()"
-                                                      Unit="@Unit" />
+                                                      PropertyTypeName="@column.GetPropertyTypeName()" />
                                 }
                             </th>
                         }
@@ -182,11 +181,11 @@
         </table>
     </div>
 
-    @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0 && (!AutoHidePaging || (AutoHidePaging && totalCount.Value > pageSize)))
+    @if (AllowPaging && totalCount > 0 && (!AutoHidePaging || (AutoHidePaging && totalCount.Value > pageSize)))
     {
         <div class="d-flex justify-content-between align-middle mt-2">
-            <Pagination ActivePageNumber="@gridCurrentState.PageIndex"
-                        TotalPages="@totalPages"
+            <Pagination ActivePageNumber="@GridCurrentState.PageIndex"
+                        TotalPages="@GetTotalPagesCount()"
                         PageChanged="OnPageChangedAsync"
                         FirstLinkIcon="IconName.ChevronDoubleLeft"
                         PreviousLinkIcon="IconName.ChevronLeft"
@@ -194,12 +193,12 @@
                         LastLinkIcon="IconName.ChevronDoubleRight"
                         Alignment="Alignment.Start" />
 
-            @if (PageSizeSelectorVisible && PageSizeSelectorItems is not null && PageSizeSelectorItems.Any())
+            @if (PageSizeSelectorVisible && PageSizeSelectorItems.Any())
             {
                 <div>
                     <div class="d-flex justify-content-center align-middle">
                         <div>
-                            <InputSelect class="form-select" role="button" TValue="int" Value="@pageSize" ValueExpression="() => pageSize" ValueChanged="async (value) => await OnPageSizeChangedAsync(value)">
+                            <InputSelect class="form-select" role="button" TValue="int" Value="@pageSize" ValueExpression="() => pageSize" ValueChanged="OnPageSizeChangedAsync">
                                 @foreach (var i in PageSizeSelectorItems)
                                 {
                                     <option value="@i">@i</option>
@@ -212,7 +211,7 @@
             }
 
             <div class="bb-grid-pagination-text">
-                @paginationItemsText
+                @GetPaginationItemsText()
             </div>
         </div>
     }

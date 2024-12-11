@@ -5,8 +5,8 @@
 <input @ref="@Element"
        type="time"
        id="@Id"
-       class="@ClassNames @fieldCssClasses"
-       style="@StyleNames"
+       class="@BootstrapClass.FormControl @Class @FieldCssClasses"
+       
        max="@formattedMax"
        min="@formattedMin"
        value="@formattedValue"
@@ -14,6 +14,6 @@
        data-current-formatted-value="@formattedValue"
        disabled="@Disabled"
        placeholder="@Placeholder"
-       autocomplete="@autoComplete"
+       autocomplete="@(AutoComplete.ToString().ToLowerInvariant())"
        @attributes="@AdditionalAttributes"
        @onchange="OnChange"/>

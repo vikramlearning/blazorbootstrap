@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Push notifications to your visitors with a toast, a lightweight and easily customizable alert message. <br/>
+/// For more information, visit the <see href="https://getbootstrap.com/docs/5.0/components/toasts/">Bootstrap Toasts</see> documentation.
+/// </summary>
 public partial class Toast : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -24,7 +28,7 @@ public partial class Toast : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", Id);
+                    await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -37,10 +41,9 @@ public partial class Toast : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        //await base.OnAfterRenderAsync(firstRender);
-
         if (firstRender)
             await ShowAsync();
 
@@ -69,6 +72,7 @@ public partial class Toast : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -78,39 +82,39 @@ public partial class Toast : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public async Task bsHiddenToast() => await Hidden.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
+    [JSInvokable("bsHiddenToast")]
+    public Task BsHiddenToast() => Hidden.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
 
-    [JSInvokable]
-    public async Task bsHideToast() => await Hiding.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
+    [JSInvokable("bsHideToast")]
+    public Task BsHideToast() => Hiding.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
 
-    [JSInvokable]
-    public async Task bsShownToast() => await Shown.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
+    [JSInvokable("bsShownToast")]
+    public Task BsShownToast() => Shown.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
 
-    [JSInvokable]
-    public async Task bsShowToast() => await Showing.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
+    [JSInvokable("bsShowToast")]
+    public Task BsShowToast() => Showing.InvokeAsync(new ToastEventArgs(ToastMessage.Id, Id!));
 
     /// <summary>
     /// Hides an element’s toast.
     /// </summary>
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", Id);
+    public ValueTask HideAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", Id);
 
     /// <summary>
     /// Reveals an element’s toast.
     /// </summary>
-    public async Task ShowAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.show", Id, AutoHide, Delay, objRef);
+    public ValueTask ShowAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.show", Id, AutoHide, Delay, objRef);
 
     private string GetIconClass() =>
         ToastMessage.Type switch
         {
-            ToastType.Primary => TextColor.Primary.ToTextColorClass(),
-            ToastType.Secondary => TextColor.Secondary.ToTextColorClass(),
-            ToastType.Success => TextColor.Success.ToTextColorClass(),
-            ToastType.Danger => TextColor.Danger.ToTextColorClass(),
-            ToastType.Warning => TextColor.Warning.ToTextColorClass(),
-            ToastType.Info => TextColor.Info.ToTextColorClass(),
-            ToastType.Light => TextColor.Light.ToTextColorClass(),
-            ToastType.Dark => TextColor.Dark.ToTextColorClass(),
+            ToastType.Primary => EnumExtensions.TextColorClassMap[TextColor.Primary],
+            ToastType.Secondary => EnumExtensions.TextColorClassMap[TextColor.Secondary],
+            ToastType.Success => EnumExtensions.TextColorClassMap[TextColor.Success],
+            ToastType.Danger => EnumExtensions.TextColorClassMap[TextColor.Danger],
+            ToastType.Warning => EnumExtensions.TextColorClassMap[TextColor.Warning],
+            ToastType.Info => EnumExtensions.TextColorClassMap[TextColor.Info],
+            ToastType.Light => EnumExtensions.TextColorClassMap[TextColor.Light],
+            ToastType.Dark => EnumExtensions.TextColorClassMap[TextColor.Dark],
             _ => ""
         };
 
@@ -144,21 +148,49 @@ public partial class Toast : BlazorBootstrapComponentBase
                   _ => IconName.BellFill
               };
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(AutoHide), StringComparison.OrdinalIgnoreCase): AutoHide = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Delay), StringComparison.OrdinalIgnoreCase): Delay = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Hidden), StringComparison.OrdinalIgnoreCase): Hidden = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Hiding), StringComparison.OrdinalIgnoreCase): Hiding = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ShowCloseButton), StringComparison.OrdinalIgnoreCase): ShowCloseButton = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Showing), StringComparison.OrdinalIgnoreCase): Showing = (EventCallback<ToastEventArgs>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Shown), StringComparison.OrdinalIgnoreCase): Shown = (EventCallback<ToastEventArgs>)parameter.Value; break;
+
+                case var _ when String.Equals(parameter.Name, nameof(ToastMessage), StringComparison.OrdinalIgnoreCase): ToastMessage = (ToastMessage)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class, (BootstrapClass.Toast, true));
-
+     
     /// <summary>
     /// Gets or sets the auto hide state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AutoHide { get; set; }
+    [Parameter] public bool AutoHide { get; set; }
 
     /// <summary>
     /// Gets or sets the delay in milliseconds before hiding the toast.
@@ -166,56 +198,53 @@ public partial class Toast : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 5000.
     /// </remarks>
-    [Parameter]
-    public int Delay { get; set; } = 5000;
+    [Parameter] public int Delay { get; set; } = 5000;
 
     /// <summary>
     /// This event is fired when the toast has finished being hidden from the user.
     /// </summary>
-    [Parameter]
-    public EventCallback<ToastEventArgs> Hidden { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Hidden { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide instance method has been called.
     /// </summary>
-    [Parameter]
-    public EventCallback<ToastEventArgs> Hiding { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Hiding { get; set; }
 
-    private string iconClass => $"{GetIconClass()} me-2".Trim();
+    private string IconClass => $"{GetIconClass()} me-2".Trim();
 
-    private IconName iconName => GetToastIconName();
+    private IconName IconName => GetToastIconName();
 
-    private ProgressColor progressColor => GetProgressColor();
+    private ProgressColor ProgressColor => GetProgressColor();
 
     /// <summary>
     /// If <see langword="true" />, shows the close button.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool ShowCloseButton { get; set; } = true;
+    [Parameter] public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
-    [Parameter]
-    public EventCallback<ToastEventArgs> Showing { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Showing { get; set; }
 
     /// <summary>
     /// This event is fired when the toast has been made visible to the user.
     /// </summary>
-    [Parameter]
-    public EventCallback<ToastEventArgs> Shown { get; set; }
+    [Parameter] public EventCallback<ToastEventArgs> Shown { get; set; }
 
     /// <summary>
     /// Gets or sets the toast message.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public ToastMessage ToastMessage { get; set; } = default!;
+    [Parameter] public ToastMessage ToastMessage { get; set; } = default!;
 
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
     #endregion
 }

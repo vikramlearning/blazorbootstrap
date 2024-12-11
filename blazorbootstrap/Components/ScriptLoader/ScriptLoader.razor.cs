@@ -1,4 +1,7 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Xml.Linq;
+using System;
+
+namespace BlazorBootstrap;
 
 /// <summary>
 /// A component for loading scripts dynamically in a Blazor application.
@@ -21,14 +24,16 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, Defer, ScriptId, Source, ScriptType, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, Defer, ScriptId, Source, ScriptType, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -36,6 +41,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <inheritdoc />
     protected override void OnParametersSet()
     {
         if (string.IsNullOrWhiteSpace(Source))
@@ -48,7 +54,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// Handles a script error event from JavaScript.
     /// </summary>
     /// <param name="errorMessage">The error message.</param>
-    [JSInvokable]
+    [JSInvokable("OnErrorJS")]
     public void OnErrorJS(string errorMessage)
     {
         if (OnError.HasDelegate)
@@ -58,11 +64,38 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <summary>
     /// Handles a script load event from JavaScript.
     /// </summary>
-    [JSInvokable]
+    [JSInvokable("OnLoadJS")]
     public void OnLoadJS()
     {
         if (OnLoad.HasDelegate)
             OnLoad.InvokeAsync();
+    }
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(Async), StringComparison.OrdinalIgnoreCase): Async = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnError), StringComparison.OrdinalIgnoreCase): OnError = (EventCallback<string>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnLoad), StringComparison.OrdinalIgnoreCase): OnLoad = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ScriptId), StringComparison.OrdinalIgnoreCase): ScriptId = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Source), StringComparison.OrdinalIgnoreCase): Source = (string)parameter.Value; break;
+                
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
@@ -75,8 +108,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Async { get; set; }
+    [Parameter] public bool Async { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the script is meant to be executed 
@@ -85,14 +117,12 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Defer { get; set; }
+    [Parameter] public bool Defer { get; set; }
 
     /// <summary>
     /// An event that is fired when a script loading error occurs.
     /// </summary>
-    [Parameter]
-    public EventCallback<string> OnError { get; set; }
+    [Parameter] public EventCallback<string> OnError { get; set; }
 
     /// <summary>
     /// An event that is fired when a script has been successfully loaded.
@@ -106,8 +136,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? ScriptId { get; set; }
+    [Parameter] public string? ScriptId { get; set; }
 
     /// <summary>
     /// Gets or sets the URI of the external script to load.
@@ -117,7 +146,13 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public string? Source { get; set; } = default!;
+    public string? Source { get; set; }
+
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

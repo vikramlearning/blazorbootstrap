@@ -7,8 +7,7 @@
         <input @ref="@Element"
                type="text"
                id="@Id"               
-               class="@ClassNames @fieldCssClasses" 
-               style="@StyleNames"
+               class="@BootstrapClass.FormControl @EnumExtensions.AutoCompleteSizeClassMap[Size] @Class @FieldCssClasses"
                value="@Value"
                placeholder="@Placeholder"
                disabled="@Disabled"
@@ -21,11 +20,11 @@
         {
             <Button @ref="closeButton"
                     Class="border-0 position-absolute end-0"
-                    Style="@DeleteButtonStyle"
+                    style="@DeleteButtonStyle"
                     Disabled="@Disabled"
                     @onclick="ClearInputTextAsync">
 
-                <Icon Name="IconName.XLg"></Icon>
+                <Icon Name="IconName.XLg" />
 
             </Button>
         }

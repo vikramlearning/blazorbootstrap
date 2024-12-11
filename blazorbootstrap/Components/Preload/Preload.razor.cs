@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Indicate the loading state of a page with Blazor Bootstrap preload component.
+/// </summary>
 public partial class Preload : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -26,6 +29,7 @@ public partial class Preload : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         PageLoadingService.OnShow += OnShow;
@@ -39,50 +43,62 @@ public partial class Preload : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
-    private void OnShow(SpinnerColor spinnerColor, string? loadingText)
+    private void OnShow(SpinnerColor newSpinnerColor, string? newLoadingText)
     {
-        this.spinnerColor = spinnerColor.ToSpinnerColorClass();
+        this.spinnerColor = EnumExtensions.SpinnerColorClassMap[newSpinnerColor];
 
         showBackdrop = true;
 
-        this.loadingText = loadingText;
+        this.loadingText = newLoadingText;
 
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case "style": Style = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LoadingText), StringComparison.OrdinalIgnoreCase): LoadingText = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Modal, true),
-            (BootstrapClass.PageLoadingModal, true),
-            (BootstrapClass.ModalFade, true),
-            (BootstrapClass.Show, showBackdrop));
-
-    protected override string? StyleNames =>
-        BuildStyleNames(Style,
-            ("display:block", showBackdrop),
-            ("display:none", !showBackdrop));
-
+     
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the loading text.
     /// </summary>
-    [Parameter]
-    public string? LoadingText { get; set; }
+    [Parameter] public string? LoadingText { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="PageLoadingService" /> instance.
     /// </summary>
-    [Inject]
-    private PreloadService PageLoadingService { get; set; } = default!;
+    [Inject] private PreloadService PageLoadingService { get; set; } = default!;
+
+    private string Style { get; set; } = "";
 
     #endregion
 }

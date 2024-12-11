@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Scatter charts are similar to line charts, but each data point is represented by a marker. <br/>
+/// </summary>
 public partial class ScatterChart : BlazorBootstrapChart
 {
     #region Fields and Constants
@@ -10,9 +13,12 @@ public partial class ScatterChart : BlazorBootstrapChart
 
     #region Constructors
 
+    /// <summary>
+    /// Default constructor
+    /// </summary>
     public ScatterChart()
     {
-        chartType = ChartType.Scatter;
+        ChartType = ChartType.Scatter;
     }
 
     #endregion
@@ -20,6 +26,7 @@ public partial class ScatterChart : BlazorBootstrapChart
     #region Methods
 
     // TODO: May be this method is not required
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
@@ -36,11 +43,12 @@ public partial class ScatterChart : BlazorBootstrapChart
                 if (data is ScatterChartDatasetData scatterChartDatasetData && scatterChartDatasetData.Data is ScatterChartDataPoint scatterChartDataPoint)
                     scatterChartDataset.Data?.Add(scatterChartDataPoint);
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data)
     {
         if (chartData is null)
@@ -81,11 +89,12 @@ public partial class ScatterChart : BlazorBootstrapChart
                     scatterChartDataset.Data?.Add(scatterChartDataPoint);
             }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (ScatterChartDatasetData)x));
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (ScatterChartDatasetData)x));
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions)
     {
         if (chartData is null)
@@ -100,12 +109,13 @@ public partial class ScatterChart : BlazorBootstrapChart
         if (chartDataset is ScatterChartDataset)
         {
             chartData.Datasets.Add(chartDataset);
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (ScatterChartDataset)chartDataset);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (ScatterChartDataset)chartDataset);
         }
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is null)
@@ -119,10 +129,11 @@ public partial class ScatterChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<ScatterChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, plugins);
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, plugins);
     }
 
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
+    /// <inheritdoc />
+    public override async Task UpdateAsync(ChartData? chartData, IChartOptions chartOptions)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
@@ -135,7 +146,7 @@ public partial class ScatterChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<ScatterChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (ScatterChartOptions)chartOptions);
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (ScatterChartOptions)chartOptions);
     }
 
     #endregion

@@ -1,16 +1,10 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a colored bar within a <see cref="Progress"/>. A <see cref="Progress"/> may contain multiple <see cref="ProgressBar"/> components.
+/// </summary>
 public partial class ProgressBar
 {
-    #region Fields and Constants
-
-    private ProgressColor color = ProgressColor.None;
-    private ProgressType type = ProgressType.Default;
-
-    private double width = 0;
-
-    #endregion
-
     #region Methods
 
     /// <summary>
@@ -29,24 +23,12 @@ public partial class ProgressBar
     }
 
     /// <summary>
-    /// Get the progress bar width.
-    /// </summary>
-    /// <returns></returns>
-    public double GetWidth() => width;
-
-    /// <summary>
     /// Increase the progress bar width.
     /// </summary>
     /// <param name="width"></param>
     public void IncreaseWidth(double width)
-    {
-        if (width is < 0 or > 100)
-            return;
-
-        if (Width + width > 100)
-            Width = 100;
-        else
-            Width += width;
+    { 
+        Width = Math.Clamp(Width + width, 0, 100);
     }
 
     /// <summary>
@@ -66,28 +48,52 @@ public partial class ProgressBar
     /// </summary>
     /// <param name="width"></param>
     public void SetWidth(double width)
-    {
-        if (width is < 0 or > 100)
-            return;
+    { 
+        Width = Math.Clamp(width, 0, 100);
+    }
 
-        Width = width;
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(Color), StringComparison.OrdinalIgnoreCase): Color = (ProgressColor)parameter.Value; break;
+
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                
+                case var _ when String.Equals(parameter.Name, nameof(Label), StringComparison.OrdinalIgnoreCase): Label = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Type), StringComparison.OrdinalIgnoreCase): Type = (ProgressType)parameter.Value; break;
+                case "style": Style = (string)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
+     
+    /*
+     * StateHasChanged() needed to be invoked in .NET 6 to re-render a component when a property got altered.
+     * In .NET 7 and later, this is no longer necessary, and having a set/get body is considered bad practice.
+     * Hence, the following code are 3 simple properties in .NET 7 and later,
+     * but for .NET 6, they are implemented with a set/get body and a private variable for the sake of StateHasChanged().
+     */
 
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.ProgressBar, true),
-            (BootstrapClass.ProgressBarStriped, type is ProgressType.Striped or ProgressType.StripedAndAnimated),
-            (BootstrapClass.ProgressBarAnimated, type == ProgressType.StripedAndAnimated),
-            (color.ToProgressColorClass(), color != ProgressColor.None));
 
-    protected override string? StyleNames =>
-        BuildStyleNames(Style,
-            // FIX: Toast progressbar not showing: https://github.com/vikramlearning/blazorbootstrap/issues/155
-            ($"width:{width.ToString(CultureInfo.InvariantCulture)}%", width is >= 0 and <= 100));
+#if NET6_0
+    private ProgressColor color = ProgressColor.None;
 
     /// <summary>
     /// Gets or sets the progress color.
@@ -105,16 +111,28 @@ public partial class ProgressBar
             StateHasChanged();
         }
     }
+#else
+    /// <summary>
+    /// Gets or sets the progress color.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="ProgressColor.None" />.
+    /// </remarks>
+    [Parameter] public ProgressColor Color { get; set; } 
+#endif
+
 
     /// <summary>
     /// Gets or sets the progress bar label.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string Label { get; set; } = default!;
+    [Parameter] public string Label { get; set; } = default!;
 
+
+#if NET6_0
+    private ProgressType type = ProgressType.Default;
     /// <summary>
     /// Gets or sets the progress bar type.
     /// </summary>
@@ -131,6 +149,19 @@ public partial class ProgressBar
             StateHasChanged();
         }
     }
+#else
+    /// <summary>
+    /// Gets or sets the progress bar type.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="ProgressType.Default" />.
+    /// </remarks>
+    [Parameter] public ProgressType Type { get; set; } 
+    
+#endif
+
+#if NET6_0
+    private double width = 0;
 
     /// <summary>
     /// Get or sets the progress bar width.
@@ -148,6 +179,17 @@ public partial class ProgressBar
             StateHasChanged();
         }
     }
+#else
+    /// <summary>
+    /// Get or sets the progress bar width.
+    /// </summary>
+    /// <remarks>
+    /// Default value is 0.
+    /// </remarks>
+    [Parameter] public double Width { get; set; }
+    
+#endif
 
+    private string Style { get; set; } = "";
     #endregion
 }

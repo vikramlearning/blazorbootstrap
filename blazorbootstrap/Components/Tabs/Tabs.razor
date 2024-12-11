@@ -7,9 +7,16 @@
 
 @if (tabs?.Any() ?? false)
 {
-    <div class="@NavParentDivCssClass">
+    var cssClass = NavStyle switch
+    {
+        NavStyle.Tabs => BootstrapClass.NavTabs,
+        NavStyle.Pills or NavStyle.VerticalPills => BootstrapClass.NavPills,
+        NavStyle.Underline or NavStyle.VerticalUnderline => BootstrapClass.NavUnderline,
+        _ => ""
+    };
+    <div class="@(IsVertical ? "d-flex" : default)">
         <nav>
-            <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" role="tablist">
+            <div @ref="@Element" id="@Id" class="@BootstrapClass.Nav @cssClass @(IsVertical ? BootstrapClass.FlexColumn : "") @Class" @attributes="@AdditionalAttributes" role="tablist">
                 @foreach (var t in tabs)
                 {
                     var tabElementId = t.Id;
@@ -30,11 +37,11 @@
                 }
             </div>
         </nav>
-        <div class="@TabContentCssClass">
+        <div class="@(IsVertical ? "tab-content flex-grow-1" : "tab-content")">
             @foreach (var t in tabs)
             {
                 <div class="tab-pane @(EnableFadeEffect ? "fade" : "")" id="nav-@t.Id" role="tabpanel" aria-labelledby="@t.Id">
-                    @t.Content
+                    @t.ChildContent
                 </div>
             }
         </div>

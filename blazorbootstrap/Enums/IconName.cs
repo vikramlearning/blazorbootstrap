@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a Bootstrap Icon, as specified in the Bootstrap Icons library. <br/>
+/// See <see href="https://icons.getbootstrap.com/" /> for more information.
+/// </summary>
 public enum IconName
 {
     None = 0,
@@ -22,7 +26,7 @@ public enum IconName
     AlphabetUppercase,
     Alt,
     Amazon,
-    AMD,
+    Amd,
     Android,
     Android2,
     App,
@@ -433,14 +437,14 @@ public enum IconName
     Cassette,
     CassetteFill,
     Cast,
-    CCCircle,
-    CCCircleFill,
+    CcCircle,
+    CcCircleFill,
     CCircle,
     CCircleFill,
     CCircleSquare,
     CCircleSquareFill,
-    CCSquare,
-    CCSquareFill,
+    CcSquare,
+    CcSquareFill,
     Chat,
     ChatDots,
     ChatDotsFill,
@@ -807,10 +811,10 @@ public enum IconName
     EraserFill,
     Escape,
     Ethernet,
-    EVFront,
-    EVFrontFill,
-    EVStation,
-    EVStationFill,
+    EvFront,
+    EvFrontFill,
+    EvStation,
+    EvStationFill,
     Exclamation,
     ExclamationCircle,
     ExclamationCircleFill,
@@ -985,7 +989,7 @@ public enum IconName
     FileTypeJson,
     FileTypeJsx,
     FileTypeKey,
-    FileTypeM4p,
+    FileTypeM4P,
     FileTypeMd,
     FileTypeMdx,
     FileTypeMov,
@@ -1854,7 +1858,7 @@ public enum IconName
     TelephonePlusFill,
     TelephoneX,
     TelephoneXFill,
-    TencentQQ,
+    TencentQq,
     Terminal,
     TerminalDash,
     TerminalFill,

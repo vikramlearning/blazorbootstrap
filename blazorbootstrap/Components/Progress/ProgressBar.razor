@@ -1,6 +1,14 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="progressbar" @attributes="@AdditionalAttributes">
+@{
+    var typeClass = Type switch
+    {
+        ProgressType.Striped or ProgressType.StripedAndAnimated => BootstrapClass.ProgressBarStriped,
+        _ => ""
+    };
+}
+
+<div @ref="@Element" id="@Id" class="@BootstrapClass.ProgressBar @typeClass @(Type == ProgressType.StripedAndAnimated ? BootstrapClass.ProgressBarAnimated : "") @EnumExtensions.ProgressColorClassMap[Color] @Class" role="progressbar" style="@($"width:{Math.Clamp(Width, 0d, 100d).ToString(CultureInfo.InvariantCulture)}%"))" @attributes="@AdditionalAttributes">
     @Label
 </div>

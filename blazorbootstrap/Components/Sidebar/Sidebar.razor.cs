@@ -2,6 +2,10 @@
 
 namespace BlazorBootstrap;
 
+/// <summary>
+/// Sidebars are vertical navigation menus that are typically positioned on the left or right side of a page. <br/>
+/// They are based on the <see href="https://getbootstrap.com/docs/5.0/examples/sidebars/">Bootstrap Sidebars example</see>
+/// </summary>
 public partial class Sidebar : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -12,7 +16,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
     private bool isMobile = false;
 
-    private IEnumerable<NavItem>? items = null;
+    private IReadOnlyCollection<NavItem>? items = null;
 
     private DotNetObjectReference<Sidebar> objRef = default!;
 
@@ -22,45 +26,47 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", Id, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", Id, objRef);
 
-            var width = await JSRuntime.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
+            var width = await JsRuntime.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
 
-            bsWindowResize(width);
+            BsWindowResize(width);
 
-            await RefreshDataAsync(firstRender);
+            await RefreshDataAsync();
         }
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
+        
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public void bsWindowResize(int width)
+    /// <summary>
+    /// Invoked by the browser when the window is resized.
+    /// If the <paramref name="width"/> is less than 641, <see cref="isMobile"/> is set to <see langword="true"/>.
+    /// </summary>
+    /// <param name="width">Width of the window</param>
+    [JSInvokable("bsWindowResize")]
+    public void BsWindowResize(int width)
     {
-        if (width < 641) // mobile
-            isMobile = true;
-        else
-            isMobile = false;
+        isMobile = width < 641; // mobile
     }
 
     /// <summary>
     /// Refresh the sidebar data.
     /// </summary>
     /// <returns>Task</returns>
-    public async Task RefreshDataAsync(bool firstRender = false)
+    public async Task RefreshDataAsync()
     {
         if (requestInProgress)
             return;
@@ -69,8 +75,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
 
         if (DataProvider != null)
         {
-            var request = new SidebarDataProviderRequest();
-            var result = await DataProvider.Invoke(request);
+            var result = await DataProvider.Invoke();
             items = result != null ? result.Data : new List<NavItem>();
         }
 
@@ -92,10 +97,37 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     {
         if (isMobile && !collapseNavMenu)
             collapseNavMenu = true;
-    }
+    } 
 
-    private string GetNavMenuCssClass()
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
     {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            { 
+                case var _ when String.Equals(parameter.Name, nameof(BadgeText), StringComparison.OrdinalIgnoreCase): BadgeText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CustomIconName), StringComparison.OrdinalIgnoreCase): CustomIconName = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DataProvider), StringComparison.OrdinalIgnoreCase): DataProvider = (SidebarDataProviderDelegate)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Href), StringComparison.OrdinalIgnoreCase): Href = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IconName), StringComparison.OrdinalIgnoreCase): IconName = (IconName)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ImageSrc), StringComparison.OrdinalIgnoreCase): ImageSrc = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Style), StringComparison.OrdinalIgnoreCase): Style = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Title), StringComparison.OrdinalIgnoreCase): Title = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Width), StringComparison.OrdinalIgnoreCase): Width = (CssPropertyValue)parameter.Value; break;
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
         var classList = new HashSet<string>();
 
         if (collapseNavMenu)
@@ -106,61 +138,49 @@ public partial class Sidebar : BlazorBootstrapComponentBase
         if (collapseSidebar)
             classList.Add("bb-scrollbar-hidden");
 
-        return string.Join(" ", classList);
+        NavMenuCssClass = String.Join(" ", classList);
+        
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
-    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
 
     #endregion
 
-    #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            ("bb-sidebar", true),
-            ("collapsed", collapseSidebar),
-            ("expanded", !collapseSidebar));
-
-    protected override string? StyleNames =>
-        BuildStyleNames(Style, 
-            ($"--bb-sidebar-width: {Width.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};", Width > 0));
-
+    #region Properties, Indexers 
+             
     /// <summary>
     /// Gets or sets the badge text.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? BadgeText { get; set; }
+    [Parameter] public string? BadgeText { get; set; }
 
     /// <summary>
     /// Gets or sets the custom icon name.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? CustomIconName { get; set; }
+    [Parameter] public string? CustomIconName { get; set; }
 
     /// <summary>
     /// Gets or sets the data provider.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public SidebarDataProviderDelegate? DataProvider { get; set; } = default!;
+    public SidebarDataProviderDelegate? DataProvider { get; set; } 
 
     /// <summary>
     /// Gets or sets the Href.
     /// </summary>
     /// <remarks>
-    /// Default value is <see cref="string.Empty" />.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? Href { get; set; } = string.Empty;
+    [Parameter] public string? Href { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the IconName.
@@ -168,43 +188,40 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="IconName.None" />.
     /// </remarks>
-    [Parameter]
-    public IconName IconName { get; set; } = IconName.None;
+    [Parameter] public IconName IconName { get; set; } = IconName.None;
 
     /// <summary>
     /// Gets or sets the sidebar logo.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? ImageSrc { get; set; }
+    [Parameter] public string? ImageSrc { get; set; }
 
-    private string? navMenuCssClass => GetNavMenuCssClass();
+    private string? NavMenuCssClass { get; set; }
 
     /// <summary>
     /// Gets or sets the sidebar title.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public string? Title { get; set; } = default!;
+    public string? Title { get; set; } 
 
     /// <summary>
     /// Gets or sets the sidebar width.
     /// </summary>
     /// <remarks>Default value is 270.</remarks>
-    [Parameter]
-    public float Width { get; set; } = 270;
+    [Parameter] public CssPropertyValue Width { get; set; } = CssPropertyValue.Pixels(270);
+
 
     /// <summary>
-    /// Gets or sets the sidebar width unit.
+    /// Dependency injected Javascript Runtime
     /// </summary>
-    /// <remarks>Default value is <see cref="Unit.Px" />.</remarks>
-    [Parameter]
-    public Unit WidthUnit { get; set; } = Unit.Px;
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+    private string Style { get; set; } = "";
 
     #endregion
 }

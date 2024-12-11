@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents an individual tab within a <see cref="Tabs"/> component.
+/// </summary>
 public partial class Tab : BlazorBootstrapComponentBase
 {
     #region Methods
@@ -11,7 +14,7 @@ public partial class Tab : BlazorBootstrapComponentBase
         {
             try
             {
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", Id);
+                await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -22,6 +25,7 @@ public partial class Tab : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         Id = IdUtility.GetNextId(); // This is required
@@ -37,7 +41,7 @@ public partial class Tab : BlazorBootstrapComponentBase
     /// Gets or sets the active state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Active { get; set; }
@@ -46,17 +50,17 @@ public partial class Tab : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     [EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the disabled state.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool Disabled { get; set; }
@@ -65,7 +69,7 @@ public partial class Tab : BlazorBootstrapComponentBase
     /// Gets or sets the tab name.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string Name { get; set; } = default!;
@@ -86,7 +90,7 @@ public partial class Tab : BlazorBootstrapComponentBase
     /// Gets or sets the tab title.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string Title { get; set; } = default!;
@@ -95,10 +99,15 @@ public partial class Tab : BlazorBootstrapComponentBase
     /// Gets or sets the tab title template.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment TitleTemplate { get; set; } = default!;
+    public RenderFragment? TitleTemplate { get; set; }
 
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
+    
     #endregion
 }

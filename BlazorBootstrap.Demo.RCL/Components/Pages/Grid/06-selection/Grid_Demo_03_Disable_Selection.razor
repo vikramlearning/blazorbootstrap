@@ -43,7 +43,7 @@
 </div>
 
 @code {
-    private IEnumerable<Employee1> employees = default!;
+    private IReadOnlyCollection<Employee1> employees = default!;
 
     private HashSet<Employee1> selectedEmployees = new();
 
@@ -55,7 +55,7 @@
         return await Task.FromResult(request.ApplyTo(employees));
     }
 
-    private IEnumerable<Employee1> GetEmployees()
+    private IReadOnlyCollection<Employee1> GetEmployees()
     {
         return new List<Employee1>
         {
@@ -71,7 +71,7 @@
         };
     }
 
-    private bool DisableAllRowsSelectionHandler(IEnumerable<Employee1> employees)
+    private bool DisableAllRowsSelectionHandler(IReadOnlyCollection<Employee1> employees)
     {
         return employees?.Any(x => x.Id < 105) ?? false; // disable selection if EmployeeId < 105
     }

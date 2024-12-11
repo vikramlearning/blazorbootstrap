@@ -1,11 +1,11 @@
 ﻿<ScatterChart @ref="scatterChart" />
 
 <div class="mt-5">
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
-    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
+    <Button Type="@ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
+    <Button Type="@ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
+    <Button Type="@ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()"> Add Data </Button>
+    <Button Type="@ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowHorizontalLineChartAsync()"> Horizontal Line Chart </Button>
+    <Button Type="@ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await ShowVerticalLineChartAsync()"> Vertical Line Chart </Button>
 </div>
 
 @code {
@@ -128,11 +128,11 @@
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = c.ToRgbaString(), // RGBA
-                BorderColor = c.ToRgbString(), // RGB
-                BorderWidth = 2,
+                BackgroundColor = [c.ToRgbaString()], // RGBA
+                BorderColor = [c.ToRgbString()], // RGB
+                BorderWidth = [2],
                 Fill = true,
-                HoverBorderWidth = 4,
+                HoverBorderWidth = [4],
                 PointHoverRadius = new List<double>{6},
             };
     }

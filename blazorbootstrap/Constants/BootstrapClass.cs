@@ -20,7 +20,7 @@ public static class BootstrapClass
     public const string AlignItemsStretch = "align-items-stretch";
 
     public const string Alert = "alert";
-    public const string AlertDismisable = "alert-dismissible";
+    public const string AlertDismissable = "alert-dismissible";
     public const string Badge = "badge";
 
     public const string Border = "border";

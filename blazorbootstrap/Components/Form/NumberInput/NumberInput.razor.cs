@@ -1,11 +1,15 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Blazor Bootstrap <see cref="NumberInput{TValue}"/>> component is built around HTML input of type="number" that prevents the user input based on the parameters set.
+/// </summary>
+/// <typeparam name="TValue">Signed number type that contains the value</typeparam>
+/// <exception cref="InvalidOperationException">Thrown if <typeparamref name="TValue"/> isn't a number or is an unsigned number, which is illegal.</exception>
+/// <exception cref="InvalidOperationException">Thrown if <see cref="Min"/> is larger than <see cref="Max"/> and <see cref="EnableMinMax"/> is <see langword="true" /></exception>
 public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
-
-    private CultureInfo cultureInfo = default!;
-
+ 
     private FieldIdentifier fieldIdentifier;
 
     private string step = default!;
@@ -14,11 +18,12 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", Id, isFloatingNumber(), AllowNegativeNumbers, cultureInfo.NumberFormat.NumberDecimalSeparator);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", Id, IsFloatingNumber(), AllowNegativeNumbers, Locale!.NumberFormat.NumberDecimalSeparator);
 
             var currentValue = Value; // object
 
@@ -37,6 +42,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         if (IsLeftGreaterThanRight(Min, Max))
@@ -58,21 +64,12 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
               || typeof(TValue) == typeof(decimal?)
              ))
             throw new InvalidOperationException($"{typeof(TValue)} is not supported.");
-
-        AdditionalAttributes ??= new Dictionary<string, object>();
-
+        
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
         step = Step.HasValue ? $"{Step.Value}" : "any";
 
-        try
-        {
-            cultureInfo = new CultureInfo(Locale);
-        }
-        catch (CultureNotFoundException)
-        {
-            cultureInfo = new CultureInfo("en-US");
-        }
+        Locale ??= new CultureInfo("en-US"); 
 
         await base.OnInitializedAsync();
     }
@@ -87,7 +84,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// </summary>
     public void Enable() => Disabled = false;
 
-    private string GetInvariantNumber(TValue value)
+    private static string GetInvariantNumber(TValue? value)
     {
         if (value is null) return string.Empty;
 
@@ -101,7 +98,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
         return value?.ToString() ?? string.Empty;
     }
 
-    private bool isFloatingNumber() =>
+    private static bool IsFloatingNumber() =>
         typeof(TValue) == typeof(float)
         || typeof(TValue) == typeof(float?)
         || typeof(TValue) == typeof(double)
@@ -115,7 +112,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <param name="left"></param>
     /// <param name="right"></param>
     /// <returns>bool</returns>
-    private bool IsLeftGreaterThanRight(TValue left, TValue right)
+    private static bool IsLeftGreaterThanRight(TValue left, TValue right)
     {
         // sbyte
         if (typeof(TValue) == typeof(sbyte))
@@ -132,7 +129,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
             var l = left as sbyte?;
             var r = right as sbyte?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // short / int16
 
@@ -150,7 +147,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
             var l = left as short?;
             var r = right as short?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // int
 
@@ -168,7 +165,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
             var l = left as int?;
             var r = right as int?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // long
 
@@ -186,7 +183,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
             var l = left as long?;
             var r = right as long?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // float / single
 
@@ -204,7 +201,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
             var l = left as float?;
             var r = right as float?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // double
 
@@ -222,7 +219,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
             var l = left as double?;
             var r = right as double?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
         // decimal
 
@@ -240,7 +237,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
             var l = left as decimal?;
             var r = right as decimal?;
 
-            return l.HasValue && r.HasValue && l > r;
+            return l > r;
         }
 
         return false;
@@ -261,14 +258,14 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
             Value = value;
 
         if (oldValue!.Equals(Value))
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.numberInput.setValue", Id, Value);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.numberInput.setValue", Id, Value);
 
         await ValueChanged.InvokeAsync(Value);
 
         EditContext?.NotifyFieldChanged(fieldIdentifier);
     }
 
-    private bool TryParseValue(object value, out TValue newValue)
+    private static bool TryParseValue(object value, out TValue newValue)
     {
         try
         {
@@ -341,43 +338,64 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
         }
     }
 
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(AllowNegativeNumbers), StringComparison.OrdinalIgnoreCase): AllowNegativeNumbers = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoComplete), StringComparison.OrdinalIgnoreCase): AutoComplete = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Disabled), StringComparison.OrdinalIgnoreCase): Disabled = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EditContext), StringComparison.OrdinalIgnoreCase): EditContext = (EditContext)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EnableMinMax), StringComparison.OrdinalIgnoreCase): EnableMinMax = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Max), StringComparison.OrdinalIgnoreCase): Max = (TValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Min), StringComparison.OrdinalIgnoreCase): Min = (TValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Placeholder), StringComparison.OrdinalIgnoreCase): Placeholder = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Step), StringComparison.OrdinalIgnoreCase): Step = (double?)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(TextAlignment), StringComparison.OrdinalIgnoreCase): TextAlignment = (Alignment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Value), StringComparison.OrdinalIgnoreCase): Value = (TValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ValueChanged), StringComparison.OrdinalIgnoreCase): ValueChanged = (EventCallback<TValue>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ValueExpression), StringComparison.OrdinalIgnoreCase): ValueExpression = (Expression<Func<TValue>>)parameter.Value; break;
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.FormControl, true),
-            (TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None));
-
+     
     /// <summary>
     /// If <see langword="true" />, allows negative numbers.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AllowNegativeNumbers { get; set; }
-
-    private string autoComplete => AutoComplete ? "true" : "false";
+    [Parameter] public bool AllowNegativeNumbers { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, NumberInput can complete the values automatically by the browser.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool AutoComplete { get; set; }
+    [Parameter] public bool AutoComplete { get; set; }
 
     /// <summary>
     /// Gets or sets the disabled state .
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Disabled { get; set; }
+    [Parameter] public bool Disabled { get; set; }
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
@@ -386,12 +404,12 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// If <see langword="true" />, restricts the user input between the Min and Max range. Else accepts the user input.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool EnableMinMax { get; set; }
 
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string FieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
     /// Gets or sets the locale. Default locale is 'en-US'.
@@ -399,9 +417,8 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 'en-US'.
     /// </remarks>
-    [Parameter]
-    //[EditorRequired]
-    public string Locale { get; set; } = "en-US";
+    [Parameter] 
+    public CultureInfo? Locale { get; set; }
 
     /// <summary>
     /// Gets or sets the max.
@@ -421,7 +438,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the placeholder.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string? Placeholder { get; set; }
@@ -430,7 +447,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the step.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public double? Step { get; set; }
@@ -456,7 +473,15 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
 
+    /// <summary>
+    /// An expression that identifies the bound value.
+    /// </summary>
     [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

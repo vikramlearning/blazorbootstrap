@@ -1,4 +1,7 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-@ChildContent
+@if (ChildContent != null)
+{
+    @ChildContent
+}

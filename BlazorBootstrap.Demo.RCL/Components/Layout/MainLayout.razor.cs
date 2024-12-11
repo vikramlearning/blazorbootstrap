@@ -2,9 +2,9 @@
 
 public partial class MainLayout : MainLayoutBase
 {
-    internal override IEnumerable<NavItem> GetNavItems()
+    internal override IReadOnlyCollection<NavItem> GetNavItems()
     {
-        navItems ??= new List<NavItem>
+        NavItems ??= new List<NavItem>
         {
             new (){ Id = "1", Text = "Getting Started", Href = "/getting-started", IconName = IconName.HouseDoorFill },
 
@@ -15,6 +15,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "3", Text = "Content", IconName = IconName.BodyText, IconColor = IconColor.Primary },
             new (){ Id = "300", Text = "Icons", Href = "/icons", IconName = IconName.PersonSquare, ParentId = "3" },
             new (){ Id = "301", Text = "Images", Href = "/images", IconName = IconName.Image, ParentId = "3" },
+            new (){ Id = "302", Text = "CSS Generator", Href = "/customcss", IconName = IconName.WrenchAdjustableCircle, ParentId = "3" },
 
             new (){ Id = "4", Text = "Forms", IconName = IconName.InputCursorText, IconColor = IconColor.Success },
             new (){ Id = "400", Text = "Auto Complete", Href = "/form/autocomplete", IconName = IconName.InputCursorText, ParentId = "4" },
@@ -97,7 +98,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "1900", Text = "Color Utility", Href = "/utils/color-utility", IconName = IconName.Palette2, ParentId = "19" },
         };
 
-        return navItems;
+        return NavItems;
     }
 
     private async ValueTask OnThemeChanged(string themeName) 

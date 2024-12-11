@@ -1,5 +1,10 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Pie charts are probably the most commonly used charts. <br/>
+/// They are divided into segments, the arc of each segment shows the proportional value of each piece of data. <br/>
+/// For more information, visit <see href="https://www.chartjs.org/docs/latest/charts/doughnut.html"/>
+/// </summary>
 public partial class PieChart : BlazorBootstrapChart
 {
     #region Fields and Constants
@@ -10,22 +15,26 @@ public partial class PieChart : BlazorBootstrapChart
 
     #region Constructors
 
+    /// <summary>
+    /// Default constructor
+    /// </summary>
     public PieChart()
     {
-        chartType = ChartType.Pie;
+        ChartType = ChartType.Pie;
     }
 
     #endregion
 
     #region Methods
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets cannot be null", nameof(chartData));
 
         if (data is null)
             throw new ArgumentNullException(nameof(data));
@@ -38,21 +47,22 @@ public partial class PieChart : BlazorBootstrapChart
                     pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor!);
                 }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
 
+    /// <inheritdoc />
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets cannot be null", nameof(chartData));
 
         if (chartData.Labels is null)
-            throw new ArgumentNullException(nameof(chartData.Labels));
+            throw new ArgumentException("chartData.Labels cannot be null", nameof(chartData));
 
         if (dataLabel is null)
             throw new ArgumentNullException(nameof(dataLabel));
@@ -77,7 +87,7 @@ public partial class PieChart : BlazorBootstrapChart
         foreach (var dataset in chartData.Datasets)
             if (dataset is PieChartDataset pieChartDataset)
             {
-                var chartDatasetData = data.FirstOrDefault(x => x is PieChartDatasetData pieChartDatasetData && pieChartDatasetData.DatasetLabel == pieChartDataset.Label);
+                var chartDatasetData = data.FirstOrDefault(x => x is PieChartDatasetData pieChartDatasetSubData && pieChartDatasetSubData.DatasetLabel == pieChartDataset.Label);
 
                 if (chartDatasetData is PieChartDatasetData pieChartDatasetData)
                 {
@@ -86,18 +96,19 @@ public partial class PieChart : BlazorBootstrapChart
                 }
             }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (PieChartDatasetData)x));
+        await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (PieChartDatasetData)x));
 
         return chartData;
     }
 
-    public override async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions)
+    /// <inheritdoc />
+    public override async Task<ChartData> AddDatasetAsync(ChartData? chartData, IChartDataset chartDataset, IChartOptions chartOptions)
     {
         if (chartData is null)
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets cannot be null", nameof(chartData));
 
         if (chartDataset is null)
             throw new ArgumentNullException(nameof(chartDataset));
@@ -105,31 +116,33 @@ public partial class PieChart : BlazorBootstrapChart
         if (chartDataset is PieChartDataset pieChartDataset)
         {
             chartData.Datasets.Add(pieChartDataset);
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, pieChartDataset);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, pieChartDataset);
         }
 
         return chartData;
     }
 
-    public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
+    /// <inheritdoc />
+    public override async Task InitializeAsync(ChartData? chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
-        if (chartData is not null && chartData.Datasets is not null)
+        if (chartData?.Datasets != null)
         {
             var datasets = chartData.Datasets.OfType<PieChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PieChartOptions)chartOptions, plugins);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PieChartOptions)chartOptions, plugins);
         }
     }
 
-    public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
+    /// <inheritdoc />
+    public override async Task UpdateAsync(ChartData? chartData, IChartOptions chartOptions)
     {
-        if (chartData is not null && chartData.Datasets is not null)
+        if (chartData?.Datasets != null)
         {
             var datasets = chartData.Datasets.OfType<PieChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PieChartOptions)chartOptions);
+            await JsRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PieChartOptions)chartOptions);
         }
-    }
+    } 
 
     #endregion
 }

@@ -30,7 +30,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync(CarouselInterop.Dispose, Id);
+                    await JsRuntime.InvokeVoidAsync(CarouselInterop.Dispose, Id);
             }
             catch (JSDisconnectedException)
             {
@@ -43,12 +43,13 @@ public partial class Carousel : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            CarouselOptions options = new() { Interval = Interval, Keyboard = Keyboard, Ride = Autoplay.ToCarouselAutoPlayString(), Touch = Touch };
-            await JSRuntime.InvokeVoidAsync(CarouselInterop.Initialize, Id, options, objRef);
+            CarouselOptions options = new() { Interval = Interval, Keyboard = Keyboard, Ride = EnumExtensions.CarouselAutoPlayStringMap[Autoplay], Touch = Touch };
+            await JsRuntime.InvokeVoidAsync(CarouselInterop.Initialize, Id, options, objRef);
             StateHasChanged(); // Required
         }
 
@@ -85,7 +86,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
         if (!isDefaultActiveCarouselItemSet)
             isDefaultActiveCarouselItemSet = true;
 
-        return JSRuntime.InvokeVoidAsync(CarouselInterop.To, Id, index);
+        return JsRuntime.InvokeVoidAsync(CarouselInterop.To, Id, index);
     }
 
     internal void AddItem(CarouselItem carouselItem)
@@ -99,7 +100,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// <summary>
     /// Shows next <see cref="CarouselItem" />.
     /// </summary>
-    public ValueTask PauseCarouselAsync() => JSRuntime.InvokeVoidAsync(CarouselInterop.Pause, Id);
+    public ValueTask PauseCarouselAsync() => JsRuntime.InvokeVoidAsync(CarouselInterop.Pause, Id);
 
     /// <summary>
     /// Shows next <see cref="CarouselItem" />.
@@ -109,7 +110,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
         var nextIndex = activeIndex + 1;
         activeIndex = nextIndex > items.Count - 1 ? 0 : nextIndex;
 
-        return JSRuntime.InvokeVoidAsync(CarouselInterop.Next, Id);
+        return JsRuntime.InvokeVoidAsync(CarouselInterop.Next, Id);
     }
 
     /// <summary>
@@ -120,29 +121,20 @@ public partial class Carousel : BlazorBootstrapComponentBase
         var previousIndex = activeIndex - 1;
         activeIndex = previousIndex < 0 ? items.Count - 1 : previousIndex;
 
-        return JSRuntime.InvokeVoidAsync(CarouselInterop.Previous, Id);
+        return JsRuntime.InvokeVoidAsync(CarouselInterop.Previous, Id);
     }
 
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(
-            Class,
-            (BootstrapClass.Carousel, true),
-            (BootstrapClass.CarouselSlide, true),
-            (BootstrapClass.CarouselFade, Crossfade)
-        );
-
+     
     /// <summary>
     /// Controls the autoplay behavior of the carousel.
     /// </summary>
     /// <remarks>
     /// Default value is <see cref="CarouselAutoPlay.None" />.
     /// </remarks>
-    [Parameter]
-    public CarouselAutoPlay Autoplay { get; set; } = CarouselAutoPlay.None;
+    [Parameter] public CarouselAutoPlay Autoplay { get; set; } = CarouselAutoPlay.None;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
@@ -150,8 +142,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is null.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Determines whether to use a crossfade effect when transitioning between slides.
@@ -159,10 +150,9 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool Crossfade { get; set; }
+    [Parameter] public bool Crossfade { get; set; }
 
-    private bool HasItems => items.Any();
+    private bool HasItems => items.Count > 0;
 
     /// <summary>
     /// The amount of time to delay between automatically cycling an item.
@@ -170,8 +160,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 5000 milliseconds.
     /// </remarks>
-    [Parameter]
-    public int? Interval { get; set; } = 5000;
+    [Parameter] public int? Interval { get; set; } = 5000;
 
     private int ItemCount => items.Count;
 
@@ -181,20 +170,17 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool Keyboard { get; set; } = true;
+    [Parameter] public bool Keyboard { get; set; } = true;
 
     /// <summary>
     /// Fired when the carousel has completed its slide transition.
     /// </summary>
-    [Parameter]
-    public EventCallback<CarouselEventArgs> Onslid { get; set; }
+    [Parameter] public EventCallback<CarouselEventArgs> Onslid { get; set; }
 
     /// <summary>
     /// Fires immediately when the slide instance method is invoked.
     /// </summary>
-    [Parameter]
-    public EventCallback<CarouselEventArgs> Onslide { get; set; }
+    [Parameter] public EventCallback<CarouselEventArgs> Onslide { get; set; }
 
     /// <summary>
     /// Indicates whether to show indicators (dots) below the carousel to navigate between slides.
@@ -202,8 +188,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool ShowIndicators { get; set; }
+    [Parameter] public bool ShowIndicators { get; set; }
 
     /// <summary>
     /// Specifies whether to display the previous and next controls (arrows) for navigating slides.
@@ -211,8 +196,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool ShowPreviousNextControls { get; set; } = true;
+    [Parameter] public bool ShowPreviousNextControls { get; set; } = true;
 
     /// <summary>
     /// Carousels support swiping left/right on touchscreen devices to move between slides.
@@ -221,8 +205,12 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool Touch { get; set; } = true;
+    [Parameter] public bool Touch { get; set; } = true;
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

@@ -25,7 +25,8 @@
 </Grid>
 
 @code {
-    private IEnumerable<User> users = default!;
+    BlazorBootstrap.Grid<User> grid = default!;
+    private IReadOnlyCollection<User> users = default!;
 
     private async Task<GridDataProviderResult<User>> UsersDataProvider(GridDataProviderRequest<User> request)
     {
@@ -35,7 +36,7 @@
         return await Task.FromResult(request.ApplyTo(users));
     }
 
-    private IEnumerable<User> GetUsers()
+    private IReadOnlyCollection<User> GetUsers()
     {
         return new List<User>
         {

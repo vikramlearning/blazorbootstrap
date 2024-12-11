@@ -2,14 +2,14 @@
 
 public class EmployeeService : IEmployeeService
 {
-    public Tuple<IEnumerable<Employee>, int> GetEmployees(
-        IEnumerable<FilterItem> filters,
+    public Tuple<IReadOnlyCollection<Employee>, int> GetEmployees(
+        IReadOnlyCollection<FilterItem>? filters,
         int pageNumber,
         int pageSize,
         string sortKey,
         SortDirection sortDirection)
     {
-        IEnumerable<Employee> employees = new List<Employee>
+        IReadOnlyCollection<Employee> employees = new List<Employee>
         {
             new Employee { Id = 101, FirstName = "Eathan", LastName = "Ellis", Designation = "Associate Architect", Salary = 19000, DOJ = new DateTime(1998, 11, 17), IsActive = true },
             new Employee { Id = 103, FirstName = "Cohan", LastName = "Wheatley", Designation = "Senior DevOps Engineer", Salary = 19000, DOJ = new DateTime(1985, 1, 5), IsActive = true },
@@ -31,7 +31,7 @@ public class EmployeeService : IEmployeeService
         };
 
         // apply filters
-        if (filters is not null && filters.Any())
+        if (filters is not null && filters.Count > 0)
         {
             var parameterExpression = Expression.Parameter(typeof(Employee)); // second param optional
             Expression<Func<Employee, bool>>? lambda = null;
@@ -43,64 +43,64 @@ public class EmployeeService : IEmployeeService
                 else
                     lambda = lambda.And(ExpressionExtensions.GetExpressionDelegate<Employee>(parameterExpression, filter)!);
             }
-            employees = employees.Where(lambda!.Compile());
+            employees = employees.Where(lambda!.Compile()).ToArray();
         }
 
         // apply sorting then paging
         if (sortKey == "Id")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.Id).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.Id).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
+                return new(employees.OrderBy(e => e.Id).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
+            if (sortDirection == SortDirection.Descending)
+                return new(employees.OrderByDescending(e => e.Id).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
         }
         else if (sortKey == "FirstName")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.FirstName).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.FirstName).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
+                return new(employees.OrderBy(e => e.FirstName).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
+            if (sortDirection == SortDirection.Descending)
+                return new(employees.OrderByDescending(e => e.FirstName).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
         }
         else if (sortKey == "LastName")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.LastName).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.LastName).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
+                return new(employees.OrderBy(e => e.LastName).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
+
+            return new(employees.OrderByDescending(e => e.LastName).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
         }
         else if (sortKey == "Designation")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.Designation).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.Designation).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
+                return new(employees.OrderBy(e => e.Designation).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
+            if (sortDirection == SortDirection.Descending)
+                return new(employees.OrderByDescending(e => e.Designation).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
         }
         else if (sortKey == "Salary")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.Salary).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.Salary).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
+                return new(employees.OrderBy(e => e.Salary).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
+            if (sortDirection == SortDirection.Descending)
+                return new(employees.OrderByDescending(e => e.Salary).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
         }
         else if (sortKey == "DOJ")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.DOJ).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.DOJ).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
+                return new(employees.OrderBy(e => e.DOJ).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
+            if (sortDirection == SortDirection.Descending)
+                return new(employees.OrderByDescending(e => e.DOJ).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
         }
         else if (sortKey == "IsActive")
         {
             if (sortDirection == SortDirection.Ascending)
-                return new(employees.OrderBy(e => e.IsActive).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
-            else if (sortDirection == SortDirection.Descending)
-                return new(employees.OrderByDescending(e => e.IsActive).Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
+                return new(employees.OrderBy(e => e.IsActive).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
+            if (sortDirection == SortDirection.Descending)
+                return new(employees.OrderByDescending(e => e.IsActive).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
         }
         else if (string.IsNullOrEmpty(sortKey))
         {
-            return new(employees.Skip((pageNumber - 1) * pageSize).Take(pageSize), employees.Count());
+            return new(employees.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToArray(), employees.Count);
         }
 
-        return new(employees, employees.Count());
+        return new(employees, employees.Count);
     }
 }

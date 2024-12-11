@@ -1,14 +1,41 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a visual image displayed on the web page.
+/// </summary>
 public partial class Image: BlazorBootstrapComponentBase
 {
+    #region Methods
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(Alt), StringComparison.OrdinalIgnoreCase): Alt = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsResponsive), StringComparison.OrdinalIgnoreCase): IsResponsive = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsThumbnail), StringComparison.OrdinalIgnoreCase): IsThumbnail = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Src), StringComparison.OrdinalIgnoreCase): Src = (string)parameter.Value; break;
+                
+
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+    #endregion
+
+
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.ImageFluid, IsResponsive),
-            (BootstrapClass.ImageThumbnail, IsThumbnail));
-
+     
     /// <summary>
     /// Gets or sets the alternate text for the image.
     /// </summary>

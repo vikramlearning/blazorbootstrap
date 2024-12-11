@@ -1,6 +1,6 @@
 ﻿<Ribbon OnClick="OnRibbonItemClick">
     <RibbonTab Title="Home">
-        <Content>
+        <ChildContent>
             <!-- New -->
             <RibbonItemGroup Name="New">
                 <RibbonItem Name="NewEmail" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/new-email.png" IsFirstItem="true">New<br />Email</RibbonItem>
@@ -11,10 +11,10 @@
                 <RibbonItem Name="Delete" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/bin.png" IsFirstItem="true" />
                 <RibbonItem Name="Archive" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/archive.png" IsLastItem="true" />
             </RibbonItemGroup>
-        </Content>
+        </ChildContent>
     </RibbonTab>
     <RibbonTab Title="Send / Receive" Active="true">
-        <Content>
+        <ChildContent>
             <!-- Send & Receive -->
             <RibbonItemGroup Name="Send & Receive">
                 <RibbonItem Name="SendReceiveAllFolders" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/refresh.png" IsFirstItem="true">Send/Receive<br />All Folders</RibbonItem>
@@ -25,10 +25,10 @@
                 <RibbonItem Name="ShowProgress" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/loading-bar.png" IsFirstItem="true">Show<br />Progress</RibbonItem>
                 <RibbonItem Name="CancelAll" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/cancelled.png" IsLastItem="true">Cancel<br />All</RibbonItem>
             </RibbonItemGroup>
-        </Content>
+        </ChildContent>
     </RibbonTab>
     <RibbonTab Title="Folder" Active="true">
-        <Content>
+        <ChildContent>
             <!-- New -->
             <RibbonItemGroup Name="New">
                 <RibbonItem Name="NewFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-add.png" IsFirstItem="true">New<br />Folder</RibbonItem>
@@ -41,7 +41,7 @@
                 <RibbonItem Name="MoveFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-move.png">Move<br />Folder</RibbonItem>
                 <RibbonItem Name="DeleteFolder" ImgSrc="/_content/BlazorBootstrap.Demo.RCL/icons/folder-delete.png" IsLastItem="true">Delete<br />Folder</RibbonItem>
             </RibbonItemGroup>
-        </Content>
+        </ChildContent>
     </RibbonTab>
 </Ribbon>
 

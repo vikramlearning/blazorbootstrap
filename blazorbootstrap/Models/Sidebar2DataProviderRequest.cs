@@ -4,22 +4,20 @@ public class Sidebar2DataProviderRequest
 {
     #region Methods
 
-    public Sidebar2DataProviderResult ApplyTo(IEnumerable<NavItem> data)
+    public static Sidebar2DataProviderResult ApplyTo(IReadOnlyCollection<NavItem>? data)
     {
         if (data is null)
         {
-            return new Sidebar2DataProviderResult { Data = Enumerable.Empty<NavItem>() };
+            return new Sidebar2DataProviderResult { Data = Array.Empty<NavItem>() };
         }
 
         var result = new List<NavItem>();
         var parentNavItems = data.Where(x => string.IsNullOrWhiteSpace(x.ParentId))?.OrderBy(x => x.Sequence)?.ToList();
 
-        if (!parentNavItems?.Any() ?? true)
-        {
-            return new Sidebar2DataProviderResult { Data = Enumerable.Empty<NavItem>() };
-        }
+        if (parentNavItems == null || parentNavItems.Count == 0)
+            return new Sidebar2DataProviderResult { Data = Array.Empty<NavItem>() };
 
-        result.AddRange(parentNavItems!);
+        result.AddRange(parentNavItems);
 
         foreach (var navItem in result)
         {
@@ -30,7 +28,7 @@ public class Sidebar2DataProviderRequest
 
             var childNavItems = data.Where(x => x.ParentId == navItem.Id)?.OrderBy(x => x.Sequence)?.ToList();
 
-            if (childNavItems?.Any() ?? false)
+            if (childNavItems is { Count: > 0})
             {
                 navItem.HasChildItems = true;
                 navItem.ChildItems = childNavItems;
@@ -50,7 +48,7 @@ public class Sidebar2DataProviderRequest
         return new Sidebar2DataProviderResult { Data = result };
     }
 
-    private void SetLevel(IEnumerable<NavItem> data, List<NavItem> items, int currentLevel, HashSet<string> visitedIds)
+    private static void SetLevel(IReadOnlyCollection<NavItem> data, List<NavItem> items, int currentLevel, HashSet<string> visitedIds)
     {
         foreach (var item in items)
         {
@@ -68,7 +66,7 @@ public class Sidebar2DataProviderRequest
 
             var childItems = data.Where(x => x.ParentId == item.Id)?.OrderBy(x => x.Sequence)?.ToList();
 
-            if (childItems?.Any() ?? false)
+            if (childItems is { Count: > 0})
             {
                 item.HasChildItems = true;
                 item.ChildItems = childItems;

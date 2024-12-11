@@ -4,44 +4,43 @@ public static class FilterOperatorUtility
 {
     #region Methods
 
-    public static IEnumerable<FilterOperatorInfo> GetBooleanFilterOperators()
+    public static IReadOnlyCollection<FilterOperatorInfo> GetBooleanFilterOperators()
     {
-        List<FilterOperatorInfo> result = new() { new FilterOperatorInfo("=", "Equals", FilterOperator.Equals), new FilterOperatorInfo("!=", "Not equals", FilterOperator.NotEquals), new FilterOperatorInfo("x", "Clear", FilterOperator.Clear) };
-
-        return result;
+        return new List<FilterOperatorInfo>()
+        {
+            new ("=", "Equals", FilterOperator.Equals), 
+            new ("!=", "Not equals", FilterOperator.NotEquals), 
+            new ("x", "Clear", FilterOperator.Clear)
+        };
     }
 
-    public static IEnumerable<FilterOperatorInfo> GetDateFilterOperators()
+    public static IReadOnlyCollection<FilterOperatorInfo> GetDateFilterOperators()
     {
-        List<FilterOperatorInfo> result = new()
+return new List<FilterOperatorInfo>()
                                           {
-                                              new FilterOperatorInfo("=", "Equals", FilterOperator.Equals),
-                                              new FilterOperatorInfo("!=", "Not equals", FilterOperator.NotEquals),
-                                              new FilterOperatorInfo("<", "Less than", FilterOperator.LessThan),
-                                              new FilterOperatorInfo("<=", "Less than or equals", FilterOperator.LessThanOrEquals),
-                                              new FilterOperatorInfo(">", "Greater than", FilterOperator.GreaterThan),
-                                              new FilterOperatorInfo(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals),
-                                              new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
+                                              new("=", "Equals", FilterOperator.Equals),
+                                              new("!=", "Not equals", FilterOperator.NotEquals),
+                                              new("<", "Less than", FilterOperator.LessThan),
+                                              new("<=", "Less than or equals", FilterOperator.LessThanOrEquals),
+                                              new(">", "Greater than", FilterOperator.GreaterThan),
+                                              new(">=", "Greater than or equals", FilterOperator.GreaterThanOrEquals),
+                                              new("x", "Clear", FilterOperator.Clear)
                                           };
-
-        return result;
     }
 
-    public static IEnumerable<FilterOperatorInfo> GetEnumFilterOperators()
+    public static IReadOnlyCollection<FilterOperatorInfo> GetEnumFilterOperators()
     {
-        List<FilterOperatorInfo> result = new()
+        return new List<FilterOperatorInfo>()
                                           {
-                                              new FilterOperatorInfo("=", "Equals", FilterOperator.Equals),
-                                              new FilterOperatorInfo("!=", "Not equals", FilterOperator.NotEquals),
-                                              new FilterOperatorInfo("x", "Clear", FilterOperator.Clear)
+                                              new ("=", "Equals", FilterOperator.Equals),
+                                              new ("!=", "Not equals", FilterOperator.NotEquals),
+                                              new ("x", "Clear", FilterOperator.Clear)
                                           };
-
-        return result;
     }
 
-    public static IEnumerable<FilterOperatorInfo> GetFilterOperators(string propertyTypeName, IEnumerable<FilterOperatorInfo> filtersTranslations)
+    public static IReadOnlyCollection<FilterOperatorInfo> GetFilterOperators(string propertyTypeName, IReadOnlyCollection<FilterOperatorInfo>? filtersTranslations)
     {
-        if (filtersTranslations is null || !filtersTranslations.Any())
+        if (filtersTranslations is null || filtersTranslations.Count == 0)
             return GetFilterOperators(propertyTypeName);
 
         var filters = new List<FilterOperatorInfo>();
@@ -49,7 +48,7 @@ public static class FilterOperatorUtility
 
         foreach (var filter in defaultFilters)
         {
-            var filterTranslation = filtersTranslations.FirstOrDefault(X => X.FilterOperator == filter.FilterOperator);
+            var filterTranslation = filtersTranslations.FirstOrDefault(x => x.FilterOperator == filter.FilterOperator);
 
             if (filterTranslation is null)
                 filters.Add(filter);
@@ -60,7 +59,13 @@ public static class FilterOperatorUtility
         return filters;
     }
 
-    public static IEnumerable<FilterOperatorInfo> GetFilterOperators(string propertyTypeName)
+    /// <summary>
+    /// Provides a number of filters for a grid column for the user to filter their records on.
+    /// </summary>
+    /// <param name="propertyTypeName">Property type to filter.</param>
+    /// <exception cref="NotSupportedException">If <paramref name="propertyTypeName"/> is not supported in this method.</exception>
+    /// <returns>List of filters.</returns>
+    public static IReadOnlyCollection<FilterOperatorInfo> GetFilterOperators(string propertyTypeName)
     {
         if (propertyTypeName is StringConstants.PropertyTypeNameInt16
                                 or StringConstants.PropertyTypeNameInt32
@@ -84,10 +89,14 @@ public static class FilterOperatorUtility
 
         if (propertyTypeName == StringConstants.PropertyTypeNameGuid) return GetEnumFilterOperators();
 
-        return new List<FilterOperatorInfo>();
+        throw new NotSupportedException($"{propertyTypeName}'' is not supported!");
     }
 
-    public static IEnumerable<FilterOperatorInfo> GetGuidFilterOperators()
+    /// <summary>
+    /// Returns filter operators that can be applied to <see cref="Guid"/>'s.
+    /// </summary>
+    /// <returns>List of usable filters</returns>
+    public static IReadOnlyCollection<FilterOperatorInfo> GetGuidFilterOperators()
     {
         List<FilterOperatorInfo> result = new()
                                           {
@@ -99,7 +108,11 @@ public static class FilterOperatorUtility
         return result;
     }
 
-    public static IEnumerable<FilterOperatorInfo> GetNumberFilterOperators()
+    /// <summary>
+    /// Returns filter operators that can be applied to numbers.
+    /// </summary>
+    /// <returns>List of usable filters</returns>
+    public static IReadOnlyCollection<FilterOperatorInfo> GetNumberFilterOperators()
     {
         List<FilterOperatorInfo> result = new()
                                           {
@@ -115,7 +128,11 @@ public static class FilterOperatorUtility
         return result;
     }
 
-    public static IEnumerable<FilterOperatorInfo> GetStringFilterOperators()
+    /// <summary>
+    /// Returns filter operators that can be applied to <see langword="string"/>s.
+    /// </summary>
+    /// <returns>List of usable filters</returns>
+    public static IReadOnlyCollection<FilterOperatorInfo> GetStringFilterOperators()
     {
         List<FilterOperatorInfo> result = new()
                                           {

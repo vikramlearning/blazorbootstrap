@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Build hidden sidebars into your project for navigation, shopping carts, and more with Blazor Bootstrap offcanvas component.
+/// For more information, visit the <see href="https://getbootstrap.com/docs/5.0/components/offcanvas/">Bootstrap Offcanvas</see> documentation.
+/// </summary>
 public partial class Offcanvas : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -8,7 +12,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
 
     private DotNetObjectReference<Offcanvas> objRef = default!;
 
-    private Dictionary<string, object> parameters = default!;
+    private Dictionary<string, object> offcanvasParameters = default!;
 
     private string title = default!;
 
@@ -24,7 +28,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.dispose", Id);
+                    await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -37,14 +41,16 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", Id, UseStaticBackdrop, CloseOnEscape, IsScrollable, objRef);
+            await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", Id, UseStaticBackdrop, CloseOnEscape, IsScrollable, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -54,27 +60,27 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public async Task bsHiddenOffcanvas() => await OnHidden.InvokeAsync();
+    [JSInvokable("bsHiddenOffcanvas")]
+    public Task BsHiddenOffCanvas() => OnHidden.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsHideOffcanvas() => await OnHiding.InvokeAsync();
+    [JSInvokable("bsHideOffcanvas")]
+    public Task BsHideOffCanvas() => OnHiding.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsShownOffcanvas() => await OnShown.InvokeAsync();
+    [JSInvokable("bsShownOffcanvas")]
+    public Task BsShownOffCanvas() => OnShown.InvokeAsync();
 
-    [JSInvokable]
-    public async Task bsShowOffcanvas() => await OnShowing.InvokeAsync();
+    [JSInvokable("bsShowOffcanvas")]
+    public Task BsShowOffcanvas() => OnShowing.InvokeAsync();
 
     /// <summary>
     /// Hides an offcanvas.
     /// </summary>
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.hide", Id);
+    public ValueTask HideAsync() => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.hide", Id);
 
     /// <summary>
     /// Shows an offcanvas.
     /// </summary>
-    public async Task ShowAsync() => await ShowAsync(null, null, null);
+    public Task ShowAsync() => ShowAsync(null, null, null);
 
     /// <summary>
     /// Opens a offcanvas.
@@ -82,7 +88,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <typeparam name="T"></typeparam>
     /// <param name="title"></param>
     /// <param name="parameters"></param>
-    public async Task ShowAsync<T>(string title, Dictionary<string, object>? parameters = null) => await ShowAsync(title, typeof(T), parameters);
+    public Task ShowAsync<T>(string title, Dictionary<string, object>? parameters = null) => ShowAsync(title, typeof(T), parameters);
 
     private async Task ShowAsync(string? title, Type? type, Dictionary<string, object>? parameters)
     {
@@ -90,118 +96,143 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
             this.title = title;
 
         childComponent = type;
-        this.parameters = parameters!;
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", Id);
+        this.offcanvasParameters = parameters!;
+        await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", Id);
         await InvokeAsync(StateHasChanged);
+    }
+
+
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(BodyCssClass), StringComparison.OrdinalIgnoreCase): BodyCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(BodyTemplate), StringComparison.OrdinalIgnoreCase): BodyTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(CloseOnEscape), StringComparison.OrdinalIgnoreCase): CloseOnEscape = (bool)parameter.Value; break;
+                 case var _ when String.Equals(parameter.Name, nameof(FooterCssClass), StringComparison.OrdinalIgnoreCase): FooterCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FooterTemplate), StringComparison.OrdinalIgnoreCase): FooterTemplate = (RenderFragment)parameter.Value; break;
+                 case var _ when String.Equals(parameter.Name, nameof(HeaderCssClass), StringComparison.OrdinalIgnoreCase): HeaderCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HeaderTemplate), StringComparison.OrdinalIgnoreCase): HeaderTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsScrollable), StringComparison.OrdinalIgnoreCase): IsScrollable = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHidden), StringComparison.OrdinalIgnoreCase): OnHidden = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnHiding), StringComparison.OrdinalIgnoreCase): OnHiding = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShowing), StringComparison.OrdinalIgnoreCase): OnShowing = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnShown), StringComparison.OrdinalIgnoreCase): OnShown = (EventCallback)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Placement), StringComparison.OrdinalIgnoreCase): Placement = (Placement)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ShowCloseButton), StringComparison.OrdinalIgnoreCase): ShowCloseButton = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (OffcanvasSize)parameter.Value; break;
+                
+                case var _ when String.Equals(parameter.Name, nameof(TabIndex), StringComparison.OrdinalIgnoreCase): TabIndex = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Title), StringComparison.OrdinalIgnoreCase): Title = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(UseStaticBackdrop), StringComparison.OrdinalIgnoreCase): UseStaticBackdrop = (bool)parameter.Value; break;
+
+                default:
+                    AdditionalAttributes[parameter.Name] = parameter.Value;
+                    break;
+            }
+        }
+
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Offcanvas, true),
-            (Placement.ToOffcanvasPlacementClass(), true),
-            (Size.ToOffcanvasSizeClass(), true));
-
+     
     /// <summary>
     /// Gets or sets the body CSS class.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string BodyCssClass { get; set; } = default!;
+    [Parameter] public string BodyCssClass { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the body template.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment BodyTemplate { get; set; } = default!;
+    [Parameter] public RenderFragment? BodyTemplate { get; set; } 
 
     /// <summary>
     /// If <see langword="true" />, offcanvas closes when escape key is pressed.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool CloseOnEscape { get; set; } = true;
+    [Parameter] public bool CloseOnEscape { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the footer CSS class.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string FooterCssClass { get; set; } = default!;
+    [Parameter] public string FooterCssClass { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the footer template.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment FooterTemplate { get; set; } = default!;
+    [Parameter] public RenderFragment? FooterTemplate { get; set; } 
 
     /// <summary>
     /// Gets or sets the header CSS class.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string HeaderCssClass { get; set; } = default!;
+    [Parameter] public string HeaderCssClass { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the header template.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment HeaderTemplate { get; set; } = default!;
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; } 
 
     /// <summary>
     /// Indicates whether body scrolling is allowed while offcanvas is open.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool IsScrollable { get; set; }
+    [Parameter] public bool IsScrollable { get; set; }
 
     /// <summary>
     /// This event is fired when an offcanvas element has been hidden from the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnHidden { get; set; }
+    [Parameter] public EventCallback OnHidden { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide method has been called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnHiding { get; set; }
+    [Parameter] public EventCallback OnHiding { get; set; }
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
-    [Parameter]
-    public EventCallback OnShowing { get; set; }
+    [Parameter] public EventCallback OnShowing { get; set; }
 
     /// <summary>
     /// This event is fired when an offcanvas element has been made visible to the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
-    [Parameter]
-    public EventCallback OnShown { get; set; }
+    [Parameter] public EventCallback OnShown { get; set; }
 
     /// <summary>
     /// Gets or sets the offcanvas placement.
@@ -209,17 +240,15 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Placement.End" />.
     /// </remarks>
-    [Parameter]
-    public Placement Placement { get; set; } = Placement.End;
+    [Parameter] public Placement Placement { get; set; } = Placement.End;
 
     /// <summary>
     /// If <see langword="true" />, modal shows close button in the header.
     /// </summary>
     /// <remarks>
-    /// Default value is true.
+    /// Default value is <see langword="true" />.
     /// </remarks>
-    [Parameter]
-    public bool ShowCloseButton { get; set; } = true;
+    [Parameter] public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the offcanvas size.
@@ -227,8 +256,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="OffcanvasSize.Regular" />.
     /// </remarks>
-    [Parameter]
-    public OffcanvasSize Size { get; set; } = OffcanvasSize.Regular;
+    [Parameter] public OffcanvasSize Size { get; set; } = OffcanvasSize.Regular;
 
     /// <summary>
     /// Gets or sets the tab index.
@@ -236,36 +264,28 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is -1.
     /// </remarks>
-    [Parameter]
-    public int TabIndex { get; set; } = -1;
+    [Parameter] public int TabIndex { get; set; } = -1;
 
     /// <summary>
     /// Gets or sets the offcanvas title.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string Title { get; set; } = default!;
-
-    [Obsolete("Use `UseStaticBackdrop` parameter.")]
-    /// <summary>
-    /// Indicates whether to apply a backdrop on body while offcanvas is open.
-    /// </summary>
-    /// <remarks>
-    /// Default value is true.
-    /// </remarks>
-    [Parameter]
-    public bool UseBackdrop { get; set; } = true;
-
+    [Parameter] public string Title { get; set; } = default!;
+    
     /// <summary>
     /// When `UseStaticBackdrop` is set to true, the offcanvas will not close when clicking outside of it.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
-    [Parameter]
-    public bool UseStaticBackdrop { get; set; }
+    [Parameter] public bool UseStaticBackdrop { get; set; }
+
+    /// <summary>
+    /// Dependency injected Javascript Runtime
+    /// </summary>
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

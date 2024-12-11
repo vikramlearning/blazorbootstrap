@@ -69,7 +69,7 @@
 
     private void DepartureTimeChanged(TimeOnly? departureTime)
     {
-        if (departureTime is null || !departureTime.HasValue)
+        if (!departureTime.HasValue)
         {
             flightForm.DepartureTime = null;
             flightForm.ArrivalTime = null;

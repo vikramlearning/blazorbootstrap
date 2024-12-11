@@ -1,21 +1,27 @@
-﻿namespace BlazorBootstrap;
+﻿using System.Collections.Immutable;
 
+namespace BlazorBootstrap;
+
+/// <summary>
+/// Use Blazor Bootstrap grid component to display tabular data from the data source. It supports client-side and server-side paging and sorting.
+/// </summary>
+/// <typeparam name="TItem">Data model to apply to the grid.</typeparam>
 public partial class Grid<TItem> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    public bool allItemsSelected = false;
+    public bool AllItemsSelected = false;
 
-    private CancellationTokenSource cancellationTokenSource = default!;
+    private CancellationTokenSource? cancellationTokenSource;
 
     private Dictionary<int, string> checkboxIds = new();
 
-    private List<GridColumn<TItem>> columns = new();
+    private readonly List<GridColumn<TItem>> columns = new();
 
     /// <summary>
     /// Current grid state (filters, paging, sorting).
     /// </summary>
-    internal GridState<TItem> gridCurrentState = new(1, null);
+    internal GridState<TItem> GridCurrentState = new(1, null);
 
     private string headerCheckboxId = default!;
 
@@ -29,7 +35,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private bool isFirstRenderComplete = false;
 
-    private List<TItem>? items = null;
+    private IReadOnlyCollection<TItem>? items = null;
 
     private object? lastAssignedDataOrDataProvider;
 
@@ -47,6 +53,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     #region Methods
 
+    /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -58,6 +65,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         await base.OnAfterRenderAsync(firstRender);
     }
 
+    /// <inheritdoc />
     protected override void OnInitialized()
     {
         headerCheckboxId = IdUtility.GetNextId();
@@ -67,7 +75,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
-    protected override Task OnParametersSetAsync()
+    /// <inheritdoc />
+    protected override async Task OnParametersSetAsync()
     {
         if ((Data is null && DataProvider is null) || (Data is not null && DataProvider is not null)) throw new ArgumentException($"Grid requires either {nameof(Data)} or {nameof(DataProvider)}, but not both or neither.");
 
@@ -88,47 +97,49 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             {
                 mustRefreshData = true;
                 pageSize = PageSize;
-                _ = ResetPageNumberAsync();
-                SaveGridSettingsAsync();
+                await ResetPageNumberAsync();
+                await SaveGridSettingsAsync();
             }
 
             // We want to trigger the first data load when we've collected the initial set of columns
             // because they might perform some action, like setting the default sort order. 
             // It would be wasteful to have to re-query immediately.
-            return columns.Count > 0 && mustRefreshData ? RefreshDataAsync(false) : Task.CompletedTask;
+            if (columns.Count > 0 && mustRefreshData)
+            {
+                await RefreshDataAsync(false);
+            }
         }
 
-        return base.OnParametersSetAsync();
+        await base.OnParametersSetAsync();
     }
 
     /// <summary>
     /// Get filters.
     /// </summary>
-    /// <returns>IEnumerable</returns>
-    public IEnumerable<FilterItem>? GetFilters() =>
-        !AllowFiltering || columns == null || !columns.Any()
+    /// <returns><see cref="IReadOnlyCollection{T}"/></returns>
+    public IReadOnlyCollection<FilterItem>? GetFilters() =>
+        !AllowFiltering || !columns.Any()
             ? null
             : columns
               .Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
-              ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison));
+              ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison)).ToImmutableArray();
 
     /// <summary>
     /// Refresh the grid data.
     /// </summary>
     /// <returns>Task</returns>
-    public async Task RefreshDataAsync(CancellationToken cancellationToken = default) => await RefreshDataAsync(false, cancellationToken);
+    public Task RefreshDataAsync(CancellationToken cancellationToken = default) => RefreshDataAsync(false, cancellationToken);
 
     /// <summary>
     /// Reset the page number to 1 and refresh the grid.
     /// </summary>
-    public async ValueTask ResetPageNumber() => await ResetPageNumberAsync(true);
+    public ValueTask ResetPageNumber() => ResetPageNumberAsync(true);
 
-    internal void AddColumn(GridColumn<TItem> column) => columns.Add(column);
+    internal void AddColumn(GridColumn<TItem> column) => columns?.Add(column);
 
     internal async Task FilterChangedAsync()
     {
-        if (cancellationTokenSource is not null
-            && !cancellationTokenSource.IsCancellationRequested)
+        if (cancellationTokenSource is not null && !cancellationTokenSource.IsCancellationRequested)
         {
             cancellationTokenSource.Cancel();
             cancellationTokenSource.Dispose();
@@ -158,13 +169,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await LoadGridSettingsAsync();
 
         var request = new GridDataProviderRequest<TItem>
-        {
-            PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
-            PageSize = AllowPaging ? pageSize : 0,
-            Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting()! : null!,
-            Filters = AllowFiltering ? GetFilters()! : null!,
-            CancellationToken = cancellationToken
-        };
+                      {
+                          PageNumber = AllowPaging ? GridCurrentState.PageIndex : 0,
+                          PageSize = AllowPaging ? pageSize : 0,
+                          Sorting = AllowSorting ? GridCurrentState.Sorting ?? GetDefaultSorting()! : null!,
+                          Filters = AllowFiltering ? GetFilters()! : null!,
+                          CancellationToken = cancellationToken
+                      };
 
         GridDataProviderResult<TItem> result = default!;
 
@@ -175,8 +186,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (result is not null)
         {
-            items = result.Data!.ToList();
-            totalCount = result.TotalCount ?? result.Data!.Count();
+            items = result.Data;
+            totalCount = result.TotalCount ?? result.Data!.Count;
         }
         else
         {
@@ -199,7 +210,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     internal async ValueTask ResetPageNumberAsync(bool refreshGrid = false)
     {
-        gridCurrentState = new GridState<TItem>(1, gridCurrentState.Sorting);
+        GridCurrentState = new GridState<TItem>(1, GridCurrentState.Sorting);
 
         if (refreshGrid)
             await RefreshDataAsync(false);
@@ -207,34 +218,34 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     internal async Task SortingChangedAsync(GridColumn<TItem> column)
     {
-        if (columns == null || !columns.Any())
+        if (!columns.Any())
             return;
 
         // check sorting enabled on any of the columns
-        var sortedColumn = columns.FirstOrDefault(c => c.currentSortDirection != SortDirection.None);
+        var sortedColumn = columns.FirstOrDefault(c => c.CurrentSortDirection != SortDirection.None);
 
         // reset other columns sorting
         columns.ForEach(
             c =>
             {
                 if (c.Id != column.Id)
-                    c.currentSortDirection = SortDirection.None;
+                    c.CurrentSortDirection = SortDirection.None;
 
                 // set default sorting
                 if (sortedColumn == null && c.IsDefaultSortColumn)
                 {
                     if (c.Id == column.Id
-                        && c.currentSortDirection == SortDirection.None
-                        && c.defaultSortDirection == SortDirection.Descending)
-                        c.currentSortDirection = SortDirection.Ascending; // Default Sorting: DESC                
+                        && c.CurrentSortDirection == SortDirection.None
+                        && c.DefaultSortDirection == SortDirection.Descending)
+                        c.CurrentSortDirection = SortDirection.Ascending; // Default Sorting: DESC                
                     else
-                        c.currentSortDirection = c.defaultSortDirection != SortDirection.None ? c.defaultSortDirection : SortDirection.Ascending;
+                        c.CurrentSortDirection = c.DefaultSortDirection != SortDirection.None ? c.DefaultSortDirection : SortDirection.Ascending;
 
-                    gridCurrentState = new GridState<TItem>(gridCurrentState.PageIndex, c.GetSorting());
+                    GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting());
                 }
                 else if (c.Id == column.Id && c.SortDirection != SortDirection.None) // TODO: this condition is not required. 1 -> ASC, 2 -> DESC, 3 -> None. Here 3 scenario is not working
                 {
-                    gridCurrentState = new GridState<TItem>(gridCurrentState.PageIndex, c.GetSorting());
+                    GridCurrentState = new GridState<TItem>(GridCurrentState.PageIndex, c.GetSorting());
                 }
             }
         );
@@ -243,7 +254,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         await RefreshDataAsync(false);
     }
 
-    private async Task CheckOrUnCheckAll() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", $".bb-grid-form-check-{headerCheckboxId} > input.form-check-input", allItemsSelected);
+    private async Task CheckOrUnCheckAll() => await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", $".bb-grid-form-check-{headerCheckboxId} > input.form-check-input", AllItemsSelected);
 
     /// <summary>
     /// Child selection template.
@@ -284,27 +295,24 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             builder.CloseElement(); // close: th
         };
 
-    private IEnumerable<SortingItem<TItem>>? GetDefaultSorting() =>
-        !AllowSorting || columns == null || !columns.Any()
+    private IReadOnlyCollection<SortingItem<TItem>>? GetDefaultSorting() =>
+        !AllowSorting || !columns.Any()
             ? null
-            : columns?
-              .Where(column => column.CanSort() && column.IsDefaultSortColumn)
-              ?
-              .SelectMany(item => item.GetSorting());
+            : columns?.Where(column => column.CanSort() && column.IsDefaultSortColumn).SelectMany(item => item.GetSorting()).ToImmutableArray();
 
     private string GetGridContainerStyle()
     {
         var styleAttributes = new HashSet<string>();
 
-        if (FixedHeader) styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
+        if (FixedHeader) styleAttributes.Add($"height:{Height.ToString()}");
 
         return string.Join(";", styleAttributes);
     }
 
     private string GetPaginationItemsText()
     {
-        var startRecord = (gridCurrentState.PageIndex - 1) * pageSize + 1;
-        var endRecord = gridCurrentState.PageIndex * pageSize;
+        var startRecord = (GridCurrentState.PageIndex - 1) * pageSize + 1;
+        var endRecord = GridCurrentState.PageIndex * pageSize;
 
         if (endRecord > totalCount)
             endRecord = totalCount ?? 0;
@@ -314,7 +322,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private int GetTotalPagesCount()
     {
-        if (totalCount.HasValue && totalCount.Value > 0)
+        if (totalCount is > 0)
         {
             var q = totalCount.Value / pageSize;
             var r = totalCount.Value % pageSize;
@@ -325,12 +333,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         return 1;
     }
 
-    private async Task<IEnumerable<FilterOperatorInfo>?> GridFiltersTranslationProviderAsync()
+    private IReadOnlyCollection<FilterOperatorInfo>? GridFiltersTranslationProviderAsync()
     {
         if (FiltersTranslationProvider is null)
             return null;
 
-        var filters = await FiltersTranslationProvider.Invoke();
+        var filters = FiltersTranslationProvider.Invoke();
 
         if (filters is null || !filters.Any())
             return null;
@@ -362,26 +370,26 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         {
             if (settings.PageSize > 0 && settings.PageNumber < settings.PageSize)
             {
-                gridCurrentState = new GridState<TItem>(settings.PageNumber, gridCurrentState.Sorting);
+                GridCurrentState = new GridState<TItem>(settings.PageNumber, GridCurrentState.Sorting);
                 pageSize = settings.PageSize;
             }
             else
             {
-                gridCurrentState = new GridState<TItem>(1, null);
+                GridCurrentState = new GridState<TItem>(1, null);
                 pageSize = 10;
             }
         }
         else
         {
-            gridCurrentState = new GridState<TItem>(1, null);
+            GridCurrentState = new GridState<TItem>(1, null);
             pageSize = 10;
         }
     }
 
     private async Task OnHeaderCheckboxChanged(ChangeEventArgs args)
     {
-        allItemsSelected = bool.TryParse(args?.Value?.ToString(), out var checkboxState) && checkboxState;
-        selectedItems = allItemsSelected ? new HashSet<TItem>(items!) : new HashSet<TItem>();
+        AllItemsSelected = bool.TryParse(args?.Value?.ToString(), out var checkboxState) && checkboxState;
+        selectedItems = AllItemsSelected ? new HashSet<TItem>(items!) : new HashSet<TItem>();
         SelectedItemsCount = selectedItems.Count;
         await CheckOrUnCheckAll();
 
@@ -391,7 +399,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task OnPageChangedAsync(int newPageNumber)
     {
-        gridCurrentState = new GridState<TItem>(newPageNumber, gridCurrentState.Sorting);
+        GridCurrentState = new GridState<TItem>(newPageNumber, GridCurrentState.Sorting);
         await SaveGridSettingsAsync();
         await RefreshDataAsync(false);
     }
@@ -406,15 +414,16 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task OnRowCheckboxChanged(string id, TItem item, ChangeEventArgs args)
     {
-        bool.TryParse(args?.Value?.ToString(), out var isChecked);
+        if (!bool.TryParse(args?.Value?.ToString(), out var isChecked))
+            return;
 
         if (SelectionMode == GridSelectionMode.Multiple)
         {
             _ = isChecked ? selectedItems.Add(item) : selectedItems.Remove(item);
             SelectedItemsCount = selectedItems.Count;
-            allItemsSelected = SelectedItemsCount == (items?.Count ?? 0);
+            AllItemsSelected = SelectedItemsCount == (items?.Count ?? 0);
 
-            if (allItemsSelected)
+            if (AllItemsSelected)
                 await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
             else if (SelectedItemsCount == 0)
                 await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
@@ -425,7 +434,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         {
             selectedItems = isChecked ? new HashSet<TItem> { item } : new HashSet<TItem>();
             SelectedItemsCount = selectedItems.Count;
-            allItemsSelected = false;
+            AllItemsSelected = false;
             await CheckOrUnCheckAll();
             await SetCheckboxStateAsync(id, isChecked ? CheckboxState.Checked : CheckboxState.Unchecked);
         }
@@ -436,12 +445,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task OnScroll(EventArgs e)
     {
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.scroll", Id);
+        await JsRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.scroll", Id);
     }
 
     private void PrepareCheckboxIds()
-    {
-        checkboxIds ??= new Dictionary<int, string>();
+    { 
         var currentLength = checkboxIds.Count;
         var itemsCount = items?.Count ?? 0;
 
@@ -460,9 +468,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                             : selectedItems?.Intersect(items!).ToHashSet() ?? new HashSet<TItem>();
 
         SelectedItemsCount = selectedItems.Count;
-        allItemsSelected = SelectedItemsCount > 0 && items!.Count == SelectedItemsCount;
+        AllItemsSelected = SelectedItemsCount > 0 && items!.Count == SelectedItemsCount;
 
-        if (allItemsSelected)
+        if (AllItemsSelected)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
         else if (SelectedItemsCount > 0)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Indeterminate);
@@ -473,16 +481,16 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await SelectedItemsChanged.InvokeAsync(selectedItems);
     }
 
-    private async Task RowClick(TItem item, EventArgs args)
+    private async Task RowClick(TItem item, MouseEventArgs args)
     {
         if (AllowRowClick && OnRowClick.HasDelegate)
-            await OnRowClick.InvokeAsync(new GridRowEventArgs<TItem>(item));
+            await OnRowClick.InvokeAsync(new GridRowEventArgs<TItem>(item, args));
     }
 
-    private async Task RowDoubleClick(TItem item, EventArgs args)
+    private async Task RowDoubleClick(TItem item, MouseEventArgs args)
     {
         if (AllowRowClick && OnRowDoubleClick.HasDelegate)
-            await OnRowDoubleClick.InvokeAsync(new GridRowEventArgs<TItem>(item));
+            await OnRowDoubleClick.InvokeAsync(new GridRowEventArgs<TItem>(item, args));
     }
 
     private Task SaveGridSettingsAsync()
@@ -490,12 +498,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         if (!GridSettingsChanged.HasDelegate)
             return Task.CompletedTask;
 
-        var settings = new GridSettings { PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0, PageSize = AllowPaging ? pageSize : 0, Filters = AllowFiltering ? GetFilters() : null };
+        var settings = new GridSettings { PageNumber = AllowPaging ? GridCurrentState.PageIndex : 0, PageSize = AllowPaging ? pageSize : 0, Filters = AllowFiltering ? GetFilters() : null };
 
         return GridSettingsChanged.InvokeAsync(settings);
     }
 
-    private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState) => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
+    private ValueTask SetCheckboxStateAsync(string id, CheckboxState checkboxState) => JsRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
 
     internal void SetGridDetailView(GridDetailView<TItem> detailView) => this.detailView = detailView;
 
@@ -507,20 +515,20 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Set filters.
     /// </summary>
     /// <param name="filterItems"></param>
-    private void SetFilters(IEnumerable<FilterItem> filterItems)
+    private void SetFilters(IReadOnlyCollection<FilterItem>? filterItems)
     {
         if (filterItems is null || !filterItems.Any())
             return;
 
         foreach (var item in filterItems)
         {
-            var column = columns.Where(x => x.PropertyName == item.PropertyName).FirstOrDefault();
+            var column = columns.FirstOrDefault(x => x.PropertyName == item.PropertyName);
 
             if (column != null)
             {
                 var allowedFilterOperators = FilterOperatorUtility.GetFilterOperators(column.GetPropertyTypeName());
 
-                if (allowedFilterOperators != null && allowedFilterOperators.Any(x => x.FilterOperator == item.Operator))
+                if (allowedFilterOperators.Any(x => x.FilterOperator == item.Operator))
                 {
                     column.SetFilterOperator(item.Operator);
                     column.SetFilterValue(item.Value);
@@ -529,39 +537,78 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         }
     }
 
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case var _ when String.Equals(parameter.Name, nameof(AllowFiltering), StringComparison.OrdinalIgnoreCase): AllowFiltering = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowPaging), StringComparison.OrdinalIgnoreCase): AllowPaging = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowRowClick), StringComparison.OrdinalIgnoreCase): AllowRowClick = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowSelection), StringComparison.OrdinalIgnoreCase): AllowSelection = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AllowSorting), StringComparison.OrdinalIgnoreCase): AllowSorting = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(AutoHidePaging), StringComparison.OrdinalIgnoreCase): AutoHidePaging = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ChildContent), StringComparison.OrdinalIgnoreCase): ChildContent = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Class), StringComparison.OrdinalIgnoreCase): Class = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Data), StringComparison.OrdinalIgnoreCase): Data = (IReadOnlyCollection<TItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DataProvider), StringComparison.OrdinalIgnoreCase): DataProvider = (GridDataProviderDelegate<TItem>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DisableAllRowsSelection), StringComparison.OrdinalIgnoreCase): DisableAllRowsSelection = (Func<IReadOnlyCollection<TItem>, bool>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(DisableRowSelection), StringComparison.OrdinalIgnoreCase): DisableRowSelection = (Func<TItem, bool>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EmptyDataTemplate), StringComparison.OrdinalIgnoreCase): EmptyDataTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(EmptyText), StringComparison.OrdinalIgnoreCase): EmptyText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FiltersRowCssClass), StringComparison.OrdinalIgnoreCase): FiltersRowCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FiltersTranslationProvider), StringComparison.OrdinalIgnoreCase): FiltersTranslationProvider = (GridFiltersTranslationDelegate)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(FixedHeader), StringComparison.OrdinalIgnoreCase): FixedHeader = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(GridSettingsChanged), StringComparison.OrdinalIgnoreCase): GridSettingsChanged = (EventCallback<GridSettings>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(HeaderRowCssClass), StringComparison.OrdinalIgnoreCase): HeaderRowCssClass = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Height), StringComparison.OrdinalIgnoreCase): Height = (CssPropertyValue)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(Id), StringComparison.OrdinalIgnoreCase): Id = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(IsResponsive), StringComparison.OrdinalIgnoreCase): IsResponsive = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(ItemsPerPageText), StringComparison.OrdinalIgnoreCase): ItemsPerPageText = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(LoadingTemplate), StringComparison.OrdinalIgnoreCase): LoadingTemplate = (RenderFragment)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnRowClick), StringComparison.OrdinalIgnoreCase): OnRowClick = (EventCallback<GridRowEventArgs<TItem>>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(OnRowDoubleClick), StringComparison.OrdinalIgnoreCase): OnRowDoubleClick = (EventCallback<GridRowEventArgs<TItem>>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PageSize), StringComparison.OrdinalIgnoreCase): PageSize = (int)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PageSizeSelectorItems), StringComparison.OrdinalIgnoreCase): PageSizeSelectorItems = (int[])parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PageSizeSelectorVisible), StringComparison.OrdinalIgnoreCase): PageSizeSelectorVisible = (bool)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(PaginationItemsTextFormat), StringComparison.OrdinalIgnoreCase): PaginationItemsTextFormat = (string)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(RowClass), StringComparison.OrdinalIgnoreCase): RowClass = (Func<TItem, string>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(SelectedItemsChanged), StringComparison.OrdinalIgnoreCase): SelectedItemsChanged = (EventCallback<HashSet<TItem>>)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(SelectionMode), StringComparison.OrdinalIgnoreCase): SelectionMode = (GridSelectionMode)parameter.Value; break;
+                case var _ when String.Equals(parameter.Name, nameof(SettingsProvider), StringComparison.OrdinalIgnoreCase): SettingsProvider = (GridSettingsProviderDelegate)parameter.Value; break;
+                
+                case var _ when String.Equals(parameter.Name, nameof(TableHeaderCssClass), StringComparison.OrdinalIgnoreCase): TableHeaderCssClass = (string)parameter.Value; break;
+                
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            ("bb-table", true),
-            (BootstrapClass.TableSticky, FixedHeader));
-
+     
     /// <summary>
-    /// Gets or sets the grid delete.
-    /// </summary>
-    //[Parameter] public int AllowDelete { get; set; }
-
-    /// <summary>
-    /// Gets or sets the grid edit.
-    /// </summary>
-    //[Parameter] public int AllowEdit { get; set; }
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the grid detail view is enabled.
+    /// Gets or sets adding a column for detailed view.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AllowDetailView { get; set; }
-
+    
     /// <summary>
     /// Gets or sets the grid filtering.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AllowFiltering { get; set; }
@@ -570,7 +617,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the grid paging.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AllowPaging { get; set; }
@@ -579,7 +626,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the allow row click.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AllowRowClick { get; set; }
@@ -588,7 +635,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the grid selection.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AllowSelection { get; set; }
@@ -597,7 +644,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the grid sorting.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AllowSorting { get; set; }
@@ -607,7 +654,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// and this property is set to `true`.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool AutoHidePaging { get; set; }
@@ -616,41 +663,49 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the grid data.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public IEnumerable<TItem> Data { get; set; } = default!;
+    public IReadOnlyCollection<TItem>? Data { get; set; }
 
     /// <summary>
     /// DataProvider is for items to render.
     /// The provider should always return an instance of 'GridDataProviderResult', and 'null' is not allowed.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public GridDataProviderDelegate<TItem> DataProvider { get; set; } = default!;
+    public GridDataProviderDelegate<TItem>? DataProvider { get; set; }
 
     /// <summary>
     /// Enable or disable the header checkbox selection.
     /// </summary>
     [Parameter]
-    public Func<IEnumerable<TItem>, bool>? DisableAllRowsSelection { get; set; }
+    public Func<IReadOnlyCollection<TItem>, bool>? DisableAllRowsSelection { get; set; }
 
     /// <summary>
     /// Enable or disable the row level checkbox selection.
     /// </summary>
     [Parameter]
     public Func<TItem, bool>? DisableRowSelection { get; set; }
+
+    /// <summary>
+    /// Gets or sets the empty data template.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    public RenderFragment EmptyDataTemplate { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the empty text.
@@ -675,7 +730,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the filters row css class.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string FiltersRowCssClass { get; set; } = default!;
@@ -684,40 +739,20 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the filters translation provider.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public GridFiltersTranslationDelegate FiltersTranslationProvider { get; set; } = default!;
+    public GridFiltersTranslationDelegate? FiltersTranslationProvider { get; set; } 
 
     /// <summary>
     /// Gets or sets the grid fixed header.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool FixedHeader { get; set; }
-
-    /// <summary>
-    /// Gets or sets the grid container css class.
-    /// </summary>
-    [Parameter]
-    public string? GridContainerClass { get; set; }
-
-    private string? GridContainerClassNames =>
-        BuildClassNames(GridContainerClass,
-            (BootstrapClass.TableResponsive, Responsive));
-
-    /// <summary>
-    /// Gets or sets the grid container css style.
-    /// </summary>
-    [Parameter]
-    public string? GridContainerStyle { get; set; }
-
-    private string? GridContainerStyleNames =>
-        BuildStyleNames(GridContainerStyle,
-            ($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}", FixedHeader));
-
+ 
     /// <summary>
     /// This event is fired when the grid state is changed.
     /// </summary>
@@ -728,7 +763,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the header row css class but not the thead tag class.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public string HeaderRowCssClass { get; set; } = default!;
@@ -778,10 +813,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Gets or sets the grid height.
     /// </summary>
     /// <remarks>
-    /// Default value is 320 <see cref="Unit.Px" />.
+    /// Default value is 320px.
     /// </remarks>
-    [Parameter]
-    public float Height { get; set; } = 320;
+    [Parameter] public CssPropertyValue Height { get; set; } = CssPropertyValue.Pixels(320);
 
     /// <summary>
     /// Gets or sets the items per page text.
@@ -791,18 +825,26 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     //[EditorRequired] 
-    public string ItemsPerPageText { get; set; } = "Items per page"!;
+    public string ItemsPerPageText { get; set; } = "Items per page";
+
+    /// <summary>
+    /// Gets or sets the loading template.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    public RenderFragment? LoadingTemplate { get; set; } 
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.
-    /// Set AllowRowClick to true to enable row clicking.
+    /// Set AllowRowClick to  <see langword="true" /> to enable row clicking.
     /// </summary>
     [Parameter]
     public EventCallback<GridRowEventArgs<TItem>> OnRowClick { get; set; }
 
     /// <summary>
-    /// This event is triggered when the user double clicks on the row.
-    /// Set AllowRowClick to true to enable row double clicking.
+    /// This event is triggered when the user double-clicks on the row.
+    /// Set AllowRowClick to <see langword="true" /> to enable row double-clicking.
     /// </summary>
     [Parameter]
     public EventCallback<GridRowEventArgs<TItem>> OnRowDoubleClick { get; set; }
@@ -822,31 +864,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is '{ 10, 20, 50 }'.
     /// </remarks>
-    [Parameter]
-    //[EditorRequired]
+    [Parameter] 
     public int[] PageSizeSelectorItems { get; set; } = { 10, 20, 50 };
 
     /// <summary>
     /// Gets or sets the page size selector visible.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
     public bool PageSizeSelectorVisible { get; set; }
-
-    [Obsolete("PaginationAlignment parameter is not supported from 1.8.0 version onwards")]
-    /// <summary>
-    /// Gets or sets the pagination alignment.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Alignment.Start" />.
-    /// </remarks>
-    [Parameter]
-    public Alignment PaginationAlignment { get; set; } = Alignment.Start;
-
-    private string paginationItemsText => GetPaginationItemsText();
-
+    
     /// <summary>
     /// Gets or sets the pagination items text format.
     /// </summary>
@@ -855,16 +884,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     //[EditorRequired]
-    public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items"!;
+    public string PaginationItemsTextFormat { get; set; } = "{0} - {1} of {2} items";
 
     /// <summary>
     /// Gets or sets a value indicating whether the grid is responsive.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [Parameter]
-    public bool Responsive { get; set; }
+    public bool IsResponsive { get; set; }
+
+    private string ResponsiveCssClass => IsResponsive ? "table-responsive" : "";
 
     /// <summary>
     /// Gets or sets the row class.
@@ -888,34 +919,27 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.Single;
 
     /// <summary>
-    /// Settings is for grid to render.
+    /// Settings for the grid to render.
     /// The provider should always return an instance of 'GridSettings', and 'null' is not allowed.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public GridSettingsProviderDelegate SettingsProvider { get; set; } = default!;
+    public GridSettingsProviderDelegate? SettingsProvider { get; set; } 
 
     /// <summary>
     /// Gets or sets the thead css class.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public string? THeadCssClass { get; set; }
-
-    private int totalPages => GetTotalPagesCount();
+    [Parameter] public string? TableHeaderCssClass { get; set; }
 
     /// <summary>
-    /// Gets or sets the units.
+    /// Dependency injected Javascript Runtime
     /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="Unit.Px" />.
-    /// </remarks>
-    [Parameter]
-    public Unit Unit { get; set; } = Unit.Px;
+    [Inject] private IJSRuntime JsRuntime { get; set; } = default!;
 
     #endregion
 }

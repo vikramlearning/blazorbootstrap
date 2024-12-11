@@ -29,7 +29,7 @@ public class ChartDatasetDataLabels
         set
         {
             alignment = value;
-            DataLabelsAlignment = value.ToChartDatasetDataLabelAlignmentString();
+            DataLabelsAlignment = EnumExtensions.ChartDatasetDataLabelAlignmentMap[value];
         }
     }
 
@@ -46,7 +46,7 @@ public class ChartDatasetDataLabels
         set
         {
             anchor = value;
-            DataLabelsAnchor = value.ToChartDatasetDataLabelAnchorString();
+            DataLabelsAnchor = EnumExtensions.ChartDatasetDataLabelAnchorMap[value];
         }
     }
 

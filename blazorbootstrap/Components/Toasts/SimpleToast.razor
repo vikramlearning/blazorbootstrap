@@ -2,7 +2,7 @@
 @inherits BlazorBootstrapComponentBase
 
 <CascadingValue Value="@(this)" IsFixed="true">
-    <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    <div @ref="@Element" id="@Id" class="@BootstrapClass.Toast @(ToastMessage is not null ? $"{ToastMessage.Type.ToToastTextColorClass()} {EnumExtensions.ToastBackgroundColorClassMap[ToastMessage.Type]}" : "") @Class" @attributes="@AdditionalAttributes">
         <div class="d-flex">
             <div class="toast-body">
                 @ToastMessage?.Message

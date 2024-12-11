@@ -7,7 +7,7 @@
 
 @code {
     private string eventLog { get; set; } = $"Last event: ..., CurrentPage: 0, TotalPages: 0";
-    private string pdfBase64String;
+    private string pdfBase64String = default!;
 
     protected override void OnInitialized()
     {

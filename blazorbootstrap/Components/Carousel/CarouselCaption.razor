@@ -1,6 +1,9 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="alert" @attributes="@AdditionalAttributes">
-    @ChildContent
+<div @ref="@Element" id="@Id" class="@BootstrapClass.CarouselCaption @BootstrapClass.DisplayBlock @BootstrapClass.DisplayMediumBlock @Class" role="alert" @attributes="@AdditionalAttributes">
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </div>
