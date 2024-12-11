@@ -3,7 +3,7 @@
 
 @if (Items != null && Items.Any())
 {
-    <nav @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" aria-label="breadcrumb">
+    <nav @ref="@Element" id="@Id" class="@Class" @attributes="@AdditionalAttributes" aria-label="breadcrumb">
         <ol class="breadcrumb">
             @foreach (var item in Items)
             {

@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" tabindex="-1" @attributes="@AdditionalAttributes">
+<div @ref="@Element" id="@Id" class="@BootstrapClass.Modal @BootstrapClass.PageLoadingModal @BootstrapClass.ModalFade @(showBackdrop ? BootstrapClass.Show : "") @Class" tabindex="-1" style="display: @(showBackdrop ? "block" : "none"); @Style" @attributes="@AdditionalAttributes">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content modal-content-page-loading">
             <div class="modal-body">

@@ -3,13 +3,15 @@
 
 <span @ref="@Element"
       id="@Id" 
-      class="@ClassNames" 
-      style="@StyleNames"
+      class="@Class"  
       data-bs-toggle="tooltip"
-      data-bs-placement="@placement"
-      data-bs-custom-class="@colorClass"
+      data-bs-placement="@(EnumExtensions.TooltipPlacementNameMap[Placement])"
+      data-bs-custom-class="@(EnumExtensions.TooltipColorClassMap[Color])"
       data-bs-html="@(IsHtml ? "true" : "false")"
       title="@Title"
       @attributes="@AdditionalAttributes">
-    @ChildContent
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </span>

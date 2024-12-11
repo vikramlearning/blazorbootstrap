@@ -41,20 +41,11 @@ public partial class ThemeSwitcher : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames => BuildClassNames(Class, (BootstrapClass.Dropdown, true));
-
-    protected string? DropdownMenuClassNames =>
-        BuildClassNames(
-            (BootstrapClass.DropdownMenu, true),
-            (Position.ToDropdownMenuPositionClass(), true)
-        );
-
+       
     /// <summary>
     /// Fired when the theme is changed.
     /// </summary>
-    [Parameter]
-    public EventCallback<string> OnThemeChanged { get; set; }
+    [Parameter] public EventCallback<string> OnThemeChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown menu position.
@@ -62,8 +53,7 @@ public partial class ThemeSwitcher : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="DropdownMenuPosition.Start" />.
     /// </remarks>
-    [Parameter]
-    public DropdownMenuPosition Position { get; set; } = DropdownMenuPosition.Start;
+    [Parameter] public DropdownMenuPosition Position { get; set; } = DropdownMenuPosition.Start;
 
     [Inject] private ThemeSwitcherJsInterop ThemeSwitcherJsInterop { get; set; } = default!;
 

@@ -1,14 +1,14 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" tabindex="@TabIndex">
-    <div class="modal-dialog @scrollable @verticallyCentered @modalSize @modalFullscreen @DialogCssClass">
+<div @ref="@Element" id="@Id" class="@BootstrapClass.Modal @BootstrapClass.ModalFade @Class" @attributes="@AdditionalAttributes" tabindex="@TabIndex">
+    <div class="modal-dialog @Scrollable @VerticallyCentered @EnumExtensions.ModalSizeClassMap[Size] @EnumExtensions.ModalFullscreenClassMap[Fullscreen] @DialogCssClass">
         <div class="modal-content">
             @if (isVisible)
             {
                 @if (!string.IsNullOrWhiteSpace(Title) || HeaderTemplate != null || ShowCloseButton)
                 {
-                    <div class="modal-header @headerCssClassInternal @HeaderCssClass">
+                    <div class="modal-header @HeaderCssClassInternal @HeaderCssClass">
                         @if (!string.IsNullOrWhiteSpace(Title))
                         {
                             <h5 class="modal-title">@Title</h5>
@@ -20,7 +20,7 @@
 
                         @if (ShowCloseButton)
                         {
-                            <Icon Color="@CloseIconColor" Name="IconName.XLg" role="button" @onclick="HideAsync"></Icon>
+                            <Icon Color="@CloseIconColor" Name="IconName.XLg" role="button" @onclick="(async() => await HideAsync())" />
                         }
                     </div>
                 }
@@ -28,7 +28,7 @@
                 @if (childComponent is not null)
                 {
                     <div class="modal-body @BodyCssClass">
-                        <DynamicComponent Type="@childComponent" Parameters="@parameters"/>
+                        <DynamicComponent Type="@childComponent" Parameters="@modalParameters"/>
                     </div>
                 }
                 else if (!string.IsNullOrWhiteSpace(Message))
@@ -53,7 +53,7 @@
                 else if (showFooterButton)
                 {
                     <div class="modal-footer @FooterCssClass">
-                        <Button Class="@footerButtonCSSClass" Color="@footerButtonColor" data-bs-dismiss="modal" aria-label="Close">@footerButtonText</Button>
+                        <Button Class="@footerButtonCssClass" Color="@footerButtonColor" data-bs-dismiss="modal" aria-label="Close">@footerButtonText</Button>
                     </div>
                 }
             }

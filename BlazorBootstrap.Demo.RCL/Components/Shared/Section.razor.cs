@@ -17,7 +17,7 @@ public partial class Section : BlazorBootstrapComponentBase
         if (firstRender && IsRenderComplete)
         {
             await Task.Delay(200);
-            await JSRuntime.InvokeVoidAsync("navigateToHeading");
+            await JsRuntime.InvokeVoidAsync("navigateToHeading");
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -25,7 +25,7 @@ public partial class Section : BlazorBootstrapComponentBase
 
     private async Task OnClick()
     {
-        await JSRuntime.InvokeVoidAsync("navigateToHeading");
+        await JsRuntime.InvokeVoidAsync("navigateToHeading");
     }
 
     #endregion

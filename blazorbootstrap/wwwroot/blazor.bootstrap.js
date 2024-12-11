@@ -300,6 +300,11 @@ window.blazorBootstrap = {
                 bootstrap?.Carousel?.getOrCreateInstance(carouselEl)?.to(index);
         },
     },
+    code: {
+        highlight: (code, type, language) => {
+            return Prism.highlight(code, Prism.languages[type], language);
+        }
+    },
     currencyInput: {
         initialize: (elementId, isFloat, allowNegativeNumbers, decimalSeperator) => {
             let currencyEl = document.getElementById(elementId);

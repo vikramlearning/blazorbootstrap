@@ -1,8 +1,10 @@
 ﻿using BlazorBootstrap;
-using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+/// <summary>
+/// Configuration for Blazor Bootstrap, to be used in the Startup class in program.cs of the Blazor application
+/// </summary>
 public static class Config
 {
     #region Methods
@@ -12,7 +14,7 @@ public static class Config
     /// </summary>
     /// <param name="services"></param>
     /// <returns>IServiceCollection</returns>
-    public static IServiceCollection AddBlazorBootstrap(this IServiceCollection services, IConfiguration configuration = null!)
+    public static IServiceCollection AddBlazorBootstrap(this IServiceCollection services)
     {
         services.AddScoped<BreadcrumbService>();
         services.AddScoped<ModalService>();

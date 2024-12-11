@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, IDisposable, IAsyncDisposable
 {
@@ -30,26 +28,26 @@ public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, 
         base.OnInitialized();
     }
 
-    public static string BuildClassNames(params (string? cssClass, bool when)[] cssClassList)
+    public static string BuildClass(params (string? cssClass, bool when)[] cssClassList)
     {
         var list = new HashSet<string>();
 
-        if (cssClassList is not null && cssClassList.Any())
+        if (cssClassList is not null && cssClassList.Length > 0)
             foreach (var (cssClass, when) in cssClassList)
                 if (!string.IsNullOrWhiteSpace(cssClass) && when)
                     list.Add(cssClass);
 
-        if (list.Any())
+        if (list.Count > 0)
             return string.Join(" ", list);
 
         return string.Empty;
     }
 
-    public static string BuildClassNames(string? userDefinedCssClass, params (string? cssClass, bool when)[] cssClassList)
+    public static string BuildClass(string? userDefinedCssClass, params (string? cssClass, bool when)[] cssClassList)
     {
         var list = new HashSet<string>();
 
-        if (cssClassList is not null && cssClassList.Any())
+        if (cssClassList is not null && cssClassList.Length > 0)
             foreach (var (cssClass, when) in cssClassList)
                 if (!string.IsNullOrWhiteSpace(cssClass) && when)
                     list.Add(cssClass);
@@ -57,7 +55,7 @@ public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, 
         if (!string.IsNullOrWhiteSpace(userDefinedCssClass))
             list.Add(userDefinedCssClass.Trim());
 
-        if (list.Any())
+        if (list.Count > 0)
             return string.Join(" ", list);
 
         return string.Empty;
@@ -67,7 +65,7 @@ public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, 
     {
         var list = new HashSet<string>();
 
-        if (cssStyleList is not null && cssStyleList.Any())
+        if (cssStyleList is not null && cssStyleList.Length > 0)
             foreach (var (cssStyle, when) in cssStyleList)
                 if (!string.IsNullOrWhiteSpace(cssStyle) && when)
                     list.Add(cssStyle);
@@ -75,7 +73,7 @@ public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, 
         if (!string.IsNullOrWhiteSpace(userDefinedCssStyle))
             list.Add(userDefinedCssStyle.Trim());
 
-        if (list.Any())
+        if (list.Count > 0)
             return string.Join(';', list);
 
         return string.Empty;
@@ -135,10 +133,6 @@ public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, 
     [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; } = default!;
 
     [Parameter] public string? Class { get; set; }
-
-    protected virtual string? ClassNames => Class;
-
-    [Inject] protected IConfiguration Configuration { get; set; } = default!;
 
     public ElementReference Element { get; set; }
 

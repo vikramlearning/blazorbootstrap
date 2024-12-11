@@ -7,7 +7,7 @@
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border">
             <small class="font-monospace text-body-secondary text-uppercase">@LanguageCode.ToLanguageCodeString()</small>
             <div class="d-flex ms-auto">
-                <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="CopyToClipboardAsync">
+                <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="(async() => await CopyToClipboardAsync())">
                     <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
                 </Tooltip>
             </div>
@@ -15,9 +15,9 @@
         <div class="highlight border border-top-0">
              <pre>
                 <code class="@LanguageCode.ToLanguageCssClass()">
-                    @if (snippet is not null)
+                    @if (ProvidedCode is not null)
                     {
-                        <text>@snippet.Trim()</text>
+                        <text>@ProvidedCode.Trim()</text>
                     }
                 </code>
             </pre>
@@ -33,7 +33,7 @@ else if (!Tabs)
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border border-top-0">
             <small class="font-monospace text-body-secondary text-uppercase">@LanguageCode.ToLanguageCodeString()</small>
             <div class="d-flex ms-auto">
-                <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="CopyToClipboardAsync">
+                <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="(async() => await CopyToClipboardAsync())">
                     <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
                 </Tooltip>
             </div>
@@ -41,9 +41,9 @@ else if (!Tabs)
         <div class="highlight border border-top-0">
             <pre>
                 <code class="@LanguageCode.ToLanguageCssClass()">
-                    @if (snippet is not null)
+                    @if (ProvidedCode is not null)
                     {
-                        <text>@snippet.Trim()</text>
+                        <text>@ProvidedCode.Trim()</text>
                     }
                 </code>
             </pre>
@@ -57,33 +57,33 @@ else // Tabs = true
             <TitleTemplate>
                 <Icon Name="IconName.Display" Class="me-2" /><b>Example</b>
             </TitleTemplate>
-            <Content>
-                <div class="bb-example border border-top-0 mt-0">
+            <ChildContent>
+                <div class="bb-example border-top-0 mt-0">
                     <DynamicComponent Type="this.Type"/>
                 </div>
-            </Content>
+            </ChildContent>
         </Tab>
         <Tab>
             <TitleTemplate>
                 <Icon Name="IconName.CodeSlash" Class="me-2" /><b>View Source</b>
             </TitleTemplate>
-            <Content>
+            <ChildContent>
                 <div class="position-relative d-block float-end mt-3 me-3 me-sm-4">
-                    <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="CopyToClipboardAsync">
+                    <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="(async() => await CopyToClipboardAsync())">
                         <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
                     </Tooltip>
                 </div>
                 <div class="highlight border border-top-0">
                     <pre class="mt-0 me-4">
                         <code class="@LanguageCode.ToLanguageCssClass()">
-                            @if (snippet is not null)
+                            @if (ProvidedCode is not null)
                             {
-                                <text>@snippet.Trim()</text>
+                                <text>@ProvidedCode.Trim()</text>
                             }
                         </code>
                     </pre>
                 </div>
-            </Content>
+            </ChildContent>
         </Tab>
     </Tabs>
 }

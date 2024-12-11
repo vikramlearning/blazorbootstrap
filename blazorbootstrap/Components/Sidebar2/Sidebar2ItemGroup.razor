@@ -1,7 +1,7 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<nav @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<nav @ref="@Element" id="@Id" class="@BootstrapClass.FlexColumn @Class" @attributes="@AdditionalAttributes">
     @if (NavItems is not null && NavItems.Any())
     {
         foreach (var item in NavItems)
@@ -15,7 +15,7 @@
                           Text="@item.Text"
                           Target="@item.Target"
                           Match="@item.Match"
-                          HasChilds="@item.HasChildItems"
+                          HasChildren="@item.HasChildItems"
                           ChildItems="@item.ChildItems"
                           NavItemGroupExpanded="navItemGroupExpanded"
                           Class="@item.Class" />

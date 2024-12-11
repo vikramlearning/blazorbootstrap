@@ -36,7 +36,7 @@
 </Grid>
 
 @code {
-    private IEnumerable<Employee3>? employees;
+    private IReadOnlyCollection<Employee3>? employees;
 
     private async Task<GridDataProviderResult<Employee3>> EmployeesDataProvider(GridDataProviderRequest<Employee3> request)
     {
@@ -46,7 +46,7 @@
         return await Task.FromResult(request.ApplyTo(employees));
     }
 
-    private IEnumerable<Employee3> GetEmployees()
+    private IReadOnlyCollection<Employee3> GetEmployees()
     {
         return new List<Employee3>
         {

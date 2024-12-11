@@ -1,9 +1,9 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<div @ref="@Element" id="@Id" class="@BootstrapClass.AccordionItem @Class" @attributes="@AdditionalAttributes">
     <h2 class="accordion-header">
-        <button class="accordion-button @buttonCollapsedStateCSSClass" type="button" @onclick="ToggleAsync">
+        <button class="accordion-button @ButtonCollapsedStateCssClass" type="button" @onclick="(async() => await ToggleAsync())">
             @if (TitleTemplate is not null)
             {
                 @TitleTemplate
@@ -24,7 +24,10 @@
               OnHiding="OnCollapseHidingAsync"
               OnHidden="OnCollapseHiddenAsync">
         <div class="accordion-body">
-            @Content
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
         </div>
     </Collapse>
 </div>

@@ -2,7 +2,7 @@
 @inherits BlazorBootstrapComponentBase
 
 <CascadingValue Name="Carousel" Value="(this)" IsFixed="true">
-    <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    <div @ref="@Element" id="@Id" class="@BootstrapClass.Carousel @BootstrapClass.CarouselSlide @(Crossfade ? BootstrapClass.CarouselFade : "") @Class" @attributes="@AdditionalAttributes">
         @if (ShowIndicators && HasItems)
         {
             <div class="@BootstrapClass.CarouselIndicators">
@@ -11,9 +11,9 @@
                     foreach (var item in items)
                     {
                         var j = i;
-                        bool isActiveItem = (i == activeIndex);
-                        string? itemClass = isActiveItem ? "active" : null;
-                        string? label = item.Label ?? $"Slide {i + 1}";
+                        var isActiveItem = (i == activeIndex);
+                        var itemClass = isActiveItem ? "active" : null;
+                        var label = item.Label ?? $"Slide {i + 1}";
 
                         <button type="button"
                                 class="@itemClass"
@@ -28,7 +28,10 @@
         }
 
         <div class="@BootstrapClass.CarouselInner">
-            @ChildContent
+            @if (ChildContent != null)
+            {
+                @ChildContent
+            }
         </div>
 
         @if (ShowPreviousNextControls)

@@ -8,15 +8,15 @@ public static class EnumExtensions
             LanguageCode.AspNet => "language-aspnet",
             LanguageCode.CSharp => "language-csharp",
             LanguageCode.Css => "language-css",
-            LanguageCode.HTML => "language-html",
+            LanguageCode.Html => "language-html",
             LanguageCode.JavaScript => "language-js",
-            LanguageCode.JSON => "language-json",
-            LanguageCode.JSONP => "language-jsonp",
+            LanguageCode.Json => "language-json",
+            LanguageCode.Jsonp => "language-jsonp",
             LanguageCode.Markdown => "language-md",
             LanguageCode.PowerShell => "language-powershell",
             LanguageCode.Razor => "language-razor",
-            LanguageCode.Text => "language-none",
-            LanguageCode.YAML => "language-yaml",
+            LanguageCode.StructuredText => "language-none",
+            LanguageCode.Yaml => "language-yaml",
             _ => null
         };
 
@@ -26,15 +26,15 @@ public static class EnumExtensions
             LanguageCode.AspNet => "ASP.NET",
             LanguageCode.CSharp => "C#",
             LanguageCode.Css => "CSS",
-            LanguageCode.HTML => "HTML",
+            LanguageCode.Html => "HTML",
             LanguageCode.JavaScript => "JS",
-            LanguageCode.JSON => "JSON",
-            LanguageCode.JSONP => "JSONP",
+            LanguageCode.Json => "JSON",
+            LanguageCode.Jsonp => "JSONP",
             LanguageCode.Markdown => "Markdown",
             LanguageCode.PowerShell => "PowerShell",
             LanguageCode.Razor => "Razor",
-            LanguageCode.Text => "Text",
-            LanguageCode.YAML => "yaml",
+            LanguageCode.StructuredText => "Text",
+            LanguageCode.Yaml => "yaml",
             _ => null
         };
 }

@@ -1,10 +1,16 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Events invoked by an <see cref="AccordionItem"/>.
+/// </summary>
 public class AccordionEventArgs
 {
     #region Constructors
 
-    public AccordionEventArgs(string name, string title)
+/// <summary>
+/// Default constructor
+/// </summary> 
+    public AccordionEventArgs(string? name, string title)
     {
         Name = name;
         Title = title;
@@ -17,7 +23,7 @@ public class AccordionEventArgs
     /// <summary>
     /// Gets the <see cref="AccordionItem" /> name.
     /// </summary>
-    public string Name { get; }
+    public string? Name { get; }
 
     /// <summary>
     /// Gets the <see cref="AccordionItem" /> title.

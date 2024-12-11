@@ -4,11 +4,30 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected override void OnInitialized()
+    /// <inheritdoc />
+    public override Task SetParametersAsync(ParameterView parameters)
     {
-        AdditionalAttributes ??= new Dictionary<string, object>();
 
-        if (!AdditionalAttributes.TryGetValue("type", out _))
+
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(AutoClose): AutoClose = (bool)parameter.Value!; break;
+                case nameof(AutoCloseBehavior): AutoCloseBehavior = (DropdownAutoCloseBehavior)parameter.Value!; break;
+                case nameof(ChildContent): ChildContent = (RenderFragment)parameter.Value!; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Color): Color = (DropdownColor)parameter.Value!; break;
+                case nameof(Disabled): Disabled = (bool)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(Size): Size = (DropdownSize)parameter.Value!; break;
+                case nameof(Split): Split = (bool)parameter.Value!; break;
+                case nameof(TabIndex): TabIndex = (int?)parameter.Value!; break;
+                default: AdditionalAttributes![parameter.Name] = parameter.Value!; break;
+            }
+        }
+
+        if (!AdditionalAttributes!.TryGetValue("type", out _))
             AdditionalAttributes.Add("type", "button");
 
         if (!AdditionalAttributes.TryGetValue("data-bs-toggle", out _))
@@ -33,26 +52,18 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
         else
             AdditionalAttributes["data-bs-auto-close"] = autoClose;
 
-        base.OnInitialized();
+        return base.SetParametersAsync(ParameterView.Empty);
     }
 
     #endregion
 
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Button, true),
-            (Color.ToDropdownButtonColorClass(), Color != DropdownColor.None),
-            (Size.ToDropdownButtonSizeClass(), Size != DropdownSize.None),
-            (BootstrapClass.DropdownToggle, true),
-            (BootstrapClass.DropdownToggleSplit, Split));
-
+     
     /// <summary>
     /// If <see langword="true" />, enables the auto close.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [CascadingParameter(Name = "AutoClose")]
     public bool AutoClose { get; set; }
@@ -70,10 +81,9 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
-    [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown toggle button color.
@@ -88,7 +98,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     /// Gets or sets the disabled.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false" />.
     /// </remarks>
     [CascadingParameter(Name = "Disabled")]
     public bool Disabled { get; set; }
@@ -102,13 +112,17 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     [CascadingParameter(Name = "Size")]
     public DropdownSize Size { get; set; } = DropdownSize.None;
 
-    [CascadingParameter(Name = "Split")] public bool Split { get; set; }
+    /// <summary>
+    /// If true, the css class 'dropdown-toggle-split' will be added to the button.
+    /// </summary>
+    [CascadingParameter(Name = "Split")] 
+    public bool Split { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown toggle button tab index.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
     public int? TabIndex { get; set; }

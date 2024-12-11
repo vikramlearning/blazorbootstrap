@@ -1,34 +1,36 @@
 ﻿<Tabs @ref="tabs" EnableFadeEffect="true">
+    
     <Tab Title="Home" Active="true">
-        <Content>
+        <ChildContent>
             <p class="mt-3">This is the placeholder content for the <b>Home</b> tab.</p>
-        </Content>
+        </ChildContent>
     </Tab>
     <Tab Title="Profile">
-        <Content>
+        <ChildContent>
             <p class="mt-3">This is the placeholder content for the <b>Profile</b> tab.</p>
-        </Content>
+        </ChildContent>
     </Tab>
     <Tab Title="Contact">
-        <Content>
+        <ChildContent>
             <p class="mt-3">This is the placeholder content for the <b>Contact</b> tab.</p>
-        </Content>
+        </ChildContent>
     </Tab>
     <Tab Title="Products" Name="Products">
-        <Content>
+        <ChildContent>
             <p class="mt-3">This is the placeholder content for the <b>Products</b> tab.</p>
-        </Content>
+        </ChildContent>
     </Tab>
     <Tab Title="FAQs" Name="FAQ">
-        <Content>
+        <ChildContent>
             <p class="mt-3">This is the placeholder content for the <b>FAQs</b> tab.</p>
-        </Content>
+        </ChildContent>
     </Tab>
     <Tab Title="About">
-        <Content>
+        <ChildContent>
             <p class="mt-3">This is the placeholder content for the <b>About</b> tab.</p>
-        </Content>
+        </ChildContent>
     </Tab>
+    
 </Tabs>
 
 <Button Color="ButtonColor.Primary" @onclick="ShowFirstTabAsync">First Tab</Button>
@@ -41,10 +43,10 @@
 @code{
     Tabs tabs = default!;
 
-    private async Task ShowFirstTabAsync() => await tabs.ShowFirstTabAsync();
-    private async Task ShowSecondTabAsync() => await tabs.ShowTabByIndexAsync(1);
-    private async Task ShowThirdTabAsync() => await tabs.ShowTabByIndexAsync(2);
-    private async Task ShowProductsTabAsync() => await tabs.ShowTabByNameAsync("Products");
-    private async Task ShowFaqsAsync() => await tabs.ShowTabByNameAsync("FAQ");
-    private async Task ShowLastTabAsync() => await tabs.ShowLastTabAsync();
+    private Task ShowFirstTabAsync() => tabs.ShowFirstTabAsync();
+    private Task ShowSecondTabAsync() => tabs.ShowTabByIndexAsync(1);
+    private Task ShowThirdTabAsync() => tabs.ShowTabByIndexAsync(2);
+    private Task ShowProductsTabAsync() => tabs.ShowTabByNameAsync("Products");
+    private Task ShowFaqsAsync() => tabs.ShowTabByNameAsync("FAQ");
+    private Task ShowLastTabAsync() => tabs.ShowLastTabAsync();
 }

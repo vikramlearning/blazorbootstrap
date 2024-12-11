@@ -1,4 +1,4 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<img @ref="@Element" id="@Id" src="@Src" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes" alt="@Alt" />
+<img @ref="@Element" id="@Id" src="@Src" class="@(IsResponsive ? BootstrapClass.ImageFluid : "") @(IsThumbnail ? BootstrapClass.ImageThumbnail : "") @Class" @attributes="@AdditionalAttributes" alt="@Alt" />

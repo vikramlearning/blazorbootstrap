@@ -1,33 +1,21 @@
 ﻿<Accordion @ref="accordion1" Class="mb-3">
     <AccordionItem Title="Home" Name="AccordionItem1">
-        <Content>
-            <b>This is the first item's accordion body.</b> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-        </Content>
+        <b>This is the first item's accordion body.</b> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
     </AccordionItem>
     <AccordionItem Title="Profile" Name="AccordionItem2">
-        <Content>
-            <b>This is the second item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-        </Content>
+        <b>This is the second item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
     </AccordionItem>
     <AccordionItem Title="Contact" Name="AccordionItem3">
-        <Content>
-            <b>This is the third item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-        </Content>
+        <b>This is the third item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
     </AccordionItem>
     <AccordionItem Title="Products" Name="Products">
-        <Content>
-            <b>This is the fourth item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-        </Content>
+        <b>This is the fourth item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
     </AccordionItem>
     <AccordionItem Title="FAQs" Name="FAQ">
-        <Content>
-            <b>This is the fifth item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-        </Content>
+        <b>This is the fifth item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
     </AccordionItem>
     <AccordionItem Title="About" Name="AccordionItem6">
-        <Content>
-            <b>This is the sixth item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
-        </Content>
+        <b>This is the sixth item's accordion body.</b> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the .accordion-body, though the transition does limit overflow.
     </AccordionItem>
 </Accordion>
 
@@ -52,16 +40,16 @@
 @code {
     private Accordion accordion1 = default!;
 
-    private async Task ShowFirstAccordionItemAsync() => await accordion1.ShowFirstAccordionItemAsync();
-    private async Task ShowSecondAccordionItemAsync() => await accordion1.ShowAccordionItemByIndexAsync(1);
-    private async Task ShowThirdAccordionItemAsync() => await accordion1.ShowAccordionItemByIndexAsync(2);
-    private async Task ShowProductsAccordionItemAsync() => await accordion1.ShowAccordionItemByNameAsync("Products");
-    private async Task ShowFaqsAccordionItemAsync() => await accordion1.ShowAccordionItemByNameAsync("FAQ");
-    private async Task ShowLastAccordionItemAsync() => await accordion1.ShowLastAccordionItemAsync();
-    private async Task HideFirstAccordionItemAsync() => await accordion1.HideFirstAccordionItemAsync();
-    private async Task HideSecondAccordionItemAsync() => await accordion1.HideAccordionItemByIndexAsync(1);
-    private async Task HideThirdAccordionItemAsync() => await accordion1.HideAccordionItemByIndexAsync(2);
-    private async Task HideProductsAccordionItemAsync() => await accordion1.HideAccordionItemByNameAsync("Products");
-    private async Task HideFaqsAccordionItemAsync() => await accordion1.HideAccordionItemByNameAsync("FAQ");
-    private async Task HideLastAccordionItemAsync() => await accordion1.HideLastAccordionItemAsync();
+    private Task ShowFirstAccordionItemAsync() => accordion1.ShowFirstAccordionItemAsync();
+    private Task ShowSecondAccordionItemAsync() => accordion1.ShowAccordionItemByIndexAsync(1);
+    private Task ShowThirdAccordionItemAsync() => accordion1.ShowAccordionItemByIndexAsync(2);
+    private Task ShowProductsAccordionItemAsync() => accordion1.ShowAccordionItemByNameAsync("Products");
+    private Task ShowFaqsAccordionItemAsync() => accordion1.ShowAccordionItemByNameAsync("FAQ");
+    private Task ShowLastAccordionItemAsync() => accordion1.ShowLastAccordionItemAsync();
+    private Task HideFirstAccordionItemAsync() => accordion1.HideFirstAccordionItemAsync();
+    private Task HideSecondAccordionItemAsync() => accordion1.HideAccordionItemByIndexAsync(1);
+    private Task HideThirdAccordionItemAsync() => accordion1.HideAccordionItemByIndexAsync(2);
+    private Task HideProductsAccordionItemAsync() => accordion1.HideAccordionItemByNameAsync("Products");
+    private Task HideFaqsAccordionItemAsync() => accordion1.HideAccordionItemByNameAsync("FAQ");
+    private Task HideLastAccordionItemAsync() => accordion1.HideLastAccordionItemAsync();
 }

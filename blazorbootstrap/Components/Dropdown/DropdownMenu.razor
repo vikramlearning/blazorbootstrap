@@ -1,6 +1,9 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<ul @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-    @ChildContent
+<ul @ref="@Element" id="@Id" class="@BootstrapClass.DropdownMenu @Position.ToDropdownMenuPositionClass() @Class" @attributes="@AdditionalAttributes">
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
 </ul>

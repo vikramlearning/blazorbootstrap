@@ -9,7 +9,7 @@ public static class ExpressionExtensions
         var parameterExpression = leftExpression.Parameters[0];
 
         SubstExpressionVisitor substExpressionVisitor = new();
-        substExpressionVisitor.subst[rightExpression.Parameters[0]] = parameterExpression;
+        substExpressionVisitor.Subst[rightExpression.Parameters[0]] = parameterExpression;
 
         Expression body = Expression.AndAlso(leftExpression.Body, substExpressionVisitor.Visit(rightExpression.Body));
 
@@ -304,31 +304,31 @@ public static class ExpressionExtensions
 
     #region Enum
 
-    public static ConstantExpression GetEnumConstantExpression<TItem>(FilterItem filterItem, Type propertyType, string propertyTypeName)
+    public static ConstantExpression GetEnumConstantExpression<TItem>(FilterItem filterItem, Type? propertyType)
     {
         ConstantExpression? value = null;
 
         if (propertyType is not null && propertyType.IsEnum)
         {
-            _ = Enum.TryParse(propertyType, filterItem.Value, out object filterValue);
+            _ = Enum.TryParse(propertyType, filterItem.Value, out var filterValue);
             value = Expression.Constant(filterValue);
         }
 
         return value!;
     }
 
-    public static Expression<Func<TItem, bool>> GetEnumEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, Type propertyType, string propertyTypeName)
+    public static Expression<Func<TItem, bool>> GetEnumEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, Type propertyType)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.Equal(property, GetEnumConstantExpression<TItem>(filterItem, propertyType, propertyTypeName));
+        var expression = Expression.Equal(property, GetEnumConstantExpression<TItem>(filterItem, propertyType));
 
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
-    public static Expression<Func<TItem, bool>> GetEnumNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, Type propertyType, string propertyTypeName)
+    public static Expression<Func<TItem, bool>> GetEnumNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, Type propertyType)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.NotEqual(property, GetEnumConstantExpression<TItem>(filterItem, propertyType, propertyTypeName));
+        var expression = Expression.NotEqual(property, GetEnumConstantExpression<TItem>(filterItem, propertyType));
 
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
@@ -337,28 +337,24 @@ public static class ExpressionExtensions
 
     #region Guid
 
-    public static ConstantExpression GetGuidConstantExpression<TItem>(FilterItem filterItem, string propertyTypeName)
+    public static ConstantExpression GetGuidConstantExpression(FilterItem filterItem)
     {
-        ConstantExpression? value = null;
-
-        _ = Guid.TryParse(filterItem.Value, out Guid filterValue);
-        value = Expression.Constant(filterValue);
-
-        return value!;
+        _ = Guid.TryParse(filterItem.Value, out var filterValue);
+ return Expression.Constant(filterValue);
     }
 
-    public static Expression<Func<TItem, bool>> GetGuidEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    public static Expression<Func<TItem, bool>> GetGuidEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.Equal(property, GetGuidConstantExpression<TItem>(filterItem, propertyTypeName));
+        var expression = Expression.Equal(property, GetGuidConstantExpression(filterItem));
 
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
 
-    public static Expression<Func<TItem, bool>> GetGuidNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem, string propertyTypeName)
+    public static Expression<Func<TItem, bool>> GetGuidNotEqualExpressionDelegate<TItem>(ParameterExpression parameterExpression, FilterItem filterItem)
     {
         var property = Expression.Property(parameterExpression, filterItem.PropertyName);
-        var expression = Expression.NotEqual(property, GetGuidConstantExpression<TItem>(filterItem, propertyTypeName));
+        var expression = Expression.NotEqual(property, GetGuidConstantExpression(filterItem));
 
         return Expression.Lambda<Func<TItem, bool>>(expression, parameterExpression);
     }
@@ -425,18 +421,18 @@ public static class ExpressionExtensions
         if (propertyTypeName == StringConstants.PropertyTypeNameEnum)
             return filterItem.Operator switch
             {
-                FilterOperator.Equals => GetEnumEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType!, propertyTypeName),
-                FilterOperator.NotEquals => GetEnumNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType!, propertyTypeName),
-                _ => GetEnumEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType!, propertyTypeName)
+                FilterOperator.Equals => GetEnumEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType!),
+                FilterOperator.NotEquals => GetEnumNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType!),
+                _ => GetEnumEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyType!)
             };
 
         // Guid
         if (propertyTypeName == StringConstants.PropertyTypeNameGuid)
             return filterItem.Operator switch
             {
-                FilterOperator.Equals => GetGuidEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                FilterOperator.NotEquals => GetGuidNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName),
-                _ => GetGuidEqualExpressionDelegate<TItem>(parameterExpression, filterItem, propertyTypeName)
+                FilterOperator.Equals => GetGuidEqualExpressionDelegate<TItem>(parameterExpression, filterItem),
+                FilterOperator.NotEquals => GetGuidNotEqualExpressionDelegate<TItem>(parameterExpression, filterItem),
+                _ => GetGuidEqualExpressionDelegate<TItem>(parameterExpression, filterItem)
             };
 
         return null;
@@ -784,7 +780,7 @@ public static class ExpressionExtensions
         var parameterExpression = leftExpression.Parameters[0];
 
         SubstExpressionVisitor substExpressionVisitor = new();
-        substExpressionVisitor.subst[rightExpression.Parameters[0]] = parameterExpression;
+        substExpressionVisitor.Subst[rightExpression.Parameters[0]] = parameterExpression;
 
         Expression body = Expression.OrElse(leftExpression.Body, substExpressionVisitor.Visit(rightExpression.Body));
 
@@ -798,13 +794,13 @@ internal class SubstExpressionVisitor : ExpressionVisitor
 {
     #region Fields and Constants
 
-    public Dictionary<Expression, Expression> subst = new();
+    public Dictionary<Expression, Expression> Subst = new();
 
     #endregion
 
     #region Methods
 
-    protected override Expression VisitParameter(ParameterExpression parameterExpression) => subst.TryGetValue(parameterExpression, out var newExpression) ? newExpression : parameterExpression;
+    protected override Expression VisitParameter(ParameterExpression parameterExpression) => Subst.TryGetValue(parameterExpression, out var newExpression) ? newExpression : parameterExpression;
 
     #endregion
 }

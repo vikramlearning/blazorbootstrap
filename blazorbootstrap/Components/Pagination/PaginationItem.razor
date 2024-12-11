@@ -1,6 +1,6 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<li id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<li id="@Id" class="@BootstrapClass.PaginationItem @(Active ? BootstrapClass.PaginationItemActive : "") @(Disabled ? BootstrapClass.PaginationItemDisabled : "") @Class" @attributes="@AdditionalAttributes">
     <PaginationLink LinkIcon="@LinkIcon" LinkText="@LinkText" Text="@Text" LinkAriaLabel="@AriaLabel"/>
 </li>

@@ -4,6 +4,6 @@ public enum Alignment
 {
     None,
     Start,
-    Center,
+    Center, 
     End
 }

@@ -2,16 +2,8 @@
 
 public partial class CarouselCaption : BlazorBootstrapComponentBase
 {
-    #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(
-            Class,
-            (BootstrapClass.CarouselCaption, true),
-            (BootstrapClass.DisplayBlock, true),
-            (BootstrapClass.DisplayMediumBlock, true)
-        );
-
+    #region Properties, Indexers 
+    
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// </summary>

@@ -5,18 +5,18 @@
 <input @ref="@Element"
        type="range"
        id="@Id"
-       class="@($"{ClassNames} {fieldCssClasses} {(showTickMarks ? "bb-form-range-input" : "")}".Trim())"
-       style="@StyleNames"
+       class="@($"{BootstrapClass.FormRange} {Class} {FieldCssClasses} {(ShowTickMarks ? "bb-form-range-input" : "")}")"
+       
        min="@GetInvariantNumber(Min)"
        max="@GetInvariantNumber(Max)"
        step="@Step.ToString(CultureInfo.InvariantCulture)"
        value="@GetInvariantNumber(Value)"
-       list="@(showTickMarks ? $"datalist-{Id}" : "")"
+       list="@(ShowTickMarks ? $"datalist-{Id}" : "")"
        disabled="@Disabled"
        @attributes="@AdditionalAttributes"
        @onchange="OnChange" />
 
-@if (showTickMarks)
+@if (ShowTickMarks)
 {
     <datalist class="bb-range-data-list" id="@($"datalist-{Id}")">
         @foreach (var item in TickMarks)

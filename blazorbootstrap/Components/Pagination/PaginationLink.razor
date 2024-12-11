@@ -1,11 +1,11 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<a id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<a id="@Id" class="@BootstrapClass.PaginationLink @Class" @attributes="@AdditionalAttributes">
     @if (Enum.IsDefined(typeof(IconName), LinkIcon) && LinkIcon != IconName.None)
     {
         <span aria-hidden="true">
-            <Icon Name="LinkIcon"/>
+            <Icon Name="LinkIcon" />
         </span>
     }
     else

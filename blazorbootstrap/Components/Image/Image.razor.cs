@@ -1,14 +1,41 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a visual image displayed on the web page.
+/// </summary>
 public partial class Image: BlazorBootstrapComponentBase
 {
+    #region Methods
+
+    /// <summary>
+    /// Parameters are loaded manually for sake of performance.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/blazor/performance#implement-setparametersasync-manually"/>
+    /// </summary> 
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        foreach (var parameter in parameters)
+        {
+            switch (parameter.Name)
+            {
+                case nameof(Alt): Alt = (string)parameter.Value!; break;
+                case nameof(Class): Class = (string)parameter.Value!; break;
+                case nameof(Id): Id = (string)parameter.Value!; break;
+                case nameof(IsResponsive): IsResponsive = (bool)parameter.Value!; break;
+                case nameof(IsThumbnail): IsThumbnail = (bool)parameter.Value!; break;
+                case nameof(Src): Src = (string)parameter.Value!; break;
+                
+
+                default: AdditionalAttributes[parameter.Name] = parameter.Value; break;
+            }
+        }
+        return base.SetParametersAsync(ParameterView.Empty);
+    }
+
+    #endregion
+
+
     #region Properties, Indexers
-
-    protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.ImageFluid, IsResponsive),
-            (BootstrapClass.ImageThumbnail, IsThumbnail));
-
+     
     /// <summary>
     /// Gets or sets the alternate text for the image.
     /// </summary>
