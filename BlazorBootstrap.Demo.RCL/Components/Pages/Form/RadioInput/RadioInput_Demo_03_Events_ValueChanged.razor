@@ -1,12 +1,21 @@
-﻿<RadioInput Label="Default checkbox" Value="isChecked" ValueExpression="() => isChecked" ValueChanged="(value) => CheckboxValueChanged(value)" />
-Current value: @isChecked
+﻿<RadioInput Name="EnableNotifications" Label="Yes" Value="isYesChecked" ValueExpression="() => isYesChecked" ValueChanged="(value) => YesOptionSelectionChanged(value)" />
+<RadioInput Name="EnableNotifications" Label="No" Value="isNoChecked" ValueExpression="() => isNoChecked" ValueChanged="(value) => NoOptionSelectionChanged(value)" />
+
 @code
 {
-    private bool isChecked;
+    private bool isYesChecked;
+    private bool isNoChecked;
 
-    private void CheckboxValueChanged(bool value)
+    private void YesOptionSelectionChanged(bool value)
     {
-        isChecked = value;
+        isYesChecked = value;
+
+        // do something
+    }
+
+    private void NoOptionSelectionChanged(bool value)
+    {
+        isYesChecked = value;
 
         // do something
     }
