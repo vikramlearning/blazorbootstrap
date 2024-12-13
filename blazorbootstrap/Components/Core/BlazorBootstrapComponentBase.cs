@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Rendering;
-using Microsoft.Extensions.Configuration;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable, IAsyncDisposable
 {
@@ -143,8 +140,6 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     [Parameter] public string? Class { get; set; }
 
     protected virtual string? ClassNames => Class;
-
-    [Inject] protected IConfiguration Configuration { get; set; } = default!;
 
     public ElementReference Element { get; set; }
 

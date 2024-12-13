@@ -12,8 +12,8 @@ public static class RouteConstants
     public const string Demos_GettingStarted_Documentation = Demos_Prefix + "/getting-started";
 
     // AI
-    public const string Demos_AI_Prefix = Demos_Prefix + "/ai";
-    public const string Demos_AI_Chat_Documentation = Demos_AI_Prefix + "/open-ai-chat";
+    //public const string Demos_AI_Prefix = Demos_Prefix + "/ai";
+    //public const string Demos_AI_Chat_Documentation = Demos_AI_Prefix + "/open-ai-chat";
 
     // Content
     public const string Demos_Icons_Documentation = Demos_Prefix + "/icons";
