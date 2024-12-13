@@ -1,0 +1,8 @@
+﻿<div class="mb-3">
+    <TextAreaInput @bind-Value="@enteredText" Rows="3" MaxLength="5" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+
+@code {
+    private string? enteredText = null;
+}
