@@ -606,9 +606,9 @@ public partial class Markdown : BlazorBootstrapComponentBase
             // remove first blank line
             if (string.IsNullOrWhiteSpace(inputs[0]))
                 inputs.RemoveAt(0);
-
+            
             // remove last blank line
-            if (string.IsNullOrWhiteSpace(inputs[^1]))
+            if (inputs.Count > 0 && string.IsNullOrWhiteSpace(inputs[^1]))
                 inputs.RemoveAt(inputs.Count - 1);
         }
 
