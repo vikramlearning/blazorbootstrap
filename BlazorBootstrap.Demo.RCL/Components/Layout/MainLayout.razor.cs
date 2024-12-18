@@ -22,6 +22,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "401", Text = "Currency Input", Href = RouteConstants.Demos_CurrencyInput_Documentation, IconName = IconName.CurrencyDollar, ParentId = "4" },
             new (){ Id = "402", Text = "Date Input", Href = RouteConstants.Demos_DateInput_Documentation, IconName = IconName.CalendarDate, ParentId = "4" },
             new (){ Id = "403", Text = "Number Input", Href = RouteConstants.Demos_NumberInput_Documentation, IconName = IconName.InputCursor, ParentId = "4" },
+            new (){ Id = "403", Text = "Password Input", Href = RouteConstants.Demos_PasswordInput_Documentation, IconName = IconName.EyeSlashFill, ParentId = "4" },
             new (){ Id = "403", Text = "Radio Input", Href = RouteConstants.Demos_RadioInput_Documentation, IconName = IconName.RecordCircle, ParentId = "4" },
             new (){ Id = "404", Text = "Range Input", Href = RouteConstants.Demos_RangeInput_Documentation, IconName = IconName.Sliders, ParentId = "4" },
             //new (){ Id = "404", Text = "Select Input", Href = RouteConstants.Demos_SelectInput_Documentation, IconName = IconName.MenuButtonWideFill, ParentId = "4" },
