@@ -186,10 +186,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (AllowSelection)
         {
-            PrepareCheckboxIds();
-
-            if (!firstRender)
-                await RefreshSelectionAsync();
+            PrepareCheckboxIds(); 
+            await RefreshSelectionAsync();
         }
 
         requestInProgress = false;
@@ -383,6 +381,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         allItemsSelected = bool.TryParse(args?.Value?.ToString(), out var checkboxState) && checkboxState;
         selectedItems = allItemsSelected ? new HashSet<TItem>(items!) : new HashSet<TItem>();
         SelectedItemsCount = selectedItems.Count;
+        SetSelected = selectedItems;
         await CheckOrUnCheckAll();
 
         if (SelectedItemsChanged.HasDelegate)
@@ -456,8 +455,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     private async Task RefreshSelectionAsync()
     {
         selectedItems = (items?.Count ?? 0) == 0
-                            ? new HashSet<TItem>()
-                            : selectedItems?.Intersect(items!).ToHashSet() ?? new HashSet<TItem>();
+            ? new HashSet<TItem>()
+            : selectedItems?.Intersect(items!).ToHashSet() ?? new HashSet<TItem>();
 
         SelectedItemsCount = selectedItems.Count;
         allItemsSelected = SelectedItemsCount > 0 && items!.Count == SelectedItemsCount;
@@ -583,6 +582,19 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public bool AllowRowClick { get; set; }
+
+    /// <summary>
+    /// Gets or sets the grid set selection.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    [Parameter]
+    public HashSet<TItem> SetSelected
+    {
+        get => selectedItems;
+        set => selectedItems = value;
+    }
 
     /// <summary>
     /// Gets or sets the grid selection.
