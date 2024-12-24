@@ -1,0 +1,20 @@
+﻿<div class="mb-3">
+    <TextAreaInput @bind-Value="@enteredText" Rows="3" Disabled="@disabled" Placeholder="Enter text" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
+
+@code {
+    private string? enteredText = null;
+
+    private bool disabled = true;
+
+    private void Enable() => disabled = false;
+
+    private void Disable() => disabled = true;
+
+    private void Toggle() => disabled = !disabled;
+}

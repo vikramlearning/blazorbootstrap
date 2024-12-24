@@ -1,0 +1,28 @@
+﻿<CheckboxInput @ref="checkboxInputRef1" Label="Default checkbox" @bind-Value="isChecked" />
+<CheckboxInput @ref="checkboxInputRef2" Label="Checked checkbox" @bind-Value="isChecked2" />
+
+<div class="mt-3">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.ExtraSmall" @onclick="Enable"> Enable </Button>
+    <Button Color="ButtonColor.Secondary" Size="ButtonSize.ExtraSmall" @onclick="Disable"> Disable </Button>
+</div>
+
+@code
+{
+    private CheckboxInput? checkboxInputRef1;
+    private CheckboxInput? checkboxInputRef2;
+
+    private bool isChecked;
+    private bool isChecked2 = true;
+
+    private void Disable()
+    {
+        checkboxInputRef1.Disable();
+        checkboxInputRef2.Disable();
+    }
+
+    private void Enable()
+    {
+        checkboxInputRef1.Enable();
+        checkboxInputRef2.Enable();
+    }
+}

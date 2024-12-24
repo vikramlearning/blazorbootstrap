@@ -13,6 +13,7 @@
     </div>
     <div class="toast-body">
         @ToastMessage.Message
+        @ToastMessage.Content
     </div>
     <Progress Height="3">
         <ProgressBar @ref="toastProgressBar" Color="@progressColor" Width="toastProgressBarWidth"/>
