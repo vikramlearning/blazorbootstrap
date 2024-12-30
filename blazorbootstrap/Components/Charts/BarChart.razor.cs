@@ -5,6 +5,8 @@ public partial class BarChart : BlazorBootstrapChart
     #region Fields and Constants
 
     private const string _jsObjectName = "window.blazorChart.bar";
+    
+    private DotNetObjectReference<BarChart> objRef;
 
     #endregion
 
@@ -18,6 +20,12 @@ public partial class BarChart : BlazorBootstrapChart
     #endregion
 
     #region Methods
+    
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        objRef ??= DotNetObjectReference.Create(this);
+    }
 
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {

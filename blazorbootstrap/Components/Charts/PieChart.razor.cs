@@ -6,6 +6,8 @@ public partial class PieChart : BlazorBootstrapChart
 
     private const string _jsObjectName = "window.blazorChart.pie";
 
+    private DotNetObjectReference<PieChart> objRef;
+
     #endregion
 
     #region Constructors
@@ -18,6 +20,12 @@ public partial class PieChart : BlazorBootstrapChart
     #endregion
 
     #region Methods
+
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        objRef ??= DotNetObjectReference.Create(this);
+    }
 
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
@@ -117,7 +125,8 @@ public partial class PieChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PieChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PieChartOptions)chartOptions, plugins);
+            var options = (PieChartOptions)chartOptions;
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, options, plugins, objRef);
         }
     }
 
