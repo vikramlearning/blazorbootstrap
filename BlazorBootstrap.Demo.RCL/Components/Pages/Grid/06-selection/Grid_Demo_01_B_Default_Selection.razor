@@ -1,11 +1,9 @@
 ﻿<Grid TItem="Employee1"
-Class="table table-hover table-bordered"
-DataProvider="EmployeesDataProvider"
-AllowFiltering="true"
-AllowSelection="true"
-SelectionMode="GridSelectionMode.Multiple"
-SelectedItemsChanged="OnSelectedItemsChanged"
-Responsive="true">
+      Class="table table-hover table-bordered"
+      DataProvider="EmployeesDataProvider"
+      AllowSelection="true"
+      @bind-SelectedItems="@selectedEmployees"
+      Responsive="true">
 
     <GridColumns>
         <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
@@ -44,7 +42,9 @@ Responsive="true">
 @code {
     private IEnumerable<Employee1> employees = default!;
 
-    private HashSet<Employee1> selectedEmployees = new();
+    private HashSet<Employee1> selectedEmployees = new(){
+        new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true }
+    };
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
@@ -74,8 +74,7 @@ Responsive="true">
 
     private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
     {
-        selectedEmployees = employees;
-        StateHasChanged();
+        selectedEmployees = employees is not null && employees.Any() ? employees : new();
         return Task.CompletedTask;
     }
 }

@@ -39,8 +39,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private HashSet<TItem> selectedItems = new();
 
-    public int SelectedItemsCount = 0;
-
     private int? totalCount = null;
 
     #endregion
@@ -63,6 +61,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         headerCheckboxId = IdUtility.GetNextId();
 
         pageSize = PageSize;
+        selectedItems = SelectedItems!;
 
         base.OnInitialized();
     }
@@ -91,6 +90,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                 pageSize = PageSize;
                 _ = ResetPageNumberAsync();
                 SaveGridSettingsAsync();
+            }
+
+            if (!mustRefreshData && selectedItems != SelectedItems)
+            {
+                mustRefreshData = true;
+                SelectedItems = selectedItems;
             }
 
             // We want to trigger the first data load when we've collected the initial set of columns
@@ -192,9 +197,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         if (AllowSelection)
         {
             PrepareCheckboxIds();
-
-            if (!firstRender)
-                await RefreshSelectionAsync();
+            await RefreshSelectionAsync();
         }
 
         requestInProgress = false;
@@ -354,7 +357,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     /// <param name="item"></param>
     /// <returns>bool</returns>
-    private bool IsItemSelected(TItem item) => selectedItems.Contains(item);
+    private bool IsItemSelected(TItem item) => selectedItems?.Contains(item) ?? false;
 
     private async Task LoadGridSettingsAsync()
     {
@@ -417,12 +420,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         if (SelectionMode == GridSelectionMode.Multiple)
         {
             _ = isChecked ? selectedItems.Add(item) : selectedItems.Remove(item);
-            SelectedItemsCount = selectedItems.Count;
-            allItemsSelected = SelectedItemsCount == (items?.Count ?? 0);
+            allItemsSelected = (selectedItems.Count == (items?.Count ?? 0));
 
             if (allItemsSelected)
                 await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
-            else if (SelectedItemsCount == 0)
+            else if (selectedItems.Count == 0)
                 await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
             else
                 await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Indeterminate);
@@ -430,7 +432,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         else
         {
             selectedItems = isChecked ? new HashSet<TItem> { item } : new HashSet<TItem>();
-            SelectedItemsCount = selectedItems.Count;
             allItemsSelected = false;
             await CheckOrUnCheckAll();
             await SetCheckboxStateAsync(id, isChecked ? CheckboxState.Checked : CheckboxState.Unchecked);
@@ -438,6 +439,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (SelectedItemsChanged.HasDelegate)
             await SelectedItemsChanged.InvokeAsync(selectedItems);
+        else
+            SelectedItems = selectedItems;
     }
 
     private async Task OnScroll(EventArgs e)
@@ -465,18 +468,19 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                             ? new HashSet<TItem>()
                             : selectedItems?.Intersect(items!).ToHashSet() ?? new HashSet<TItem>();
 
-        SelectedItemsCount = selectedItems.Count;
-        allItemsSelected = SelectedItemsCount > 0 && items!.Count == SelectedItemsCount;
+        allItemsSelected = selectedItems.Count > 0 && items!.Count == selectedItems.Count;
 
         if (allItemsSelected)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
-        else if (SelectedItemsCount > 0)
+        else if (selectedItems.Count > 0)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Indeterminate);
         else
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
 
         if (SelectedItemsChanged.HasDelegate)
             await SelectedItemsChanged.InvokeAsync(selectedItems);
+        else
+            SelectedItems = selectedItems;
     }
 
     private async Task RowClick(TItem item, EventArgs args)
@@ -508,7 +512,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         allItemsSelected = selectAll;
         selectedItems = allItemsSelected ? new HashSet<TItem>(items!) : new HashSet<TItem>();
-        SelectedItemsCount = allItemsSelected ? selectedItems.Count : 0;
 
         if (allItemsSelected)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
@@ -519,6 +522,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (SelectedItemsChanged.HasDelegate)
             await SelectedItemsChanged.InvokeAsync(selectedItems);
+        else
+            SelectedItems = selectedItems;
     }
 
     private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState) => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
@@ -897,6 +902,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public Func<TItem, string>? RowClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets the selected items.
+    /// </summary>
+    [Parameter]
+    public HashSet<TItem>? SelectedItems { get; set; }
 
     /// <summary>
     /// This event is fired when the item selection changes.
