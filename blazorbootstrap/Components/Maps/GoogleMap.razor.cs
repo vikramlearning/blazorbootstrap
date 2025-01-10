@@ -82,7 +82,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
         );
 
     /// <summary>
-    /// Gets or sets the Google Maps Map ID.
+    /// Gets or sets the Google Map ID. It essentially allows for custom styled maps from Google Maps Platforms, see: https://developers.google.com/maps/documentation/javascript/map-ids/mapid-over
     /// </summary>
     [Parameter]
     public string? MapId { get; set; }
@@ -105,7 +105,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     [Parameter] 
     public bool Clickable { get; set; }
 
-    private string? GoogleMapsJsFileUrl => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&libraries=maps,marker";
+    private string? GoogleMapsJsFileUrl => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&libraries=maps,marker{(MapId != null ? $"&map_ids={MapId}" : "")}";
 
     /// <summary>
     /// Gets or sets the height of the <see cref="GoogleMap" />.

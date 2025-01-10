@@ -3,8 +3,8 @@
   <PropertyGroup>
 
     <PackageId>Blazor.Bootstrap</PackageId>
-    <Version>3.2.3</Version>
-    <PackageVersion>3.2.3</PackageVersion>
+    <Version>3.4.0</Version>
+    <PackageVersion>3.4.0</PackageVersion>
 
     <!--<PackageIconUrl></PackageIconUrl>-->
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
