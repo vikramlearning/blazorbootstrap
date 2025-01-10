@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, IDisposable, IAsyncDisposable
 {
@@ -137,8 +135,6 @@ public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, 
     [Parameter] public string? Class { get; set; }
 
     protected virtual string? ClassNames => Class;
-
-    [Inject] protected IConfiguration Configuration { get; set; } = default!;
 
     public ElementReference Element { get; set; }
 

@@ -1,0 +1,13 @@
+﻿<ThemeSwitcher OnThemeChanged="OnThemeChanged" />
+
+@code
+{
+    [Inject]
+    ToastService ToastService { get; set; } = default!;
+
+    private void OnThemeChanged(string themeName)
+    {
+        // do something when the theme changes
+        ToastService.Notify(new(ToastType.Success, $"Theme changed to {themeName}"));
+    }
+}

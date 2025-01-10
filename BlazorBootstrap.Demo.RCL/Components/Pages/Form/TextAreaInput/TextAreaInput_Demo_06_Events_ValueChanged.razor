@@ -1,0 +1,15 @@
+﻿<div class="mb-3">
+    <TextAreaInput Value="@enteredText" ValueExpression="() => enteredText" ValueChanged="(value) => TextChanged(value)" Rows="3" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+
+@code {
+    private string? enteredText = null;
+
+    private void TextChanged(string? value)
+    {
+        enteredText = value;
+
+        // do something
+    }
+}

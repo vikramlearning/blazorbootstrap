@@ -1,0 +1,13 @@
+﻿<div class="mb-3">
+    <TextInput @bind-Value="@enteredText" TextAlignment="Alignment.Center" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+<div class="mb-3">
+    <TextInput @bind-Value="@enteredText2" TextAlignment="Alignment.End" />
+</div>
+<div class="mb-3">Entered text: @enteredText2</div>
+
+@code {
+    private string? enteredText = "sample text";
+    private string? enteredText2 = "sample text 2";
+}
