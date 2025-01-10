@@ -531,10 +531,15 @@ window.blazorBootstrap = {
         get: (elementId) => {
             return window.blazorBootstrap.googlemaps.instances[elementId];
         },
-        initialize: (elementId, zoom, center, markers, clickable, clusterOptions, dotNetHelper) => {
+        initialize: (elementId, zoom, center, markers, clickable, clusterOptions, mapId, dotNetHelper) => {
             window.blazorBootstrap.googlemaps.markerEls[elementId] ??= [];
-                        
-            let mapOptions = { center: center, zoom: zoom, mapId: elementId };
+            let id = elementId;
+            
+            // in case a person wants to use a custom map
+            if(mapId) 
+                id = mapId;
+            
+            let mapOptions = { center: center, zoom: zoom, mapId: id };
             let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
             window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable, clusterOptions);

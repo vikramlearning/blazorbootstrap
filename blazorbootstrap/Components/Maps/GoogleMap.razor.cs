@@ -49,7 +49,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// <returns>A completed task.</returns>
     public ValueTask RefreshAsync()
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, objRef);
+        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, MapId, objRef);
 
         return ValueTask.CompletedTask;
     }
@@ -67,7 +67,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
 
     private void OnScriptLoad()
     {
-        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, objRef));
+        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, MapId, objRef));
     }
 
     #endregion
