@@ -82,6 +82,12 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
         );
 
     /// <summary>
+    /// Gets or sets the Google Maps Map ID.
+    /// </summary>
+    [Parameter]
+    public string? MapId { get; set; }
+    
+    /// <summary>
     /// Gets or sets the Google Map API key.
     /// </summary>
     [Parameter]

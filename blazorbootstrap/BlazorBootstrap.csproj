@@ -3,8 +3,8 @@
   <PropertyGroup>
 
     <PackageId>Blazor.Bootstrap</PackageId>
-    <Version>3.1.1</Version>
-    <PackageVersion>3.1.1</PackageVersion>
+    <Version>3.2.3</Version>
+    <PackageVersion>3.2.3</PackageVersion>
 
     <!--<PackageIconUrl></PackageIconUrl>-->
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -54,4 +54,21 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\**\*">
+      <Pack>true</Pack>
+      <PackagePath>wwwroot</PackagePath>
+    </None>
+
+    <Content Update="wwwroot\**\*">
+      <Pack>true</Pack>
+      <PackagePath>staticwebassets</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="CopyAssets" BeforeTargets="Pack">
+    <Copy SourceFiles="wwwroot\blazor.bootstrap.js"
+          DestinationFolder="$(OutDir)wwwroot" />
+  </Target>
 </Project>
