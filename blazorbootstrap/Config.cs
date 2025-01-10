@@ -1,5 +1,4 @@
 ﻿using BlazorBootstrap;
-using Microsoft.Extensions.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -12,7 +11,7 @@ public static class Config
     /// </summary>
     /// <param name="services"></param>
     /// <returns>IServiceCollection</returns>
-    public static IServiceCollection AddBlazorBootstrap(this IServiceCollection services, IConfiguration configuration = null!)
+    public static IServiceCollection AddBlazorBootstrap(this IServiceCollection services)
     {
         services.AddScoped<BreadcrumbService>();
         services.AddScoped<ModalService>();

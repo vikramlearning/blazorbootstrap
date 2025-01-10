@@ -92,9 +92,12 @@ public static class BootstrapClass
 
     public const string FormCheck = "form-check";
     public const string FormCheckInput = "form-check-input";
+    public const string FormCheckLabel = "form-check-label";
     public const string FormCheckReverse = "form-check-reverse";
     public const string FormControl = "form-control";
+    public const string FormLabel = "form-label";
     public const string FormRange = "form-range";
+    public const string FormSelect = "form-select";
     public const string FormSwitch= "form-switch";
 
     public const string ImageFluid = "img-fluid";

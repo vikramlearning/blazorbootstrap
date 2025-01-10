@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap.Demo.RCL;
 
-public partial class Demo : ComponentBase
+public partial class Demo : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
@@ -10,12 +10,12 @@ public partial class Demo : ComponentBase
 
     private string? clipboardTooltipTitle = "Copy to clipboard";
 
-    private string? snippet;
-
     /// <summary>
     /// A reference to this component instance for use in JavaScript calls.
     /// </summary>
     private DotNetObjectReference<Demo> objRef = default!;
+
+    private string? snippet;
 
     #endregion
 
@@ -102,6 +102,8 @@ public partial class Demo : ComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames => BuildClassNames(Class, ("bd-example-snippet bd-code-snippet", true));
 
     [Inject] protected IJSRuntime JS { get; set; } = default!;
 

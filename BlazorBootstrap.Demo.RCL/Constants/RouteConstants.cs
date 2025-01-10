@@ -12,8 +12,8 @@ public static class RouteConstants
     public const string Demos_GettingStarted_Documentation = Demos_Prefix + "/getting-started";
 
     // AI
-    public const string Demos_AI_Prefix = Demos_Prefix + "/ai";
-    public const string Demos_AI_Chat_Documentation = Demos_AI_Prefix + "/open-ai-chat";
+    //public const string Demos_AI_Prefix = Demos_Prefix + "/ai";
+    //public const string Demos_AI_Chat_Documentation = Demos_AI_Prefix + "/open-ai-chat";
 
     // Content
     public const string Demos_Icons_Documentation = Demos_Prefix + "/icons";
@@ -22,11 +22,17 @@ public static class RouteConstants
     // Forms
     public const string Demos_Forms_Prefix = Demos_Prefix + "/form";
     public const string Demos_AutoComplete_Documentation = Demos_Forms_Prefix + "/autocomplete";
+    public const string Demos_CheckboxInput_Documentation = Demos_Forms_Prefix + "/checkbox-input";
     public const string Demos_CurrencyInput_Documentation = Demos_Forms_Prefix + "/currency-input";
     public const string Demos_DateInput_Documentation = Demos_Forms_Prefix + "/date-input";
     public const string Demos_NumberInput_Documentation = Demos_Forms_Prefix + "/number-input";
+    public const string Demos_PasswordInput_Documentation = Demos_Forms_Prefix + "/password-input";
+    public const string Demos_RadioInput_Documentation = Demos_Forms_Prefix + "/radio-input";
     public const string Demos_RangeInput_Documentation = Demos_Forms_Prefix + "/range-input";
+    public const string Demos_SelectInput_Documentation = Demos_Forms_Prefix + "/select-input";
     public const string Demos_Switch_Documentation = Demos_Forms_Prefix + "/switch";
+    public const string Demos_TextInput_Documentation = Demos_Forms_Prefix + "/text-input";
+    public const string Demos_TextAreaInput_Documentation = Demos_Forms_Prefix + "/text-area-input";
     public const string Demos_TimeInput_Documentation = Demos_Forms_Prefix + "/time-input";
 
     // Components
@@ -79,6 +85,7 @@ public static class RouteConstants
     public const string Demos_SortableList_Documentation = Demos_Prefix + "/sortable-list";
     public const string Demos_Spinners_Documentation = Demos_Prefix + "/spinners";
     public const string Demos_Tabs_Documentation = Demos_Prefix + "/tabs";
+    public const string Demos_ThemeSwitcher_Documentation = Demos_Prefix + "/theme-switcher";
     public const string Demos_Toasts_Documentation = Demos_Prefix + "/toasts";
     public const string Demos_Tooltips_Documentation = Demos_Prefix + "/tooltips";
 

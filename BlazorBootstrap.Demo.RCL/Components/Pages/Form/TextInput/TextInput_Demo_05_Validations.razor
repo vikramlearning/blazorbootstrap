@@ -1,0 +1,80 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">First Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TextInput @bind-Value="@employee.FirstName" Placeholder="Enter first name" />
+            <ValidationMessage For="@(() => employee.FirstName)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Last Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TextInput @bind-Value="@employee.LastName" Placeholder="Enter last name" />
+            <ValidationMessage For="@(() => employee.LastName)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+        </div>
+    </div>
+
+</EditForm>
+
+@code {
+    private Employee employee = new();
+    private EditContext? editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(employee);
+        base.OnInitialized();
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        // additional check
+        if (editContext.Validate())
+        {
+            // do something
+            // submit the form
+            Console.WriteLine("Form submitted successfully");
+        }
+    }
+
+    private void ResetForm()
+    {
+        employee = new();
+        editContext = new EditContext(employee);
+    }
+
+    public class Employee
+    {
+        [Required(ErrorMessage = "First name required.")]
+        public string? FirstName { get; set; }
+
+        [Required(ErrorMessage = "Last name required.")]
+        public string? LastName { get; set; }
+    }
+}

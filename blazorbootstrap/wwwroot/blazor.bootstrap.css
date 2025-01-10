@@ -465,7 +465,7 @@ table > tbody > tr > td:is(.freeze-column-right).freeze-column-active {
         flex-direction: row !important;
     }
 
-    .bb-top-row {
+    .bb-top-row-sticky {
         position: sticky;
         top: 0;
         z-index: 1;
