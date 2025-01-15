@@ -35,6 +35,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private int pageSize;
 
+    private Queue<Func<Task>> queuedTasks = new();
+
     private bool requestInProgress = false;
 
     private HashSet<TItem> selectedItems = new();
@@ -54,6 +56,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         }
 
         await base.OnAfterRenderAsync(firstRender);
+
+        // process queued tasks
+        while (true)
+        {
+            if (queuedTasks.Count == 0)
+                break;
+
+            var taskToExecute = queuedTasks.Dequeue();
+
+            if (taskToExecute is not null)
+                await taskToExecute.Invoke();
+        }
     }
 
     protected override void OnInitialized()
@@ -92,11 +106,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                 SaveGridSettingsAsync();
             }
 
-            if (!mustRefreshData && selectedItems != SelectedItems)
-            {
-                mustRefreshData = true;
-                SelectedItems = selectedItems;
-            }
+            //if (!mustRefreshData && selectedItems != SelectedItems)
+            //{
+            //    mustRefreshData = true;
+            //    SelectedItems = selectedItems;
+            //}
 
             // We want to trigger the first data load when we've collected the initial set of columns
             // because they might perform some action, like setting the default sort order. 
@@ -168,13 +182,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await LoadGridSettingsAsync();
 
         var request = new GridDataProviderRequest<TItem>
-                      {
-                          PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
-                          PageSize = AllowPaging ? pageSize : 0,
-                          Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting()! : null!,
-                          Filters = AllowFiltering ? GetFilters()! : null!,
-                          CancellationToken = cancellationToken
-                      };
+        {
+            PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
+            PageSize = AllowPaging ? pageSize : 0,
+            Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting()! : null!,
+            Filters = AllowFiltering ? GetFilters()! : null!,
+            CancellationToken = cancellationToken
+        };
 
         GridDataProviderResult<TItem> result = default!;
 
@@ -507,7 +521,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task SelectAllItemsInternalAsync(bool selectAll)
     {
-        if(SelectionMode != GridSelectionMode.Multiple)
+        if (SelectionMode != GridSelectionMode.Multiple)
             return;
 
         allItemsSelected = selectAll;
@@ -526,7 +540,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             SelectedItems = selectedItems;
     }
 
-    private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState) => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
+    private Task SetCheckboxStateAsync(string id, CheckboxState checkboxState)
+    {
+        queuedTasks.Enqueue(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState));
+
+        return Task.CompletedTask;
+    }
 
     /// <summary>
     /// Set filters.

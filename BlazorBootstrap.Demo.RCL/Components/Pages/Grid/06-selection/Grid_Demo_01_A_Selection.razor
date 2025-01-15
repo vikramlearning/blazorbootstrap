@@ -2,7 +2,7 @@
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
       AllowSelection="true"
-      SelectedItemsChanged="OnSelectedItemsChanged"
+      @bind-SelectedItems="@selectedEmployees"
       Responsive="true">
 
     <GridColumns>
@@ -68,11 +68,5 @@
             new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
         };
-    }
-
-    private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
-    {
-        selectedEmployees = employees is not null && employees.Any() ? employees : new();
-        return Task.CompletedTask;
     }
 }

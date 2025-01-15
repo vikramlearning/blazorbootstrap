@@ -71,10 +71,4 @@
             new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
         };
     }
-
-    private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
-    {
-        selectedEmployees = employees is not null && employees.Any() ? employees : new();
-        return Task.CompletedTask;
-    }
 }
