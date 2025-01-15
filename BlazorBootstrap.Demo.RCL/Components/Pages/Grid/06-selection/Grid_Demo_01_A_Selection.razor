@@ -1,9 +1,7 @@
 ﻿<Grid TItem="Employee1"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
-      AllowFiltering="true"
       AllowSelection="true"
-      SelectionMode="GridSelectionMode.Multiple"
       @bind-SelectedItems="@selectedEmployees"
       Responsive="true">
 
@@ -44,10 +42,7 @@
 @code {
     private IEnumerable<Employee1> employees = default!;
 
-    private HashSet<Employee1> selectedEmployees = new(){
-        new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
-        new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
-    };
+    private HashSet<Employee1> selectedEmployees = new();
 
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
