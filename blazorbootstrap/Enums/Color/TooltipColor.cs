@@ -2,7 +2,6 @@
 
 public enum TooltipColor
 {
-    None,
     Primary,
     Secondary,
     Success,

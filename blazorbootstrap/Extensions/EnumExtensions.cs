@@ -433,8 +433,7 @@ public static class EnumExtensions
         { TooltipColor.Warning, "bb-tooltip-warning" },
         { TooltipColor.Info, "bb-tooltip-info" },
         { TooltipColor.Light, "bb-tooltip-light" },
-        { TooltipColor.Dark, "bb-tooltip-dark" },
-        { TooltipColor.None, String.Empty }
+        { TooltipColor.Dark, "bb-tooltip-dark" }
     };
      
     internal static readonly Dictionary<TooltipPlacement, string> TooltipPlacementNameMap = new()

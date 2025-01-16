@@ -298,7 +298,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see langword="0"/>.
     /// </remarks>
     [Parameter]
-    public int FilterTextboxWidth { get; set; }
+    public CssPropertyValue FilterTextboxWidth { get; set; }
 
     /// <summary>
     /// Gets or sets the filter value.

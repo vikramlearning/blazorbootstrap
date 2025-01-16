@@ -82,7 +82,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <summary>
     /// class attribute to be applied in the Html render, for usages such as CSS.
     /// </summary>
-    [Parameter] public string? Class { get; set; }
+    [Parameter] public string Class { get; set; } = "";
       
     /// <summary>
     /// Element reference for the component, to use in code when interfacing with the component.

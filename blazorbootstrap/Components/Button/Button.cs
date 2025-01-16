@@ -231,10 +231,7 @@ public sealed class Button : BlazorBootstrapComponentBase
 
             AdditionalAttributes["title"] = TooltipTitle;
 
-            if (TooltipColor != TooltipColor.None)
-            {
-                AdditionalAttributes["data-bs-custom-class"] = EnumExtensions.TooltipColorClassMap[TooltipColor];
-            }
+            AdditionalAttributes["data-bs-custom-class"] = EnumExtensions.TooltipColorClassMap[TooltipColor];
         }
         else // button disabled (or) tooltip text empty
         {
@@ -266,7 +263,6 @@ public sealed class Button : BlazorBootstrapComponentBase
                 case var _ when String.Equals(parameter.Name, nameof(Loading), StringComparison.OrdinalIgnoreCase): Loading = (bool)parameter.Value; break;
                 case var _ when String.Equals(parameter.Name, nameof(LoadingTemplate), StringComparison.OrdinalIgnoreCase): LoadingTemplate = (RenderFragment?)parameter.Value; break;
                 case var _ when String.Equals(parameter.Name, nameof(LoadingText), StringComparison.OrdinalIgnoreCase): LoadingText = (string)parameter.Value; break;
-                case var _ when String.Equals(parameter.Name, nameof(Outline), StringComparison.OrdinalIgnoreCase): Outline = (bool)parameter.Value; break;
                 case var _ when String.Equals(parameter.Name, nameof(Position), StringComparison.OrdinalIgnoreCase): Position = (Position)parameter.Value; break;
                 case var _ when String.Equals(parameter.Name, nameof(Size), StringComparison.OrdinalIgnoreCase): Size = (ButtonSize)parameter.Value; break;
                 case var _ when String.Equals(parameter.Name, nameof(TabIndex), StringComparison.OrdinalIgnoreCase): TabIndex = (int?)parameter.Value; break;
@@ -373,14 +369,6 @@ public sealed class Button : BlazorBootstrapComponentBase
     [Parameter] public string LoadingText { get; set; } = "Loading...";
     
     /// <summary>
-    /// Gets or sets the button outline.
-    /// </summary>
-    /// <remarks>
-    /// Default value is <see langword="false" />.
-    /// </remarks>
-    [Parameter] public bool Outline { get; set; }
-
-    /// <summary>
     /// Gets or sets the position.
     /// Use <see cref="Position" /> to modify a <see cref="Badge" /> and position it in the corner of a link or button.
     /// </summary>
@@ -425,9 +413,9 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// Gets or sets the button tooltip color.
     /// </summary>
     /// <remarks>
-    /// Default value is <see cref="TooltipColor.None" />.
+    /// Default value is <see cref="TooltipColor.Secondary" />.
     /// </remarks>
-    [Parameter] public TooltipColor TooltipColor { get; set; } = TooltipColor.None;
+    [Parameter] public TooltipColor TooltipColor { get; set; } = TooltipColor.Secondary;
 
     /// <summary>
     /// Gets or sets the button tooltip placement.
@@ -465,10 +453,10 @@ public sealed class Button : BlazorBootstrapComponentBase
     protected override void BuildRenderTree(RenderTreeBuilder builder)
     {
         var btnClasses = new StringBuilder(BootstrapClass.Button);
-        btnClasses.Append(' ').Append(Outline ? EnumExtensions.ButtonOutlineColorClassMap[Color] : EnumExtensions.ButtonColorClassMap[Color]);
+        btnClasses.Append(' ').Append(EnumExtensions.ButtonOutlineColorClassMap[Color]);
 
         btnClasses.Append(' ').Append(EnumExtensions.ButtonSizeClassMap[Size]);
-        if (Disabled && Type == ButtonType.Link)
+        if (Disabled)
         {
             btnClasses.Append(' ').Append(BootstrapClass.ButtonDisabled);
         }
@@ -483,11 +471,6 @@ public sealed class Button : BlazorBootstrapComponentBase
             btnClasses.Append(' ').Append(BootstrapClass.ButtonBlock);
         }
         
-        if (Loading && LoadingTemplate is not null)
-        {
-            btnClasses.Append(' ').Append(BootstrapClass.ButtonLoading);
-        }
-
         btnClasses.Append(' ').Append(EnumExtensions.PositionClassMap[Position]);
         btnClasses.Append(' ').Append(Class);
 

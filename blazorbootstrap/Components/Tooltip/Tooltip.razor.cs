@@ -126,16 +126,16 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     /// Default value is <see langword="null" />.
     /// </remarks>
     [Parameter]
-    public RenderFragment? ChildContent { get; set; } 
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the tooltip color.
     /// </summary>
     /// <remarks>
-    /// Default value is <see cref="TooltipColor.None" />.
+    /// Default value is <see cref="TooltipColor.Secondary" />.
     /// </remarks>
     [Parameter]
-    public TooltipColor Color { get; set; } = TooltipColor.None;
+    public TooltipColor Color { get; set; } = TooltipColor.Secondary;
 
     /// <summary>
     /// Gets or sets a value indicating whether to display the content as HTML instead of text.
