@@ -498,10 +498,14 @@ window.blazorBootstrap = {
                 if (clickable) {
                     markerEl.addListener("click", ({ domEvent, latLng }) => {
                         const { target } = domEvent;
-                        const infoWindow = new google.maps.InfoWindow();
-                        infoWindow.close();
-                        infoWindow.setContent(markerEl.title);
-                        infoWindow.open(markerEl.map, markerEl);
+                        
+                        // Disables info window, but enables clicking
+                        if(!marker.disableInfoWindow) {
+                            const infoWindow = new google.maps.InfoWindow();
+                            infoWindow.close();
+                            infoWindow.setContent(markerEl.title);
+                            infoWindow.open(markerEl.map, markerEl);
+                        }
                         dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
                     });
                 }
