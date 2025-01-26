@@ -18,6 +18,9 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine($"PropertyTypeName: {PropertyTypeName}");
+        Console.WriteLine("-------------------------------------");
+
         filterOperators = await GetFilterOperatorsAsync(PropertyTypeName!);
         filterOperator = FilterOperator;
         filterValue = FilterValue;
