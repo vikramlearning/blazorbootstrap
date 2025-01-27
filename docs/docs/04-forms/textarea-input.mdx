@@ -38,36 +38,250 @@ The Blazor Bootstrap `TextAreaInput` component provides a multi-line plain-text 
 
 ### Basic Usage
 
-<img src="" alt="Blazor Bootstrap  Component - " />
+<img src="https://i.imgur.com/9hYaIs3.png" alt="Blazor Bootstrap TextArea Input Component - Basic Usage" />
 
 ```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextAreaInput @bind-Value="@enteredText" Rows="3" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
 ```
 
 ```cs {} showLineNumbers
+@code {
+    private string? enteredText = null;
+}
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/)
+[See demo here](https://demos.blazorbootstrap.com/form/text-area-input#basic-usage)
+
+### Text alignment
+
+You can change the text alignment according to your need. 
+Use the `TextAlignment` parameter to set the alignment. 
+In the below example, alignment is set to **center** and **end**.
+
+<img src="https://i.imgur.com/SidcCwL.png" alt="Blazor Bootstrap TextArea Input Component - Text alignment" />
+
+```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextAreaInput @bind-Value="@enteredText" Rows="3" TextAlignment="Alignment.Center" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+<div class="mb-3">
+    <TextAreaInput @bind-Value="@enteredText2" Rows="3" TextAlignment="Alignment.End" />
+</div>
+<div class="mb-3">Entered text: @enteredText2</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string? enteredText = "sample text";
+    private string? enteredText2 = "sample text 2";
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/text-area-input#text-alignment)
 
 ### Disable
 
-<img src="" alt="Blazor Bootstrap  Component - " />
+Use the **Disabled** parameter to disable the `TextAreaInput`.
+
+<img src="https://i.imgur.com/IMXHhOm.png" alt="Blazor Bootstrap TextArea Input Component - Disable" />
 
 ```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextAreaInput @bind-Value="@enteredText" Rows="3" Disabled="@disabled" Placeholder="Enter text" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
 ```
 
 ```cs {} showLineNumbers
+@code {
+    private string? enteredText = null;
+
+    private bool disabled = true;
+
+    private void Enable() => disabled = false;
+
+    private void Disable() => disabled = true;
+
+    private void Toggle() => disabled = !disabled;
+}
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/)
+Also, use `Enable()` and `Disable()` methods to enable and disable the PasswordInput.
+
+:::caution NOTE
+Do not use both the `Disabled` parameter and `Enable()` & `Disable()` methods.
+:::
+
+```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextAreaInput @ref="textAreaInputRef" @bind-Value="@enteredText" Rows="3" Placeholder="Enter text" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+```
+
+```cs {} showLineNumbers
+@code {
+    private TextAreaInput? textAreaInputRef;
+
+    private string? enteredText = null;
+
+    private void Disable() => textAreaInputRef.Disable();
+
+    private void Enable() => textAreaInputRef.Enable();
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/text-area-input#disable)
+
+### Max length
+
+Use the `MaxLength` parameter to set the maximum length of the `TextAreaInput`.
+
+<img src="https://i.imgur.com/CLCHEpC.png" alt="Blazor Bootstrap TextArea Input Component - Max length" />
+
+```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextAreaInput @bind-Value="@enteredText" Rows="3" MaxLength="5" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string? enteredText = null;
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/text-area-input#max-length)
+
+### Valdations
+
+Like any other blazor input component, `TextAreaInput` supports validations. 
+Add the DataAnnotations on the `TextAreaInput` component to validate the user input before submitting the form. 
+In the below example, we used **Required** attribute.
+
+<img src="https://i.imgur.com/UjenHwL.png" alt="Blazor Bootstrap TextArea Input Component - Valdations" />
+
+```cshtml {} showLineNumbers
+@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TextInput @bind-Value="@product.Name" Rows="3" Placeholder="Enter product name" />
+            <ValidationMessage For="@(() => product.Name)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Description: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TextAreaInput @bind-Value="@product.Description" Rows="3" Placeholder="Enter product description" />
+            <ValidationMessage For="@(() => product.Description)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+        </div>
+    </div>
+
+</EditForm>
+```
+
+```cs {} showLineNumbers
+@code {
+    private Product product = new();
+    private EditContext? editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(product);
+        base.OnInitialized();
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        // additional check
+        if (editContext.Validate())
+        {
+            // do something
+            // submit the form
+            Console.WriteLine("Form submitted successfully");
+        }
+    }
+
+    private void ResetForm()
+    {
+        product = new();
+        editContext = new EditContext(product);
+    }
+
+    public class Product
+    {
+        [Required(ErrorMessage = "Product name required.")]
+        public string? Name { get; set; }
+
+        [Required(ErrorMessage = "Product description required.")]
+        public string? Description { get; set; }
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/text-area-input#validations)
 
 ### Events: ValueChanged
 
-<img src="" alt="Blazor Bootstrap  Component - " />
+<img src="https://i.imgur.com/6HB8nAX.png" alt="Blazor Bootstrap TextArea Input Component - Events: ValueChanged" />
 
 ```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextAreaInput Value="@enteredText" ValueExpression="() => enteredText" ValueChanged="(value) => TextChanged(value)" Rows="3" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
 ```
 
 ```cs {} showLineNumbers
+@code {
+    private string? enteredText = null;
+
+    private void TextChanged(string? value)
+    {
+        enteredText = value;
+
+        // do something
+    }
+}
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/)
+[See demo here](https://demos.blazorbootstrap.com/form/text-area-input#events-value-changed)
