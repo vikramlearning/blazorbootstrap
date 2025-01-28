@@ -21,10 +21,17 @@ public class ThemeSwitcherJsInterop : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (moduleTask.IsValueCreated)
+        try
         {
-            var module = await moduleTask.Value;
-            await module.DisposeAsync();
+            if (moduleTask.IsValueCreated)
+            {
+                var module = await moduleTask.Value;
+                await module.DisposeAsync();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // do nothing
         }
     }
 

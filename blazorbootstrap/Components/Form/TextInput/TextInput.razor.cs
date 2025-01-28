@@ -53,7 +53,7 @@ public partial class TextInput : BlazorBootstrapComponentBase
     private string autoComplete => AutoComplete ? "true" : "false";
 
     /// <summary>
-    /// If <see langword="true" />, NumberInput can complete the values automatically by the browser.
+    /// If <see langword="true" />, TextInput can complete the values automatically by the browser.
     /// </summary>
     /// <remarks>
     /// Default value is false.
@@ -75,13 +75,13 @@ public partial class TextInput : BlazorBootstrapComponentBase
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
-    /// Gets or sets the maximum length of the input.
+    /// Gets or sets the maximum number of characters that can be entered.
     /// </summary>
     [Parameter]
     public int? MaxLength { get; set; }
 
     /// <summary>
-    /// Gets or sets the placeholder.
+    /// Gets or sets the placeholder text.
     /// </summary>
     /// <remarks>
     /// Default value is null.
@@ -105,7 +105,7 @@ public partial class TextInput : BlazorBootstrapComponentBase
     public string Value { get; set; } = default!;
 
     /// <summary>
-    /// This event fired on every user keystroke that changes the NumberInput value.
+    /// This event fires when the <see cref="TextInput" /> value changes.
     /// </summary>
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
