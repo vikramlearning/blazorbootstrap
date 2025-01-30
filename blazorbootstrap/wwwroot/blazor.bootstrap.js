@@ -529,21 +529,24 @@ window.blazorBootstrap = {
                 center: center,
                 markers: markers,
                 clickable: clickable,
-                clusterOptions : clusterOptions
+                clusterOptions: clusterOptions,
             };
         },
         get: (elementId) => {
             return window.blazorBootstrap.googlemaps.instances[elementId];
         },
-        initialize: (elementId, zoom, center, markers, clickable, clusterOptions, mapId, dotNetHelper) => {
+        initialize: (elementId, zoom, center, markers, clickable, clusterOptions, mapControls, mapId, dotNetHelper) => {
             window.blazorBootstrap.googlemaps.markerEls[elementId] ??= [];
             let id = elementId;
             
             // in case a person wants to use a custom map
             if(mapId) 
                 id = mapId;
+
+            // get the controls configuration based on the enum
+            const controlsConfig = window.blazorBootstrap.googlemaps.getMapControlsConfig(mapControls);
             
-            let mapOptions = { center: center, zoom: zoom, mapId: id };
+            let mapOptions = { center: center, zoom: zoom, mapId: id, ...controlsConfig };
             let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
             window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable, clusterOptions);
@@ -695,6 +698,40 @@ window.blazorBootstrap = {
                     });
                 }
             }
+        },
+        getMapControlsConfig: (mapControls) => {
+            // Default configuration - everything enabled
+            let controlsConfig = {
+                streetViewControl: true,
+                zoomControl: true,
+                disableDefaultUI: false
+            };
+
+            switch (mapControls) {
+                case 0: // Full
+                    // Default config is already set up for Full
+                    break;
+
+                case 1: // NoZoom
+                    controlsConfig.zoomControl = false;
+                    controlsConfig.disableDefaultUI = true;
+                    controlsConfig.streetViewControl = true;
+                    break;
+
+                case 2: // NoStreetView
+                    controlsConfig.streetViewControl = false;
+                    controlsConfig.disableDefaultUI = true;
+                    controlsConfig.zoomControl = true;
+                    break;
+
+                case 3: // NoZoomAndStreetView
+                    controlsConfig.streetViewControl = false;
+                    controlsConfig.zoomControl = false;
+                    controlsConfig.disableDefaultUI = true;
+                    break;
+            }
+
+            return controlsConfig;
         }
     },
     grid: {

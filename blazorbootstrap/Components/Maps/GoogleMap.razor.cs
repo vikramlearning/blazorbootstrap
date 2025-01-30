@@ -49,7 +49,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// <returns>A completed task.</returns>
     public ValueTask RefreshAsync()
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, MapId, objRef);
+        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, MapControls, MapId, objRef);
 
         return ValueTask.CompletedTask;
     }
@@ -67,7 +67,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
 
     private void OnScriptLoad()
     {
-        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, MapId, objRef));
+        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, MapControls, MapId, objRef));
     }
 
     #endregion
@@ -177,6 +177,14 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public EventCallback<GoogleMapClusterClickEvent> OnClusterClick { get; set; }
-    
+
+    /// <summary>
+    /// Decides which controls to show on the map.
+    /// </summary>
+    /// <remarks>
+    /// Full is the default value, which enables both street view and zoom controls.
+    /// </remarks>
+    [Parameter]
+    public GoogleMapControls MapControls { get; set; } = GoogleMapControls.Full;
     #endregion
 }
