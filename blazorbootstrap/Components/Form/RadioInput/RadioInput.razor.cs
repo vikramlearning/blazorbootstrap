@@ -6,17 +6,41 @@ public partial class RadioInput : BlazorBootstrapComponentBase
 
     private FieldIdentifier fieldIdentifier;
 
+    private DotNetObjectReference<RadioInput> objRef = default!;
+
     #endregion
 
     #region Methods
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.radioInput.initialize", Id, Name, objRef);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     protected override void OnInitialized()
     {
+        objRef ??= DotNetObjectReference.Create(this);
+
         AdditionalAttributes ??= new Dictionary<string, object>();
 
         fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
         base.OnInitialized();
+    }
+
+    [JSInvokable]
+    public async Task OnChangeJS(bool newValue)
+    {
+        Value = newValue;
+
+        await ValueChanged.InvokeAsync(Value);
+
+        EditContext?.NotifyFieldChanged(fieldIdentifier);
     }
 
     /// <summary>
@@ -28,17 +52,6 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     /// Enables number input.
     /// </summary>
     public void Enable() => Disabled = false;
-
-    private async Task OnChange(ChangeEventArgs e)
-    {
-        var oldValue = Value;
-
-        var newValue = string.Equals(e.Value?.ToString(), "on");
-
-        await ValueChanged.InvokeAsync(newValue);
-
-        EditContext?.NotifyFieldChanged(fieldIdentifier);
-    }
 
     #endregion
 
