@@ -2,6 +2,10 @@
 <RadioInput Name="EnableNotifications" Label="Yes" @bind-Value="isChecked" />
 <RadioInput Name="EnableNotifications" Label="No" @bind-Value="isChecked2" />
 
+<div class="mt-3">
+    <div>isChecked: @isChecked</div>
+    <div>isChecked2: @isChecked2</div>
+</div>
 @code
 {
     private bool isChecked;
