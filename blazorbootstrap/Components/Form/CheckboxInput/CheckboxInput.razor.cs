@@ -20,12 +20,12 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Disables number input.
+    /// Disables checkbox input.
     /// </summary>
     public void Disable() => Disabled = true;
 
     /// <summary>
-    /// Enables number input.
+    /// Enables checkbox input.
     /// </summary>
     public void Enable() => Disabled = false;
 
@@ -78,7 +78,7 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     public bool Value { get; set; }
 
     /// <summary>
-    /// This event fired on every user keystroke that changes the NumberInput value.
+    /// This event fires when the <see cref="CheckboxInput" /> value changes.
     /// </summary>
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; }
