@@ -42,19 +42,24 @@ The Blazor Bootstrap `RadioInput` component is constructed using an HTML input o
 
 ### Basic Usage
 
-<img src="https://i.imgur.com/8koE00q.png" alt="Blazor Bootstrap Radio Input Component - Basic Usage" />
+<img src="https://i.imgur.com/sIRgmUn.png" alt="Blazor Bootstrap Radio Input Component - Basic Usage" />
 
 ```cshtml {} showLineNumbers
 <p>Would you like to receive notifications?</p>
-<RadioInput Name="EnableNotifications" Label="Yes" @bind-Value="isChecked" />
-<RadioInput Name="EnableNotifications" Label="No" @bind-Value="isChecked2" />
+<RadioInput Name="EnableNotifications" Label="Yes" @bind-Value="isYesOn" />
+<RadioInput Name="EnableNotifications" Label="No" @bind-Value="isNoOn" />
+
+<div class="mt-3">
+    <div>IsYesOn: @isYesOn</div>
+    <div>IsNoOn: @isNoOn</div>
+</div>
 ```
 
 ```cs {} showLineNumbers
 @code
 {
-    private bool isChecked;
-    private bool isChecked2 = true;
+    private bool isYesOn;
+    private bool isNoOn = true;
 }
 ```
 

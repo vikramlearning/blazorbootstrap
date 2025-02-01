@@ -1,8 +1,13 @@
-﻿<CheckboxInput Label="Default checkbox" @bind-Value="isChecked" />
-<CheckboxInput Label="Checked checkbox" @bind-Value="isChecked2" />
+﻿<CheckboxInput Label="Option 1" @bind-Value="option1" />
+<CheckboxInput Label="Option 2" @bind-Value="option2" />
+
+<div class="mt-3">
+    <div>Option 1: @option1</div>
+    <div>Option 2: @option2</div>
+</div>
 
 @code
 {
-    private bool isChecked;
-    private bool isChecked2 = true;
+    private bool option1;
+    private bool option2 = true;
 }

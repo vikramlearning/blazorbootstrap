@@ -41,7 +41,7 @@
 
 ## Install
 
-Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.3.0`
+Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.3.1`
 
 ## Install Blazor Bootstrap templates
 
@@ -158,6 +158,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Charts: Polar Area Chart
 ![Blazor Bootstrap - Charts: Polar Area Chart](https://i.imgur.com/MSFDsSo.png "Blazor Bootstrap - Charts: Polar Area Chart")
 
+### Blazor Bootstrap - Checkbox Input
+![Blazor Bootstrap - Checkbox Input](https://i.imgur.com/kqSggFK.png "Blazor Bootstrap - Checkbox Input")
+
 ### Blazor Bootstrap - Collapse
 ![Blazor Bootstrap - Collapse](https://i.imgur.com/8A0emQe.png "Blazor Bootstrap - Collapse")
 
@@ -197,6 +200,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Offcanvas
 ![Blazor Bootstrap - Offcanvas](https://i.imgur.com/1vNz5Ci.jpg "Blazor Bootstrap - Offcanvas")
 
+### Blazor Bootstrap - Password Input
+![Blazor Bootstrap - Password Input](https://i.imgur.com/0k1C2XS.png "Blazor Bootstrap - Password Input")
+
 ### Blazor Bootstrap - Pagination
 ![Blazor Bootstrap - Pagination](https://i.imgur.com/SCbZVd4.jpg "Blazor Bootstrap - Pagination")
 
@@ -211,6 +217,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Progress
 ![Blazor Bootstrap - Progress](https://i.imgur.com/MK142lQ.png "Blazor Bootstrap - Progress")
+
+### Blazor Bootstrap - Radio Input
+![Blazor Bootstrap - Radio Input](https://i.imgur.com/8koE00q.png "Blazor Bootstrap - Radio Input")
 
 ### Blazor Bootstrap - Range Input
 ![Blazor Bootstrap - Range Input](https://i.imgur.com/rWDDHaf.png "Blazor Bootstrap - Range Input")
@@ -235,6 +244,12 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Tabs
 ![Blazor Bootstrap - Tabs](https://i.imgur.com/NdE5oqH.png "Blazor Bootstrap - Tabs")
+
+### Blazor Bootstrap - Text Input
+![Blazor Bootstrap - Text Input](https://i.imgur.com/N2VUHIn.png "Blazor Bootstrap - Text Input")
+
+### Blazor Bootstrap - TextArea Input
+![Blazor Bootstrap - TextArea Input](https://i.imgur.com/aSVKMqv.png "Blazor Bootstrap - TextArea Input")
 
 ### Blazor Bootstrap - Theme Switcher
 ![Blazor Bootstrap - Theme Switcher](https://i.imgur.com/2eixWho.png "Blazor Bootstrap - Theme Switcher")
