@@ -4,10 +4,23 @@
         <title>Blazor Bootstrap Docs Blog</title>
         <link>https://docs.blazorbootstrap.com/blog</link>
         <description>Blazor Bootstrap Docs Blog</description>
-        <lastBuildDate>Tue, 28 Jan 2025 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sat, 01 Feb 2025 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Blazor Bootstrap v3.3.1]]></title>
+            <link>https://docs.blazorbootstrap.com/blog/2025/02/01/blazorbootstrap-3.3.1</link>
+            <guid>https://docs.blazorbootstrap.com/blog/2025/02/01/blazorbootstrap-3.3.1</guid>
+            <pubDate>Sat, 01 Feb 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[Blazor Bootstrap v3.3.1 has been released, including a fix for the RadioInput.]]></description>
+            <content:encoded><![CDATA[<p>Blazor Bootstrap v3.3.1 has been released, including a fix for the RadioInput.</p><p><img loading="lazy" src="https://i.imgur.com/sIRgmUn.png" alt="image" title="Blazor Bootstrap Radio Input Component - Basic Usage" class="img_ev3q"></p><h2 class="anchor anchorWithStickyNavbar_LWe7" id="whats-changed">What's changed<a href="#whats-changed" class="hash-link" aria-label="Direct link to What's changed" title="Direct link to What's changed">​</a></h2><ul><li>RadioInput component<ul><li>RadioInput uses wrong attribute #1015</li></ul></li></ul><h2 class="anchor anchorWithStickyNavbar_LWe7" id="links">Links<a href="#links" class="hash-link" aria-label="Direct link to Links" title="Direct link to Links">​</a></h2><ul><li><a href="https://docs.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Docs Website - Blazor Bootstrap</a></li><li><a href="https://demos.blazorbootstrap.com/" target="_blank" rel="noopener noreferrer">Demos Website - Blazor Bootstrap</a></li></ul>]]></content:encoded>
+            <category>v3.3.1</category>
+            <category>blazor</category>
+            <category>bootstrap</category>
+            <category>blazorbootstrap</category>
+            <category>radio</category>
+        </item>
         <item>
             <title><![CDATA[Blazor Bootstrap v3.3.0]]></title>
             <link>https://docs.blazorbootstrap.com/blog/2025/01/28/blazorbootstrap-3.3.0</link>
