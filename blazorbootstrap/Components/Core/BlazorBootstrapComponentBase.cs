@@ -8,6 +8,8 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 
     private bool isDisposed;
 
+    internal Queue<Func<Task>> queuedTasks = new();
+
     #endregion
 
     #region Methods
@@ -15,17 +17,17 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        IsRenderComplete = true;
+        // process queued tasks
+        while (queuedTasks.TryDequeue(out var taskToExecute))
+            await taskToExecute.Invoke();
 
-        await base.OnAfterRenderAsync(firstRender);
+        IsRenderComplete = true;
     }
 
     /// <inheritdoc />
     protected override void OnInitialized()
     {
         Id ??= IdUtility.GetNextId();
-
-        base.OnInitialized();
     }
 
     public static string BuildClassNames(params (string? cssClass, bool when)[] cssClassList)
