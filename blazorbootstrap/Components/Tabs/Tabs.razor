@@ -33,7 +33,7 @@
         <div class="@TabContentCssClass">
             @foreach (var t in tabs)
             {
-                <div class="tab-pane @(EnableFadeEffect ? "fade" : "")" id="nav-@t.Id" role="tabpanel" aria-labelledby="@t.Id">
+                <div id="nav-@t.Id" class="@BootstrapClass.TabPane @(EnableFadeEffect ? BootstrapClass.Fade : "") @t.Class" style="@t.Style" role="tabpanel" aria-labelledby="@t.Id">
                     @t.Content
                 </div>
             }
