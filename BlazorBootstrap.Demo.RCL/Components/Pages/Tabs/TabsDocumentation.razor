@@ -69,28 +69,28 @@
         </p>
         <table class="table">
             <thead>
-            <tr>
-                <th scope="col">Event Name</th>
-                <th scope="col">Description</th>
-            </tr>
+                <tr>
+                    <th scope="col">Event Name</th>
+                    <th scope="col">Description</th>
+                </tr>
             </thead>
             <tbody class="table-group-divider">
-            <tr>
-                <th scope="row"><code>OnHiding</code></th>
-                <td>This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).</td>
-            </tr>
-            <tr>
-                <th scope="row"><code>OnHidden</code></th>
-                <td>This event fires after a new tab is shown (and thus the previous active tab is hidden).</td>
-            </tr>
-            <tr>
-                <th scope="row"><code>OnShowing</code></th>
-                <td>This event fires on tab show, but before the new tab has been shown.</td>
-            </tr>
-            <tr>
-                <th scope="row"><code>OnShown</code></th>
-                <td>This event fires on tab show after a tab has been shown.</td>
-            </tr>
+                <tr>
+                    <th scope="row"><code>OnHiding</code></th>
+                    <td>This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).</td>
+                </tr>
+                <tr>
+                    <th scope="row"><code>OnHidden</code></th>
+                    <td>This event fires after a new tab is shown (and thus the previous active tab is hidden).</td>
+                </tr>
+                <tr>
+                    <th scope="row"><code>OnShowing</code></th>
+                    <td>This event fires on tab show, but before the new tab has been shown.</td>
+                </tr>
+                <tr>
+                    <th scope="row"><code>OnShown</code></th>
+                    <td>This event fires on tab show after a tab has been shown.</td>
+                </tr>
             </tbody>
         </table>
         <Callout Color="CalloutColor.Info">
@@ -121,6 +121,13 @@
         In the following example, we are deleting tabs dynamically.  Ensure that the <b>@@key</b> parameter is added with unique value.
     </Callout>
     <Demo Type="typeof(Tabs_Demo_14_Remove_Dynamic_Tabs)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Remove inactive tab" PageUrl="@pageUrl" Link="remove-inactive-tab">
+    <div>
+        In the following example, we are removing the inactive tab by name. The focus will not be lost with this active tab.
+    </div>
+    <Demo Type="typeof(Tabs_Demo_15_Remove_Inactive_Tab_by_Name)" />
 </Section>
 
 @code {

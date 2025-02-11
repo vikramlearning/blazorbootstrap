@@ -35,8 +35,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private int pageSize;
 
-    private Queue<Func<Task>> queuedTasks = new();
-
     private bool requestInProgress = false;
 
     private HashSet<TItem> selectedItems = new();
@@ -56,18 +54,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         }
 
         await base.OnAfterRenderAsync(firstRender);
-
-        // process queued tasks
-        while (true)
-        {
-            if (queuedTasks.Count == 0)
-                break;
-
-            var taskToExecute = queuedTasks.Dequeue();
-
-            if (taskToExecute is not null)
-                await taskToExecute.Invoke();
-        }
     }
 
     protected override void OnInitialized()
