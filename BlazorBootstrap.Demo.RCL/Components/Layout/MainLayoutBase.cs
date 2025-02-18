@@ -2,25 +2,29 @@
 
 public class MainLayoutBase : LayoutComponentBase
 {
-    private string version = default!;
-    private string docsUrl = default!;
-    private string blogUrl = default!;
-    private string githubUrl = default!;
-    private string twitterUrl = default!;
-    private string linkedInUrl = default!;
-    private string openCollectiveUrl = default!;
-    private string githubIssuesUrl = default!;
-    private string githubDiscussionsUrl = default!;
-    private string stackoverflowUrl = default!;
+    internal string version = default!;
+    internal string dotNetVersion = default!;
+    internal string docsUrl = default!;
+    internal string blogUrl = default!;
+    internal string githubUrl = default!;
+    internal string twitterUrl = default!;
+    internal string linkedInUrl = default!;
+    internal string openCollectiveUrl = default!;
+    internal string githubIssuesUrl = default!;
+    internal string githubDiscussionsUrl = default!;
+    internal string stackoverflowUrl = default!;
 
     internal Sidebar2 sidebar2 = default!;
     internal IEnumerable<NavItem> navItems = default!;
 
     [Inject] public IConfiguration Configuration { get; set; } = default!;
 
+    [Inject] protected IJSRuntime JS { get; set; } = default!;
+
     protected override void OnInitialized()
     {
         version = $"v{Configuration["version"]}"; // example: v0.6.1
+        dotNetVersion = $".NET {Configuration["dotNetVersion"]}"; // example: 9.0.0
         docsUrl = $"{Configuration["urls:docs"]}";
         blogUrl = $"{Configuration["urls:blog"]}";
         githubUrl = $"{Configuration["urls:github"]}";
@@ -44,6 +48,7 @@ public class MainLayoutBase : LayoutComponentBase
     internal virtual IEnumerable<NavItem> GetNavItems() => new List<NavItem>();
 
     public string Version => version;
+    public string DotNetVersion => dotNetVersion;
     public string DocsUrl => docsUrl;
     public string BlogUrl => blogUrl;
     public string GithubUrl => githubUrl;

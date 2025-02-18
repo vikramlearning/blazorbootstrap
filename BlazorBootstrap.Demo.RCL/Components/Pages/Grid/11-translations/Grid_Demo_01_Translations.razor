@@ -1,0 +1,102 @@
+﻿<Grid TItem="User"
+      AllowFiltering="true"
+      AllowPaging="true"
+      AllowSorting="true"
+      Class="table table-hover"
+      DataProvider="UsersDataProvider"
+      FiltersRowCssClass="bg-dark text-white bg-opacity-25 border-bottom-0"
+      FiltersTranslationProvider="GridFiltersTranslationProvider"
+      HeaderRowCssClass="bg-dark text-white border-bottom-0"
+      PageSize="10"
+      PageSizeSelectorVisible="true"
+      PageSizeSelectorItems="@(new int[] { 5,10,20 })"
+      PaginationItemsTextFormat="{0} - {1} van {2} artikelen"
+      ItemsPerPageText="Artikelen per pagina"
+      EnumFilterSelectText="Selecteer"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="User" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="User Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="DOB" PropertyName="DOB">
+            @context.DOB
+        </GridColumn>
+        <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
+            @context.Status
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+@code {
+    private IEnumerable<User> users = default!;
+
+    private async Task<IEnumerable<FilterOperatorInfo>> GridFiltersTranslationProvider()
+    {
+        var filtersTranslation = new List<FilterOperatorInfo>();
+
+        // number/date/boolean
+        filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
+        filtersTranslation.Add(new("!=", "Niet gelijk", FilterOperator.NotEquals));
+        // number/date
+        filtersTranslation.Add(new("<", "Minder dan", FilterOperator.LessThan));
+        filtersTranslation.Add(new("<=", "Kleiner dan of gelijk aan", FilterOperator.LessThanOrEquals));
+        filtersTranslation.Add(new(">", "Groter dan", FilterOperator.GreaterThan));
+        filtersTranslation.Add(new(">=", "Groter dan of gelijk aan", FilterOperator.GreaterThanOrEquals));
+        // string
+        filtersTranslation.Add(new("*a*", "Bevat", FilterOperator.Contains));
+        filtersTranslation.Add(new("!*a*", "Bevat niet", FilterOperator.DoesNotContain));
+        filtersTranslation.Add(new("a**", "Begint met", FilterOperator.StartsWith));
+        filtersTranslation.Add(new("**a", "Eindigt met", FilterOperator.EndsWith));
+        filtersTranslation.Add(new("=", "gelijk aan", FilterOperator.Equals));
+        // common
+        filtersTranslation.Add(new("x", "Duidelijk", FilterOperator.Clear));
+
+        return await Task.FromResult(filtersTranslation);
+    }
+
+
+    private async Task<GridDataProviderResult<User>> UsersDataProvider(GridDataProviderRequest<User> request)
+    {
+        if (users is null) // pull employees only one time for client-side filtering, sorting, and paging
+            users = GetUsers(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(users));
+    }
+
+    private IEnumerable<User> GetUsers()
+    {
+        return new List<User>
+        {
+            new User { Id = 107, Name = "Alice", DOB = new DateOnly(1998, 11, 17), Status = UserStatus.Registered },
+            new User { Id = null, Name = "Bob", DOB = new DateOnly(1985, 1, 5), Status = UserStatus.Verified },
+            new User { Id = 106, Name = "John", DOB = new DateOnly(1995, 4, 17), Status = UserStatus.Registered },
+            new User { Id = 104, Name = "Pop", DOB = new DateOnly(1985, 6, 8), Status = UserStatus.Registered },
+            new User { Id = 105, Name = "Ronald", DOB = new DateOnly(1991, 8, 23), Status = UserStatus.VerificationPending },
+            new User { Id = 102, Name = "Line", DOB = new DateOnly(1977, 1, 12), Status = UserStatus.VerificationPending },
+            new User { Id = 101, Name = "Daniel", DOB = new DateOnly(1977, 1, 12), Status = UserStatus.Registered },
+            new User { Id = 108, Name = "Zayne", DOB = new DateOnly(1991, 1, 1), Status = UserStatus.Verified },
+            new User { Id = 109, Name = "Isha", DOB = null, Status = UserStatus.Verified },
+            new User { Id = 110, Name = "Vijay", DOB = new DateOnly(1990, 7, 1), Status = UserStatus.Verified },
+        };
+    }
+
+    public record class User
+    {
+        public int? Id { get; set; }
+        public string? Name { get; set; }
+        public DateOnly? DOB { get; set; }
+        public UserStatus Status { get; set; }
+    }
+
+    public enum UserStatus
+    {
+        Registered,
+        VerificationPending,
+        Verified
+    }
+}

@@ -149,9 +149,7 @@ public partial class Toast : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        BuildClassNames(Class,
-            (BootstrapClass.Toast, true),
-            (BackgroundColor.White.ToBackgroundClass(), true));
+        BuildClassNames(Class, (BootstrapClass.Toast, true));
 
     /// <summary>
     /// Gets or sets the auto hide state.

@@ -1,0 +1,293 @@
+---
+title: Blazor Text Input Component
+description: The Blazor Bootstrap TextInput component is constructed using an HTML input of type 'text'.
+image: https://i.imgur.com/N2VUHIn.png
+
+sidebar_label: Text Input
+sidebar_position: 10
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Text Input
+
+The Blazor Bootstrap `TextInput` component is constructed using an HTML input of type *text*.
+
+<CarbonAd />
+
+<img src="https://i.imgur.com/N2VUHIn.png" alt="Blazor Bootstrap: Text Input Component" />
+
+## Parameters
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AutoComplete | bool | false | | If `true`, TextInput can complete the values automatically by the browser. | 3.3.0 |
+| Disabled | bool | false | | Gets or sets the disabled state. | 3.3.0 |
+| MaxLength | int | null | | Gets or sets the maximum number of characters that can be entered. | 3.3.0 |
+| Placeholder | string | null | | Gets or sets the placeholder text. | 3.3.0 |
+| TextAlignment | `Alignment` | `Alignment.None` | | Gets or sets the text alignment. | 3.3.0 |
+| Value | string | null | ✔️ | Gets or sets the value. | 3.3.0 |
+
+## Methods
+
+| Name | Returns | Description | Added Version |
+|:--|:--|:--|:--|
+| Disable() | void | Disables autocomplete. | 3.3.0 |
+| Enable() | void | Enables autocomplete. | 3.3.0 |
+
+## Events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| ValueChanged | This event fires on every user keystroke that changes the textbox value. | 3.3.0 |
+
+## Examples
+
+### Basic Usage
+
+<img src="https://i.imgur.com/N2VUHIn.png" alt="Blazor Bootstrap Text Input Component - Basic Usage" />
+
+```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextInput @bind-Value="@enteredText" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string? enteredText = null;
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/text-input#basic-usage)
+
+### Text alignment
+
+You can change the text alignment according to your need. 
+Use the `TextAlignment` parameter to set the alignment. 
+In the below example, alignment is set to **center** and **end**.
+
+<img src="https://i.imgur.com/9wk2Ljo.png" alt="Blazor Bootstrap Text Input Component - Text alignment" />
+
+```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextInput @bind-Value="@enteredText" TextAlignment="Alignment.Center" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+<div class="mb-3">
+    <TextInput @bind-Value="@enteredText2" TextAlignment="Alignment.End" />
+</div>
+<div class="mb-3">Entered text: @enteredText2</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string? enteredText = "sample text";
+    private string? enteredText2 = "sample text 2";
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/text-input#text-alignment)
+
+### Disable
+
+Use the `Disabled` parameter to disable the `TextInput`.
+
+<img src="https://i.imgur.com/8enRkyx.png" alt="Blazor Bootstrap Text Input Component - Disable" />
+
+```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextInput @bind-Value="@enteredText" Disabled="@disabled" Placeholder="Enter text" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Warning" @onclick="Toggle"> Toggle </Button>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string? enteredText = null;
+
+    private bool disabled = true;
+
+    private void Enable() => disabled = false;
+
+    private void Disable() => disabled = true;
+
+    private void Toggle() => disabled = !disabled;
+}
+```
+
+Also, use `Enable()` and `Disable()` methods to enable and disable the PasswordInput.
+
+:::caution NOTE
+Do not use both the `Disabled` parameter and `Enable()` & `Disable()` methods.
+:::
+
+```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextInput @ref="textInputRef" @bind-Value="@enteredText" Placeholder="Enter text" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+
+<Button Color="ButtonColor.Secondary" @onclick="Disable"> Disable </Button>
+<Button Color="ButtonColor.Primary" @onclick="Enable"> Enable </Button>
+```
+
+```cs {} showLineNumbers
+@code {
+    private TextInput? textInputRef;
+
+    private string? enteredText = null;
+
+    private void Disable() => textInputRef.Disable();
+
+    private void Enable() => textInputRef.Enable();
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/text-input#disable)
+
+### Max length
+
+<img src="https://i.imgur.com/F2oqdpy.png" alt="Blazor Bootstrap Text Input Component - Max length" />
+
+```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextInput @bind-Value="@enteredText" MaxLength="5" />
+</div>
+<div class="mb-3">Entered text: @enteredText</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string? enteredText = null;
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/text-input#max-length)
+
+### Valdations
+
+Like any other blazor input component, `TextInput` supports validations. 
+Add the DataAnnotations on the `TextInput` component to validate the user input before submitting the form. 
+In the below example, we used **Required** attribute.
+
+<img src="https://i.imgur.com/80W6mWY.png" alt="Blazor Bootstrap Text Input Component - Valdations" />
+
+```cshtml {} showLineNumbers
+@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">First Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TextInput @bind-Value="@employee.FirstName" Placeholder="Enter first name" />
+            <ValidationMessage For="@(() => employee.FirstName)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Last Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TextInput @bind-Value="@employee.LastName" Placeholder="Enter last name" />
+            <ValidationMessage For="@(() => employee.LastName)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+        </div>
+    </div>
+
+</EditForm>
+```
+
+```cs {} showLineNumbers
+@code {
+    private Employee employee = new();
+    private EditContext? editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(employee);
+        base.OnInitialized();
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        // additional check
+        if (editContext.Validate())
+        {
+            // do something
+            // submit the form
+            Console.WriteLine("Form submitted successfully");
+        }
+    }
+
+    private void ResetForm()
+    {
+        employee = new();
+        editContext = new EditContext(employee);
+    }
+
+    public class Employee
+    {
+        [Required(ErrorMessage = "First name required.")]
+        public string? FirstName { get; set; }
+
+        [Required(ErrorMessage = "Last name required.")]
+        public string? LastName { get; set; }
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/text-input#validations)
+
+### Events: ValueChanged
+
+This event fires when the `TextInput` value changes, but not on every keystroke.
+
+<img src="https://i.imgur.com/O1HHUa3.png" alt="Blazor Bootstrap Text Input Component - Events: ValueChanged" />
+
+```cshtml {} showLineNumbers
+<div class="mb-3">
+    <TextInput Value="@employeeName" ValueExpression="() => employeeName" ValueChanged="(value) => EmployeeNameChanged(value)" />
+</div>
+<div class="mb-3">Entered employee name: @employeeName</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string? employeeName = null;
+
+    private void EmployeeNameChanged(string? value)
+    {
+        employeeName = value;
+
+        // do something
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/text-input#events-value-changed)

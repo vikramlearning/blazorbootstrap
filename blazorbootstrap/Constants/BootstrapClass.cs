@@ -65,6 +65,8 @@ public static class BootstrapClass
 
     public const string ConfirmationModal = "modal-confirmation";
 
+    public const string Container = "container";
+
     public const string Disabled = "disabled";
     public const string DisplayNone = "d-none";
     public const string DisplayBlock = "d-block";
@@ -90,9 +92,12 @@ public static class BootstrapClass
 
     public const string FormCheck = "form-check";
     public const string FormCheckInput = "form-check-input";
+    public const string FormCheckLabel = "form-check-label";
     public const string FormCheckReverse = "form-check-reverse";
     public const string FormControl = "form-control";
+    public const string FormLabel = "form-label";
     public const string FormRange = "form-range";
+    public const string FormSelect = "form-select";
     public const string FormSwitch= "form-switch";
 
     public const string ImageFluid = "img-fluid";
@@ -132,6 +137,8 @@ public static class BootstrapClass
     public const string Show = "show";
     
     public const string Spinner = "spinner";
+
+    public const  string TabPane = "tab-pane";
 
     public const string TableResponsive = "table-responsive";
     public const string TableSticky = "bb-table-sticky";

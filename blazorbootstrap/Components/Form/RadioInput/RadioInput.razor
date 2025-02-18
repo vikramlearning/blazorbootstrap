@@ -1,0 +1,19 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div class="@BootstrapClass.FormCheck">
+    <input @ref="@Element"
+           type="radio"
+           id="@Id"
+           name="@Name"
+           class="@ClassNames"
+           style="@StyleNames"
+           checked="@Value"
+           disabled="@Disabled"
+           @attributes="@AdditionalAttributes" />
+
+    @if (!string.IsNullOrWhiteSpace(Label))
+    {
+        <label class="@BootstrapClass.FormCheckLabel" for="@Id">@Label</label>
+    }
+</div>

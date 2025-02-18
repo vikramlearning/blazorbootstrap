@@ -1,0 +1,13 @@
+﻿<p>Would you like to receive notifications?</p>
+<RadioInput Name="EnableNotifications" Label="Yes" @bind-Value="isYesOn" />
+<RadioInput Name="EnableNotifications" Label="No" @bind-Value="isNoOn" />
+
+<div class="mt-3">
+    <div>IsYesOn: @isYesOn</div>
+    <div>IsNoOn: @isNoOn</div>
+</div>
+@code
+{
+    private bool isYesOn;
+    private bool isNoOn = true;
+}

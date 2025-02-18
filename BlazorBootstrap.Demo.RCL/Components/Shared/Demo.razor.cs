@@ -1,21 +1,21 @@
 ﻿namespace BlazorBootstrap.Demo.RCL;
 
-public partial class Demo : ComponentBase
+public partial class Demo : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private IconColor clipboardTooltipIconColor = IconColor.Dark;
+    private IconColor clipboardTooltipIconColor = IconColor.None;
 
     private IconName clipboardTooltipIconName = IconName.Clipboard;
 
     private string? clipboardTooltipTitle = "Copy to clipboard";
 
-    private string? snippet;
-
     /// <summary>
     /// A reference to this component instance for use in JavaScript calls.
     /// </summary>
     private DotNetObjectReference<Demo> objRef = default!;
+
+    private string? snippet;
 
     #endregion
 
@@ -92,7 +92,7 @@ public partial class Demo : ComponentBase
     {
         clipboardTooltipTitle = "Copy to clipboard";
         clipboardTooltipIconName = IconName.Clipboard;
-        clipboardTooltipIconColor = IconColor.Dark;
+        clipboardTooltipIconColor = IconColor.None;
 
         StateHasChanged();
     }
@@ -102,6 +102,8 @@ public partial class Demo : ComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    protected override string? ClassNames => BuildClassNames(Class, ("bd-example-snippet bd-code-snippet", true));
 
     [Inject] protected IJSRuntime JS { get; set; } = default!;
 

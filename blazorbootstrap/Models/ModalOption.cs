@@ -45,9 +45,9 @@ public class ModalOption
     public string Title { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the modal type. Default value is `ModalType.Light`.
+    /// Gets or sets the modal type. Default value is `ModalType.None`.
     /// </summary>
-    public ModalType Type { get; set; } = ModalType.Light;
+    public ModalType Type { get; set; } = ModalType.None;
 
     #endregion
 }

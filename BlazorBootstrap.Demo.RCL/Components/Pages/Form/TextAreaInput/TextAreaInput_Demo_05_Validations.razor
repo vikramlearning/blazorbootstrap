@@ -1,0 +1,80 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<style>
+    .valid.modified:not([type=checkbox]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid red;
+    }
+
+    .validation-message {
+        color: red;
+    }
+</style>
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleOnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TextInput @bind-Value="@product.Name" Rows="3" Placeholder="Enter product name" />
+            <ValidationMessage For="@(() => product.Name)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Description: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TextAreaInput @bind-Value="@product.Description" Rows="3" Placeholder="Enter product description" />
+            <ValidationMessage For="@(() => product.Description)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="float-end" @onclick="ResetForm">Reset</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end me-2">Submit</Button>
+        </div>
+    </div>
+
+</EditForm>
+
+@code {
+    private Product product = new();
+    private EditContext? editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(product);
+        base.OnInitialized();
+    }
+
+    public void HandleOnValidSubmit()
+    {
+        // additional check
+        if (editContext.Validate())
+        {
+            // do something
+            // submit the form
+            Console.WriteLine("Form submitted successfully");
+        }
+    }
+
+    private void ResetForm()
+    {
+        product = new();
+        editContext = new EditContext(product);
+    }
+
+    public class Product
+    {
+        [Required(ErrorMessage = "Product name required.")]
+        public string? Name { get; set; }
+
+        [Required(ErrorMessage = "Product description required.")]
+        public string? Description { get; set; }
+    }
+}

@@ -41,7 +41,7 @@
 
 ## Install
 
-Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.0.0`
+Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.3.1`
 
 ## Install Blazor Bootstrap templates
 
@@ -71,6 +71,7 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Charts: Polar Area chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/polar-area-chart) | [Demos](https://demos.blazorbootstrap.com/charts/polar-area-chart) |
 | Charts: Radar chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/radar-chart) | [Demos](https://demos.blazorbootstrap.com/charts/radar-chart) |
 | Charts: Scatter chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/scatter-chart) | [Demos](https://demos.blazorbootstrap.com/charts/scatter-chart) |
+| Checkbox Input | [Docs](https://docs.blazorbootstrap.com/forms/checkbox-input) | [Demos](https://demos.blazorbootstrap.com/form/checkbox-input) |
 | Collapse | [Docs](https://docs.blazorbootstrap.com/components/collapse) | [Demos](https://demos.blazorbootstrap.com/collapse) |
 | Confirm Dialog | [Docs](https://docs.blazorbootstrap.com/components/confirm-dialog) | [Demos](https://demos.blazorbootstrap.com/confirm-dialog) |
 | Currency Input | [Docs](https://docs.blazorbootstrap.com/forms/currency-input) | [Demos](https://demos.blazorbootstrap.com/form/currency-input) |
@@ -80,14 +81,17 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Grid | [Docs](https://docs.blazorbootstrap.com/components/grid) | [Demos](https://demos.blazorbootstrap.com/grid) |
 | Icons | [Docs](https://docs.blazorbootstrap.com/content/icons) | [Demos](https://demos.blazorbootstrap.com/icons) |
 | Images | [Docs](https://docs.blazorbootstrap.com/content/images) | [Demos](https://demos.blazorbootstrap.com/images) |
+| Markdown | [Docs](https://docs.blazorbootstrap.com/content/markdown) | [Demos](https://demos.blazorbootstrap.com/markdown) |
 | Modals | [Docs](https://docs.blazorbootstrap.com/components/modal) | [Demos](https://demos.blazorbootstrap.com/modals) |
 | Number Input | [Docs](https://docs.blazorbootstrap.com/forms/number-input) | [Demos](https://demos.blazorbootstrap.com/form/number-input) |
 | Offcanvas | [Docs](https://docs.blazorbootstrap.com/components/offcanvas) | [Demos](https://demos.blazorbootstrap.com/offcanvas) |
 | Pagination | [Docs](https://docs.blazorbootstrap.com/components/pagination) | [Demos](https://demos.blazorbootstrap.com/pagination) |
+| Password Input | [Docs](https://docs.blazorbootstrap.com/forms/password-input) | [Demos](https://demos.blazorbootstrap.com/form/password-input) |
 | PDF Viewer | [Docs](https://docs.blazorbootstrap.com/components/pdf-viewer) | [Demos](https://demos.blazorbootstrap.com/pdf-viewer) |
 | Placeholders | [Docs](https://docs.blazorbootstrap.com/components/placeholders) | [Demos](https://demos.blazorbootstrap.com/placeholders) |
 | Preload | [Docs](https://docs.blazorbootstrap.com/components/preload) | [Demos](https://demos.blazorbootstrap.com/preload) |
 | Progress | [Docs](https://docs.blazorbootstrap.com/components/progress) | [Demos](https://demos.blazorbootstrap.com/progress) |
+| Radio Input | [Docs](https://docs.blazorbootstrap.com/forms/radio-input) | [Demos](https://demos.blazorbootstrap.com/form/radio-input) |
 | RangeInput | [Docs](https://docs.blazorbootstrap.com/forms/range-input) | [Demos](https://demos.blazorbootstrap.com/form/range-input) |
 | Ribbon | [Docs](https://docs.blazorbootstrap.com/components/ribbon) | [Demos](https://demos.blazorbootstrap.com/ribbon) |
 | Script Loader | [Docs](https://docs.blazorbootstrap.com/components/script-loader) | [Demos](https://demos.blazorbootstrap.com/script-loader) |
@@ -97,6 +101,9 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Spinners | [Docs](https://docs.blazorbootstrap.com/components/spinners) | [Demos](https://demos.blazorbootstrap.com/spinners) |
 | Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/form/switch) |
 | Tabs | [Docs](https://docs.blazorbootstrap.com/components/tabs) | [Demos](https://demos.blazorbootstrap.com/tabs) |
+| Text Input | [Docs](https://docs.blazorbootstrap.com/forms/text-input) | [Demos](https://demos.blazorbootstrap.com/form/text-input) |
+| TextArea Input | [Docs](https://docs.blazorbootstrap.com/forms/textarea-input) | [Demos](https://demos.blazorbootstrap.com/form/text-area-input) |
+| Theme Switcher | [Docs](https://docs.blazorbootstrap.com/components/theme-switcher) | [Demos](https://demos.blazorbootstrap.com/theme-switcher) |
 | Time Input | [Docs](https://docs.blazorbootstrap.com/forms/time-input) | [Demos](https://demos.blazorbootstrap.com/form/time-input) |
 | Toasts | [Docs](https://docs.blazorbootstrap.com/components/toasts) | [Demos](https://demos.blazorbootstrap.com/toasts) |
 | Tooltips | [Docs](https://docs.blazorbootstrap.com/components/tooltips) | [Demos](https://demos.blazorbootstrap.com/tooltips) |
@@ -151,6 +158,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Charts: Polar Area Chart
 ![Blazor Bootstrap - Charts: Polar Area Chart](https://i.imgur.com/MSFDsSo.png "Blazor Bootstrap - Charts: Polar Area Chart")
 
+### Blazor Bootstrap - Checkbox Input
+![Blazor Bootstrap - Checkbox Input](https://i.imgur.com/kqSggFK.png "Blazor Bootstrap - Checkbox Input")
+
 ### Blazor Bootstrap - Collapse
 ![Blazor Bootstrap - Collapse](https://i.imgur.com/8A0emQe.png "Blazor Bootstrap - Collapse")
 
@@ -178,6 +188,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Image
 ![Blazor Bootstrap - Image](https://i.imgur.com/eiSTmvO.png "Blazor Bootstrap - Image")
 
+### Blazor Bootstrap - Markdown
+![Blazor Bootstrap - Markdown](https://i.imgur.com/FhN1caj.png "Blazor Bootstrap - Markdown")
+
 ### Blazor Bootstrap - Modal
 ![Blazor Bootstrap - Modal](https://i.imgur.com/n0m4Fhq.jpg "Blazor Bootstrap - Modal")
 
@@ -186,6 +199,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Offcanvas
 ![Blazor Bootstrap - Offcanvas](https://i.imgur.com/1vNz5Ci.jpg "Blazor Bootstrap - Offcanvas")
+
+### Blazor Bootstrap - Password Input
+![Blazor Bootstrap - Password Input](https://i.imgur.com/0k1C2XS.png "Blazor Bootstrap - Password Input")
 
 ### Blazor Bootstrap - Pagination
 ![Blazor Bootstrap - Pagination](https://i.imgur.com/SCbZVd4.jpg "Blazor Bootstrap - Pagination")
@@ -201,6 +217,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Progress
 ![Blazor Bootstrap - Progress](https://i.imgur.com/MK142lQ.png "Blazor Bootstrap - Progress")
+
+### Blazor Bootstrap - Radio Input
+![Blazor Bootstrap - Radio Input](https://i.imgur.com/8koE00q.png "Blazor Bootstrap - Radio Input")
 
 ### Blazor Bootstrap - Range Input
 ![Blazor Bootstrap - Range Input](https://i.imgur.com/rWDDHaf.png "Blazor Bootstrap - Range Input")
@@ -225,6 +244,15 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Tabs
 ![Blazor Bootstrap - Tabs](https://i.imgur.com/NdE5oqH.png "Blazor Bootstrap - Tabs")
+
+### Blazor Bootstrap - Text Input
+![Blazor Bootstrap - Text Input](https://i.imgur.com/N2VUHIn.png "Blazor Bootstrap - Text Input")
+
+### Blazor Bootstrap - TextArea Input
+![Blazor Bootstrap - TextArea Input](https://i.imgur.com/aSVKMqv.png "Blazor Bootstrap - TextArea Input")
+
+### Blazor Bootstrap - Theme Switcher
+![Blazor Bootstrap - Theme Switcher](https://i.imgur.com/2eixWho.png "Blazor Bootstrap - Theme Switcher")
 
 ### Blazor Bootstrap - Time Input
 ![Blazor Bootstrap - Time Input](https://i.imgur.com/TlvjRlP.png "Blazor Bootstrap - Time Input")

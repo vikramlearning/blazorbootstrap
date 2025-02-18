@@ -1,0 +1,117 @@
+code[class*=language-], pre[class*=language-] {
+    color: #393a34;
+    text-shadow: none;
+    direction: ltr;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    line-height: 1.5em;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none
+}
+
+    code[class*=language-] ::-moz-selection, code[class*=language-]::-moz-selection, pre[class*=language-] ::-moz-selection, pre[class*=language-]::-moz-selection {
+        background: #c1def1
+    }
+
+    code[class*=language-] ::selection, code[class*=language-]::selection, pre[class*=language-] ::selection, pre[class*=language-]::selection {
+        background: #c1def1
+    }
+
+pre[class*=language-] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+    background-color: #fff
+}
+
+:not(pre) > code[class*=language-] {
+    padding: .1em .3em;
+    border-radius: .3em;
+    background: #f8f8f8;
+}
+
+.prism-token.prism-cdata, .prism-token.prism-comment, .prism-token.prism-doctype, .prism-token.prism-prolog {
+    color: green;
+}
+
+.prism-token.prism-namespace {
+    opacity: .7
+}
+
+.prism-token.prism-string {
+    color: #a31515
+}
+
+.prism-token.prism-operator, .prism-token.prism-punctuation {
+    color: #393a34
+}
+
+.prism-token.prism-boolean, .prism-token.prism-constant, .prism-token.prism-inserted, .prism-token.prism-number, .prism-token.prism-symbol, .prism-token.prism-url, .prism-token.prism-variable {
+    color: #36acaa
+}
+
+.language-autohotkey .prism-token.prism-selector, .prism-language-json .prism-token.prism-boolean, .prism-language-json .prism-token.prism-number, .prism-token.prism-atrule, .prism-token.prism-attr-value, .prism-token.prism-keyword, code[class*=language-css] {
+    color: #00f
+}
+
+.prism-token.prism-function {
+    color: #393a34
+}
+
+.language-autohotkey .prism-token.prism-tag, .prism-token.prism-deleted {
+    color: #9a050f
+}
+
+.language-autohotkey .prism-token.prism-keyword, .prism-token.prism-selector {
+    color: #00009f
+}
+
+.prism-token.prism-important {
+    color: #e90
+}
+
+.prism-token.prism-bold, .prism-token.prism-important {
+    font-weight: 700
+}
+
+.prism-token.prism-italic {
+    font-style: italic
+}
+
+.language-json .prism-token.prism-property, .prism-token.prism-class-name {
+    color: #2b91af
+}
+
+.prism-token.prism-selector, .prism-token.prism-tag {
+    color: maroon
+}
+
+.prism-token.prism-attr-name, .prism-token.prism-entity, .prism-token.prism-property, .prism-token.prism-regex {
+    color: red
+}
+
+.prism-token.prism-directive.prism-tag .prism-tag {
+    background: #ff0;
+    color: #393a34
+}
+
+.prism-line-numbers.prism-line-numbers .prism-line-numbers-rows {
+    border-right-color: #a5a5a5
+}
+
+.prism-line-numbers .prism-line-numbers-rows > span:before {
+    color: #2b91af
+}
+
+.line-highlight.line-highlight {
+    background: rgba(193,222,241,.2);
+    background: -webkit-linear-gradient(left,rgba(193,222,241,.2) 70%,rgba(221,222,241,0));
+    background: linear-gradient(to right,rgba(193,222,241,.2) 70%,rgba(221,222,241,0))
+}

@@ -1,43 +1,47 @@
-﻿@page "/charts/scatter-chart"
+﻿@attribute [Route(pageUrl)]
 
-<PageTitle>@title</PageTitle>
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
 
-<MetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl"/>
-
-<h1>Blazor Scatter Chart</h1>
-<div class="lead mb-3">
-    A Blazor Bootstrap scatter chart components are based on basic line charts with the x-axis changed to a linear axis. 
-    To use a scatter chart, data must be passed as objects containing X and Y properties.
-</div>
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
 
 <CarbonAds />
 
-<SectionHeading Size="HeadingSize.H4" Text="Prerequisites" PageUrl="@pageUrl" HashTagName="prerequisites" />
-<div class="mb-3">
-    Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
-</div>
+<Section Size="HeadingSize.H4" Name="Prerequisites" PageUrl="@pageUrl" Link="prerequisites">
+    <div class="mb-3">
+        Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
+    </div>
+</Section>
 
-<SectionHeading Size="HeadingSize.H4" Text="How it works" PageUrl="@pageUrl" HashTagName="how-it-works"/>
-<div class="mb-3">
-    In the following example, a <a href="/utils/color-utility#categorical-12-color">categorical 12-color</a> palette is used.
-</div>
-<Callout Heading="TIP" Color="CalloutColor.Success">
-    For data visualization, you can use the predefined palettes <code>ColorUtility.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorUtility.CategoricalSixColors</code> for a 6-color palette.
-    These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
-</Callout>
-<Demo Type="typeof(ScatterChart_Demo_01_Basic_Example)" Tabs="true"/>
+<Section Size="HeadingSize.H4" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
+    <div class="mb-3">
+        In the following example, a <a href="/utils/color-utility#categorical-12-color">categorical 12-color</a> palette is used.
+    </div>
+    <Callout Heading="TIP" Color="CalloutColor.Success">
+        For data visualization, you can use the predefined palettes <code>ColorUtility.CategoricalTwelveColors</code> for a 12-color palette and <code>ColorUtility.CategoricalSixColors</code> for a 6-color palette.
+        These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.
+    </Callout>
+    <Demo Type="typeof(ScatterChart_Demo_01_Basic_Example)" Tabs="true"/>
+</Section>
 
-<SectionHeading Size="HeadingSize.H4" Text="Dynamic data" PageUrl="@pageUrl" HashTagName="dynamic-data" />
-<div class="mb-3">
-    In the following example, you can randomize the data and datasets dynamically. 
-    Along with this, the <b>ScatterChartOptions</b> are updated. With these changes, the scatter chart is responsive, and when hovered over, the points' radius increases for better visibility to the end-user.
-    Additionally, the data is grouped and displayed in a tooltip by index.
-</div>
-<Demo Type="typeof(ScatterChart_Demo_02_Dynamic_Data)" Tabs="true" />
+<Section Size="HeadingSize.H4" Name="Dynamic data" PageUrl="@pageUrl" Link="dynamic-data">
+    <div class="mb-3">
+        In the following example, you can randomize the data and datasets dynamically. 
+        Along with this, the <b>ScatterChartOptions</b> are updated. With these changes, the scatter chart is responsive, and when hovered over, the points' radius increases for better visibility to the end-user.
+        Additionally, the data is grouped and displayed in a tooltip by index.
+    </div>
+    <Demo Type="typeof(ScatterChart_Demo_02_Dynamic_Data)" Tabs="true" />
+</Section>
 
 @code {
-    private readonly string pageUrl = "/charts/scatter-chart";
-    private readonly string title = "Blazor Scatter Chart";
-    private readonly string description = "A Blazor Bootstrap scatter chart components are based on basic line charts with the x-axis changed to a linear axis. To use a scatter chart, data must be passed as objects containing X and Y properties.";
-    private readonly string imageUrl = "https://i.imgur.com/GEox0tS.png";
+    private const string pageUrl = RouteConstants.Demos_ScatterChart_Documentation;
+    private const string pageTitle = "Blazor Scatter Chart";
+    private const string pageDescription = "A Blazor Bootstrap scatter chart components are based on basic line charts with the x-axis changed to a linear axis. To use a scatter chart, data must be passed as objects containing X and Y properties.";
+    private const string metaTitle = "Blazor Scatter Chart Component";
+    private const string metaDescription = "A Blazor Bootstrap scatter chart components are based on basic line charts with the x-axis changed to a linear axis. To use a scatter chart, data must be passed as objects containing X and Y properties.";
+    private const string imageUrl = "https://i.imgur.com/GEox0tS.png";
 }
