@@ -249,6 +249,15 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     public int FilterTextboxWidth { get; set; }
 
     /// <summary>
+    /// Gets or sets the filter textbox width units.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Unit.Px" />.
+    /// </remarks>
+    [Parameter]
+    public Unit FilterTextboxWidthUnit { get; set; } = Unit.Px;
+
+    /// <summary>
     /// Gets or sets the filter value.
     /// </summary>
     /// <remarks>
