@@ -183,7 +183,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     [Parameter]
     public GridFiltersTranslationDelegate FiltersTranslationProvider { get; set; } = default!;
 
-    private string filterStyle => FilterWidth > 0 ? $"width:{FilterWidth.ToString(CultureInfo.InvariantCulture)}{Unit.ToString().ToLower()};" : "";
+    private string filterStyle => FilterWidth > 0 ? $"width:{FilterWidth.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()};" : "";
 
     /// <summary>
     /// Gets or sets filter value.

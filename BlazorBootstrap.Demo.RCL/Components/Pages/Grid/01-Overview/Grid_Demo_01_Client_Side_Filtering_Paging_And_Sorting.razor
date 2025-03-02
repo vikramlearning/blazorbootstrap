@@ -14,7 +14,7 @@
         <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
             @context.Id
         </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" FilterTextboxWidth="50" FilterTextboxWidthUnit="Unit.Percentage" SortKeySelector="item => item.Name">
             @context.Name
         </GridColumn>
         <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
