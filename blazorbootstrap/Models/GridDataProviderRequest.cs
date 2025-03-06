@@ -63,20 +63,18 @@ public class GridDataProviderRequest<TItem>
         // apply paging
         var totalCount = resultData!.Count(); // before paging
         int? newPageNumber = null;
-        bool updatePageNumber = false;
         if (PageNumber > 0 && PageSize > 0 && totalCount > 0)
         {
             int skip = (PageNumber - 1) * PageSize;
             if (totalCount <= skip)
             {
-                updatePageNumber = true;
                 newPageNumber = (totalCount / PageSize) + (totalCount % PageSize  == 0 ? 0 : 1);
                 skip = (newPageNumber.Value - 1) * PageSize;
             }
             resultData = resultData!.Skip(skip).Take(PageSize);
         }
 
-        return new GridDataProviderResult<TItem> { Data = resultData, TotalCount = totalCount, UpdatePageNumber = updatePageNumber, PageNumber = newPageNumber };
+        return new GridDataProviderResult<TItem> { Data = resultData, TotalCount = totalCount, PageNumber = newPageNumber };
     }
 
     #endregion
