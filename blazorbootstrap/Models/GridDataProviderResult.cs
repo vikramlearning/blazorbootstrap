@@ -20,5 +20,21 @@ public class GridDataProviderResult<TItem>
     /// </remarks>
     public int? TotalCount { get; init; }
 
+    /// <summary>
+    /// Updates the page number of the grid if set to true.
+    /// </summary>
+    /// <remarks>
+    /// Default value is false.
+    /// </remarks>
+    public bool UpdatePageNumber {get;set;}=false;
+
+    /// <summary>
+    /// Updates the page number of the grid.
+    /// </summary>
+    /// <remarks>
+    /// Default value is null.
+    /// </remarks>
+    public int? PageNumber {get;init;}
+
     #endregion
 }
