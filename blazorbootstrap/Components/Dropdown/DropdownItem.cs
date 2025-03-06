@@ -4,7 +4,7 @@ using System.Text;
 namespace BlazorBootstrap;
 
 /// <summary>
-/// Represents an item in a <see cref="DropDown"/>
+/// Represents an item in a <see cref="Dropdown"/>
 /// </summary>
 public sealed class DropdownItem : BlazorBootstrapComponentBase
 {
@@ -259,6 +259,10 @@ public sealed class DropdownItem : BlazorBootstrapComponentBase
         builder.OpenElement(1, Type == DropdownItemType.Link ? "a" : "button");
         builder.AddAttribute(2, "id", Id);
         builder.AddAttribute(3, "class", classBuilder.ToString());
+        if (Type == DropdownItemType.Button)
+        {
+            builder.AddAttribute(4, "type", "button");
+        }
         builder.AddMultipleAttributes(4, AdditionalAttributes);
         builder.AddElementReferenceCapture(5, value => Element = value);
         if (ChildContent != null)

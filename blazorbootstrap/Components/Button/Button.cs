@@ -317,7 +317,7 @@ public sealed class Button : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter] public bool Block { get; set; }
 
-    private string ButtonTypeString { get; set; } = "";
+    private string ButtonTypeString { get; set; } = EnumExtensions.ButtonTypeStringMap[ButtonType.Button];
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
