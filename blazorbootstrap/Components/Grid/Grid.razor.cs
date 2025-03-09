@@ -25,6 +25,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private RenderFragment? headerSelectionTemplate;
 
+    private bool isColumnVisibilityChanged = false;
+
     private bool isFirstRenderComplete = false;
 
     private List<TItem>? items = null;
@@ -52,6 +54,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await RefreshDataAsync(firstRender);
             isFirstRenderComplete = true;
         }
+
+        // As Rendering now complete we can reset the column visibility change to false
+        isColumnVisibilityChanged = false;
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -134,6 +139,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public Task UnSelectAllItemsAsync() => SelectAllItemsInternalAsync(false);
 
     internal void AddColumn(GridColumn<TItem> column) => columns.Add(column);
+
+    internal void ColumnVisibilityUpdated()
+    {
+        if (!isColumnVisibilityChanged)
+        {
+            isColumnVisibilityChanged = true;
+            StateHasChanged();
+        }
+    }
 
     internal async Task FilterChangedAsync()
     {
