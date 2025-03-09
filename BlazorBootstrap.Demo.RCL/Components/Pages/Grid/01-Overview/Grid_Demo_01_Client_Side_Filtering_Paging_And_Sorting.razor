@@ -1,4 +1,8 @@
-﻿<Grid TItem="Employee1"
+﻿<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="ToggleActiveColumnVisibility"> 
+    Toggle Active Column Visibility 
+</Button>
+
+<Grid TItem="Employee1"
       Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
       AllowFiltering="true"
@@ -23,7 +27,7 @@
         <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
             @context.DOJ
         </GridColumn>
-        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive" IsVisible="@isActiveColumnVisible">
             @context.IsActive
         </GridColumn>
     </GridColumns>
@@ -49,12 +53,19 @@
 
     private HashSet<Employee1> selectedEmployees = new();
 
+    public bool isActiveColumnVisible = true;
+
     private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
     {
         if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
             employees = GetEmployees(); // call a service or an API to pull the employees
 
         return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private async Task ToggleActiveColumnVisibility()
+    {
+        isActiveColumnVisible = !isActiveColumnVisible;
     }
 
     private IEnumerable<Employee1> GetEmployees()
