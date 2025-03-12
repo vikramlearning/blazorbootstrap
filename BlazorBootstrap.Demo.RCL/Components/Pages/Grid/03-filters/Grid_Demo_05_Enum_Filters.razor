@@ -1,4 +1,6 @@
-﻿﻿<Grid  TItem="User"
+﻿﻿@using System.ComponentModel.DataAnnotations
+
+<Grid  TItem="User"
        Class="table table-hover table-bordered table-striped"
        DataProvider="UsersDataProvider"
        AllowFiltering="true"
@@ -15,7 +17,7 @@
             @context.DOB
         </GridColumn>
         <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
-            @context.Status
+            @(typeof(UserStatus).GetDisplayName(context.Status))
         </GridColumn>
     </GridColumns>
 
@@ -60,6 +62,7 @@
     public enum UserStatus
     {
         Registered,
+        [Display(Name = "Pending Verification")]
         VerificationPending,
         Verified
     }
