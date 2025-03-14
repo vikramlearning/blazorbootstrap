@@ -22,6 +22,10 @@
                     }
                     @foreach (var column in columns)
                     {
+                        @if (!column.IsVisible)
+                        {
+                            continue;
+                        }
                         @column.HeaderTemplate
                     }
                 </tr>
@@ -38,6 +42,10 @@
                         }
                         @foreach (var column in columns)
                         {
+                            @if (!column.IsVisible)
+                            {
+                                continue;
+                            }
                             var columnClassList = new HashSet<string>();
                             var columnStyleList = new List<string>();
 
@@ -78,7 +86,7 @@
             </thead>
             <tbody>
                 @{
-                    var columnCount = columns.Count;
+                    var columnCount = columns.Where(c => c.IsVisible).Count();
                     if (AllowSelection) columnCount += 1;
                     if (AllowDetailView) columnCount += 1;
                 }
@@ -158,6 +166,10 @@
 
                                 @foreach (var column in columns)
                                 {
+                                    @if (!column.IsVisible)
+                                    {
+                                        continue;
+                                    }
                                     @column.CellTemplate(item)
                                 }
                             </tr>
