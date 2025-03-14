@@ -14,6 +14,8 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     private string filterValue = default!;
 
+    private bool isVisible = true;
+
     private RenderFragment? headerTemplate;
 
     #endregion
@@ -108,6 +110,11 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
         {
             if (filterOperator == FilterOperator.None)
                 FilterOperator = filterOperator = FilterOperator.Equals;
+        }
+        if (isVisible != IsVisible)
+        {
+            isVisible = IsVisible;
+            Parent?.ColumnVisibilityUpdated();
         }
     }
 
@@ -419,6 +426,15 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public bool IsDefaultSortColumn { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets visibility of the Grid column.
+    /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
+    [Parameter]
+    public bool IsVisible { get; set; } = true;
 
     [CascadingParameter(Name = "Parent")]
     public Grid<TItem> Parent { get; set; } = default!;
