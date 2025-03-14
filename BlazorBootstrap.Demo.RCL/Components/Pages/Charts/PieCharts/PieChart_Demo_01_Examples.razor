@@ -1,10 +1,14 @@
-﻿<PieChart @ref="pieChart" Width="500" />
+﻿<PieChart @ref="pieChart" Width="500" OnClick="OnClickTest"/>
 
 <div class="mt-5">
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDatasetAsync()"> Add Dataset </Button>
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await AddDataAsync()">Add Data</Button>
 </div>
+
+@if (_clickedArgs is not null) {
+    <div class="mt-5"> Clicked on '@_clickedArgs.LabelName' that has the index @_clickedArgs.Index </div>
+}
 
 @code {
     private PieChart pieChart = default!;
@@ -17,8 +21,9 @@
 
     private Random random = new();
 
-    protected override void OnInitialized()
-    {
+    private ChartClickArgs? _clickedArgs;
+
+    protected override void OnInitialized() {
         backgroundColors = ColorUtility.CategoricalTwelveColors;
         chartData = new ChartData { Labels = GetDefaultDataLabels(4), Datasets = GetDefaultDataSets(1) };
 
@@ -28,32 +33,27 @@
         pieChartOptions.Plugins.Title.Display = true;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
+    protected override async Task OnAfterRenderAsync(bool firstRender) {
+        if (firstRender) {
             await pieChart.InitializeAsync(chartData, pieChartOptions);
         }
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task RandomizeAsync()
-    {
+    private async Task RandomizeAsync() {
         if (chartData is null || chartData.Datasets is null || !chartData.Datasets.Any()) return;
 
         var newDatasets = new List<IChartDataset>();
 
-        foreach (var dataset in chartData.Datasets)
-        {
+        foreach (var dataset in chartData.Datasets) {
             if (dataset is PieChartDataset pieChartDataset
-                && pieChartDataset is not null
-                && pieChartDataset.Data is not null)
-            {
+             && pieChartDataset is not null
+             && pieChartDataset.Data is not null) {
                 var count = pieChartDataset.Data.Count;
 
                 var newData = new List<double?>();
-                for (var i = 0; i < count; i++)
-                {
+                for (var i = 0; i < count; i++) {
                     newData.Add(random.Next(0, 100));
                 }
 
@@ -67,27 +67,21 @@
         await pieChart.UpdateAsync(chartData, pieChartOptions);
     }
 
-    private async Task AddDatasetAsync()
-    {
+    private async Task AddDatasetAsync() {
         if (chartData is null || chartData.Datasets is null) return;
 
         var chartDataset = GetRandomPieChartDataset();
         chartData = await pieChart.AddDatasetAsync(chartData, chartDataset, pieChartOptions);
     }
 
-    private async Task AddDataAsync()
-    {
-        if (dataLabelsCount >= 12)
-            return;
+    private async Task AddDataAsync() {
+        if (dataLabelsCount >= 12) return;
 
-        if (chartData is null || chartData.Datasets is null)
-            return;
+        if (chartData is null || chartData.Datasets is null) return;
 
         var data = new List<IChartDatasetData>();
-        foreach (var dataset in chartData.Datasets)
-        {
-            if (dataset is PieChartDataset pieChartDataset)
-                data.Add(new PieChartDatasetData(pieChartDataset.Label, random.Next(0, 100), backgroundColors![dataLabelsCount]));
+        foreach (var dataset in chartData.Datasets) {
+            if (dataset is PieChartDataset pieChartDataset) data.Add(new PieChartDatasetData(pieChartDataset.Label, random.Next(0, 100), backgroundColors![dataLabelsCount]));
         }
 
         chartData = await pieChart.AddDataAsync(chartData, GetNextDataLabel(), data);
@@ -97,51 +91,42 @@
 
     #region Data Preparation
 
-    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets)
-    {
+    private List<IChartDataset> GetDefaultDataSets(int numberOfDatasets) {
         var datasets = new List<IChartDataset>();
 
-        for (var index = 0; index < numberOfDatasets; index++)
-        {
+        for (var index = 0; index < numberOfDatasets; index++) {
             datasets.Add(GetRandomPieChartDataset());
         }
 
         return datasets;
     }
 
-    private PieChartDataset GetRandomPieChartDataset()
-    {
+    private PieChartDataset GetRandomPieChartDataset() {
         datasetsCount += 1;
         return new() { Label = $"Team {datasetsCount}", Data = GetRandomData(), BackgroundColor = GetRandomBackgroundColors() };
     }
 
-    private List<double?> GetRandomData()
-    {
+    private List<double?> GetRandomData() {
         var data = new List<double?>();
-        for (var index = 0; index < dataLabelsCount; index++)
-        {
+        for (var index = 0; index < dataLabelsCount; index++) {
             data.Add(random.Next(0, 100));
         }
 
         return data;
     }
 
-    private List<string> GetRandomBackgroundColors()
-    {
+    private List<string> GetRandomBackgroundColors() {
         var colors = new List<string>();
-        for (var index = 0; index < dataLabelsCount; index++)
-        {
+        for (var index = 0; index < dataLabelsCount; index++) {
             colors.Add(backgroundColors![index]);
         }
 
         return colors;
     }
 
-    private List<string> GetDefaultDataLabels(int numberOfLabels)
-    {
+    private List<string> GetDefaultDataLabels(int numberOfLabels) {
         var labels = new List<string>();
-        for (var index = 0; index < numberOfLabels; index++)
-        {
+        for (var index = 0; index < numberOfLabels; index++) {
             labels.Add(GetNextDataLabel());
             dataLabelsCount += 1;
         }
@@ -153,5 +138,10 @@
 
     private string GetNextDataBackgrounfColor() => backgroundColors![dataLabelsCount];
 
-    #endregion  Data Preparation
+    #endregion Data Preparation
+
+    private void OnClickTest(ChartClickArgs args) {
+        _clickedArgs = args;
+    }
+
 }
