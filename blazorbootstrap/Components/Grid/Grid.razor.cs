@@ -201,6 +201,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         {
             items = result.Data!.ToList();
             totalCount = result.TotalCount ?? result.Data!.Count();
+            if (result.PageNumber.HasValue)
+            {
+                gridCurrentState = new GridState<TItem>(result.PageNumber.Value, gridCurrentState.Sorting);
+            }
         }
         else
         {
