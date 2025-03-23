@@ -29,8 +29,6 @@
 @code {
     private IEnumerable<Employee> employees = default!;
 
-    private HashSet<Employee> selectedEmployees = new();
-
     private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
     {
         if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
@@ -56,12 +54,6 @@
             new Employee { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), Salary = 8000, IsActive = true },
             new Employee { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), Salary = 17850, IsActive = true },
         };
-    }
-
-    private Task OnSelectedItemsChanged(HashSet<Employee> employees)
-    {
-        selectedEmployees = employees is not null && employees.Any() ? employees : new();
-        return Task.CompletedTask;
     }
 
     public record class Employee
