@@ -19,13 +19,17 @@
     </div>
     <Callout Color="CalloutColor.Info">
         <div>
-            Supported enumeration values for <code>GridSummaryColumnType</code> are: Average, Count, Max, Min, Sum
-        </div>
-        <div>
-            Default value is <code>GridSummaryColumnType.None</code>.
+            <code>GridSummaryColumnType</code>: Average, Count, Max, Min, Sum. Default value is <code>GridSummaryColumnType.None</code>.
         </div>
     </Callout>
-    <Demo Type="typeof(Grid_Demo_16_Summary_Example)" Tabs="true" />
+    <Demo Type="typeof(Grid_Demo_01_Summary_Example)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Summary with Filters and Paging" PageUrl="@pageUrl" Link="summary-with-filters-paging">
+    <Callout Color="CalloutColor.Danger">
+        <b>NOTE: </b>Summaries will be calculated based on the current page data.
+    </Callout>
+    <Demo Type="typeof(Grid_Demo_02_Summary_with_Filters_Paging)" Tabs="true" />
 </Section>
 
 @code {
