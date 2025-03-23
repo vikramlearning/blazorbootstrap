@@ -495,6 +495,24 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
 
     /// <summary>
+    /// Gets or sets the summary column type.
+    /// <para>
+    /// Default value is <see cref="GridSummaryColumnType.None"/>.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public GridSummaryColumnType SummaryType { get; set; } = GridSummaryColumnType.None;
+
+    /// <summary>
+    /// Gets or sets the summary value display format.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public string? SummaryValueDisplayFormat { get; set; }
+
+    /// <summary>
     /// Gets or sets the text alignment.
     /// </summary>
     /// <remarks>
