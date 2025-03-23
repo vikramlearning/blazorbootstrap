@@ -12,8 +12,20 @@
 <CarbonAds />
 
 <Section Size="HeadingSize.H2" Name="Example" PageUrl="@pageUrl" Link="example">
-    <div class="mb-3">To enable detail view, set the <code>AllowDetailView</code> parameter to <b>true</b>. In the following example, existing <code>&lt;GridColumn&gt;</code> tags are nested under <code>&lt;GridColumns&gt;</code> tag to distinguish them from <code>&lt;GridDetailView&gt;</code>.</div>
-    <Demo Type="typeof(Grid_Demo_16_Summary_Example)" Tabs="false" />
+    <div class="mb-3">
+        To enable summaries on columns, set the <code>AllowSummary</code> parameter to <b>true</b> at the Grid level. Additionally, set the <code>SummaryType</code> parameter on each GridColumn.
+        <br />
+        In the following example, the Employee Name column has <code>SummaryType</code> set to <b>GridSummaryColumnType.Count</b>, and the <b>Salary</b> column has <code>SummaryType</code> set to <b>GridSummaryColumnType.Sum</b> and <code>SummaryValueDisplayFormat</code> set to <b>C</b> to display the sum of salaries in currency format.
+    </div>
+    <Callout Color="CalloutColor.Info">
+        <div>
+            Supported enumeration values for <code>GridSummaryColumnType</code> are: Average, Count, Max, Min, Sum
+        </div>
+        <div>
+            Default value is <code>GridSummaryColumnType.None</code>.
+        </div>
+    </Callout>
+    <Demo Type="typeof(Grid_Demo_16_Summary_Example)" Tabs="true" />
 </Section>
 
 @code {

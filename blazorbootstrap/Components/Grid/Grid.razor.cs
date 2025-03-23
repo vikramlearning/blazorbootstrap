@@ -123,6 +123,43 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
               .Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
               ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison));
 
+    private string GetColumnSummaryValue(GridSummaryColumnType type, string propertyName, string format)
+    {
+        string? prefix = null;
+        double value = 0;
+
+        if (type == GridSummaryColumnType.Average)
+        {
+            prefix = "Avg";
+            value = items?.Average(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
+        }
+        else if (type == GridSummaryColumnType.Count)
+        {
+            prefix = "Count";
+            value = items?.Where(x => x.GetType().GetProperty(propertyName)?.GetValue(x) is not null).Count() ?? 0;
+        }
+        else if (type == GridSummaryColumnType.Max)
+        {
+            prefix = "Max";
+            value = items?.Max(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
+        }
+        else if (type == GridSummaryColumnType.Min)
+        {
+            prefix = "Min";
+            value = items?.Min(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
+        }
+        else if (type == GridSummaryColumnType.Sum)
+        {
+            prefix = "Total";
+            value = items?.Sum(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
+        }
+
+        if (string.IsNullOrWhiteSpace(format))
+            return $"{prefix}: {value}";
+        else
+            return $"{prefix}: {value.ToString(format)}";
+    }
+
     /// <summary>
     /// Refresh the grid data.
     /// </summary>
@@ -651,6 +688,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public bool AllowSorting { get; set; }
+
+    /// <summary>
+    /// Gets or sets the grid summary.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public bool AllowSummary { get; set; }
 
     /// <summary>
     /// Automatically hides the paging controls when the grid item count is less than or equal to the <see cref="PageSize" />
