@@ -513,6 +513,17 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     public string? SummaryValueDisplayFormat { get; set; }
 
     /// <summary>
+    /// Gets or sets the summary value prefix. If set, it will be displayed before the summary value.
+    /// Otherwise, based on the <see cref="SummaryType"/>, default prefix will be displayed.
+    /// To remove the default prefix, set this property to an empty string.
+    /// <para>
+    /// Example: "Total: ", "Average: ", etc.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public string? SummaryValuePrefix { get; set; }
+
+    /// <summary>
     /// Gets or sets the text alignment.
     /// </summary>
     /// <remarks>
