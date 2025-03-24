@@ -44,6 +44,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | HeaderRowCssClass | string | null | | Gets or sets the header row css class but not the thead tag class. | 1.9.2 |
 | Height | float | 320 pixels | | Gets or sets the grid height. | 1.10.3 |
 | ItemsPerPageText | string | `Items per page` | ✔️ | Gets or sets the items per page text. | 1.9.5 |
+| Locale | string? | `en-US` | | Gets or sets the locale. Default value is 'en-US'. | 3.4.0 |
 | PageSize | int | 10 | | Gets or sets the page size. | 1.0.0 |
 | PageSizeSelectorItems | `int[]` | `new int[] { 10, 20, 50 }` | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
 | PageSizeSelectorVisible | bool | false | | Gets or sets the page size selector visible. | 1.8.0 |
@@ -103,6 +104,7 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 | StringComparison | `StringComparison` | `StringComparison.OrdinalIgnoreCase` | | Gets or sets the StringComparison. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 1.0.0 |
 | SummaryType | `GridSummaryColumnType` | `GridSummaryColumnType.None` | | Gets or sets the summary type. Supported values are `GridSummaryColumnType.None`, `GridSummaryColumnType.Count`, `GridSummaryColumnType.Sum`, `GridSummaryColumnType.Average`, `GridSummaryColumnType.Min`, `GridSummaryColumnType.Max`. | 3.4.0 |
 | SummaryValueDisplayFormat | string | null | | Gets or sets the summary value display format. | 3.4.0 |
+| SummaryValuePrefix | string | null | | Gets or sets the summary value prefix. If set, it will be displayed before the summary value. Otherwise, based on the <see cref="SummaryType"/>, default prefix will be displayed. To remove the default prefix, set this property to an empty string. | 3.4.0 |
 | TextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
 | TextNoWrap | bool | false | | Gets or sets text nowrap. | 1.0.0 |
 | IsVisible | bool | true | | Gets or sets visibility of the Grid column. | 3.4.0 |

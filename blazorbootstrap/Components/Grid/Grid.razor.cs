@@ -123,41 +123,40 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
               .Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
               ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison));
 
-    private string GetColumnSummaryValue(GridSummaryColumnType type, string propertyName, string format)
+    private string GetColumnSummaryValue(GridSummaryColumnType type, string propertyName, string format, string prefix)
     {
-        string? prefix = null;
         double value = 0;
 
         if (type == GridSummaryColumnType.Average)
         {
-            prefix = "Avg";
+            prefix ??= "Avg: ";
             value = items?.Average(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
         }
         else if (type == GridSummaryColumnType.Count)
         {
-            prefix = "Count";
+            prefix ??= "Count: ";
             value = items?.Where(x => x.GetType().GetProperty(propertyName)?.GetValue(x) is not null).Count() ?? 0;
         }
         else if (type == GridSummaryColumnType.Max)
         {
-            prefix = "Max";
+            prefix ??= "Max: ";
             value = items?.Max(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
         }
         else if (type == GridSummaryColumnType.Min)
         {
-            prefix = "Min";
+            prefix ??= "Min: ";
             value = items?.Min(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
         }
         else if (type == GridSummaryColumnType.Sum)
         {
-            prefix = "Total";
+            prefix ??= "Total: ";
             value = items?.Sum(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
         }
 
         if (string.IsNullOrWhiteSpace(format))
-            return $"{prefix}: {value}";
+            return $"{prefix}{value}";
         else
-            return $"{prefix}: {value.ToString(format)}";
+            return $"{prefix}{value.ToString(format, GetCultureInfo())}";
     }
 
     /// <summary>
@@ -352,6 +351,21 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             builder.CloseElement(); // close: div
             builder.CloseElement(); // close: th
         };
+
+    private CultureInfo GetCultureInfo()
+    {
+        if (string.IsNullOrWhiteSpace(Locale))
+            return CultureInfo.InvariantCulture;
+
+        try
+        {
+            return CultureInfo.GetCultureInfo(Locale);
+        }
+        catch (CultureNotFoundException)
+        {
+            return CultureInfo.InvariantCulture;
+        }
+    }
 
     private IEnumerable<SortingItem<TItem>>? GetDefaultSorting() =>
         !AllowSorting || columns == null || !columns.Any()
@@ -892,6 +906,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     //[EditorRequired] 
     public string ItemsPerPageText { get; set; } = "Items per page"!;
+
+    /// <summary>
+    /// Gets or sets the locale.
+    /// <para>
+    /// Default value is 'en-US'.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public string? Locale { get; set; } = "en-US";
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.

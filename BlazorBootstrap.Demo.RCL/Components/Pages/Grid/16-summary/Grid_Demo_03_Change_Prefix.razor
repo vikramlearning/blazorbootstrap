@@ -1,33 +1,26 @@
 ﻿<Grid TItem="Employee"
       Class="table table-hover table-bordered table-striped"
       DataProvider="EmployeesDataProvider"
-      AllowFiltering="true"
-      AllowPaging="true"
-      PageSize="5"
-      AllowSorting="true"
-      AllowSelection="true"
-      SelectionMode="GridSelectionMode.Multiple"
-      SelectedItemsChanged="OnSelectedItemsChanged"
       AllowSummary="true"
       Responsive="true">
 
     <GridColumns>
-        <GridColumn TItem="Employee" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+        <GridColumn TItem="Employee" HeaderText="Id" PropertyName="Id">
             @context.Id
         </GridColumn>
-        <GridColumn TItem="Employee" HeaderText="Employee Name" PropertyName="Name" FilterTextboxWidth="50" FilterTextboxWidthUnit="Unit.Percentage" SortKeySelector="item => item.Name" SummaryType="GridSummaryColumnType.Count">
+        <GridColumn TItem="Employee" HeaderText="Employee Name" PropertyName="Name" SummaryType="GridSummaryColumnType.Count" SummaryValuePrefix="Records count: ">
             @context.Name
         </GridColumn>
-        <GridColumn TItem="Employee" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+        <GridColumn TItem="Employee" HeaderText="Designation" PropertyName="Designation">
             @context.Designation
         </GridColumn>
-        <GridColumn TItem="Employee" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+        <GridColumn TItem="Employee" HeaderText="DOJ" PropertyName="DOJ">
             @context.DOJ
         </GridColumn>
-        <GridColumn TItem="Employee" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" PropertyName="Salary" SortKeySelector="item => item.Salary" SummaryType="GridSummaryColumnType.Sum" SummaryValueDisplayFormat="C">
+        <GridColumn TItem="Employee" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" PropertyName="Salary" SummaryType="GridSummaryColumnType.Sum" SummaryValueDisplayFormat="C" SummaryValuePrefix="Sum: ">
             @context.Salary.ToString("C")
         </GridColumn>
-        <GridColumn TItem="Employee" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+        <GridColumn TItem="Employee" HeaderText="Active" PropertyName="IsActive">
             @context.IsActive
         </GridColumn>
     </GridColumns>
@@ -35,8 +28,6 @@
 
 @code {
     private IEnumerable<Employee> employees = default!;
-
-    private HashSet<Employee> selectedEmployees = new();
 
     private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
     {
@@ -63,12 +54,6 @@
             new Employee { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), Salary = 8000, IsActive = true },
             new Employee { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), Salary = 17850, IsActive = true },
         };
-    }
-
-    private Task OnSelectedItemsChanged(HashSet<Employee> employees)
-    {
-        selectedEmployees = employees is not null && employees.Any() ? employees : new();
-        return Task.CompletedTask;
     }
 
     public record class Employee
