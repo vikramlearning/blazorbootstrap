@@ -24,7 +24,7 @@
         <GridColumn TItem="Employee" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
             @context.DOJ
         </GridColumn>
-        <GridColumn TItem="Employee" HeaderText="Salary" PropertyName="Salary" SortKeySelector="item => item.Salary" SummaryType="GridSummaryColumnType.Sum" SummaryValueDisplayFormat="C">
+        <GridColumn TItem="Employee" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" PropertyName="Salary" SortKeySelector="item => item.Salary" SummaryType="GridSummaryColumnType.Sum" SummaryValueDisplayFormat="C">
             @context.Salary.ToString("C")
         </GridColumn>
         <GridColumn TItem="Employee" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
