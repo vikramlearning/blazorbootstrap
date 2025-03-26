@@ -17,7 +17,7 @@
             @context.DOB
         </GridColumn>
         <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
-            @(typeof(UserStatus).GetDisplayName(context.Status))
+            @(typeof(UserStatus).GetDisplayName(context.Status.ToString()))
         </GridColumn>
     </GridColumns>
 
