@@ -62,7 +62,7 @@
                 }
                 else
                 {
-                    <span class="px-2">@filterValue</span>
+                    <span class="px-2">@(PropertyType!.GetDisplayName(filterValue))</span>
                 }
             </DropdownToggleButton>
             <DropdownMenu Class="bb-dropdown-menu-enum" Style="max-height: var(--bb-grid-filter-dropdown-max-height); overflow-x: hidden; overflow-y: auto;">
@@ -70,7 +70,8 @@
                 {
                     @foreach (var item in Enum.GetValues(PropertyType!))
                     {
-                        <DropdownItem @onclick="@(async () => await OnEnumFilterValueChangedAsync(item))">@item</DropdownItem>
+                        var name = PropertyType!.GetDisplayName(Enum.GetName(PropertyType!, item));
+                        <DropdownItem @onclick="@(async () => await OnEnumFilterValueChangedAsync(item))">@name</DropdownItem>
                     }
                 }
             </DropdownMenu>
