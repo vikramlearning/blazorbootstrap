@@ -355,7 +355,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     private CultureInfo GetCultureInfo()
     {
         if (string.IsNullOrWhiteSpace(Locale))
-            return CultureInfo.InvariantCulture;
+            return CultureInfo.CurrentCulture;
 
         try
         {
@@ -910,11 +910,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the locale.
     /// <para>
-    /// Default value is 'en-US'.
+    /// Default value is <see langword="null"/>.
     /// </para>
     /// </summary>
     [Parameter]
-    public string? Locale { get; set; } = "en-US";
+    public string? Locale { get; set; }
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.
