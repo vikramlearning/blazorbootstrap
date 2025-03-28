@@ -189,6 +189,13 @@ table button.dropdown-toggle.bb-grid-filter::after {
     padding: .375rem;
 }
 
+/* google maps */
+.bb-googlemaps-marker-fix {
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+
 /* grid - fixed header */
 .bb-table {
     /* NOTE: intentionally overriding the behavior */
@@ -638,3 +645,5 @@ main {
     color: var(--bs-link-hover-color);
     text-decoration: underline;
 }
+
+
