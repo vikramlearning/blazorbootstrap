@@ -12,6 +12,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private List<GridColumn<TItem>> columns = new();
 
+    private GridDetailView<TItem>? detailView;
+
+    public GridEmptyDataTemplate<TItem>? emptyDataTemplate;
+
     /// <summary>
     /// Current grid state (filters, paging, sorting).
     /// </summary>
@@ -21,11 +25,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private RenderFragment? headerSelectionTemplate;
 
-    private GridDetailView<TItem>? detailView;
-
-    public GridEmptyDataTemplate<TItem>? emptyDataTemplate;
-
-    public GridLoadingTemplate<TItem>? loadingTemplate;
+    private bool isColumnVisibilityChanged = false;
 
     private bool isFirstRenderComplete = false;
 
@@ -33,13 +33,13 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private object? lastAssignedDataOrDataProvider;
 
+    public GridLoadingTemplate<TItem>? loadingTemplate;
+
     private int pageSize;
 
     private bool requestInProgress = false;
 
     private HashSet<TItem> selectedItems = new();
-
-    public int SelectedItemsCount = 0;
 
     private int? totalCount = null;
 
@@ -55,6 +55,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             isFirstRenderComplete = true;
         }
 
+        // As Rendering now complete we can reset the column visibility change to false
+        isColumnVisibilityChanged = false;
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -63,13 +66,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         headerCheckboxId = IdUtility.GetNextId();
 
         pageSize = PageSize;
+        selectedItems = SelectedItems!;
 
         base.OnInitialized();
     }
 
     protected override Task OnParametersSetAsync()
     {
-        if ((Data is null && DataProvider is null) || (Data is not null && DataProvider is not null)) throw new ArgumentException($"Grid requires either {nameof(Data)} or {nameof(DataProvider)}, but not both or neither.");
+        if ((Data is null && DataProvider is null) || (Data is not null && DataProvider is not null))
+            throw new ArgumentException($"Grid requires either {nameof(Data)} or {nameof(DataProvider)}, but not both or neither.");
 
         if (AllowPaging && PageSize < 0)
             throw new ArgumentException($"{nameof(PageSize)} must be greater than zero.");
@@ -92,6 +97,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                 SaveGridSettingsAsync();
             }
 
+            //if (!mustRefreshData && selectedItems != SelectedItems)
+            //{
+            //    mustRefreshData = true;
+            //    SelectedItems = selectedItems;
+            //}
+
             // We want to trigger the first data load when we've collected the initial set of columns
             // because they might perform some action, like setting the default sort order. 
             // It would be wasteful to have to re-query immediately.
@@ -112,6 +123,42 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
               .Where(column => column.Filterable && column.GetFilterOperator() != FilterOperator.None && !string.IsNullOrWhiteSpace(column.GetFilterValue()))
               ?.Select(column => new FilterItem(column.PropertyName, column.GetFilterValue(), column.GetFilterOperator(), column.StringComparison));
 
+    private string GetColumnSummaryValue(GridSummaryColumnType type, string propertyName, string format, string prefix)
+    {
+        double value = 0;
+
+        if (type == GridSummaryColumnType.Average)
+        {
+            prefix ??= "Avg: ";
+            value = items?.Average(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
+        }
+        else if (type == GridSummaryColumnType.Count)
+        {
+            prefix ??= "Count: ";
+            value = items?.Where(x => x.GetType().GetProperty(propertyName)?.GetValue(x) is not null).Count() ?? 0;
+        }
+        else if (type == GridSummaryColumnType.Max)
+        {
+            prefix ??= "Max: ";
+            value = items?.Max(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
+        }
+        else if (type == GridSummaryColumnType.Min)
+        {
+            prefix ??= "Min: ";
+            value = items?.Min(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
+        }
+        else if (type == GridSummaryColumnType.Sum)
+        {
+            prefix ??= "Total: ";
+            value = items?.Sum(x => Convert.ToDouble(x.GetType().GetProperty(propertyName)?.GetValue(x))) ?? 0;
+        }
+
+        if (string.IsNullOrWhiteSpace(format))
+            return $"{prefix}{value}";
+        else
+            return $"{prefix}{value.ToString(format, GetCultureInfo())}";
+    }
+
     /// <summary>
     /// Refresh the grid data.
     /// </summary>
@@ -123,7 +170,20 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     public async ValueTask ResetPageNumber() => await ResetPageNumberAsync(true);
 
+    public Task SelectAllItemsAsync() => SelectAllItemsInternalAsync(true);
+
+    public Task UnSelectAllItemsAsync() => SelectAllItemsInternalAsync(false);
+
     internal void AddColumn(GridColumn<TItem> column) => columns.Add(column);
+
+    internal void ColumnVisibilityUpdated()
+    {
+        if (!isColumnVisibilityChanged)
+        {
+            isColumnVisibilityChanged = true;
+            StateHasChanged();
+        }
+    }
 
     internal async Task FilterChangedAsync()
     {
@@ -177,6 +237,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         {
             items = result.Data!.ToList();
             totalCount = result.TotalCount ?? result.Data!.Count();
+            if (result.PageNumber.HasValue)
+            {
+                gridCurrentState = new GridState<TItem>(result.PageNumber.Value, gridCurrentState.Sorting);
+            }
         }
         else
         {
@@ -187,9 +251,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         if (AllowSelection)
         {
             PrepareCheckboxIds();
-
-            if (!firstRender)
-                await RefreshSelectionAsync();
+            await RefreshSelectionAsync();
         }
 
         requestInProgress = false;
@@ -204,6 +266,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         if (refreshGrid)
             await RefreshDataAsync(false);
     }
+
+    internal void SetGridDetailView(GridDetailView<TItem> detailView) => this.detailView = detailView;
+
+    internal void SetGridEmptyDataTemplate(GridEmptyDataTemplate<TItem> emptyDataTemplate) => this.emptyDataTemplate = emptyDataTemplate;
+
+    internal void SetGridLoadingTemplate(GridLoadingTemplate<TItem> loadingTemplate) => this.loadingTemplate = loadingTemplate;
 
     internal async Task SortingChangedAsync(GridColumn<TItem> column)
     {
@@ -284,6 +352,21 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             builder.CloseElement(); // close: th
         };
 
+    private CultureInfo GetCultureInfo()
+    {
+        if (string.IsNullOrWhiteSpace(Locale))
+            return CultureInfo.CurrentCulture;
+
+        try
+        {
+            return CultureInfo.GetCultureInfo(Locale);
+        }
+        catch (CultureNotFoundException)
+        {
+            return CultureInfo.InvariantCulture;
+        }
+    }
+
     private IEnumerable<SortingItem<TItem>>? GetDefaultSorting() =>
         !AllowSorting || columns == null || !columns.Any()
             ? null
@@ -343,7 +426,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     /// <param name="item"></param>
     /// <returns>bool</returns>
-    private bool IsItemSelected(TItem item) => selectedItems.Contains(item);
+    private bool IsItemSelected(TItem item) => selectedItems?.Contains(item) ?? false;
 
     private async Task LoadGridSettingsAsync()
     {
@@ -380,13 +463,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task OnHeaderCheckboxChanged(ChangeEventArgs args)
     {
-        allItemsSelected = bool.TryParse(args?.Value?.ToString(), out var checkboxState) && checkboxState;
-        selectedItems = allItemsSelected ? new HashSet<TItem>(items!) : new HashSet<TItem>();
-        SelectedItemsCount = selectedItems.Count;
-        await CheckOrUnCheckAll();
-
-        if (SelectedItemsChanged.HasDelegate)
-            await SelectedItemsChanged.InvokeAsync(selectedItems);
+        var headerCheckboxState = bool.TryParse(args?.Value?.ToString(), out var checkboxState) && checkboxState;
+        await SelectAllItemsInternalAsync(headerCheckboxState);
     }
 
     private async Task OnPageChangedAsync(int newPageNumber)
@@ -411,12 +489,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         if (SelectionMode == GridSelectionMode.Multiple)
         {
             _ = isChecked ? selectedItems.Add(item) : selectedItems.Remove(item);
-            SelectedItemsCount = selectedItems.Count;
-            allItemsSelected = SelectedItemsCount == (items?.Count ?? 0);
+            allItemsSelected = (selectedItems.Count == (items?.Count ?? 0));
 
             if (allItemsSelected)
                 await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
-            else if (SelectedItemsCount == 0)
+            else if (selectedItems.Count == 0)
                 await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
             else
                 await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Indeterminate);
@@ -424,7 +501,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         else
         {
             selectedItems = isChecked ? new HashSet<TItem> { item } : new HashSet<TItem>();
-            SelectedItemsCount = selectedItems.Count;
             allItemsSelected = false;
             await CheckOrUnCheckAll();
             await SetCheckboxStateAsync(id, isChecked ? CheckboxState.Checked : CheckboxState.Unchecked);
@@ -432,6 +508,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (SelectedItemsChanged.HasDelegate)
             await SelectedItemsChanged.InvokeAsync(selectedItems);
+        else
+            SelectedItems = selectedItems;
     }
 
     private async Task OnScroll(EventArgs e)
@@ -459,18 +537,19 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                             ? new HashSet<TItem>()
                             : selectedItems?.Intersect(items!).ToHashSet() ?? new HashSet<TItem>();
 
-        SelectedItemsCount = selectedItems.Count;
-        allItemsSelected = SelectedItemsCount > 0 && items!.Count == SelectedItemsCount;
+        allItemsSelected = selectedItems.Count > 0 && items!.Count == selectedItems.Count;
 
         if (allItemsSelected)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
-        else if (SelectedItemsCount > 0)
+        else if (selectedItems.Count > 0)
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Indeterminate);
         else
             await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
 
         if (SelectedItemsChanged.HasDelegate)
             await SelectedItemsChanged.InvokeAsync(selectedItems);
+        else
+            SelectedItems = selectedItems;
     }
 
     private async Task RowClick(TItem item, EventArgs args)
@@ -495,13 +574,33 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         return GridSettingsChanged.InvokeAsync(settings);
     }
 
-    private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState) => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);
+    private async Task SelectAllItemsInternalAsync(bool selectAll)
+    {
+        if (SelectionMode != GridSelectionMode.Multiple)
+            return;
 
-    internal void SetGridDetailView(GridDetailView<TItem> detailView) => this.detailView = detailView;
+        allItemsSelected = selectAll;
+        selectedItems = allItemsSelected ? new HashSet<TItem>(items!) : new HashSet<TItem>();
 
-    internal void SetGridEmptyDataTemplate(GridEmptyDataTemplate<TItem> emptyDataTemplate) => this.emptyDataTemplate = emptyDataTemplate;
+        if (allItemsSelected)
+            await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Checked);
+        else
+            await SetCheckboxStateAsync(headerCheckboxId, CheckboxState.Unchecked);
 
-    internal void SetGridLoadingTemplate(GridLoadingTemplate<TItem> loadingTemplate) => this.loadingTemplate = loadingTemplate;
+        await CheckOrUnCheckAll();
+
+        if (SelectedItemsChanged.HasDelegate)
+            await SelectedItemsChanged.InvokeAsync(selectedItems);
+        else
+            SelectedItems = selectedItems;
+    }
+
+    private Task SetCheckboxStateAsync(string id, CheckboxState checkboxState)
+    {
+        queuedTasks.Enqueue(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState));
+
+        return Task.CompletedTask;
+    }
 
     /// <summary>
     /// Set filters.
@@ -534,9 +633,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     protected override string? ClassNames =>
-        BuildClassNames(Class,
+        BuildClassNames(
+            Class,
             ("bb-table", true),
-            (BootstrapClass.TableSticky, FixedHeader));
+            (BootstrapClass.TableSticky, FixedHeader)
+        );
 
     /// <summary>
     /// Gets or sets the grid delete.
@@ -601,6 +702,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public bool AllowSorting { get; set; }
+
+    /// <summary>
+    /// Gets or sets the grid summary.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public bool AllowSummary { get; set; }
 
     /// <summary>
     /// Automatically hides the paging controls when the grid item count is less than or equal to the <see cref="PageSize" />
@@ -705,8 +815,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public string? GridContainerClass { get; set; }
 
     private string? GridContainerClassNames =>
-        BuildClassNames(GridContainerClass,
-            (BootstrapClass.TableResponsive, Responsive));
+        BuildClassNames(
+            GridContainerClass,
+            (BootstrapClass.TableResponsive, Responsive)
+        );
 
     /// <summary>
     /// Gets or sets the grid container css style.
@@ -715,8 +827,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public string? GridContainerStyle { get; set; }
 
     private string? GridContainerStyleNames =>
-        BuildStyleNames(GridContainerStyle,
-            ($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}", FixedHeader));
+        BuildStyleNames(
+            GridContainerStyle,
+            ($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}", FixedHeader)
+        );
 
     /// <summary>
     /// This event is fired when the grid state is changed.
@@ -792,6 +906,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     //[EditorRequired] 
     public string ItemsPerPageText { get; set; } = "Items per page"!;
+
+    /// <summary>
+    /// Gets or sets the locale.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public string? Locale { get; set; }
 
     /// <summary>
     /// This event is triggered when the user clicks on the row.
@@ -871,6 +994,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [Parameter]
     public Func<TItem, string>? RowClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets the selected items.
+    /// </summary>
+    [Parameter]
+    public HashSet<TItem>? SelectedItems { get; set; }
 
     /// <summary>
     /// This event is fired when the item selection changes.

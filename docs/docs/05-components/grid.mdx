@@ -44,6 +44,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | HeaderRowCssClass | string | null | | Gets or sets the header row css class but not the thead tag class. | 1.9.2 |
 | Height | float | 320 pixels | | Gets or sets the grid height. | 1.10.3 |
 | ItemsPerPageText | string | `Items per page` | ✔️ | Gets or sets the items per page text. | 1.9.5 |
+| Locale | string? | `en-US` | | Gets or sets the locale. Default value is 'en-US'. | 3.4.0 |
 | PageSize | int | 10 | | Gets or sets the page size. | 1.0.0 |
 | PageSizeSelectorItems | `int[]` | `new int[] { 10, 20, 50 }` | ✔️ | Gets or sets the page size selector items. | 1.8.0 |
 | PageSizeSelectorVisible | bool | false | | Gets or sets the page size selector visible. | 1.8.0 |
@@ -101,8 +102,12 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 | SortKeySelector | `Expression<Func<TItem, IComparable>>` | | | Expression used for sorting. | 1.0.0 |
 | SortString | string | null | | Gets or sets the column sort string. This string is passed to the backend/API for sorting. And it is ignored for client-side sorting. | 1.0.0 |
 | StringComparison | `StringComparison` | `StringComparison.OrdinalIgnoreCase` | | Gets or sets the StringComparison. Use `StringComparison.CurrentCulture` or `StringComparison.CurrentCultureIgnoreCase` or `StringComparison.InvariantCulture` or `StringComparison.InvariantCultureIgnoreCase` or `StringComparison.Ordinal` or `StringComparison.OrdinalIgnoreCase`. | 1.0.0 |
+| SummaryType | `GridSummaryColumnType` | `GridSummaryColumnType.None` | | Gets or sets the summary type. Supported values are `GridSummaryColumnType.None`, `GridSummaryColumnType.Count`, `GridSummaryColumnType.Sum`, `GridSummaryColumnType.Average`, `GridSummaryColumnType.Min`, `GridSummaryColumnType.Max`. | 3.4.0 |
+| SummaryValueDisplayFormat | string | null | | Gets or sets the summary value display format. | 3.4.0 |
+| SummaryValuePrefix | string | null | | Gets or sets the summary value prefix. If set, it will be displayed before the summary value. Otherwise, based on the <see cref="SummaryType"/>, default prefix will be displayed. To remove the default prefix, set this property to an empty string. | 3.4.0 |
 | TextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the text alignment. Use `Alignment.Start` or `Alignment.Center` or `Alignment.End`. | 1.0.0 |
 | TextNoWrap | bool | false | | Gets or sets text nowrap. | 1.0.0 |
+| IsVisible | bool | true | | Gets or sets visibility of the Grid column. | 3.4.0 |
 
 ## GridSettings Properties
 
@@ -1949,6 +1954,93 @@ Set `AllowSelection="true"` to enable the selection on the Grid. By default, Sel
 
 [See demo here](https://demos.blazorbootstrap.com/grid/selection#selection)
 
+### Default selection
+
+Set `AllowSelection="true"` to enable the selection on the Grid. By default, `SelectionMode` is **Single**.
+
+<img src="https://i.imgur.com/nUodoAa.png" alt="Blazor Bootstrap: Grid Component - Default selection" />
+
+```cshtml {} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered"
+      DataProvider="EmployeesDataProvider"
+      AllowSelection="true"
+      @bind-SelectedItems="@selectedEmployees"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+<div class="mt-3">
+    Selected Items Count: @selectedEmployees.Count
+</div>
+
+<div class="mt-2">
+    Selected Employees:
+    <ul>
+        @foreach (var emp in selectedEmployees)
+        {
+            <li>@emp.Name</li>
+        }
+    </ul>
+</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    private HashSet<Employee1> selectedEmployees = new(){
+        new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true }
+    };
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        Console.WriteLine("EmployeesDataProvider called...");
+
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+        };
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid/selection#default-selection)
+
 ### Multiple selection
 
 To select multiple rows, set `SelectionMode="GridSelectionMode.Multiple"`.
@@ -2045,6 +2137,109 @@ Selected items are removed from the selection if they are not rendered after pag
 :::
 
 [See demo here](https://demos.blazorbootstrap.com/grid/selection#multiple-selection)
+
+### Select all or unselect all programmatically
+
+**Select** or **unselect** all the items programatically by calling the `SelectAllItemsAsync()` and `UnSelectAllItemsAsync()` methods. Also, set `SelectionMode="GridSelectionMode.Multiple"`.
+
+<img src="https://i.imgur.com/opicd0P.png" alt="Blazor Bootstrap: Grid Component - Select all or unselect all programmatically" />
+
+```cshtml {} showLineNumbers
+<div class="mb-3">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="SelectAllEmployees">Select All</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="UnselectAllEmployees">Unselect All</Button>
+</div>
+
+<Grid @ref="gridRef" TItem="Employee1"
+      Class="table table-hover table-bordered"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      AllowSelection="true"
+      SelectionMode="GridSelectionMode.Multiple"
+      SelectedItemsChanged="OnSelectedItemsChanged"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+<div class="mt-3">
+    Selected Items Count: @selectedEmployees.Count
+</div>
+
+<div class="mt-2">
+    Selected Employees:
+    <ul>
+        @foreach (var emp in selectedEmployees)
+        {
+            <li>@emp.Name</li>
+        }
+    </ul>
+</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private Grid<Employee1> gridRef;
+    private IEnumerable<Employee1> employees = default!;
+
+    private HashSet<Employee1> selectedEmployees = new();
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        Console.WriteLine("EmployeesDataProvider called...");
+
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+        };
+    }
+
+    private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
+    {
+        selectedEmployees = employees is not null && employees.Any() ? employees : new();
+        return Task.CompletedTask;
+    }
+
+    private Task SelectAllEmployees() => gridRef.SelectAllItemsAsync();
+
+    private Task UnselectAllEmployees() => gridRef.UnSelectAllItemsAsync();
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid/selection#select-all-or-unselect-all-programmatically)
 
 ### Disable selection
 
@@ -3888,3 +4083,194 @@ To create a nested grid, we first need to enable the detail view. To enable the 
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/grid/nested-grid)
+
+
+### Hide columns
+
+Set the <code>IsVisible</code> parameter to **false** to hide the column.
+
+<img src="https://i.imgur.com/R19yb1X.png" alt="Blazor Bootstrap: Grid Component - Hide columns" />
+
+```cshtml {} showLineNumbers
+<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Size="ButtonSize.Small" @onclick="ToggleActiveColumnVisibility"> 
+    Toggle Active Column Visibility 
+</Button>
+
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      AllowPaging="true"
+      PageSize="5"
+      AllowSorting="true"
+      AllowSelection="true"
+      SelectionMode="GridSelectionMode.Multiple"
+      SelectedItemsChanged="OnSelectedItemsChanged"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" FilterTextboxWidth="50" FilterTextboxWidthUnit="Unit.Percentage" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive" IsVisible="@isActiveColumnVisible">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+<div class="mt-3">
+    Selected Items Count: @selectedEmployees.Count
+</div>
+
+<div class="mt-2">
+    Selected Employees:
+    <ul>
+        @foreach (var emp in selectedEmployees)
+        {
+            <li>@emp.Name</li>
+        }
+    </ul>
+</div>
+```
+
+```cshtml {} showLineNumbers
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    private HashSet<Employee1> selectedEmployees = new();
+
+    public bool isActiveColumnVisible = true;
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private async Task ToggleActiveColumnVisibility()
+    {
+        isActiveColumnVisible = !isActiveColumnVisible;
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
+            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
+        };
+    }
+
+    private Task OnSelectedItemsChanged(HashSet<Employee1> employees)
+    {
+        selectedEmployees = employees is not null && employees.Any() ? employees : new();
+        return Task.CompletedTask;
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid/other#hide-columns)
+
+### Summary
+
+To enable summaries on columns, set the `AllowSummary` parameter to **true** at the Grid level. Additionally, set the `SummaryType` parameter on each GridColumn.
+In the following example, the Employee Name column has `SummaryType` set to **GridSummaryColumnType.Count**, and the **Salary** column has `SummaryType` set to **GridSummaryColumnType.Sum** and `SummaryValueDisplayFormat` set to **C** to display the sum of salaries in currency format.
+
+<img src="https://i.imgur.com/1DHiEkN.png" alt="Blazor Bootstrap: Grid Component - Summary" />
+
+```cshtml {} showLineNumbers
+<Grid TItem="Employee"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowSummary="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Employee Name" PropertyName="Name" SummaryType="GridSummaryColumnType.Count">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Salary" PropertyName="Salary" SummaryType="GridSummaryColumnType.Sum" SummaryValueDisplayFormat="C">
+            @context.Salary.ToString("C")
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+</Grid>
+```
+
+```cshtml {} showLineNumbers
+@code {
+    private IEnumerable<Employee> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee> GetEmployees()
+    {
+        return new List<Employee>
+        {
+            new Employee { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), Salary = 7700, IsActive = true },
+            new Employee { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), Salary = 19000, IsActive = true },
+            new Employee { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), Salary = 12000, IsActive = true },
+            new Employee { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), Salary = 19000, IsActive = false },
+            new Employee { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), Salary = 16500.50f, IsActive = true },
+            new Employee { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), Salary = 24000, IsActive = true },
+            new Employee { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), Salary = 21000, IsActive = true },
+            new Employee { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), Salary = 13500, IsActive = true },
+            new Employee { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), Salary = 15800.10f, IsActive = true },
+            new Employee { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), Salary = 14000, IsActive = true },
+            new Employee { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), Salary = 8000, IsActive = true },
+            new Employee { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), Salary = 17850, IsActive = true },
+        };
+    }
+
+    public record class Employee
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Designation { get; set; }
+        public DateOnly DOJ { get; set; }
+        public float Salary { get; set; }
+        public bool IsActive { get; set; }
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/grid/summary)

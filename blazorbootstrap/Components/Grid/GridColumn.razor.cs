@@ -14,6 +14,8 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     private string filterValue = default!;
 
+    private bool isVisible = true;
+
     private RenderFragment? headerTemplate;
 
     #endregion
@@ -108,6 +110,11 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
         {
             if (filterOperator == FilterOperator.None)
                 FilterOperator = filterOperator = FilterOperator.Equals;
+        }
+        if (isVisible != IsVisible)
+        {
+            isVisible = IsVisible;
+            Parent?.ColumnVisibilityUpdated();
         }
     }
 
@@ -247,6 +254,15 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public int FilterTextboxWidth { get; set; }
+
+    /// <summary>
+    /// Gets or sets the filter textbox width units.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="Unit.Px" />.
+    /// </remarks>
+    [Parameter]
+    public Unit FilterTextboxWidthUnit { get; set; } = Unit.Px;
 
     /// <summary>
     /// Gets or sets the filter value.
@@ -411,6 +427,15 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public bool IsDefaultSortColumn { get; set; } = false;
 
+    /// <summary>
+    /// Gets or sets visibility of the Grid column.
+    /// </summary>
+    /// <remarks>
+    /// Default value is true.
+    /// </remarks>
+    [Parameter]
+    public bool IsVisible { get; set; } = true;
+
     [CascadingParameter(Name = "Parent")]
     public Grid<TItem> Parent { get; set; } = default!;
 
@@ -468,6 +493,35 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
+
+    /// <summary>
+    /// Gets or sets the summary column type.
+    /// <para>
+    /// Default value is <see cref="GridSummaryColumnType.None"/>.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public GridSummaryColumnType SummaryType { get; set; } = GridSummaryColumnType.None;
+
+    /// <summary>
+    /// Gets or sets the summary value display format.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public string? SummaryValueDisplayFormat { get; set; }
+
+    /// <summary>
+    /// Gets or sets the summary value prefix. If set, it will be displayed before the summary value.
+    /// Otherwise, based on the <see cref="SummaryType"/>, default prefix will be displayed.
+    /// To remove the default prefix, set this property to an empty string.
+    /// <para>
+    /// Example: "Total: ", "Average: ", etc.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public string? SummaryValuePrefix { get; set; }
 
     /// <summary>
     /// Gets or sets the text alignment.

@@ -1,0 +1,68 @@
+﻿<Grid TItem="Employee"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowSummary="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Employee Name" PropertyName="Name" SummaryType="GridSummaryColumnType.Count" SummaryValuePrefix="Records count: ">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="DOJ" PropertyName="DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" PropertyName="Salary" SummaryType="GridSummaryColumnType.Sum" SummaryValueDisplayFormat="C" SummaryValuePrefix="Sum: ">
+            @context.Salary.ToString("C")
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+</Grid>
+
+@code {
+    private IEnumerable<Employee> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee>> EmployeesDataProvider(GridDataProviderRequest<Employee> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee> GetEmployees()
+    {
+        return new List<Employee>
+        {
+            new Employee { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), Salary = 7700, IsActive = true },
+            new Employee { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), Salary = 19000, IsActive = true },
+            new Employee { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), Salary = 12000, IsActive = true },
+            new Employee { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), Salary = 19000, IsActive = false },
+            new Employee { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), Salary = 16500.50f, IsActive = true },
+            new Employee { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), Salary = 24000, IsActive = true },
+            new Employee { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), Salary = 21000, IsActive = true },
+            new Employee { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), Salary = 13500, IsActive = true },
+            new Employee { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), Salary = 15800.10f, IsActive = true },
+            new Employee { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), Salary = 14000, IsActive = true },
+            new Employee { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), Salary = 8000, IsActive = true },
+            new Employee { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), Salary = 17850, IsActive = true },
+        };
+    }
+
+    public record class Employee
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Designation { get; set; }
+        public DateOnly DOJ { get; set; }
+        public float Salary { get; set; }
+        public bool IsActive { get; set; }
+    }
+}

@@ -1,4 +1,9 @@
-﻿<Grid TItem="Employee1"
+﻿<div class="mb-3">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="SelectAllEmployees">Select All</Button>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="UnselectAllEmployees">Unselect All</Button>
+</div>
+
+<Grid @ref="gridRef" TItem="Employee1"
       Class="table table-hover table-bordered"
       DataProvider="EmployeesDataProvider"
       AllowFiltering="true"
@@ -42,6 +47,7 @@
 </div>
 
 @code {
+    private Grid<Employee1> gridRef;
     private IEnumerable<Employee1> employees = default!;
 
     private HashSet<Employee1> selectedEmployees = new();
@@ -77,4 +83,8 @@
         selectedEmployees = employees is not null && employees.Any() ? employees : new();
         return Task.CompletedTask;
     }
+
+    private Task SelectAllEmployees() => gridRef.SelectAllItemsAsync();
+
+    private Task UnselectAllEmployees() => gridRef.UnSelectAllItemsAsync();
 }

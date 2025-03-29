@@ -66,6 +66,7 @@ public static class RouteConstants
     public const string Demos_Grid_Paging_Documentation = Demos_Grid_Prefix + "/paging";
     public const string Demos_Grid_Selection_Documentation = Demos_Grid_Prefix + "/selection";
     public const string Demos_Grid_Sorting_Documentation = Demos_Grid_Prefix + "/sorting";
+    public const string Demos_Grid_Summary_Documentation = Demos_Grid_Prefix + "/summary";
     public const string Demos_Grid_Translations_Documentation = Demos_Grid_Prefix + "/translations";
     public const string Demos_Grid_OtherExamples_Documentation = Demos_Grid_Prefix + "/other";
     #endregion Grid

@@ -7,7 +7,11 @@
 </CascadingValue>
 
 @if (columns.Any())
-{
+{   
+    var columnCount = columns.Where(c => c.IsVisible).Count();
+    if (AllowSelection) columnCount += 1;
+    if (AllowDetailView) columnCount += 1;
+    
     <div class="@GridContainerClassNames" style="@GridContainerStyleNames" onscroll="@OnScroll">
         <table @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
             <thead class="@THeadCssClass">
@@ -22,6 +26,10 @@
                     }
                     @foreach (var column in columns)
                     {
+                        @if (!column.IsVisible)
+                        {
+                            continue;
+                        }
                         @column.HeaderTemplate
                     }
                 </tr>
@@ -38,6 +46,10 @@
                         }
                         @foreach (var column in columns)
                         {
+                            @if (!column.IsVisible)
+                            {
+                                continue;
+                            }
                             var columnClassList = new HashSet<string>();
                             var columnStyleList = new List<string>();
 
@@ -59,17 +71,17 @@
                                 @if (column.Filterable)
                                 {
                                     <GridColumnFilter EnumFilterSelectText="@EnumFilterSelectText"
-                                                      FilterButtonColor="@column.FilterButtonColor"
-                                                      FilterButtonCSSClass="@column.FilterButtonCSSClass"
-                                                      FilterOperator="@column.FilterOperator"
-                                                      FilterValue="@column.FilterValue"
-                                                      FilterWidth="@column.FilterTextboxWidth"
-                                                      FiltersTranslationProvider="GridFiltersTranslationProviderAsync!"
-                                                      FixedHeader="@FixedHeader"
-                                                      GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
-                                                      PropertyType="@column.GetPropertyType()"
-                                                      PropertyTypeName="@column.GetPropertyTypeName()"
-                                                      Unit="@Unit" />
+                                    FilterButtonColor="@column.FilterButtonColor"
+                                    FilterButtonCSSClass="@column.FilterButtonCSSClass"
+                                    FilterOperator="@column.FilterOperator"
+                                    FilterValue="@column.FilterValue"
+                                    FilterWidth="@column.FilterTextboxWidth"
+                                    FiltersTranslationProvider="GridFiltersTranslationProviderAsync!"
+                                    FixedHeader="@FixedHeader"
+                                    GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
+                                    PropertyType="@column.GetPropertyType()"
+                                    PropertyTypeName="@column.GetPropertyTypeName()"
+                                    Unit="@column.FilterTextboxWidthUnit" />
                                 }
                             </th>
                         }
@@ -77,11 +89,6 @@
                 }
             </thead>
             <tbody>
-                @{
-                    var columnCount = columns.Count;
-                    if (AllowSelection) columnCount += 1;
-                    if (AllowDetailView) columnCount += 1;
-                }
                 @if (requestInProgress) //|| totalCount is null
                 {
                     @if (loadingTemplate is null)
@@ -158,6 +165,10 @@
 
                                 @foreach (var column in columns)
                                 {
+                                    @if (!column.IsVisible)
+                                    {
+                                        continue;
+                                    }
                                     @column.CellTemplate(item)
                                 }
                             </tr>
@@ -179,6 +190,35 @@
                     }
                 }
             </tbody>
+            @if (AllowSummary)
+            {
+                <tfoot>
+                    <tr>
+                        @if (totalCount > 0)
+                        {
+                            @if (AllowSelection)
+                            {
+                                <td></td>
+                            }
+                            foreach (var column in columns)
+                            {
+                                @if (!column.IsVisible)
+                                {
+                                    continue;
+                                }
+                                else if (column.SummaryType == GridSummaryColumnType.None)
+                                {
+                                    <td></td>
+                                }
+                                else if (column.SummaryType != GridSummaryColumnType.None)
+                                {
+                                    <td class="@column.TextAlignment.ToTextAlignmentClass()">@GetColumnSummaryValue(column.SummaryType, column.PropertyName, column.SummaryValueDisplayFormat, column.SummaryValuePrefix)</td>
+                                }
+                            }
+                        }
+                    </tr>
+                </tfoot>
+            }
         </table>
     </div>
 

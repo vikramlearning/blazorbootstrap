@@ -720,6 +720,36 @@ window.blazorBootstrap = {
                 bootstrap?.Offcanvas?.getOrCreateInstance(offcanvasEl)?.dispose();
         }
     },
+    radioInput: {
+        isChanging: false,
+        initialize: (elementId, elementName, dotNetHelper) => {
+            let radioEl = document.getElementById(elementId);
+            if (radioEl == null)
+                return;
+
+            radioEl.addEventListener('change', function () {
+                try {
+                    dotNetHelper.invokeMethodAsync('OnChangeJS', radioEl.checked);
+
+                    let radioEls = document.getElementsByName(elementName) ?? [];
+                    radioEls.forEach((el, index) => {
+
+                        if (window.blazorBootstrap.radioInput.isChanging)
+                            return;
+
+                        if (el.id !== radioEl.id) {
+                            window.blazorBootstrap.radioInput.isChanging = true;
+                            el.checked = false;
+                            el.dispatchEvent(new Event('change'));
+                        }
+                    });
+                }
+                finally {
+                    window.blazorBootstrap.radioInput.isChanging = false;
+                }
+            });
+        }
+    },
     rangeInput: {
         initialize: (elementId, dotNetHelper) => {
             let rangeEl = document.getElementById(elementId);
