@@ -124,7 +124,7 @@ public partial class LineChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins);
+        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins, objRef);
     }
 
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)

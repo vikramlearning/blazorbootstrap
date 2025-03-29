@@ -6,7 +6,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     internal ChartType chartType;
     
-    protected DotNetObjectReference<PieChart> objRef;
+    protected DotNetObjectReference<BlazorBootstrapChart> objRef;
 
     #endregion
 
@@ -49,8 +49,13 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             var _data = GetChartDataObject(chartData);
 
             var dotNetReference = DotNetObjectReference.Create(this);
+            if (dotNetReference is null) {
+                Console.WriteLine("ERROR!");
+            } else {
+                Console.WriteLine("SUCCESS!");
+            }
             if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins, dotNetReference);
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins, objRef);
             else if (chartType == ChartType.Line)
                 await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), _data, (LineChartOptions)chartOptions, plugins, dotNetReference);
             else

@@ -1118,7 +1118,7 @@ window.blazorChart.bar = {
         if (chart) return;
 
         window.blazorChart.bar.create(elementId, type, data, options, plugins);
-        chart = window.blazorChart.pie.get(elementId);
+        chart = window.blazorChart.bar.get(elementId);
         options.onClick = (e, array) => {
             if (array.length <= 0) {
                 return;
@@ -1262,7 +1262,7 @@ window.blazorChart.doughnut = {
         if (chart) return;
 
         window.blazorChart.doughnut.create(elementId, type, data, options, plugins);
-        chart = window.blazorChart.pie.get(elementId);
+        chart = window.blazorChart.doughnut.get(elementId);
         options.onClick = (e, array) => {
             if (array.length <= 0) {
                 return;
@@ -1442,7 +1442,7 @@ window.blazorChart.line = {
 
         window.blazorChart.line.create(elementId, type, data, options, plugins);
 
-        chart = window.blazorChart.pie.get(elementId);
+        chart = window.blazorChart.doughnut.get(elementId);
         options.onClick = (e, array) => {
             if (array.length <= 0) {
                 return;
@@ -1733,7 +1733,7 @@ window.blazorChart.polarArea = {
         if (chart) return;
 
         window.blazorChart.polarArea.create(elementId, type, data, options, plugins);
-        chart = window.blazorChart.pie.get(elementId);
+        chart = window.blazorChart.polarArea.get(elementId);
         options.onClick = (e, array) => {
             if (array.length <= 0) {
                 return;
@@ -1877,7 +1877,7 @@ window.blazorChart.radar = {
         if (chart) return;
 
         window.blazorChart.radar.create(elementId, type, data, options, plugins);
-        chart = window.blazorChart.pie.get(elementId);
+        chart = window.blazorChart.radar.get(elementId);
         options.onClick = (e, array) => {
             if (array.length <= 0) {
                 return;
@@ -2021,7 +2021,7 @@ window.blazorChart.scatter = {
         if (chart) return;
 
         window.blazorChart.scatter.create(elementId, type, data, options, plugins);
-        chart = window.blazorChart.pie.get(elementId);
+        chart = window.blazorChart.scatter.get(elementId);
         options.onClick = (e, array) => {
             if (array.length <= 0) {
                 return;

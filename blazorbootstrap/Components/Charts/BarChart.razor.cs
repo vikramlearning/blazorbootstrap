@@ -23,7 +23,7 @@ public partial class BarChart : BlazorBootstrapChart
     
     protected override async Task OnInitializedAsync() {
         await base.OnInitializedAsync();
-
+        
         objRef ??= DotNetObjectReference.Create(this);
     }
 
@@ -119,7 +119,7 @@ public partial class BarChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<BarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (BarChartOptions)chartOptions, plugins);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (BarChartOptions)chartOptions, plugins, objRef);
         }
     }
 
