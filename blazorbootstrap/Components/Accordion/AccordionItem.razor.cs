@@ -27,30 +27,34 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
 
     internal async Task ShowAsync() => await collapse.ShowAsync();
 
-    private async Task OnCollapseHiddenAsync()
+    private async Task OnCollapseHiddenAsync(string collapseId)
     {
+        if (collapseId != collapse.Id) return;
         if (Parent is not null && Parent.OnHidden.HasDelegate)
             await Parent.OnHidden.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
-    private async Task OnCollapseHidingAsync()
+    private async Task OnCollapseHidingAsync(string collapseId)
     {
+        if (collapseId != collapse.Id) return;
         isCollapsed = true;
 
         if (Parent is not null && Parent.OnHiding.HasDelegate)
             await Parent.OnHiding.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
-    private async Task OnCollapseShowingAsync()
+    private async Task OnCollapseShowingAsync(string collapseId)
     {
+        if (collapseId != collapse.Id) return;
         isCollapsed = false;
 
         if (Parent is not null && Parent.OnShowing.HasDelegate)
             await Parent.OnShowing.InvokeAsync(new AccordionEventArgs(Name, Title));
     }
 
-    private async Task OnCollapseShownAsync()
+    private async Task OnCollapseShownAsync(string collapseId)
     {
+        if (collapseId != collapse.Id) return;
         if (Parent is not null && Parent.OnShown.HasDelegate)
             await Parent.OnShown.InvokeAsync(new AccordionEventArgs(Name, Title));
     }

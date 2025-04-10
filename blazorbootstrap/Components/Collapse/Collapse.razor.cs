@@ -47,16 +47,16 @@ public partial class Collapse : BlazorBootstrapComponentBase
     }
 
     [JSInvokable]
-    public async Task bsHiddenCollapse() => await OnHidden.InvokeAsync();
+    public async Task bsHiddenCollapse(string collapseId) => await OnHidden.InvokeAsync(collapseId);
 
     [JSInvokable]
-    public async Task bsHideCollapse() => await OnHiding.InvokeAsync();
+    public async Task bsHideCollapse(string collapseId) => await OnHiding.InvokeAsync(collapseId);
 
     [JSInvokable]
-    public async Task bsShowCollapse() => await OnShowing.InvokeAsync();
+    public async Task bsShowCollapse(string collapseId) => await OnShowing.InvokeAsync(collapseId);
 
     [JSInvokable]
-    public async Task bsShownCollapse() => await OnShown.InvokeAsync();
+    public async Task bsShownCollapse(string collapseId) => await OnShown.InvokeAsync(collapseId);
 
     /// <summary>
     /// Hides a collapsible element.
@@ -105,26 +105,26 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// This event is fired when a collapse element has been hidden from the user (will wait for CSS transitions to complete).
     /// </summary>
     [Parameter]
-    public EventCallback OnHidden { get; set; }
+    public EventCallback<string> OnHidden { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide method has been called.
     /// </summary>
     [Parameter]
-    public EventCallback OnHiding { get; set; }
+    public EventCallback<string> OnHiding { get; set; }
 
     /// <summary>
     /// This event fires immediately when the show instance method is called.
     /// </summary>
     [Parameter]
-    public EventCallback OnShowing { get; set; }
+    public EventCallback<string> OnShowing { get; set; }
 
     /// <summary>
     /// This event is fired when a collapse element has been made visible to the user (will wait for CSS transitions to
     /// complete).
     /// </summary>
     [Parameter]
-    public EventCallback OnShown { get; set; }
+    public EventCallback<string> OnShown { get; set; }
 
     /// <summary>
     /// Gets or sets the parent selector, DOM element.
