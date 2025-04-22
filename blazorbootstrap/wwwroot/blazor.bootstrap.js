@@ -186,16 +186,16 @@ window.blazorBootstrap = {
                 return;
 
             collapseEl.addEventListener('show.bs.collapse', (event) => {
-                dotNetHelper.invokeMethodAsync('bsShowCollapse');
+                dotNetHelper.invokeMethodAsync('bsShowCollapse', event.target?.id);
             });
             collapseEl.addEventListener('shown.bs.collapse', (event) => {
-                dotNetHelper.invokeMethodAsync('bsShownCollapse');
+                dotNetHelper.invokeMethodAsync('bsShownCollapse', event.target?.id);
             });
             collapseEl.addEventListener('hide.bs.collapse', (event) => {
-                dotNetHelper.invokeMethodAsync('bsHideCollapse');
+                dotNetHelper.invokeMethodAsync('bsHideCollapse', event.target?.id);
             });
             collapseEl.addEventListener('hidden.bs.collapse', (event) => {
-                dotNetHelper.invokeMethodAsync('bsHiddenCollapse');
+                dotNetHelper.invokeMethodAsync('bsHiddenCollapse', event.target?.id);
             });
 
             let options = { parent: parent, toggle: toggle };
