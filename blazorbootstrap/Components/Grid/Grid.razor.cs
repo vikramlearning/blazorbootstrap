@@ -996,6 +996,14 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public Func<TItem, string>? RowClass { get; set; }
 
     /// <summary>
+    ///  Gets or sets the row key selector.
+    /// usage ex.
+    /// RowKeySelector="context => context.UserId"
+    /// </summary>
+    [Parameter]
+    public Func<TItem, object>? RowKeySelector { get; set; }
+    
+    /// <summary>
     /// Gets or sets the selected items.
     /// </summary>
     [Parameter]
