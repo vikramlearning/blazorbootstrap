@@ -26,7 +26,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
-    private async void OnNotify(ToastMessage toastMessage)
+    private async Task OnNotify(ToastMessage toastMessage)
     {
         if (toastMessage is null)
             return;

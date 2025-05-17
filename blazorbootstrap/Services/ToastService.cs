@@ -4,7 +4,7 @@ public class ToastService
 {
     #region Events
 
-    internal event Action<ToastMessage> OnNotify = default!;
+    internal event Func<ToastMessage, Task> OnNotify = default!;
 
     #endregion
 
