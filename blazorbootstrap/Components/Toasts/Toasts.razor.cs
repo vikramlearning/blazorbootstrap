@@ -12,7 +12,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
             Messages = null;
 
             if (ToastService is not null)
-                ToastService.OnNotify -= OnNotify;
+                ToastService.OnNotify -= OnNotifyAsync;
         }
 
         await base.DisposeAsyncCore(disposing);
@@ -21,12 +21,12 @@ public partial class Toasts : BlazorBootstrapComponentBase
     protected override void OnInitialized()
     {
         if (ToastService is not null)
-            ToastService.OnNotify += OnNotify;
+            ToastService.OnNotify += OnNotifyAsync;
 
         base.OnInitialized();
     }
 
-    private async Task OnNotify(ToastMessage toastMessage)
+    private async Task OnNotifyAsync(ToastMessage toastMessage)
     {
         if (toastMessage is null)
             return;
