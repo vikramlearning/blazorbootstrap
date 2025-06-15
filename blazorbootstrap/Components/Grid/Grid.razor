@@ -147,7 +147,7 @@
                         {
                             var rowClass = RowClass?.Invoke(item) ?? "";
                             var detailViewRowId = IdUtility.GetNextId();
-                            <tr @key="item?.GetHashCode()" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
+                            <tr @key="RowKeySelector?.Invoke(item) ?? item?.GetHashCode()" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
                                 @if (AllowDetailView)
                                 {
                                     <td class="text-center">

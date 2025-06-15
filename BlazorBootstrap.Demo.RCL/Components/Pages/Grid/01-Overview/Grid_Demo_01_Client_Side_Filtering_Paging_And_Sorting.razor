@@ -1,14 +1,15 @@
 <Grid TItem="Employee1"
-      Class="table table-hover table-bordered table-striped"
-      DataProvider="EmployeesDataProvider"
       AllowFiltering="true"
       AllowPaging="true"
-      PageSize="5"
       AllowSorting="true"
       AllowSelection="true"
-      SelectionMode="GridSelectionMode.Multiple"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      PageSize="5"
+      Responsive="true"
+      RowKeySelector="(emp) => emp.Id"
       SelectedItemsChanged="OnSelectedItemsChanged"
-      Responsive="true">
+      SelectionMode="GridSelectionMode.Multiple">
 
     <GridColumns>
         <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
