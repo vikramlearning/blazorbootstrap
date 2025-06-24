@@ -476,6 +476,12 @@ public class ChartAxesTicks
     public string? Color { get; set; }
 
     /// <summary>
+    /// Font of ticks
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ChartFont? Font { get; set; } = new();
+
+    /// <summary>
     /// If <see langword="true" />, show tick labels.
     /// </summary>
     public bool Display { get; set; } = true;
