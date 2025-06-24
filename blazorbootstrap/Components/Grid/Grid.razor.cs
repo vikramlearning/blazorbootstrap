@@ -829,7 +829,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     private string? GridContainerStyleNames =>
         BuildStyleNames(
             GridContainerStyle,
-            ($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}", FixedHeader)
+            ($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}", FixedHeader),
+            ($"overflow-x:auto;", Responsive)
         );
 
     /// <summary>
