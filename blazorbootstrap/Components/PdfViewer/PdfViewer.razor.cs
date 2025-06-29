@@ -128,6 +128,8 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
     private async Task PrintAsync() => await PdfViewerJsInterop.PrintAsync(objRef!, Id!, Url!);
 
+    private async Task DownloadAsync() => await PdfViewerJsInterop.DownloadAsync(objRef!, Id!, Url!);
+
     private async Task ResetZoomAsync()
     {
         zoomLevel = defaultZoomLevel;
