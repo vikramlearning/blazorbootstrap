@@ -35,6 +35,13 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
         if (OnMarkerClick.HasDelegate)
             await OnMarkerClick.InvokeAsync(marker);
     }
+    
+    [JSInvokable]
+    public async Task OnClusterClickJS(GoogleMapClusterClickEvent clusterEvent)
+    {
+        if (OnClusterClick.HasDelegate)
+            await OnClusterClick.InvokeAsync(clusterEvent);
+    }
 
     /// <summary>
     /// Refreshes the Google Map component.
@@ -42,7 +49,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// <returns>A completed task.</returns>
     public ValueTask RefreshAsync()
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef);
+        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, MapControls, MapId, objRef);
 
         return ValueTask.CompletedTask;
     }
@@ -60,7 +67,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
 
     private void OnScriptLoad()
     {
-        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef));
+        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, ClusterOptions, MapControls, MapId, objRef));
     }
 
     #endregion
@@ -74,6 +81,12 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
             ($"height:{Height!.Value.ToString(CultureInfo.InvariantCulture)}{HeightUnit.ToCssString()}", Height is not null && Height.Value > 0)
         );
 
+    /// <summary>
+    /// Gets or sets the Google Map ID. It essentially allows for custom styled maps from Google Maps Platforms, see: https://developers.google.com/maps/documentation/javascript/map-ids/mapid-over
+    /// </summary>
+    [Parameter]
+    public string? MapId { get; set; }
+    
     /// <summary>
     /// Gets or sets the Google Map API key.
     /// </summary>
@@ -92,7 +105,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     [Parameter] 
     public bool Clickable { get; set; }
 
-    private string? GoogleMapsJsFileUrl => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&libraries=maps,marker";
+    private string? GoogleMapsJsFileUrl => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&libraries=maps,marker{(MapId != null ? $"&map_ids={MapId}" : "")}";
 
     /// <summary>
     /// Gets or sets the height of the <see cref="GoogleMap" />.
@@ -152,5 +165,26 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     [Parameter]
     public int Zoom { get; set; } = 14;
 
+    /// <summary>
+    /// Gets or sets the clustering options for the map.
+    /// </summary>
+    [Parameter]
+    public GoogleMapClusterOptions? ClusterOptions { get; set; } = new();
+
+    /// <summary>
+    /// Event fired when a user clicks on a cluster.
+    /// This event fires only when EnableClustering is true and ClusterOptions.EnableClusterClick is true.
+    /// </summary>
+    [Parameter]
+    public EventCallback<GoogleMapClusterClickEvent> OnClusterClick { get; set; }
+
+    /// <summary>
+    /// Decides which controls to show on the map.
+    /// </summary>
+    /// <remarks>
+    /// Full is the default value, which enables both street view and zoom controls.
+    /// </remarks>
+    [Parameter]
+    public GoogleMapControls MapControls { get; set; } = GoogleMapControls.Full;
     #endregion
 }
