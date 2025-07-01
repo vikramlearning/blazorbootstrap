@@ -1,0 +1,31 @@
+﻿<Sidebar2 Href="/"
+          DataProvider="Sidebar2DataProvider"
+          ImageSrc="@($"{StringConstants.ImagesBasePath}/demos_logo_bw.png")"
+          ImageWidth="200"
+          Width="232"
+          WidthUnit="Unit.Px" />
+
+@code {
+    IEnumerable<NavItem>? navItems;
+
+    private async Task<Sidebar2DataProviderResult> Sidebar2DataProvider(Sidebar2DataProviderRequest request)
+    {
+        if (navItems is null)
+            navItems = GetNavItems();
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+
+    private IEnumerable<NavItem> GetNavItems()
+    {
+        navItems = new List<NavItem>
+        {
+            new NavItem { Href = "/getting-started", IconName = IconName.HouseDoorFill, Text = "Getting Started"},
+            new NavItem { Href = "/alerts", IconName = IconName.CheckCircleFill, Text = "Alerts"},
+            new NavItem { Href = "/autocomplete", IconName = IconName.InputCursorText, Text = "Auto Complete"},
+            new NavItem { Href = "/breadcrumb", IconName = IconName.SegmentedNav, Text = "Breadcrumb"},
+            new NavItem { Href = "/sidebar", IconName = IconName.LayoutSidebarInset, Text = "Sidebar"},
+        };
+        return navItems;
+    }
+}

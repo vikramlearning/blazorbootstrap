@@ -124,6 +124,8 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
         BuildStyleNames(Style,
             ($"--bb-sidebar2-width: {Width.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};", Width > 0));
 
+        private string? ImageStyleNames => BuildStyleNames("",
+        ($"width: {ImageWidth.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};", ImageWidth > 0));
 
     /// <summary>
     /// Gets or sets the badge text.
@@ -179,6 +181,14 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public string? ImageSrc { get; set; }
+
+    /// <summary>
+    /// Gets or sets the width of the image in pixels.
+    /// You can change the unit by setting <see cref="WidthUnit" />.
+    /// <remarks>Default value is 0.</remarks>
+    /// </summary>
+    [Parameter]
+    public float ImageWidth { get; set; } = 0;
 
     private string? navMenuCssClass => GetNavMenuCssClass();
 
