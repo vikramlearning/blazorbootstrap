@@ -80,7 +80,7 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
 }
 
 /* carbon ads */
-#carbonads {
+/* #carbonads {
   position: static;
   display: block;
   max-width: 400px;
@@ -113,7 +113,7 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   display: block;
   margin-top: .75rem;
   color: #212529 !important
-}
+} */
 
 /* webpack-dev-server-client-overlay */
 #webpack-dev-server-client-overlay {

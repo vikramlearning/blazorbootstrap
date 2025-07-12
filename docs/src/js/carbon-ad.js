@@ -5,7 +5,7 @@ class CarbonAd extends Component {
     super(props);
 
     this.name = this.props.name || "docsblazorbootstrapcom";
-      this.serve = this.props.serve || "CW7ILK7W";
+    this.serve = this.props.serve || "CW7ILK7W";
     this.script = this.props.script || null;
     this.placement = this.props.placement || "";
     this.format = this.props.format || "cover";
