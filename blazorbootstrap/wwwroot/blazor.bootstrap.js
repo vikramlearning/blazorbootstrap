@@ -1041,7 +1041,7 @@ window.blazorChart = {
         }
     },
     updateDataValues: (elementId, data) => {
-        let chart = window.blazorChart.line.get(elementId);
+        let chart = window.blazorChart.get(elementId);
         if (chart) {
             chart.data.datasets.splice(data.datasets.length);
 
@@ -1305,7 +1305,7 @@ window.blazorChart.doughnut = {
         }
     },
     updateDataValues: (elementId, data) => {
-        let chart = window.blazorChart.line.get(elementId);
+        let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) {
             chart.data.datasets.splice(data.datasets.length);
 
@@ -1609,7 +1609,7 @@ window.blazorChart.pie = {
         }
     },
     updateDataValues: (elementId, data) => {
-        let chart = window.blazorChart.line.get(elementId);
+        let chart = window.blazorChart.pie.get(elementId);
         if (chart) {
             chart.data.datasets.splice(data.datasets.length);
 
@@ -1745,7 +1745,7 @@ window.blazorChart.polarArea = {
         }
     },
     updateDataValues: (elementId, data) => {
-        let chart = window.blazorChart.line.get(elementId);
+        let chart = window.blazorChart.polarArea.get(elementId);
         if (chart) {
             chart.data.datasets.splice(data.datasets.length);
 
@@ -1880,7 +1880,7 @@ window.blazorChart.radar = {
         }
     },
     updateDataValues: (elementId, data) => {
-        let chart = window.blazorChart.line.get(elementId);
+        let chart = window.blazorChart.radar.get(elementId);
         if (chart) {
             chart.data.datasets.splice(data.datasets.length);
 
@@ -2015,7 +2015,7 @@ window.blazorChart.scatter = {
         }
     },
     updateDataValues: (elementId, data) => {
-        let chart = window.blazorChart.line.get(elementId);
+        let chart = window.blazorChart.scatter.get(elementId);
         if (chart) {
             chart.data.datasets.splice(data.datasets.length);
 
