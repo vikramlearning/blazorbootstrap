@@ -5,9 +5,10 @@ class CarbonAd extends Component {
     super(props);
 
     this.name = this.props.name || "docsblazorbootstrapcom";
-    this.serve = this.props.serve || "CWYICKJI";
+      this.serve = this.props.serve || "CW7ILK7W";
     this.script = this.props.script || null;
     this.placement = this.props.placement || "";
+    this.format = this.props.format || "cover";
     this.fallback = this.props.fallback || null;
     this.showFallback = false;
   }
@@ -20,11 +21,7 @@ class CarbonAd extends Component {
     script.async = true;
     script.id = this.script ? "" : "_carbonads_js";
     script.type = "text/javascript";
-    script.src =
-      this.script ||
-      `//cdn.carbonads.com/carbon.js?serve=${this.serve}&placement=${
-        this.placement
-      }`;
+    script.src = this.script || `//cdn.carbonads.com/carbon.js?serve=${this.serve}&placement=${this.placement}&format=${this.format}`;
     script.onerror = () => {
       this.showFallback = true;
       this.forceUpdate();
