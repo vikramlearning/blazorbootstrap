@@ -14,5 +14,10 @@ public class GoogleMapMarker
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public string? Title { get; set; }
 
+    /// <summary>
+    /// Variable for disabling info windows on the maps
+    /// </summary>
+    public bool DisableInfoWindow { get; set; } = false;
+
     #endregion
 }

@@ -474,6 +474,13 @@ window.blazorBootstrap = {
                 else if (marker.content) {
                     _content = document.createElement("div");
                     _content.classList.add("bb-google-marker-content");
+
+                    // fixes SVG misalignment on zoom out - Adlei
+                    const hasSVG = marker.content.includes('<svg');
+                    if (hasSVG) {
+                        _content.classList.add("bb-googlemaps-marker-fix");
+                    }
+                    
                     _content.innerHTML = marker.content;
                 }
 
@@ -491,58 +498,240 @@ window.blazorBootstrap = {
                 if (clickable) {
                     markerEl.addListener("click", ({ domEvent, latLng }) => {
                         const { target } = domEvent;
-                        const infoWindow = new google.maps.InfoWindow();
-                        infoWindow.close();
-                        infoWindow.setContent(markerEl.title);
-                        infoWindow.open(markerEl.map, markerEl);
+                        
+                        // Disables info window, but enables clicking
+                        if(!marker.disableInfoWindow) {
+                            const infoWindow = new google.maps.InfoWindow();
+                            infoWindow.close();
+                            infoWindow.setContent(markerEl.title);
+                            infoWindow.open(markerEl.map, markerEl);
+                        }
                         dotNetHelper.invokeMethodAsync('OnMarkerClickJS', marker);
                     });
                 }
+                if (mapInstance.markerCluster) {
+                    const markers = mapInstance.markerCluster.markers;
+                    const markerExists = markers.includes(markerEl);
+
+                    if (!markerExists) {
+                        mapInstance.markerCluster.addMarker(markerEl);
+                    } else {
+                        mapInstance.markerCluster.render();
+                    }
+                }
+                
             }
         },
-        create: (elementId, map, zoom, center, markers, clickable) => {
+        create: (elementId, map, zoom, center, markers, clickable, clusterOptions) => {
             window.blazorBootstrap.googlemaps.instances[elementId] = {
                 map: map,
                 zoom: zoom,
                 center: center,
                 markers: markers,
-                clickable: clickable
+                clickable: clickable,
+                clusterOptions: clusterOptions,
             };
         },
         get: (elementId) => {
             return window.blazorBootstrap.googlemaps.instances[elementId];
         },
-        initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
-            window.blazorBootstrap.googlemaps.markerEls[elementId] = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
+        initialize: (elementId, zoom, center, markers, clickable, clusterOptions, mapControls, mapId, dotNetHelper) => {
+            window.blazorBootstrap.googlemaps.markerEls[elementId] ??= [];
+            let id = elementId;
+            
+            // in case a person wants to use a custom map
+            if(mapId) 
+                id = mapId;
 
-            let mapOptions = { center: center, zoom: zoom, mapId: elementId };
+            // get the controls configuration based on the enum
+            const controlsConfig = window.blazorBootstrap.googlemaps.getMapControlsConfig(mapControls);
+            
+            let mapOptions = { center: center, zoom: zoom, mapId: id, ...controlsConfig };
             let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
 
-            window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable);
+            window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable, clusterOptions);
 
-            if (markers) {
+            // clean up just the clustering if it exists
+            const existingInstance = window.blazorBootstrap.googlemaps.get(elementId);
+            if (existingInstance?.markerCluster) {
+                existingInstance.markerCluster.setMap(null);
+                existingInstance.markerCluster = null;
+            }
+
+            // don't recreate markers if they already exist
+            if (markers && window.blazorBootstrap.googlemaps.markerEls[elementId].length === 0) {
                 for (const marker of markers) {
                     window.blazorBootstrap.googlemaps.addMarker(elementId, marker, dotNetHelper);
                 }
+            }
+            
+            // add clustering if enabled, if not keep the markers as it is
+            if(clusterOptions?.clusteringEnabled) {
+                const mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
+                const clusterConfig = {
+                    map: map,
+                    markers: window.blazorBootstrap.googlemaps.markerEls[elementId]
+                };
+                
+                
+                if (clusterOptions?.renderer) {
+                    clusterConfig.renderer = {
+                        render: ({ count, position }) => {
+                            // Create custom marker element
+                            const div = document.createElement("div");
+                            if (clusterOptions.renderer.svgIcon) {
+                                const countStyle = `position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)` +
+                                    (clusterOptions.renderer.textColor ? `;color:${clusterOptions.renderer.textColor}` : '') +
+                                    (clusterOptions.renderer.textFontSize ? `;font-size:${clusterOptions.renderer.textFontSize}` : '');
+
+                                div.innerHTML = `
+                                    <div style="position:relative;">
+                                        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">${clusterOptions.renderer.svgIcon}</div>
+                                        ${clusterOptions.renderer.showMarkerCount ? `<div style="${countStyle}">${count}</div>` : ''}
+                                    </div>`;
+                            }
+                            // Return as an advanced marker element
+                            return new google.maps.marker.AdvancedMarkerElement({
+                                position,
+                                content: div
+                            });
+                        }
+                    };
+                }
+                if (clusterOptions?.algorithm) {
+                    clusterConfig.algorithm = new markerClusterer[clusterOptions.algorithm.type]({
+                        ...clusterOptions.algorithm.options
+                    });
+                }
+                // set marker cluster to the instance with the configuration
+                mapInstance.markerCluster = new markerClusterer.MarkerClusterer(clusterConfig);
+
+                if (clusterOptions?.enableClusterClick) {
+                    mapInstance.markerCluster.addListener("click", (cluster) => {
+                        dotNetHelper.invokeMethodAsync('OnClusterClickJS', {
+                            position: cluster.position,
+                            markers: cluster.markers.map(m => ({
+                                position: m.position,
+                                title: m.title
+                            }))
+                        });
+                    });
+                }
+                
+                
+            } else {
+                window.blazorBootstrap.googlemaps.markerEls[elementId].forEach(marker => {
+                    marker.map = map;
+                });
             }
         },
         instances: {},
         markerEls: {},
         updateMarkers: (elementId, markers, dotNetHelper) => {
+            const mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
             let markerEls = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
+            const clusterOptions = mapInstance.clusterOptions;
 
-            // delete the markers
-            if (markerEls.length > 0) {
-                for (const markerEl of markerEls) {
-                    markerEl.setMap(null);
-                }
+            // clean up existing cluster
+            if (mapInstance.markerCluster) {
+                mapInstance.markerCluster.clearMarkers();
+                mapInstance.markerCluster.setMap(null);
             }
+            
+            // clean up old and keep already existing markers
+            markerEls = markerEls.filter(existing => {
+                const shouldKeep = markers?.some(m => m.title === existing.title && m.pinElement === existing.pinElement);
+                if (!shouldKeep) existing.map = null;
+                return shouldKeep;
+            });
+            window.blazorBootstrap.googlemaps.markerEls[elementId] = markerEls;
 
-            if (markers) {
-                for (const marker of markers) {
+            // add only new markers
+            markers?.forEach(marker => {
+                if (!markerEls.some(m => m.title === marker.title && m.pinElement === marker.pinElement))
                     window.blazorBootstrap.googlemaps.addMarker(elementId, marker, dotNetHelper);
+            });
+
+            if (clusterOptions?.clusteringEnabled) {
+                const clusterConfig = {
+                    map: mapInstance.map,
+                    markers: window.blazorBootstrap.googlemaps.markerEls[elementId]
+                };
+
+                // add renderer if configured
+                if (clusterOptions.renderer) {
+                    clusterConfig.renderer = {
+                        render: ({ count, position }) => {
+                            const div = document.createElement("div");
+                            if (clusterOptions.renderer.svgIcon) {
+                                const countStyle = `position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)` +
+                                    (clusterOptions.renderer.textColor ? `;color:${clusterOptions.renderer.textColor}` : '') +
+                                    (clusterOptions.renderer.textFontSize ? `;font-size:${clusterOptions.renderer.textFontSize}` : '');
+
+                                div.innerHTML = `
+                            <div style="position:relative;">
+                                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">${clusterOptions.renderer.svgIcon}</div>
+                                ${clusterOptions.renderer.showMarkerCount ? `<div style="${countStyle}">${count}</div>` : ''}
+                            </div>`;
+                            }
+                            return new google.maps.marker.AdvancedMarkerElement({ position, content: div });
+                        }
+                    };
+                }
+
+                // add algorithm if configured
+                if (clusterOptions.algorithm) {
+                    clusterConfig.algorithm = new markerClusterer[clusterOptions.algorithm.type]({
+                        ...clusterOptions.algorithm.options
+                    });
+                }
+
+                // create cluster and add click handler
+                mapInstance.markerCluster = new markerClusterer.MarkerClusterer(clusterConfig);
+
+                if (clusterOptions.enableClusterClick) {
+                    mapInstance.markerCluster.addListener("click", (cluster) => {
+                        dotNetHelper.invokeMethodAsync('OnClusterClickJS', {
+                            position: cluster.position,
+                            markers: cluster.markers.map(m => ({ position: m.position, title: m.title }))
+                        });
+                    });
                 }
             }
+        },
+        getMapControlsConfig: (mapControls) => {
+            // Default configuration - everything enabled
+            let controlsConfig = {
+                streetViewControl: true,
+                zoomControl: true,
+                disableDefaultUI: false
+            };
+
+            switch (mapControls) {
+                case 0: // Full
+                    // Default config is already set up for Full
+                    break;
+
+                case 1: // NoZoom
+                    controlsConfig.zoomControl = false;
+                    controlsConfig.disableDefaultUI = true;
+                    controlsConfig.streetViewControl = true;
+                    break;
+
+                case 2: // NoStreetView
+                    controlsConfig.streetViewControl = false;
+                    controlsConfig.disableDefaultUI = true;
+                    controlsConfig.zoomControl = true;
+                    break;
+
+                case 3: // NoZoomAndStreetView
+                    controlsConfig.streetViewControl = false;
+                    controlsConfig.zoomControl = false;
+                    controlsConfig.disableDefaultUI = true;
+                    break;
+            }
+
+            return controlsConfig;
         }
     },
     grid: {
