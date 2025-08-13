@@ -177,10 +177,10 @@ h1:focus-visible {
     background-color: transparent
 }
 
-.bd-masthead #carbonads {
+/*.bd-masthead #carbonads {
     margin-right: auto;
     margin-left: auto
-}
+}*/
 
 @media (min-width: 768px) {
     .bd-masthead .lead {
@@ -404,7 +404,7 @@ pre[class*=language-] {
 }
 
 /* carbon ads */
-#carbonads {
+/*#carbonads {
     position: static;
     display: block;
     max-width: 400px;
@@ -437,7 +437,7 @@ pre[class*=language-] {
     display: block;
     margin-top: .75rem;
     color: var(--bs-body-color) !important
-}
+}*/
 
 .bg-body-tertiary {
     --bs-bg-opacity: 1;

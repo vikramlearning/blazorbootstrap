@@ -829,7 +829,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     private string? GridContainerStyleNames =>
         BuildStyleNames(
             GridContainerStyle,
-            ($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}", FixedHeader)
+            ($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}", FixedHeader),
+            ($"overflow-x:auto;", Responsive)
         );
 
     /// <summary>
@@ -995,6 +996,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public Func<TItem, string>? RowClass { get; set; }
 
+    /// <summary>
+    /// Gets or sets the function used to extract a unique key from a row item.
+    /// </summary>
+    /// <remarks>
+    /// The key returned by the function is used to uniquely identify each row in the data set.  This
+    /// is typically required for operations such as tracking changes or rendering rows efficiently. 
+    /// If not set, the item hash code will be used as the key.
+    /// Example usage: `RowKeySelector="(employee) => employee.Id"`.
+    /// </remarks>
+    [Parameter]
+    public Func<TItem, object>? RowKeySelector { get; set; }
+    
     /// <summary>
     /// Gets or sets the selected items.
     /// </summary>

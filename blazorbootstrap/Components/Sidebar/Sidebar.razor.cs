@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class Sidebar : BlazorBootstrapComponentBase
 {
@@ -122,8 +120,11 @@ public partial class Sidebar : BlazorBootstrapComponentBase
             ("expanded", !collapseSidebar));
 
     protected override string? StyleNames =>
-        BuildStyleNames(Style, 
+        BuildStyleNames(Style,
             ($"--bb-sidebar-width: {Width.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};", Width > 0));
+
+    private string? ImageStyleNames => BuildStyleNames("",
+        ($"width: {ImageWidth.ToString(CultureInfo.InvariantCulture)}{WidthUnit.ToCssString()};", ImageWidth > 0));
 
     /// <summary>
     /// Gets or sets the badge text.
@@ -180,6 +181,14 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     [Parameter]
     public string? ImageSrc { get; set; }
 
+    /// <summary>
+    /// Gets or sets the width of the image in pixels.
+    /// You can change the unit by setting <see cref="WidthUnit" />.
+    /// <remarks>Default value is 0.</remarks>
+    /// </summary>
+    [Parameter]
+    public float ImageWidth { get; set; } = 0;
+
     private string? navMenuCssClass => GetNavMenuCssClass();
 
     /// <summary>
@@ -189,7 +198,6 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [Parameter]
-    [EditorRequired]
     public string? Title { get; set; } = default!;
 
     /// <summary>

@@ -147,7 +147,7 @@
                         {
                             var rowClass = RowClass?.Invoke(item) ?? "";
                             var detailViewRowId = IdUtility.GetNextId();
-                            <tr @key="item?.GetHashCode()" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
+                            <tr @key="RowKeySelector?.Invoke(item) ?? item?.GetHashCode()" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
                                 @if (AllowDetailView)
                                 {
                                     <td class="text-center">
@@ -224,7 +224,7 @@
 
     @if (AllowPaging && totalCount.HasValue && totalCount.Value > 0 && (!AutoHidePaging || (AutoHidePaging && totalCount.Value > pageSize)))
     {
-        <div class="d-flex justify-content-between align-middle mt-2">
+        <div class="d-flex justify-content-between align-middle flex-wrap mt-2">
             <Pagination ActivePageNumber="@gridCurrentState.PageIndex"
                         TotalPages="@totalPages"
                         PageChanged="OnPageChangedAsync"
