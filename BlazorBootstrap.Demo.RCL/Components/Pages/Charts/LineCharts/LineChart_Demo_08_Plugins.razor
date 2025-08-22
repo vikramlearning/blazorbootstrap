@@ -1,0 +1,203 @@
+﻿@using System.Text.Json.Serialization
+<div class="container-fluid overflow-x-auto">
+  <LineChart @ref="lineChart" Width="800" />
+</div>
+<small>This line chart has the Zoom (built-in), Annotations (built-in), DragData (locally defined) and Crosshair (anonymous) plugins enabled.</small>
+
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3/dist/chartjs-plugin-annotation.min.js" integrity="sha256-8BDDxChCyYOB80/6VhOpmr7qI5EIDyDPzxsWePPFVfo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair@2/dist/chartjs-plugin-crosshair.min.js" integrity="sha256-5bTtdEYtbjO36pQbMCXOsoYW5u5jfYfyI41LelMTTbQ=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2/dist/chartjs-plugin-zoom.min.js" integrity="sha256-UDxwmAK+KFxnav4Dab9fcgZtCwwjkpGIwxWPNcAyepw=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-dragdata@2/dist/chartjs-plugin-dragdata.min.js" integrity="sha256-TVzMefO8VbXaQ5GV1xGhZbFEGUGOm/x/y7bQGhxyKuE=" crossorigin="anonymous"></script>
+
+@code {
+  private LineChart lineChart = default!;
+  private LineChartOptions lineChartOptions = default!;
+  private ChartData chartData = default!;
+
+  protected override void OnInitialized()
+  {
+    var colors = ColorUtility.CategoricalTwelveColors;
+    var labels = new List<string> { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" };
+    var datasets = new List<IChartDataset>();
+
+    var dataset1 = new LineChartDataset
+      {
+        Label = "Windows",
+        Data = new List<double?> { 7265791, 5899643, 6317759, 6315641, 5338211, 8496306, 7568556, 8538933, 8274297, 8657298, 7548388, 7764845 },
+        BorderWidth = 2,
+        HoverBorderWidth = 4,
+        BackgroundColor = colors[ 0 ],
+        BorderColor = colors[ 0 ],
+      };
+    datasets.Add( dataset1 );
+
+    var dataset2 = new LineChartDataset
+      {
+        Label = "macOS",
+        Data = new List<double?> { 1809499, 1816642, 2122410, 1809499, 1850793, 1846743, 1954797, 2391313, 1983430, 2469918, 2633303, 2821149 },
+        BorderWidth = 2,
+        HoverBorderWidth = 4,
+        BackgroundColor = colors[ 1 ],
+        BorderColor = colors[ 1 ],
+      };
+    datasets.Add( dataset2 );
+
+    var dataset3 = new LineChartDataset
+      {
+        Label = "Other",
+        Data = new List<double?> { 1081241, 1100363, 1118136, 1073255, 1120315, 1395736, 1488788, 1489466, 1489947, 1414739, 1735811, 1820171 },
+        BorderWidth = 2,
+        HoverBorderWidth = 4,
+        BackgroundColor = colors[ 2 ],
+        BorderColor = colors[ 2 ],
+      };
+    datasets.Add( dataset3 );
+
+    chartData = new ChartData { Labels = labels, Datasets = datasets };
+
+    lineChartOptions = new();
+    lineChartOptions.Responsive = true;
+    lineChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index };
+
+    lineChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "2019", Display = true };
+    lineChartOptions.Scales.Y!.Title = new ChartAxesTitle { Text = "Visitors", Display = true };
+
+    lineChartOptions.Plugins.Title!.Text = "Operating system";
+    lineChartOptions.Plugins.Title.Display = true;
+
+    EnableDragDataPlugin();
+    EnableZoomPlugin();
+    EnableAnnotationsPlugin();
+    EnableCrosshairsPlugin();
+  }
+
+  [JsonSourceGenerationOptions( DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase )]
+  public class DragDataPlugin : ChartPlugin
+  {
+    public bool? DragX { get; set; }
+    public bool? DragY { get; set; }
+    public bool? ShowTooltip { get; set; }
+  }
+
+  private void EnableDragDataPlugin()
+  {
+    // Example of a plugin class deriving from ChartPlugin that is defined locally
+    lineChartOptions.Plugins.Add( "dragData", new DragDataPlugin() { DragX = true, ShowTooltip = false } );
+
+    // Alternative way to access the plugin:
+    var plugin = lineChartOptions.Plugins.Get<DragDataPlugin>();
+    plugin.ShowTooltip = true;
+  }
+
+  private void EnableAnnotationsPlugin()
+  {
+    // Example of the built-in Annotation plugin class.
+    var annotations = new ChartPluginsAnnotation()
+      {
+        Annotations = new List<Annotation>()
+      };
+
+    foreach( LineChartDataset dataset in chartData.Datasets )
+    {
+      var average = dataset.Data.Average();
+      annotations.Annotations.Add( new LineAnnotation()
+        {
+          BorderColor = dataset.BorderColor,
+          BorderDash = [ 2, 2 ],
+          YMin = average,
+          YMax = average
+        } );
+    }
+
+    annotations.Annotations.Add( new BoxAnnotation()
+      {
+        XMin = 3.5,
+        XMax = 8.75,
+        YMin = 1250000,
+        YMax = 4750000,
+        BorderWidth = 2,
+        BorderColor = "gray",
+        BorderDash = [ 1, 1 ],
+        BackgroundColor = "rgba(255, 255, 0, 0.1)",
+        ShadowOffsetX = 5,
+        ShadowOffsetY = 5
+      } );
+
+    lineChartOptions.Plugins.Add( "annotation", annotations );
+  }
+
+  private void EnableZoomPlugin()
+  {
+    // Example of the built-in Zoom plugin class.
+    var zoom = new ChartPluginsZoom()
+      {
+        Zoom = new()
+        {
+          Wheel = new()
+          {
+            Enabled = true
+          },
+          Pinch = new()
+          {
+            Enabled = true
+          },
+          Mode = ZoomMode.Y,
+          ScaleMode = ZoomMode.XY,
+        },
+        Pan = new()
+        {
+          Enabled = true,
+          Mode = ZoomMode.XY
+        },
+        Limits = new()
+        {
+          X = new() { MinimumIsOriginal = true, MaximumIsOriginal = true, MinRange = 1.0 },
+          Y = new() { MinimumIsOriginal = true, MaximumIsOriginal = true, MinRange = 1.0 }
+        }
+      };
+
+    lineChartOptions.Plugins.Add( "zoom", zoom );
+  }
+
+  private void EnableCrosshairsPlugin()
+  {
+    // Example of an anonymous plugin class, i.e. one that does not derive from ChartPlugin.
+    // Note that you cannot .Get() or .TryGet() it later.
+    // Demo configuration taken directly from https://github.com/abelheinsbroek/chartjs-plugin-crosshair
+    var crossHairs = new
+    {
+      line = new
+      {
+        color = "#F66",
+        width = 1,
+      },
+      sync = new
+      {
+        enabled = true,
+        group = 1,
+        suppressTooltips = false
+      },
+      zoom = new
+      {
+        enabled = true,
+        zoomboxBackgroundColor = "rgba(66,133,244,0.2)",
+        zoomboxBorderColor = "#48F",
+        zoomButtonText = "Reset Zoom",
+        zoomButtonClass = "reset-zoom",
+      }
+    };
+
+    lineChartOptions.Plugins.AddObject( "crosshairs", crossHairs );
+  }
+
+
+  protected override async Task OnAfterRenderAsync( bool firstRender )
+  {
+    if( firstRender )
+    {
+      await lineChart.InitializeAsync( chartData, lineChartOptions );
+    }
+    await base.OnAfterRenderAsync( firstRender );
+  }
+
+}
