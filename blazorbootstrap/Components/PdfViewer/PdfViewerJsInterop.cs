@@ -82,5 +82,11 @@ public class PdfViewerJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("zoomInOut", objRef, elementId, scale);
     }
 
+    public async Task DownloadAsync(object objRef, string elementId, string url)
+    {
+        var module = await moduleTask.Value;
+        await module.InvokeVoidAsync("downloadDocument", objRef, elementId, "document.pdf");
+    }
+
     #endregion
 }

@@ -46,6 +46,7 @@ class Pdf {
         this.pageNumPending = null;
         this.scale = 1;
         this.rotation = 0;
+        this.url = '';
 
         pdfInstances[this.id] = this;
     }
@@ -198,7 +199,7 @@ export function initialize(dotNetHelper, elementId, scale, rotation, url) {
     const pdf = new Pdf(elementId);
     pdf.scale = scale;
     pdf.rotation = rotation;
-
+    pdf.url = url;
     pdfJS.getDocument(url).promise.then(function (doc) {
         pdf.pdfDoc = doc;
         pdf.pagesCount = doc.numPages;
@@ -265,3 +266,42 @@ function setPdfViewerMetaData(dotNetHelper, pdf) {
 
     dotNetHelper.invokeMethodAsync('SetPdfViewerMetaData', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
 }
+
+export function downloadDocument(dotNetHelper, elementId, filename) {
+    const pdf = Pdf.getPdf(elementId);
+    if (pdf.url) {
+        if (pdf.url.indexOf('data:') === 0) {
+            const split = pdf.url.split(',');
+            const base64Data = split.length > 1 ? split[1] : '';            
+            try {
+                saveAsFile(filename, base64Data)
+            } catch (e) {
+                console.error('Failed to decode base64 PDF:', e);
+            }
+        }
+        else {
+            saveAsFileFromUrl(pdf.url)
+        }
+    }
+    else {
+        console.error('Pdf Url empty');
+    }
+}
+
+function saveAsFile(filename, byteBase64) {
+    var link = document.createElement('a');
+    link.download = filename;
+    link.href = "data:application/octet-stream;base64," + byteBase64;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function saveAsFileFromUrl(url) {
+    var link = document.createElement('a');    
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
