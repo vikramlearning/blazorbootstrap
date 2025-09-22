@@ -1011,15 +1011,7 @@ window.blazorChart = {
         
         window.blazorChart.create(elementId, type, data, options, plugins);
         chart = window.blazorChart.pie.get(elementId);
-        options.onClick = (e, array) => {
-            if (array.length <= 0) {
-                return;
-            }
-
-            const rawItem = array[0];
-            const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
-        }
+        options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.get(elementId);
@@ -1028,7 +1020,7 @@ window.blazorChart = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1040,6 +1032,7 @@ window.blazorChart = {
 
             chart.data = data;
             chart.options = options;
+            options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
             chart.update();
         } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
@@ -1149,15 +1142,7 @@ window.blazorChart.bar = {
 
         window.blazorChart.bar.create(elementId, type, data, options, plugins);
         chart = window.blazorChart.bar.get(elementId);
-        options.onClick = (e, array) => {
-            if (array.length <= 0) {
-                return;
-            }
-
-            const rawItem = array[0];
-            const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
-        }
+        options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.bar.get(elementId);
@@ -1166,7 +1151,7 @@ window.blazorChart.bar = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1178,6 +1163,7 @@ window.blazorChart.bar = {
 
             chart.data = data;
             chart.options = options;
+            options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
             chart.update();
         } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
@@ -1293,16 +1279,7 @@ window.blazorChart.doughnut = {
 
         window.blazorChart.doughnut.create(elementId, type, data, options, plugins);
         chart = window.blazorChart.doughnut.get(elementId);
-        options.onClick = (e, array) => {
-            if (array.length <= 0) {
-                return;
-            }
-
-            const rawItem = array[0];
-            const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
-
-        }
+        options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.doughnut.get(elementId);
@@ -1311,7 +1288,7 @@ window.blazorChart.doughnut = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1323,6 +1300,7 @@ window.blazorChart.doughnut = {
 
             chart.data = data;
             chart.options = options;
+            options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
             chart.update();
         } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
@@ -1473,16 +1451,7 @@ window.blazorChart.line = {
         window.blazorChart.line.create(elementId, type, data, options, plugins);
 
         chart = window.blazorChart.doughnut.get(elementId);
-        options.onClick = (e, array) => {
-            if (array.length <= 0) {
-                return;
-            }
-
-            const rawItem = array[0];
-            const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
-
-        }
+        options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.line.get(elementId);
@@ -1491,7 +1460,7 @@ window.blazorChart.line = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1503,6 +1472,7 @@ window.blazorChart.line = {
 
             chart.data = data;
             chart.options = options;
+            options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
             chart.update();
         } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
@@ -1618,16 +1588,7 @@ window.blazorChart.pie = {
 
         window.blazorChart.pie.create(elementId, type, data, options, plugins);
         chart = window.blazorChart.pie.get(elementId);
-        options.onClick = (e, array) => {
-            if (array.length <= 0) {
-                return;
-            }
-
-            const rawItem = array[0];
-            const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
-
-        }
+        options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.pie.get(elementId);
@@ -1636,7 +1597,7 @@ window.blazorChart.pie = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.pie.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1648,6 +1609,7 @@ window.blazorChart.pie = {
 
             chart.data = data;
             chart.options = options;
+            options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
             chart.update();
         } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
@@ -1764,15 +1726,7 @@ window.blazorChart.polarArea = {
 
         window.blazorChart.polarArea.create(elementId, type, data, options, plugins);
         chart = window.blazorChart.polarArea.get(elementId);
-        options.onClick = (e, array) => {
-            if (array.length <= 0) {
-                return;
-            }
-
-            const rawItem = array[0];
-            const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
-        }
+        options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.polarArea.get(elementId);
@@ -1781,7 +1735,7 @@ window.blazorChart.polarArea = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.polarArea.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1793,6 +1747,7 @@ window.blazorChart.polarArea = {
 
             chart.data = data;
             chart.options = options;
+            options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
             chart.update();
         } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
@@ -1908,15 +1863,7 @@ window.blazorChart.radar = {
 
         window.blazorChart.radar.create(elementId, type, data, options, plugins);
         chart = window.blazorChart.radar.get(elementId);
-        options.onClick = (e, array) => {
-            if (array.length <= 0) {
-                return;
-            }
-
-            const rawItem = array[0];
-            const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
-        }
+        options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.radar.get(elementId);
@@ -1925,7 +1872,7 @@ window.blazorChart.radar = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.radar.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1937,6 +1884,7 @@ window.blazorChart.radar = {
 
             chart.data = data;
             chart.options = options;
+            options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
             chart.update();
         } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
@@ -2052,15 +2000,7 @@ window.blazorChart.scatter = {
 
         window.blazorChart.scatter.create(elementId, type, data, options, plugins);
         chart = window.blazorChart.scatter.get(elementId);
-        options.onClick = (e, array) => {
-            if (array.length <= 0) {
-                return;
-            }
-
-            const rawItem = array[0];
-            const item = chart.data.labels[rawItem.index];
-            dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
-        }
+        options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.scatter.get(elementId);
@@ -2069,7 +2009,7 @@ window.blazorChart.scatter = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.scatter.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -2081,6 +2021,7 @@ window.blazorChart.scatter = {
 
             chart.data = data;
             chart.options = options;
+            options.onClick = (e, array) => triggerClickEvent(dotNetHelper, array, chart);
             chart.update();
         } else {
             console.warn(`The chart is not initialized. Initialize it and then call update.`);
@@ -2103,4 +2044,14 @@ window.blazorChart.scatter = {
             chart.update();
         }
     }
+}
+
+function triggerClickEvent(dotNetHelper, array, chart){
+    if (array.length <= 0) {
+        return;
+    }
+
+    const rawItem = array[0];
+    const item = chart.data.labels[rawItem.index];
+    dotNetHelper.invokeMethodAsync("ClickEvent", item, rawItem.index);
 }

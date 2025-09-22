@@ -94,11 +94,11 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             var data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions, objRef);
             else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions, objRef);
             else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions);
+                await JSRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions, objRef);
         }
     }
 
