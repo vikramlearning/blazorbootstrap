@@ -69,6 +69,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     [JSInvokable]
     public async Task bsHiddenModal()
     {
+        isVisible = false;
         await OnHidden.InvokeAsync();
 
         if (ModalService is not null && IsServiceModal)
@@ -92,7 +93,6 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// </summary>
     public async Task HideAsync()
     {
-        isVisible = false;
         await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.modal.hide", Id);
     }
 
