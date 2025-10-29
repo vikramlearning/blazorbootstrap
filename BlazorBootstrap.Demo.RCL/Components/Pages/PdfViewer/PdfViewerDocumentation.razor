@@ -35,6 +35,14 @@
     <Image Src="https://github.com/user-attachments/assets/2a2afd0d-9065-456c-9866-db10f81b7780" Alt="Blazor Bootstrap: Blazor PDF Viewer Component - RTL doc"/>
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Password protected" PageUrl="@pageUrl" Link="password-protected">
+    <Demo Type="typeof(PdfViewer_Demo_05_Password_Protected_A)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Prompt for password" PageUrl="@pageUrl" Link="prompt-for-password">
+    <Demo Type="typeof(PdfViewer_Demo_05_Password_Protected_B_Prompt_For_Password)" Tabs="true" />
+</Section>
+
 @code {
     private const string pageUrl = RouteConstants.Demos_PDFViewer_Documentation;
     private const string pageTitle = "Blazor PDF Viewer";
