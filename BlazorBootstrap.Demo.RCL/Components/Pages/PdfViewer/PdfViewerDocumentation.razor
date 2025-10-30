@@ -35,6 +35,21 @@
     <Image Src="https://github.com/user-attachments/assets/2a2afd0d-9065-456c-9866-db10f81b7780" Alt="Blazor Bootstrap: Blazor PDF Viewer Component - RTL doc"/>
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Password protected" PageUrl="@pageUrl" Link="password-protected">
+    <div class="mb-3">
+        To open a password-protected PDF document, set the <code>Password</code> parameter to the required password.
+    </div>
+    <Demo Type="typeof(PdfViewer_Demo_05_Password_Protected_A)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Prompt for password" PageUrl="@pageUrl" Link="prompt-for-password">
+    <div class="mb-3">
+        If the <code>Password</code> parameter is not set and the PDF document is password-protected, the PDF Viewer component will prompt the user to enter the password.
+        In the following example, the PDF Viewer prompts the user to enter the password for the protected PDF document. Enter <b>12345</b> as the password to view the document.
+    </div>
+    <Demo Type="typeof(PdfViewer_Demo_05_Password_Protected_B_Prompt_For_Password)" Tabs="true" />
+</Section>
+
 @code {
     private const string pageUrl = RouteConstants.Demos_PDFViewer_Documentation;
     private const string pageTitle = "Blazor PDF Viewer";

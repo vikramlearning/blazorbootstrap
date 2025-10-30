@@ -32,7 +32,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await PdfViewerJsInterop.InitializeAsync(objRef!, Id!, scale, rotation, Url!);
+            await PdfViewerJsInterop.InitializeAsync(objRef!, Id!, scale, rotation, Url!, Password!);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -71,6 +71,15 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
 
         if (OnDocumentLoaded.HasDelegate)
             OnDocumentLoaded.InvokeAsync(new PdfViewerEventArgs(pageNumber, pagesCount));
+    }
+
+    [JSInvokable]
+    public void DocumentLoadError(string errorMessage)
+    {
+        if(string.IsNullOrEmpty(errorMessage)) return;
+
+        if (OnDocumentLoadError.HasDelegate)
+            OnDocumentLoadError.InvokeAsync(errorMessage);
     }
 
     [JSInvokable]
@@ -208,6 +217,12 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     public EventCallback<PdfViewerEventArgs> OnDocumentLoaded { get; set; }
 
     /// <summary>
+    /// This event fires if there is an error loading the PDF document.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnDocumentLoadError { get; set; }
+
+    /// <summary>
     /// This event fires immediately after the page is changed.
     /// </summary>
     [Parameter]
@@ -221,6 +236,15 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public Orientation Orientation { get; set; } = Orientation.Portrait;
+
+    /// <summary>
+    /// Gets or sets the password used for the PDF document if it is password-protected.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null"/>.
+    /// </remarks>
+    [Parameter]
+    public string? Password { get; set; }
 
     /// <summary>
     /// Provides JavaScript interop functionality for the PDF viewer.
