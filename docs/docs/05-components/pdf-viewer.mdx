@@ -20,6 +20,7 @@ The Blazor PDF Viewer component allows users to view PDF files directly in the b
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | Orientation | `Orientation` | `Orientation.Portrait` | | Gets or sets the preferred orientation for the PDF viewer. | 2.1.0 |
+| Password | string | null | | Gets or sets the password required to open password-protected PDF documents. | 3.5.0 |
 | Url | string | null | ✔️ | Gets or sets the URL of the PDF document to be displayed. PDF Viewer component supports base64 string as a URL. | 1.11.0 |
 
 ## Callback Events
@@ -27,6 +28,7 @@ The Blazor PDF Viewer component allows users to view PDF files directly in the b
 | Event | Description | Added Version |
 |:--|:--|:--|
 | OnDocumentLoaded | This event fires immediately after the PDF document is loaded. | 1.11.0 |
+| OnDocumentLoadError | This event fires if there is an error loading the PDF document. | 3.5.0 |
 | OnPageChanged | This event fires immediately after the page is changed. | 1.11.0 |
 
 ## Examples
@@ -148,3 +150,41 @@ Below screenshot is added for demo purposes only. For additional info, refer to 
         => eventLog = $"Last event: OnPageChanged, CurrentPage: {args.CurrentPage}, TotalPages: {args.TotalPages}";
 }
 ```
+
+### Password protected
+
+To open a password-protected PDF document, set the <code>Password</code> parameter to the required password.
+
+<img src="" alt="Blazor Bootstrap: Blazor PDF Viewer Component - Password protected" />
+
+```cshtml {} showLineNumbers
+<PdfViewer Class="mb-3"
+           Url="@($"{StringConstants.DocsBasePath}/pdf_password_protected.pdf")"
+           Password="12345" />
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/pdf-viewer#password-protected)
+
+### Prompt for password
+
+If the <code>Password</code> parameter is not set and the PDF document is password-protected, the PDF Viewer component will prompt the user to enter the password.
+In the following example, the PDF Viewer prompts the user to enter the password for the protected PDF document. Enter <b>12345</b> as the password to view the document.
+
+<img src="" alt="Blazor Bootstrap: Blazor PDF Viewer Component - Prompt for password" />
+
+```cshtml {} showLineNumbers
+@if (showPdfViewer)
+{
+    <PdfViewer Class="mb-3" Url="@($"{StringConstants.DocsBasePath}/pdf_password_protected.pdf")" PromptForPassword="true" />
+}
+else
+{
+    <Button Class="btn btn-secondary mb-3" @onclick="() => showPdfViewer = true">Load Password Protected PDF (Prompt for Password)</Button>
+}
+
+@code {
+    private bool showPdfViewer = false;
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/pdf-viewer#prompt-for-password)
