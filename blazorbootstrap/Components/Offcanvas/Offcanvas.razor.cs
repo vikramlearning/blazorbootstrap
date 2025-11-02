@@ -101,9 +101,18 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
 
     protected override string? ClassNames =>
         BuildClassNames(Class,
-            (BootstrapClass.Offcanvas, true),
+            (BootstrapClass.Offcanvas, EnableDefaultClass),
             (Placement.ToOffcanvasPlacementClass(), true),
             (Size.ToOffcanvasSizeClass(), true));
+
+    /// <summary>
+    /// When set to false, suppresses the rendering of the default "offcanvas" class, which must be ommitted in some scenarios such as a responsive offcanvas. 
+    /// </summary>
+    /// <remarks>
+    /// Defaults to true.
+    /// </remarks>
+    [Parameter]
+    public bool EnableDefaultClass { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the body CSS class.
