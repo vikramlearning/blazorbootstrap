@@ -56,4 +56,21 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\**\*">
+      <Pack>true</Pack>
+      <PackagePath>wwwroot</PackagePath>
+    </None>
+
+    <Content Update="wwwroot\**\*">
+      <Pack>true</Pack>
+      <PackagePath>staticwebassets</PackagePath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="CopyAssets" BeforeTargets="Pack">
+    <Copy SourceFiles="wwwroot\blazor.bootstrap.js"
+          DestinationFolder="$(OutDir)wwwroot" />
+  </Target>
 </Project>
