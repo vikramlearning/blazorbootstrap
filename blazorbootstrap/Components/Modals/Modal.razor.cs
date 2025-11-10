@@ -99,7 +99,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     /// <summary>
     /// Opens a modal.
     /// </summary>
-    public async Task ShowAsync() => await ShowAsync(null, null, null, null);
+    public async Task ShowAsync(string? title = null, string? message = null) => await ShowAsync(title, message, null, null);
 
     /// <summary>
     /// Opens a modal.
