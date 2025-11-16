@@ -282,6 +282,14 @@ public static class EnumExtensions
             _ => ""
         };
 
+    public static string ToEnumIputSizeClass(this EnumInputSize enumInputSize) =>
+        enumInputSize switch
+        {
+            EnumInputSize.Small => "form-select-sm",
+            EnumInputSize.Large => "form-select-lg",
+            _ => ""
+        };
+
     public static string ToIconColorClass(this IconColor iconColor) =>
         iconColor switch
         {

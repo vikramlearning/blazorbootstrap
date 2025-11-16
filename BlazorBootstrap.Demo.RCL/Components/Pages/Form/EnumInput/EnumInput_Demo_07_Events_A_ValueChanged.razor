@@ -1,0 +1,31 @@
+<EnumInput TEnum="Status" Class="mb-3" Value="@value1" ValueChanged="OnValueChanged" />
+<div>Selected value: @value1</div>
+
+@code {
+    private int value1 = (int)Status.Pending;
+
+    private void OnValueChanged(int value)
+    {
+        value1 = value;
+
+        if (value == (int)Status.Active)
+        {
+            // Do something when the value is Active
+        }
+        else if (value == (int)Status.Inactive)
+        {
+            // Do something when the value is Inactive
+        }
+        else if (value == (int)Status.Pending)
+        {
+            // Do something when the value is Pending
+        }
+    }
+
+    public enum Status
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}

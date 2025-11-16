@@ -1,0 +1,22 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TEnum
+
+<select @ref="@Element"
+        id="@Id"
+        class="@ClassNames @FieldCssClasses"
+        style="@StyleNames"
+        disabled="@Disabled"
+        @attributes="@AdditionalAttributes"
+        @onchange="OnChange">
+
+    @if (items is not null)
+    {
+        foreach (var item in items)
+        {
+            <option value="@item.Value" selected="@(item.Value.Equals(Value) || item.Text.Equals(Text))">
+                @item.Text
+            </option>
+        }
+    }
+</select>
