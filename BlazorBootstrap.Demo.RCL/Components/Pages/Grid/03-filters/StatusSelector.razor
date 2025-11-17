@@ -1,0 +1,24 @@
+﻿@if (Value == VALUE_TRUE)
+{
+    <Button Size="ButtonSize.Small" @onclick="() => ValueChanged.InvokeAsync(VALUE_FALSE)"><Icon Name="IconName.Check" /></Button>
+}
+else if (Value == VALUE_FALSE)
+{
+    <Button Size="ButtonSize.Small" @onclick="() => ValueChanged.InvokeAsync(VALUE_EMPTY)"><Icon Name="IconName.Diamond" /></Button>
+}
+else
+{
+    <Button Size="ButtonSize.Small" @onclick="() => ValueChanged.InvokeAsync(VALUE_TRUE)"><Icon Name="IconName.DiamondHalf" /></Button>
+}
+
+@code {
+    private const string VALUE_FALSE = "False";
+    private const string VALUE_TRUE = "True";
+    private const string VALUE_EMPTY = "";
+
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+}

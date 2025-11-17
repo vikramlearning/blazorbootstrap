@@ -1,3 +1,27 @@
 ﻿@namespace BlazorBootstrap
+@using BlazorBootstrap.Models
 @inherits BlazorBootstrapComponentBase
 @typeparam TItem
+
+@code{
+    internal RenderFragment RenderColumnFilter(GridColumnFilterContext context)
+    {
+        if (CustomColumnFilter is not null)
+        {
+            return CustomColumnFilter(new(context, this));
+        }
+
+        return @<GridColumnFilter EnumFilterSelectText="@context.EnumFilterSelectText"
+            FilterButtonColor="@FilterButtonColor"
+            FilterButtonCSSClass="@FilterButtonCSSClass"
+            FilterOperator="@FilterOperator"
+            FilterValue="@FilterValue"
+            FilterWidth="@FilterTextboxWidth"
+            FiltersTranslationProvider="context.FiltersTranslationProvider"
+            FixedHeader="@context.FixedHeader"
+            GridColumnFilterChanged="async args => await OnFilterChangedAsync(args)"
+            PropertyType="@GetPropertyType()"
+            PropertyTypeName="@GetPropertyTypeName()"
+            Unit="@FilterTextboxWidthUnit" />;
+    }
+}

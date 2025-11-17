@@ -1,0 +1,61 @@
+﻿<Grid TItem="Employee4"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowFiltering="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee4" HeaderText="Id" PropertyName="Id" Filterable=false>
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Employee Name" PropertyName="Name" Filterable=false>
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Designation" PropertyName="Designation" Filterable=false>
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="DOJ" PropertyName="DOJ" Filterable=false>
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee4" HeaderText="Active" PropertyName="IsActive">
+            <CustomColumnFilter>
+                <StatusSelector
+                    Value="@context.Column.ActualFilterValue"
+                    ValueChanged="(newValue)=> context.Column.OnFilterChangedAsync(new FilterEventArgs(newValue, string.IsNullOrEmpty(newValue) ? FilterOperator.None : FilterOperator.Equals))"/>
+            </CustomColumnFilter>
+            <ChildContent>
+                @context.IsActive
+            </ChildContent>
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+@code {
+    private IEnumerable<Employee4> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee4>> EmployeesDataProvider(GridDataProviderRequest<Employee4> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee4> GetEmployees()
+    {
+        return new List<Employee4>
+        {
+            new Employee4 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee4 { Id = null, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee4 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee4 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee4 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee4 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee4 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee4 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee4 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = null, IsActive = true },
+            new Employee4 { Id = 110, Name = "Vijay", Designation = null, DOJ = new DateOnly(1990, 7, 1), IsActive = true },
+        };
+    }
+}

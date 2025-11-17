@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap;
+﻿using BlazorBootstrap.Models;
+
+namespace BlazorBootstrap;
 
 public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 {
@@ -60,7 +62,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
         yield return new SortingItem<TItem>(SortString, SortKeySelector!, currentSortDirection);
     }
 
-    internal async Task OnFilterChangedAsync(FilterEventArgs args, GridColumn<TItem> column)
+    public async Task OnFilterChangedAsync(FilterEventArgs args)
     {
         if (filterValue != args.Text || filterOperator != args.FilterOperator)
             await Parent.ResetPageNumberAsync();
@@ -204,6 +206,12 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     public RenderFragment<TItem> ChildContent { get; set; } = default!;
 
     /// <summary>
+    /// Specifies the content of custom column filter
+    /// </summary>
+    [Parameter]
+    public RenderFragment<GridColumnFilterRenderContext<TItem>>? CustomColumnFilter { get; set; }
+
+    /// <summary>
     /// Gets or sets the column class.
     /// </summary>
     [Parameter]
@@ -272,6 +280,8 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     public string FilterValue { get; set; } = default!;
+
+    public string ActualFilterValue => filterValue;
 
     /// <summary>
     /// Indicates whether the column is frozen.
