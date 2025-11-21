@@ -2,6 +2,12 @@
 
 public partial class LineChart : BlazorBootstrapChart
 {
+    #region Fields and Constants
+    
+    private DotNetObjectReference<LineChart> objRef;
+    
+    #endregion
+    
     #region Constructors
 
     public LineChart()
@@ -12,6 +18,12 @@ public partial class LineChart : BlazorBootstrapChart
     #endregion
 
     #region Methods
+    
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        objRef ??= DotNetObjectReference.Create(this);
+    }
 
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
@@ -112,7 +124,7 @@ public partial class LineChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins);
+        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins, objRef);
     }
 
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
@@ -128,7 +140,7 @@ public partial class LineChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions, objRef);
     }
 
     #endregion
