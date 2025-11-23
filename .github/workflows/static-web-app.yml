@@ -42,6 +42,8 @@ jobs:
 
       - name: Show published files (debug)
         run: |
+          echo "repo root tree (top-level):"
+          ls -la .
           echo "build folder tree:"
           ls -la build || true
           echo "build/wwwroot tree:"
@@ -56,9 +58,9 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GRAY_WAVE_0E4848710 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "."                      # point to repository root (not the project folder)
+          app_location: "."                      # repository root
           skip_app_build: true                   # we already produced the build on runner
-          output_location: "build/wwwroot"      # point to the published static files
+          app_artifact_location: "build/wwwroot" # <-- IMPORTANT: point to the published static files
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
