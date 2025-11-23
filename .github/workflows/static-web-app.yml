@@ -18,7 +18,7 @@ on:
 
 jobs:
   build_and_deploy_job:
-    if: ${{ inputs.prod_release }}  || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    if: ${{ inputs.prod_release }} || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
@@ -26,28 +26,33 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup .NET Core SDK
+      - name: Setup .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.x'    # using .NET 10 as you specified
 
-      - name: Build And Deploy
+      - name: Install WASM workload
+        run: dotnet workload install wasm-tools --skip-manifest-update
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Publish app (produce static assets)
+        run: dotnet publish BlazorBootstrap.Demo.WebAssembly -c Release -o build
+
+      - name: Show published files (debug)
+        run: ls -la build || true && ls -la build/wwwroot || true
+
+      - name: Build And Deploy (upload artifacts, skip Oryx)
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          dotnet-version: '10.0.x'
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GRAY_WAVE_0E4848710 }}
-          skip_deploy_on_missing_secrets: true
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "BlazorBootstrap.Demo.WebAssembly" # App source code path
-          #api_location: "Api" # Api source code path - optional
-          #output_location: "build/wwwroot" # Built app content directory - optional
-          output_location: "wwwroot" # Built app content directory - optional
-          app_build_command: 'dotnet publish --configuration Release --output build'
-          ###### End of Repository/Build Configurations ######
+          app_location: "BlazorBootstrap.Demo.WebAssembly"
+          skip_app_build: true
+          output_location: "build/wwwroot"
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -59,5 +64,4 @@ jobs:
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GRAY_WAVE_0E4848710 }}
-          skip_deploy_on_missing_secrets: true
           action: "close"
