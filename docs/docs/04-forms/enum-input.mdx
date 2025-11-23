@@ -1,0 +1,255 @@
+---
+title: Blazor Enum Input Component
+description: The Blazor Bootstrap EnumInput component renders a dropdown list from an enumeration (enum), enabling users to select from a predefined set of options. It simplifies data entry by binding directly to enum types and supports customization with sizes.
+image: https://private-user-images.githubusercontent.com/2337067/517874250-8a624590-1dfc-470a-8f9d-7636851d6c95.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjM5MjAxNzEsIm5iZiI6MTc2MzkxOTg3MSwicGF0aCI6Ii8yMzM3MDY3LzUxNzg3NDI1MC04YTYyNDU5MC0xZGZjLTQ3MGEtOGY5ZC03NjM2ODUxZDZjOTUucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MTEyMyUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTExMjNUMTc0NDMxWiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9ZmVlNDlmZDZkNGQ5ZWUxMjE5MGM3NmEzMzc2OTdhYzk0MjY4YTU3NTk5M2JmMGIxNDNkYjI0ZWYyM2UwMDA5YyZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.hvU9-57w9n41vwE3eyy3ZcDPDYXbQ3p_JW1RmDmT-c8
+
+sidebar_label: Enum Input
+sidebar_position: 5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Enum Input
+
+The Blazor Bootstrap `EnumInput` component renders a dropdown list from an enumeration (enum), enabling users to select from a predefined set of options. It simplifies data entry by binding directly to enum types and supports customization with sizes.
+
+<CarbonAd />
+
+<img src="https://private-user-images.githubusercontent.com/2337067/517874250-8a624590-1dfc-470a-8f9d-7636851d6c95.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjM5MjAxNzEsIm5iZiI6MTc2MzkxOTg3MSwicGF0aCI6Ii8yMzM3MDY3LzUxNzg3NDI1MC04YTYyNDU5MC0xZGZjLTQ3MGEtOGY5ZC03NjM2ODUxZDZjOTUucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MTEyMyUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTExMjNUMTc0NDMxWiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9ZmVlNDlmZDZkNGQ5ZWUxMjE5MGM3NmEzMzc2OTdhYzk0MjY4YTU3NTk5M2JmMGIxNDNkYjI0ZWYyM2UwMDA5YyZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.hvU9-57w9n41vwE3eyy3ZcDPDYXbQ3p_JW1RmDmT-c8" alt="Blazor Bootstrap: Enum Input Component" />
+
+## Parameters
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Disabled | bool | false | | Gets or sets the disabled state. | 3.5.0 |
+| Size | `EnumInputSize` | `EnumInputSize.None` | | Gets or sets the size of the input. | 3.5.0 |
+| Text | string | null | | Gets or sets the display text. | 3.5.0 |
+| Value | string | 0 | ✔️ | Gets or sets the value. | 3.5.0 |
+
+## Methods
+
+| Name | Returns | Description | Added Version |
+|:--|:--|:--|:--|
+| Disable() | void | Disables the enum input. | 3.5.0 |
+| Enable() | void | Enables the enum input. | 3.5.0 |
+
+## Events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| ValueChanged | This event fires when the `Value` property changes. | 3.5.0 |
+| TextChanged | This event fires when the `Text` property changes. | 3.5.0 |
+
+## Examples
+
+### How it works
+
+The **EnumInput** component displays enum values in a dropdown, allowing users to select from a predefined set of options.
+
+<img src="https://private-user-images.githubusercontent.com/2337067/517874250-8a624590-1dfc-470a-8f9d-7636851d6c95.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjM5MjAxNzEsIm5iZiI6MTc2MzkxOTg3MSwicGF0aCI6Ii8yMzM3MDY3LzUxNzg3NDI1MC04YTYyNDU5MC0xZGZjLTQ3MGEtOGY5ZC03NjM2ODUxZDZjOTUucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MTEyMyUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTExMjNUMTc0NDMxWiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9ZmVlNDlmZDZkNGQ5ZWUxMjE5MGM3NmEzMzc2OTdhYzk0MjY4YTU3NTk5M2JmMGIxNDNkYjI0ZWYyM2UwMDA5YyZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.hvU9-57w9n41vwE3eyy3ZcDPDYXbQ3p_JW1RmDmT-c8" alt="Blazor Bootstrap Enum Input Component - How it works" />
+
+```cshtml {} showLineNumbers
+<EnumInput TEnum="Status" @bind-Value="@selectedStatusValue" />
+<div class="mb-3">Selected value: @selectedStatusValue</div>
+
+<EnumInput TEnum="Status" @bind-Text="@selectedStatusText" />
+<div class="mb-3">Selected text: @selectedStatusText</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private int selectedStatusValue;
+    private string? selectedStatusText;
+
+    override protected void OnInitialized()
+    {
+        selectedStatusValue = (int)Status.Pending;
+        selectedStatusText = Status.Inactive.ToString();
+    }
+
+    public enum Status
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/enum-input#how-it-works)
+
+### Sizes
+
+The **EnumInput** component can be rendered in various sizes to fit different UI requirements.
+
+<img src="https://private-user-images.githubusercontent.com/2337067/517874558-0486fa89-6607-4009-a392-2a5e9cfb2851.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjM5MjAzMzEsIm5iZiI6MTc2MzkyMDAzMSwicGF0aCI6Ii8yMzM3MDY3LzUxNzg3NDU1OC0wNDg2ZmE4OS02NjA3LTQwMDktYTM5Mi0yYTVlOWNmYjI4NTEucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MTEyMyUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTExMjNUMTc0NzExWiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9MmNkYTE1MjU0NGNiNDNjM2I3MjhjYmJiZmEyMWYzODIwNjYxMzU0NDA5ZTAxMzUzMTRkNTBiODRhMGM1ZDVkYSZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.hzjHoqRtQhQgUsPLph4jsLBidEoV8lFwpQHm6rU0zxg" alt="Blazor Bootstrap Enum Input Component - Sizes" />
+
+```cshtml {} showLineNumbers
+<EnumInput TEnum="Status" Class="mb-3" @bind-Value="@value1" />
+<EnumInput TEnum="Status" Size="EnumInputSize.Small" Class="mb-3" @bind-Value="@value2" />
+<EnumInput TEnum="Status" Size="EnumInputSize.Normal" Class="mb-3" @bind-Value="@value3" />
+<EnumInput TEnum="Status" Size="EnumInputSize.Large" @bind-Value="@value5" />
+```
+
+```cs {} showLineNumbers
+@code {
+    private int value1 = (int)Status.Pending;
+    private int value2 = (int)Status.Pending;
+    private int value3 = (int)Status.Pending;
+    private int value4 = (int)Status.Pending;
+    private int value5 = (int)Status.Pending;
+
+    public enum Status
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}
+```
+[See demo here](https://demos.blazorbootstrap.com/form/enum-input#sizes)
+
+### Disabled
+
+Use the `Disabled` parameter to disable the `EnumInput`.
+
+<img src="https://private-user-images.githubusercontent.com/2337067/517874631-84a88a37-65c3-47c6-a0bc-38a9b9e80ca3.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjM5MjAzODQsIm5iZiI6MTc2MzkyMDA4NCwicGF0aCI6Ii8yMzM3MDY3LzUxNzg3NDYzMS04NGE4OGEzNy02NWMzLTQ3YzYtYTBiYy0zOGE5YjllODBjYTMucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MTEyMyUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTExMjNUMTc0ODA0WiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9OTJiODI1ZmE4MDM4NTk5M2JjZDg2NmQ1NTMyYWIyZWVkMDk0YzA0MGE2ZDViMjU5NThmZTYwMjRhYTJiNmEzMCZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.p5asOW55KH7KJ1wCQ87dO_COzMQO8CSKkYMyeN-ZdgU" alt="Blazor Bootstrap Enum Input Component - Disable" />
+
+```cshtml {} showLineNumbers
+<EnumInput TEnum="Status" @bind-Value="@value1" Disabled="true" />
+```
+
+```cs {} showLineNumbers
+@code {
+    private int value1 = (int)Status.Pending;
+
+    public enum Status
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/enum-input#disabled)
+
+### Events
+
+The **EnumInput** component supports event callbacks for value and text changes, enabling custom logic when the selection changes.
+
+**ValueChanged Event**
+
+```cshtml {} showLineNumbers
+<EnumInput TEnum="Status" Class="mb-3" Value="@value1" ValueChanged="OnValueChanged" />
+<div>Selected value: @value1</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private int value1 = (int)Status.Pending;
+
+    private void OnValueChanged(int value)
+    {
+        value1 = value;
+
+        if (value == (int)Status.Active)
+        {
+            // Do something when the value is Active
+        }
+        else if (value == (int)Status.Inactive)
+        {
+            // Do something when the value is Inactive
+        }
+        else if (value == (int)Status.Pending)
+        {
+            // Do something when the value is Pending
+        }
+    }
+
+    public enum Status
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}
+```
+
+**TextChanged Event**
+
+```cshtml {} showLineNumbers
+<EnumInput TEnum="Status" Class="mb-3" Text="@text1" TextChanged="OnTextChanged" />
+<div>Selected text: @text1</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string text1 = Status.Pending.ToString();
+
+    private void OnTextChanged(string value)
+    {
+        text1 = value;
+
+        if (value == "Active")
+        {
+            // Do something when the text is "Active"
+        }
+        else if (value == "Inactive")
+        {
+            // Do something when the text is "Inactive"
+        }
+        else if (value == "Pending")
+        {
+            // Do something when the text is "Pending"
+        }
+    }
+
+    public enum Status
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/enum-input#events)
+
+### Methods
+
+The **EnumInput** component can be enabled or disabled dynamically at runtime.
+
+```cshtml {} showLineNumbers
+<EnumInput TEnum="Status" Class="mb-3" @bind-Value="@value1" Disabled="isDisabled" />
+
+<Buttons Size="ButtonSize.Small" Class="mt-3">
+    <Button Color="ButtonColor.Primary" @onclick="EnableInput">Enable</Button>
+    <Button Color="ButtonColor.Danger" @onclick="DisableInput">Disable</Button>
+</Buttons>
+```
+
+```cs {} showLineNumbers
+@code {
+    private bool isDisabled = true;
+    private int value1 = (int)Status.Pending;
+
+    private void EnableInput()
+    {
+        isDisabled = false;
+    }
+
+    private void DisableInput()
+    {
+        isDisabled = true;
+    }
+
+    public enum Status
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/enum-input#methods)
