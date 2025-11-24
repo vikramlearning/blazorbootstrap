@@ -26,30 +26,30 @@ jobs:
         with:
           submodules: true
 
-      # - name: Setup .NET SDK
-      #   uses: actions/setup-dotnet@v3
-      #   with:
-      #     dotnet-version: '10.0.x'
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '10.0.x'
 
-      # - name: Install WASM workload
-      #   run: dotnet workload install wasm-tools --skip-manifest-update
+      - name: Install WASM workload
+        run: dotnet workload install wasm-tools --skip-manifest-update
 
-      # - name: Restore
-      #   run: dotnet restore
+      - name: Restore
+        run: dotnet restore
 
-      # - name: Publish app (produce static assets)
-      #   run: dotnet publish BlazorBootstrap.Demo.WebAssembly -c Release -o build
+      - name: Publish app (produce static assets)
+        run: dotnet publish BlazorBootstrap.Demo.WebAssembly -c Release -o build
 
-      # - name: Show published files (debug)
-      #   run: |
-      #     echo "repo root tree (top-level):"
-      #     ls -la .
-      #     echo "build folder tree:"
-      #     ls -la build || true
-      #     echo "build/wwwroot tree:"
-      #     ls -la build/wwwroot || true
-      #     echo "index.html exists?"
-      #     if [ -f build/wwwroot/index.html ]; then echo "FOUND"; else echo "MISSING"; fi
+      - name: Show published files (debug)
+        run: |
+          echo "repo root tree (top-level):"
+          ls -la .
+          echo "build folder tree:"
+          ls -la build || true
+          echo "build/wwwroot tree:"
+          ls -la build/wwwroot || true
+          echo "index.html exists?"
+          if [ -f build/wwwroot/index.html ]; then echo "FOUND"; else echo "MISSING"; fi
 
       - name: Build And Deploy (upload artifacts; skip Oryx build)
         id: builddeploy
