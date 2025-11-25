@@ -18,16 +18,21 @@ on:
 
 jobs:
   build_and_deploy_job:
-    if: ${{ inputs.prod_release }} || (github.event_name == 'pull_request' && github.event.action != 'closed')
+    # Run when:
+    # - workflow_dispatch AND prod_release == true
+    # - OR pull_request (except when closed)
+    if: >
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.prod_release == 'true') ||
+      (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.0.x'
 

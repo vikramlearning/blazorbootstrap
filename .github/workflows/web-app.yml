@@ -23,7 +23,6 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '10.0.x'
-          include-prerelease: false
 
       - name: Build
         run: dotnet build ./BlazorBootstrap.Demo.Server/BlazorBootstrap.Demo.Server.csproj --configuration Release
