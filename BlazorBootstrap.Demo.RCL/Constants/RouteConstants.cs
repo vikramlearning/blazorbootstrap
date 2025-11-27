@@ -25,6 +25,7 @@ public static class RouteConstants
     public const string Demos_CheckboxInput_Documentation = Demos_Forms_Prefix + "/checkbox-input";
     public const string Demos_CurrencyInput_Documentation = Demos_Forms_Prefix + "/currency-input";
     public const string Demos_DateInput_Documentation = Demos_Forms_Prefix + "/date-input";
+    public const string Demos_EnumInput_Documentation = Demos_Forms_Prefix + "/enum-input";
     public const string Demos_NumberInput_Documentation = Demos_Forms_Prefix + "/number-input";
     public const string Demos_PasswordInput_Documentation = Demos_Forms_Prefix + "/password-input";
     public const string Demos_RadioInput_Documentation = Demos_Forms_Prefix + "/radio-input";

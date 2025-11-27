@@ -194,17 +194,57 @@ pageRotateCwButton.disabled = this.pagesCount === 0;
 pageRotateCcwButton.disabled = this.pagesCount === 0;
 */
 
-export function initialize(dotNetHelper, elementId, scale, rotation, url) {
+export function initialize(dotNetHelper, elementId, scale, rotation, url, password = null) {
     const pdf = new Pdf(elementId);
     pdf.scale = scale;
     pdf.rotation = rotation;
 
-    pdfJS.getDocument(url).promise.then(function (doc) {
-        pdf.pdfDoc = doc;
-        pdf.pagesCount = doc.numPages;
-        renderPage(pdf, pdf.pageNum);
-        dotNetHelper.invokeMethodAsync('DocumentLoaded', { pagesCount: pdf.pagesCount, pageNumber: pdf.pageNum });
-    });
+    // prepare loading options (optional password allowed)
+    const options = { url };
+    if (password) {
+        options.password = password; // pre-supply if user already has it
+    }
+
+    // begin loading document
+    const loadingTask = pdfJS.getDocument(options);
+
+    // handle password only when required (optional password support)
+    loadingTask.onPassword = function (updatePassword, reason) {
+        if (reason === pdfJS.PasswordResponses.NEED_PASSWORD) {
+            // only prompt if PDF actually requires password
+            const password = prompt("This PDF is password protected. Enter password:");
+            updatePassword(password);
+        } else if (reason === pdfJS.PasswordResponses.INCORRECT_PASSWORD) {
+            const password = prompt("Incorrect password. Please try again:");
+            updatePassword(password);
+        }
+    };
+
+    // handle the promise
+    loadingTask
+        .promise
+        .then(function (doc) {
+            pdf.pdfDoc = doc;
+            pdf.pagesCount = doc.numPages;
+            renderPage(pdf, pdf.pageNum);
+
+            // notify .NET side that document is loaded
+            dotNetHelper.invokeMethodAsync('DocumentLoaded', {
+                pagesCount: pdf.pagesCount,
+                pageNumber: pdf.pageNum
+            });
+        })
+        .catch(function (error) {
+            console.error("PDF loading error:", error);
+
+            // handle password exceptions specifically
+            if (error.name === "PasswordException") {
+                console.error("Password required but not provided");
+            }
+
+            // notify .NET side that document loading failed
+            dotNetHelper.invokeMethodAsync('DocumentLoadError', error.message);
+        });
 }
 
 function isDomSupported() {

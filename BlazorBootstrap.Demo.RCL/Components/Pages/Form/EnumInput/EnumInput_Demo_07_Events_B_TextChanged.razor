@@ -1,0 +1,31 @@
+<EnumInput TEnum="Status" Class="mb-3" Text="@text1" TextChanged="OnTextChanged" />
+<div>Selected text: @text1</div>
+
+@code {
+    private string text1 = Status.Pending.ToString();
+
+    private void OnTextChanged(string value)
+    {
+        text1 = value;
+
+        if (value == "Active")
+        {
+            // Do something when the text is "Active"
+        }
+        else if (value == "Inactive")
+        {
+            // Do something when the text is "Inactive"
+        }
+        else if (value == "Pending")
+        {
+            // Do something when the text is "Pending"
+        }
+    }
+
+    public enum Status
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}
