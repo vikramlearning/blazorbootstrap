@@ -17,64 +17,51 @@ on:
         type: boolean
 
 jobs:
-  build_and_deploy_job:
-    # Run when:
-    # - workflow_dispatch AND prod_release == true
-    # - OR pull_request (except when closed)
-    if: >
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.prod_release == 'true') ||
-      (github.event_name == 'pull_request' && github.event.action != 'closed')
+  build-and-deploy:
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    env:
+      DOTNET_TELEMETRY_OPTOUT: '1'
+
     steps:
-      - uses: actions/checkout@v5
-        with:
-          submodules: true
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Install WASM workload
-        run: dotnet workload install wasm-tools --skip-manifest-update
+      - name: Show dotnet version
+        run: dotnet --info
+
+      - name: Clean repository build outputs
+        run: |
+          dotnet clean
+          rm -rf **/obj **/bin
+
+      - name: Update workloads (required for wasm/Emscripten)
+        run: dotnet workload update --no-restore
 
       - name: Restore
         run: dotnet restore
 
-      - name: Publish app (produce static assets)
-        run: dotnet publish BlazorBootstrap.Demo.WebAssembly -c Release -o build
-
-      - name: Show published files (debug)
+      - name: Publish Blazor WebAssembly (CI-mode)
         run: |
-          echo "repo root tree (top-level):"
-          ls -la .
-          echo "build folder tree:"
-          ls -la build || true
-          echo "build/wwwroot tree:"
-          ls -la build/wwwroot || true
-          echo "index.html exists?"
-          if [ -f build/wwwroot/index.html ]; then echo "FOUND"; else echo "MISSING"; fi
+          dotnet publish BlazorBootstrap.Demo.WebAssembly/BlazorBootstrap.Demo.WebAssembly.csproj -c Release -o build/publish -v minimal
 
-      - name: Build And Deploy (upload artifacts; skip Oryx build)
-        id: builddeploy
+      - name: Archive published build
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-webassembly-build
+          path: build/publish
+
+      - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GRAY_WAVE_0E4848710 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "."                      # repository root
-          skip_app_build: true                   # we already produced the build on runner
-          app_artifact_location: "build/wwwroot" # <-- IMPORTANT: point to the published static files
-
-  close_pull_request_job:
-    if: github.event_name == 'pull_request' && github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    name: Close Pull Request Job
-    steps:
-      - name: Close Pull Request
-        id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
-        with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GRAY_WAVE_0E4848710 }}
-          action: "close"
+          app_location: "/"
+          api_location: ""
+          output_location: "build/publish"
+          deployment_environment: ${{ github.event.inputs.prod_release == 'true' && 'production' || 'staging' }}
