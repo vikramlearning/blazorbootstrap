@@ -59,9 +59,9 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_PLANT_04DA70210 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "publish/wwwroot"
+          app_location: "output/wwwroot"
           api_location: ""
-          output_location: "publish/wwwroot" 
+          output_location: "output/wwwroot" 
           skip_api_build: true
           skip_app_build: true
 
