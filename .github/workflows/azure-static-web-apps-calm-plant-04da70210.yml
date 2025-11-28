@@ -21,31 +21,44 @@ jobs:
           submodules: true
           lfs: false
 
-      # 1. Setup .NET 10 SDK
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Cache .NET 10 SDK
+        uses: actions/cache@v4
         with:
-          dotnet-version: '10.0.x' # Specifies the use of .NET 10 SDK
+          path: $HOME/.dotnet
+          key: dotnet-10-${{ runner.os }}-${{ hashFiles('**/global.json') }}
+          restore-keys: |
+            dotnet-10-${{ runner.os }}-
+
+      - name: Install .NET 10 SDK
+        shell: bash
+        run: |
+          wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+          chmod +x dotnet-install.sh
+          # install latest 10.x channel; replace --version <exact-version> if needed
+          ./dotnet-install.sh --channel 10.0 --install-dir $HOME/.dotnet
+          echo "$HOME/.dotnet" >> $GITHUB_PATH
+          echo "DOTNET_ROOT=$HOME/.dotnet" >> $GITHUB_ENV
+      - name: Verify dotnet
+        run: dotnet --info
+
+      # # 1. Setup .NET 10 SDK
+      # - name: Setup .NET
+      #   uses: actions/setup-dotnet@v4
+      #   with:
+      #     dotnet-version: '10.0.x'
       
       # 2. Azure Static Web App Deployment Action
-      # This action automatically handles the dotnet restore, build, and publish steps
-      # and deploys the output to SWA.
       - name: Build And Deploy Blazor WASM App
         id: swa
         uses: azure/static-web-apps-deploy@v1
         with:
-          dotnet-version: '10.0.x' # Specifies the use of .NET 10 SDK
+          dotnet-version: '10.0.x'
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_PLANT_04DA70210 }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          #app_location: "Client" # App source code path
           app_location: "BlazorBootstrap.Demo.WebAssembly" # App source code path
-          #api_location: "Api" # Api source code path - optional
           output_location: "wwwroot" # Built app content directory - optional
           app_build_command: 'dotnet publish --configuration Release --output build'
-          ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
