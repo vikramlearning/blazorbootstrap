@@ -49,7 +49,7 @@ jobs:
         
       # .NET Publish
       - name: .NET Publish
-        run: dotnet publish ${{ env.PROJECT }} -c ${{ env.BUILD_CONFIG }} -o publish -f ${{ env.DOTNET_VERSION }} --no-build
+        run: dotnet publish ${{ env.PROJECT }} -c ${{ env.BUILD_CONFIG }} -o output -f ${{ env.DOTNET_VERSION }} --no-build
       
       # Azure Static Web App Deployment Action
       - name: Build And Deploy Blazor WASM App
