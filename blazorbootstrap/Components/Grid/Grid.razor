@@ -1,4 +1,5 @@
 ﻿@namespace BlazorBootstrap
+@using BlazorBootstrap.Models
 @inherits BlazorBootstrapComponentBase
 @typeparam TItem
 
@@ -35,6 +36,7 @@
                 </tr>
                 @if (AllowFiltering)
                 {
+                    var columnFilterContext = new GridColumnFilterContext(EnumFilterSelectText, GridFiltersTranslationProviderAsync!, FixedHeader);
                     <tr class="@FiltersRowCssClass">
                         @if (AllowDetailView)
                         {
@@ -70,18 +72,7 @@
                             <th class="@string.Join(" ", columnClassList)" style="@string.Join(";", columnStyleList)">
                                 @if (column.Filterable)
                                 {
-                                    <GridColumnFilter EnumFilterSelectText="@EnumFilterSelectText"
-                                    FilterButtonColor="@column.FilterButtonColor"
-                                    FilterButtonCSSClass="@column.FilterButtonCSSClass"
-                                    FilterOperator="@column.FilterOperator"
-                                    FilterValue="@column.FilterValue"
-                                    FilterWidth="@column.FilterTextboxWidth"
-                                    FiltersTranslationProvider="GridFiltersTranslationProviderAsync!"
-                                    FixedHeader="@FixedHeader"
-                                    GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
-                                    PropertyType="@column.GetPropertyType()"
-                                    PropertyTypeName="@column.GetPropertyTypeName()"
-                                    Unit="@column.FilterTextboxWidthUnit" />
+                                    @column.RenderColumnFilter(columnFilterContext)
                                 }
                             </th>
                         }
