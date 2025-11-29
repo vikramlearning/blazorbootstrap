@@ -43,6 +43,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private int? totalCount = null;
 
+    private bool pendingPageSizeChanging = false;
+
+    private bool isColumnsLoading = false;
+
     #endregion
 
     #region Methods
@@ -68,16 +72,24 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         pageSize = PageSize;
         selectedItems = SelectedItems!;
 
+        isColumnsLoading = true;
+
         base.OnInitialized();
     }
 
-    protected override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
         if ((Data is null && DataProvider is null) || (Data is not null && DataProvider is not null))
             throw new ArgumentException($"Grid requires either {nameof(Data)} or {nameof(DataProvider)}, but not both or neither.");
 
         if (AllowPaging && PageSize < 0)
             throw new ArgumentException($"{nameof(PageSize)} must be greater than zero.");
+
+        if (pendingPageSizeChanging)
+        {
+            PageSize = pageSize;
+            return;
+        }
 
         if (isFirstRenderComplete)
         {
@@ -93,8 +105,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             {
                 mustRefreshData = true;
                 pageSize = PageSize;
-                _ = ResetPageNumberAsync();
-                SaveGridSettingsAsync();
+                await ResetPageNumberAsync();
+                await SaveGridSettingsAsync();
             }
 
             //if (!mustRefreshData && selectedItems != SelectedItems)
@@ -106,10 +118,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             // We want to trigger the first data load when we've collected the initial set of columns
             // because they might perform some action, like setting the default sort order. 
             // It would be wasteful to have to re-query immediately.
-            return columns.Count > 0 && mustRefreshData ? RefreshDataAsync(false) : Task.CompletedTask;
+            if (columns.Count > 0 && mustRefreshData)
+                await RefreshDataAsync(false);
         }
 
-        return base.OnParametersSetAsync();
+        await base.OnParametersSetAsync();
     }
 
     /// <summary>
@@ -170,9 +183,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     public async ValueTask ResetPageNumber() => await ResetPageNumberAsync(true);
 
-    public Task SelectAllItemsAsync() => SelectAllItemsInternalAsync(true);
+    public async Task SelectAllItemsAsync() => await SelectAllItemsInternalAsync(true);
 
-    public Task UnSelectAllItemsAsync() => SelectAllItemsInternalAsync(false);
+    public async Task UnSelectAllItemsAsync() => await SelectAllItemsInternalAsync(false);
 
     internal void AddColumn(GridColumn<TItem> column) => columns.Add(column);
 
@@ -253,6 +266,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             PrepareCheckboxIds();
             await RefreshSelectionAsync();
         }
+
+        if (firstRender)
+            isColumnsLoading = false;
 
         requestInProgress = false;
 
@@ -476,10 +492,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task OnPageSizeChangedAsync(int newPageSize)
     {
+        pendingPageSizeChanging = true;
         pageSize = PageSize = newPageSize;
         await ResetPageNumberAsync();
         await SaveGridSettingsAsync();
         await RefreshDataAsync(false);
+        pendingPageSizeChanging = false;
     }
 
     private async Task OnRowCheckboxChanged(string id, TItem item, ChangeEventArgs args)
@@ -564,14 +582,14 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             await OnRowDoubleClick.InvokeAsync(new GridRowEventArgs<TItem>(item));
     }
 
-    private Task SaveGridSettingsAsync()
+    private async Task SaveGridSettingsAsync()
     {
         if (!GridSettingsChanged.HasDelegate)
-            return Task.CompletedTask;
+            return;
 
         var settings = new GridSettings { PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0, PageSize = AllowPaging ? pageSize : 0, Filters = AllowFiltering ? GetFilters() : null };
 
-        return GridSettingsChanged.InvokeAsync(settings);
+        await GridSettingsChanged.InvokeAsync(settings);
     }
 
     private async Task SelectAllItemsInternalAsync(bool selectAll)
@@ -595,11 +613,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             SelectedItems = selectedItems;
     }
 
-    private Task SetCheckboxStateAsync(string id, CheckboxState checkboxState)
+    private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState)
     {
-        queuedTasks.Enqueue(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState));
-
-        return Task.CompletedTask;
+        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState);        
     }
 
     /// <summary>
