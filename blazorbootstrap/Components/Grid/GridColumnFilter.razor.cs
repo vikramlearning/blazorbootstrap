@@ -114,7 +114,7 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
 
        if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
        {
-           if (bool.TryParse(filterValue, out bool isChecked))
+           if ((bool.TryParse(filterValue, out bool isChecked)) && isChecked)
                builder.AddAttribute(104, "checked", "checked");
 
            builder.AddAttribute(106, "onchange", async (ChangeEventArgs args) => await OnFilterValueChangedAsync(args));
