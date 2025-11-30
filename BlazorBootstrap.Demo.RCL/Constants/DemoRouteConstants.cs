@@ -1,10 +1,10 @@
 ﻿namespace BlazorBootstrap.Demo.RCL;
 
-public static class RouteConstants
+public static class DemoRouteConstants
 {
     public const string Blog_Prefix = "/blog";
+    public const string Demos_Prefix = "/demos";
     public const string Docs_Prefix = "/docs";
-    public const string Demos_Prefix = "";
 
     #region Demos
 
@@ -109,5 +109,20 @@ public static class RouteConstants
     public const string Demos_Utils_Prefix = Demos_Prefix + "/utils";
     public const string Demos_ColorUtils_Documentation = Demos_Utils_Prefix + "/color-utility";
 
-    #endregion
+    #endregion Demos
+
+    #region Docs
+
+    // Getting Started
+    public const string Docs_GettingStarted_Documentation = Docs_Prefix + "/getting-started";
+
+    // AI
+    //public const string Docs_AI_Prefix = Docs_Prefix + "/ai";
+    //public const string Docs_AI_Chat_Documentation = Docs_Prefix + "/open-ai-chat";
+
+    // Content
+    public const string Docs_Icons_Documentation = Docs_Prefix + "/icons";
+    public const string Docs_Images_Documentation = Docs_Prefix + "/images";
+
+    #endregion Docs
 }
