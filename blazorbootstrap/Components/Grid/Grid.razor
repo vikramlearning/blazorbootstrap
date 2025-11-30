@@ -68,21 +68,31 @@
                             }
 
                             <th class="@string.Join(" ", columnClassList)" style="@string.Join(";", columnStyleList)">
-                                @if (column.Filterable)
+
+                                @if (isColumnsLoading)
                                 {
-                                    <GridColumnFilter EnumFilterSelectText="@EnumFilterSelectText"
-                                    FilterButtonColor="@column.FilterButtonColor"
-                                    FilterButtonCSSClass="@column.FilterButtonCSSClass"
-                                    FilterOperator="@column.FilterOperator"
-                                    FilterValue="@column.FilterValue"
-                                    FilterWidth="@column.FilterTextboxWidth"
-                                    FiltersTranslationProvider="GridFiltersTranslationProviderAsync!"
-                                    FixedHeader="@FixedHeader"
-                                    GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
-                                    PropertyType="@column.GetPropertyType()"
-                                    PropertyTypeName="@column.GetPropertyTypeName()"
-                                    Unit="@column.FilterTextboxWidthUnit" />
+                                    <PlaceholderContainer Animation="PlaceholderAnimation.Glow">
+                                        <Placeholder Width="PlaceholderWidth.Col12" />
+                                    </PlaceholderContainer>
                                 }
+                                else
+                                {
+                                    @if (column.Filterable)
+                                    {
+                                        <GridColumnFilter EnumFilterSelectText="@EnumFilterSelectText"
+                                        FilterButtonColor="@column.FilterButtonColor"
+                                        FilterButtonCSSClass="@column.FilterButtonCSSClass"
+                                        FilterOperator="@column.FilterOperator"
+                                        FilterValue="@column.FilterValue"
+                                        FilterWidth="@column.FilterTextboxWidth"
+                                        FiltersTranslationProvider="GridFiltersTranslationProviderAsync!"
+                                        FixedHeader="@FixedHeader"
+                                        GridColumnFilterChanged="async args => await column.OnFilterChangedAsync(args, column)"
+                                        PropertyType="@column.GetPropertyType()"
+                                        PropertyTypeName="@column.GetPropertyTypeName()"
+                                        Unit="@column.FilterTextboxWidthUnit" />
+                                    }
+                                }                                
                             </th>
                         }
                     </tr>
