@@ -199,7 +199,6 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [Parameter]
-    [EditorRequired]
     public string? Title { get; set; } = default!;
 
     /// <summary>

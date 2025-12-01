@@ -1,0 +1,28 @@
+<EnumInput TEnum="Status" Class="mb-3" @bind-Value="@value1" Disabled="isDisabled" />
+
+<div class="mt-3">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="EnableInput">Enable</Button>
+    <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="DisableInput">Disable</Button>
+</div>
+
+@code {
+    private bool isDisabled = true;
+    private int value1 = (int)Status.Pending;
+
+    private void EnableInput()
+    {
+        isDisabled = false;
+    }
+
+    private void DisableInput()
+    {
+        isDisabled = true;
+    }
+
+    public enum Status
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}

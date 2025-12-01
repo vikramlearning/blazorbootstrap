@@ -1,0 +1,527 @@
+﻿@page "/"
+@layout EmptyLayout
+
+<PageTitle>Blazor Bootstrap Components Examples & Demos | Blazor Bootstrap</PageTitle>
+
+<PageMetaTags PageUrl="@pageUrl" Title="@title" Description="@description" ImageUrl="@imageUrl" />
+
+<div class="bd-masthead pb-4" id="content">
+    <div class="container-xxl bd-gutter">
+        <div class="col-md-8 mx-auto text-center">
+            <a class="d-flex flex-column flex-lg-row justify-content-center align-items-center mb-4 text-dark lh-sm text-decoration-none" href="/">
+                <strong class="d-sm-inline-block p-2 me-2 mb-2 mb-lg-0 rounded-3 masthead-notice">New in @version</strong>
+                <span class="text-muted">@releaseShortDescription</span>
+            </a>
+            <img src="images/logo/logo-color.svg" width="200" height="165" alt="Blazor Bootstrap" class="d-block mx-auto mb-3">
+            <h1 class="mb-3 fw-semibold">Build fast, responsive sites with BlazorBootstrap</h1>
+            <p class="lead mb-4">
+                High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.
+            </p>
+            <p class="text-muted mb-0">
+                Currently <strong>@version</strong>
+                <span class="px-1"></span>
+                <a href="https://www.nuget.org/packages/Blazor.Bootstrap/"><img alt="Nuget" src="https://img.shields.io/nuget/v/Blazor.Bootstrap"></a>
+                <span class="px-1"></span>
+                <a href="https://www.nuget.org/packages/Blazor.Bootstrap/"><img alt="Nuget" src="https://img.shields.io/nuget/dt/Blazor.Bootstrap"></a>
+            </p>
+            <CarbonAds Class="d-flex justify-content-center mt-5" />
+        </div>
+    </div>
+</div>
+
+<div class="container bd-gutter masthead-followup mb-5">
+    <div class="col-lg-7 mb-4 mx-auto text-md-center">
+        <h2 class="mb-3 fw-semibold lh-sm">All Components</h2>
+    </div>
+
+    <div class="row g-3 mt-md-5">
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Accordion">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ChevronBarExpand" class="me-2" /> Accordion</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Alerts">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CheckCircleFill" class="me-2" /> Alerts</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_AutoComplete">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursorText" class="me-2" /> Auto Complete</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Badge">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.AppIndicator" class="me-2" /> Badge</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Breadcrumb">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.SegmentedNav" class="me-2" /> Breadcrumb</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Buttons">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ToggleOn" class="me-2" /> Buttons</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Callout">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.StickyFill" class="me-2" /> Callout</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Card">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CardHeading" class="me-2" /> Card</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Carousel">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CollectionPlayFill" class="me-2" /> Carousel</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Charts">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.BarChartLineFill" class="me-2" /> Charts</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_CheckboxInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CheckSquareFill" class="me-2" /> Checkbox Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Collapse">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowsCollapse" class="me-2" /> Collapse</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_ConfirmDialog">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.QuestionDiamondFill" class="me-2" /> Confirm Dialog</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_CurrencyInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CurrencyDollar" class="me-2" /> Currency Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_DateInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CalendarDate" class="me-2" /> Date Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Dropdown">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.MenuButtonWideFill" class="me-2" /> Dropdown</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_EnumInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.MenuButtonWideFill" class="me-2" /> Enum Input <Badge Color="BadgeColor.Danger">New</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_GoogleMap">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Map" class="me-2" /> Google Map</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_Overview">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Grid3X2" class="me-2" /> Grid <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_GoogleMap">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Map" class="me-2" /> Icons <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Images">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Image" class="me-2" /> Images</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Markdown">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.MarkdownFill" class="me-2" /> Markdown</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Modal">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.WindowStack" class="me-2" /> Modals</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_NumberInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursor" class="me-2" /> Number Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_PasswordInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.EyeSlashFill" class="me-2" /> Password Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Offcanvas">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.LayoutSidebarReverse" class="me-2" /> Offcanvas</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Pagination">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ThreeDots" class="me-2" /> Pagination</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_PDFViewer">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.FilePdfFill" class="me-2" /> PDF Viewer</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Placeholders">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ColumnsGap" class="me-2" /> Placeholders</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Preload">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowClockwise" class="me-2" /> Preload</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Progress">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.UsbC" class="me-2" /> Progress</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_RadioInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.RecordCircle" class="me-2" /> Radio Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_RangeInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Sliders" class="me-2" /> Range Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Ribbon">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.WindowStack" class="me-2" /> Ribbon</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_ScriptLoader">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CodeSlash" class="me-2" /> Script Loader</h4>
+            </a>
+        </div>
+        @* <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_SelectInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.MenuButtonWideFill" class="me-2" /> Select Input <Badge Color="BadgeColor.Danger">New</Badge></h4>
+            </a>
+        </div> *@
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Sidebar">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.LayoutSidebarInset" class="me-2" /> Sidebar <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Sidebar2">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ListNested" class="me-2" /> Sidebar 2 <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_SortableList">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowsMove" class="me-2" /> Sortable List</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Spinners">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowRepeat" class="me-2" /> Spinners</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Switch">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ToggleOn" class="me-2" /> Switch</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Tabs">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.WindowPlus" class="me-2" /> Tabs <Badge Color="BadgeColor.Success">Updated</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_TextInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursorText" class="me-2" /> Text Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_TextAreaInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursorText" class="me-2" /> Text Area Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_TimeInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ClockFill" class="me-2" /> Time Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_ThemeSwitcher">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.NintendoSwitch" class="me-2" /> Theme Switcher</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Toasts">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ExclamationTriangleFill" class="me-2" /> Toasts</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Tooltips">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ChatSquareDotsFill" class="me-2" /> Tooltips</h4>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container bd-gutter masthead-followup mb-5">
+    <div class="col-lg-7 mb-4 mx-auto text-md-center">
+        <h2 class="mb-3 fw-semibold lh-sm">Form Components</h2>
+    </div>
+
+    <div class="row g-3 mt-5">
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_AutoComplete">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.FilePdfFill" class="me-2" /> Auto Complete</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Placeholders">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ColumnsGap" class="me-2" /> Checkbox Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Preload">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowClockwise" class="me-2" /> Currency Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Progress">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.UsbC" class="me-2" /> Date Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_RadioInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.RecordCircle" class="me-2" /> Enum Input <Badge Color="BadgeColor.Danger">New</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_NumberInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursor" class="me-2" /> Number Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_PasswordInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.EyeSlashFill" class="me-2" /> Password Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_RadioInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.RecordCircle" class="me-2" /> Radio Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_RangeInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Sliders" class="me-2" /> Range Input</h4>
+            </a>
+        </div>
+        @* <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_SelectInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.MenuButtonWideFill" class="me-2" /> Select Input <Badge Color="BadgeColor.Danger">New</Badge></h4>
+            </a>
+        </div> *@
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Switch">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ToggleOn" class="me-2" /> Switch</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_TextInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursorText" class="me-2" /> Text Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_TextAreaInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursorText" class="me-2" /> Text Area Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_TimeInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ClockFill" class="me-2" /> Time Input</h4>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container bd-gutter masthead-followup mb-5">
+    <div class="col-lg-7 mb-4 mx-auto text-md-center">
+        <h2 class="mb-3 fw-semibold lh-sm">Data Visualization Components</h2>
+    </div>
+
+    <div class="row g-3 mt-5">
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_BarChart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.BarChartFill" class="me-2" /> Bar Chart</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_DoughnutChart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CircleFill" class="me-2" /> Doughnut Chart</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_LineChart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.GraphUp" class="me-2" /> Line Chart</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_PieChart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.PieChart" class="me-2" /> Pie Chart</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_PolarAreaChart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.PieChartFill" class="me-2" /> Polar Area Chart</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_RadarChart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Radar" class="me-2" /> Radar Chart</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_ScatterChart">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.GraphUpArrow" class="me-2" /> Scatter Chart</h4>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container bd-gutter masthead-followup mb-5">
+    <div class="col-lg-7 mb-4 mx-auto text-md-center">
+        <h2 class="mb-3 fw-semibold lh-sm">Grid Component</h2>
+    </div>
+
+    <div class="row g-3 mt-5">
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_SortableList">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowsMove" class="me-2" /> Alignment </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Spinners">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowRepeat" class="me-2" /> Custom CSS Class </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Switch">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ToggleOn" class="me-2" /> Data Binding </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Tabs">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.WindowPlus" class="me-2" /> Detail View </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_Events">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.LightningChargeFill" class="me-2" /> Events </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_Filters">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.FunnelFill" class="me-2" /> Filters </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_FixedHeader">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Table" class="me-2" /> Fixed Header </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_FreezeColumns">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.LayoutThreeColumns" class="me-2" /> Freeze Columns </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_Settings">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.GearFill" class="me-2" /> Grid Settings </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_NestedGrid">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Pip" class="me-2" /> Nested Grid </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_Paging">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ChevronBarRight" class="me-2" /> Paging </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_Selection">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.CheckSquareFill" class="me-2" /> Selection </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_Sorting">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.ArrowDownUp" class="me-2" /> Sorting </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_Summary">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Calculator" class="me-2" /> Summary </h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_Grid_Translations">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Translate" class="me-2" /> Translations </h4>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container bd-gutter masthead-followup">
+    <div class="col-lg-7 mb-4 mx-auto text-md-center">
+        <h2 class="mb-3 fw-semibold lh-sm">Utilities</h2>
+    </div>
+
+    <div class="row g-3 mt-5">
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_ColorUtils">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Palette2" class="me-2" /> Color Utility </h4>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <Callout Class="mt-5" Color="CalloutColor.Success" Heading="DO YOU KNOW?">
+        This demo website is built using the <strong><a href="https://www.nuget.org/packages/Blazor.Bootstrap">Blazor Bootstrap</a></strong> library and published on the Azure Web App.
+        See our source code on <a href="https://github.com/vikramlearning/blazorbootstrap">GitHub</a>.
+    </Callout>
+</div>
+
+@code {
+    private string pageUrl = "/";
+    private string title = "Blazor Bootstrap Component Library";
+    private string description = "An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.";
+    private string imageUrl = "https://i.imgur.com/HEJciCp.png";
+
+    private string version = default!;
+    private string releaseShortDescription = default!;
+
+    [Inject] public IConfiguration Configuration { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        version = $"v{Configuration["version"]}"; // example: v0.6.1
+        releaseShortDescription = Configuration["release:short_description"]!;
+
+        base.OnInitialized();
+    }
+}

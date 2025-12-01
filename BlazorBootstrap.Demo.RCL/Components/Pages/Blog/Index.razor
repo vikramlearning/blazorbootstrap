@@ -1,0 +1,22 @@
+﻿@attribute [Route(pageUrl)]
+
+<PageMetaTags PageUrl="@pageUrl"
+              Title="@metaTitle"
+              Description="@metaDescription"
+              ImageUrl="@imageUrl" />
+
+<PageHero Heading="@pageTitle">
+    <LeadSection>@pageDescription</LeadSection>
+</PageHero>
+
+<CarbonAds />
+
+
+@code{
+    private const string pageUrl = DemoRouteConstants.Blog_URL_Prefix;
+    private const string pageTitle = "Blog";
+    private const string pageDescription = "An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.";
+    private const string metaTitle = "Blog";
+    private const string metaDescription = "An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.";
+    private const string imageUrl = "https://i.imgur.com/FGgEMp6.jpg";
+}

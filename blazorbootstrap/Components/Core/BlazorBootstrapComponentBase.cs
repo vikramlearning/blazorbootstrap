@@ -137,21 +137,72 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 
     #region Properties, Indexers
 
-    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> AdditionalAttributes { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets additional attributes that will be applied to the component.
+    /// <para>
+    /// Default value is <see langword="null" />.
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets additional attributes that will be applied to the component.")]
+    [ParameterTypeName("Dictionary<string, object>")]
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> AdditionalAttributes { get; set; } = default!;
 
-    [Parameter] public string? Class { get; set; }
+    /// <summary>
+    /// Gets or sets the CSS class name(s) to apply to the component.
+    /// <para>
+    /// Default value is <see langword="null" />.
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the CSS class name(s) to apply to the component.")]
+    [ParameterTypeName("string?")]
+    [Parameter]
+    public string? Class { get; set; }
 
     protected virtual string? ClassNames => Class;
 
+    /// <summary>
+    /// Gets or sets the associated <see cref="ElementReference" />.
+    /// <para>
+    /// May be <see langword="null" />, if accessed before the component is rendered.
+    /// </para>
+    /// </summary>
+    [DisallowNull]
     public ElementReference Element { get; set; }
 
-    [Parameter] public string? Id { get; set; }
+    /// <summary>
+    /// Gets or sets the ID. If not set, a unique ID will be generated.
+    /// <para>
+    /// Default value is <see langword="null" />.
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the ID. If not set, a unique ID will be generated.")]
+    [ParameterTypeName("string?")]
+    [Parameter] 
+    public string? Id { get; set; }
 
     protected bool IsRenderComplete { get; private set; }
 
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
 
-    [Parameter] public string? Style { get; set; }
+    /// <summary>
+    /// Gets or sets the CSS style string that defines the inline styles for the component.
+    /// <para>
+    /// Default value is <see langword="null" />.
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the CSS style string that defines the inline styles for the component.")]
+    [ParameterTypeName("string?")]
+    [Parameter]
+    public string? Style { get; set; }
 
     protected virtual string? StyleNames => Style;
 
