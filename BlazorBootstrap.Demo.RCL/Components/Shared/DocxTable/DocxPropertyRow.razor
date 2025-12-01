@@ -4,12 +4,12 @@
 
 <tr>
     <td>@PropertyInfo.Name</td>
-    <td class="has-text-danger">@PropertyTypeShortName</td>
+    <td class="text-danger">@PropertyTypeShortName</td>
     <td>@DefaultValue</td>
-    <td class="has-text-centered">
+    <td class="text-center">
         @if (IsRequired)
         {
-            <i class="bi bi-check-circle-fill has-text-success"></i>
+            <i class="bi bi-check-circle-fill text-success"></i>
         }
     </td>
     <td>@((MarkupString)Description)</td>

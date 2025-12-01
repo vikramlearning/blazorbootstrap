@@ -3,6 +3,8 @@ global using Microsoft.AspNetCore.Components.Forms;
 global using Microsoft.AspNetCore.Components.Routing;
 global using Microsoft.AspNetCore.Components.Web;
 global using Microsoft.JSInterop;
+global using System.ComponentModel;
+global using System.Diagnostics.CodeAnalysis;
 global using System.Drawing;
 global using System.Globalization;
 global using System.Linq.Expressions;

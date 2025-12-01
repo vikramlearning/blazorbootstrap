@@ -55,6 +55,8 @@ public partial class Alert : BlazorBootstrapComponentBase
     /// <summary>
     /// Closes an alert by removing it from the DOM.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Closes an alert by removing it from the DOM.")]
     public async Task CloseAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.close", Id);
 
     #endregion
@@ -69,40 +71,54 @@ public partial class Alert : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the alert color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="AlertColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(AlertColor.None)]
+    [Description("Gets or sets the alert color.")]
     [Parameter]
     public AlertColor Color { get; set; } = AlertColor.None;
 
     /// <summary>
     /// If <see langword="true" />, shows an inline close button.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("If <b>true</b>, shows an inline close button.")]
     [Parameter]
     public bool Dismissable { get; set; }
 
     /// <summary>
     /// Fires immediately when the close instance method is called.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Fires immediately when the close instance method is called.")]
     [Parameter]
     public EventCallback OnClose { get; set; }
 
     /// <summary>
     /// Fired when the alert has been closed and CSS transitions have completed.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Fired when the alert has been closed and CSS transitions have completed.")]
     [Parameter]
     public EventCallback OnClosed { get; set; }
 

@@ -1,5 +1,4 @@
-﻿global using BlazorBootstrap.Demo.RCL.Attributes;
-global using BlazorBootstrap.Demo.RCL.Models;
+﻿global using BlazorBootstrap.Demo.RCL.Models;
 global using BlazorBootstrap.Demo.RCL.Services;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Rendering;
