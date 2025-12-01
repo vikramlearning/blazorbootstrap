@@ -6,6 +6,8 @@ public partial class PolarAreaChart : BlazorBootstrapChart
 
     private const string _jsObjectName = "window.blazorChart.polarArea";
 
+    private DotNetObjectReference<PolarAreaChart> objRef;
+    
     #endregion
 
     #region Constructors
@@ -18,6 +20,12 @@ public partial class PolarAreaChart : BlazorBootstrapChart
     #endregion
 
     #region Methods
+    
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        objRef ??= DotNetObjectReference.Create(this);
+    }
 
     // TODO: May be this method is not required
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
@@ -112,7 +120,7 @@ public partial class PolarAreaChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PolarAreaChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions, plugins);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions, plugins, objRef);
         }
     }
 
@@ -122,7 +130,7 @@ public partial class PolarAreaChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PolarAreaChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions);
+            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions, objRef);
         }
     }
 

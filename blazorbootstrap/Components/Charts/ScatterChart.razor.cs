@@ -6,6 +6,8 @@ public partial class ScatterChart : BlazorBootstrapChart
 
     private const string _jsObjectName = "window.blazorChart.scatter";
 
+    private DotNetObjectReference<ScatterChart> objRef;
+    
     #endregion
 
     #region Constructors
@@ -18,6 +20,12 @@ public partial class ScatterChart : BlazorBootstrapChart
     #endregion
 
     #region Methods
+    
+    protected override async Task OnInitializedAsync() {
+        await base.OnInitializedAsync();
+
+        objRef ??= DotNetObjectReference.Create(this);
+    }
 
     // TODO: May be this method is not required
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
@@ -119,7 +127,7 @@ public partial class ScatterChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<ScatterChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, plugins);
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, plugins, objRef);
     }
 
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
@@ -135,7 +143,7 @@ public partial class ScatterChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<ScatterChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (ScatterChartOptions)chartOptions);
+        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, objRef);
     }
 
     #endregion

@@ -42,7 +42,8 @@ public class ChartOptions : IChartOptions
     /// Default value is <see langword="false" />.
     /// </remarks>
     public bool Responsive { get; set; }
-
+    
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
     #endregion
 }
 
