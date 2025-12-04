@@ -1,4 +1,4 @@
-name: Static WebApp (Blazor WebAssembly)
+name: StaticWebApp (Blazor WebAssembly)
 
 on:
   push:
@@ -18,54 +18,52 @@ on:
 
 jobs:
   build_and_deploy_job:
-    # Run when:
-    # - workflow_dispatch AND prod_release == true
-    # - OR pull_request (except when closed)
-    if: >
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.prod_release == 'true') ||
-      (github.event_name == 'pull_request' && github.event.action != 'closed')
+    if: ${{ inputs.prod_release }} || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
+    env:
+      DOTNET_VERSION: "net10.0"
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      PROJECT: "BlazorBootstrap.Demo.WebAssembly/BlazorBootstrap.Demo.WebAssembly.csproj"
+      BUILD_CONFIG: "Release"
+
     name: Build and Deploy Job
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
           submodules: true
+          lfs: false
 
-      - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v5
+      # Setup .NET 10.0
+      - name: Setup .NET 10.0
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-
-      - name: Install WASM workload
-        run: dotnet workload install wasm-tools --skip-manifest-update
-
-      - name: Restore
-        run: dotnet restore
-
-      - name: Publish app (produce static assets)
-        run: dotnet publish BlazorBootstrap.Demo.WebAssembly -c Release -o build
-
-      - name: Show published files (debug)
-        run: |
-          echo "repo root tree (top-level):"
-          ls -la .
-          echo "build folder tree:"
-          ls -la build || true
-          echo "build/wwwroot tree:"
-          ls -la build/wwwroot || true
-          echo "index.html exists?"
-          if [ -f build/wwwroot/index.html ]; then echo "FOUND"; else echo "MISSING"; fi
-
-      - name: Build And Deploy (upload artifacts; skip Oryx build)
-        id: builddeploy
-        uses: Azure/static-web-apps-deploy@v1
+      
+      # .NET Restore
+      - name: .NET Restore
+        run: dotnet restore ${{ env.PROJECT }}
+        
+      # .NET Build
+      - name: .NET Build
+        run: dotnet build ${{ env.PROJECT }} -c ${{ env.BUILD_CONFIG }} -f ${{ env.DOTNET_VERSION }} --no-restore
+        
+      # .NET Publish
+      - name: .NET Publish
+        run: dotnet publish ${{ env.PROJECT }} -c ${{ env.BUILD_CONFIG }} -o output -f ${{ env.DOTNET_VERSION }} --no-build
+      
+      # Azure Static Web App Deployment Action
+      - name: Build And Deploy Blazor WASM App
+        id: swa
+        uses: azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GRAY_WAVE_0E4848710 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_PLANT_04DA70210 }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "."                      # repository root
-          skip_app_build: true                   # we already produced the build on runner
-          app_artifact_location: "build/wwwroot" # <-- IMPORTANT: point to the published static files
+          app_location: "output/wwwroot"
+          api_location: ""
+          output_location: "output/wwwroot" 
+          skip_api_build: true
+          skip_app_build: true
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
@@ -74,7 +72,7 @@ jobs:
     steps:
       - name: Close Pull Request
         id: closepullrequest
-        uses: Azure/static-web-apps-deploy@v1
+        uses: azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_GRAY_WAVE_0E4848710 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_PLANT_04DA70210 }}
           action: "close"
