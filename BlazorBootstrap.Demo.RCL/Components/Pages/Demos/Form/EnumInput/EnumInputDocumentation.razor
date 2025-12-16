@@ -1,4 +1,7 @@
+@page "/enum-input"
+
 @attribute [Route(pageUrl)]
+@layout DemosMainLayout
 
 <PageMetaTags PageUrl="@pageUrl"
               Title="@metaTitle"
@@ -12,7 +15,7 @@
 <CarbonAds />
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
-    <Block>
+    <div class="mb-3">
         The <strong>EnumInput</strong> component displays enum values in a dropdown, allowing users to select from a predefined set of options.
         <br />
         <strong>How to use:</strong>
@@ -25,12 +28,12 @@
             </ol>
         </div>
         This demo shows how to bind both the enum value and text, and how to display the selected result.
-    </Block>
+    </div>
     <Demo Type="typeof(EnumInput_Demo_01_How_it_works)" Tabs="true" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Sizes" PageUrl="@pageUrl" Link="Sizes">
-    <Block>
+    <div class="mb-3">
         The <strong>EnumInput</strong> component can be rendered in various sizes to fit different UI requirements.
         <br />
         <strong>How to use:</strong>
@@ -41,12 +44,12 @@
             </ol>
         </div>
         This demo shows how to display EnumInput in different sizes for flexible layout integration.
-    </Block>
+    </div>
     <Demo Type="typeof(EnumInput_Demo_03_Sizes)" Tabs="true" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Disabled" PageUrl="@pageUrl" Link="disabled">
-    <Block>
+    <div class="mb-3">
         The <strong>EnumInput</strong> component can be disabled to prevent user interaction.
         <br /><br />
         <strong>How to use:</strong>
@@ -57,12 +60,12 @@
             </ol>
         </div>
         This demo demonstrates how to render EnumInput in a disabled state.
-    </Block>
+    </div>
     <Demo Type="typeof(EnumInput_Demo_06_Disabled)" Tabs="true" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
-    <Block>
+    <div class="mb-3">
         The <strong>EnumInput</strong> component supports event callbacks for value and text changes, enabling custom logic when the selection changes.
         <br />
         <strong>How to use (ValueChanged):</strong>
@@ -73,9 +76,9 @@
             </ol>
         </div>
         This demo shows how to handle value changes using the ValueChanged event.
-    </Block>
+    </div>
     <Demo Class="my-3" Type="typeof(EnumInput_Demo_07_Events_A_ValueChanged)" Tabs="true" />
-    <Block>
+    <div class="mb-3">
         <strong>How to use (TextChanged):</strong>
         <div class="content mb-2">
             <ol>
@@ -84,12 +87,12 @@
             </ol>
         </div>
         This demo shows how to handle text changes using the TextChanged event.
-    </Block>
+    </div>
     <Demo Type="typeof(EnumInput_Demo_07_Events_B_TextChanged)" Tabs="true" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Mehods" PageUrl="@pageUrl" Link="methods">
-    <Block>
+    <div class="mb-3">
         The <strong>EnumInput</strong> component can be enabled or disabled dynamically at runtime.
         <br />
         <strong>How to use:</strong>
@@ -100,7 +103,7 @@
             </ol>
         </div>
         This demo demonstrates how to programmatically enable or disable the EnumInput component.
-    </Block>
+    </div>
     <Demo Type="typeof(EnumInput_Demo_08_Methods_Enable_Disable)" Tabs="true" />
 </Section>
 
