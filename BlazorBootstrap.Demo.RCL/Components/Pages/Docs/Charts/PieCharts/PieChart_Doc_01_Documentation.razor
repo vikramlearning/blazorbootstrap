@@ -8,27 +8,39 @@
                      MetaDescription="@metaDescription"
                      ImageUrl="@imageUrl" />
 
-<DemoLink Href="@DemoRouteConstants.Demos_URL_Alerts" />
+<DemoLink Href="@DemoRouteConstants.Demos_URL_PieChart" />
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
     <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Parameters" PageUrl="@pageUrl" Link="parameters">
-    <DocxTable TItem="Alert" DocType="DocType.Parameters" />
+<Section Class="p-0" Size="HeadingSize.H3" Name="PieChart Parameters" PageUrl="@pageUrl" Link="pie-chart-parameters">
+    <DocxTable TItem="PieChart" DocType="DocType.Parameters" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Methods" PageUrl="@pageUrl" Link="methods">
-    <DocxTable TItem="Alert" DocType="DocType.Methods" />
+<Section Class="p-0" Size="HeadingSize.H3" Name="PieChart Methods" PageUrl="@pageUrl" Link="pie-chart-methods">
+    <DocxTable TItem="PieChart" DocType="DocType.Methods" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
-    <DocxTable TItem="Alert" DocType="DocType.Events" />
+<Section Class="p-0" Size="HeadingSize.H3" Name="ChartData Members" PageUrl="@pageUrl" Link="chart-data-members">
+    <DocxTable TItem="ChartData" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="PieChartDataset Members" PageUrl="@pageUrl" Link="pie-chart-dataset-members">
+    <DocxTable TItem="PieChartDataset" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="PieChartDatasetDataLabels Members" PageUrl="@pageUrl" Link="pie-chart-dataset-datalabels-members">
+    <DocxTable TItem="PieChartDatasetDataLabels" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="PieChartOptions Members" PageUrl="@pageUrl" Link="pie-chart-options-members">
+    <DocxTable TItem="PieChartOptions" DocType="DocType.Parameters" />
 </Section>
 
 @code {
-    private const string componentName = nameof(Alert);
-    private const string pageUrl = DemoRouteConstants.Docs_URL_Alerts;
+    private const string componentName = nameof(PieChart);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_PieChart;
     private const string pageTitle = componentName;
     private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
     private const string metaTitle = $"Blazor {componentName} Component";
