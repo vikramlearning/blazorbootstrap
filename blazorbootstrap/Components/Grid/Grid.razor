@@ -147,7 +147,8 @@
                         {
                             var rowClass = RowClass?.Invoke(item) ?? "";
                             var detailViewRowId = IdUtility.GetNextId();
-                            <tr @key="RowKeySelector?.Invoke(item) ?? item?.GetHashCode()" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
+                            var rowKey = RowKeySelector?.Invoke(item) ?? item?.GetHashCode();
+                            <tr @key="rowKey" class="@rowClass" @onclick="args => RowClick(item, args)" @ondblclick="args => RowDoubleClick(item, args)" role="@(AllowRowClick ? "button" : "")">
                                 @if (AllowDetailView)
                                 {
                                     <td class="text-center">
@@ -174,7 +175,7 @@
                             </tr>
                             @if (AllowDetailView)
                             {
-                                <tr class="collapse" id="@($"collape-{detailViewRowId}")">
+                                <tr @key="new DetailTableRowKey(rowKey)" class="collapse" id="@($"collape-{detailViewRowId}")">
                                     <td></td>
                                     @if (AllowSelection)
                                     {

@@ -1060,4 +1060,5 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public Unit Unit { get; set; } = Unit.Px;
 
     #endregion
+    private sealed record DetailTableRowKey(object? RowKey) { }
 }
