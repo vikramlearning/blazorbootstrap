@@ -41,7 +41,7 @@ public partial class DocsMainLayout : MainLayoutBase
             new (){ Id = "505", Text = "Callout", Href = DemoRouteConstants.Docs_URL_Callout, IconName = IconName.StickyFill, ParentId = "5" },
             new (){ Id = "506", Text = "Card", Href = DemoRouteConstants.Docs_URL_Card, IconName = IconName.CardHeading, ParentId = "5" },
             new (){ Id = "507", Text = "Carousel", Href = DemoRouteConstants.Docs_URL_Carousel, IconName = IconName.CollectionPlayFill, ParentId = "5" },
-            new (){ Id = "508", Text = "Charts", Href = DemoRouteConstants.Docs_URL_Charts, IconName = IconName.BarChartLineFill, ParentId = "5", Match = NavLinkMatch.All },
+            new (){ Id = "508", Text = "Charts", Href = DemoRouteConstants.Docs_URL_BarChart, IconName = IconName.BarChartLineFill, ParentId = "5", Match = NavLinkMatch.All },
             new (){ Id = "509", Text = "Collapse", Href = DemoRouteConstants.Docs_URL_Collapse, IconName = IconName.ArrowsCollapse, ParentId = "5" },
             new (){ Id = "510", Text = "Confirm Dialog", Href = DemoRouteConstants.Docs_URL_ConfirmDialog, IconName = IconName.QuestionDiamondFill, ParentId = "5" },
             new (){ Id = "511", Text = "Dropdown", Href = DemoRouteConstants.Docs_URL_Dropdown, IconName = IconName.MenuButtonWideFill, ParentId = "5" },
