@@ -1,16 +1,14 @@
 ﻿@attribute [Route(pageUrl)]
 @layout DemosMainLayout
 
-<PageMetaTags PageUrl="@pageUrl"
-              Title="@metaTitle"
-              Description="@metaDescription"
-              ImageUrl="@imageUrl" />
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
 
-<PageHero Heading="@pageTitle">
-    <LeadSection>@pageDescription</LeadSection>
-</PageHero>
-
-<CarbonAds />
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
 
 <Section Size="HeadingSize.H2" Name="Client side paging" PageUrl="@pageUrl" Link="client-side-paging">
     <div>For paging, <code>AllowPaging</code> and <code>PageSize</code> parameters are required.</div>

@@ -3,16 +3,14 @@
 @attribute [Route(pageUrl)]
 @layout DemosMainLayout
 
-<PageMetaTags PageUrl="@pageUrl"
-              Title="@metaTitle"
-              Description="@metaDescription"
-              ImageUrl="@imageUrl" />
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
 
-<PageHero Heading="@pageTitle">
-    <LeadSection>@pageDescription</LeadSection>
-</PageHero>
-
-<CarbonAds />
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
 
 <Section Size="HeadingSize.H2" Name="Client side filtering, paging, and sorting" PageUrl="@pageUrl" Link="client-side-filtering-paging-sorting">
     <Demo Type="typeof(Grid_Demo_01_Client_Side_Filtering_Paging_And_Sorting)" Tabs="true" />

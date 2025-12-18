@@ -3,16 +3,14 @@
 @attribute [Route(pageUrl)]
 @layout DemosMainLayout
 
-<PageMetaTags PageUrl="@pageUrl"
-              Title="@metaTitle"
-              Description="@metaDescription"
-              ImageUrl="@imageUrl" />
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
 
-<PageHero Heading="@pageTitle">
-    <LeadSection>@pageDescription</LeadSection>
-</PageHero>
-
-<CarbonAds />
+<DocsLink Href="@DemoRouteConstants.Docs_URL_AutoComplete" />
 
 <Section Size="HeadingSize.H2" Name="Client side data" PageUrl="@pageUrl" Link="client-side-data">
     <Demo Type="typeof(AutoComplete_Demo_01_A_Client_Side_Filtering)" Tabs="true" />

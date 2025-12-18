@@ -3,16 +3,14 @@
 @attribute [Route(pageUrl)]
 @layout DemosMainLayout
 
-<PageMetaTags PageUrl="@pageUrl"
-              Title="@metaTitle"
-              Description="@metaDescription"
-              ImageUrl="@imageUrl" />
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
 
-<PageHero Heading="@pageTitle">
-    <LeadSection>@pageDescription</LeadSection>
-</PageHero>
-
-<CarbonAds />
+<DocsLink Href="@DemoRouteConstants.Docs_URL_EnumInput" />
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
     <div class="mb-3">

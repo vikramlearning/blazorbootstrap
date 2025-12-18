@@ -2,19 +2,12 @@
 @page "/getting-started/blazor-server"
 @page "/getting-started/maui-blazor"
 
-@attribute [Route(pageUrl)]
-@layout DemosMainLayout
-
-<PageMetaTags PageUrl="@pageUrl"
-              Title="@metaTitle"
-              Description="@metaDescription"
-              ImageUrl="@imageUrl" />
-
-<PageHero Heading="@pageTitle">
-    <LeadSection>@pageDescription</LeadSection>
-</PageHero>
-
-<CarbonAds />
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
 
 <Section Size="HeadingSize.H2" Name="Documentation" PageUrl="@pageUrl" Link="documentation">
     <div class="mb-3">

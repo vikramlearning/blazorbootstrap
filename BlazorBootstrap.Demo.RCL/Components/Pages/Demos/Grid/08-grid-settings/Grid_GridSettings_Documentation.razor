@@ -1,16 +1,14 @@
 ﻿@attribute [Route(pageUrl)]
 @layout DemosMainLayout
 
-<PageMetaTags PageUrl="@pageUrl"
-              Title="@metaTitle"
-              Description="@metaDescription"
-              ImageUrl="@imageUrl" />
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
 
-<PageHero Heading="@pageTitle">
-    <LeadSection>@pageDescription</LeadSection>
-</PageHero>
-
-<CarbonAds />
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
 
 <Section Size="HeadingSize.H2" Name="Save and Load Grid Settings" PageUrl="@pageUrl" Link="save-and-load-grid-settings">
     <div class="mb-3">This example shows how to save/load the Grid state. The state includes the <b>page number</b>, <b>page size</b>, and <b>filters</b>.</div>
