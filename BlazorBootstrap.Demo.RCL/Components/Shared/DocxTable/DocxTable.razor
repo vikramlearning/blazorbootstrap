@@ -1,0 +1,94 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+
+<CascadingValue Name="DocType" Value="DocType" IsFixed>
+    @if (DocType is DocType.Parameters)
+    {
+        <div class="table-container">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Default</th>
+                        <th class="has-text-centered">Required</th>
+                        <th>Description</th>
+                        <th class="text-nowrap">Added Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var propertyInfo in typeof(TItem).GetComponentParametersOnly())
+                    {
+                        <DocxPropertyRow TItem="TItem" PropertyInfo="@propertyInfo" />
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (DocType is DocType.Properties)
+    {
+        <div class="table-container">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Default</th>
+                        <th class="has-text-centered">Required</th>
+                        <th>Description</th>
+                        <th class="text-nowrap">Added Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var propertyInfo in typeof(TItem).GetModelProperties())
+                    {
+                        <DocxPropertyRow TItem="TItem" PropertyInfo="@propertyInfo" />
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (DocType == DocType.Methods)
+    {
+        <div class="table-container">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Return type</th>
+                        <th>Description</th>
+                        <th class="text-nowrap">Added Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var methodInfo in typeof(TItem).GetComponentMethods())
+                    {
+                        <DocxMethodRow TItem="TItem" MethodInfo="@methodInfo" />
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if (DocType == DocType.Events)
+    {
+        <div class="table-container">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Return Type</th>
+                        <th>Description</th>
+                        <th class="text-nowrap">Added Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var propertyInfo in typeof(TItem).GetComponentEventCallbacks())
+                    {
+                        <DocxEventCallbackRow TItem="TItem" PropertyInfo="@propertyInfo" />
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</CascadingValue>

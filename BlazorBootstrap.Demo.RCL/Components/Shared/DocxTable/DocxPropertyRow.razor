@@ -1,0 +1,17 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+
+<tr>
+    <td>@PropertyInfo.Name</td>
+    <td class="text-danger">@PropertyTypeShortName</td>
+    <td>@DefaultValue</td>
+    <td class="text-center">
+        @if (IsRequired)
+        {
+            <i class="bi bi-check-circle-fill text-success"></i>
+        }
+    </td>
+    <td>@((MarkupString)Description)</td>
+    <td>@AddedVersion</td>
+</tr>

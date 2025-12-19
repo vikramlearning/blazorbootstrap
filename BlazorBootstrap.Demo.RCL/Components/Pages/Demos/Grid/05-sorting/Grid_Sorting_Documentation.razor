@@ -1,0 +1,39 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
+
+<Section Size="HeadingSize.H2" Name="Client side sorting" PageUrl="@pageUrl" Link="client-side-sorting">
+    <div>For sorting, <code>AllowSorting</code> and <code>SortKeySelector</code> parameters are required.</div>
+    <div class="mb-3">Add <code>AllowSorting="true"</code> parameter to Grid and <code>SortKeySelector</code> to all the GridColumns.</div>
+    <Demo Type="typeof(Grid_Demo_03_Client_Side_Sorting)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Set default sorting" PageUrl="@pageUrl" Link="set-default-sorting">
+    <div><code>IsDefaultSortColumn</code> parameter is required to set the default sorting. Add <code>IsDefaultSortColumn="true"</code> parameter to the GridColumn.</div>
+    <div class="mb-2">The default sort direction will be ascending. To change the default sorting of a column, add <code>SortDirection="SortDirection.Descending"</code> to the GridColumn.</div>
+    <Callout Color="CalloutColor.Info">If more than one GridColumn has the <strong>IsDefaultSortColumn</strong> paramter, it will pick the first column as the default sorting column.</Callout>
+    <div class="mb-3">The default sorting is enabled on the <b>Employee Name</b> column in the below example, and the sort direction is <b>descending</b>.</div>
+    <Demo Type="typeof(Grid_Demo_08_Default_Sorting)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disable specific column sorting" PageUrl="@pageUrl" Link="disable-specific-column-sorting">
+    <div>Add <code>Sortable="false"</code>parameter the GridColumn to disable the sorting. If sorting is disabled, then the <code>SortKeySelector</code> parameter is not required. The sorting is disabled on the <b>Designation</b> column in the below example.</div>
+    <Demo Type="typeof(Grid_Demo_09_Disable_Specific_Column_Sorting)" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_Sorting;
+    private const string pageTitle = "Blazor Grid - Sorting";
+    private const string pageDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string metaTitle = "Blazor Grid Component - Sorting";
+    private const string metaDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}

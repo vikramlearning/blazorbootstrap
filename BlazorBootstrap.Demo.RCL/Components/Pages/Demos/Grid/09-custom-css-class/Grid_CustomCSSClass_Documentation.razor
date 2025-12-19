@@ -1,0 +1,45 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
+
+<Section Size="HeadingSize.H2" Name="Conditional css class for grid row" PageUrl="@pageUrl" Link="conditional-css-class-for-grid-row">
+    <div class="mb-3">In the below example, we applied <code>table-danger</code> CSS class to the row where the employee is inactive and the <code>table-success</code> CSS class to the row where the employee designation is Architect.</div>
+    <Demo Type="typeof(Grid_Demo_18_Specify_Custom_Row_Class)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Conditional css class for grid column" PageUrl="@pageUrl" Link="conditional-css-class-for-grid-column">
+    <div class="mb-3">In the below example, we applied <code>table-danger</code> CSS class to the Active column where the employee is inactive and the <code>table-success</code> CSS class to the Active column where the employee is active.</div>
+    <Demo Type="typeof(Grid_Demo_19_Specify_Custom_Column_Class)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Column Class" PageUrl="@pageUrl" Link="colum-class">
+    <div class="mb-3">In the following example, the <code>Class</code> parameter is used to apply the CSS class to an entire grid column, including the header.</div>
+    <Demo Type="typeof(Grid_Demo_20_Column_Css_Class)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Header row css class" PageUrl="@pageUrl" Link="header-row-css-class">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Grid_Demo_27_Header_Row_CSS_Class)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Filters row css class" PageUrl="@pageUrl" Link="filters-row-css-class">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Grid_Demo_28_Filters_Row_CSS_Class)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_CustomCSSClass;
+    private const string pageTitle = "Blazor Grid - Custom CSS Class";
+    private const string pageDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string metaTitle = "Blazor Grid Component - Custom CSS Class";
+    private const string metaDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}

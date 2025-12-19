@@ -1,0 +1,51 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Layout" />
+
+<Section Size="HeadingSize.H2" Name="Prerequisites" PageUrl="@pageUrl" Link="prerequisites">
+    <div class="mb-3">
+        Assuming you followed the getting started docs for the initial setup.
+        <ol class="mt-2">
+            <li><b>Blazor WebAssembly Project:</b> Follow the <a href="/getting-started/blazor-webassembly">getting started</a> steps for the initial setup.</li>
+            <li><b>Blazor Server Project:</b> Follow the <a href="/getting-started/blazor-server">getting started</a> steps for the initial setup.</li>
+        </ol>
+    </div>
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Steps" PageUrl="@pageUrl" Link="steps">
+    <div class="mb-3">
+        1. Replace <b>MainLayout.razor</b> page code with the below code.
+    </div>
+    <Callout Color="CalloutColor.Danger" Heading="NOTE">
+        Remove all the CSS content from the <b>Shared/MainLayout.razor.css</b> file.
+    </Callout>
+
+    <Snippet FilePath="~\Components\Pages\Layout\server\Layout_Server_Demo_01.razor" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Layout_Blazor_Server;
+    private const string pageTitle = "Blazor Bootstrap Layout Setup - Blazor Server";
+    private const string pageDescription = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
+    private const string metaTitle = "Blazor Bootstrap Layout Setup - Blazor Server";
+    private const string metaDescription = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
+    private const string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
+
+    private string version = default!;
+
+    [Inject] public IConfiguration Configuration { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        version = $"{Configuration["version"]}"; // example: v0.6.1
+        base.OnInitialized();
+    }
+}

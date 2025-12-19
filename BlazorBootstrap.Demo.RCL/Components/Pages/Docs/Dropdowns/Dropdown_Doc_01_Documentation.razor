@@ -1,0 +1,57 @@
+﻿@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Dropdown" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Dropdown Parameters" PageUrl="@pageUrl" Link="dropdown-parameters">
+    <DocxTable TItem="Dropdown" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Dropdown Methods" PageUrl="@pageUrl" Link="dropdown-methods">
+    <DocxTable TItem="Dropdown" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Dropdown Events" PageUrl="@pageUrl" Link="dropdown-events">
+    <DocxTable TItem="Dropdown" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="DropdownToggleButton Parameters" PageUrl="@pageUrl" Link="dropdown-toggle-button-parameters">
+    <DocxTable TItem="DropdownToggleButton" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="DropdownActionButton Parameters" PageUrl="@pageUrl" Link="dropdown-action-button-parameters">
+    <DocxTable TItem="DropdownActionButton" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="DropdownMenu Parameters" PageUrl="@pageUrl" Link="dropdown-menu-parameters">
+    <DocxTable TItem="DropdownMenu" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="DropdownHeader Parameters" PageUrl="@pageUrl" Link="dropdown-header-parameters">
+    <DocxTable TItem="DropdownHeader" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Dropdown Parameters" PageUrl="@pageUrl" Link="dropdown-item-parameters">
+    <DocxTable TItem="DropdownItem" DocType="DocType.Parameters" />
+</Section>
+
+@code {
+    private const string componentName = nameof(Dropdown);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Dropdown;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Dropdown;
+}

@@ -1,0 +1,97 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inherits MainLayoutBase
+
+<BlazorBootstrapLayout StickyHeader="true">
+    <HeaderSection>
+        <WebsiteNavbar />
+    </HeaderSection>
+    <SidebarSection>
+        <Sidebar2 Href="/"
+                  ImageSrc="https://demos.blazorbootstrap.com/images/logo/logo-white.svg"
+                  Title="Blazor Bootstrap"
+                  BadgeText="@Version"
+                  DataProvider="Sidebar2DataProvider"
+                  WidthUnit="Unit.Px" />
+    </SidebarSection>
+
+    <ContentSection>
+        @Body
+
+        <Callout Class="text-center text-bold skippy border-0" HideHeading="true">
+            <a href="@GithubUrl" class="text-decoration-none" b-09pcjsuuk4="">
+                <i class="bi bi-star-fill" b-09pcjsuuk4=""></i>
+                <span b-09pcjsuuk4="">If you like Blazor Bootstrap, give it a star on GitHub!</span>
+                <i class="bi bi-star-fill" b-09pcjsuuk4=""></i>
+            </a>
+        </Callout>
+    </ContentSection>
+
+    <FooterSection>
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                <a class="d-inline-flex align-items-center mb-2 text-body-emphasis text-decoration-none" href="/" aria-label="Bootstrap">
+                    <img src="/images/logo/logo-color.svg" width="40" height="32" class="d-block me-2" alt="Blazor Bootstrap">
+                    <span class="fs-5">Blazor Bootstrap</span>
+                </a>
+                <ul class="list-unstyled small text-muted">
+                    <li class="mb-2">Designed and built with all the love in the world by the <strong><a href="https://www.nuget.org/packages/Blazor.Bootstrap">Blazor Bootstrap</a></strong> team with the help of our contributors.</li>
+                    <li class="mb-2">Code licensed <a href="https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt" target="_blank" rel="license noopener">Apache License 2.0</a>.</li>
+                    <li class="mb-2">Currently @Version.</li>
+                    @if (!string.IsNullOrWhiteSpace(DotNetVersion))
+                    {
+                        <li class="mb-2">Powered by @DotNetVersion</li>
+                    }
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2 mb-3">
+                <h5>Links</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/">Home</a></li>
+                    <li class="mb-2"><a href="@DemosUrl" rel="noopener">Demos</a></li>
+                    <li class="mb-2"><a href="@DocsUrl" rel="noopener">Docs</a></li>
+                    <li class="mb-2"><a href="@BlogUrl" target="_blank" rel="noopener">Blog</a></li>
+                    <li class="mb-2"><a href="@GithubUrl" target="_blank" rel="noopener">GitHub</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2 mb-3">
+                <h5>Guides</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/getting-started/blazor-webassembly">Getting started</a></li>
+                    <li class="mb-2"><a href="/getting-started#install-nuget-package">Install Nuget</a></li>
+                    <li class="mb-2"><a href="https://github.com/vikramlearning/blazorbootstrap-starter-templates" target="_blank">Starter templates</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2 mb-3">
+                <h5>Community</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="@GithubIssuesUrl" target="_blank" rel="noopener">Issues</a></li>
+                    <li class="mb-2"><a href="@GithubDiscussionsUrl" target="_blank" rel="noopener">Discussions</a></li>
+                    <li class="mb-2"><a href="@OpenCollectiveUrl" target="_blank" rel="noopener">Open Collective</a></li>
+                    <li class="mb-2"><a href="@StackoverflowUrl" target="_blank" rel="noopener">Stack Overflow</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2 mb-3">
+                <h5>Other Libraries</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <a href="https://bulma.blazorexpress.com/" target="_blank" rel="noopener">
+                            BlazorExpress.Bulma <Icon Name="IconName.Stars" Color="IconColor.Danger" />
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://chartjs.blazorexpress.com/" target="_blank" rel="noopener">
+                            BlazorExpress.ChartJS <Icon Name="IconName.Stars" Color="IconColor.Danger" />
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://github.com/unlimited-pdf/UnlimitedPDF/" target="_blank" rel="noopener">
+                            UnlimitedPDF <Icon Name="IconName.Stars" Color="IconColor.Danger" />
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </FooterSection>
+</BlazorBootstrapLayout>
+
+<MainLayoutBaseServices />

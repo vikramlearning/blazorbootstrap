@@ -1,0 +1,30 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
+
+<Section Size="HeadingSize.H2" Name="Header text alignment" PageUrl="@pageUrl" Link="header-text-alignment">
+    <div class="mb-3">Use the <code>HeaderTextAlignment</code> parameter to change the header column alignment. By default, <code>HeaderTextAlignment</code> is set to <code>Alignment.Start</code>. Other options you can use are <code>Alignment.Center</code> and <code>Alignment.End</code>.</div>
+    <Demo Type="typeof(Grid_Demo_10_Header_Text_Alignment)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Cell alignment" PageUrl="@pageUrl" Link="cell-alignment">
+    <div class="mb-3">Use the <code>TextAlignment</code> parameter to change the cell data alignment. By default, <code>TextAlignment</code> is set to <code>Alignment.Start</code>. Other options you can use are <code>Alignment.Center</code> and <code>Alignment.End</code>.</div>
+    <Demo Type="typeof(Grid_Demo_11_Grid_Cell_Alignment)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_Alignment;
+    private const string pageTitle = "Blazor Grid - Alignment";
+    private const string pageDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string metaTitle = "Blazor Grid Component - Alignment";
+    private const string metaDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}

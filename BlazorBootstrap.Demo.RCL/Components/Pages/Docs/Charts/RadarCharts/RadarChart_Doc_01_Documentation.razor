@@ -1,0 +1,49 @@
+﻿@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_RadarChart" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RadarChart Parameters" PageUrl="@pageUrl" Link="radar-chart-parameters">
+    <DocxTable TItem="RadarChart" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RadarChart Methods" PageUrl="@pageUrl" Link="radar-chart-methods">
+    <DocxTable TItem="RadarChart" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ChartData Properties" PageUrl="@pageUrl" Link="chart-data-properties">
+    <DocxTable TItem="ChartData" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RadarChartDataset Properties" PageUrl="@pageUrl" Link="radar-chart-dataset-properties">
+    <DocxTable TItem="RadarChartDataset" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RadarChartDatasetDataLabels Properties" PageUrl="@pageUrl" Link="radar-chart-dataset-datalabels-properties">
+    <DocxTable TItem="RadarChartDatasetDataLabels" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RadarChartOptions Properties" PageUrl="@pageUrl" Link="radar-chart-options-properties">
+    <DocxTable TItem="RadarChartOptions" DocType="DocType.Properties" />
+</Section>
+
+@code {
+    private const string componentName = nameof(RadarChart);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_RadarChart;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_RadarChart;
+}

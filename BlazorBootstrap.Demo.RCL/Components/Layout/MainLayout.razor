@@ -3,34 +3,7 @@
 
 <BlazorBootstrapLayout StickyHeader="true">
     <HeaderSection>
-        <div>
-            <a class="nav-link py-2 px-2" href="@githubUrl" target="_blank" rel="noopener">
-                <i class="bi bi-github"></i>
-            </a>
-        </div>
-        <div>
-            <a class="nav-link py-2 px-2" href="@twitterUrl" target="_blank" rel="noopener">
-                <i class="bi bi-twitter-x"></i>
-            </a>
-        </div>
-        <div>
-            <a class="nav-link py-2 px-2" href="@linkedInUrl" target="_blank" rel="noopener">
-                <i class="bi bi-linkedin"></i>
-            </a>
-        </div>
-        <div>
-            <a class="nav-link py-2 px-2 pe-3" href="@openCollectiveUrl" target="_blank" rel="noopener">
-                <i class="bi bi-opencollective"></i>
-            </a>
-        </div>
-        <div>
-            <div class="vr mt-2"></div>
-        </div>
-        
-        <ThemeSwitcher Class="ps-3 ps-lg-2"
-                       Position="DropdownMenuPosition.End"
-                       OnThemeChanged="@(async(string themeName) => await OnThemeChanged(themeName))" />
-
+        <WebsiteNavbar />
     </HeaderSection>
     <SidebarSection>
         <Sidebar2 Href="/"
@@ -74,7 +47,7 @@
                 <h5>Links</h5>
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="/">Home</a></li>
-                    <li class="mb-2"><a href="@DocsUrl" target="_blank" rel="noopener">Docs</a></li><!--!-->
+                    <li class="mb-2"><a href="@DocsUrl" rel="noopener">Docs</a></li>
                     <li class="mb-2"><a href="@BlogUrl" target="_blank" rel="noopener">Blog</a></li>
                     <li class="mb-2"><a href="@GithubUrl" target="_blank" rel="noopener">GitHub</a></li>
                 </ul>
@@ -97,10 +70,23 @@
                 </ul>
             </div>
             <div class="col-6 col-lg-2 mb-3">
-                <h5>Blazor Express</h5>
+                <h5>Other Libraries</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a href="https://bulma.blazorexpress.com/" target="_blank" rel="noopener">BlazorExpress.Bulma</a></li>
-                    <li class="mb-2"><a href="https://chartjs.blazorexpress.com/" target="_blank" rel="noopener">BlazorExpress.ChartJS</a></li>
+                    <li class="mb-2">
+                        <a href="https://bulma.blazorexpress.com/" target="_blank" rel="noopener">
+                            BlazorExpress.Bulma <Icon Name="IconName.Stars" Color="IconColor.Danger" />
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://chartjs.blazorexpress.com/" target="_blank" rel="noopener">
+                            BlazorExpress.ChartJS <Icon Name="IconName.Stars" Color="IconColor.Danger" />
+                        </a>
+                    </li>
+                    <li class="mb-2">
+                        <a href="https://github.com/unlimited-pdf/UnlimitedPDF/" target="_blank" rel="noopener">
+                            UnlimitedPDF <Icon Name="IconName.Stars" Color="IconColor.Danger" />
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

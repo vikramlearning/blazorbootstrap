@@ -1,0 +1,32 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Breadcrumb" />
+
+<Section Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" Link="examples">
+    <Demo Type="typeof(Breadcrumb_Demo_01_Examples)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Dividers" PageUrl="@pageUrl" Link="dividers">
+    <Demo Type="typeof(Breadcrumb_Demo_02_Dividers)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Embedded SVG icon" PageUrl="@pageUrl" Link="embedded-svg-icon">
+    <Demo Type="typeof(Breadcrumb_Demo_03_Embedded_SVG)" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Breadcrumb;
+    private const string pageTitle = "Blazor Breadcrumb";
+    private const string pageDescription = "Indicate the current page's location within a navigational hierarchy that automatically adds separators.";
+    private const string metaTitle = "Blazor Breadcrumb Component";
+    private const string metaDescription = "Indicate the current page's location within a navigational hierarchy that automatically adds separators.";
+    private const string imageUrl = "https://i.imgur.com/hO90HoC.jpg";
+}

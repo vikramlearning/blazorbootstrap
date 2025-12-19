@@ -1,0 +1,61 @@
+﻿@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Card" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Card Parameters" PageUrl="@pageUrl" Link="card-parameters">
+    <DocxTable TItem="Card" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="CardBody Parameters" PageUrl="@pageUrl" Link="card-body-parameters">
+    <DocxTable TItem="CardBody" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="CardFooter Parameters" PageUrl="@pageUrl" Link="card-footer-parameters">
+    <DocxTable TItem="CardFooter" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="CardGroup Parameters" PageUrl="@pageUrl" Link="card-group-parameters">
+    <DocxTable TItem="CardGroup" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="CardHeader Parameters" PageUrl="@pageUrl" Link="card-header-parameters">
+    <DocxTable TItem="CardHeader" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="CardLink Parameters" PageUrl="@pageUrl" Link="card-link-parameters">
+    <DocxTable TItem="CardLink" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="CardSubTitle Parameters" PageUrl="@pageUrl" Link="card-subtitle-parameters">
+    <DocxTable TItem="CardSubTitle" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="CardText Parameters" PageUrl="@pageUrl" Link="card-text-parameters">
+    <DocxTable TItem="CardText" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="CardTitle Parameters" PageUrl="@pageUrl" Link="card-title-parameters">
+    <DocxTable TItem="CardTitle" DocType="DocType.Parameters" />
+</Section>
+
+@code {
+    private const string componentName = nameof(Card);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Card;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Card;
+}

@@ -1,0 +1,18 @@
+<EnumInput TEnum="Status" Class="mb-3" @bind-Value="@value1" />
+<EnumInput TEnum="Status" Size="EnumInputSize.Small" Class="mb-3" @bind-Value="@value2" />
+<EnumInput TEnum="Status" Size="EnumInputSize.Normal" Class="mb-3" @bind-Value="@value3" />
+<EnumInput TEnum="Status" Size="EnumInputSize.Large" @bind-Value="@value4" />
+
+@code {
+    private int value1 = (int)Status.Pending;
+    private int value2 = (int)Status.Pending;
+    private int value3 = (int)Status.Pending;
+    private int value4 = (int)Status.Pending;
+
+    public enum Status
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}

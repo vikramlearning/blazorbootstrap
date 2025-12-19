@@ -1,0 +1,57 @@
+﻿@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Ribbon" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Ribbon Parameters" PageUrl="@pageUrl" Link="ribbon-parameters">
+    <DocxTable TItem="Ribbon" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Ribbon Methods" PageUrl="@pageUrl" Link="ribbon-methods">
+    <DocxTable TItem="Ribbon" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Ribbon Events" PageUrl="@pageUrl" Link="ribbon-events">
+    <DocxTable TItem="Ribbon" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RibbonTab Parameters" PageUrl="@pageUrl" Link="ribbon-tab-parameters">
+    <DocxTable TItem="RibbonTab" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RibbonTab Events" PageUrl="@pageUrl" Link="ribbon-tab-events">
+    <DocxTable TItem="RibbonTab" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RibbonGroup Parameters" PageUrl="@pageUrl" Link="ribbon-group-parameters">
+    <DocxTable TItem="RibbonGroup" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RibbonItemGroup Parameters" PageUrl="@pageUrl" Link="ribbon-item-group-parameters">
+    <DocxTable TItem="RibbonItemGroup" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RibbonItem Parameters" PageUrl="@pageUrl" Link="ribbon-item-parameters">
+    <DocxTable TItem="RibbonItem" DocType="DocType.Parameters" />
+</Section>
+
+@code {
+    private const string componentName = nameof(Ribbon);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Ribbon;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Ribbon;
+}
