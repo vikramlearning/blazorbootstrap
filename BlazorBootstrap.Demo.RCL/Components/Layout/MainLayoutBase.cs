@@ -4,6 +4,7 @@ public class MainLayoutBase : LayoutComponentBase
 {
     internal string version = default!;
     internal string dotNetVersion = default!;
+    internal string demosUrl = default!;
     internal string docsUrl = default!;
     internal string blogUrl = default!;
     internal string githubUrl = default!;
@@ -25,6 +26,7 @@ public class MainLayoutBase : LayoutComponentBase
     {
         version = $"v{Configuration["version"]}"; // example: v0.6.1
         dotNetVersion = $".NET {Configuration["dotNetVersion"]}"; // example: 9.0.0
+        demosUrl = $"{Configuration["urls:demos"]}";
         docsUrl = $"{Configuration["urls:docs"]}";
         blogUrl = $"{Configuration["urls:blog"]}";
         githubUrl = $"{Configuration["urls:github"]}";
@@ -49,6 +51,7 @@ public class MainLayoutBase : LayoutComponentBase
 
     public string Version => version;
     public string DotNetVersion => dotNetVersion;
+    public string DemosUrl => demosUrl;
     public string DocsUrl => docsUrl;
     public string BlogUrl => blogUrl;
     public string GithubUrl => githubUrl;

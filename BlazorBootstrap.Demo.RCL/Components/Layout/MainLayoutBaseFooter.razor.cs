@@ -4,6 +4,7 @@ public partial class MainLayoutBaseFooter : ComponentBase
 {
     [Parameter] public string? Version { get; set; }
     [Parameter] public string? DotNetVersion { get; set; }
+    [Parameter] public string? DemosUrl { get; set; }
     [Parameter] public string? DocsUrl { get; set; }
     [Parameter] public string? BlogUrl { get; set; }
     [Parameter] public string? GithubUrl { get; set; }

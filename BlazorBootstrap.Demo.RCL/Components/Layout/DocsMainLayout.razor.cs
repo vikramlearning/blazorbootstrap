@@ -77,8 +77,8 @@ public partial class DocsMainLayout : MainLayoutBase
             new(){ Id = "7", Text = "Services", IconName = IconName.WrenchAdjustableCircleFill, IconColor = IconColor.Success },
             new (){ Id = "700", Text = "Modal Service", Href = DemoRouteConstants.Docs_URL_ModalService, IconName = IconName.WindowStack, ParentId = "7" },
 
-            new(){ Id = "19", Text = "Utilities", IconName = IconName.GearWideConnected, IconColor = IconColor.Info },
-            new (){ Id = "1900", Text = "Color Utility", Href = DemoRouteConstants.Docs_URL_ColorUtils, IconName = IconName.Palette2, ParentId = "19" },
+            //new(){ Id = "19", Text = "Utilities", IconName = IconName.GearWideConnected, IconColor = IconColor.Info },
+            //new (){ Id = "1900", Text = "Color Utility", Href = DemoRouteConstants.Docs_URL_ColorUtils, IconName = IconName.Palette2, ParentId = "19" },
         };
 
         return navItems;
