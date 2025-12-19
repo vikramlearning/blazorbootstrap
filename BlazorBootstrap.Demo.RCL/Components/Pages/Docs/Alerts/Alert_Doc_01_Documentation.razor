@@ -14,16 +14,20 @@
     <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Parameters" PageUrl="@pageUrl" Link="parameters">
+<Section Class="p-0" Size="HeadingSize.H3" Name="Alert Parameters" PageUrl="@pageUrl" Link="alert-parameters">
     <DocxTable TItem="Alert" DocType="DocType.Parameters" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Methods" PageUrl="@pageUrl" Link="methods">
+<Section Class="p-0" Size="HeadingSize.H3" Name="Alert Methods" PageUrl="@pageUrl" Link="alert-methods">
     <DocxTable TItem="Alert" DocType="DocType.Methods" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
+<Section Class="p-0" Size="HeadingSize.H3" Name="Alert Events" PageUrl="@pageUrl" Link="alert-events">
     <DocxTable TItem="Alert" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="AlertColor Enum" PageUrl="@pageUrl" Link="alert-color-enum">
+    <DocxTable TItem="AlertColor" DocType="DocType.Enum" />
 </Section>
 
 @code {
