@@ -10,12 +10,10 @@ public class DemoScreenshotSrcConstants
     public const string Home = DemoScreenshotSrcPrefix + "home.png";
 
     // Layout
-    public const string Demos_URL_Layout_Prefix = DemoScreenshotSrcPrefix + "home.png";
-    public const string Demos_URL_Layout_BlazorWebAssembly = DemoScreenshotSrcPrefix + "home.png";
-    public const string Demos_URL_Layout_Blazor_Server = DemoScreenshotSrcPrefix + "home.png";
+    public const string Demos_URL_Layout = DemoScreenshotSrcPrefix + "home.png";
 
     // Content
-    public const string Demos_URL_Icons = DemoScreenshotSrcPrefix + "home.png";
+    public const string Demos_URL_Icons = DemoScreenshotSrcPrefix + "icons.png";
     public const string Demos_URL_Images = DemoScreenshotSrcPrefix + "images.png";
 
     // Forms
@@ -101,8 +99,8 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_ScatterChart = DemoScreenshotSrcPrefix + "scatter-chart.png";
 
     // Services
-    public const string Demos_URL_Services_Prefix = DemoScreenshotSrcPrefix + "home.png";
-    public const string Demos_URL_ModalService = DemoScreenshotSrcPrefix + "home.png";
+    public const string Demos_URL_Services_Prefix = DemoScreenshotSrcPrefix + "home.png"; // TODO: update screenshot
+    public const string Demos_URL_ModalService = DemoScreenshotSrcPrefix + "modal.png";
 
     // Utilities
     public const string Demos_URL_Utils_Prefix = DemoScreenshotSrcPrefix + "home.png";

@@ -122,9 +122,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_GettingStarted = Docs_URL_Prefix + "/getting-started";
 
     // Layout
-    public const string Docs_URL_Layout_Prefix = Docs_URL_Prefix + "/layout-setup";
-    public const string Docs_URL_Layout_BlazorWebAssembly = Docs_URL_Layout_Prefix + "/blazor-webassembly";
-    public const string Docs_URL_Layout_Blazor_Server = Docs_URL_Layout_Prefix + "/blazor-server";
+    public const string Docs_URL_Layout = Docs_URL_Prefix + "/layout";
 
     // AI
     //public const string Docs_URL_AI_Prefix = Docs_URL_Prefix + "/ai";

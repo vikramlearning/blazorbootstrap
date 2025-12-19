@@ -9,8 +9,7 @@ public partial class DocsMainLayout : MainLayoutBase
             new (){ Id = "1", Text = "Getting Started", Href = DemoRouteConstants.Docs_URL_GettingStarted, IconName = IconName.HouseDoorFill },
 
             new (){ Id = "2", Text = "Layout", IconName = IconName.LayoutTextWindowReverse, IconColor = IconColor.Success },
-            new (){ Id = "200", Text = "Blazor WebAssembly", Href = DemoRouteConstants.Docs_URL_Layout_BlazorWebAssembly, IconName = IconName.BrowserEdge, ParentId = "2" },
-            new (){ Id = "201", Text = "Blazor Server", Href = DemoRouteConstants.Docs_URL_Layout_Blazor_Server, IconName = IconName.Server, ParentId = "2" },
+            new (){ Id = "200", Text = "Blazor Bootstrap Layout", Href = DemoRouteConstants.Docs_URL_Layout, IconName = IconName.BrowserEdge, ParentId = "2" },
 
             new (){ Id = "3", Text = "Content", IconName = IconName.BodyText, IconColor = IconColor.Primary },
             new (){ Id = "300", Text = "Icons", Href = DemoRouteConstants.Docs_URL_Icons, IconName = IconName.PersonSquare, ParentId = "3" },
