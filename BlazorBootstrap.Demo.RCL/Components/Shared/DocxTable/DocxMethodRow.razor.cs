@@ -11,7 +11,7 @@ public partial class DocxMethodRow<TItem> : BlazorBootstrapComponentBase
 
     public string ReturnType => MethodInfo.GetMethodReturnTypeName() ?? MethodInfo.GetMethodReturnType();
 
-    public string MethodNameWithParameters => $"{MethodInfo.Name}({MethodParameters})";
+    public string MethodNameWithParameters => MethodInfo.GetMethodName() ?? $"{MethodInfo.Name}({MethodParameters})";
 
     public string MethodParameters => MethodInfo.GetMethodParameters();
 

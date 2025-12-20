@@ -195,6 +195,7 @@ public static class DemoRouteConstants
 
     // Services
     public const string Docs_URL_Services_Prefix = Docs_URL_Prefix + "/services";
+    public const string Docs_URL_BreadcrumbService = Docs_URL_Services_Prefix + "/breadcrumb-service";
     public const string Docs_URL_ModalService = Docs_URL_Services_Prefix + "/modal-service";
 
     // Utilities

@@ -8,18 +8,10 @@
                      MetaDescription="@metaDescription"
                      ImageUrl="@imageUrl" />
 
-<DemoLink Href="@DemoRouteConstants.Demos_URL_Breadcrumb" />
+<DemoLink Href="@DemoRouteConstants.Demos_URL_ModalService" />
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
     <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
-</Section>
-
-<Section Class="p-0" Size="HeadingSize.H3" Name="Breadcrumb Parameters" PageUrl="@pageUrl" Link="breadcrumb-parameters">
-    <DocxTable TItem="Breadcrumb" DocType="DocType.Parameters" />
-</Section>
-
-<Section Class="p-0" Size="HeadingSize.H3" Name="BreadcrumbItem Properties" PageUrl="@pageUrl" Link="breadcrumb-item-properties">
-    <DocxTable TItem="BreadcrumbItem" DocType="DocType.Properties" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="BreadcrumbService Methods" PageUrl="@pageUrl" Link="breadcrumb-service-methods">
@@ -27,8 +19,8 @@
 </Section>
 
 @code {
-    private const string componentName = nameof(Breadcrumb);
-    private const string pageUrl = DemoRouteConstants.Docs_URL_Breadcrumb;
+    private const string componentName = nameof(BreadcrumbService);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_BreadcrumbService;
     private const string pageTitle = componentName;
     private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
     private const string metaTitle = $"Blazor {componentName} Component";
