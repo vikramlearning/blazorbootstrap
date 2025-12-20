@@ -143,6 +143,8 @@ public partial class Button : BlazorBootstrapComponentBase
     /// <summary>
     /// Hides the loading state and enables the button.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Hides the loading state and enables the button.")]
     public void HideLoading()
     {
         Loading = false;
@@ -154,6 +156,8 @@ public partial class Button : BlazorBootstrapComponentBase
     /// Shows the loading state and disables the button.
     /// </summary>
     /// <param name="text"></param>
+    [AddedVersion("1.0.0")]
+    [Description("Shows the loading state and disables the button.")]
     public void ShowLoading(string text = "")
     {
         LoadingText = text;
@@ -296,19 +300,25 @@ public partial class Button : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the button active state.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the button active state.")]
     [Parameter]
     public bool Active { get; set; }
 
     /// <summary>
     /// Gets or sets the block level button.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the block level button.")]
     [Parameter]
     public bool Block { get; set; }
 
@@ -316,147 +326,200 @@ public partial class Button : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the button color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="ButtonColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(ButtonColor.None)]
+    [Description("Gets or sets the button color.")]
     [Parameter]
     public ButtonColor Color { get; set; } = ButtonColor.None;
 
     /// <summary>
     /// Gets or sets the button disabled state.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the button disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, shows the loading spinner or a <see cref="LoadingTemplate" />.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("If <b>true</b>, shows the loading spinner or a <b>LoadingTemplate</b>.")]
     [Parameter]
     public bool Loading { get; set; }
 
     /// <summary>
     /// Gets or sets the button loading template.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the button loading template.")]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
-    public RenderFragment LoadingTemplate { get; set; } = default!;
+    public RenderFragment? LoadingTemplate { get; set; }
 
     /// <summary>
-    /// Gets or sets the loading text.
-    /// <see cref="LoadingTemplate" /> takes precedence.
-    /// </summary>
-    /// <remarks>
+    /// Gets or sets the loading text. <see cref="LoadingTemplate" /> takes precedence.
+    /// <para>
     /// Default value is 'Loading...'.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue("Loading...")]
+    [Description("Gets or sets the loading text. <b>LoadingTemplate</b> takes precedence.")]
+    [ParameterTypeName("")]
     [Parameter]
     public string LoadingText { get; set; } = "Loading...";
 
     /// <summary>
     /// Gets or sets the button outline.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the button outline.")]
     [Parameter]
     public bool Outline { get; set; }
 
     /// <summary>
     /// Gets or sets the position.
     /// Use <see cref="Position" /> to modify a <see cref="Badge" /> and position it in the corner of a link or button.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Position.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(Position.None)]
+    [Description("Gets or sets the position. Use <b>Position</b> to modify a <b>Badge</b> and position it in the corner of a link or button.")]
     [Parameter]
     public Position Position { get; set; } = Position.None;
 
     /// <summary>
     /// Gets or sets the button size.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="ButtonSize.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(ButtonSize.None)]
+    [Description("Gets or sets the button size.")]
     [Parameter]
     public ButtonSize Size { get; set; } = ButtonSize.None;
 
     /// <summary>
     /// Gets or sets the button tab index.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the button tab index.")]
+    [ParameterTypeName("int?")]
     [Parameter]
     public int? TabIndex { get; set; }
 
     /// <summary>
     /// Gets or sets the link button target.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Target.None" />
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(Target.None)]
+    [Description("Gets or sets the link button target.")]
     [Parameter]
     public Target Target { get; set; } = Target.None;
 
     /// <summary>
     /// Gets or sets the link button href attribute.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the link button href attribute.")]
+    [ParameterTypeName("string?")]
     [Parameter]
     public string? To { get; set; }
 
     /// <summary>
     /// Gets or sets the button tooltip color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="TooltipColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(TooltipColor.None)]
+    [Description("Gets or sets the button tooltip color.")]
     [Parameter]
     public TooltipColor TooltipColor { get; set; } = TooltipColor.None;
 
     /// <summary>
     /// Gets or sets the button tooltip placement.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="TooltipPlacement.Top" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(TooltipPlacement.Top)]
+    [Description("Gets or sets the button tooltip placement.")]
     [Parameter]
     public TooltipPlacement TooltipPlacement { get; set; } = TooltipPlacement.Top;
 
     /// <summary>
     /// Gets or sets the button tooltip title.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the button tooltip title.")]
+    [ParameterTypeName("string?")]
     [Parameter]
-    public string TooltipTitle { get; set; } = default!;
+    public string? TooltipTitle { get; set; }
 
     /// <summary>
     /// Gets or sets the button type.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="ButtonType.Button" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(ButtonType.Button)]
+    [Description("Gets or sets the button type.")]
     [Parameter]
     public ButtonType Type { get; set; } = ButtonType.Button;
 
