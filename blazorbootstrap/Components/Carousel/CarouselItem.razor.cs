@@ -24,34 +24,51 @@ public partial class CarouselItem : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the active state.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="false" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the active state.")]
     [Parameter]
     public bool Active { get; set; }
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="null" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// The amount of time to delay between automatically cycling an item.
+    /// <para>
+    /// Default value is 5000 milliseconds.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is 5000.
-    /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(5000)]
+    [Description("The amount of time to delay between automatically cycling an item.")]
     [Parameter]
-    public int? Interval { get; set; } = 5000;
+    public int Interval { get; set; } = 5000;
 
     /// <summary>
     /// Gets or sets the aria-label.
+    /// <para>
+    /// Default value is <see langword="null" />.
+    /// </para>
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the aria-label.")]
+    [ParameterTypeName("string?")]
     [Parameter]
     public string? Label { get; set; }
 
