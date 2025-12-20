@@ -11,16 +11,26 @@ public partial class CardHeader : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the card header color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="CardColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(CardColor.None)]
+    [Description("Gets or sets the card header color.")]
     [Parameter]
     public CardColor Color { get; set; } = CardColor.None;
 

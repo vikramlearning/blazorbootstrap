@@ -50,6 +50,22 @@
     <DocxTable TItem="CardTitle" DocType="DocType.Parameters" />
 </Section>
 
+<Section Class="p-0" Size="HeadingSize.H3" Name="CardColor Enum" PageUrl="@pageUrl" Link="card-color-enum">
+    <DocxTable TItem="CardColor" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Alignment Enum" PageUrl="@pageUrl" Link="alignment-enum">
+    <DocxTable TItem="Alignment" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Target Enum" PageUrl="@pageUrl" Link="target-enum">
+    <DocxTable TItem="Target" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="HeadingSize Enum" PageUrl="@pageUrl" Link="heading-size-enum">
+    <DocxTable TItem="HeadingSize" DocType="DocType.Enum" />
+</Section>
+
 @code {
     private const string componentName = nameof(Card);
     private const string pageUrl = DemoRouteConstants.Docs_URL_Card;
