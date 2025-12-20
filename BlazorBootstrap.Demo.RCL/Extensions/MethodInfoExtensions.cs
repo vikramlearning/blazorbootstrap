@@ -32,6 +32,17 @@ public static class MethodInfoExtensions
         return descriptionAttribute?.Description ?? string.Empty;
     }
 
+    /// <summary>
+    /// Get method name.
+    /// </summary>
+    /// <param name="methodInfo"></param>
+    /// <returns>string</returns>
+    public static string GetMethodName(this MethodInfo methodInfo)
+    {
+        var methodNameAttribute = methodInfo.GetCustomAttributes(typeof(MethodNameAttribute), false).FirstOrDefault() as MethodNameAttribute;
+        return methodNameAttribute?.MethodName ?? null!;
+    }
+
     public static string GetMethodParameters(this MethodInfo methodInfo)
     {
         var parameters = methodInfo.GetParameters();

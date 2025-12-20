@@ -12,28 +12,38 @@ public partial class Card : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the card color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="CardColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(CardColor.None)]
+    [Description("Gets or sets the card color.")]
     [Parameter]
     public CardColor Color { get; set; } = CardColor.None;
 
     /// <summary>
     /// Gets or sets the text alignment of the card.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Alignment.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(Alignment.None)]
+    [Description("Gets or sets the text alignment of the card.")]
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.None;
 

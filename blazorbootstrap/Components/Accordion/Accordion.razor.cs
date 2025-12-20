@@ -22,6 +22,8 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// Hides the <see cref="AccordionItem" /> by index.
     /// </summary>
     /// <param name="index">The index of the AccordionItem to hide.</param>
+    [AddedVersion("1.10.5")]
+    [Description("Hides the <b>AccordionItem</b> by index.")]
     public async Task HideAccordionItemByIndexAsync(int index)
     {
         if (!items?.Any() ?? false) return;
@@ -38,6 +40,8 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// Hides the <see cref="AccordionItem" /> by name.
     /// </summary>
     /// <param name="accordionItemName">The name of the AccordionItem to hide.</param>
+    [AddedVersion("1.10.5")]
+    [Description("Hides the <b>AccordionItem</b> by name.")]
     public async Task HideAccordionItemByNameAsync(string accordionItemName)
     {
         if (!items?.Any() ?? false) return;
@@ -51,6 +55,8 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// <summary>
     /// Hides all <see cref="AccordionItem" /> instances.
     /// </summary>
+    [AddedVersion("1.10.5")]
+    [Description("Hides all <b>AccordionItem</b> instances.")]
     public async Task HideAllAccordionItemsAsync()
     {
         if (!items?.Any() ?? false) return;
@@ -63,6 +69,8 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// <summary>
     /// Hides the first <see cref="AccordionItem" />.
     /// </summary>
+    [AddedVersion("1.10.5")]
+    [Description("Hides the first <b>AccordionItem</b>.")]
     public async Task HideFirstAccordionItemAsync()
     {
         if (!items?.Any() ?? false) return;
@@ -76,6 +84,8 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// <summary>
     /// Hides the last <see cref="AccordionItem" />.
     /// </summary>
+    [AddedVersion("1.10.5")]
+    [Description("Hides the last <b>AccordionItem</b>.")]
     public async Task HideLastAccordionItemAsync()
     {
         if (!items?.Any() ?? false) return;
@@ -90,6 +100,8 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// Shows the <see cref="AccordionItem" /> by index.
     /// </summary>
     /// <param name="index">The index of the AccordionItem to show.</param>
+    [AddedVersion("1.7.0")]
+    [Description("Shows the <b>AccordionItem</b> by index.")]
     public async Task ShowAccordionItemByIndexAsync(int index)
     {
         if (!items?.Any() ?? false) return;
@@ -106,6 +118,8 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// Shows the <see cref="AccordionItem" /> by name.
     /// </summary>
     /// <param name="accordionItemName">The name of the AccordionItem to show.</param>
+    [AddedVersion("1.7.0")]
+    [Description("Shows the <b>AccordionItem</b> by name.")]
     public async Task ShowAccordionItemByNameAsync(string accordionItemName)
     {
         if (!items?.Any() ?? false) return;
@@ -117,8 +131,10 @@ public partial class Accordion : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Shows all <see cref="AccordionItem" /> instances if AlwaysOpen is true.
+    /// Shows all <see cref="AccordionItem" /> instances if <see cref="AlwaysOpen"/> is <see langword="true"/>.
     /// </summary>
+    [AddedVersion("1.10.5")]
+    [Description("Shows all <b>AccordionItem</b> instances if <b>AlwaysOpen</b> is <b>true</b>.")]
     public async Task ShowAllAccordionItemsAsync()
     {
         if (!items?.Any() ?? false) return;
@@ -132,6 +148,8 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// <summary>
     /// Shows the first <see cref="AccordionItem" />.
     /// </summary>
+    [AddedVersion("1.7.0")]
+    [Description("Shows the first <b>AccordionItem</b>.")]
     public async Task ShowFirstAccordionItemAsync()
     {
         if (!items?.Any() ?? false) return;
@@ -145,6 +163,8 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// <summary>
     /// Shows the last <see cref="AccordionItem" />.
     /// </summary>
+    [AddedVersion("1.7.0")]
+    [Description("Shows the last <b>AccordionItem</b>.")]
     public async Task ShowLastAccordionItemAsync()
     {
         if (!items?.Any() ?? false) return;
@@ -179,54 +199,79 @@ public partial class Accordion : BlazorBootstrapComponentBase
 
     /// <summary>
     /// If <see langword="true" />, accordion items stay open when another item is opened.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(false)]
+    [Description("If <b>true</b>, accordion items stay open when another item is opened.")]
     [Parameter]
     public bool AlwaysOpen { get; set; }
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
-    [Parameter]
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [EditorRequired]
-    public RenderFragment ChildContent { get; set; } = default!;
+    [ParameterTypeName("RenderFragment?")]
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, removes borders and rounded corners to render accordions edge-to-edge with their parent container.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(false)]
+    [Description("If <b>true</b>, removes borders and rounded corners to render accordions edge-to-edge with their parent container.")]
     [Parameter]
     public bool Flush { get; set; }
 
     /// <summary>
     /// This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete).
     /// </summary>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete).")]
+    [ParameterTypeName("EventCallback<AccordionEventArgs>")]
     [Parameter]
     public EventCallback<AccordionEventArgs> OnHidden { get; set; }
 
     /// <summary>
     /// This event is fired immediately when the hide method has been called.
     /// </summary>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("This event is fired immediately when the hide method has been called.")]
+    [ParameterTypeName("EventCallback<AccordionEventArgs>")]
     [Parameter]
     public EventCallback<AccordionEventArgs> OnHiding { get; set; }
 
     /// <summary>
     /// This event fires immediately when the show method is called.
     /// </summary>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("This event fires immediately when the show method is called.")]
+    [ParameterTypeName("EventCallback<AccordionEventArgs>")]
     [Parameter]
     public EventCallback<AccordionEventArgs> OnShowing { get; set; }
 
     /// <summary>
-    /// This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to
-    /// complete).
+    /// This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to complete).
     /// </summary>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to complete).")]
+    [ParameterTypeName("EventCallback<AccordionEventArgs>")]
     [Parameter]
     public EventCallback<AccordionEventArgs> OnShown { get; set; }
 

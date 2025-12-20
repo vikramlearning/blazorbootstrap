@@ -46,8 +46,12 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// Gets or sets the content to be rendered within the component.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null"/>.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -57,6 +61,9 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="CalloutColor.Default" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(CalloutColor.Default)]
+    [Description("Gets or sets the callout color.")]
     [Parameter]
     public CalloutColor Color { get; set; } = CalloutColor.Default;
 
@@ -66,8 +73,12 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// Gets or sets the callout heading.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null"/>.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the callout heading.")]
+    [ParameterTypeName("string?")]
     [Parameter]
     public string? Heading { get; set; }
 
@@ -75,8 +86,11 @@ public partial class Callout : BlazorBootstrapComponentBase
     /// Gets or sets a value indicating whether to hide the callout heading.
     /// </summary>
     /// <remarks>
-    /// Default value is false.
+    /// Default value is <see langword="false"/>.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets a value indicating whether to hide the callout heading.")]
     [Parameter]
     public bool HideHeading { get; set; }
 

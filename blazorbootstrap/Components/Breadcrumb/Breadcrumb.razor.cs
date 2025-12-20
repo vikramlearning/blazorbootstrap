@@ -37,16 +37,21 @@ public partial class Breadcrumb : BlazorBootstrapComponentBase
 
     #region Properties, Indexers
 
-    [Inject] private BreadcrumbService BreadcrumbService { get; set; } = default!;
+    [Inject] 
+    private BreadcrumbService BreadcrumbService { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the items.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null"/>.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the items.")]
+    [ParameterTypeName("List<BreadcrumbItem>?")]
     [Parameter]
-    public List<BreadcrumbItem> Items { get; set; } = default!;
+    public List<BreadcrumbItem>? Items { get; set; }
 
     #endregion
 }
