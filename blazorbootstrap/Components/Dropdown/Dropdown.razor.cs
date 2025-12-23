@@ -101,55 +101,74 @@ public partial class Dropdown : BlazorBootstrapComponentBase
 
     /// <summary>
     /// If <see langword="true" />, enables the auto close.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is true.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(true)]
+    [Description("If <b>true</b>, enables the auto close.")]
     [Parameter]
     public bool AutoClose { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the auto close behavior of the dropdown.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownAutoCloseBehavior.Both" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(DropdownAutoCloseBehavior.Both)]
+    [Description("Gets or sets the auto close behavior of the dropdown.")]
     [Parameter]
     public DropdownAutoCloseBehavior AutoCloseBehavior { get; set; } = DropdownAutoCloseBehavior.Both;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(DropdownColor.None)]
+    [Description("Gets or sets the dropdown color.")]
     [Parameter]
     public DropdownColor Color { get; set; } = DropdownColor.None;
 
     /// <summary>
     /// Gets or sets the direction of the dropdown menu.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownDirection.Dropdown" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(DropdownDirection.Dropdown)]
+    [Description("Gets or sets the direction of the dropdown menu.")]
     [Parameter]
     public DropdownDirection Direction { get; set; } = DropdownDirection.Dropdown;
 
     /// <summary>
     /// If <see langword="true" />, dropdown will be disabled.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(false)]
+    [Description("If <b>true</b>, dropdown will be disabled.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -188,19 +207,25 @@ public partial class Dropdown : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the dropdown size.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownSize.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(DropdownSize.None)]
+    [Description("Gets or sets the dropdown size.")]
     [Parameter]
     public DropdownSize Size { get; set; } = DropdownSize.None;
 
     /// <summary>
     /// Gets or sets the toggle button split behavior.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the toggle button split behavior.")]
     [Parameter]
     public bool Split { get; set; }
 
