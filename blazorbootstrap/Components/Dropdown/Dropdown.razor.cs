@@ -142,7 +142,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// Default value is <see cref="DropdownColor.None" />.
     /// </para>
     /// </summary>
-    [AddedVersion("1.10.0")]
+    [AddedVersion("3.0.0")]
     [DefaultValue(DropdownColor.None)]
     [Description("Gets or sets the dropdown color.")]
     [Parameter]
@@ -166,7 +166,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// Default value is <see langword="false"/>.
     /// </para>
     /// </summary>
-    [AddedVersion("1.10.0")]
+    [AddedVersion("1.10.3")]
     [DefaultValue(false)]
     [Description("If <b>true</b>, dropdown will be disabled.")]
     [Parameter]
@@ -211,7 +211,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// Default value is <see cref="DropdownSize.None" />.
     /// </para>
     /// </summary>
-    [AddedVersion("1.10.0")]
+    [AddedVersion("1.10.3")]
     [DefaultValue(DropdownSize.None)]
     [Description("Gets or sets the dropdown size.")]
     [Parameter]
