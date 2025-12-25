@@ -130,7 +130,6 @@ public partial class ProgressBar
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the progress bar label.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? Label { get; set; }
 

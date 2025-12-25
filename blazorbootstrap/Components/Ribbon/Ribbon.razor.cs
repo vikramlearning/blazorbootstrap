@@ -303,7 +303,6 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
     [EditorRequired]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -311,12 +310,11 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// Gets or sets the tabs fade effect.
     /// </summary>
     /// <para>
-    /// Default value is false.
+    /// Default value is <see langword="false"/>.
     /// </para>
     [AddedVersion("2.2.0")]
-    [DefaultValue(null)]
-    [Description("")]
-    [ParameterTypeName("")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the tabs fade effect.")]
     [Parameter]
     public bool EnableFadeEffect { get; set; }
 

@@ -37,7 +37,6 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     [AddedVersion("2.2.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -50,7 +49,6 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     [AddedVersion("2.2.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the custom icon name.")]
-    [ParameterTypeName("")]
     [Parameter]
     public string? CustomIconName { get; set; }
 
@@ -75,7 +73,6 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     [AddedVersion("2.2.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the icon CSS class.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? IconCssClass { get; set; }
 
@@ -124,7 +121,6 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     [AddedVersion("2.2.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the image source.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? ImgSrc { get; set; }
 
@@ -173,7 +169,6 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     [AddedVersion("2.2.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the <b>RibbonItem</b> name.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? Name { get; set; }
 
@@ -189,7 +184,6 @@ public partial class RibbonItem : BlazorBootstrapComponentBase
     [AddedVersion("2.2.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the text to be displayed inside the RibbonItem.")]
-    [ParameterTypeName("")]
     [Parameter]
     public string? Text { get; set; }
 

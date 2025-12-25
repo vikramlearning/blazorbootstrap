@@ -255,7 +255,6 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     [AddedVersion("3.5.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the password used for the PDF document if it is password-protected.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? Password { get; set; }
 
@@ -275,7 +274,6 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     [AddedVersion("1.11.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the URL of the PDF document to be displayed. PDF Viewer component supports <b>base64 string</b> as a URL.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? Url { get; set; }
 

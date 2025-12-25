@@ -120,7 +120,6 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the body CSS class.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? BodyCssClass { get; set; }
 
@@ -133,7 +132,6 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the body template.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? BodyTemplate { get; set; }
 
@@ -158,7 +156,6 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the footer CSS class.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? FooterCssClass { get; set; }
 
@@ -171,7 +168,6 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the footer template.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? FooterTemplate { get; set; }
 
@@ -184,7 +180,6 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the header CSS class.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? HeaderCssClass { get; set; }
 
@@ -197,7 +192,6 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the header template.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? HeaderTemplate { get; set; }
 
@@ -302,7 +296,6 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the offcanvas title.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? Title { get; set; }
 
