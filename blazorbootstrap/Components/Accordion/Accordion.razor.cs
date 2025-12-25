@@ -219,7 +219,6 @@ public partial class Accordion : BlazorBootstrapComponentBase
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
     [EditorRequired]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -239,9 +238,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete).
     /// </summary>
     [AddedVersion("1.7.0")]
-    [DefaultValue(null)]
     [Description("This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete).")]
-    [ParameterTypeName("EventCallback<AccordionEventArgs>")]
     [Parameter]
     public EventCallback<AccordionEventArgs> OnHidden { get; set; }
 
@@ -249,9 +246,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// This event is fired immediately when the hide method has been called.
     /// </summary>
     [AddedVersion("1.7.0")]
-    [DefaultValue(null)]
     [Description("This event is fired immediately when the hide method has been called.")]
-    [ParameterTypeName("EventCallback<AccordionEventArgs>")]
     [Parameter]
     public EventCallback<AccordionEventArgs> OnHiding { get; set; }
 
@@ -259,9 +254,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// This event fires immediately when the show method is called.
     /// </summary>
     [AddedVersion("1.7.0")]
-    [DefaultValue(null)]
     [Description("This event fires immediately when the show method is called.")]
-    [ParameterTypeName("EventCallback<AccordionEventArgs>")]
     [Parameter]
     public EventCallback<AccordionEventArgs> OnShowing { get; set; }
 
@@ -269,9 +262,7 @@ public partial class Accordion : BlazorBootstrapComponentBase
     /// This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to complete).
     /// </summary>
     [AddedVersion("1.7.0")]
-    [DefaultValue(null)]
     [Description("This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to complete).")]
-    [ParameterTypeName("EventCallback<AccordionEventArgs>")]
     [Parameter]
     public EventCallback<AccordionEventArgs> OnShown { get; set; }
 
