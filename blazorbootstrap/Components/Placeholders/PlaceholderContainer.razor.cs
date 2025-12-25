@@ -9,19 +9,27 @@ public partial class PlaceholderContainer : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the placeholder animation.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="PlaceholderAnimation.Glow" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(PlaceholderAnimation.Glow)]
+    [Description("Gets or sets the placeholder animation.")]
     [Parameter]
     public PlaceholderAnimation Animation { get; set; } = PlaceholderAnimation.Glow;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [EditorRequired]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
