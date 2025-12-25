@@ -111,6 +111,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// </summary>
     /// <param name="tabIndex"></param>
     /// <exception cref="IndexOutOfRangeException"></exception>
+    [AddedVersion("2.2.0")]
+    [Description("Removes the tab by index.")]
     public void RemoveTabByIndex(int tabIndex)
     {
         if (!tabs?.Any() ?? true) return;
@@ -130,6 +132,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// Removes the tab by name.
     /// </summary>
     /// <param name="tabName"></param>
+    [AddedVersion("2.2.0")]
+    [Description("Removes the tab by name.")]
     public void RemoveTabByName(string tabName)
     {
         if (!tabs?.Any() ?? true) return;
@@ -148,6 +152,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <summary>
     /// Selects the first tab and show its associated pane.
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("Selects the first tab and show its associated pane.")]
     public async Task ShowFirstTabAsync()
     {
         if (!tabs?.Any() ?? true) return;
@@ -161,6 +167,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <summary>
     /// Selects the last tab and show its associated pane.
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("Selects the last tab and show its associated pane.")]
     public async Task ShowLastTabAsync()
     {
         if (!tabs?.Any() ?? true) return;
@@ -174,12 +182,16 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <summary>
     /// Shows the recently added tab.
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("Shows the recently added tab.")]
     public void ShowRecentTab() => showLastTab = true;
 
     /// <summary>
     /// Selects the tab by index and show its associated pane.
     /// </summary>
     /// <param name="tabIndex">The zero-based index of the element to get or set.</param>
+    [AddedVersion("2.2.0")]
+    [Description("Selects the tab by index and show its associated pane.")]
     public async Task ShowTabByIndexAsync(int tabIndex)
     {
         if (!tabs?.Any() ?? true) return;
@@ -196,6 +208,8 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// Selects the tab by name and show its associated pane.
     /// </summary>
     /// <param name="tabName">The name of the tab to select.</param>
+    [AddedVersion("2.2.0")]
+    [Description("Selects the tab by name and show its associated pane.")]
     public async Task ShowTabByNameAsync(string tabName)
     {
         if (!tabs?.Any() ?? true) return;
@@ -281,16 +295,28 @@ public partial class Ribbon : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [EditorRequired]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the tabs fade effect.
     /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is false.
-    /// </remarks>
+    /// </para>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("")]
+    [ParameterTypeName("")]
     [Parameter]
     public bool EnableFadeEffect { get; set; }
 
@@ -310,39 +336,49 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     /// <summary>
     /// Get or sets the nav style.
     /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="NavStyle.Underline" />.
-    /// </remarks>
+    /// </para>
     //[Parameter]
     private NavStyle NavStyle { get; set; } = NavStyle.Underline;
 
     /// <summary>
     /// This event fires when the user clicks the corresponding <see cref="RibbonItem" />.
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("This event fires when the user clicks the corresponding <b>RibbonItem</b>.")]
     [Parameter]
     public EventCallback<RibbonItemEventArgs> OnClick { get; set; }
 
     /// <summary>
     /// This event fires after a new tab is shown (and thus the previous active tab is hidden).
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("This event fires after a new tab is shown (and thus the previous active tab is hidden).")]
     [Parameter]
     public EventCallback<RibbonEventArgs> OnHidden { get; set; }
 
     /// <summary>
     /// This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).")]
     [Parameter]
     public EventCallback<RibbonEventArgs> OnHiding { get; set; }
 
     /// <summary>
     /// This event fires on tab show, but before the new tab has been shown.
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("This event fires on tab show, but before the new tab has been shown.")]
     [Parameter]
     public EventCallback<RibbonEventArgs> OnShowing { get; set; }
 
     /// <summary>
     /// This event fires on tab show after a tab has been shown.
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("This event fires on tab show after a tab has been shown.")]
     [Parameter]
     public EventCallback<RibbonEventArgs> OnShown { get; set; }
 
