@@ -68,13 +68,27 @@ public partial class Preload : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
+    [AddedVersion("1.1.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the loading text.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
+    [AddedVersion("1.10.4")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the loading text.")]
+    [ParameterTypeName("string?")]
     [Parameter]
     public string? LoadingText { get; set; }
 
