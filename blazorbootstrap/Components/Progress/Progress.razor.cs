@@ -29,19 +29,26 @@ public partial class Progress : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the height of the Progress. Height is measured in pixels.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 16.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(16)]
+    [Description("Gets or sets the height of the Progress. Height is measured in pixels.")]
     [Parameter]
     public double Height { get; set; } = 16;
 
