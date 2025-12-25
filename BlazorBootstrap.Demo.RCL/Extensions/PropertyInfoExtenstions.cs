@@ -39,72 +39,8 @@ public static class PropertyInfoExtenstions
     public static string GetParameterTypeName(this PropertyInfo propertyInfo)
     {
         var nullabilityInfo = _nullabilityInfoContext.Create(propertyInfo);
-        var typeName = GetParameterTypeName(nullabilityInfo);
+        var typeName = nullabilityInfo.GetFriendlyTypeName();
         return typeName;
-    }
-
-    private static string GetParameterTypeName(NullabilityInfo info)
-    {
-        if (info.Type.IsGenericType && info.Type.GetGenericTypeDefinition() == typeof(Nullable<>))
-        {
-            var underlyingType = Nullable.GetUnderlyingType(info.Type);
-            return $"{underlyingType?.GetCSharpTypeName()}?";
-        }
-
-        var type = info.Type;
-        string typeName;
-
-        if (IsTuple(type))
-        {
-            var genericArgs = info.GenericTypeArguments.Select(GetParameterTypeName);
-            typeName = $"({string.Join(", ", genericArgs)})";
-        }
-        else if (info.Type.IsGenericType)
-        {
-            if (type.GetGenericTypeDefinition() == typeof(EventHandler<>))
-            {
-                var genericArg = info.GenericTypeArguments.Select(GetParameterTypeName);
-                typeName = $"EventHandler<{string.Join(", ", genericArg)}>";
-            }
-            else
-            {
-                var genericTypeName = info.Type.Name;
-                var backtickIndex = genericTypeName.IndexOf('`');
-                if (backtickIndex > 0)
-                {
-                    genericTypeName = genericTypeName.Remove(backtickIndex);
-                }
-                var genericArgs = info.GenericTypeArguments.Select(GetParameterTypeName);
-                typeName = $"{genericTypeName}<{string.Join(", ", genericArgs)}>";
-            }
-        }
-        else
-        {
-            typeName = info.Type.GetCSharpTypeName();
-        }
-
-        if (info.ReadState == NullabilityState.Nullable && info.Type.IsValueType == false)
-        {
-            typeName += "?";
-        }
-
-        return typeName;
-    }
-
-    private static bool IsTuple(Type type)
-    {
-        if (!type.IsGenericType)
-            return false;
-
-        var genericTypeDefinition = type.GetGenericTypeDefinition();
-        return genericTypeDefinition == typeof(ValueTuple<>) ||
-               genericTypeDefinition == typeof(ValueTuple<,>) ||
-               genericTypeDefinition == typeof(ValueTuple<,,>) ||
-               genericTypeDefinition == typeof(ValueTuple<,,,>) ||
-               genericTypeDefinition == typeof(ValueTuple<,,,,>) ||
-               genericTypeDefinition == typeof(ValueTuple<,,,,,>) ||
-               genericTypeDefinition == typeof(ValueTuple<,,,,,,>) ||
-               genericTypeDefinition == typeof(ValueTuple<,,,,,,,>);
     }
 
     /// <summary>
@@ -138,65 +74,6 @@ public static class PropertyInfoExtenstions
     {
         var descriptionAttribute = (DescriptionAttribute?)Attribute.GetCustomAttribute(propertyInfo, typeof(DescriptionAttribute));
         return descriptionAttribute?.Description ?? string.Empty;
-    }
-
-    /// <summary>
-    /// Get property type name.
-    /// </summary>
-    /// <param name="propertyInfo"></param>
-    /// <returns>string</returns>
-    public static string GetPropertyTypeName(this PropertyInfo propertyInfo)
-    {
-        var propertyTypeName = propertyInfo.Name;
-        if (string.IsNullOrWhiteSpace(propertyTypeName))
-            return string.Empty;
-
-        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt16, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameInt16CSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt32, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameInt32CSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt64, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameInt64CSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameChar, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameCharCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameStringComparison, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameStringComparisonCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameString, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameStringCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameSingle, StringComparison.InvariantCulture)) // float
-            propertyTypeName = StringConstants.PropertyTypeNameSingleCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDecimal, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameDecimalCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDouble, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameDoubleCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDateOnly, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameDateOnlyCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDateTime, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameDateTimeCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameBoolean, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameBooleanCSharpTypeKeyword;
-
-        //else if (propertyType!.IsEnum)
-        //    propertyTypeName = StringConstants.PropertyTypeNameEnumCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameGuid, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameGuidCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameObject, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameObjectCSharpTypeKeyword;
-
-        return propertyTypeName;
     }
 
     /// <summary>
