@@ -57,7 +57,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     [EditorRequired]
     [ParameterTypeName("RenderFragment?")]
     [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    public RenderFragment? Content { get; set; }
 
     /// <summary>
     /// Gets or sets the disabled state.

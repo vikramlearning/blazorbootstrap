@@ -8,6 +8,8 @@
 /// </summary>
 public static class PropertyInfoExtenstions
 {
+    private static readonly NullabilityInfoContext _nullabilityInfoContext = new();
+
     /// <summary>
     /// Get event callback return type.
     /// </summary>
@@ -36,8 +38,43 @@ public static class PropertyInfoExtenstions
     /// <returns>string</returns>
     public static string GetParameterTypeName(this PropertyInfo propertyInfo)
     {
-        var parameterTypeNameAttribute = propertyInfo.GetCustomAttributes(typeof(ParameterTypeNameAttribute), false).FirstOrDefault() as ParameterTypeNameAttribute;
-        return parameterTypeNameAttribute?.TypeName ?? null!;
+        var nullabilityInfo = _nullabilityInfoContext.Create(propertyInfo);
+        var typeName = GetFriendlyTypeName(nullabilityInfo);
+        return typeName;
+    }
+
+    private static string GetFriendlyTypeName(NullabilityInfo info)
+    {
+        if (info.Type.IsGenericType && info.Type.GetGenericTypeDefinition() == typeof(Nullable<>))
+        {
+            var underlyingType = Nullable.GetUnderlyingType(info.Type);
+            return $"{underlyingType?.GetCSharpTypeName()}?";
+        }
+
+        var type = info.Type;
+        string typeName;
+        if (info.Type.IsGenericType)
+        {
+            var genericTypeName = info.Type.Name;
+            var backtickIndex = genericTypeName.IndexOf('`');
+            if (backtickIndex > 0)
+            {
+                genericTypeName = genericTypeName.Remove(backtickIndex);
+            }
+            var genericArgs = info.GenericTypeArguments.Select(GetFriendlyTypeName);
+            typeName = $"{genericTypeName}<{string.Join(", ", genericArgs)}>";
+        }
+        else
+        {
+            typeName = info.Type.GetCSharpTypeName();
+        }
+
+        if (info.ReadState == NullabilityState.Nullable && info.Type.IsValueType == false)
+        {
+            typeName += "?";
+        }
+
+        return typeName;
     }
 
     /// <summary>
@@ -47,8 +84,8 @@ public static class PropertyInfoExtenstions
     /// <returns>string</returns>
     public static string GetPropertyAddedVersion(this PropertyInfo propertyInfo)
     {
-        var addedVersionAttribute = propertyInfo.GetCustomAttributes(typeof(AddedVersionAttribute), false).FirstOrDefault() as AddedVersionAttribute;
-        return addedVersionAttribute?.Version!;
+        var addedVersionAttribute = (AddedVersionAttribute?)Attribute.GetCustomAttribute(propertyInfo, typeof(AddedVersionAttribute));
+        return addedVersionAttribute?.Version ?? string.Empty;
     }
 
     /// <summary>
@@ -58,7 +95,7 @@ public static class PropertyInfoExtenstions
     /// <returns>string</returns>
     public static string GetPropertyDefaultValue(this PropertyInfo propertyInfo)
     {
-        var defaultValueAttribute = propertyInfo.GetCustomAttributes(typeof(DefaultValueAttribute), false).FirstOrDefault() as DefaultValueAttribute;
+        var defaultValueAttribute = (DefaultValueAttribute?)Attribute.GetCustomAttribute(propertyInfo, typeof(DefaultValueAttribute));
         return defaultValueAttribute?.Value?.ToString() ?? "null";
     }
 
@@ -69,7 +106,7 @@ public static class PropertyInfoExtenstions
     /// <returns>string</returns>
     public static string GetPropertyDescription(this PropertyInfo propertyInfo)
     {
-        var descriptionAttribute = propertyInfo.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
+        var descriptionAttribute = (DescriptionAttribute?)Attribute.GetCustomAttribute(propertyInfo, typeof(DescriptionAttribute));
         return descriptionAttribute?.Description ?? string.Empty;
     }
 
@@ -165,7 +202,7 @@ public static class PropertyInfoExtenstions
     /// <returns>bool</returns>
     public static bool IsPropertyRequired(this PropertyInfo propertyInfo)
     {
-        var editorRequiredAttribute = propertyInfo.GetCustomAttributes(typeof(EditorRequiredAttribute), false).FirstOrDefault() as EditorRequiredAttribute;
+        var editorRequiredAttribute = (EditorRequiredAttribute?)Attribute.GetCustomAttribute(propertyInfo, typeof(EditorRequiredAttribute));
         return editorRequiredAttribute is not null;
     }
 }
