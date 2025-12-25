@@ -34,14 +34,13 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the active state.
-    /// </summary>
     /// <para>
-    /// Default value is false.
+    /// Default value is <see langword="false"/>.
     /// </para>
+    /// </summary>
     [AddedVersion("2.2.0")]
-    [DefaultValue(null)]
-    [Description("")]
-    [ParameterTypeName("")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the active state.")]
     [Parameter]
     public bool Active { get; set; }
 
@@ -55,41 +54,38 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
     [EditorRequired]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? Content { get; set; }
 
     /// <summary>
     /// Gets or sets the disabled state.
-    /// </summary>
     /// <para>
-    /// Default value is false.
+    /// Default value is <see langword="false"/>.
     /// </para>
+    /// </summary>
     [AddedVersion("2.2.0")]
-    [DefaultValue(null)]
-    [Description("")]
-    [ParameterTypeName("")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
     /// Gets or sets the tab name.
-    /// </summary>
     /// <para>
-    /// Default value is null.
+    /// Default value is <see langword="null"/>.
     /// </para>
+    /// </summary>
     [AddedVersion("2.2.0")]
     [DefaultValue(null)]
-    [Description("")]
-    [ParameterTypeName("")]
+    [Description("Gets or sets the tab name.")]
     [Parameter]
-    public string Name { get; set; } = default!;
+    public string? Name { get; set; }
 
     /// <summary>
     /// This event fires when the user clicks the corresponding tab button and the tab is displayed.
     /// </summary>
     [AddedVersion("2.2.0")]
-    [Description("")]
+    [Description("This event fires when the user clicks the corresponding tab button and the tab is displayed.")]
     [Parameter]
     public EventCallback<TabEventArgs> OnClick { get; set; }
 
@@ -97,30 +93,31 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// Gets or sets the parent ribbon.
     /// </summary>
     [CascadingParameter(Name = "Ribbon1")]
-    internal Ribbon Parent { get; set; } = default!;
+    internal Ribbon? Parent { get; set; }
 
     /// <summary>
     /// Gets or sets the tab title.
-    /// </summary>
     /// <para>
-    /// Default value is null.
+    /// Default value is <see langword="null"/>.
     /// </para>
+    /// </summary>
     [AddedVersion("2.2.0")]
     [DefaultValue(null)]
-    [Description("")]
-    [ParameterTypeName("")]
+    [Description("Gets or sets the tab title.")]
     [Parameter]
-    public string Title { get; set; } = default!;
+    public string? Title { get; set; }
 
     /// <summary>
     /// Gets or sets the tab title template.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
     [AddedVersion("2.2.0")]
     [DefaultValue(null)]
-    [Description("")]
-    [ParameterTypeName("")]
+    [Description("Gets or sets the tab title template.")]
     [Parameter]
-    public RenderFragment TitleTemplate { get; set; } = default!;
+    public RenderFragment? TitleTemplate { get; set; }
 
     #endregion
 }
