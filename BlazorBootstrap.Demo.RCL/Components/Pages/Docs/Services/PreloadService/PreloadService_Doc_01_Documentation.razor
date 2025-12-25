@@ -8,30 +8,22 @@
                      MetaDescription="@metaDescription"
                      ImageUrl="@imageUrl" />
 
-<DemoLink Href="@DemoRouteConstants.Demos_URL_ConfirmDialog" />
+<DemoLink Href="@DemoRouteConstants.Demos_URL_PreloadService" />
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
     <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="ConfirmDialog Parameters" PageUrl="@pageUrl" Link="confirm-dialog-parameters">
-    <DocxTable TItem="ConfirmDialog" DocType="DocType.Parameters" />
-</Section>
-
-<Section Class="p-0" Size="HeadingSize.H3" Name="ConfirmDialog Methods" PageUrl="@pageUrl" Link="confirm-dialog-methods">
-    <DocxTable TItem="ConfirmDialog" DocType="DocType.Methods" />
-</Section>
-
-<Section Class="p-0" Size="HeadingSize.H3" Name="ConfirmDialogOptions Properties" PageUrl="@pageUrl" Link="confirm-dialog-options-properties">
-    <DocxTable TItem="ConfirmDialogOptions" DocType="DocType.Properties" />
+<Section Class="p-0" Size="HeadingSize.H3" Name="PreloadService Methods" PageUrl="@pageUrl" Link="preload-service-methods">
+    <DocxTable TItem="PreloadService" DocType="DocType.Methods" />
 </Section>
 
 @code {
-    private const string componentName = nameof(ConfirmDialog);
-    private const string pageUrl = DemoRouteConstants.Docs_URL_ConfirmDialog;
+    private const string componentName = nameof(PreloadService);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_PreloadService;
     private const string pageTitle = componentName;
     private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
     private const string metaTitle = $"Blazor {componentName} Component";
     private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
-    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_ConfirmDialog;
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_PreloadService;
 }

@@ -8,6 +8,8 @@
 /// </summary>
 public static class PropertyInfoExtenstions
 {
+    private static readonly NullabilityInfoContext _nullabilityInfoContext = new();
+
     /// <summary>
     /// Get event callback return type.
     /// </summary>
@@ -36,8 +38,9 @@ public static class PropertyInfoExtenstions
     /// <returns>string</returns>
     public static string GetParameterTypeName(this PropertyInfo propertyInfo)
     {
-        var parameterTypeNameAttribute = propertyInfo.GetCustomAttributes(typeof(ParameterTypeNameAttribute), false).FirstOrDefault() as ParameterTypeNameAttribute;
-        return parameterTypeNameAttribute?.TypeName ?? null!;
+        var nullabilityInfo = _nullabilityInfoContext.Create(propertyInfo);
+        var typeName = nullabilityInfo.GetFriendlyTypeName();
+        return typeName;
     }
 
     /// <summary>
@@ -47,8 +50,8 @@ public static class PropertyInfoExtenstions
     /// <returns>string</returns>
     public static string GetPropertyAddedVersion(this PropertyInfo propertyInfo)
     {
-        var addedVersionAttribute = propertyInfo.GetCustomAttributes(typeof(AddedVersionAttribute), false).FirstOrDefault() as AddedVersionAttribute;
-        return addedVersionAttribute?.Version!;
+        var addedVersionAttribute = (AddedVersionAttribute?)Attribute.GetCustomAttribute(propertyInfo, typeof(AddedVersionAttribute));
+        return addedVersionAttribute?.Version ?? string.Empty;
     }
 
     /// <summary>
@@ -58,7 +61,7 @@ public static class PropertyInfoExtenstions
     /// <returns>string</returns>
     public static string GetPropertyDefaultValue(this PropertyInfo propertyInfo)
     {
-        var defaultValueAttribute = propertyInfo.GetCustomAttributes(typeof(DefaultValueAttribute), false).FirstOrDefault() as DefaultValueAttribute;
+        var defaultValueAttribute = (DefaultValueAttribute?)Attribute.GetCustomAttribute(propertyInfo, typeof(DefaultValueAttribute));
         return defaultValueAttribute?.Value?.ToString() ?? "null";
     }
 
@@ -69,64 +72,8 @@ public static class PropertyInfoExtenstions
     /// <returns>string</returns>
     public static string GetPropertyDescription(this PropertyInfo propertyInfo)
     {
-        var descriptionAttribute = propertyInfo.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
+        var descriptionAttribute = (DescriptionAttribute?)Attribute.GetCustomAttribute(propertyInfo, typeof(DescriptionAttribute));
         return descriptionAttribute?.Description ?? string.Empty;
-    }
-
-    /// <summary>
-    /// Get property type name.
-    /// </summary>
-    /// <param name="propertyInfo"></param>
-    /// <returns>string</returns>
-    public static string GetPropertyTypeName(this PropertyInfo propertyInfo)
-    {
-        var propertyTypeName = propertyInfo.Name;
-        if (string.IsNullOrWhiteSpace(propertyTypeName))
-            return string.Empty;
-
-        if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt16, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameInt16CSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt32, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameInt32CSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameInt64, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameInt64CSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameChar, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameCharCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameStringComparison, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameStringComparisonCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameString, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameStringCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameSingle, StringComparison.InvariantCulture)) // float
-            propertyTypeName = StringConstants.PropertyTypeNameSingleCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDecimal, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameDecimalCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDouble, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameDoubleCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDateOnly, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameDateOnlyCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameDateTime, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameDateTimeCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameBoolean, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameBooleanCSharpTypeKeyword;
-
-        //else if (propertyType!.IsEnum)
-        //    propertyTypeName = StringConstants.PropertyTypeNameEnumCSharpTypeKeyword;
-
-        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameGuid, StringComparison.InvariantCulture))
-            propertyTypeName = StringConstants.PropertyTypeNameGuidCSharpTypeKeyword;
-
-        return propertyTypeName;
     }
 
     /// <summary>
@@ -165,7 +112,7 @@ public static class PropertyInfoExtenstions
     /// <returns>bool</returns>
     public static bool IsPropertyRequired(this PropertyInfo propertyInfo)
     {
-        var editorRequiredAttribute = propertyInfo.GetCustomAttributes(typeof(EditorRequiredAttribute), false).FirstOrDefault() as EditorRequiredAttribute;
+        var editorRequiredAttribute = (EditorRequiredAttribute?)Attribute.GetCustomAttribute(propertyInfo, typeof(EditorRequiredAttribute));
         return editorRequiredAttribute is not null;
     }
 }

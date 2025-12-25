@@ -8,6 +8,8 @@
 /// </summary>
 public static class MethodInfoExtensions
 {
+    private static readonly NullabilityInfoContext _nullabilityInfoContext = new();
+
     /// <summary>
     /// Get added version of a method.
     /// </summary>
@@ -16,7 +18,7 @@ public static class MethodInfoExtensions
     /// <returns>string</returns>
     public static string GetMethodAddedVersion(this MethodInfo methodInfo)
     {
-        var addedVersionAttribute = methodInfo.GetCustomAttributes(typeof(AddedVersionAttribute), false).FirstOrDefault() as AddedVersionAttribute;
+        var addedVersionAttribute = (AddedVersionAttribute?)Attribute.GetCustomAttribute(methodInfo, typeof(AddedVersionAttribute));
         return addedVersionAttribute?.Version ?? string.Empty;
     }
 
@@ -28,7 +30,7 @@ public static class MethodInfoExtensions
     /// <returns>string</returns>
     public static string GetMethodDescription(this MethodInfo methodInfo)
     {
-        var descriptionAttribute = methodInfo.GetCustomAttributes(typeof(DescriptionAttribute), false).FirstOrDefault() as DescriptionAttribute;
+        var descriptionAttribute = (DescriptionAttribute?)Attribute.GetCustomAttribute(methodInfo, typeof(DescriptionAttribute));
         return descriptionAttribute?.Description ?? string.Empty;
     }
 
@@ -39,21 +41,14 @@ public static class MethodInfoExtensions
     /// <returns>string</returns>
     public static string GetMethodName(this MethodInfo methodInfo)
     {
-        var methodNameAttribute = methodInfo.GetCustomAttributes(typeof(MethodNameAttribute), false).FirstOrDefault() as MethodNameAttribute;
-        return methodNameAttribute?.MethodName ?? null!;
-    }
-
-    public static string GetMethodParameters(this MethodInfo methodInfo)
-    {
         var parameters = methodInfo.GetParameters();
-        if (parameters.Length == 0)
-            return string.Empty;
+        var parameterStrings = parameters.Select(p =>
+        {
+            var paramNullabilityInfo = _nullabilityInfoContext.Create(p);
+            return $"{paramNullabilityInfo.GetFriendlyTypeName()} {p.Name}";
+        });
 
-        var parametersWithType = new HashSet<string>();
-        foreach (var parameter in parameters)
-            parametersWithType.Add($"{parameter.ParameterType.GetCSharpTypeName()} {parameter.Name}");
-
-        return string.Join(",", parametersWithType);
+        return $"{methodInfo.Name}({string.Join(", ", parameterStrings)})";
     }
 
     /// <summary>
@@ -63,16 +58,8 @@ public static class MethodInfoExtensions
     /// <param name="methodName"></param>
     /// <returns>string</returns>
     public static string GetMethodReturnType(this MethodInfo methodInfo)
-        => methodInfo.ReturnType.GetCSharpTypeName();
-
-    /// <summary>
-    /// Get method return type name.
-    /// </summary>
-    /// <param name="methodInfo"></param>
-    /// <returns>string</returns>
-    public static string GetMethodReturnTypeName(this MethodInfo methodInfo)
     {
-        var parameterTypeNameAttribute = methodInfo.GetCustomAttributes(typeof(MethodReturnTypeNameAttribute), false).FirstOrDefault() as MethodReturnTypeNameAttribute;
-        return parameterTypeNameAttribute?.TypeName ?? null!;
+        var nullabilityInfo = _nullabilityInfoContext.Create(methodInfo.ReturnParameter);
+        return nullabilityInfo.GetFriendlyTypeName();
     }
 }

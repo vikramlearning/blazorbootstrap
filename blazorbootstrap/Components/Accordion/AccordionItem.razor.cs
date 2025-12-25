@@ -88,7 +88,6 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
     [EditorRequired]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? Content { get; set; }
 
@@ -101,7 +100,6 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     [AddedVersion("1.7.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the name.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? Name { get; set; }
 
@@ -120,7 +118,6 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     [AddedVersion("1.7.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the title.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? Title { get; set; }
 
@@ -133,7 +130,6 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     [AddedVersion("1.7.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the title template.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? TitleTemplate { get; set; } = default!;
 

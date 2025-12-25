@@ -120,7 +120,6 @@ public partial class CardLink : BlazorBootstrapComponentBase
     [AddedVersion("1.10.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -145,7 +144,6 @@ public partial class CardLink : BlazorBootstrapComponentBase
     [AddedVersion("1.10.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the card link tab index.")]
-    [ParameterTypeName("int?")]
     [Parameter]
     public int? TabIndex { get; set; }
 
@@ -170,7 +168,6 @@ public partial class CardLink : BlazorBootstrapComponentBase
     [AddedVersion("1.10.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the link href attribute.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? To { get; set; }
 

@@ -177,7 +177,6 @@ public partial class Modal : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the body CSS class.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? BodyCssClass { get; set; }
 
@@ -190,7 +189,6 @@ public partial class Modal : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the body template.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? BodyTemplate { get; set; }
 
@@ -227,7 +225,6 @@ public partial class Modal : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the modal dialog (div.modal-dialog) CSS class.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? DialogCssClass { get; set; }
 
@@ -240,7 +237,6 @@ public partial class Modal : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the footer CSS class.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? FooterCssClass { get; set; }
 
@@ -253,7 +249,6 @@ public partial class Modal : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the footer template.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? FooterTemplate { get; set; }
 
@@ -278,7 +273,6 @@ public partial class Modal : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the header CSS class.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? HeaderCssClass { get; set; }
 
@@ -295,7 +289,6 @@ public partial class Modal : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the header template.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? HeaderTemplate { get; set; }
 
@@ -344,7 +337,6 @@ public partial class Modal : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the message.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? Message { get; set; }
 
@@ -455,7 +447,6 @@ public partial class Modal : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the modal header title.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? Title { get; set; }
 

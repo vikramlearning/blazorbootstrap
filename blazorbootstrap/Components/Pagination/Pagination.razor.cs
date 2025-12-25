@@ -131,7 +131,6 @@ public partial class Pagination : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the first link text. <b>FirstLinkText</b> is ignored if <b>FirstLinkIcon</b> is specified.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? FirstLinkText { get; set; }
 
@@ -160,7 +159,6 @@ public partial class Pagination : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the last link text. <b>LastLinkText</b> is ignored if <b>LastLinkIcon</b> is specified.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? LastLinkText { get; set; }
 
@@ -189,7 +187,6 @@ public partial class Pagination : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the next link text. <b>NextLinkText</b> is ignored if <b>NextLinkIcon</b> is specified.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? NextLinkText { get; set; }
 
@@ -230,7 +227,6 @@ public partial class Pagination : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the previous link text. <b>PreviousLinkText</b> is ignored if <b>PreviousLinkIcon</b> is specified.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? PreviousLinkText { get; set; }
 

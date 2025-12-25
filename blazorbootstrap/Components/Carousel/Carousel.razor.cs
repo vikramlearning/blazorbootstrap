@@ -164,7 +164,6 @@ public partial class Carousel : BlazorBootstrapComponentBase
     [AddedVersion("3.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 

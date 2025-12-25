@@ -89,7 +89,6 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     [AddedVersion("3.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the Google Map API key.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? ApiKey { get; set; }
 
@@ -102,7 +101,6 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     [AddedVersion("3.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the center parameter.")]
-    [ParameterTypeName("GoogleMapCenter?")]
     [Parameter] 
     public GoogleMapCenter? Center { get; set; }
 
@@ -129,7 +127,6 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     [AddedVersion("3.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the height of the <b>GoogleMap</b>.")]
-    [ParameterTypeName("double?")]
     [Parameter]
     public double? Height { get; set; }
 
@@ -154,7 +151,6 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     [AddedVersion("3.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the markers.")]
-    [ParameterTypeName("IEnumerable<GoogleMapMarker>?")]
     [Parameter] 
     public IEnumerable<GoogleMapMarker>? Markers { get; set; }
 
@@ -176,7 +172,6 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     [AddedVersion("3.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the width of the <b>GoogleMap</b>.")]
-    [ParameterTypeName("double?")]
     [Parameter]
     public double? Width { get; set; }
 

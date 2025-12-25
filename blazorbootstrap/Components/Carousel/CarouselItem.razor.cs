@@ -43,7 +43,6 @@ public partial class CarouselItem : BlazorBootstrapComponentBase
     [AddedVersion("3.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -68,7 +67,6 @@ public partial class CarouselItem : BlazorBootstrapComponentBase
     [AddedVersion("3.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the aria-label.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? Label { get; set; }
 

@@ -100,7 +100,9 @@ public class DemoScreenshotSrcConstants
 
     // Services
     public const string Demos_URL_Services_Prefix = DemoScreenshotSrcPrefix + "home.png"; // TODO: update screenshot
+    public const string Demos_URL_BreadcrumbService = DemoScreenshotSrcPrefix + "breadcrumb.png";
     public const string Demos_URL_ModalService = DemoScreenshotSrcPrefix + "modal.png";
+    public const string Demos_URL_PreloadService = DemoScreenshotSrcPrefix + "preload.png";
 
     // Utilities
     public const string Demos_URL_Utils_Prefix = DemoScreenshotSrcPrefix + "home.png";

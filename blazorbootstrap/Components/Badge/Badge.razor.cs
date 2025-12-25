@@ -22,7 +22,6 @@ public partial class Badge : BlazorBootstrapComponentBase
     [AddedVersion("1.7.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -83,7 +82,6 @@ public partial class Badge : BlazorBootstrapComponentBase
     [AddedVersion("1.7.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the visually hidden text.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? VisuallyHiddenText { get; set; }
 

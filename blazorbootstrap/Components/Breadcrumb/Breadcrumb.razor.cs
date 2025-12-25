@@ -49,7 +49,6 @@ public partial class Breadcrumb : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the items.")]
-    [ParameterTypeName("List<BreadcrumbItem>?")]
     [Parameter]
     public List<BreadcrumbItem>? Items { get; set; }
 
