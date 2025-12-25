@@ -39,11 +39,11 @@ public static class PropertyInfoExtenstions
     public static string GetParameterTypeName(this PropertyInfo propertyInfo)
     {
         var nullabilityInfo = _nullabilityInfoContext.Create(propertyInfo);
-        var typeName = GetFriendlyTypeName(nullabilityInfo);
+        var typeName = GetParameterTypeName(nullabilityInfo);
         return typeName;
     }
 
-    private static string GetFriendlyTypeName(NullabilityInfo info)
+    private static string GetParameterTypeName(NullabilityInfo info)
     {
         if (info.Type.IsGenericType && info.Type.GetGenericTypeDefinition() == typeof(Nullable<>))
         {
@@ -53,16 +53,30 @@ public static class PropertyInfoExtenstions
 
         var type = info.Type;
         string typeName;
-        if (info.Type.IsGenericType)
+
+        if (IsTuple(type))
         {
-            var genericTypeName = info.Type.Name;
-            var backtickIndex = genericTypeName.IndexOf('`');
-            if (backtickIndex > 0)
+            var genericArgs = info.GenericTypeArguments.Select(GetParameterTypeName);
+            typeName = $"({string.Join(", ", genericArgs)})";
+        }
+        else if (info.Type.IsGenericType)
+        {
+            if (type.GetGenericTypeDefinition() == typeof(EventHandler<>))
             {
-                genericTypeName = genericTypeName.Remove(backtickIndex);
+                var genericArg = info.GenericTypeArguments.Select(GetParameterTypeName);
+                typeName = $"EventHandler<{string.Join(", ", genericArg)}>";
             }
-            var genericArgs = info.GenericTypeArguments.Select(GetFriendlyTypeName);
-            typeName = $"{genericTypeName}<{string.Join(", ", genericArgs)}>";
+            else
+            {
+                var genericTypeName = info.Type.Name;
+                var backtickIndex = genericTypeName.IndexOf('`');
+                if (backtickIndex > 0)
+                {
+                    genericTypeName = genericTypeName.Remove(backtickIndex);
+                }
+                var genericArgs = info.GenericTypeArguments.Select(GetParameterTypeName);
+                typeName = $"{genericTypeName}<{string.Join(", ", genericArgs)}>";
+            }
         }
         else
         {
@@ -75,6 +89,22 @@ public static class PropertyInfoExtenstions
         }
 
         return typeName;
+    }
+
+    private static bool IsTuple(Type type)
+    {
+        if (!type.IsGenericType)
+            return false;
+
+        var genericTypeDefinition = type.GetGenericTypeDefinition();
+        return genericTypeDefinition == typeof(ValueTuple<>) ||
+               genericTypeDefinition == typeof(ValueTuple<,>) ||
+               genericTypeDefinition == typeof(ValueTuple<,,>) ||
+               genericTypeDefinition == typeof(ValueTuple<,,,>) ||
+               genericTypeDefinition == typeof(ValueTuple<,,,,>) ||
+               genericTypeDefinition == typeof(ValueTuple<,,,,,>) ||
+               genericTypeDefinition == typeof(ValueTuple<,,,,,,>) ||
+               genericTypeDefinition == typeof(ValueTuple<,,,,,,,>);
     }
 
     /// <summary>
@@ -162,6 +192,9 @@ public static class PropertyInfoExtenstions
 
         else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameGuid, StringComparison.InvariantCulture))
             propertyTypeName = StringConstants.PropertyTypeNameGuidCSharpTypeKeyword;
+
+        else if (propertyTypeName.Contains(StringConstants.PropertyTypeNameObject, StringComparison.InvariantCulture))
+            propertyTypeName = StringConstants.PropertyTypeNameObjectCSharpTypeKeyword;
 
         return propertyTypeName;
     }

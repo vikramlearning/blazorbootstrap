@@ -18,6 +18,7 @@ public static class StringConstants
     public const string PropertyTypeNameBoolean = "Boolean";
     public const string PropertyTypeNameEnum = "Enum";
     public const string PropertyTypeNameGuid = "Guid";
+    public const string PropertyTypeNameObject = "Object";
 
     public const string PropertyTypeNameInt16CSharpTypeKeyword = "short";
     public const string PropertyTypeNameInt32CSharpTypeKeyword = "int";
@@ -33,6 +34,7 @@ public static class StringConstants
     public const string PropertyTypeNameBooleanCSharpTypeKeyword = "bool";
     public const string PropertyTypeNameEnumCSharpTypeKeyword = "enum";
     public const string PropertyTypeNameGuidCSharpTypeKeyword = "Guid";
+    public const string PropertyTypeNameObjectCSharpTypeKeyword = "object";
 
     #endregion
 }

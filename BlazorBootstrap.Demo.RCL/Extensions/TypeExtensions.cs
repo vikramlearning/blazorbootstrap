@@ -138,6 +138,9 @@ public static class TypeExtensions
         else if (typeName.Contains(StringConstants.PropertyTypeNameGuid, StringComparison.InvariantCulture))
             typeName = StringConstants.PropertyTypeNameGuidCSharpTypeKeyword;
 
+        else if (typeName.Contains(StringConstants.PropertyTypeNameObject, StringComparison.InvariantCulture))
+            typeName = StringConstants.PropertyTypeNameObjectCSharpTypeKeyword;
+
         else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
         {
             Type enumerableType = type.GetGenericArguments()[0]; // Get the T in IEnumerable<T>
