@@ -191,7 +191,6 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
     [EditorRequired]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -216,7 +215,6 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     [AddedVersion("1.10.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the dropdown item tab index.")]
-    [ParameterTypeName("int?")]
     [Parameter]
     public int? TabIndex { get; set; }
 
@@ -241,7 +239,6 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
     [AddedVersion("1.10.0")]
     [DefaultValue(null)]
     [Description("Get or sets the link href attribute (if the type is link).")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? To { get; set; }
 

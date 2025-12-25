@@ -4,7 +4,7 @@ public partial class Button : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private bool isFirstRenderComplete = false;
+    private bool isFirstRenderComplete;
 
     private bool previousActive;
 
@@ -14,15 +14,15 @@ public partial class Button : BlazorBootstrapComponentBase
 
     private Target previousTarget;
 
-    private string? previousTo = default!;
+    private string? previousTo;
 
-    private TooltipColor previousTooltipColor = default!;
+    private TooltipColor previousTooltipColor;
 
-    private string previousTooltipTitle = default!;
+    private string? previousTooltipTitle;
 
     private ButtonType previousType;
 
-    private bool setButtonAttributesAgain = false;
+    private bool setButtonAttributesAgain;
 
     #endregion
 
@@ -333,7 +333,6 @@ public partial class Button : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -382,7 +381,6 @@ public partial class Button : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the button loading template.")]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment? LoadingTemplate { get; set; }
 
@@ -395,7 +393,6 @@ public partial class Button : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue("Loading...")]
     [Description("Gets or sets the loading text. <b>LoadingTemplate</b> takes precedence.")]
-    [ParameterTypeName("")]
     [Parameter]
     public string LoadingText { get; set; } = "Loading...";
 
@@ -445,7 +442,6 @@ public partial class Button : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the button tab index.")]
-    [ParameterTypeName("int?")]
     [Parameter]
     public int? TabIndex { get; set; }
 
@@ -470,7 +466,6 @@ public partial class Button : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the link button href attribute.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? To { get; set; }
 
@@ -507,7 +502,6 @@ public partial class Button : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the button tooltip title.")]
-    [ParameterTypeName("string?")]
     [Parameter]
     public string? TooltipTitle { get; set; }
 

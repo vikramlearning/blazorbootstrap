@@ -34,7 +34,6 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     [DefaultValue(null)]
     [Description("Gets or sets the content to be rendered within the component.")]
     [EditorRequired]
-    [ParameterTypeName("RenderFragment?")]
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
@@ -74,7 +73,6 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
     [AddedVersion("1.10.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the dropdown action button tab index.")]
-    [ParameterTypeName("int?")]
     [Parameter]
     public int? TabIndex { get; set; }
 
