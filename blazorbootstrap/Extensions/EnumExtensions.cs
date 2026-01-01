@@ -458,7 +458,8 @@ public static class EnumExtensions
             SortableListPullMode.True => true,
             SortableListPullMode.False => false,
             SortableListPullMode.Clone => "clone",
-            //SortableListPullMode.Array => "array"
+            //SortableListPullMode.Array => "array",
+            _ => null!
         };
 
     public static object ToSortableListPutMode(this SortableListPutMode sortableListPutMode) =>
@@ -466,7 +467,8 @@ public static class EnumExtensions
         {
             SortableListPutMode.True => true,
             SortableListPutMode.False => false,
-            //SortableListPullMode.Array => "array"
+            //SortableListPullMode.Array => "array",
+            _ => null!
         };
 
     public static string ToSpinnerColorClass(this SpinnerColor spinnerColor) =>
