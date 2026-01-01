@@ -111,12 +111,16 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// Gets the active tab.
     /// </summary>
     /// <returns>Returns the cuurent active <see cref="Tab"/>.</returns>
+    [AddedVersion("3.0.0")]
+    [Description("Gets the active tab.")]
     public Tab GetActiveTab() => activeTab;
 
     /// <summary>
     /// Removes the tab by index.
     /// </summary>
     /// <param name="tabIndex"></param>
+    [AddedVersion("2.2.0")]
+    [Description("Removes the tab by index.")]
     public void RemoveTabByIndex(int tabIndex)
     {
         var tab = tabs.ElementAtOrDefault(tabIndex);
@@ -136,6 +140,8 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// Removes the tab by name.
     /// </summary>
     /// <param name="tabName"></param>
+    [AddedVersion("2.2.0")]
+    [Description("Removes the tab by name.")]
     public void RemoveTabByName(string tabName)
     {
         var tabIndex = tabs.FindIndex(x => x.Name == tabName);
@@ -155,6 +161,8 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <summary>
     /// Selects the first tab and show its associated pane.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Selects the first tab and show its associated pane.")]
     public async Task ShowFirstTabAsync()
     {
         var tab = tabs.FirstOrDefault(x => !x.Disabled);
@@ -168,6 +176,8 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <summary>
     /// Selects the last tab and show its associated pane.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Selects the last tab and show its associated pane.")]
     public async Task ShowLastTabAsync()
     {
         if (tabs.Count == 0) return;
@@ -181,12 +191,16 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// <summary>
     /// Shows the recently added tab.
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("Shows the recently added tab.")]
     public void ShowRecentTab() => showLastTab = true;
 
     /// <summary>
     /// Selects the tab by index and show its associated pane.
     /// </summary>
     /// <param name="tabIndex">The zero-based index of the element to get or set.</param>
+    [AddedVersion("1.0.0")]
+    [Description("Selects the tab by index and show its associated pane.")]
     public async Task ShowTabByIndexAsync(int tabIndex)
     {
         if (tabs.Count == 0) return;
@@ -203,6 +217,8 @@ public partial class Tabs : BlazorBootstrapComponentBase
     /// Selects the tab by name and show its associated pane.
     /// </summary>
     /// <param name="tabName">The name of the tab to select.</param>
+    [AddedVersion("1.0.0")]
+    [Description("Selects the tab by name and show its associated pane.")]
     public async Task ShowTabByNameAsync(string tabName)
     {
         if (tabs.Count == 0) return;
@@ -270,7 +286,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         queuedTasks.Enqueue(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.Id));
 
         if (tab?.OnClick.HasDelegate ?? false)
-            await tab.OnClick.InvokeAsync(new TabEventArgs(tab!.Name, tab.Title));
+            await tab.OnClick.InvokeAsync(new TabEventArgs(tab.Name!, tab.Title!));
 
         activeTab = tab!;
     }
@@ -289,19 +305,26 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [EditorRequired]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the tabs fade effect.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the tabs fade effect.")]
     [Parameter]
     public bool EnableFadeEffect { get; set; }
 
@@ -314,34 +337,45 @@ public partial class Tabs : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Get or sets the nav style.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="NavStyle.Tabs" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(NavStyle.Tabs)]
+    [Description("Get or sets the nav style.")]
     [Parameter]
     public NavStyle NavStyle { get; set; } = NavStyle.Tabs;
 
     /// <summary>
     /// This event fires after a new tab is shown (and thus the previous active tab is hidden).
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("This event fires after a new tab is shown (and thus the previous active tab is hidden).")]
     [Parameter]
     public EventCallback<TabsEventArgs> OnHidden { get; set; }
 
     /// <summary>
     /// This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).")]
     [Parameter]
     public EventCallback<TabsEventArgs> OnHiding { get; set; }
 
     /// <summary>
     /// This event fires on tab show, but before the new tab has been shown.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("This event fires on tab show, but before the new tab has been shown.")]
     [Parameter]
     public EventCallback<TabsEventArgs> OnShowing { get; set; }
 
     /// <summary>
     /// This event fires on tab show after a tab has been shown.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("This event fires on tab show after a tab has been shown.")]
     [Parameter]
     public EventCallback<TabsEventArgs> OnShown { get; set; }
 
