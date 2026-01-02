@@ -111,6 +111,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_BreadcrumbService = Demos_URL_Services_Prefix + "/breadcrumb-service";
     public const string Demos_URL_ModalService = Demos_URL_Services_Prefix + "/modal-service";
     public const string Demos_URL_PreloadService = Demos_URL_Services_Prefix + "/preload-service";
+    public const string Demos_URL_ToastService = Demos_URL_Services_Prefix + "/toast-service";
 
     // Utilities
     public const string Demos_URL_Utils_Prefix = Demos_URL_Prefix + "/utils";
@@ -200,6 +201,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_BreadcrumbService = Docs_URL_Services_Prefix + "/breadcrumb-service";
     public const string Docs_URL_ModalService = Docs_URL_Services_Prefix + "/modal-service";
     public const string Docs_URL_PreloadService = Docs_URL_Services_Prefix + "/preload-service";
+    public const string Docs_URL_ToastService = Docs_URL_Services_Prefix + "/toast-service";
 
     // Utilities
     public const string Docs_URL_Utils_Prefix = Docs_URL_Prefix + "/utils";

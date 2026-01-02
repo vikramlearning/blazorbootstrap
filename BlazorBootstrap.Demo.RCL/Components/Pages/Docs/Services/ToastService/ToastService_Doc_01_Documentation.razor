@@ -8,30 +8,30 @@
                      MetaDescription="@metaDescription"
                      ImageUrl="@imageUrl" />
 
-<DemoLink Href="@DemoRouteConstants.Demos_URL_Tooltips" />
+<DemoLink Href="@DemoRouteConstants.Demos_URL_PreloadService" />
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
     <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Tooltip Parameters" PageUrl="@pageUrl" Link="tooltip-parameters">
-    <DocxTable TItem="Tooltip" DocType="DocType.Parameters" />
+<Section Class="p-0" Size="HeadingSize.H3" Name="ToastService Methods" PageUrl="@pageUrl" Link="toast-service-methods">
+    <DocxTable TItem="ToastService" DocType="DocType.Methods" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="TooltipColor Enum" PageUrl="@pageUrl" Link="tooltip-color-enum">
-    <DocxTable TItem="TooltipColor" DocType="DocType.Enum" />
+<Section Class="p-0" Size="HeadingSize.H3" Name="ToastMessage Properties" PageUrl="@pageUrl" Link="toast-message-properties">
+    <DocxTable TItem="ToastMessage" DocType="DocType.Properties" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="TooltipPlacement Enum" PageUrl="@pageUrl" Link="tooltip-placement-enum">
-    <DocxTable TItem="TooltipPlacement" DocType="DocType.Enum" />
+<Section Class="p-0" Size="HeadingSize.H3" Name="ToastType Enum" PageUrl="@pageUrl" Link="toast-type-enum">
+    <DocxTable TItem="ToastType" DocType="DocType.Enum" />
 </Section>
 
 @code {
-    private const string componentName = nameof(Tooltip);
-    private const string pageUrl = DemoRouteConstants.Docs_URL_Tooltips;
+    private const string componentName = nameof(ToastService);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_ToastService;
     private const string pageTitle = componentName;
     private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
     private const string metaTitle = $"Blazor {componentName} Component";
     private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
-    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Tooltips;
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Toasts;
 }
