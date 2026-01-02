@@ -2,6 +2,11 @@
 
 public enum ToastsPlacement
 {
+    /// <summary>
+    /// Top left
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Top left")]
     TopLeft,
 
     /// <summary>

@@ -102,6 +102,7 @@ public partial class DemosMainLayout : MainLayoutBase
             new (){ Id = "700", Text = "Breadcrumb Service", Href = DemoRouteConstants.Demos_URL_BreadcrumbService, IconName = IconName.SegmentedNav, ParentId = "7" },
             new (){ Id = "701", Text = "Modal Service", Href = DemoRouteConstants.Demos_URL_ModalService, IconName = IconName.WindowStack, ParentId = "7" },
             new (){ Id = "702", Text = "Preload Service", Href = DemoRouteConstants.Demos_URL_PreloadService, IconName = IconName.ArrowRepeat, ParentId = "7" },
+            new (){ Id = "703", Text = "Toast Service", Href = DemoRouteConstants.Demos_URL_ToastService, IconName = IconName.InfoCircleFill, ParentId = "7" },
 
             new(){ Id = "19", Text = "Utilities", IconName = IconName.GearWideConnected, IconColor = IconColor.Info },
             new (){ Id = "1900", Text = "Color Utility", Href = DemoRouteConstants.Demos_URL_ColorUtils, IconName = IconName.Palette2, ParentId = "19" },
