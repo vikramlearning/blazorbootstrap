@@ -153,19 +153,19 @@ public partial class Toast : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the auto hide state.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
     [Parameter]
     public bool AutoHide { get; set; }
 
     /// <summary>
     /// Gets or sets the delay in milliseconds before hiding the toast.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 5000.
-    /// </remarks>
+    /// </para>
+    /// </summary>
     [Parameter]
     public int Delay { get; set; } = 5000;
 
@@ -189,10 +189,10 @@ public partial class Toast : BlazorBootstrapComponentBase
 
     /// <summary>
     /// If <see langword="true" />, shows the close button.
+    /// <para>
+    /// Default value is <see langword="true"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is true.
-    /// </remarks>
     [Parameter]
     public bool ShowCloseButton { get; set; } = true;
 
@@ -210,10 +210,10 @@ public partial class Toast : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the toast message.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
     [Parameter]
     public ToastMessage ToastMessage { get; set; } = default!;
 

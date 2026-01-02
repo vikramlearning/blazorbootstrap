@@ -3,43 +3,59 @@
 public enum ToastType
 {
     /// <summary>
-    /// Primary background color.
+    /// Sets the primary background color to the toast.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Sets the primary background color to the toast.")]
     Primary = 1,
 
     /// <summary>
-    /// Secondary background color.
+    /// Sets the secondary background color to the toast.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Sets the secondary background color to the toast.")]
     Secondary,
 
     /// <summary>
-    /// Success background color.
+    /// Sets the success background color to the toast.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Sets the success background color to the toast.")]
     Success,
 
     /// <summary>
-    /// Danger background color.
+    /// Sets the danger background color to the toast.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Sets the danger background color to the toast.")]
     Danger,
 
     /// <summary>
-    /// Warning background color.
+    /// Sets the warning background color to the toast.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Sets the warning background color to the toast.")]
     Warning,
 
     /// <summary>
-    /// Info background color.
+    /// Sets the info background color to the toast.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Sets the info background color to the toast.")]
     Info,
 
     /// <summary>
-    /// Light background color.
+    /// Sets the light background color to the toast.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Sets the light background color to the toast.")]
     Light,
 
     /// <summary>
-    /// Dark background color.
+    /// Sets the dark background color to the toast.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Sets the dark background color to the toast.")]
     Dark
 
     // TODO: Review

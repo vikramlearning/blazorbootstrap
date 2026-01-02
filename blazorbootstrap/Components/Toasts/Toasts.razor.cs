@@ -90,59 +90,78 @@ public partial class Toasts : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the auto hide state.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the auto hide state.")]
     [Parameter]
     public bool AutoHide { get; set; }
 
     /// <summary>
     /// Gets or sets the delay in milliseconds before hiding the toast.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 5000.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(5000)]
+    [Description("Gets or sets the delay in milliseconds before hiding the toast.")]
     [Parameter]
     public int Delay { get; set; } = 5000;
 
     /// <summary>
     /// Gets or sets the toast messages.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the toast messages.")]
     [Parameter]
-    public List<ToastMessage>? Messages { get; set; } = default!;
+    public List<ToastMessage>? Messages { get; set; }
 
     /// <summary>
     /// Gets or sets the toast placement.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="ToastsPlacement.TopRight" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(ToastsPlacement.TopRight)]
+    [Description("Gets or sets the toast placement.")]
     [Parameter]
     public ToastsPlacement Placement { get; set; } = ToastsPlacement.TopRight;
 
     /// <summary>
     /// If <see langword="true" />, shows the close button.
+    /// <para>
+    /// Default value is <see langword="true"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is true.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(true)]
+    [Description("If <b>true</b>, shows the close button.")]
     [Parameter]
     public bool ShowCloseButton { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the toast container maximum capacity.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 5.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(5)]
+    [Description("Gets or sets the toast container maximum capacity.")]
     [Parameter]
     public int StackLength { get; set; } = 5;
 
-    [Inject] public ToastService ToastService { get; set; } = default!;
+    [Inject] 
+    public ToastService ToastService { get; set; } = default!;
 
     #endregion
 }
