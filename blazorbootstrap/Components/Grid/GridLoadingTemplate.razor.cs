@@ -17,9 +17,9 @@ public partial class GridLoadingTemplate<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Specifies the content to be rendered inside the component.
     /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is null.
-    /// </remarks>
+    /// </para>
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
