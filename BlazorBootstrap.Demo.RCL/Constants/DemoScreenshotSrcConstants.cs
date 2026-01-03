@@ -10,7 +10,7 @@ public class DemoScreenshotSrcConstants
     public const string Home = DemoScreenshotSrcPrefix + "home.png";
 
     // Layout
-    public const string Demos_URL_Layout = DemoScreenshotSrcPrefix + "home.png";
+    public const string Demos_URL_Layout = DemoScreenshotSrcPrefix + "layout.png";
 
     // Content
     public const string Demos_URL_Icons = DemoScreenshotSrcPrefix + "icons.png";
