@@ -50,15 +50,15 @@ public class DemoScreenshotSrcConstants
 
     #region Grid
     public const string Demos_URL_Grid_Prefix = DemoScreenshotSrcPrefix + "grid.png";
-    public const string Demos_URL_Grid_Overview = DemoScreenshotSrcPrefix + "home.png";
+    public const string Demos_URL_Grid_Overview = DemoScreenshotSrcPrefix + "grid_fixed_header_freeze_columns.png";
     public const string Demos_URL_Grid_Alignment = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_CustomCSSClass = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_DataBinding = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_DetailView = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_Events = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_Filters = DemoScreenshotSrcPrefix + "home.png";
-    public const string Demos_URL_Grid_FixedHeader = DemoScreenshotSrcPrefix + "home.png";
-    public const string Demos_URL_Grid_FreezeColumns = DemoScreenshotSrcPrefix + "home.png";
+    public const string Demos_URL_Grid_FixedHeader = DemoScreenshotSrcPrefix + "grid_fixed_header_freeze_columns.png";
+    public const string Demos_URL_Grid_FreezeColumns = DemoScreenshotSrcPrefix + "grid_fixed_header_freeze_columns.png";
     public const string Demos_URL_Grid_Settings = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_NestedGrid = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_Paging = DemoScreenshotSrcPrefix + "home.png";

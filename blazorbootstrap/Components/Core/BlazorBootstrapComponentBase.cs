@@ -148,7 +148,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     [Description("Gets or sets additional attributes that will be applied to the component.")]
     [ParameterTypeName("Dictionary<string, object>")]
     [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object> AdditionalAttributes { get; set; } = default!;
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     /// <summary>
     /// Gets or sets the CSS class name(s) to apply to the component.
