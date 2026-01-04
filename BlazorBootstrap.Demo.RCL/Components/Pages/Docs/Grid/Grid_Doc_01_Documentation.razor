@@ -15,19 +15,19 @@
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Grid Parameters" PageUrl="@pageUrl" Link="grid-parameters">
-    <DocxTable TItem="Grid<object>" DocType="DocType.Parameters" />
+    <DocxTable TItem="Grid<TItem>" DocType="DocType.Parameters" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Grid Methods" PageUrl="@pageUrl" Link="grid-methods">
-    <DocxTable TItem="Grid<object>" DocType="DocType.Methods" />
+    <DocxTable TItem="Grid<TItem>" DocType="DocType.Methods" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Grid Events" PageUrl="@pageUrl" Link="grid-events">
-    <DocxTable TItem="Grid<object>" DocType="DocType.Events" />
+    <DocxTable TItem="Grid<TItem>" DocType="DocType.Events" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="GridColumn Parameters" PageUrl="@pageUrl" Link="grid-column-parameters">
-    <DocxTable TItem="GridColumn<object>" DocType="DocType.Parameters" />
+<Section Class="p-0" Size="HeadingSize.H3" Name="GridSettings Properties" PageUrl="@pageUrl" Link="grid-settings-properties">
+    <DocxTable TItem="GridSettings" DocType="DocType.Properties" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="GridColumns Parameters" PageUrl="@pageUrl" Link="grid-columns-parameters">
@@ -35,23 +35,35 @@
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="GridColumn Parameters" PageUrl="@pageUrl" Link="grid-column-parameters">
-    <DocxTable TItem="GridColumn<object>" DocType="DocType.Parameters" />
+    <DocxTable TItem="GridColumn<TItem>" DocType="DocType.Parameters" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="GridDetailView Parameters" PageUrl="@pageUrl" Link="grid-detailview-parameters">
-    <DocxTable TItem="GridDetailView<object>" DocType="DocType.Parameters" />
+    <DocxTable TItem="GridDetailView<TItem>" DocType="DocType.Parameters" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="GridSettings Properties" PageUrl="@pageUrl" Link="grid-settings-properties">
-    <DocxTable TItem="GridSettings" DocType="DocType.Properties" />
+<Section Class="p-0" Size="HeadingSize.H3" Name="GridTemplates Parameters" PageUrl="@pageUrl" Link="grid-templates-parameters">
+    <DocxTable TItem="GridTemplates" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="GridEmptyDataTemplate Parameters" PageUrl="@pageUrl" Link="grid-empty-data-templates-parameters">
+    <DocxTable TItem="GridEmptyDataTemplate<TItem>" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="GridLoadingTemplate Parameters" PageUrl="@pageUrl" Link="grid-loading-template-parameters">
+    <DocxTable TItem="GridLoadingTemplate<TItem>" DocType="DocType.Parameters" />
 </Section>
 
 @code {
-    private const string componentName = nameof(Grid<object>);
+    private const string componentName = nameof(Grid<TItem>);
     private const string pageUrl = DemoRouteConstants.Docs_URL_Grid;
     private const string pageTitle = componentName;
     private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
     private const string metaTitle = $"Blazor {componentName} Component";
     private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
     private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Grid_Overview;
+
+    public class TItem : object
+    {
+    }
 }
