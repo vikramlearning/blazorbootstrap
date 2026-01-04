@@ -116,6 +116,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Get filters.
     /// </summary>
     /// <returns>IEnumerable</returns>
+    [AddedVersion("1.0.0")]
+    [Description("")]
     public IEnumerable<FilterItem>? GetFilters() =>
         !AllowFiltering || columns == null || !columns.Any()
             ? null
@@ -163,11 +165,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Refresh the grid data.
     /// </summary>
     /// <returns>Task</returns>
+    [AddedVersion("1.0.0")]
+    [Description("")]
     public async Task RefreshDataAsync(CancellationToken cancellationToken = default) => await RefreshDataAsync(false, cancellationToken);
 
     /// <summary>
     /// Reset the page number to 1 and refresh the grid.
     /// </summary>
+    [AddedVersion("1.4.3")]
+    [Description("")]
     public async ValueTask ResetPageNumber() => await ResetPageNumberAsync(true);
 
     public Task SelectAllItemsAsync() => SelectAllItemsInternalAsync(true);
@@ -896,6 +902,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// This event is fired when the grid state is changed.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("")]
     [Parameter]
     public EventCallback<GridSettings> GridSettingsChanged { get; set; }
 
@@ -992,6 +1000,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// This event is triggered when the user clicks on the row.
     /// Set AllowRowClick to true to enable row clicking.
     /// </summary>
+    [AddedVersion("1.9.5")]
+    [Description("")]
     [Parameter]
     public EventCallback<GridRowEventArgs<TItem>> OnRowClick { get; set; }
 
@@ -999,6 +1009,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// This event is triggered when the user double clicks on the row.
     /// Set AllowRowClick to true to enable row double clicking.
     /// </summary>
+    [AddedVersion("1.9.5")]
+    [Description("")]
     [Parameter]
     public EventCallback<GridRowEventArgs<TItem>> OnRowDoubleClick { get; set; }
 
@@ -1094,6 +1106,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// This event is fired when the item selection changes.
     /// </summary>
+    [AddedVersion("1.8.0")]
+    [Description("")]
     [Parameter]
     public EventCallback<HashSet<TItem>> SelectedItemsChanged { get; set; }
 

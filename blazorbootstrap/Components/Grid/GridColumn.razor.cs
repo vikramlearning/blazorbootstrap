@@ -200,12 +200,18 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is null.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public RenderFragment<TItem> ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the column class.
     /// </summary>
+    [AddedVersion("1.6.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public Func<TItem, string>? ColumnClass { get; set; }
 
@@ -216,6 +222,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is true.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public bool Filterable { get; set; } = true;
 
@@ -225,6 +234,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is <see cref="ButtonColor.Light" />.
     /// </para>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public ButtonColor FilterButtonColor { get; set; } = ButtonColor.Light;
 
@@ -234,6 +246,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is null.
     /// </para>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public string? FilterButtonCSSClass { get; set; }
 
@@ -243,6 +258,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is <see cref="FilterOperator.None" />.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public FilterOperator FilterOperator { get; set; } = FilterOperator.None;
 
@@ -252,6 +270,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is 0.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public int FilterTextboxWidth { get; set; }
 
@@ -261,6 +282,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is <see cref="Unit.Px" />.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public Unit FilterTextboxWidthUnit { get; set; } = Unit.Px;
 
@@ -270,6 +294,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is null.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public string FilterValue { get; set; } = default!;
 
@@ -279,6 +306,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is false.
     /// </para>
+    [AddedVersion("1.10.4")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public bool Freeze { get; set; }
 
@@ -288,6 +318,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is <see cref="FreezeDirection.Left" />.
     /// </para>
+    [AddedVersion("1.10.4")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public FreezeDirection FreezeDirection { get; set; } = FreezeDirection.Left;
 
@@ -297,6 +330,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is 0.
     /// </para>
+    [AddedVersion("1.10.4")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public double FreezeLeftPosition { get; set; }
 
@@ -306,6 +342,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is 0.
     /// </para>
+    [AddedVersion("1.10.4")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public double FreezeRightPosition { get; set; }
 
@@ -315,6 +354,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is null.
     /// </para>
+    [AddedVersion("1.7.3")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public RenderFragment HeaderContent { get; set; } = default!;
 
@@ -406,6 +448,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is null.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public string HeaderText { get; set; } = default!;
 
@@ -415,6 +460,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is <see cref="Alignment.Start" />.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public Alignment HeaderTextAlignment { get; set; } = Alignment.Start;
 
@@ -424,6 +472,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is false.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public bool IsDefaultSortColumn { get; set; } = false;
 
@@ -433,6 +484,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is true.
     /// </para>
+    [AddedVersion("3.4.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public bool IsVisible { get; set; } = true;
 
@@ -446,6 +500,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is null.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public string PropertyName { get; set; } = default!;
 
@@ -456,6 +513,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is true.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public bool Sortable { get; set; } = true;
 
@@ -465,12 +525,18 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is <see cref="SortDirection.None" />.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public SortDirection SortDirection { get; set; } = SortDirection.None;
 
     /// <summary>
     /// Expression used for sorting.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public Expression<Func<TItem, IComparable>> SortKeySelector { get; set; } = default!;
 
@@ -482,6 +548,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is null.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public string SortString { get; set; } = default!;
 
@@ -491,6 +560,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is <see cref="StringComparison.OrdinalIgnoreCase" />.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
 
@@ -500,6 +572,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see cref="GridSummaryColumnType.None"/>.
     /// </para>
     /// </summary>
+    [AddedVersion("3.4.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public GridSummaryColumnType SummaryType { get; set; } = GridSummaryColumnType.None;
 
@@ -509,6 +584,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see langword="null"/>.
     /// </para>
     /// </summary>
+    [AddedVersion("3.4.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public string? SummaryValueDisplayFormat { get; set; }
 
@@ -520,6 +598,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Example: "Total: ", "Average: ", etc.
     /// </para>
     /// </summary>
+    [AddedVersion("3.4.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public string? SummaryValuePrefix { get; set; }
 
@@ -529,6 +610,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is <see cref="Alignment.Start" />.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.Start;
 
@@ -538,6 +622,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is false.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public bool TextNoWrap { get; set; }
 

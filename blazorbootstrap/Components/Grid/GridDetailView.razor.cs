@@ -20,8 +20,11 @@ public partial class GridDetailView<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is null.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
-    public RenderFragment<TItem> ChildContent { get; set; } = default!;
+    public RenderFragment<TItem>? ChildContent { get; set; }
 
     internal RenderFragment<TItem> GetTemplate =>
         gridDetailViewTemplate ??= rowData => builder =>

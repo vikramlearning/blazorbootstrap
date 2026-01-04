@@ -8,6 +8,9 @@ public partial class GridTemplates : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is null.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
-    public RenderFragment? ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 }

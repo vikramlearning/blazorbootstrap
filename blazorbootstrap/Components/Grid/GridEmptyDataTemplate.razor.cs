@@ -20,8 +20,11 @@ public partial class GridEmptyDataTemplate<TItem> : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is null.
     /// </para>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     internal RenderFragment Template =>
         template ??= builder =>
