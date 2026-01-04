@@ -16,13 +16,13 @@ public partial class GridDetailView<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Specifies the content to be rendered inside the component.
-    /// </summary>
     /// <para>
-    /// Default value is null.
+    /// Default value is <see langword="null"/>.
     /// </para>
+    /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("")]
+    [Description("Specifies the content to be rendered inside the component.")]
     [Parameter]
     public RenderFragment<TItem>? ChildContent { get; set; }
 
