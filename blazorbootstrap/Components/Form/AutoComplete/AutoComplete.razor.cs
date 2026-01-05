@@ -96,22 +96,30 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Disables autocomplete.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Disables autocomplete.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables autocomplete.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Enables autocomplete.")]
     public void Enable() => Disabled = false;
 
     /// <summary>
     /// Refresh the autocomplete data.
     /// </summary>
     /// <returns>Task</returns>
+    [AddedVersion("1.0.0")]
+    [Description("Refresh the autocomplete data.")]
     public async Task RefreshDataAsync() => await FilterDataAsync();
 
     /// <summary>
     /// Resets the autocomplete selection.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Resets the autocomplete selection.")]
     public async Task ResetAsync() => await ClearInputTextAsync();
 
     /// <summary>
@@ -294,13 +302,16 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the data provider.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
-    [Parameter]
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the data provider.")]
     [EditorRequired]
-    public AutoCompleteDataProviderDelegate<TItem> DataProvider { get; set; } = null!;
+    [Parameter]
+    public AutoCompleteDataProviderDelegate<TItem>? DataProvider { get; set; }
 
     /// <summary>
     /// Gets all Style attributes for the autocomplete delete button.
@@ -316,21 +327,28 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the disabled state.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
-    [CascadingParameter] private EditContext EditContext { get; set; } = default!;
+    [CascadingParameter] 
+    private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the empty text.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 'No records found.'.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue("No records found.")]
+    [Description("Gets or sets the empty text.")]
     [Parameter]
     public string EmptyText { get; set; } = "No records found.";
 
@@ -338,86 +356,121 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the loading text.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 'Loading...'.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue("Loading...")]
+    [Description("Gets or sets the loading text.")]
     [Parameter]
     public string LoadingText { get; set; } = "Loading...";
 
     /// <summary>
     /// This event fires immediately when the autocomplete selection changes by the user.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("This event fires immediately when the autocomplete selection changes by the user.")]
     [Parameter]
     public EventCallback<TItem> OnChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the placeholder.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the placeholder.")]
     [Parameter]
     public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets the property name.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
-    [Parameter]
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the property name.")]
     [EditorRequired]
-    public string PropertyName { get; set; } = null!;
+    [Parameter]
+    public string? PropertyName { get; set; }
 
     /// <summary>
     /// Gets selected item.
     /// </summary>
-    public TItem SelectedItem => selectedItem = default!;
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets selected item.")]
+    public TItem? SelectedItem => selectedItem;
 
     /// <summary>
     /// Gets or sets the autocomplete size.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="AutoCompleteSize.Default" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(AutoCompleteSize.Default)]
+    [Description("Gets or sets the autocomplete size.")]
     [Parameter]
     public AutoCompleteSize Size { get; set; } = AutoCompleteSize.Default;
 
     /// <summary>
     /// Gets or sets the StringComparison.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="StringComparison.OrdinalIgnoreCase" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(StringComparison.OrdinalIgnoreCase)]
+    [Description("Gets or sets the StringComparison.")]
     [Parameter]
     public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
 
     /// <summary>
     /// Gets or sets the string filter operator.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="StringFilterOperator.Contains" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(StringFilterOperator.Contains)]
+    [Description("Gets or sets the string filter operator.")]
     [Parameter]
     public StringFilterOperator StringFilterOperator { get; set; } = StringFilterOperator.Contains;
 
     /// <summary>
     /// Gets or sets the value.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the value.")]
     [Parameter]
-    public string Value { get; set; } = default!;
+    public string? Value { get; set; }
 
     /// <summary>
     /// This is event fires on every user keystroke that changes the textbox value.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("This is event fires on every user keystroke that changes the textbox value.")]
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<string?>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets the value expression.
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the value expression.")]
+    [Parameter] 
+    public Expression<Func<string?>>? ValueExpression { get; set; }
 
     #endregion
 }
