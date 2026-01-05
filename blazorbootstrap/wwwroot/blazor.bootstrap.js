@@ -948,8 +948,11 @@ window.blazorBootstrap = {
         windowSize: () => window.innerWidth
     },
     // global function
-    invokeMethodAsync: (callbackEventName, dotNetHelper) => {
-        dotNetHelper.invokeMethodAsync(callbackEventName);
+    focusElement(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.focus();
+        }
     },
     hasInvalidChars: (input, validChars) => {
         if (input.length <= 0 || validChars.length <= 0)
@@ -962,6 +965,9 @@ window.blazorBootstrap = {
         }
 
         return false;
+    },
+    invokeMethodAsync: (callbackEventName, dotNetHelper) => {
+        dotNetHelper.invokeMethodAsync(callbackEventName);
     },
     scrollToElementBottom: (elementId) => {
         let el = document.getElementById(elementId);
