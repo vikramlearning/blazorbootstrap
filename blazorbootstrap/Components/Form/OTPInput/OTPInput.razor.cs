@@ -54,35 +54,40 @@ public partial class OTPInput : BlazorBootstrapComponentBase
 
     private async Task OnInput(ChangeEventArgs e, int index)
     {
-        Console.WriteLine(">> OnInput called");
-        var currentValue = otpValues[index] ?? "";
-        var newValue = new string(e.Value?.ToString()?.Where(char.IsDigit)?.ToArray());
+        var rawValue = e.Value?.ToString();
+        var numericValue = new string(rawValue?.Where(char.IsDigit).ToArray());
 
-        Console.WriteLine($">> newValue: {newValue}");
-        if (string.IsNullOrEmpty(newValue))
+        if (string.IsNullOrEmpty(numericValue))
         {
             otpValues[index] = string.Empty;
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.SetInputElementValue, GetInputId(index), string.Empty);
+
+            // Clear the input element if it contained invalid characters
+            if (!string.IsNullOrEmpty(rawValue))
+            {
+                await JSRuntime.InvokeVoidAsync(JsInteropUtils.SetInputElementValue, GetInputId(index), string.Empty);
+            }
+
             await NotifyChangesAsync();
             return;
         }
 
-        if (int.TryParse(newValue, out var digit))
-        {
-            otpValues[index] = digit.ToString();
+        // If multiple digits were entered (e.g. fast typing or paste), use the last one
+        var digit = numericValue.Length > 1 ? numericValue[^1].ToString() : numericValue;
 
-            if (index < Length - 1)
-            {
-                otpValues[index + 1] = string.Empty;
-                await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index + 1));
-            }
-        }
-        else
+        otpValues[index] = digit;
+
+        // Reset the input value on the client side if it doesn't match the sanitized digit
+        if (rawValue != digit)
         {
-            otpValues[index] = string.Empty;
+            await JSRuntime.InvokeVoidAsync(JsInteropUtils.SetInputElementValue, GetInputId(index), digit);
         }
 
-        // Notify changes
+        // Move focus to the next input field
+        if (index < Length - 1)
+        {
+            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index + 1));
+        }
+
         await NotifyChangesAsync();
     }
 
