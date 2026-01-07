@@ -948,7 +948,7 @@ window.blazorBootstrap = {
         windowSize: () => window.innerWidth
     },
     // global function
-    focusElement(elementId) {
+    focusInputElement(elementId) {
         const element = document.getElementById(elementId);
         if (element) {
             element.focus();
@@ -978,6 +978,12 @@ window.blazorBootstrap = {
         let el = document.getElementById(elementId);
         if (el)
             el.scrollTop = 0;
+    },
+    setInputElementValue: (elementId, value) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.value = value;
+        }
     }
 }
 

@@ -34,7 +34,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
         await NotifyChangesAsync();
 
         if (Length > 0)
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusElement, GetInputId(0));
+            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(0));
 
         await InvokeAsync(StateHasChanged);
     }
@@ -43,7 +43,9 @@ public partial class OTPInput : BlazorBootstrapComponentBase
 
     private async Task NotifyChangesAsync()
     {
+        Console.WriteLine(">> NotifyChangesAsync called");
         var otpValue = string.Join(string.Empty, otpValues);
+        Console.WriteLine($">> otpValue: {otpValue}");
         await OnOTPChanged.InvokeAsync(otpValue);
 
         if (otpValue.Length == Length && !otpValues.Any(string.IsNullOrWhiteSpace))
@@ -52,13 +54,16 @@ public partial class OTPInput : BlazorBootstrapComponentBase
 
     private async Task OnInput(ChangeEventArgs e, int index)
     {
+        Console.WriteLine(">> OnInput called");
         var currentValue = otpValues[index] ?? "";
         var newValue = new string(e.Value?.ToString()?.Where(char.IsDigit)?.ToArray());
 
+        Console.WriteLine($">> newValue: {newValue}");
         if (string.IsNullOrEmpty(newValue))
         {
             otpValues[index] = string.Empty;
-
+            await JSRuntime.InvokeVoidAsync(JsInteropUtils.SetInputElementValue, GetInputId(index), string.Empty);
+            await NotifyChangesAsync();
             return;
         }
 
@@ -69,7 +74,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
             if (index < Length - 1)
             {
                 otpValues[index + 1] = string.Empty;
-                await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusElement, GetInputId(index + 1));
+                await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index + 1));
             }
         }
         else
@@ -87,7 +92,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
         if (e.Key == "Backspace" && index > 0)
         {
             otpValues[index] = string.Empty;
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusElement, GetInputId(index - 1));
+            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index - 1));
 
             // Notify changes
             await NotifyChangesAsync();
@@ -95,11 +100,11 @@ public partial class OTPInput : BlazorBootstrapComponentBase
 
         // Handle left arrow key to focus on the previous input
         if (e.Key == "ArrowLeft" && index > 0)
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusElement, GetInputId(index - 1));
+            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index - 1));
 
         // Handle right arrow key to focus on the next input
         if (e.Key == "ArrowRight" && index < Length - 1)
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusElement, GetInputId(index + 1));
+            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index + 1));
     }
 
     #endregion
@@ -111,7 +116,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
             Class,
             (BootstrapClass.FormControl, true),
             (BootstrapClass.TextCenter, true),
-            (BootstrapClass.MarginEnd1, true)
+            (BootstrapClass.MarginEnd2, true)
         );
 
     protected override string? StyleNames =>

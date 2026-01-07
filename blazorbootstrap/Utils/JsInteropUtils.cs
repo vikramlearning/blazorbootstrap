@@ -6,7 +6,9 @@ public class JsInteropUtils
 
     private const string Prefix = "window.blazorBootstrap.";
 
-    public const string FocusElement = Prefix + "focusElement";
+    public const string FocusInputElement = Prefix + "focusInputElement";
+
+    public const string SetInputElementValue = Prefix + "setInputElementValue";
 
     #endregion
 }
