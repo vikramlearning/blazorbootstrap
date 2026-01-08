@@ -9,67 +9,47 @@ public class ToastMessage : IEquatable<ToastMessage>
         Id = Guid.NewGuid();
     }
 
-    public ToastMessage(ToastType type, string message)
+    public ToastMessage(ToastType type)
+        : this()
     {
-        Id = Guid.NewGuid();
         Type = type;
+    }
+
+    public ToastMessage(ToastType type, string message)
+        : this(type)
+    {
         Message = message;
     }
 
     public ToastMessage(ToastType type, string title, string message)
+        : this(type, message)
     {
-        Id = Guid.NewGuid();
-        Type = type;
         Title = title;
-        Message = message;
     }
 
     public ToastMessage(ToastType type, IconName iconName, string title, string message)
+        : this(type, title, message)
     {
-        Id = Guid.NewGuid();
-        Type = type;
         IconName = iconName;
-        Title = title;
-        Message = message;
     }
 
     public ToastMessage(ToastType type, string customIconName, string title, string message)
+        : this(type, title, message)
     {
-        Id = Guid.NewGuid();
-        Type = type;
         CustomIconName = customIconName;
-        Title = title;
-        Message = message;
     }
 
-    public ToastMessage(ToastType type, IconName iconName, string title, string helpText, string message)
+    public ToastMessage(ToastType type, IconName iconName, string title, string helpText, string message, bool autoHide = false)
+        : this(type, iconName, title, message)
     {
-        Id = Guid.NewGuid();
-        Type = type;
-        IconName = iconName;
-        Title = title;
         HelpText = helpText;
-        Message = message;
+        AutoHide = autoHide;
     }
 
-    public ToastMessage(ToastType type, string customIconName, string title, string helpText, string message)
+    public ToastMessage(ToastType type, string customIconName, string title, string helpText, string message, bool autoHide = false)
+        : this(type, customIconName, title, message)
     {
-        Id = Guid.NewGuid();
-        Type = type;
-        CustomIconName = customIconName;
-        Title = title;
         HelpText = helpText;
-        Message = message;
-    }
-
-    public ToastMessage(ToastType type, string customIconName, string title, string helpText, string message, bool autoHide)
-    {
-        Id = Guid.NewGuid();
-        Type = type;
-        CustomIconName = customIconName;
-        Title = title;
-        HelpText = helpText;
-        Message = message;
         AutoHide = autoHide;
     }
 
