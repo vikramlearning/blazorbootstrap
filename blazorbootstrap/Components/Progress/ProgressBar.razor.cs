@@ -17,6 +17,8 @@ public partial class ProgressBar
     /// Decrease the progress bar width.
     /// </summary>
     /// <param name="width"></param>
+    [AddedVersion("1.0.0")]
+    [Description("Decrease the progress bar width.")]
     public void DecreaseWidth(double width)
     {
         if (width is < 0 or > 100)
@@ -31,13 +33,17 @@ public partial class ProgressBar
     /// <summary>
     /// Get the progress bar width.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>double</returns>
+    [AddedVersion("1.0.0")]
+    [Description("Get the progress bar width.")]
     public double GetWidth() => width;
 
     /// <summary>
     /// Increase the progress bar width.
     /// </summary>
     /// <param name="width"></param>
+    [AddedVersion("1.0.0")]
+    [Description("Increase the progress bar width.")]
     public void IncreaseWidth(double width)
     {
         if (width is < 0 or > 100)
@@ -53,18 +59,24 @@ public partial class ProgressBar
     /// Set the progress bar color.
     /// </summary>
     /// <param name="color"></param>
+    [AddedVersion("1.0.0")]
+    [Description("Set the progress bar color.")]
     public void SetColor(ProgressColor color) => Color = color;
 
     /// <summary>
     /// Set the progress bar label.
     /// </summary>
     /// <param name="text"></param>
+    [AddedVersion("1.0.0")]
+    [Description("Set the progress bar label.")]
     public void SetLabel(string text) => Label = text;
 
     /// <summary>
     /// Set the progress bar width.
     /// </summary>
     /// <param name="width"></param>
+    [AddedVersion("1.0.0")]
+    [Description("Set the progress bar width.")]
     public void SetWidth(double width)
     {
         if (width is < 0 or > 100)
@@ -91,10 +103,13 @@ public partial class ProgressBar
 
     /// <summary>
     /// Gets or sets the progress color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="ProgressColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(ProgressColor.None)]
+    [Description("Gets or sets the progress color.")]
     [Parameter]
     public ProgressColor Color
     {
@@ -108,19 +123,25 @@ public partial class ProgressBar
 
     /// <summary>
     /// Gets or sets the progress bar label.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the progress bar label.")]
     [Parameter]
-    public string Label { get; set; } = default!;
+    public string? Label { get; set; }
 
     /// <summary>
     /// Gets or sets the progress bar type.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="ProgressType.Default" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(ProgressType.Default)]
+    [Description("Gets or sets the progress bar type.")]
     [Parameter]
     public ProgressType Type
     {
@@ -134,10 +155,13 @@ public partial class ProgressBar
 
     /// <summary>
     /// Get or sets the progress bar width.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 0.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(0)]
+    [Description("Get or sets the progress bar width.")]
     [Parameter]
     public double Width
     {

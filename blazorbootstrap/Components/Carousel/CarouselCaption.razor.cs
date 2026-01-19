@@ -14,10 +14,13 @@ public partial class CarouselCaption : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="null" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 

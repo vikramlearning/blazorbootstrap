@@ -80,6 +80,8 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// Shows <see cref="CarouselItem" /> by index.
     /// </summary>
     /// <param name="index"></param>
+    [AddedVersion("3.0.0")]
+    [Description("Shows <b>CarouselItem</b> by index.")]
     public ValueTask ShowItemByIndexAsync(int index)
     {
         if (!isDefaultActiveCarouselItemSet)
@@ -99,11 +101,15 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// <summary>
     /// Shows next <see cref="CarouselItem" />.
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [Description("Shows next <b>CarouselItem</b>.")]
     public ValueTask PauseCarouselAsync() => JSRuntime.InvokeVoidAsync(CarouselInterop.Pause, Id);
 
     /// <summary>
     /// Shows next <see cref="CarouselItem" />.
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [Description("Shows next <b>CarouselItem</b>.")]
     public ValueTask ShowNextItemAsync()
     {
         var nextIndex = activeIndex + 1;
@@ -115,6 +121,8 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// <summary>
     /// Shows previous <see cref="CarouselItem" />.
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [Description("Shows previous <b>CarouselItem</b>.")]
     public ValueTask ShowPreviousItemAsync()
     {
         var previousIndex = activeIndex - 1;
@@ -137,28 +145,37 @@ public partial class Carousel : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Controls the autoplay behavior of the carousel.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="CarouselAutoPlay.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(CarouselAutoPlay.None)]
+    [Description("Controls the autoplay behavior of the carousel.")]
     [Parameter]
     public CarouselAutoPlay Autoplay { get; set; } = CarouselAutoPlay.None;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Determines whether to use a crossfade effect when transitioning between slides.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="false" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(false)]
+    [Description("Determines whether to use a crossfade effect when transitioning between slides.")]
     [Parameter]
     public bool Crossfade { get; set; }
 
@@ -166,61 +183,80 @@ public partial class Carousel : BlazorBootstrapComponentBase
 
     /// <summary>
     /// The amount of time to delay between automatically cycling an item.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 5000 milliseconds.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(5000)]
+    [Description("The amount of time to delay between automatically cycling an item.")]
     [Parameter]
-    public int? Interval { get; set; } = 5000;
+    public int Interval { get; set; } = 5000;
 
     private int ItemCount => items.Count;
 
     /// <summary>
     /// Whether the carousel should react to keyboard events.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="true" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(true)]
+    [Description("Whether the carousel should react to keyboard events.")]
     [Parameter]
     public bool Keyboard { get; set; } = true;
 
     /// <summary>
     /// Fired when the carousel has completed its slide transition.
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [Description("Fired when the carousel has completed its slide transition.")]
     [Parameter]
     public EventCallback<CarouselEventArgs> Onslid { get; set; }
 
     /// <summary>
     /// Fires immediately when the slide instance method is invoked.
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [Description("Fires immediately when the slide instance method is invoked.")]
     [Parameter]
     public EventCallback<CarouselEventArgs> Onslide { get; set; }
 
     /// <summary>
     /// Indicates whether to show indicators (dots) below the carousel to navigate between slides.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="false" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(false)]
+    [Description("Indicates whether to show indicators (dots) below the carousel to navigate between slides.")]
     [Parameter]
     public bool ShowIndicators { get; set; }
 
     /// <summary>
     /// Specifies whether to display the previous and next controls (arrows) for navigating slides.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="true" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(true)]
+    [Description("Specifies whether to display the previous and next controls (arrows) for navigating slides.")]
     [Parameter]
     public bool ShowPreviousNextControls { get; set; } = true;
 
     /// <summary>
     /// Carousels support swiping left/right on touchscreen devices to move between slides.
     /// This can be disabled by setting the <see cref="Touch" /> parameter to <see langword="false" />.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="true" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(true)]
+    [Description("Carousels support swiping left/right on touchscreen devices to move between slides. This can be disabled by setting the <b>Touch</b> parameter to <b>false</b>.")]
     [Parameter]
     public bool Touch { get; set; } = true;
 

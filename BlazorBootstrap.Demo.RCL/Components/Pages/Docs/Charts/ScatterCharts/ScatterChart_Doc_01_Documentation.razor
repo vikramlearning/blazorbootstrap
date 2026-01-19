@@ -1,0 +1,49 @@
+﻿@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_ScatterChart" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ScatterChart Parameters" PageUrl="@pageUrl" Link="scatter-chart-parameters">
+    <DocxTable TItem="ScatterChart" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ScatterChart Methods" PageUrl="@pageUrl" Link="scatter-chart-methods">
+    <DocxTable TItem="ScatterChart" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ChartData Properties" PageUrl="@pageUrl" Link="chart-data-properties">
+    <DocxTable TItem="ChartData" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ScatterChartDataset Properties" PageUrl="@pageUrl" Link="scatter-chart-dataset-properties">
+    <DocxTable TItem="ScatterChartDataset" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ScatterChartDatasetDataLabels Properties" PageUrl="@pageUrl" Link="scatter-chart-dataset-datalabels-properties">
+    <DocxTable TItem="ScatterChartDatasetDataLabels" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ScatterChartOptions Properties" PageUrl="@pageUrl" Link="scatter-chart-options-properties">
+    <DocxTable TItem="ScatterChartOptions" DocType="DocType.Properties" />
+</Section>
+
+@code {
+    private const string componentName = nameof(ScatterChart);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_ScatterChart;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_ScatterChart;
+}

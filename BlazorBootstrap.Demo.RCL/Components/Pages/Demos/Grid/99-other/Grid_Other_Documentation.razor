@@ -1,0 +1,55 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
+
+<Section Size="HeadingSize.H2" Name="Cell formating" PageUrl="@pageUrl" Link="cell-formating">
+    <div class="mb-3">To format the cell data, use <code>ToString method and format strings</code>. Refer: <a href="https://docs.microsoft.com/en-us/dotnet/standard/base-types/formatting-types" target="_blank">How to format numbers, dates, enums, and other types in .NET</a></div>
+    <Callout Color="CalloutColor.Success"><strong>Example: </strong>@@context.Salary.ToString("N2").</Callout>
+    <Demo Type="typeof(Grid_Demo_01_Grid_Cell_Formating)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Cell nowrap" PageUrl="@pageUrl" Link="cell-nowrap">
+    <div class="mb-3">To prevent text from wrapping, add <code>TextNoWrap="true"</code> to the GridColumn.</div>
+    <Demo Type="typeof(Grid_Demo_02_Grid_Cell_Nowrap)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Empty data" PageUrl="@pageUrl" Link="empty-data">
+    <div class="mb-3">If there are no records to display in the Grid, by default, it will display the <strong>No records to display</strong> message. You can change this message by adding the <code>EmptyText</code> parameter to the Grid.</div>
+    <Demo Type="typeof(Grid_Demo_03_Empty_Data)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Empty data template" PageUrl="@pageUrl" Link="empty-data-template">
+    <div class="mb-3">Set the <code>GridEmptyDataTemplate</code> to customize the message displayed when the grid has no records.</div>
+    <Demo Type="typeof(Grid_Demo_04_Empty_Data_Template)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Custom column headers" PageUrl="@pageUrl" Link="custom-column-headers">
+    <div class="mb-3">In the below example, we use <code>&lt;HeaderContent&gt;</code> and <code>&lt;ChildContent&gt;</code> tags to define custom column header and cell content. When defining header content, filters and sorting are removed from column.</div>
+    <Demo Type="typeof(Grid_Demo_05_Specify_Custom_Column_Header)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Hide columns" PageUrl="@pageUrl" Link="hide-columns">
+    <div class="mb-3">Set the <code>IsVisible</code> parameter to <b>false</b> to hide the column.</div>
+    <Demo Type="typeof(Grid_Demo_06_Hide_Columns_Dynamically)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Increase textbox width" PageUrl="@pageUrl" Link="increase-textbox-width">
+    <Demo Type="typeof(Grid_Demo_07_Increase_TextBox_Width)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_OtherExamples;
+    private const string pageTitle = "Blazor Grid - Other examples";
+    private const string pageDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string metaTitle = "Blazor Grid Component - Other examples";
+    private const string metaDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}

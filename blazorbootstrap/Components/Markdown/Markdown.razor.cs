@@ -678,24 +678,39 @@ public partial class Markdown : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the CSS class for blockquotes.
+    /// <para>
+    /// Default value is "blockquote".
+    /// </para>
     /// </summary>
+    [AddedVersion("3.1.0")]
+    [DefaultValue("blockquote")]
+    [Description("Gets or sets the CSS class for blockquotes.")]
     [Parameter]
-    public string? BlockquotesCssClass { get; set; } = "blockquote";
+    public string BlockquotesCssClass { get; set; } = "blockquote";
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="null" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.1.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the CSS class for table.
+    /// <para>
+    /// Default value is "table".
+    /// </para>
     /// </summary>
+    [AddedVersion("3.1.0")]
+    [DefaultValue("table")]
+    [Description("Gets or sets the CSS class for table.")]
     [Parameter]
-    public string? TableCssClass { get; set; } = "table";
+    public string TableCssClass { get; set; } = "table";
 
     #endregion
 }

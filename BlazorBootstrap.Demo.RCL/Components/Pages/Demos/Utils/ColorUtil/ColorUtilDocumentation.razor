@@ -1,0 +1,32 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+@* <DocsLink Href="@DemoRouteConstants.Docs_URL_ColorUtils" /> *@
+
+<Section Size="HeadingSize.H2" Name="Categorical 6-color" PageUrl="@pageUrl" Link="categorical-6-color">
+    <div class="mt-4">
+        <ColorUtil_Demo_01_CategoricalSixColor />
+    </div>
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Categorical 12-color" PageUrl="@pageUrl" Link="categorical-12-color">
+    <div class="mt-4">
+        <ColorUtil_Demo_02_CategoricalTwelveColor />
+    </div>
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_ColorUtils;
+    private const string pageTitle = "Blazor Bootstrap Color Utils";
+    private const string pageDescription = "For data visualization, you can use the predefined palettes ColorBuilder.CategoricalTwelveColors for a 12-color palette and ColorBuilder.CategoricalSixColors for a 6-color palette. These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.";
+    private const string metaTitle = "Blazor Bootstrap Color Utils";
+    private const string metaDescription = "For data visualization, you can use the predefined palettes ColorBuilder.CategoricalTwelveColors for a 12-color palette and ColorBuilder.CategoricalSixColors for a 6-color palette. These palettes offer a range of distinct and visually appealing colors that can be applied to represent different categories or data elements in your visualizations.";
+    private const string imageUrl = "https://i.imgur.com/VRglJqU.jpg"; // TODO: update this
+}

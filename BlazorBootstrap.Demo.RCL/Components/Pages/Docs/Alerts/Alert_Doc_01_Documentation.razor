@@ -1,0 +1,41 @@
+﻿@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Alerts" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Alert Parameters" PageUrl="@pageUrl" Link="alert-parameters">
+    <DocxTable TItem="Alert" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Alert Methods" PageUrl="@pageUrl" Link="alert-methods">
+    <DocxTable TItem="Alert" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Alert Events" PageUrl="@pageUrl" Link="alert-events">
+    <DocxTable TItem="Alert" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="AlertColor Enum" PageUrl="@pageUrl" Link="alert-color-enum">
+    <DocxTable TItem="AlertColor" DocType="DocType.Enum" />
+</Section>
+
+@code {
+    private const string componentName = nameof(Alert);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Alerts;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Alerts;
+}

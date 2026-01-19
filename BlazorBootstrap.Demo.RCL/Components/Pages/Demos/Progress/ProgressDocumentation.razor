@@ -1,0 +1,68 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Progress" />
+
+<Section Size="HeadingSize.H2" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
+    <Demo Type="typeof(Progress_Demo_01_How_It_Works)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Labels" PageUrl="@pageUrl" Link="labels">
+    <div>Add labels to your Blazor ProgressBar component using the <code>Label</code> parameter or by calling the <code>SetLabel(...)</code> method.</div>
+    <Demo Type="typeof(Progress_Demo_02_Labels)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Set width programmatically" PageUrl="@pageUrl" Link="set-width-programmatically">
+    <div>Use <code>IncreaseWidth()</code> or <code>DecreaseWidth()</code> methods to increase or decrease the Blazor ProgressBar width.</div>
+    <Demo Type="typeof(Progress_Demo_03_Set_Width_Programmatically)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Height" PageUrl="@pageUrl" Link="height">
+    <div>Set the height of the Blazor Progress by using the <code>Height</code> parameter. Height is measured in <b>pixels</b>.</div>
+    <Demo Type="typeof(Progress_Demo_04_Height)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Backgrounds" PageUrl="@pageUrl" Link="backgrounds">
+    <div>Use the <code>Color</code> parameter or the <code>SetColor(ProgressColor color)</code> method to change the appearance of individual Blazor ProgressBar components.</div>
+    <Demo Type="typeof(Progress_Demo_05_Backgrounds)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Set background programmatically" PageUrl="@pageUrl" Link="set-background-programmatically">
+    <div>You can dynamically set the Blazor ProgressBar color by calling the <code>SetColor()</code> method.</div>
+    <Demo Type="typeof(Progress_Demo_06_Set_Background_Programmatically)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Multiple bars" PageUrl="@pageUrl" Link="multiple-bars">
+    <div>Include multiple Blazor ProgressBar components in a Blazor Progress component if needed.</div>
+    <Demo Type="typeof(Progress_Demo_07_MultipleBars)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Striped" PageUrl="@pageUrl" Link="striped">
+    <div>Add <code>Type="ProgressType.Striped"</code> to any Blazor ProgressBar component to apply a stripe.</div>
+    <Demo Type="typeof(Progress_Demo_08_Striped)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Animated stripes" PageUrl="@pageUrl" Link="animated-stripes">
+    <div>The stripes can also be animated. Add <code>Type="ProgressType.StripedAndAnimated"</code> to the Blazor ProgressBar component to animate the stripes right to the left.</div>
+    <Demo Type="typeof(Progress_Demo_09_Animated_Stripes)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Dynamic progress" PageUrl="@pageUrl" Link="dynamic-progress">
+    <Demo Type="typeof(Progress_Demo_10_Dynamic_Progress)" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Progress;
+    private const string pageTitle = "Blazor Progress";
+    private const string pageDescription = "Documentation and examples for using Blazor Bootstrap custom progress bars featuring support for stacked bars, animated backgrounds, and text labels.";
+    private const string metaTitle = "Blazor Progress Component";
+    private const string metaDescription = "Documentation and examples for using Blazor Bootstrap custom progress bars featuring support for stacked bars, animated backgrounds, and text labels.";
+    private const string imageUrl = "https://i.imgur.com/MK142lQ.png";
+}

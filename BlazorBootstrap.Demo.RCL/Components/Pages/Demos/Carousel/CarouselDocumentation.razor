@@ -1,0 +1,113 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Carousel" />
+
+<Section Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" Link="examples">
+    <div class="mb-3">Here is a basic example of a carousel with three slides.</div>
+    <Demo Type="typeof(Carousel_Demo_01_Examples)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Indicators" PageUrl="@pageUrl" Link="indicators">
+    <div class="mb-3">
+        You can add indicators to the carousel, alongside the previous/next controls.
+        The indicators allow users to jump directly to a particular slide.
+        Set <code>ShowIndicators</code> to <code>true</code> to show the indicators.
+    </div>
+    <Demo Type="typeof(Carousel_Demo_02_Indicators)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Captions" PageUrl="@pageUrl" Link="captions">
+    <div class="mb-3">
+        You can add captions to your slides with the <code>CarouselCaption</code> component within any <code>CarouselItem</code>.
+        They can be easily hidden on smaller viewports.
+    </div>
+    <Demo Type="typeof(Carousel_Demo_03_Captions)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Crossfade" PageUrl="@pageUrl" Link="Crossfade">
+    <div class="mb-3">
+        To animate slides with a fading transition instead of sliding, set <code>Crossfade</code> to <code>true</code>.
+    </div>
+    <Demo Type="typeof(Carousel_Demo_04_Crossfade)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Autoplaying carousels" PageUrl="@pageUrl" Link="autoplaying-carousels">
+    <div class="mb-3">
+        You can make your carousels autoplay on page load by setting the <code>Autoplay</code> parameter to <code>CarouselAutoPlay.StartOnPageLoad</code>.
+        Autoplaying carousels automatically pause while hovered with the mouse.
+    </div>
+    <Demo Type="typeof(Carousel_Demo_05_Autoplay_A_StartOnPageLoad)" Tabs="true" />
+    <div class="my-3">
+        When the <code>Autoplay</code> parameter is set to <code>CarouselAutoPlay.StartAfterUserInteraction</code>, the carousel won’t automatically start to cycle on page load.
+        Instead, it will only start after the first user interaction.
+    </div>
+    <Demo Type="typeof(Carousel_Demo_05_Autoplay_B_StartAfterUserInteraction)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Individual carousel item interval" PageUrl="@pageUrl" Link="individual-carousel-item-interval">
+    <div class="mb-3">
+        Add <code>Interval</code> parameter to a <code>CarouselItem</code> component to change the amount of time to delay between automatically cycling to the next item.
+    </div>
+    <Demo Type="typeof(Carousel_Demo_06_Individual_Carouselitem_Interval)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Autoplaying carousels without controls" PageUrl="@pageUrl" Link="autoplaying-carousels-without-controls">
+    <div class="mb-3">
+        Hide the controls by setting <code>ShowPreviousNextControls</code> parameter to <code>false</code>.
+    </div>
+    <Demo Type="typeof(Carousel_Demo_07_Autoplaying_Carousels_without_Controls)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disable touch swiping" PageUrl="@pageUrl" Link="disable-touch-swiping">
+    <div class="mb-3">
+        Carousels support swiping left/right on touchscreen devices to move between slides.
+        This can be disabled by setting the <code>Touch</code> option to <code>false</code>.
+    </div>
+    <Demo Type="typeof(Carousel_Demo_08_Touch)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Events" PageUrl="@pageUrl" Link="events">
+    <div class="mb-3">
+        Blazor Bootstrap Carousel component exposes a two events for hooking into Carousel functionality.
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Event Name</th>
+                <th scope="col">Description</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr>
+                <th scope="row"><code>Onslide</code></th>
+                <td>Fires immediately when the slide instance method is invoked.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>Onslid</code></th>
+                <td>Fired when the carousel has completed its slide transition.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <Demo Type="typeof(Carousel_Demo_09_Events)" Tabs="true" />
+</Section>
+
+<Callout HideHeading="true">
+    <b>NOTE:</b> All of the images were generated using Microsoft Designer.
+</Callout>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Carousel;
+    private const string pageTitle = "Blazor Carousel";
+    private const string pageDescription = "Blazor Carousel component is a slideshow component that cycles through elements, images, or slides of text.";
+    private const string metaTitle = "Blazor Carousel Component";
+    private const string metaDescription = "Blazor Carousel component is a slideshow component that cycles through elements, images, or slides of text.";
+    private const string imageUrl = "https://i.imgur.com/YoZd9Hy.png";
+}

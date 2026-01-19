@@ -1,0 +1,14 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inherits BlazorBootstrapComponentBase
+
+<div>
+    <Button Color="ButtonColor.Primary" Type="ButtonType.Link" To="@Href">
+        <span>Demos</span>
+        <Icon Class="ml-1" Name="IconName.BoxArrowUpRight" />
+    </Button>
+</div>
+
+@code{
+    [Parameter]
+    public string? Href { get; set; }
+}

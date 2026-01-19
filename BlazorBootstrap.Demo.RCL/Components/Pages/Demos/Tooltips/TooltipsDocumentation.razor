@@ -1,0 +1,63 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Tooltips" />
+
+<Section Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" Link="examples">
+    <Demo Type="typeof(Tooltips_Demo_01_Examples)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disabled button with tootip" PageUrl="@pageUrl" Link="disabled-button-with-tootip">
+    <Demo Type="typeof(Tooltips_Demo_02_Disabled_Button_With_Tooltip)" />
+</Section>
+
+<Callout Color="CalloutColor.Success">
+    By default, <code>Button</code> supports tooltips via <code>TooltipTitle</code> and <code>TooltipPlacement</code> parameters.
+    See <a href="/buttons#tooltip">Buttons - Tooltip</a>.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Icon with click event" PageUrl="@pageUrl" Link="icon-with-click-event">
+    <Demo Type="typeof(Tooltips_Demo_03_Icon_With_Click_Event)" />
+</Section>
+
+@* START: Commented Examples *@
+@*<Section Size="HeadingSize.H2" Name="Dynamically update the tooltip text" PageUrl="@pageUrl" Link="dynamically-update-the-tooltip-text">
+    <Demo Type="typeof(Tooltips_Demo_04_Dynamically_Update_Tooltip_Text)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Tooltip with link" PageUrl="@pageUrl" Link="tooltip-with-link">
+    <Demo Type="typeof(Tooltips_Demo_05_Tooltip_With_Navigation_Link)" />
+</Section>*@
+@* END: Commented Examples *@
+
+<Section Size="HeadingSize.H2" Name="Custom tooltips" PageUrl="@pageUrl" Link="custom-tooltips">
+    <div class="mb-3">
+        Blazor Bootstrap includes several predefined tooltip styles, each serving its own semantic purpose. 
+        The <b>Color</b> parameter can be used to customize the color of the tooltip.
+    </div>
+    <Demo Type="typeof(Tooltips_Demo_06_Colors)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Dynamically change the tooltip color" PageUrl="@pageUrl" Link="dynamically-change-the-tooltip-color">
+    <Demo Type="typeof(Tooltips_Demo_07_Dynamically_Change_Color)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Tooltip with HTML" PageUrl="@pageUrl" Link="tooltip-with-html">
+    <Demo Type="typeof(Tooltips_Demo_08_HTML)" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Tooltips;
+    private const string pageTitle = "Blazor Tooltip";
+    private const string pageDescription = "Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.";
+    private const string metaTitle = "Blazor Tooltip Component";
+    private const string metaDescription = "Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.";
+    private const string imageUrl = "https://i.imgur.com/PGlmZS3.jpg";
+}

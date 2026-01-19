@@ -1,0 +1,39 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
+
+<Section Size="HeadingSize.H2" Name="Data parameter - Assign collection" PageUrl="@pageUrl" Link="data-parameter-assign-collection">
+    <div class="mb-3">Assign a collection to the <code>Data</code> parameter to render the grid dynamically. The example below will render different department employees in the individual grid.</div>
+    <Demo Type="typeof(Grid_Demo_01_Data_Parameter_Assign_Collection)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Data parameter - Update collection" PageUrl="@pageUrl" Link="data-parameter-update-collection">
+    <div class="mb-3">You can update the collection assigned to the <code>Data</code> parameter. In the below example, the grid will render the updated collection.</div>
+    <Callout Color="CalloutColor.Success" Heading="Important">
+        <p>
+            The <b>Add Employee</b> button click adds a new employee to the existing <b>employees</b> collection—so explicit grid refresh is required.
+        </p>
+        <p>
+            The <b>Add Employee 2</b> button click creates a shallow copy of the <b>employees</b> collection and adds a new employee.
+            This new collection is assigned to the <b>employees</b> variable. Now, the <b>employees</b> variable has a new reference. So the grid will refresh automatically. An explicit grid refresh call is not required.
+        </p>
+    </Callout>
+    <Demo Type="typeof(Grid_Demo_02_Data_Parameter_Update_Collection)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_DataBinding;
+    private const string pageTitle = "Blazor Grid - Data binding";
+    private const string pageDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string metaTitle = "Blazor Grid Component - Data binding";
+    private const string metaDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}
