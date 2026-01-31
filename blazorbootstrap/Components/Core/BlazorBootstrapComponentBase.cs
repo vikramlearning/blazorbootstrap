@@ -8,6 +8,8 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
 
     private bool isDisposed;
 
+    private bool isJsRuntimeAvailable = true;
+
     internal Queue<Func<Task>> queuedTasks = new();
 
     #endregion
@@ -28,6 +30,27 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     protected override void OnInitialized()
     {
         Id ??= IdUtility.GetNextId();
+    }
+
+    protected async Task SafeInvokeVoidAsync(string identifier, params object?[] args)
+    {
+        if (!isJsRuntimeAvailable)
+            return;
+
+        try
+        {
+            await JSRuntime.InvokeVoidAsync(identifier, args);
+        }
+        catch (TaskCanceledException)
+        {
+            // Component/DOM likely got removed (navigation, conditional render, etc.)
+            // Treat as benign for focus/value updates; do not mark JS runtime as unavailable.
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime no longer available (more common on Server, but safe here too).
+            isJsRuntimeAvailable = false;
+        }
     }
 
     public static string BuildClassNames(params (string? cssClass, bool when)[] cssClassList)
@@ -188,6 +211,8 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     public string? Id { get; set; }
 
     protected bool IsRenderComplete { get; private set; }
+
+    protected bool IsJsRuntimeAvailable => isJsRuntimeAvailable;
 
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
 

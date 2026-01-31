@@ -948,8 +948,11 @@ window.blazorBootstrap = {
         windowSize: () => window.innerWidth
     },
     // global function
-    invokeMethodAsync: (callbackEventName, dotNetHelper) => {
-        dotNetHelper.invokeMethodAsync(callbackEventName);
+    focusInputElement(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.focus();
+        }
     },
     hasInvalidChars: (input, validChars) => {
         if (input.length <= 0 || validChars.length <= 0)
@@ -963,6 +966,9 @@ window.blazorBootstrap = {
 
         return false;
     },
+    invokeMethodAsync: (callbackEventName, dotNetHelper) => {
+        dotNetHelper.invokeMethodAsync(callbackEventName);
+    },
     scrollToElementBottom: (elementId) => {
         let el = document.getElementById(elementId);
         if (el)
@@ -972,6 +978,12 @@ window.blazorBootstrap = {
         let el = document.getElementById(elementId);
         if (el)
             el.scrollTop = 0;
+    },
+    setInputElementValue: (elementId, value) => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.value = value;
+        }
     }
 }
 

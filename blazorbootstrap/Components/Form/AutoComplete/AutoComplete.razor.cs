@@ -34,7 +34,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", Element); // NOTE: Always pass ElementRef
+                    await SafeInvokeVoidAsync("window.blazorBootstrap.autocomplete.dispose", Element); // NOTE: Always pass ElementRef
             }
             catch (JSDisconnectedException)
             {
@@ -50,7 +50,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", Element, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.autocomplete.initialize", Element, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -206,7 +206,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         if (AdditionalAttributes is not null && AdditionalAttributes.TryGetValue(BootstrapAttributes.DataBootstrapToggle, out _))
             AdditionalAttributes.Remove(BootstrapAttributes.DataBootstrapToggle);
 
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", Element);
+        await SafeInvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", Element);
     }
 
     private async Task OnInputChangedAsync(ChangeEventArgs args)
@@ -288,7 +288,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         if (AdditionalAttributes is not null && !AdditionalAttributes.TryGetValue(BootstrapAttributes.DataBootstrapToggle, out _))
             AdditionalAttributes.Add(BootstrapAttributes.DataBootstrapToggle, "dropdown");
 
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.autocomplete.show", Element);
+        await SafeInvokeVoidAsync("window.blazorBootstrap.autocomplete.show", Element);
     }
 
     #endregion

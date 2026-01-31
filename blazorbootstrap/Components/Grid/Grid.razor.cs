@@ -331,7 +331,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         await RefreshDataAsync(false);
     }
 
-    private async Task CheckOrUnCheckAll() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", $".bb-grid-form-check-{headerCheckboxId} > input.form-check-input", allItemsSelected);
+    private async Task CheckOrUnCheckAll() => await SafeInvokeVoidAsync("window.blazorBootstrap.grid.checkOrUnCheckAll", $".bb-grid-form-check-{headerCheckboxId} > input.form-check-input", allItemsSelected);
 
     /// <summary>
     /// Child selection template.
@@ -534,7 +534,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task OnScroll(EventArgs e)
     {
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.scroll", Id);
+        await SafeInvokeVoidAsync("window.blazorBootstrap.grid.scroll", Id);
     }
 
     private void PrepareCheckboxIds()
@@ -617,7 +617,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private Task SetCheckboxStateAsync(string id, CheckboxState checkboxState)
     {
-        queuedTasks.Enqueue(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState));
+        queuedTasks.Enqueue(async () => await SafeInvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState));
 
         return Task.CompletedTask;
     }

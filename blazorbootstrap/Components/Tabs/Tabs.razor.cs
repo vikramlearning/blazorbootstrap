@@ -24,7 +24,29 @@ public partial class Tabs : BlazorBootstrapComponentBase
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
         if (disposing && tabs is not null)
+        {
+            foreach (var tab in tabs)
+            {
+                try
+                {
+                    if (tab is IAsyncDisposable asyncDisposable)
+                    {
+                        await asyncDisposable.DisposeAsync();
+                    }
+                    else if (tab is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Exception while disposing tab '{tab?.Name}': {ex}");
+                }
+            }
+
+            tabs.Clear();
             tabs = null!;
+        }
 
         await base.DisposeAsyncCore(disposing);
     }
@@ -32,7 +54,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", Id, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.tabs.initialize", Id, objRef);
 
         // Set active tab
         if (firstRender && !isDefaultActiveTabSet)
@@ -283,7 +305,7 @@ public partial class Tabs : BlazorBootstrapComponentBase
         if (!isDefaultActiveTabSet)
             isDefaultActiveTabSet = true;
 
-        queuedTasks.Enqueue(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.Id));
+        queuedTasks.Enqueue(async () => await SafeInvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.Id));
 
         if (tab?.OnClick.HasDelegate ?? false)
             await tab.OnClick.InvokeAsync(new TabEventArgs(tab.Name!, tab.Title!));

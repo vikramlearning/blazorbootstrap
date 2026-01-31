@@ -24,7 +24,7 @@ public partial class Sidebar : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", Id, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", Id, objRef);
 
             var width = await JSRuntime.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
 

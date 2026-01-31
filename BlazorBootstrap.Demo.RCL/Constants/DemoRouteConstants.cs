@@ -32,6 +32,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_DateInput = Demos_URL_Forms_Prefix + "/date-input";
     public const string Demos_URL_EnumInput = Demos_URL_Forms_Prefix + "/enum-input";
     public const string Demos_URL_NumberInput = Demos_URL_Forms_Prefix + "/number-input";
+    public const string Demos_URL_OTPInput = Demos_URL_Forms_Prefix + "/otp-input";
     public const string Demos_URL_PasswordInput = Demos_URL_Forms_Prefix + "/password-input";
     public const string Demos_URL_RadioInput = Demos_URL_Forms_Prefix + "/radio-input";
     public const string Demos_URL_RangeInput = Demos_URL_Forms_Prefix + "/range-input";
@@ -143,6 +144,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_DateInput = Docs_URL_Forms_Prefix + "/date-input";
     public const string Docs_URL_EnumInput = Docs_URL_Forms_Prefix + "/enum-input";
     public const string Docs_URL_NumberInput = Docs_URL_Forms_Prefix + "/number-input";
+    public const string Docs_URL_OTPInput = Docs_URL_Forms_Prefix + "/otp-input";
     public const string Docs_URL_PasswordInput = Docs_URL_Forms_Prefix + "/password-input";
     public const string Docs_URL_RadioInput = Docs_URL_Forms_Prefix + "/radio-input";
     public const string Docs_URL_RangeInput = Docs_URL_Forms_Prefix + "/range-input";

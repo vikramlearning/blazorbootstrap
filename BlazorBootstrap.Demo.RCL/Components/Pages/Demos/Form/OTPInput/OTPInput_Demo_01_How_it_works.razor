@@ -1,0 +1,19 @@
+﻿<OTPInput OnOTPChanged="HandleOtpChanged"
+          OnOTPCompleted="HandleOtpCompleted" />
+
+<div class="mt-3">Entered OTP: @enteredOTP</div>
+
+@code {
+    private string? enteredOTP = null;
+
+    private void HandleOtpChanged(string otp)
+    {
+        enteredOTP = otp;
+    }
+
+    private void HandleOtpCompleted(string otp)
+    {
+        Console.WriteLine($"OTP Completed: {otp}");
+        enteredOTP = otp;
+    }
+}

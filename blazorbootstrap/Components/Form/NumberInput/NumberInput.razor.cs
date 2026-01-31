@@ -18,7 +18,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", Id, isFloatingNumber(), AllowNegativeNumbers, cultureInfo.NumberFormat.NumberDecimalSeparator);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.numberInput.initialize", Id, isFloatingNumber(), AllowNegativeNumbers, cultureInfo.NumberFormat.NumberDecimalSeparator);
 
             var currentValue = Value; // object
 
@@ -261,7 +261,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
             Value = value;
 
         if (oldValue!.Equals(Value))
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.numberInput.setValue", Id, Value);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.numberInput.setValue", Id, Value);
 
         await ValueChanged.InvokeAsync(Value);
 

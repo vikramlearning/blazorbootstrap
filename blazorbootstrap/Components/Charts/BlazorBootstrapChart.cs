@@ -47,11 +47,11 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             var _data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins);
+                await SafeInvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins);
             else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), _data, (LineChartOptions)chartOptions, plugins);
+                await SafeInvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), _data, (LineChartOptions)chartOptions, plugins);
             else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.initialize", Id, GetChartType(), _data, chartOptions, plugins);
+                await SafeInvokeVoidAsync("window.blazorChart.initialize", Id, GetChartType(), _data, chartOptions, plugins);
         }
     }
 
@@ -70,7 +70,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     {
         var widthWithUnit = $"width:{width.ToString(CultureInfo.InvariantCulture)}{widthUnit.ToCssString()}";
         var heightWithUnit = $"height:{height.ToString(CultureInfo.InvariantCulture)}{heightUnit.ToCssString()}";
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.resize", Id, widthWithUnit, heightWithUnit);
+        await SafeInvokeVoidAsync("window.blazorChart.resize", Id, widthWithUnit, heightWithUnit);
     }
 
     /// <summary>
@@ -86,11 +86,11 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             var data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
+                await SafeInvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
             else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+                await SafeInvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
             else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions);
+                await SafeInvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions);
         }
     }
 
@@ -106,11 +106,11 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             var data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.updateDataValues", Id, data);
+                await SafeInvokeVoidAsync("window.blazorChart.bar.updateDataValues", Id, data);
             else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.updateDataValues", Id, data);
+                await SafeInvokeVoidAsync("window.blazorChart.line.updateDataValues", Id, data);
             else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.updateDataValues", Id, data);
+                await SafeInvokeVoidAsync("window.blazorChart.updateDataValues", Id, data);
         }
     }
 

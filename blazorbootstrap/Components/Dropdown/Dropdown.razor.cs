@@ -15,15 +15,8 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
-            try
-            {
-                if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.dispose", Id);
-            }
-            catch (JSDisconnectedException)
-            {
-                // do nothing
-            }
+            if (IsRenderComplete)
+                await SafeInvokeVoidAsync("window.blazorBootstrap.dropdown.dispose", Id);
 
             objRef?.Dispose();
         }
@@ -34,7 +27,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.initialize", Id, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.dropdown.initialize", Id, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -64,7 +57,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <returns>Task</returns>
     [AddedVersion("1.10.0")]
     [Description("Hides the dropdown menu of a given navbar or tabbed navigation.")]
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.hide", Id);
+    public async Task HideAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.dropdown.hide", Id);
 
     /// <summary>
     /// Shows the dropdown menu of a given navbar or tabbed navigation.
@@ -72,7 +65,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <returns>Task</returns>
     [AddedVersion("1.10.0")]
     [Description("Shows the dropdown menu of a given navbar or tabbed navigation.")]
-    public async Task ShowAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.show", Id);
+    public async Task ShowAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.dropdown.show", Id);
 
     /// <summary>
     /// Toggles the dropdown menu of a given navbar or tabbed navigation.
@@ -80,7 +73,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <returns>Task</returns>
     [AddedVersion("1.10.0")]
     [Description("Toggles the dropdown menu of a given navbar or tabbed navigation.")]
-    public async Task ToggleAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.toggle", Id);
+    public async Task ToggleAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.dropdown.toggle", Id);
 
     /// <summary>
     /// Updates the position of an element’s dropdown.
@@ -88,7 +81,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
     /// <returns>Task</returns>
     [AddedVersion("1.10.0")]
     [Description("Updates the position of an element’s dropdown.")]
-    public async Task UpdateAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dropdown.update", Id);
+    public async Task UpdateAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.dropdown.update", Id);
 
     #endregion
 

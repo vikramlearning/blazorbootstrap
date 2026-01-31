@@ -38,7 +38,7 @@ public partial class PieChart : BlazorBootstrapChart
                     pieChartDataset.BackgroundColor?.Add(pieChartDatasetData.BackgroundColor!);
                 }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
+        await SafeInvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
@@ -86,7 +86,7 @@ public partial class PieChart : BlazorBootstrapChart
                 }
             }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (PieChartDatasetData)x));
+        await SafeInvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (PieChartDatasetData)x));
 
         return chartData;
     }
@@ -105,7 +105,7 @@ public partial class PieChart : BlazorBootstrapChart
         if (chartDataset is PieChartDataset pieChartDataset)
         {
             chartData.Datasets.Add(pieChartDataset);
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, pieChartDataset);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.addDataset", Id, pieChartDataset);
         }
 
         return chartData;
@@ -117,7 +117,7 @@ public partial class PieChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PieChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PieChartOptions)chartOptions, plugins);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PieChartOptions)chartOptions, plugins);
         }
     }
 
@@ -127,7 +127,7 @@ public partial class PieChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PieChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PieChartOptions)chartOptions);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PieChartOptions)chartOptions);
         }
     }
 
