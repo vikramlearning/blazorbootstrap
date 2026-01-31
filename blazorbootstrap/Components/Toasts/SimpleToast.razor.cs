@@ -15,7 +15,15 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", Id);
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", Id);
+            }
+            catch (Microsoft.JSInterop.JSDisconnectedException)
+            {
+                // Circuit already disconnected; ignore.
+            }
+
             objRef?.Dispose();
         }
 

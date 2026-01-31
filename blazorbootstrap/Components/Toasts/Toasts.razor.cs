@@ -72,7 +72,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
                 {
                     Messages.Remove(message);
                     if (!string.IsNullOrWhiteSpace(message.ElementId))
-                        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
+                        await SafeInvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
                 }
             }
         }

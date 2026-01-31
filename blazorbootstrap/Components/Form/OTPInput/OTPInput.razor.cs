@@ -1,7 +1,5 @@
 ﻿namespace BlazorBootstrap;
 
-using Microsoft.JSInterop;
-
 public partial class OTPInput : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -21,23 +19,6 @@ public partial class OTPInput : BlazorBootstrapComponentBase
         {
             otpValues = new string[Length];
             Array.Fill(otpValues, string.Empty);
-        }
-    }
-
-    private async Task SafeInvokeVoidAsync(string identifier, params object?[] args)
-    {
-        try
-        {
-            await JSRuntime.InvokeVoidAsync(identifier, args);
-        }
-        catch (TaskCanceledException)
-        {
-            // Component/DOM likely got removed (navigation, conditional render, etc.)
-            // Treat as benign for focus/value updates.
-        }
-        catch (JSDisconnectedException)
-        {
-            // JS runtime no longer available (more common on Server, but safe here too).
         }
     }
 

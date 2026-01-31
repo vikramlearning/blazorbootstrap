@@ -20,7 +20,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.currencyInput.initialize", Id, isFloatingNumber(), AllowNegativeNumbers, cultureInfo.NumberFormat.CurrencyDecimalSeparator);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.currencyInput.initialize", Id, isFloatingNumber(), AllowNegativeNumbers, cultureInfo.NumberFormat.CurrencyDecimalSeparator);
 
             var currentValue = Value; // object
 

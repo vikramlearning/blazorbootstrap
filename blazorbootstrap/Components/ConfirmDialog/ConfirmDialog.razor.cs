@@ -77,7 +77,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(() => JSRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", Id));
+        Task.Run(async () => await SafeInvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", Id));
     }
 
     private void OnNoClick()
@@ -122,7 +122,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(() => JSRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
+        Task.Run(async () => await SafeInvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
 
         return task;
     }

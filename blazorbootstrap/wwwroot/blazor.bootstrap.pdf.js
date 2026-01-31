@@ -195,7 +195,10 @@ pageRotateCcwButton.disabled = this.pagesCount === 0;
 */
 
 export function initialize(dotNetHelper, elementId, scale, rotation, url, password = null) {
-    const pdf = new Pdf(elementId);
+    const canvas = getCanvas(elementId);
+    if (!canvas) return;
+
+    const pdf = new Pdf(canvas);
     pdf.scale = scale;
     pdf.rotation = rotation;
 

@@ -23,8 +23,19 @@ public class PdfViewerJsInterop : IAsyncDisposable
     {
         if (moduleTask.IsValueCreated)
         {
-            var module = await moduleTask.Value;
-            await module.DisposeAsync();
+            try
+            {
+                var module = await moduleTask.Value;
+                await module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Circuit is gone; ignore cleanup.
+            }
+            catch (TaskCanceledException)
+            {
+                // Circuit is shutting down; ignore cleanup.
+            }
         }
     }
 

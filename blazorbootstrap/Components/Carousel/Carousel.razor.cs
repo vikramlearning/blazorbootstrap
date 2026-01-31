@@ -30,7 +30,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync(CarouselInterop.Dispose, Id);
+                    await SafeInvokeVoidAsync(CarouselInterop.Dispose, Id);
             }
             catch (JSDisconnectedException)
             {
@@ -48,7 +48,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
         if (firstRender)
         {
             CarouselOptions options = new() { Interval = Interval, Keyboard = Keyboard, Ride = Autoplay.ToCarouselAutoPlayString(), Touch = Touch };
-            await JSRuntime.InvokeVoidAsync(CarouselInterop.Initialize, Id, options, objRef);
+            await SafeInvokeVoidAsync(CarouselInterop.Initialize, Id, options, objRef);
             StateHasChanged(); // Required
         }
 
@@ -87,7 +87,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
         if (!isDefaultActiveCarouselItemSet)
             isDefaultActiveCarouselItemSet = true;
 
-        return JSRuntime.InvokeVoidAsync(CarouselInterop.To, Id, index);
+        return new(SafeInvokeVoidAsync(CarouselInterop.To, Id, index));
     }
 
     internal void AddItem(CarouselItem carouselItem)
@@ -103,7 +103,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("3.0.0")]
     [Description("Shows next <b>CarouselItem</b>.")]
-    public ValueTask PauseCarouselAsync() => JSRuntime.InvokeVoidAsync(CarouselInterop.Pause, Id);
+    public ValueTask PauseCarouselAsync() => new(SafeInvokeVoidAsync(CarouselInterop.Pause, Id));
 
     /// <summary>
     /// Shows next <see cref="CarouselItem" />.
@@ -115,7 +115,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
         var nextIndex = activeIndex + 1;
         activeIndex = nextIndex > items.Count - 1 ? 0 : nextIndex;
 
-        return JSRuntime.InvokeVoidAsync(CarouselInterop.Next, Id);
+        return new(SafeInvokeVoidAsync(CarouselInterop.Next, Id));
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
         var previousIndex = activeIndex - 1;
         activeIndex = previousIndex < 0 ? items.Count - 1 : previousIndex;
 
-        return JSRuntime.InvokeVoidAsync(CarouselInterop.Previous, Id);
+        return new(SafeInvokeVoidAsync(CarouselInterop.Previous, Id));
     }
 
     #endregion

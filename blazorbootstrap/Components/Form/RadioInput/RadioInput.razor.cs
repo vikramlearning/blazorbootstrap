@@ -16,7 +16,7 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.radioInput.initialize", Id, Name, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.radioInput.initialize", Id, Name, objRef);
         }
 
         await base.OnAfterRenderAsync(firstRender);

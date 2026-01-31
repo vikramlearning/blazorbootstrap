@@ -18,7 +18,7 @@ public partial class Alert : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.dispose", Id);
+                    await SafeInvokeVoidAsync("window.blazorBootstrap.alert.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -34,7 +34,7 @@ public partial class Alert : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.initialize", Id, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.alert.initialize", Id, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -57,7 +57,7 @@ public partial class Alert : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [Description("Closes an alert by removing it from the DOM.")]
-    public async Task CloseAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.alert.close", Id);
+    public async Task CloseAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.alert.close", Id);
 
     #endregion
 

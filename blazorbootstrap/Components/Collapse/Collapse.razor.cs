@@ -18,7 +18,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.dispose", Id);
+                    await SafeInvokeVoidAsync("window.blazorBootstrap.collapse.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -34,7 +34,7 @@ public partial class Collapse : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.initialize", Id, Parent, Toggle, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.collapse.initialize", Id, Parent, Toggle, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -63,21 +63,21 @@ public partial class Collapse : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.7.0")]
     [Description("Hides a collapsible element.")]
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.hide", Id);
+    public async Task HideAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.collapse.hide", Id);
 
     /// <summary>
     /// Shows a collapsible element.
     /// </summary>
     [AddedVersion("1.7.0")]
     [Description("Shows a collapsible element.")]
-    public async Task ShowAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.show", Id);
+    public async Task ShowAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.collapse.show", Id);
 
     /// <summary>
     /// Toggles a collapsible element to shown or hidden.
     /// </summary>
     [AddedVersion("1.7.0")]
     [Description("Toggles a collapsible element to shown or hidden.")]
-    public async Task ToggleAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.collapse.toggle", Id);
+    public async Task ToggleAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.collapse.toggle", Id);
 
     #endregion
 

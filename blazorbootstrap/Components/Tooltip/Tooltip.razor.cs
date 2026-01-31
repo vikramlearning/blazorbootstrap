@@ -21,7 +21,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                    await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
             }
             catch (JSDisconnectedException)
             {
@@ -38,7 +38,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", Element);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", Element);
 
             isFirstRenderComplete = true;
         }
@@ -65,14 +65,14 @@ public partial class Tooltip : BlazorBootstrapComponentBase
                 title = Title;
                 color = Color;
 
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element);
+                await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element);
             }
     }
 
     public async Task ShowAsync()
     {
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.show", Element);
+        await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.show", Element);
     }
 
     #endregion

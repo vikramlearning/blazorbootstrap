@@ -21,10 +21,21 @@ public class SortableListJsInterop : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        if (moduleTask.IsValueCreated)
+        if (!moduleTask.IsValueCreated)
+            return;
+
+        try
         {
             var module = await moduleTask.Value;
             await module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // Circuit is gone; ignore.
+        }
+        catch (TaskCanceledException)
+        {
+            // Dispose during teardown; ignore.
         }
     }
 
