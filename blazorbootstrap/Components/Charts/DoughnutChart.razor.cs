@@ -38,7 +38,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
                     doughnutChartDataset.BackgroundColor?.Add(doughnutChartDatasetData.BackgroundColor!);
                 }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
+        await SafeInvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
@@ -86,7 +86,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
                 }
             }
 
-        await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (DoughnutChartDatasetData)x));
+        await SafeInvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (DoughnutChartDatasetData)x));
 
         return chartData;
     }
@@ -105,7 +105,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         if (chartDataset is DoughnutChartDataset doughnutChartDataset)
         {
             chartData.Datasets.Add(doughnutChartDataset);
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.addDataset", Id, doughnutChartDataset);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.addDataset", Id, doughnutChartDataset);
         }
 
         return chartData;
@@ -117,7 +117,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions, plugins);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions, plugins);
         }
     }
 
@@ -127,7 +127,7 @@ public partial class DoughnutChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await JSRuntime.InvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions);
         }
     }
 
