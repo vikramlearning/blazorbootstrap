@@ -1,5 +1,7 @@
 ﻿namespace BlazorBootstrap;
 
+using Microsoft.JSInterop;
+
 public partial class OTPInput : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -22,6 +24,23 @@ public partial class OTPInput : BlazorBootstrapComponentBase
         }
     }
 
+    private async Task SafeInvokeVoidAsync(string identifier, params object?[] args)
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync(identifier, args);
+        }
+        catch (TaskCanceledException)
+        {
+            // Component/DOM likely got removed (navigation, conditional render, etc.)
+            // Treat as benign for focus/value updates.
+        }
+        catch (JSDisconnectedException)
+        {
+            // JS runtime no longer available (more common on Server, but safe here too).
+        }
+    }
+
     /// <summary>
     /// Clears the OTP input fields.
     /// </summary>
@@ -34,7 +53,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
         await NotifyChangesAsync();
 
         if (Length > 0)
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(0));
+            await SafeInvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(0));
 
         await InvokeAsync(StateHasChanged);
     }
@@ -64,28 +83,56 @@ public partial class OTPInput : BlazorBootstrapComponentBase
             // Clear the input element if it contained invalid characters
             if (!string.IsNullOrEmpty(rawValue))
             {
-                await JSRuntime.InvokeVoidAsync(JsInteropUtils.SetInputElementValue, GetInputId(index), string.Empty);
+                await SafeInvokeVoidAsync(JsInteropUtils.SetInputElementValue, GetInputId(index), string.Empty);
             }
 
             await NotifyChangesAsync();
             return;
         }
 
-        // If multiple digits were entered (e.g. fast typing or paste), use the last one
-        var digit = numericValue.Length > 1 ? numericValue[^1].ToString() : numericValue;
+        // If multiple digits were entered (e.g. paste), distribute them across the input fields
+        if (numericValue.Length > 1)
+        {
+            var digits = numericValue.ToCharArray();
+            var currentInputLength = digits.Length;
+
+            for (int i = 0; i < currentInputLength; i++)
+            {
+                var targetIndex = index + i;
+                if (targetIndex < Length)
+                {
+                    otpValues[targetIndex] = digits[i].ToString();
+
+                    // Update the UI value for the current input and subsequent inputs
+                    await SafeInvokeVoidAsync(JsInteropUtils.SetInputElementValue, GetInputId(targetIndex), otpValues[targetIndex]);
+                }
+            }
+
+            // Move focus to the next input field after the last pasted digit
+            var nextIndex = index + currentInputLength;
+            if (nextIndex < Length)
+                await SafeInvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(nextIndex));
+            else
+                await SafeInvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(Length - 1));
+
+            await NotifyChangesAsync();
+            return;
+        }
+
+        var digit = numericValue;
 
         otpValues[index] = digit;
 
         // Reset the input value on the client side if it doesn't match the sanitized digit
         if (rawValue != digit)
         {
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.SetInputElementValue, GetInputId(index), digit);
+            await SafeInvokeVoidAsync(JsInteropUtils.SetInputElementValue, GetInputId(index), digit);
         }
 
         // Move focus to the next input field
         if (index < Length - 1)
         {
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index + 1));
+            await SafeInvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index + 1));
         }
 
         await NotifyChangesAsync();
@@ -97,7 +144,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
         if (e.Key == "Backspace" && index > 0)
         {
             otpValues[index] = string.Empty;
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index - 1));
+            await SafeInvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index - 1));
 
             // Notify changes
             await NotifyChangesAsync();
@@ -105,11 +152,11 @@ public partial class OTPInput : BlazorBootstrapComponentBase
 
         // Handle left arrow key to focus on the previous input
         if (e.Key == "ArrowLeft" && index > 0)
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index - 1));
+            await SafeInvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index - 1));
 
         // Handle right arrow key to focus on the next input
         if (e.Key == "ArrowRight" && index < Length - 1)
-            await JSRuntime.InvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index + 1));
+            await SafeInvokeVoidAsync(JsInteropUtils.FocusInputElement, GetInputId(index + 1));
     }
 
     #endregion
