@@ -103,6 +103,9 @@ public static class BootstrapClass
     public const string ImageFluid = "img-fluid";
     public const string ImageThumbnail = "img-thumbnail";
 
+    public const string MarginEnd1 = "me-1";
+    public const string MarginEnd2 = "me-2";
+
     public const string Modal = "modal";
     public const string ModalFade = "fade";
 
@@ -143,6 +146,7 @@ public static class BootstrapClass
     public const string TableResponsive = "table-responsive";
     public const string TableSticky = "bb-table-sticky";
 
+    public const string TextCenter = "text-center";
     public const string TextNoWrap = "text-nowrap";
 
     public const string Toast = "toast";

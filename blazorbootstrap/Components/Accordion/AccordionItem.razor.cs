@@ -66,10 +66,13 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the active state.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the active state.")]
     [Parameter]
     public bool Active { get; set; }
 
@@ -77,22 +80,28 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
-    [Parameter]
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [EditorRequired]
-    public RenderFragment Content { get; set; } = default!;
+    [Parameter]
+    public RenderFragment? Content { get; set; }
 
     /// <summary>
     /// Gets or sets the name.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the name.")]
     [Parameter]
-    public string Name { get; set; } = default!;
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the parent.
@@ -102,21 +111,27 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the title.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the title.")]
     [Parameter]
-    public string Title { get; set; } = default!;
+    public string? Title { get; set; }
 
     /// <summary>
     /// Gets or sets the title template.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the title template.")]
     [Parameter]
-    public RenderFragment TitleTemplate { get; set; } = default!;
+    public RenderFragment? TitleTemplate { get; set; } = default!;
 
     #endregion
 }

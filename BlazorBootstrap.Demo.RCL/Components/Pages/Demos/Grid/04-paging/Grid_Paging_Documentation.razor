@@ -1,0 +1,45 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
+
+<Section Size="HeadingSize.H2" Name="Client side paging" PageUrl="@pageUrl" Link="client-side-paging">
+    <div>For paging, <code>AllowPaging</code> and <code>PageSize</code> parameters are required.</div>
+    <div class="mb-2">Add <code>AllowPaging="true"</code> and <code>PageSize="20"</code> parameters to the Grid. <code>PageSize</code> parameter is optional.</div>
+    <Callout Color="CalloutColor.Info">The default page size is 10.</Callout>
+    <Demo Type="typeof(Grid_Demo_01_Client_Side_Paging)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Dynamic page size" PageUrl="@pageUrl" Link="dynamic-page-size">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Grid_Demo_02_Dynamic_Page_Size)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Page size selection" PageUrl="@pageUrl" Link="page-size-selection">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Grid_Demo_03_Page_Size_Selection)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Auto hide paging" PageUrl="@pageUrl" Link="auto-hide-paging">
+    <Demo Type="typeof(Grid_Demo_04_AutoHide_Paging)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Dynamic pagination" PageUrl="@pageUrl" Link="dynamic-pagination">
+    <Demo Type="typeof(Grid_Demo_05_Dynamic_Pagination)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_Paging;
+    private const string pageTitle = "Blazor Grid - Paging";
+    private const string pageDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string metaTitle = "Blazor Grid Component - Paging";
+    private const string metaDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}

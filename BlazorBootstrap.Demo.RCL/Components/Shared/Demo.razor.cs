@@ -24,7 +24,7 @@ public partial class Demo : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JS.InvokeVoidAsync("highlightCode");
+            await SafeInvokeVoidAsync("highlightCode");
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -97,15 +97,13 @@ public partial class Demo : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
-    private async Task CopyToClipboardAsync() => await JS.InvokeVoidAsync("copyToClipboard", snippet, objRef);
+    private async Task CopyToClipboardAsync() => await SafeInvokeVoidAsync("copyToClipboard", snippet, objRef);
 
     #endregion
 
     #region Properties, Indexers
 
     protected override string? ClassNames => BuildClassNames(Class, ("bd-example-snippet bd-code-snippet", true));
-
-    [Inject] protected IJSRuntime JS { get; set; } = default!;
 
     [Parameter] public LanguageCode LanguageCode { get; set; } = LanguageCode.Razor;
 

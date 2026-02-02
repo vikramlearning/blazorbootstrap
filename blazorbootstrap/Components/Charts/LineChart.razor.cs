@@ -33,7 +33,7 @@ public partial class LineChart : BlazorBootstrapChart
                 }
 
 
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.addDatasetData", Id, dataLabel, data);
+        await SafeInvokeVoidAsync("window.blazorChart.line.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
@@ -78,7 +78,7 @@ public partial class LineChart : BlazorBootstrapChart
                     lineChartDataset.Data?.Add(lineChartDatasetData.Data as double?);
             }
 
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.addDatasetsData", Id, dataLabel, data?.Select(x => (LineChartDatasetData)x));
+        await SafeInvokeVoidAsync("window.blazorChart.line.addDatasetsData", Id, dataLabel, data?.Select(x => (LineChartDatasetData)x));
 
         return chartData;
     }
@@ -97,7 +97,7 @@ public partial class LineChart : BlazorBootstrapChart
         if (chartDataset is LineChartDataset)
         {
             chartData.Datasets.Add(chartDataset);
-            await JSRuntime.InvokeVoidAsync("window.blazorChart.line.addDataset", Id, (LineChartDataset)chartDataset);
+            await SafeInvokeVoidAsync("window.blazorChart.line.addDataset", Id, (LineChartDataset)chartDataset);
         }
 
         return chartData;
@@ -116,7 +116,7 @@ public partial class LineChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins);
+        await SafeInvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins);
     }
 
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
@@ -132,7 +132,7 @@ public partial class LineChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+        await SafeInvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
     }
 
     #endregion

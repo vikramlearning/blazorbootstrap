@@ -1,0 +1,54 @@
+﻿@page "/switch"
+
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Switch" />
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+<Demo Type="typeof(Switch_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disable" PageUrl="@pageUrl" Link="disable">
+    <div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>Switch</code>.</div>
+    <Demo Type="typeof(Switch_Demo_02_A_Disable)" Tabs="false" />
+    <div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>Switch</code>.</div>
+    <Callout Color="CalloutColor.Warning" Heading="NOTE">
+        Do not use both the <b>Disabled</b> parameter and <b>Enable()</b> &amp; <b>Disable()</b> methods.
+    </Callout>
+    <Demo Type="typeof(Switch_Demo_02_B_Disable)" Tabs="false" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Reverse" PageUrl="@pageUrl" Link="reverse">
+    <div class="mb-3">
+        Put your switches on the opposite side by using the <code>Reverse</code> parameter.
+    </div>
+    <Demo Type="typeof(Switch_Demo_03_Reverse)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Events: ValueChanged" PageUrl="@pageUrl" Link="events-value-changed">
+    <div class="mb-3">
+        This event fired when the <code>Switch</code> selection changed.
+    </div>
+    <Demo Type="typeof(Switch_Demo_04_Events_Value_Changed)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Form" PageUrl="@pageUrl" Link="form">
+    <Demo Type="typeof(Switch_Demo_05_Form)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Switch;
+    private const string pageTitle = "Blazor Switch";
+    private const string pageDescription = "Create consistent cross-browser and cross-device checkboxes with our blazor switches. A switch has the markup of a custom checkbox.";
+    private const string metaTitle = "Blazor Switch Component";
+    private const string metaDescription = "Create consistent cross-browser and cross-device checkboxes with our blazor switches. A switch has the markup of a custom checkbox.";
+    private const string imageUrl = "https://i.imgur.com/ALKzreq.png";
+}

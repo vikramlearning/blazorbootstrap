@@ -1,0 +1,131 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Markdown" />
+
+<Section Size="HeadingSize.H2" Name="Live preview" PageUrl="@pageUrl" Link="live-preview">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_01_Preview)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Headers" PageUrl="@pageUrl" Link="headers">
+    <div class="mb-3">
+        Use headers to structure your content. Start a line with <code>#</code> for a heading. Add more <code>#</code> characters for subheadings, up to six levels.
+    </div>
+    <Demo Type="typeof(Markdown_Demo_02_Headers)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Paragraphs and line breaks" PageUrl="@pageUrl" Link="paragraphs-and-line-breaks">
+    <div class="mb-3">
+        Break your text into paragraphs or line breaks for easier reading.
+    </div>
+    <Demo Type="typeof(Markdown_Demo_03_Paragraphs_and_Line_Breaks)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Blockquotes" PageUrl="@pageUrl" Link="blockquotes">
+    <div class="mb-3">
+        Quote text with <code>></code> before it. Use more <code>></code> characters to nest quotes. For blocks of text, use <code>></code> at the start of each line.
+    </div>
+    <Demo Type="typeof(Markdown_Demo_04_Blockquotes)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Horizontal rules" PageUrl="@pageUrl" Link="horizontal-rules">
+    <div class="mb-3">
+        Add a horizontal rule with a line of <code>---</code>.
+    </div>
+    <Demo Type="typeof(Markdown_Demo_05_Horizontal_Rules)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Emphasis (bold, italics, strikethrough)" PageUrl="@pageUrl" Link="emphasis-bold-italics-strikethrough">
+    <div class="mb-3">
+        Emphasize text with bold, italics, or strikethrough:
+        <ul>
+            <li>Italics: <code>*text*</code> or <code>_text_</code></li>
+            <li>Bold: <code>**text**</code></li>
+            <li>Strikethrough: <code>~~text~~</code></li>
+            <li>Combine for more emphasis.</li>
+        </ul>
+    </div>
+    <Demo Type="typeof(Markdown_Demo_06_Emphasis_bold_italics_strikethrough)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Code highlighting" PageUrl="@pageUrl" Link="code-highlighting">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_07_Code_Highlighting)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Tables" PageUrl="@pageUrl" Link="tables">
+    <div class="mb-3">
+        Tables help organize structured data.
+        <ul>
+            <li>Use <code>|</code> to separate cells.</li>
+            <li>Escape <code>|</code> with <code>\|</code> if used within a cell.</li>
+            <li>Use <code>&lt;br /&gt;</code> for new lines within a cell.</li>
+            <li>End each row with a carriage return (CR) or line feed (LF).</li>
+        </ul>
+    </div>
+    <Demo Type="typeof(Markdown_Demo_08_Tables_A_Example)" Tabs="true" />
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_08_Tables_B_Custom_CssClass)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Lists" PageUrl="@pageUrl" Link="lists">
+    <div class="mb-3">
+        Use lists to organize related items:
+        <ul>
+            <li>Ordered lists: start with a number followed by a period.</li>
+            <li>Unordered lists: start with a <code>-</code>.</li>
+            <li>Begin each list item on a new line.</li>
+        </ul>    
+    </div>
+</Section>
+
+<Section Size="HeadingSize.H3" Name="Ordered list" PageUrl="@pageUrl" Link="ordered-list">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_09_Lists_A_Ordered)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H3" Name="Unordered list" PageUrl="@pageUrl" Link="unordered-list">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_09_Lists_B_Unordered)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H3" Name="Nested list" PageUrl="@pageUrl" Link="nested-list">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_09_Lists_C_Nested)" Tabs="true" />
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_09_Lists_D_Nested)" Tabs="true" />
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_09_Lists_E_Nested)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Links" PageUrl="@pageUrl" Link="links">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_10_Links)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Images" PageUrl="@pageUrl" Link="images">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_11_Images)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" Link="examples">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Markdown_Demo_99_Examples)" Tabs="true" />
+</Section>
+
+@code{
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Markdown;
+    private const string pageTitle = "Blazor Markdown";
+    private const string pageDescription = "Use Blazor Bootstrap Markdown component to add formatting, tables, images, and more to your project pages.";
+    private const string metaTitle = "Blazor Markdown Component";
+    private const string metaDescription = "Use Blazor Bootstrap Markdown component to add formatting, tables, images, and more to your project pages.";
+    private const string imageUrl = "https://i.imgur.com/FhN1caj.png";
+}

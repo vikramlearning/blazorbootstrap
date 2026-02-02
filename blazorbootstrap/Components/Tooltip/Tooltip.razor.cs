@@ -21,7 +21,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                    await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
             }
             catch (JSDisconnectedException)
             {
@@ -38,7 +38,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", Element);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", Element);
 
             isFirstRenderComplete = true;
         }
@@ -65,14 +65,14 @@ public partial class Tooltip : BlazorBootstrapComponentBase
                 title = Title;
                 color = Color;
 
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element);
+                await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element);
             }
     }
 
     public async Task ShowAsync()
     {
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.show", Element);
+        await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.show", Element);
     }
 
     #endregion
@@ -81,19 +81,25 @@ public partial class Tooltip : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the tooltip color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="TooltipColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(TooltipColor.None)]
+    [Description("Gets or sets the tooltip color.")]
     [Parameter]
     public TooltipColor Color { get; set; } = TooltipColor.None;
 
@@ -101,10 +107,13 @@ public partial class Tooltip : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets a value indicating whether to display the content as HTML instead of text.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("2.1.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets a value indicating whether to display the content as HTML instead of text.")]
     [Parameter]
     public bool IsHtml { get; set; }
 
@@ -112,22 +121,28 @@ public partial class Tooltip : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the tooltip placement.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="TooltipPlacement.Top" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(TooltipPlacement.Top)]
+    [Description("Gets or sets the tooltip placement.")]
     [Parameter]
     public TooltipPlacement Placement { get; set; } = TooltipPlacement.Top;
 
     /// <summary>
     /// Displays informative text when users hover, focus, or tap an element.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
-    [Parameter]
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Displays informative text when users hover, focus, or tap an element.")]
     [EditorRequired]
-    public string Title { get; set; } = default!;
+    [Parameter]
+    public string? Title { get; set; }
 
     #endregion
 }

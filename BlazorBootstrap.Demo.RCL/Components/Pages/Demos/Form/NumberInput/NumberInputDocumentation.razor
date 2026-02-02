@@ -1,0 +1,82 @@
+﻿@page "/number-input"
+
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_NumberInput" />
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">By default, <code>e + -</code> are blocked. For all integral numeric types, dot <code>.</code> is blocked.</div>
+    <Demo Type="typeof(NumberInput_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Generic type" PageUrl="@pageUrl" Link="generic-type">
+    <div class="mb-3"><code>NumberInput</code> is a generic component. Always specify the exact type. In the below example <b>TValue</b> is set to <code>int</code>, <code>int?</code>, <code>float</code>, <code>float?</code>, <code>double</code>, <code>double?</code>, <code>decimal</code>, and <code>decimal?</code>.</div>
+    <Demo Type="typeof(NumberInput_Demo_02_Generic_Type)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Enable min and max" PageUrl="@pageUrl" Link="enable-min-and-max">
+    <div class="mb-3">
+        Set <code>EnableMinMax="true"</code> and set the <code>Min</code> and <code>Max</code> parameters to restrict the user input between the Min and Max range.
+    </div>
+    <Callout Color="CalloutColor.Warning" Heading="NOTE">
+        If the user tries to enter a number in the <b>NumberInput</b> field which is out of range, then it will override with Min or Max value based on the context. If the user input is less than the Min value, then it will override with the Min value.
+        If the user input exceeds the Max value, it will override with the Max value.
+    </Callout>
+    <Demo Type="typeof(NumberInput_Demo_03_Enable_Min_Max)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Step" PageUrl="@pageUrl" Link="step">
+    <div class="mb-3">The <code>Step</code> sets the stepping interval when clicking the up and down spinner buttons. If not explicitly included, <code>Step</code> defaults to <b>1</b>.</div>
+    <Demo Type="typeof(NumberInput_Demo_04_Step)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Text alignment" PageUrl="@pageUrl" Link="text-alignment">
+    <div class="mb-3">You can change the text alignment according to your need. Use the <code>TextAlignment</code> parameter to set the alignment. In the below example, alignment is set to center and end.</div>
+    <Demo Type="typeof(NumberInput_Demo_05_Text_Alignment)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Allow negative numbers" PageUrl="@pageUrl" Link="allow-negative-numbers">
+    <div class="mb-3">By default, negative numbers are not allowed. Set the <code>AllowNegativeNumbers</code> parameter to true to allow the negative numbers.</div>
+    <Demo Type="typeof(NumberInput_Demo_06_Allow_Negative_Numbers)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disable" PageUrl="@pageUrl" Link="disable">
+    <div class="mb-3">Use the <code>Disabled</code> parameter to disable the <code>NumberInput</code>.</div>
+    <Demo Type="typeof(NumberInput_Demo_07_A_Disable_Number_Input)" Tabs="false" />
+    <div class="my-3">Also, use <b>Enable()</b> and <b>Disable()</b> methods to enable and disable the <code>NumberInput</code>.</div>
+    <Callout Color="CalloutColor.Warning" Heading="NOTE">
+        Do not use both the <b>Disabled</b> parameter and <b>Enable()</b> &amp; <b>Disable()</b> methods.
+    </Callout>
+    <Demo Type="typeof(NumberInput_Demo_07_B_Disable_Number_Input)" Tabs="false" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Validations" PageUrl="@pageUrl" Link="validations">
+    <div class="mb-3">
+        Like any other blazor input component, <code>NumberInput</code> supports validations.
+        Add the DataAnnotations on the <code>NumberInput</code> component to validate the user input before submitting the form.
+        In the below example, we used <b>Required</b> and <b>Range</b> attributes.
+    </div>
+    <Demo Type="typeof(NumberInput_Demo_08_Validations)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Events: ValueChanged" PageUrl="@pageUrl" Link="event-value-changed">
+    <div class="mb-3">This event fires on every user keystroke that changes the <code>NumberInput</code> value.</div>
+    <Demo Type="typeof(NumberInput_Demo_09_Events_Value_Changed)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_NumberInput;
+    private const string pageTitle = "Blazor NumberInput";
+    private const string pageDescription = "Blazor Bootstrap NumberInput component is built around HTML input of type=\"number\" that prevents the user input based on the parameters set.";
+    private const string metaTitle = "Blazor NumberInput Component";
+    private const string metaDescription = "Blazor Bootstrap NumberInput component is built around HTML input of type=\"number\" that prevents the user input based on the parameters set.";
+    private const string imageUrl = "https://i.imgur.com/iUNBkki.png";
+}

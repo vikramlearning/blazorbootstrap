@@ -24,7 +24,7 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, Defer, ScriptId, Source, ScriptType, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.scriptLoader.initialize", Id, Async, Defer, ScriptId, Source, ScriptType, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -71,53 +71,74 @@ public partial class ScriptLoader : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets a value indicating whether the script should be loaded asynchronously.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="false" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.11.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets a value indicating whether the script should be loaded asynchronously.")]
     [Parameter]
     public bool Async { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the script is meant to be executed 
-    /// after the document has been parsed, but before firing DOMContentLoaded event..
-    /// </summary>
-    /// <remarks>
+    /// after the document has been parsed, but before firing DOMContentLoaded event.
+    /// <para>
     /// Default value is <see langword="false" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.11.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets a value indicating whether the script is meant to be executed after the document has been parsed, but before firing DOMContentLoaded event.")]
     [Parameter]
     public bool Defer { get; set; }
 
     /// <summary>
     /// An event that is fired when a script loading error occurs.
     /// </summary>
+    [AddedVersion("1.11.0")]
+    [Description("An event that is fired when a script loading error occurs.")]
     [Parameter]
     public EventCallback<string> OnError { get; set; }
 
     /// <summary>
     /// An event that is fired when a script has been successfully loaded.
     /// </summary>
+    [AddedVersion("1.11.0")]
+    [Description("An event that is fired when a script has been successfully loaded.")]
     [Parameter]
     public EventCallback OnLoad { get; set; }
 
     /// <summary>
     /// Gets or sets the ID of the script element.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="null" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.11.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the ID of the script element.")]
     [Parameter]
     public string? ScriptId { get; set; }
 
     /// <summary>
     /// Gets or sets the URI of the external script to load.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="null" />.
-    /// </remarks>
-    [Parameter]
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.11.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the URI of the external script to load.")]
     [EditorRequired]
-    public string? Source { get; set; } = default!;
+    [Parameter]
+    public string? Source { get; set; }
+
+    // NOTE: Hiding base Class and Style properties to prevent their usage in this component.
+    private new string? Class { get; set; }
+
+    private new string? Style { get; set; }
 
     #endregion
 }
