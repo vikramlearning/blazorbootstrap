@@ -25,9 +25,13 @@ public partial class LineChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
-            if (dataset is LineChartDataset lineChartDataset && lineChartDataset.Label == dataLabel)
-                if (data is LineChartDatasetData lineChartDatasetData)
+            if (data is LineChartDatasetData lineChartDatasetData)
+                if (dataset is LineChartDataset lineChartDataset && lineChartDataset.Label == lineChartDatasetData.DatasetLabel)
+                {
+                    chartData.Labels?.Add(dataLabel);
                     lineChartDataset.Data?.Add(lineChartDatasetData.Data as double?);
+                }
+
 
         await SafeInvokeVoidAsync("window.blazorChart.line.addDatasetData", Id, dataLabel, data);
 
