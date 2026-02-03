@@ -114,8 +114,6 @@ public static class BootstrapClass
     public const string NavTabs = "nav-tabs";
     public const string NavUnderline = "nav-underline";
 
-    public const string Offcanvas = "offcanvas";
-
     public const string PageLoadingModal = "modal-page-loading";
 
     public const string Pagination = "pagination";
