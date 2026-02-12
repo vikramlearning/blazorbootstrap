@@ -318,6 +318,14 @@ window.blazorBootstrap = {
                         return;
                 }
 
+                // allow copy/paste keys, ctrl (Windows/Linux) or Cmd (macOS) key
+                const isModifierPressed = event.ctrlKey || event.metaKey;
+                const isCopyKeyPressed = event.key === 'c' || event.key === 'C';
+                const isPasteKeyPressed = event.key === 'v' || event.key === 'V';
+                if (isModifierPressed && (isCopyKeyPressed || isPasteKeyPressed)) {
+                    return;
+                }
+
                 let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
                 if (isFloat) {
