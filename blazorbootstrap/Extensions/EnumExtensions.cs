@@ -353,6 +353,18 @@ public static class EnumExtensions
             _ => "offcanvas-bottom"
         };
 
+    public static string ToOffcanvasResponsiveClass(this OffcanvasResponsive offcanvasResponsive) =>
+        offcanvasResponsive switch
+        {
+            OffcanvasResponsive.Always => "offcanvas",
+            OffcanvasResponsive.SmallDown => "offcanvas-sm",
+            OffcanvasResponsive.MediumDown => "offcanvas-md",
+            OffcanvasResponsive.LargeDown => "offcanvas-lg",
+            OffcanvasResponsive.ExtraLargeDown => "offcanvas-xl",
+            OffcanvasResponsive.ExtraExtraLargeDown => "offcanvas-xxl",
+            _ => "offcanvas"
+        };
+
     public static string ToOffcanvasSizeClass(this OffcanvasSize offcanvasSize) =>
         offcanvasSize switch
         {
