@@ -89,7 +89,7 @@ public partial class Dropdown : BlazorBootstrapComponentBase
 
     protected override string? ClassNames =>
         BuildClassNames(Class,
-            (BootstrapClass.ButtonGroup, true),
+            (BootstrapClass.ButtonGroup, Split),
             (Direction.ToDropdownDirectionClass(), true));
 
     /// <summary>

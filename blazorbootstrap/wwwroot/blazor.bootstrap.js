@@ -399,48 +399,60 @@ window.blazorBootstrap = {
     dropdown: {
         dispose: (elementId) => {
             let dropdownEl = document.getElementById(elementId);
-            if (dropdownEl != null)
-                bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl)?.dispose();
+            if (dropdownEl != null) {
+                let toggleEl = dropdownEl.querySelector('[data-bs-toggle="dropdown"]') ?? dropdownEl;
+                bootstrap?.Dropdown?.getOrCreateInstance(toggleEl)?.dispose();
+            }
         },
         hide: (elementId) => {
             let dropdownEl = document.getElementById(elementId);
-            if (dropdownEl != null)
-                bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl)?.hide();
+            if (dropdownEl != null) {
+                let toggleEl = dropdownEl.querySelector('[data-bs-toggle="dropdown"]') ?? dropdownEl;
+                bootstrap?.Dropdown?.getOrCreateInstance(toggleEl)?.hide();
+            }
         },
         initialize: (elementId, dotNetHelper) => {
             let dropdownEl = document.getElementById(elementId);
             if (dropdownEl == null)
                 return;
 
-            dropdownEl.addEventListener('hide.bs.dropdown', function () {
+            let toggleEl = dropdownEl.querySelector('[data-bs-toggle="dropdown"]') ?? dropdownEl;
+
+            toggleEl.addEventListener('hide.bs.dropdown', function () {
                 dotNetHelper.invokeMethodAsync('bsHideDropdown');
             });
-            dropdownEl.addEventListener('hidden.bs.dropdown', function () {
+            toggleEl.addEventListener('hidden.bs.dropdown', function () {
                 dotNetHelper.invokeMethodAsync('bsHiddenDropdown');
             });
-            dropdownEl.addEventListener('show.bs.dropdown', function () {
+            toggleEl.addEventListener('show.bs.dropdown', function () {
                 dotNetHelper.invokeMethodAsync('bsShowDropdown');
             });
-            dropdownEl.addEventListener('shown.bs.dropdown', function () {
+            toggleEl.addEventListener('shown.bs.dropdown', function () {
                 dotNetHelper.invokeMethodAsync('bsShownDropdown');
             });
 
-            bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl);
+            bootstrap?.Dropdown?.getOrCreateInstance(toggleEl);
         },
         show: (elementId) => {
             let dropdownEl = document.getElementById(elementId);
-            if (dropdownEl != null)
-                bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl)?.show();
+            if (dropdownEl != null) {
+                let toggleEl = dropdownEl.querySelector('[data-bs-toggle="dropdown"]') ?? dropdownEl;
+                bootstrap?.Dropdown?.getOrCreateInstance(toggleEl)?.show();
+            }
         },
         toggle: (elementId) => {
             let dropdownEl = document.getElementById(elementId);
-            if (dropdownEl != null)
-                bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl)?.toggle();
+            if (dropdownEl != null) {
+                let toggleEl = dropdownEl.querySelector('[data-bs-toggle="dropdown"]') ?? dropdownEl;
+                bootstrap?.Dropdown?.getOrCreateInstance(toggleEl)?.toggle();
+            }
         },
         update: (elementId) => {
             let dropdownEl = document.getElementById(elementId);
-            if (dropdownEl != null)
-                bootstrap?.Dropdown?.getOrCreateInstance(dropdownEl)?.update();
+            if (dropdownEl != null) {
+                let toggleEl = dropdownEl.querySelector('[data-bs-toggle="dropdown"]') ?? dropdownEl;
+                bootstrap?.Dropdown?.getOrCreateInstance(toggleEl)?.update();
+            }
         }
     },
     googlemaps: {
