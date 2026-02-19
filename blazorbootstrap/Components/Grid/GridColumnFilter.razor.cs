@@ -8,7 +8,23 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
 
     private IEnumerable<FilterOperatorInfo>? filterOperators;
 
-    private string? filterValue;
+    private string? _filterValue;
+    private string? filterValue
+    {
+        get => _filterValue;
+        set
+        {
+            if (_filterValue != value)
+            {
+                _filterValue = value;
+                // Trigger the filter changed event when the value changes
+                if (GridColumnFilterChanged.HasDelegate)
+                {
+                    InvokeAsync(async () => await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(_filterValue!, filterOperator)));
+                }
+            }
+        }
+    }
 
     private string? selectedFilterSymbol;
 
@@ -87,10 +103,15 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
 
     private async Task OnEnumFilterValueChangedAsync(object enumValue)
     {
+        // Setting filterValue will automatically trigger the event via the property setter
         filterValue = enumValue?.ToString();
+    }
 
-        if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
+    private void OnFilterValueInput(ChangeEventArgs args)
+    {
+        // Update the value directly without triggering the property setter to avoid issues with date/datetime binding
+        // The property setter will auto-trigger when assigned
+        filterValue = args?.Value?.ToString();
     }
 
     private async Task OnFilterOperatorChangedAsync(FilterOperatorInfo filterOperatorInfo)
@@ -107,21 +128,14 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         else
         {
             filterOperator = filterOperatorInfo.FilterOperator;
+            // Manually trigger the event since we're only changing the operator, not the value
+            if (GridColumnFilterChanged.HasDelegate)
+                await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
         }
 
         SetSelectedFilterSymbol();
-
-        if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
     }
 
-    private async Task OnFilterValueChangedAsync(ChangeEventArgs args)
-    {
-        filterValue = args?.Value?.ToString();
-
-        if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
-    }
 
     private void SetSelectedFilterSymbol()
     {
