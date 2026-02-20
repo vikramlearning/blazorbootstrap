@@ -638,3 +638,12 @@ main {
     color: var(--bs-link-hover-color);
     text-decoration: underline;
 }
+
+/* sortable-list */
+.list-group-item:not(:has(.bb-sortable-list-handle)) {
+    cursor: grab !important;
+}
+
+.bb-sortable-list-handle .bi-grip-vertical::before {
+    cursor: grab !important;
+}
