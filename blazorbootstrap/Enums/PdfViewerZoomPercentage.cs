@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-public enum PdfViewerManualZoomPercentage
+public enum PdfViewerZoomPercentage
 {
     x25Percent = 1,
     x33Percent,
