@@ -59,14 +59,25 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         await base.OnParametersSetAsync();
     }
 
-    public async Task SetManualZoomPercentage(PdfViewerManualZoomPercentage manualZoomPercentage)
+    /// <summary>
+    /// Asynchronously sets the zoom level of the PDF viewer to the specified percentage.
+    /// </summary>
+    /// <remarks>The zoom percentage is converted to a scale factor for rendering the PDF document. Ensure
+    /// that the provided zoom percentage is within valid bounds to avoid unexpected display behavior.</remarks>
+    /// <param name="zoomPercentage">The desired zoom percentage to apply to the PDF viewer. Must be a valid value defined by the
+    /// PdfViewerZoomPercentage enumeration.</param>
+    /// <returns>A task that represents the asynchronous operation of updating the zoom level.</returns>
+    [AddedVersion("4.0.0")]
+    [Description("Asynchronously sets the zoom level of the PDF viewer to the specified percentage.")]
+    public async Task SetZoomPercentageAsync(PdfViewerZoomPercentage zoomPercentage)
     {
-        zoomLevel = (int)manualZoomPercentage;
+        zoomLevel = (int)zoomPercentage;
         var zp = GetZoomPercentage(zoomLevel);
-        zoomPercentage = $"{zp}%";
+        this.zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
-        await PdfViewerJsInterop.ZoomInOutAsync(objRef!, Id!, scale);
+        await PdfViewerJsInterop!.ZoomInOutAsync(objRef!, Id!, scale);
     }
+
     [JSInvokable]
     public void DocumentLoaded(PdfViewerModel pdfViewerModel)
     {
