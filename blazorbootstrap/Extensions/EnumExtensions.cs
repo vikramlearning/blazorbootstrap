@@ -544,7 +544,7 @@ public static class EnumExtensions
         tooltipColor switch
         {
             TooltipColor.Primary => "bb-tooltip-primary",
-            TooltipColor.Secondary => "bb-tooltip-tooltip-secondary",
+            TooltipColor.Secondary => "bb-tooltip-secondary",
             TooltipColor.Success => "bb-tooltip-success",
             TooltipColor.Danger => "bb-tooltip-danger",
             TooltipColor.Warning => "bb-tooltip-warning",
