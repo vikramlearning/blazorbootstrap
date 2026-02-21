@@ -122,7 +122,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(async () => await SafeInvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
+        Task.Run(async () => await SafeInvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id, shouldAutoFocusYesButton));
 
         return task;
     }
