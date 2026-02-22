@@ -1,6 +1,6 @@
 ﻿---
 title: Blazor Dropdown Component
-description: Dropdowns are toggleable, contextual overlays for displaying lists of links and more. They are toggled by clicking, not by hovering; this is an intentional design decision'by bootstrap.
+description: Dropdowns are toggleable, contextual overlays for displaying lists of links and more. They are toggled by clicking, not by hovering; this is an intentional design decision by bootstrap.
 image: https://i.imgur.com/beAr31J.png
 
 sidebar_label: Dropdown
@@ -12,7 +12,7 @@ import CarbonAd from '/carbon-ad.mdx'
 # Blazor Dropdown
 
 Dropdowns are toggleable, contextual overlays for displaying lists of links and more. 
-They are toggled by clicking, not by hovering; this is an intentional design decision'by bootstrap.
+They are toggled by clicking, not by hovering; this is an intentional design decision by bootstrap.
 
 <CarbonAd />
 
@@ -541,7 +541,7 @@ Separate groups of related menu items with a divider.
 
 ### Text
 
-Place any freeform text within a dropdown menu with text and use spacing utilities. Note that youll likely need additional sizing styles to constrain the menu width.
+Place any freeform text within a dropdown menu with text and use spacing utilities. Note that you'll likely need additional sizing styles to constrain the menu width.
 
 <img src="https://i.imgur.com/2G0ozU0.png" alt="Blazor Bootstrap: Dropdown Component - Text" />
 
@@ -628,23 +628,23 @@ Put a form within a dropdown menu, or make it into a dropdown menu, and use marg
 
     protected override void OnParametersSet()
     {
-        CalculateToatl();
+        CalculateTotal();
         base.OnParametersSet();
     }
 
     private void PriceChanged(decimal? value)
     {
         invoice.Price = value;
-        CalculateToatl();
+        CalculateTotal();
     }
 
     private void DiscountChanged(decimal? value)
     {
         invoice.Discount = value;
-        CalculateToatl();
+        CalculateTotal();
     }
 
-    private void CalculateToatl()
+    private void CalculateTotal()
     {
         var price = invoice.Price.HasValue ? invoice.Price.Value : 0;
         var discount = invoice.Discount.HasValue ? invoice.Discount.Value : 0;
