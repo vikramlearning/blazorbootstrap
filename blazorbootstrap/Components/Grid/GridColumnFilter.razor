@@ -38,19 +38,19 @@
     || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
     || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
     {
-        <input class="form-control" style="@filterStyle" type="number" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))">
+        <input class="form-control" style="@filterStyle" type="number" @bind-value="filterValue" @bind-value:event="oninput" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly)
     {
-        <input class="form-control" style="@filterStyle" type="date" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
+        <input class="form-control" style="@filterStyle" type="date" value="@_filterValue" @oninput="OnFilterValueInput" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
     {
-        <input class="form-control" style="@filterStyle" type="datetime-local" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
+        <input class="form-control" style="@filterStyle" type="datetime-local" value="@_filterValue" @oninput="OnFilterValueInput" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
     {
-        <input class="form-check-input" type="checkbox" value="@filterValue" @onchange="@(async args => await OnFilterValueChangedAsync(args))" />
+        <input class="form-check-input" type="checkbox" @bind-value="filterValue" @bind-value:event="onchange" />
     }
     else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum)
     {
@@ -79,6 +79,6 @@
     }
     else // guid or string
     {
-        <input class="form-control" style="@filterStyle" type="text" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
+        <input class="form-control" style="@filterStyle" type="text" @bind-value="filterValue" @bind-value:event="oninput" />
     }
 </div>
