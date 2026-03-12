@@ -767,6 +767,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public bool AutoHidePaging { get; set; }
 
     /// <summary>
+    /// Moves pagination from below the grid to above the grid.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
+    /// </summary>
+    [AddedVersion("")]
+    [DefaultValue(false)]
+    [Description("Moves pagination from below the grid to above the grid.")]
+    [Parameter]
+    public bool PlacePaginationBeforeGrid { get; set; }
+
+    /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// <para>
     /// Default value is <see langword="null"/>.
