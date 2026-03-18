@@ -993,9 +993,40 @@ window.blazorBootstrap = {
 }
 
 window.blazorChart = {
-    create: (elementId, type, data, options, plugins) => {
+    setOnClickHandler: (options, dotNetHelper) => {
+        if (!options || !dotNetHelper)
+            return;
+
+        const onClick = options.onClick;
+
+        options.onClick = function (event, activeElements, chart) {
+            if (typeof onClick === 'function')
+                onClick.call(this, event, activeElements, chart);
+
+            if (!activeElements || activeElements.length === 0 || !chart)
+                return;
+
+            const activeElement = activeElements[0];
+            const datasetIndex = activeElement.datasetIndex;
+            const index = activeElement.index;
+            const dataset = chart.data?.datasets?.[datasetIndex];
+            const label = chart.data?.labels?.[index] ?? null;
+            const value = dataset?.data?.[index] ?? null;
+
+            dotNetHelper.invokeMethodAsync('HandleClickAsync', {
+                datasetIndex: datasetIndex,
+                datasetLabel: dataset?.label ?? null,
+                index: index,
+                label: label,
+                value: value
+            }).catch(() => { });
+        };
+    },
+    create: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chartEl = document.getElementById(elementId);
         let _plugins = [];
+
+        window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
         if (plugins && plugins.length > 0) {
             // register `ChartDataLabels` plugin
@@ -1026,11 +1057,11 @@ window.blazorChart = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.create(elementId, type, data, options, plugins);
+            window.blazorChart.create(elementId, type, data, options, plugins, dotNetHelper);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.get(elementId);
@@ -1039,7 +1070,7 @@ window.blazorChart = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1048,6 +1079,8 @@ window.blazorChart = {
                     return context.dataset.backgroundColor;
                 };
             }
+
+            window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
             chart.data = data;
             chart.options = options;
@@ -1122,9 +1155,11 @@ window.blazorChart.bar = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options, plugins) => {
+    create: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chartEl = document.getElementById(elementId);
         let _plugins = [];
+
+        window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
         if (plugins && plugins.length > 0) {
             // register `ChartDataLabels` plugin
@@ -1155,11 +1190,11 @@ window.blazorChart.bar = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.bar.create(elementId, type, data, options, plugins);
+            window.blazorChart.bar.create(elementId, type, data, options, plugins, dotNetHelper);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.bar.get(elementId);
@@ -1168,7 +1203,7 @@ window.blazorChart.bar = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.bar.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1177,6 +1212,8 @@ window.blazorChart.bar = {
                     return context.dataset.backgroundColor;
                 };
             }
+
+            window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
             chart.data = data;
             chart.options = options;
@@ -1252,9 +1289,11 @@ window.blazorChart.doughnut = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options, plugins) => {
+    create: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chartEl = document.getElementById(elementId);
         let _plugins = [];
+
+        window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
         if (plugins && plugins.length > 0) {
             // register `ChartDataLabels` plugin
@@ -1290,11 +1329,11 @@ window.blazorChart.doughnut = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.doughnut.create(elementId, type, data, options, plugins);
+            window.blazorChart.doughnut.create(elementId, type, data, options, plugins, dotNetHelper);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.doughnut.get(elementId);
@@ -1303,7 +1342,7 @@ window.blazorChart.doughnut = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.doughnut.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1312,6 +1351,8 @@ window.blazorChart.doughnut = {
                     return context.dataset.backgroundColor;
                 };
             }
+
+            window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
             chart.data = data;
             chart.options = options;
@@ -1386,9 +1427,11 @@ window.blazorChart.line = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options, plugins) => {
+    create: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chartEl = document.getElementById(elementId);
         let _plugins = [];
+
+        window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
         if (plugins && plugins.length > 0) {
             // register `ChartDataLabels` plugin
@@ -1457,12 +1500,12 @@ window.blazorChart.line = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart)
             return;
         else
-            window.blazorChart.line.create(elementId, type, data, options, plugins);
+            window.blazorChart.line.create(elementId, type, data, options, plugins, dotNetHelper);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.line.get(elementId);
@@ -1471,7 +1514,7 @@ window.blazorChart.line = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.line.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1480,6 +1523,8 @@ window.blazorChart.line = {
                     return context.dataset.backgroundColor;
                 };
             }
+
+            window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
             chart.data = data;
             chart.options = options;
@@ -1555,9 +1600,11 @@ window.blazorChart.pie = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options, plugins) => {
+    create: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chartEl = document.getElementById(elementId);
         let _plugins = [];
+
+        window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
         if (plugins && plugins.length > 0) {
             // register `ChartDataLabels` plugin
@@ -1593,11 +1640,11 @@ window.blazorChart.pie = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.pie.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.pie.create(elementId, type, data, options, plugins);
+            window.blazorChart.pie.create(elementId, type, data, options, plugins, dotNetHelper);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.pie.get(elementId);
@@ -1606,7 +1653,7 @@ window.blazorChart.pie = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.pie.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1615,6 +1662,8 @@ window.blazorChart.pie = {
                     return context.dataset.backgroundColor;
                 };
             }
+
+            window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
             chart.data = data;
             chart.options = options;
@@ -1690,9 +1739,11 @@ window.blazorChart.polarArea = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options, plugins) => {
+    create: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chartEl = document.getElementById(elementId);
         let _plugins = [];
+
+        window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
         if (plugins && plugins.length > 0) {
             // register `ChartDataLabels` plugin
@@ -1729,11 +1780,11 @@ window.blazorChart.polarArea = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.polarArea.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.polarArea.create(elementId, type, data, options, plugins);
+            window.blazorChart.polarArea.create(elementId, type, data, options, plugins, dotNetHelper);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.polarArea.get(elementId);
@@ -1742,7 +1793,7 @@ window.blazorChart.polarArea = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.polarArea.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1751,6 +1802,8 @@ window.blazorChart.polarArea = {
                     return context.dataset.backgroundColor;
                 };
             }
+
+            window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
             chart.data = data;
             chart.options = options;
@@ -1825,9 +1878,11 @@ window.blazorChart.radar = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options, plugins) => {
+    create: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chartEl = document.getElementById(elementId);
         let _plugins = [];
+
+        window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
         if (plugins && plugins.length > 0) {
             // register `ChartDataLabels` plugin
@@ -1864,11 +1919,11 @@ window.blazorChart.radar = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.radar.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.radar.create(elementId, type, data, options, plugins);
+            window.blazorChart.radar.create(elementId, type, data, options, plugins, dotNetHelper);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.radar.get(elementId);
@@ -1877,7 +1932,7 @@ window.blazorChart.radar = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.radar.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -1886,6 +1941,8 @@ window.blazorChart.radar = {
                     return context.dataset.backgroundColor;
                 };
             }
+
+            window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
             chart.data = data;
             chart.options = options;
@@ -1960,9 +2017,11 @@ window.blazorChart.scatter = {
             chart.update();
         }
     },
-    create: (elementId, type, data, options, plugins) => {
+    create: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chartEl = document.getElementById(elementId);
         let _plugins = [];
+
+        window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
         if (plugins && plugins.length > 0) {
             // register `ChartDataLabels` plugin
@@ -1999,11 +2058,11 @@ window.blazorChart.scatter = {
 
         return chart;
     },
-    initialize: (elementId, type, data, options, plugins) => {
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
         let chart = window.blazorChart.scatter.get(elementId);
         if (chart) return;
         else
-            window.blazorChart.scatter.create(elementId, type, data, options, plugins);
+            window.blazorChart.scatter.create(elementId, type, data, options, plugins, dotNetHelper);
     },
     resize: (elementId, width, height) => {
         let chart = window.blazorChart.scatter.get(elementId);
@@ -2012,7 +2071,7 @@ window.blazorChart.scatter = {
             chart.canvas.parentNode.style.width = width;
         }
     },
-    update: (elementId, type, data, options) => {
+    update: (elementId, type, data, options, dotNetHelper) => {
         let chart = window.blazorChart.scatter.get(elementId);
         if (chart) {
             if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
@@ -2021,6 +2080,8 @@ window.blazorChart.scatter = {
                     return context.dataset.backgroundColor;
                 };
             }
+
+            window.blazorChart.setOnClickHandler(options, dotNetHelper);
 
             chart.data = data;
             chart.options = options;

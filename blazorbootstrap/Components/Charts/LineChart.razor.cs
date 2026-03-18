@@ -112,7 +112,7 @@ public partial class LineChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await SafeInvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins);
+        await SafeInvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins, ObjRef);
     }
 
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
@@ -128,7 +128,7 @@ public partial class LineChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<LineChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await SafeInvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+        await SafeInvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions, ObjRef);
     }
 
     #endregion

@@ -112,7 +112,7 @@ public partial class RadarChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<RadarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (RadarChartOptions)chartOptions, plugins);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (RadarChartOptions)chartOptions, plugins, ObjRef);
         }
     }
 
@@ -122,7 +122,7 @@ public partial class RadarChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<RadarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (RadarChartOptions)chartOptions);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (RadarChartOptions)chartOptions, ObjRef);
         }
     }
 

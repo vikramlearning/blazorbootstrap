@@ -111,7 +111,7 @@ public partial class BarChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<BarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (BarChartOptions)chartOptions, plugins);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (BarChartOptions)chartOptions, plugins, ObjRef);
         }
     }
 
@@ -121,7 +121,7 @@ public partial class BarChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<BarChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (BarChartOptions)chartOptions, ObjRef);
         }
     }
 

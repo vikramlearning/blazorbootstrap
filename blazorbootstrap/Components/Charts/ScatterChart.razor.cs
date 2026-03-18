@@ -119,7 +119,7 @@ public partial class ScatterChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<ScatterChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, plugins);
+        await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, plugins, ObjRef);
     }
 
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
@@ -135,7 +135,7 @@ public partial class ScatterChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<ScatterChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (ScatterChartOptions)chartOptions);
+        await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, ObjRef);
     }
 
     #endregion

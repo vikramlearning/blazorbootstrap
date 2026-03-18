@@ -117,7 +117,7 @@ public partial class PieChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PieChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PieChartOptions)chartOptions, plugins);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PieChartOptions)chartOptions, plugins, ObjRef);
         }
     }
 
@@ -127,7 +127,7 @@ public partial class PieChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PieChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PieChartOptions)chartOptions);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PieChartOptions)chartOptions, ObjRef);
         }
     }
 

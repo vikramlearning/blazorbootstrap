@@ -112,7 +112,7 @@ public partial class PolarAreaChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PolarAreaChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions, plugins);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions, plugins, ObjRef);
         }
     }
 
@@ -122,7 +122,7 @@ public partial class PolarAreaChart : BlazorBootstrapChart
         {
             var datasets = chartData.Datasets.OfType<PolarAreaChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (PolarAreaChartOptions)chartOptions, ObjRef);
         }
     }
 

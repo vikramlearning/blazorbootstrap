@@ -6,6 +6,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     internal ChartType chartType;
 
+    private DotNetObjectReference<BlazorBootstrapChart>? objRef;
+
     #endregion
 
     #region Methods
@@ -47,12 +49,23 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             var _data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await SafeInvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins);
+                await SafeInvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins, ObjRef);
             else if (chartType == ChartType.Line)
-                await SafeInvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), _data, (LineChartOptions)chartOptions, plugins);
+                await SafeInvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), _data, (LineChartOptions)chartOptions, plugins, ObjRef);
             else
-                await SafeInvokeVoidAsync("window.blazorChart.initialize", Id, GetChartType(), _data, chartOptions, plugins);
+                await SafeInvokeVoidAsync("window.blazorChart.initialize", Id, GetChartType(), _data, chartOptions, plugins, ObjRef);
         }
+    }
+
+    [JSInvokable]
+    public async Task HandleClickAsync(ChartClickEventArgs eventArgs) => await OnClick.InvokeAsync(eventArgs);
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        objRef ??= DotNetObjectReference.Create(this);
+
+        base.OnInitialized();
     }
 
     //public async Task Render() { }
@@ -86,12 +99,28 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             var data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await SafeInvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
+                await SafeInvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions, ObjRef);
             else if (chartType == ChartType.Line)
-                await SafeInvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+                await SafeInvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions, ObjRef);
             else
-                await SafeInvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions);
+                await SafeInvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions, ObjRef);
         }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+            objRef?.Dispose();
+
+        base.Dispose(disposing);
+    }
+
+    protected override ValueTask DisposeAsyncCore(bool disposing)
+    {
+        if (disposing)
+            objRef?.Dispose();
+
+        return base.DisposeAsyncCore(disposing);
     }
 
     /// <summary>
@@ -168,6 +197,16 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     #region Properties, Indexers
 
     internal string ContainerStyle => GetChartContainerSizeAsStyle();
+
+    /// <summary>
+    /// Fired when a chart data point is clicked.
+    /// </summary>
+    [AddedVersion("4.0.0")]
+    [Description("Fired when a chart data point is clicked.")]
+    [Parameter]
+    public EventCallback<ChartClickEventArgs> OnClick { get; set; }
+
+    protected DotNetObjectReference<BlazorBootstrapChart>? ObjRef => objRef;
 
     /// <summary>
     /// Gets or sets chart container height.
