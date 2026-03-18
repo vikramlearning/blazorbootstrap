@@ -1,0 +1,50 @@
+<PieChart @ref="pieChart" OnClick="OnClick" Width="500" />
+
+<div class="mt-3">
+    <strong>Selected item:</strong> @selectedItemMessage
+</div>
+
+@code {
+    private PieChart pieChart = default!;
+    private PieChartOptions pieChartOptions = default!;
+    private ChartData chartData = default!;
+    private string selectedItemMessage = "Click a slice to view its details.";
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+            {
+                Labels = new List<string> { "Chrome", "Edge", "Firefox", "Safari" },
+                Datasets = new List<IChartDataset>
+                {
+                    new PieChartDataset
+                    {
+                        Label = "Browsers",
+                        Data = new List<double?> { 62, 18, 11, 9 },
+                        BackgroundColor = new List<string>
+                        {
+                            ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbString(),
+                            ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbString(),
+                            ColorUtility.CategoricalTwelveColors[2].ToColor().ToRgbString(),
+                            ColorUtility.CategoricalTwelveColors[3].ToColor().ToRgbString()
+                        }
+                    }
+                }
+            };
+
+        pieChartOptions = new PieChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await pieChart.InitializeAsync(chartData, pieChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnClick(ChartClickEventArgs eventArgs)
+    {
+        selectedItemMessage = $"Dataset: {eventArgs.DatasetLabel}, Label: {eventArgs.Label}, Value: {eventArgs.Value}";
+    }
+}
