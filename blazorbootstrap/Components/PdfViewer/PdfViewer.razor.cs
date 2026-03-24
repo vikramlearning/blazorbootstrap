@@ -225,6 +225,10 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         await PdfViewerJsInterop!.ZoomInOutAsync(objRef!, Id!, scale);
     }
 
+    private async Task DownloadPdf()
+    {
+        await PdfViewerJsInterop!.DownloadPdfAsync(Url);
+    }
     #endregion
 
     #region Properties, Indexers
