@@ -457,18 +457,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         if (settings.Filters is not null && settings.Filters.Any())
             SetFilters(settings.Filters);
 
-        if (settings.PageNumber > 0)
-        {
-            if (settings.PageSize > 0 && settings.PageNumber < settings.PageSize)
-            {
-                gridCurrentState = new GridState<TItem>(settings.PageNumber, gridCurrentState.Sorting);
-                pageSize = settings.PageSize;
-            }
-            else
-            {
-                gridCurrentState = new GridState<TItem>(1, null);
-                pageSize = 10;
-            }
+        if ((settings.PageNumber > 0) && (settings.PageSize > 0))
+        {           
+            gridCurrentState = new GridState<TItem>(settings.PageNumber, gridCurrentState.Sorting);
+            pageSize = settings.PageSize;           
         }
         else
         {
@@ -485,9 +477,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task OnPageChangedAsync(int newPageNumber)
     {
+        pendingPageSizeChanging = true;
         gridCurrentState = new GridState<TItem>(newPageNumber, gridCurrentState.Sorting);
         await SaveGridSettingsAsync();
         await RefreshDataAsync(false);
+        pendingPageSizeChanging = false;
     }
 
     private async Task OnPageSizeChangedAsync(int newPageSize)
