@@ -32,7 +32,7 @@ public partial class Modal : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.modal.dispose", Id);
+                    await SafeInvokeVoidAsync("window.blazorBootstrap.modal.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -51,7 +51,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.modal.initialize", Id, UseStaticBackdrop, CloseOnEscape, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.modal.initialize", Id, UseStaticBackdrop, CloseOnEscape, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -95,7 +95,7 @@ public partial class Modal : BlazorBootstrapComponentBase
     public async Task HideAsync()
     {
         isVisible = false;
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.modal.hide", Id);
+        await SafeInvokeVoidAsync("window.blazorBootstrap.modal.hide", Id);
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ public partial class Modal : BlazorBootstrapComponentBase
 
         await InvokeAsync(StateHasChanged);
 
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.modal.show", Id);
+        await SafeInvokeVoidAsync("window.blazorBootstrap.modal.show", Id);
     }
 
     #endregion

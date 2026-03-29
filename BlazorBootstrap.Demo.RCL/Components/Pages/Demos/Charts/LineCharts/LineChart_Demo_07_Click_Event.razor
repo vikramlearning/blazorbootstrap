@@ -1,0 +1,62 @@
+<div class="container-fluid overflow-x-auto">
+    <LineChart @ref="lineChart" OnClick="OnClick" Width="800" />
+</div>
+
+<div class="mt-3">
+    <strong>Selected item:</strong> @selectedItemMessage
+</div>
+
+@code {
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
+    private string selectedItemMessage = "Click a point to view its details.";
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+            {
+                Labels = new List<string> { "January", "February", "March", "April", "May", "June" },
+                Datasets = new List<IChartDataset>
+                {
+                    new LineChartDataset
+                    {
+                        Label = "Product A",
+                        Data = new List<double?> { 35, 41, 62, 42, 13, 18 },
+                        BackgroundColor = ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbaString(),
+                        BorderColor = ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbString(),
+                        PointRadius = new List<double> { 5 },
+                        PointHoverRadius = new List<double> { 8 }
+                    },
+                    new LineChartDataset
+                    {
+                        Label = "Product B",
+                        Data = new List<double?> { 28, 48, 40, 19, 86, 27 },
+                        BackgroundColor = ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbaString(),
+                        BorderColor = ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbString(),
+                        PointRadius = new List<double> { 5 },
+                        PointHoverRadius = new List<double> { 8 }
+                    }
+                }
+            };
+
+        lineChartOptions = new LineChartOptions
+            {
+                Interaction = new Interaction { Mode = InteractionMode.Nearest, Intersect = true },
+                Responsive = true
+            };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnClick(ChartClickEventArgs eventArgs)
+    {
+        selectedItemMessage = $"Dataset: {eventArgs.DatasetLabel}, Label: {eventArgs.Label}, Value: {eventArgs.Value}";
+    }
+}

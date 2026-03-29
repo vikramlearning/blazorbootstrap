@@ -1,20 +1,40 @@
-﻿<Dropdown @ref="dropdown1" Color="DropdownColor.Secondary">
-    <DropdownToggleButton>Dropdown button</DropdownToggleButton>
-    <DropdownMenu>
-        <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
-        <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
-        <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
-    </DropdownMenu>
-</Dropdown>
+﻿<div class="mb-3">
+    <div class="btn-group gap-3">
+        <Dropdown @ref="dropdown1" Color="DropdownColor.Secondary">
+            <DropdownToggleButton>Dropdown button</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+                <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+                <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
 
-<Button Color="ButtonColor.Primary" @onclick="ShowAsync">Show</Button>
-<Button Color="ButtonColor.Primary" @onclick="HideAsync">Hide</Button>
-<Button Color="ButtonColor.Primary" @onclick="ToggleAsync">Toggle</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ShowAsync">Show</Button>
+        <Button Color="ButtonColor.Primary" @onclick="HideAsync">Hide</Button>
+    </div>
+</div>
 
-@code{
+<div>
+    <div class="btn-group gap-3">
+        <Dropdown @ref="dropdown2" Color="DropdownColor.Secondary" AutoClose="false">
+            <DropdownToggleButton>Dropdown button</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+                <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+                <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
+
+        <Button Color="ButtonColor.Primary" @onclick="ToggleAsync">Toggle</Button>
+    </div>
+</div>
+
+@code {
     private Dropdown dropdown1 = default!;
+    private Dropdown dropdown2 = default!;
 
     private async Task ShowAsync() => await dropdown1.ShowAsync();
     private async Task HideAsync() => await dropdown1.HideAsync();
-    private async Task ToggleAsync() => await dropdown1.ToggleAsync();
+
+    private async Task ToggleAsync() => await dropdown2.ToggleAsync();
 }

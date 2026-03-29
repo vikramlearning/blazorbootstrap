@@ -24,7 +24,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
             try
             {
                 if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.dispose", Id);
+                    await SafeInvokeVoidAsync("window.blazorBootstrap.offcanvas.dispose", Id);
             }
             catch (JSDisconnectedException)
             {
@@ -40,7 +40,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", Id, UseStaticBackdrop, CloseOnEscape, IsScrollable, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.offcanvas.initialize", Id, UseStaticBackdrop, CloseOnEscape, IsScrollable, objRef);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -71,7 +71,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [Description("Hides an offcanvas.")]
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.hide", Id);
+    public async Task HideAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.offcanvas.hide", Id);
 
     /// <summary>
     /// Shows an offcanvas.
@@ -97,7 +97,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
 
         childComponent = type;
         this.parameters = parameters!;
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.offcanvas.show", Id);
+        await SafeInvokeVoidAsync("window.blazorBootstrap.offcanvas.show", Id);
         await InvokeAsync(StateHasChanged);
     }
 

@@ -28,7 +28,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.rangeInput.initialize", Id, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.rangeInput.initialize", Id, objRef);
 
             var currentValue = Value; // object
 

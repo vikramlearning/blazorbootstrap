@@ -24,6 +24,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_DateInput = DemoScreenshotSrcPrefix + "date-input.png";
     public const string Demos_URL_EnumInput = DemoScreenshotSrcPrefix + "enum-input.png"; // TODO: pending
     public const string Demos_URL_NumberInput = DemoScreenshotSrcPrefix + "number-input.png";
+    public const string Demos_URL_OTPInput = DemoScreenshotSrcPrefix + "otp-input.png";
     public const string Demos_URL_PasswordInput = DemoScreenshotSrcPrefix + "password-input.png";
     public const string Demos_URL_RadioInput = DemoScreenshotSrcPrefix + "radio-input.png";
     public const string Demos_URL_RangeInput = DemoScreenshotSrcPrefix + "range-input.png";

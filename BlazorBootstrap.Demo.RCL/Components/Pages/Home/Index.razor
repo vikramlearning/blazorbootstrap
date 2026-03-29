@@ -156,6 +156,11 @@
             </a>
         </div>
         <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_OTPInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Asterisk" class="me-2" /> OTP Input <Badge Color="BadgeColor.Danger">New</Badge></h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
             <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_PasswordInput">
                 <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.EyeSlashFill" class="me-2" /> Password Input</h4>
             </a>
@@ -312,6 +317,11 @@
         <div class="col-sm-4 mb-2">
             <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_NumberInput">
                 <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.InputCursor" class="me-2" /> Number Input</h4>
+            </a>
+        </div>
+        <div class="col-sm-4 mb-2">
+            <a class="d-block pe-lg-4 text-decoration-none lh-sm" href="@DemoRouteConstants.Demos_URL_OTPInput">
+                <h4 class="mb-0 fs-5 fw-semibold"><Icon Name="IconName.Asterisk" class="me-2" /> OTP Input <Badge Color="BadgeColor.Danger">New</Badge></h4>
             </a>
         </div>
         <div class="col-sm-4 mb-2">
@@ -519,7 +529,7 @@
 
     protected override void OnInitialized()
     {
-        version = $"v{Configuration["version"]}"; // example: v0.6.1
+        version = $"v{Configuration["version"]}"; // example: v4.0.1
         releaseShortDescription = Configuration["release:short_description"]!;
 
         base.OnInitialized();

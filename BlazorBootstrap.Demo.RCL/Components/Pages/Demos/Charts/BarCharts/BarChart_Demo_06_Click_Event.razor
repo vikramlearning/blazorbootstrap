@@ -1,0 +1,54 @@
+<BarChart @ref="barChart" OnClick="OnClick" Width="500" Height="300" />
+
+<div class="mt-3">
+    <strong>Selected item:</strong> @selectedItemMessage
+</div>
+
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+    private string selectedItemMessage = "Click a bar to view its details.";
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+            {
+                Labels = new List<string> { "January", "February", "March", "April", "May", "June" },
+                Datasets = new List<IChartDataset>
+                {
+                    new BarChartDataset
+                    {
+                        Label = "Product A",
+                        Data = new List<double?> { 65, 59, 80, 81, 56, 55 },
+                        BackgroundColor = new List<string> { ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbString() },
+                        BorderColor = new List<string> { ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbString() },
+                        BorderWidth = new List<double> { 0 }
+                    },
+                    new BarChartDataset
+                    {
+                        Label = "Product B",
+                        Data = new List<double?> { 28, 48, 40, 19, 86, 27 },
+                        BackgroundColor = new List<string> { ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbString() },
+                        BorderColor = new List<string> { ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbString() },
+                        BorderWidth = new List<double> { 0 }
+                    }
+                }
+            };
+
+        barChartOptions = new BarChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await barChart.InitializeAsync(chartData, barChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnClick(ChartClickEventArgs eventArgs)
+    {
+        selectedItemMessage = $"Dataset: {eventArgs.DatasetLabel}, Label: {eventArgs.Label}, Value: {eventArgs.Value}";
+    }
+}

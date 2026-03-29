@@ -21,15 +21,8 @@ public partial class Toast : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
-            try
-            {
-                if (IsRenderComplete)
-                    await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", Id);
-            }
-            catch (JSDisconnectedException)
-            {
-                // do nothing
-            }
+            if (IsRenderComplete)
+                await SafeInvokeVoidAsync("window.blazorBootstrap.toasts.dispose", Id);
 
             objRef?.Dispose();
         }
@@ -93,12 +86,12 @@ public partial class Toast : BlazorBootstrapComponentBase
     /// <summary>
     /// Hides an element’s toast.
     /// </summary>
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", Id);
+    public async Task HideAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.toasts.hide", Id);
 
     /// <summary>
     /// Reveals an element’s toast.
     /// </summary>
-    public async Task ShowAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.show", Id, AutoHide, Delay, objRef);
+    public async Task ShowAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.toasts.show", Id, AutoHide, Delay, objRef);
 
     private string GetIconClass() =>
         ToastMessage.Type switch

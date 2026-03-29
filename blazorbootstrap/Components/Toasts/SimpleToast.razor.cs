@@ -15,7 +15,8 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     {
         if (disposing)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.dispose", Id);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.toasts.dispose", Id);
+
             objRef?.Dispose();
         }
 
@@ -52,12 +53,12 @@ public partial class SimpleToast : BlazorBootstrapComponentBase
     /// <summary>
     /// Hides an element’s toast.
     /// </summary>
-    public async Task HideAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.hide", Id);
+    public async Task HideAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.toasts.hide", Id);
 
     /// <summary>
     /// Reveals an element’s toast.
     /// </summary>
-    public async Task ShowAsync() => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.toasts.show", Id, AutoHide, Delay, objRef);
+    public async Task ShowAsync() => await SafeInvokeVoidAsync("window.blazorBootstrap.toasts.show", Id, AutoHide, Delay, objRef);
 
     #endregion
 
