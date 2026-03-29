@@ -1,0 +1,34 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Ribbon" />
+
+<Section Size="HeadingSize.H2" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
+    <div class="mb-3">In the following example, you will see a ribbon similar to the one found in Outlook.</div>
+    <Demo Type="typeof(Ribbon_Demo_01_How_It_Works)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Other icons" PageUrl="@pageUrl" Link="other-icons">
+    <div class="mb-3">In the following example, instead of icons like Bootstrap, Font Awesome, etc., we used PNG icons.</div>
+    <Demo Type="typeof(Ribbon_Demo_02_Images)" Tabs="true" />
+
+    <Callout Color="CalloutColor.Warning" HideHeading="true">
+        <b>NOTE:</b> All the PNG icons used on this page are from Flaticon with a premium license only.
+    </Callout>
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Ribbon;
+    private const string pageTitle = "Blazor Ribbon";
+    private const string pageDescription = "Documentation and examples for using the Blazor Bootstrap Ribbon component.";
+    private const string metaTitle = "Blazor Ribbon Component";
+    private const string metaDescription = "Documentation and examples for using the Blazor Bootstrap Ribbon component.";
+    private const string imageUrl = "https://i.imgur.com/LpZVLbF.png";
+}

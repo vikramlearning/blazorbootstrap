@@ -202,7 +202,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
         formattedValue = GetFormattedValue(Value!);
 
         if (oldValue!.Equals(Value))
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.timeInput.setValue", Id, formattedValue);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.timeInput.setValue", Id, formattedValue);
 
         await ValueChanged.InvokeAsync(Value);
 

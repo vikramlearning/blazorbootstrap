@@ -1,0 +1,39 @@
+﻿<Carousel Onslid="Onslid" Onslide="Onslide">
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/carousel/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/carousel/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/carousel/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+
+@code {
+    [Inject]
+    ToastService ToastService { get; set; } = default!;
+    private void Onslid(CarouselEventArgs e)
+    {
+        var message = new ToastMessage
+            {
+                Type = ToastType.Secondary,
+                Title = "Carousel Events",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Onslid: from={e.From}, to={e.To}"
+            };
+        ToastService.Notify(message);
+    }
+
+    private void Onslide(CarouselEventArgs e)
+    {
+        var message = new ToastMessage
+            {
+                Type = ToastType.Secondary,
+                Title = "Carousel Events",
+                HelpText = $"{DateTime.Now}",
+                Message = $"Onslide: from={e.From}, to={e.To}"
+            };
+        ToastService.Notify(message);
+    }
+}

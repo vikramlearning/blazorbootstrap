@@ -26,43 +26,53 @@ public partial class DropdownActionButton : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [EditorRequired]
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the dropdown action button color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
     [CascadingParameter(Name = "Color")]
     public DropdownColor Color { get; set; } = DropdownColor.None;
 
     /// <summary>
     /// Gets or sets the disabled.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
     [CascadingParameter(Name = "Disabled")]
     public bool Disabled { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown action button size.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownSize.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
     [CascadingParameter(Name = "Size")]
     public DropdownSize Size { get; set; } = DropdownSize.None;
 
     /// <summary>
     /// Gets or sets the dropdown action button tab index.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the dropdown action button tab index.")]
     [Parameter]
     public int? TabIndex { get; set; }
 

@@ -1,0 +1,37 @@
+﻿@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Sidebar" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Sidebar Parameters" PageUrl="@pageUrl" Link="sidebar-parameters">
+    <DocxTable TItem="Sidebar" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Sidebar Methods" PageUrl="@pageUrl" Link="sidebar-methods">
+    <DocxTable TItem="Sidebar" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="NavItem Properties" PageUrl="@pageUrl" Link="nav-item-properties">
+    <DocxTable TItem="NavItem" DocType="DocType.Properties" />
+</Section>
+
+@code {
+    private const string componentName = nameof(Sidebar);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Sidebar;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Sidebar;
+}

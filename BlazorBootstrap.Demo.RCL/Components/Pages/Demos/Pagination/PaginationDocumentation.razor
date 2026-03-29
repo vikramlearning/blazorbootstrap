@@ -1,0 +1,46 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Pagination" />
+
+<Section Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" Link="examples">
+    <div>We use a large block of connected links for our pagination, making links hard to miss and easily scalable—all while providing large hit areas. Pagination is built with list HTML elements so screen readers can announce the number of available links.</div>
+    <Demo Type="typeof(Pagination_Demo_01_Examples)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Working with icons" PageUrl="@pageUrl" Link="working-with-icons">
+    <Demo Type="typeof(Pagination_Demo_02_Working_With_Icons)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disabled and active states" PageUrl="@pageUrl" Link="disabled-and-active-states">
+    <Demo Type="typeof(Pagination_Demo_03_Disabled_And_Active_States)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Sizing" PageUrl="@pageUrl" Link="sizing">
+    <div>Fancy larger or smaller pagination? Add <code>Size="PaginationSize.Small"</code> or <code>Size="PaginationSize.Large"</code> for additional sizes.</div>
+    <Demo Type="typeof(Pagination_Demo_04_Sizing)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Alignment" PageUrl="@pageUrl" Link="alignment">
+    <Demo Type="typeof(Pagination_Demo_05_Alignment)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Events" PageUrl="@pageUrl" Link="events">
+    <Demo Type="typeof(Pagination_Demo_06_Events)" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Pagination;
+    private const string pageTitle = "Blazor Pagination";
+    private const string pageDescription = "Use Blazor Bootstrap pagination component to indicate a series of related content exists across multiple pages.";
+    private const string metaTitle = "Blazor Pagination Component";
+    private const string metaDescription = "Use Blazor Bootstrap pagination component to indicate a series of related content exists across multiple pages.";
+    private const string imageUrl = "https://i.imgur.com/SCbZVd4.jpg";
+}

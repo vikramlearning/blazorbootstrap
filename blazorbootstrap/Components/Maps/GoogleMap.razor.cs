@@ -22,9 +22,11 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// </summary>
     /// <param name="marker">The marker to add to the map.</param>
     /// <returns>A completed task.</returns>
+    [AddedVersion("3.0.0")]
+    [Description("Adds a marker to the GoogleMap.")]
     public ValueTask AddMarkerAsync(GoogleMapMarker marker)
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.addMarker", Id, marker, objRef);
+        _ = SafeInvokeVoidAsync("window.blazorBootstrap.googlemaps.addMarker", Id, marker, objRef);
 
         return ValueTask.CompletedTask;
     }
@@ -40,9 +42,11 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// Refreshes the Google Map component.
     /// </summary>
     /// <returns>A completed task.</returns>
+    [AddedVersion("3.0.0")]
+    [Description("Refreshes the Google Map component.")]
     public ValueTask RefreshAsync()
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef);
+        _ = SafeInvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef);
 
         return ValueTask.CompletedTask;
     }
@@ -51,16 +55,18 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// Updates the markers on the Google Map.
     /// </summary>
     /// <returns>A completed task.</returns>
+    [AddedVersion("3.0.0")]
+    [Description("Updates the markers on the Google Map.")]
     public ValueTask UpdateMarkersAsync(IEnumerable<GoogleMapMarker> markers)
     {
-        JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.updateMarkers", Id, markers, objRef);
+        _ = SafeInvokeVoidAsync("window.blazorBootstrap.googlemaps.updateMarkers", Id, markers, objRef);
 
         return ValueTask.CompletedTask;
     }
 
     private void OnScriptLoad()
     {
-        Task.Run(async () => await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef));
+        Task.Run(() => SafeInvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef));
     }
 
     #endregion
@@ -76,19 +82,37 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the Google Map API key.
+    /// <para>
+    /// Default value is <see langword="null" />.
+    /// </para>
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the Google Map API key.")]
     [Parameter]
     public string? ApiKey { get; set; }
 
     /// <summary>
     /// Gets or sets the center parameter.
+    /// <para>
+    /// Default value is <see langword="null" />.
+    /// </para>
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the center parameter.")]
     [Parameter] 
-    public GoogleMapCenter Center { get; set; } = default!;
+    public GoogleMapCenter? Center { get; set; }
 
     /// <summary>
     /// Makes the marker clickable if set to <see langword="true" />.
+    /// <para>
+    /// Default value is <see langword="false" />.
+    /// </para>
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(false)]
+    [Description("Makes the marker clickable if set to <b>true</b>.")]
     [Parameter] 
     public bool Clickable { get; set; }
 
@@ -96,25 +120,37 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the height of the <see cref="GoogleMap" />.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="null" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the height of the <b>GoogleMap</b>.")]
     [Parameter]
     public double? Height { get; set; }
 
     /// <summary>
     /// Gets or sets the units for the <see cref="Height" />.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Unit.Px" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(Unit.Px)]
+    [Description("Gets or sets the units for the <b>Height</b>.")]
     [Parameter]
     public Unit HeightUnit { get; set; } = Unit.Px;
 
     /// <summary>
     /// Gets or sets the markers.
+    /// <para>
+    /// Default value is <see langword="null" />.
+    /// </para>
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the markers.")]
     [Parameter] 
     public IEnumerable<GoogleMapMarker>? Markers { get; set; }
 
@@ -122,33 +158,44 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     /// Event fired when a user clicks on a marker.
     /// This event fires only when <see cref="Clickable" /> is set to <see langword="true" />.
     /// </summary>
+    [AddedVersion("3.0.0")]
+    [Description("Event fired when a user clicks on a marker. This event fires only when <b>Clickable</b> is set to <b>true</b>.")]
     [Parameter] 
     public EventCallback<GoogleMapMarker> OnMarkerClick { get; set; }
 
     /// <summary>
     /// Gets or sets the width of the <see cref="GoogleMap" />.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="null" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the width of the <b>GoogleMap</b>.")]
     [Parameter]
     public double? Width { get; set; }
 
     /// <summary>
     /// Gets or sets the units for the <see cref="Width" />.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Unit.Percentage" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(Unit.Percentage)]
+    [Description("Gets or sets the units for the <b>Width</b>.")]
     [Parameter]
     public Unit WidthUnit { get; set; } = Unit.Percentage;
 
     /// <summary>
     /// Gets or sets the zoom level of the <see cref="GoogleMap" />.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 14.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(14)]
+    [Description("Gets or sets the zoom level of the <b>GoogleMap</b>.")]
     [Parameter]
     public int Zoom { get; set; } = 14;
 

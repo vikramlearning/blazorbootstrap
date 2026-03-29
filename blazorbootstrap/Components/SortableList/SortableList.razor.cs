@@ -80,151 +80,205 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets a value indicating whether sorting is allowed for the list.
+    /// <para>
+    /// Default value is <see langword="true"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is true.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(true)]
+    [Description("Gets or sets a value indicating whether sorting is allowed for the list.")]
     [Parameter]
     public bool AllowSorting { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the items.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the items.")]
     [Parameter]
-    public List<TItem> Data { get; set; } = default!;
+    public List<TItem>? Data { get; set; }
 
     /// <summary>
     /// Gets or sets the CSS class applied to disabled items.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the CSS class applied to disabled items.")]
     [Parameter]
-    public string? DisabledItemCssClass { get; set; } = default!;
+    public string? DisabledItemCssClass { get; set; }
 
     /// <summary>
     /// Gets or sets a delegate that determines whether an item should be disabled.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets a delegate that determines whether an item should be disabled.")]
     [Parameter]
-    public Func<TItem, bool> DisableItem { get; set; } = default!;
+    public Func<TItem, bool>? DisableItem { get; set; }
 
     /// <summary>
     /// Gets or sets the empty data template.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the empty data template.")]
     [Parameter]
-    public RenderFragment EmptyDataTemplate { get; set; } = default!;
+    public RenderFragment? EmptyDataTemplate { get; set; }
 
     /// <summary>
     /// Gets or sets the text to display when there are no records in the list.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is `No records to display`.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("2.2.0")]
+    [DefaultValue("No records to display")]
+    [Description("Gets or sets the text to display when there are no records in the list.")]
     [Parameter]
     public string EmptyText { get; set; } = "No records to display";
 
     /// <summary>
     /// Gets or sets the group name associated with the list.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the group name associated with the list.")]
     [Parameter]
     public string? Group { get; set; }
 
     /// <summary>
     /// Gets or sets the CSS selector for the drag handle element.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the CSS selector for the drag handle element.")]
     [Parameter]
     public string? Handle { get; set; }
 
     /// <summary>
     /// Gets or sets the loading state.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the loading state.")]
     [Parameter]
     public bool IsLoading { get; set; }
 
     /// <summary>
     /// Gets or sets the template used to render individual items in the list.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the template used to render individual items in the list.")]
     [Parameter]
     public RenderFragment<TItem>? ItemTemplate { get; set; }
 
     /// <summary>
     /// Gets or sets the loading template.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the loading template.")]
     [Parameter]
     public RenderFragment LoadingTemplate { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the name of the <see cref="SortableList{TItem}" /> component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the name of the <b>SortableList{TItem}</b> component.")]
     [Parameter]
     public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets an event callback that fires when an item is added to the list.
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("Gets or sets an event callback that fires when an item is added to the list.")]
     [Parameter]
     public EventCallback<SortableListEventArgs> OnAdd { get; set; }
 
     /// <summary>
     /// Gets or sets an event callback that fires when an item is removed from the list.
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("Gets or sets an event callback that fires when an item is removed from the list.")]
     [Parameter]
     public EventCallback<SortableListEventArgs> OnRemove { get; set; }
 
     /// <summary>
     /// Gets or sets an event callback that fires when an item is updated in the list.
     /// </summary>
+    [AddedVersion("2.2.0")]
+    [Description("Gets or sets an event callback that fires when an item is updated in the list.")]
     [Parameter]
     public EventCallback<SortableListEventArgs> OnUpdate { get; set; }
 
     /// <summary>
     /// Gets or sets the pull mode for the sortable list.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="SortableListPullMode.True" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(SortableListPullMode.True)]
+    [Description("Gets or sets the pull mode for the sortable list.")]
     [Parameter]
     public SortableListPullMode Pull { get; set; } = SortableListPullMode.True;
 
     /// <summary>
     /// Gets or sets the put mode for the sortable list.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="SortableListPutMode.True" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("2.2.0")]
+    [DefaultValue(SortableListPutMode.True)]
+    [Description("Gets or sets the put mode for the sortable list.")]
     [Parameter]
     public SortableListPutMode Put { get; set; } = SortableListPutMode.True;
 

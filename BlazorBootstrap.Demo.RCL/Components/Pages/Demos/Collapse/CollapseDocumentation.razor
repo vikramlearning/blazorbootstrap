@@ -1,0 +1,79 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Collapse" />
+
+<Section Size="HeadingSize.H2" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
+    <div class="mb-3">
+        The <code>Collapse</code> component is used to show and hide content. Use <code>ShowAsync</code>, <code>HideAsync</code>, and <code>ToggleAsync</code> methods to toggle the content.
+        Collapsing an element will animate the height from its current value to <code>0</code>.
+    </div>
+
+    <Callout Color="CalloutColor.Info">
+        The animation effect of this component is dependent on the <code>prefers-reduced-motion</code> media query. <br />
+        See the <a href="https://getbootstrap.com/docs/5.3/getting-started/accessibility/#reduced-motion" target="_blank">reduced motion section of our accessibility documentation</a>.
+    </Callout>
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" Link="examples">
+    <div class="mb-3">
+        Click the buttons below to show and hide the content.
+    </div>
+    <Demo Type="typeof(Collapse_Demo_01_Examples)" Tabs="false" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Horizontal" PageUrl="@pageUrl" Link="horizontal">
+    <div class="mb-3">
+        The <code>Collapse</code> component supports horizontal collapsing. Set the <code>Horizontal</code> parameter to <code>true</code> to enable horizontal collapsing.
+    </div>
+    <Demo Type="typeof(Collapse_Demo_02_Horizontal)" Tabs="false" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Events" PageUrl="@pageUrl" Link="events">
+    <div class="mb-3">
+        Blazor Bootstrap Collapse component exposes a few events for hooking into collapse functionality.
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Event Name</th>
+                <th scope="col">Description</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr>
+                <th scope="row"><code>OnHiding</code></th>
+                <td>This event is fired immediately when the <code>hide</code> method has been called.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnHidden</code></th>
+                <td>This event is fired when a collapse component has been hidden from the user (will wait for CSS transitions to complete).</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnShowing</code></th>
+                <td>This event fires immediately when the <code>show</code> method is called.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnShown</code></th>
+                <td>This event is fired when a collapse component has been made visible to the user (will wait for CSS transitions to complete).</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <Demo Type="typeof(Collapse_Demo_03_Events)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Collapse;
+    private const string pageTitle = "Blazor Collapse";
+    private const string pageDescription = "Toggle the visibility of content across your project with the Blazor Bootstrap Collapse component.";
+    private const string metaTitle = "Blazor Collapse Component";
+    private const string metaDescription = "Toggle the visibility of content across your project with the Blazor Bootstrap Collapse component.";
+    private const string imageUrl = "https://i.imgur.com/8A0emQe.png";
+}

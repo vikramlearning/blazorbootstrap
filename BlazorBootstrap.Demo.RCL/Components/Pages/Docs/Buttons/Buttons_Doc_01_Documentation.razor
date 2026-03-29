@@ -1,0 +1,61 @@
+﻿@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Buttons" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Button Parameters" PageUrl="@pageUrl" Link="button-parameters">
+    <DocxTable TItem="Button" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Button Methods" PageUrl="@pageUrl" Link="button-methods">
+    <DocxTable TItem="Button" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ButtonColor Enum" PageUrl="@pageUrl" Link="button-color-enum">
+    <DocxTable TItem="ButtonColor" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ButtonSize Enum" PageUrl="@pageUrl" Link="button-size-enum">
+    <DocxTable TItem="ButtonSize" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ButtonType Enum" PageUrl="@pageUrl" Link="button-type-enum">
+    <DocxTable TItem="ButtonType" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Position Enum" PageUrl="@pageUrl" Link="position-enum">
+    <DocxTable TItem="Position" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Target Enum" PageUrl="@pageUrl" Link="target-enum">
+    <DocxTable TItem="Target" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="TooltipColor Enum" PageUrl="@pageUrl" Link="tooltip-color-enum">
+    <DocxTable TItem="TooltipColor" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="TooltipPlacement Enum" PageUrl="@pageUrl" Link="tooltip-placement-enum">
+    <DocxTable TItem="TooltipPlacement" DocType="DocType.Enum" />
+</Section>
+
+@code {
+    private const string componentName = nameof(Button);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Buttons;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Buttons;
+}

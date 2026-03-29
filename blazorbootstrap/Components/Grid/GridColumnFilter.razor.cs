@@ -209,18 +209,18 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the filter button color.
     /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="ButtonColor.Light" />.
-    /// </remarks>
+    /// </para>
     [Parameter]
     public ButtonColor FilterButtonColor { get; set; } = ButtonColor.Light;
 
     /// <summary>
     /// Gets or sets the filter button CSS class.
     /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is null.
-    /// </remarks>
+    /// </para>
     [Parameter]
     public string? FilterButtonCSSClass { get; set; }
 
@@ -244,9 +244,9 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets filter value.
     /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is null.
-    /// </remarks>
+    /// </para>
     [Parameter]
     public string? FilterValue { get; set; }
 
@@ -273,9 +273,9 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the filter property name.
     /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is null.
-    /// </remarks>
+    /// </para>
     [Parameter]
     public string? PropertyTypeName { get; set; }
 

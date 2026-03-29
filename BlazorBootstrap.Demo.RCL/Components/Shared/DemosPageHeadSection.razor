@@ -1,0 +1,33 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inherits BlazorBootstrapComponentBase
+
+<PageMetaTags PageUrl="@PageUrl"
+              Title="@MetaTitle"
+              Description="@MetaDescription"
+              ImageUrl="@ImageUrl" />
+
+<PageHero Heading="@PageTitle">
+    <LeadSection>@((MarkupString)PageDescription!)</LeadSection>
+</PageHero>
+
+<CarbonAds />
+
+@code {
+    [Parameter]
+    public string? PageUrl { get; set; }
+
+    [Parameter]
+    public string? PageTitle { get; set; }
+
+    [Parameter]
+    public string? PageDescription { get; set; }
+
+    [Parameter]
+    public string? MetaTitle { get; set; }
+
+    [Parameter]
+    public string? MetaDescription { get; set; }
+
+    [Parameter]
+    public string? ImageUrl { get; set; }
+}

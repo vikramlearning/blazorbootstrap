@@ -1,0 +1,121 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Accordion" />
+
+<Section Class="p-0" Size="HeadingSize.H2" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
+    <div class="mb-3">
+        The <code>Accordion</code> component uses the <code>Collapse</code> component internally to make it collapsible.
+    </div>
+</Section>
+
+<Callout Color="CalloutColor.Info">
+    The animation effect of this component is dependent on the <code>prefers-reduced-motion</code> media query. <br />
+    See the <a href="https://getbootstrap.com/docs/5.3/getting-started/accessibility/#reduced-motion" target="_blank">reduced motion section of our accessibility documentation</a>.
+</Callout>
+
+<Section Class="p-0" Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" Link="examples">
+    <div class="mb-3">
+        Click the accordions below to expand/collapse the accordion content.
+    </div>
+    <Demo Type="typeof(Accordion_Demo_01_Examples)" Tabs="false" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H2" Name="Title with Icon" PageUrl="@pageUrl" Link="title-with-icon">
+    <div class="mb-3">
+        To customize the accordion title, use <code>TitleTemplate</code>, as shown in the below example.
+    </div>
+    <Demo Type="typeof(Accordion_Demo_02_Title_with_Icon)" Tabs="false" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Flush" PageUrl="@pageUrl" Link="flush">
+    <div class="mb-3">
+        Set the <code>Flush</code> parameter to <code>true</code> to remove borders and rounded corners to render accordions edge-to-edge with their parent container.
+    </div>
+    <Demo Type="typeof(Accordion_Demo_03_Flush)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Set default active accordion item" PageUrl="@pageUrl" Link="set-default-active-accordion-item">
+    <div class="mb-3">
+        Set the <code>Active</code> parameter to <code>true</code> to keep the accordion item open by default.
+    </div>
+    <Demo Type="typeof(Accordion_Demo_04_Set_Default_Active)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Always open" PageUrl="@pageUrl" Link="always-open">
+    <div class="mb-3">
+        Set the <code>AlwaysOpen</code> parameter to <code>true</code> to keep accordion items open when another item is opened.
+    </div>
+    <Demo Type="typeof(Accordion_Demo_05_Always_Open)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Show / hide individual accordion items" PageUrl="@pageUrl" Link="show-hide-individual-accordion-items">
+    <div class="mb-3">
+        You can show and hide individual accordion items in several ways.
+        <ul>
+            <li>To show an accordion item, use predefined methods <code>ShowFirstAccordionItemAsync</code>, <code>ShowLastAccordionItemAsync</code>, <code>ShowAccordionItemByNameAsync</code>, and <code>ShowAccordionItemByIndexAsync</code>.</li>
+            <li>To hide an accordion item, use predefined methods <code>HideFirstAccordionItemAsync</code>, <code>HideLastAccordionItemAsync</code>, <code>HideAccordionItemByNameAsync</code>, and <code>HideAccordionItemByIndexAsync</code>.</li>
+        </ul>
+    </div>
+    <Demo Type="typeof(Accordion_Demo_06_Show_Hide_Individual_AccordionItems)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Show / hide all accordion items" PageUrl="@pageUrl" Link="show-hide-all-accordion-items">
+    <div class="mb-3">
+        When the <code>AlwaysOpen</code> parameter is set to <code>true</code>, you can show all accordion items simultaneously using the <code>ShowAllAccordionItemsAsync</code> method.
+        The <code>HideAllAccordionItemsAsync</code> method will hide all accordion items, regardless of the value of <code>AlwaysOpen</code>.
+    </div>
+    <Demo Type="typeof(Accordion_Demo_07_Show_Hide_All_AccordionItems)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Events" PageUrl="@pageUrl" Link="events">
+    <div class="mb-3">
+        Blazor Bootstrap Accordion component exposes a few events for hooking into accordion functionality.
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Event Name</th>
+                    <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                <tr>
+                    <th scope="row"><code>OnHiding</code></th>
+                    <td>This event is fired immediately when the <code>hide</code> method has been called.</td>
+                </tr>
+                <tr>
+                    <th scope="row"><code>OnHidden</code></th>
+                    <td>This event is fired when a accordion item has been hidden from the user (will wait for CSS transitions to complete).</td>
+                </tr>
+                <tr>
+                    <th scope="row"><code>OnShowing</code></th>
+                    <td>This event fires immediately when the <code>show</code> method is called.</td>
+                </tr>
+                <tr>
+                    <th scope="row"><code>OnShown</code></th>
+                    <td>This event is fired when a accordion item has been made visible to the user (will wait for CSS transitions to complete).</td>
+                </tr>
+            </tbody>
+        </table>
+        <Callout Type="CalloutColor.Info">
+            If no accordion item is active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
+        </Callout>
+    </div>
+    <Demo Type="typeof(Accordion_Demo_08_Events)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Accordion;
+    private const string pageTitle = "Blazor Accordion";
+    private const string pageDescription = "Build vertically collapsing accordions in combination with our Collapse component.";
+    private const string metaTitle = "Blazor Accordion Component";
+    private const string metaDescription = "Build vertically collapsing accordions in combination with our Collapse component.";
+    private const string imageUrl = "https://i.imgur.com/g4zpMXp.png";
+}

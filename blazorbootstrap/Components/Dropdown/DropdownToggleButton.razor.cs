@@ -50,55 +50,58 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
 
     /// <summary>
     /// If <see langword="true" />, enables the auto close.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
     [CascadingParameter(Name = "AutoClose")]
     public bool AutoClose { get; set; }
 
     /// <summary>
     /// Gets or sets the auto close behavior of the dropdown.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownAutoCloseBehavior.Inside" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
     [CascadingParameter(Name = "AutoCloseBehavior")]
     public DropdownAutoCloseBehavior AutoCloseBehavior { get; set; } = DropdownAutoCloseBehavior.Inside;
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the dropdown toggle button color.
+    /// <para>
+    /// Default value is  <see cref="DropdownColor.None"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is <see cref="DropdownColor.None" />.
-    /// </remarks>
     [CascadingParameter(Name = "Color")]
     public DropdownColor Color { get; set; } = DropdownColor.None;
 
     /// <summary>
     /// Gets or sets the disabled.
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     [CascadingParameter(Name = "Disabled")]
     public bool Disabled { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown action button size.
     /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownSize.None" />.
-    /// </remarks>
+    /// </para>
     [CascadingParameter(Name = "Size")]
     public DropdownSize Size { get; set; } = DropdownSize.None;
 
@@ -107,9 +110,12 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the dropdown toggle button tab index.
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the dropdown toggle button tab index.")]
     [Parameter]
     public int? TabIndex { get; set; }
 

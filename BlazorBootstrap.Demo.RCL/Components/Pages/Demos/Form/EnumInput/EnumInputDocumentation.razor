@@ -1,0 +1,115 @@
+@page "/enum-input"
+
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_EnumInput" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
+    <div class="mb-3">
+        The <strong>EnumInput</strong> component displays enum values in a dropdown, allowing users to select from a predefined set of options.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Define an <code>enum</code> representing your options.</li>
+                <li>Add the <code>EnumInput</code> component to your page, specifying the <code>TEnum</code> type parameter.</li>
+                <li>Bind the selected value using <code>@@bind-Value</code> or <code>@@bind-Text</code> as needed.</li>
+                <li>Use the selected value or text in your logic as shown in the demo.</li>
+            </ol>
+        </div>
+        This demo shows how to bind both the enum value and text, and how to display the selected result.
+    </div>
+    <Demo Type="typeof(EnumInput_Demo_01_How_it_works)" Tabs="true" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Sizes" PageUrl="@pageUrl" Link="Sizes">
+    <div class="mb-3">
+        The <strong>EnumInput</strong> component can be rendered in various sizes to fit different UI requirements.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set the <code>Size</code> parameter to one of the <code>EnumInputSize</code> values (<code>Small</code>, <code>Normal</code>, <code>Large</code>).</li>
+                <li>Bind the selected value as needed.</li>
+            </ol>
+        </div>
+        This demo shows how to display EnumInput in different sizes for flexible layout integration.
+    </div>
+    <Demo Type="typeof(EnumInput_Demo_03_Sizes)" Tabs="true" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Disabled" PageUrl="@pageUrl" Link="disabled">
+    <div class="mb-3">
+        The <strong>EnumInput</strong> component can be disabled to prevent user interaction.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set the <code>Disabled</code> parameter to <code>true</code> to make the dropdown non-interactive.</li>
+                <li>Bind the value as usual; the user will not be able to change it.</li>
+            </ol>
+        </div>
+        This demo demonstrates how to render EnumInput in a disabled state.
+    </div>
+    <Demo Type="typeof(EnumInput_Demo_06_Disabled)" Tabs="true" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
+    <div class="mb-3">
+        The <strong>EnumInput</strong> component supports event callbacks for value and text changes, enabling custom logic when the selection changes.
+        <br />
+        <strong>How to use (ValueChanged):</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set the <code>Value</code> parameter and handle the <code>ValueChanged</code> event to respond to selection changes.</li>
+                <li>Update your logic based on the new value in the event handler.</li>
+            </ol>
+        </div>
+        This demo shows how to handle value changes using the ValueChanged event.
+    </div>
+    <Demo Class="my-3" Type="typeof(EnumInput_Demo_07_Events_A_ValueChanged)" Tabs="true" />
+    <div class="mb-3">
+        <strong>How to use (TextChanged):</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set the <code>Text</code> parameter and handle the <code>TextChanged</code> event to respond to text changes.</li>
+                <li>Update your logic based on the new text in the event handler.</li>
+            </ol>
+        </div>
+        This demo shows how to handle text changes using the TextChanged event.
+    </div>
+    <Demo Type="typeof(EnumInput_Demo_07_Events_B_TextChanged)" Tabs="true" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Mehods" PageUrl="@pageUrl" Link="methods">
+    <div class="mb-3">
+        The <strong>EnumInput</strong> component can be enabled or disabled dynamically at runtime.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Bind the <code>Disabled</code> parameter to a boolean property in your component.</li>
+                <li>Update the property in your code (e.g., via button click) to enable or disable the EnumInput as needed.</li>
+            </ol>
+        </div>
+        This demo demonstrates how to programmatically enable or disable the EnumInput component.
+    </div>
+    <Demo Type="typeof(EnumInput_Demo_08_Methods_Enable_Disable)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_EnumInput;
+    private const string pageTitle = "Blazor EnumInput";
+    private const string pageDescription = "The Blazor Bootstrap EnumInput component renders a dropdown list from an enumeration (enum), enabling users to select from a predefined set of options. It simplifies data entry by binding directly to enum types and supports customization with sizes.";
+    private const string metaTitle = "Blazor EnumInput Component";
+    private const string metaDescription = "The Blazor Bootstrap EnumInput component renders a dropdown list from an enumeration (enum), enabling users to select from a predefined set of options. It simplifies data entry by binding directly to enum types and supports customization with sizes.";
+    private const string imageUrl = "https://i.imgur.com/1mVjqQv.png";
+}

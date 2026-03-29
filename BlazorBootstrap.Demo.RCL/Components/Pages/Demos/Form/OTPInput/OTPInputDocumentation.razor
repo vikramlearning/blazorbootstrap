@@ -1,0 +1,57 @@
+﻿@page "/otp-input"
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_OTPInput" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
+    <div class="mb-3">
+        The <strong>OTPInput</strong> component provides a user-friendly interface for entering one-time passwords (OTP), commonly used for authentication and verification flows.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add the <code>OTPInput</code> component to your page.</li>
+                <li>Handle the <code>OnOTPChanged</code> event to capture the OTP value as the user types.</li>
+                <li>Handle the <code>OnOTPCompleted</code> event to respond when the user has entered the complete OTP.</li>
+                <li>Bind the entered OTP to a variable for display or further processing as needed.</li>
+            </ol>
+        </div>
+        This demo illustrates the basic usage of the OTPInput component, including event handling for OTP entry and completion.
+    </div>
+    <Demo Type="typeof(OTPInput_Demo_01_How_it_works)" Tabs="true"/>
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Length" PageUrl="@pageUrl" Link="length">
+    <div class="mb-3">
+        The <strong>OTPInput</strong> component allows you to specify the required OTP length, adapting the number of input fields accordingly.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set the <code>Length</code> parameter to define how many digits or characters the OTP should have (e.g., <code>Length="5"</code>).</li>
+                <li>Handle the <code>OnOTPChanged</code> and <code>OnOTPCompleted</code> events as shown in the demo to process the OTP input.</li>
+                <li>Display or use the entered OTP value as needed in your application.</li>
+            </ol>
+        </div>
+        This demo demonstrates how to configure the OTPInput component for a custom OTP length and handle user input accordingly.
+    </div>
+    <Demo Type="typeof(OTPInput_Demo_02_Length)" Tabs="true" />
+</Section>
+
+@code {
+    private const string componentName = nameof(OTPInput);
+    private const string pageUrl = DemoRouteConstants.Demos_URL_OTPInput;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"The <code>{componentName}</code> component allows users to enter a one-time password (OTP) in a secure and user-friendly manner. The component is designed to enhance the user experience by providing a visually appealing and functional input field for OTP entry.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"The {componentName} component allows users to enter a one-time password (OTP) in a secure and user-friendly manner. The component is designed to enhance the user experience by providing a visually appealing and functional input field for OTP entry.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_OTPInput;
+}

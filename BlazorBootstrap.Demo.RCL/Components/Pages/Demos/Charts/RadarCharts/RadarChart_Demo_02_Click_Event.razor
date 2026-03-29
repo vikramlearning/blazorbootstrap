@@ -1,0 +1,58 @@
+<RadarChart @ref="radarChart" OnClick="OnClick" Width="600" />
+
+<div class="mt-3">
+    <strong>Selected item:</strong> @selectedItemMessage
+</div>
+
+@code {
+    private RadarChart radarChart = default!;
+    private RadarChartOptions radarChartOptions = default!;
+    private ChartData chartData = default!;
+    private string selectedItemMessage = "Click a point to view its details.";
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+            {
+                Labels = new List<string> { "Speed", "Reliability", "Comfort", "Safety", "Efficiency" },
+                Datasets = new List<IChartDataset>
+                {
+                    new RadarChartDataset
+                    {
+                        Label = "Model A",
+                        Data = new List<double?> { 65, 59, 90, 81, 56 },
+                        BackgroundColor = ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbaString(),
+                        BorderColor = ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbaString(0.8),
+                        BorderWidth = 2,
+                        Fill = true,
+                        HoverBorderWidth = 4
+                    },
+                    new RadarChartDataset
+                    {
+                        Label = "Model B",
+                        Data = new List<double?> { 28, 48, 40, 19, 96 },
+                        BackgroundColor = ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbaString(),
+                        BorderColor = ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbaString(0.8),
+                        BorderWidth = 2,
+                        Fill = true,
+                        HoverBorderWidth = 4
+                    }
+                }
+            };
+
+        radarChartOptions = new RadarChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await radarChart.InitializeAsync(chartData, radarChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnClick(ChartClickEventArgs eventArgs)
+    {
+        selectedItemMessage = $"Dataset: {eventArgs.DatasetLabel}, Label: {eventArgs.Label}, Value: {eventArgs.Value}";
+    }
+}

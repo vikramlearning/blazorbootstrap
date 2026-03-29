@@ -19,21 +19,29 @@ public class TabsEventArgs : EventArgs
     /// <summary>
     /// Gets the active <see cref="Tab" /> name.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Gets the active <b>Tab</b> name.")]
     public string ActiveTabName { get; }
 
     /// <summary>
     /// Gets the active <see cref="Tab" /> title.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Gets the active <b>Tab</b> title.")]
     public string ActiveTabTitle { get; }
 
     /// <summary>
     /// Gets the previous active <see cref="Tab" /> name.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Gets the previous active <b>Tab</b> name.")]
     public string PreviousActiveTabName { get; }
 
     /// <summary>
     /// Gets the previous active <see cref="Tab" /> title.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Gets the previous active <b>Tab</b> title.")]
     public string PreviousActiveTabTitle { get; }
 
     #endregion

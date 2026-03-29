@@ -63,63 +63,81 @@ public partial class Spinner : BlazorBootstrapComponentBase
             ($"{Type.ToSpinnerTypeClass()}-{Size.ToSpinnerSizeClass()}", Type is (SpinnerType.Border or SpinnerType.Grow)));
 
     /// <summary>
-    /// Gets or sets the color of the spinner.
-    /// </summary>
-    /// <remarks>
+    /// Gets or sets the color of the <see cref="Spinner" />.
+    /// <para>
     /// Default value is <see cref="SpinnerColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("2.0.0")]
+    [DefaultValue(null)]
+    [Description("")]
     [Parameter]
     public SpinnerColor Color { get; set; } = SpinnerColor.None;
 
     /// <summary>
-    /// Gets or sets the size of the spinner.
-    /// </summary>
-    /// <remarks>
+    /// Gets or sets the size of the <see cref="Spinner" />.
+    /// <para>
     /// Default value is <see cref="SpinnerSize.Medium" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("2.0.0")]
+    [DefaultValue(SpinnerSize.Medium)]
+    [Description("Gets or sets the color of the <b>Spinner</b>.")]
     [Parameter]
     public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
 
     /// <summary>
-    /// Gets the width, height, and circles information for the spinner SVG.
+    /// Gets the width, height, and circles information for the <see cref="Spinner" /> SVG.
     /// </summary>
     private (int Width, int Height, List<SpinnerCircle> Circles) SpinnerSvg => GetSpinnerSvgInfo();
 
     /// <summary>
     /// Gets or sets the title text used as an accessibility attribute.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("2.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the title text used as an accessibility attribute.")]
     [Parameter]
     public string? Title { get; set; }
 
     /// <summary>
-    /// Gets or sets the type of the spinner.
-    /// </summary>
-    /// <remarks>
+    /// Gets or sets the type of the <see cref="Spinner" />.
+    /// <para>
     /// Default value is <see cref="SpinnerType.Border" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("2.0.0")]
+    [DefaultValue(SpinnerType.Border)]
+    [Description("Gets or sets the type of the <b>Spinner</b>.")]
     [Parameter]
     public SpinnerType Type { get; set; } = SpinnerType.Border;
 
     /// <summary>
-    /// Gets or sets whether the spinner is visible or not.
+    /// Gets or sets whether the <see cref="Spinner" /> is visible or not.
+    /// <para>
+    /// Default value is <see langword="true"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is true.
-    /// </remarks>
+    [AddedVersion("2.0.0")]
+    [DefaultValue(true)]
+    [Description("Gets or sets whether the <b>Spinner</b> is visible or not.")]
     [Parameter]
     public bool Visible { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the visually hidden text.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 'Loading...'.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("2.0.0")]
+    [DefaultValue("Loading...")]
+    [Description("Gets or sets the visually hidden text.")]
     [Parameter]
-    public string? VisuallyHiddenText { get; set; } = "Loading...";
+    public string VisuallyHiddenText { get; set; } = "Loading...";
 
     #endregion
 }

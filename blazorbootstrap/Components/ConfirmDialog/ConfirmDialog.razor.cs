@@ -5,11 +5,9 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     #region Fields and Constants
 
     private Type? childComponent;
-
     private string? dialogCssClass;
     private bool dismissable;
     private string? headerCssClass;
-
     private bool isVisible;
     private string? message1;
     private string? message2;
@@ -18,19 +16,26 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     private string? noButtonText;
     private Dictionary<string, object>? parameters;
     private string? scrollable;
-
+    private bool shouldAutoFocusYesButton;
     private bool showBackdrop;
-
     private TaskCompletionSource<bool>? taskCompletionSource;
-
     private string? title;
     private string? verticallyCentered;
+    private ElementReference yesButtonElement;
     private string? yesButtonColor;
     private string? yesButtonText;
 
     #endregion
 
     #region Methods
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(isVisible && shouldAutoFocusYesButton)
+            await yesButtonElement.FocusAsync();
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
 
     /// <summary>
     /// Shows confirm dialog.
@@ -39,6 +44,8 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     /// <param name="message1">message1 for the confirmation dialog.</param>
     /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
     /// <returns>bool</returns>
+    [AddedVersion("1.1.0")]
+    [Description("Shows confirm dialog.")]
     public Task<bool> ShowAsync(string title, string message1, ConfirmDialogOptions? confirmDialogOptions = null) => Show(title, message1, null, null, null, confirmDialogOptions!);
 
     /// <summary>
@@ -49,6 +56,8 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     /// <param name="message2">message2 for the confirmation dialog. This is optional.</param>
     /// <param name="confirmDialogOptions">options for the confirmation dialog.</param>
     /// <returns>bool</returns>
+    [AddedVersion("1.1.0")]
+    [Description("Shows confirm dialog.")]
     public Task<bool> ShowAsync(string title, string message1, string message2, ConfirmDialogOptions? confirmDialogOptions = null) => Show(title, message1, message2, null, null, confirmDialogOptions!);
 
     /// <summary>
@@ -59,6 +68,8 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     /// <param name="parameters"></param>
     /// <param name="confirmDialogOptions"></param>
     /// <returns>bool</returns>
+    [AddedVersion("1.1.0")]
+    [Description("Shows confirm dialog.")]
     public Task<bool> ShowAsync<T>(string title, Dictionary<string, object>? parameters = null, ConfirmDialogOptions? confirmDialogOptions = null) where T : ComponentBase => Show(title, null, null, typeof(T), parameters, confirmDialogOptions!);
 
     /// <summary>
@@ -71,7 +82,7 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
 
         StateHasChanged();
 
-        Task.Run(() => JSRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", Id));
+        Task.Run(async () => await SafeInvokeVoidAsync("window.blazorBootstrap.confirmDialog.hide", Id));
     }
 
     private void OnNoClick()
@@ -110,13 +121,13 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
         modalSize = confirmDialogOptions.Size.ToDialogSizeClass();
         yesButtonColor = $"{BootstrapClass.Button} {confirmDialogOptions.YesButtonColor.ToButtonColorClass()}";
         yesButtonText = confirmDialogOptions.YesButtonText;
-
+        shouldAutoFocusYesButton = confirmDialogOptions.AutoFocusYesButton;
         isVisible = true;
         showBackdrop = true;
 
         StateHasChanged();
 
-        Task.Run(() => JSRuntime.InvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
+        Task.Run(async () => await SafeInvokeVoidAsync("window.blazorBootstrap.confirmDialog.show", Id));
 
         return task;
     }

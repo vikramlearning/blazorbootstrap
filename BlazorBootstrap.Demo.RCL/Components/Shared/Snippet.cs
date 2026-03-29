@@ -1,10 +1,11 @@
 ﻿namespace BlazorBootstrap.Demo.RCL;
 
-public class Snippet : ComponentBase
+public class Snippet : BlazorBootstrapComponentBase
 {
     #region Members
 
     private string? snippet;
+    private bool isJsRuntimeAvailable = true;
 
     #endregion
 
@@ -31,7 +32,7 @@ public class Snippet : ComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JS.InvokeVoidAsync("highlightCode");
+            await SafeInvokeVoidAsync("highlightCode");
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -68,8 +69,6 @@ public class Snippet : ComponentBase
     #endregion
 
     #region Properties
-
-    [Inject] protected IJSRuntime JS { get; set; } = null!;
 
     [Parameter] public LanguageCode LanguageCode { get; set; } = LanguageCode.Razor;
 

@@ -1,0 +1,36 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Callout" />
+
+<Section Size="HeadingSize.H4" Name="Examples" PageUrl="@pageUrl" Link="examples">
+    <Demo Type="typeof(Callout_Demo_01_Examples)" />
+</Section>
+
+<Section Size="HeadingSize.H4" Name="Custom heading" PageUrl="@pageUrl" Link="custom-heading">
+    <Demo Type="typeof(Callout_Demo_02_Change_Heading)" />
+</Section>
+
+<Section Size="HeadingSize.H4" Name="Large text" PageUrl="@pageUrl" Link="large-text">
+    <Demo Type="typeof(Callout_Demo_03_Large_Text)" />
+</Section>
+
+<Section Size="HeadingSize.H4" Name="Hide heading" PageUrl="@pageUrl" Link="hide-heading">
+    <Demo Type="typeof(Callout_Demo_04_Hide_Heading)" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Callout;
+    private const string pageTitle = "Blazor Callout";
+    private const string pageDescription = "Blazor Bootstrap callout component provides content presentation in a visually distinct manner.";
+    private const string metaTitle = "Blazor Callout Component";
+    private const string metaDescription = "Blazor Bootstrap callout component provides content presentation in a visually distinct manner.";
+    private const string imageUrl = "https://i.imgur.com/y2jI9ix.png";
+}

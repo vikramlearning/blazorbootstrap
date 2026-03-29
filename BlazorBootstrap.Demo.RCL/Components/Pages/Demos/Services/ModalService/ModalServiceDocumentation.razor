@@ -1,0 +1,54 @@
+﻿@page "/modal-service"
+
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_ModalService" />
+
+<Section Size="HeadingSize.H2" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
+    <Demo Type="typeof(ModalService_Demo_01_How_It_Works)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Vertically Centered" PageUrl="@pageUrl" Link="vertically-centered">
+    <Demo Type="typeof(ModalService_Demo_02_Vertically_Centered_Modal)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Size" PageUrl="@pageUrl" Link="size">
+    <Demo Type="typeof(ModalService_Demo_03_Size)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Change footer button color and text" PageUrl="@pageUrl" Link="change-footer-button-color-and-text">
+    <Demo Type="typeof(ModalService_Demo_04_Change_Footer_Button_Color_and_Text)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Hide footer button" PageUrl="@pageUrl" Link="hide-footer-button">
+    <Demo Type="typeof(ModalService_Demo_05_Hide_Footer_Button)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Callback" PageUrl="@pageUrl" Link="callback">
+    <Demo Type="typeof(ModalService_Demo_06_Callback)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="How to setup" PageUrl="@pageUrl" Link="how-to-setup">
+    <div class="mb-3">1. Add the <code>Modal</code> component in <code>MainLayout.razor</code> page as shown below.</div>
+    <Demo Type="typeof(ModalService_Demo_100_Global_Modal_Service_For_Application_01)" ShowCodeOnly="true" />
+
+    <div class="mb-3">2. Inject <code>ModalService</code>, then call the <code>ShowAsync(...)</code> method as shown below. <code>ShowAsync</code> method accepts <b>ModalOption</b> object as a parameter.</div>
+    <Demo Type="typeof(ModalService_Demo_100_Global_Modal_Service_For_Application_02)" ShowCodeOnly="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_ModalService;
+    private const string pageTitle = "Blazor Modal Service";
+    private const string pageDescription = "Use Blazor Bootstrap modal service to show quick dialogs to your site for lightboxes, user notifications, or completely custom content.";
+    private const string metaTitle = "Blazor Modal Service";
+    private const string metaDescription = "Use Blazor Bootstrap modal service to show quick dialogs to your site for lightboxes, user notifications, or completely custom content.";
+    private const string imageUrl = "https://i.imgur.com/Tze7msN.png";
+}

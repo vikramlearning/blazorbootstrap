@@ -27,7 +27,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
         Id = IdUtility.GetNextId(); // Required
 
         filterOperator = FilterOperator;
-        filterValue = FilterValue;
+        filterValue = FilterValue!;
 
         currentSortDirection = SortDirection;
         defaultSortDirection = SortDirection;
@@ -48,16 +48,16 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     internal string GetFilterValue() => filterValue;
 
-    internal Type GetPropertyType() => typeof(TItem).GetPropertyType(PropertyName)!;
+    internal Type GetPropertyType() => typeof(TItem).GetPropertyType(PropertyName!)!;
 
-    internal string GetPropertyTypeName() => typeof(TItem).GetPropertyTypeName(PropertyName);
+    internal string GetPropertyTypeName() => typeof(TItem).GetPropertyTypeName(PropertyName!);
 
     internal IEnumerable<SortingItem<TItem>> GetSorting()
     {
         if (SortKeySelector == null && string.IsNullOrWhiteSpace(SortString))
             yield break;
 
-        yield return new SortingItem<TItem>(SortString, SortKeySelector!, currentSortDirection);
+        yield return new SortingItem<TItem>(SortString!, SortKeySelector!, currentSortDirection);
     }
 
     internal async Task OnFilterChangedAsync(FilterEventArgs args, GridColumn<TItem> column)
@@ -196,134 +196,180 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Specifies the content to be rendered inside the grid column.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Specifies the content to be rendered inside the grid column.")]
+    [EditorRequired]
     [Parameter]
-    public RenderFragment<TItem> ChildContent { get; set; } = default!;
+    public RenderFragment<TItem>? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the column class.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
+    [AddedVersion("1.6.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the column class.")]
     [Parameter]
     public Func<TItem, string>? ColumnClass { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, filter is enabled.
     /// The filter is enabled or disabled based on the grid `AllowFiltering` parameter.
+    /// <para>
+    /// Default value is <see langword="true"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is true.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(true)]
+    [Description("If <b>true</b>, filter is enabled. The filter is enabled or disabled based on the grid <b>AllowFiltering</b> parameter.")]
     [Parameter]
     public bool Filterable { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the filter button color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="ButtonColor.Light" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(ButtonColor.Light)]
+    [Description("Gets or sets the filter button color.")]
     [Parameter]
     public ButtonColor FilterButtonColor { get; set; } = ButtonColor.Light;
 
     /// <summary>
     /// Gets or sets the filter button CSS class.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the filter button CSS class.")]
     [Parameter]
     public string? FilterButtonCSSClass { get; set; }
 
     /// <summary>
     /// Gets or sets the filter operator.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="FilterOperator.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(FilterOperator.None)]
+    [Description("Gets or sets the filter operator.")]
     [Parameter]
     public FilterOperator FilterOperator { get; set; } = FilterOperator.None;
 
     /// <summary>
     /// Gets or sets the filter textbox width in pixels.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 0.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the filter textbox width in pixels.")]
     [Parameter]
     public int FilterTextboxWidth { get; set; }
 
     /// <summary>
     /// Gets or sets the filter textbox width units.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Unit.Px" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(Unit.Px)]
+    [Description("Gets or sets the filter textbox width units.")]
     [Parameter]
     public Unit FilterTextboxWidthUnit { get; set; } = Unit.Px;
 
     /// <summary>
     /// Gets or sets the filter value.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the filter value.")]
     [Parameter]
-    public string FilterValue { get; set; } = default!;
+    public string? FilterValue { get; set; }
 
     /// <summary>
     /// Indicates whether the column is frozen.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.10.4")]
+    [DefaultValue(false)]
+    [Description("Indicates whether the column is frozen.")]
     [Parameter]
     public bool Freeze { get; set; }
 
     /// <summary>
     /// Gets or sets the freeze direction of the column.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="FreezeDirection.Left" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.4")]
+    [DefaultValue(FreezeDirection.Left)]
+    [Description("Gets or sets the freeze direction of the column.")]
     [Parameter]
     public FreezeDirection FreezeDirection { get; set; } = FreezeDirection.Left;
 
     /// <summary>
     /// Gets or sets the horizontal position of the column from left. It has no effect on non-positioned columns.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 0.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.4")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the horizontal position of the column from left. It has no effect on non-positioned columns.")]
     [Parameter]
     public double FreezeLeftPosition { get; set; }
 
     /// <summary>
     /// Gets or sets the horizontal position of the column from right. It has no effect on non-positioned columns.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is 0.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.4")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the horizontal position of the column from right. It has no effect on non-positioned columns.")]
     [Parameter]
     public double FreezeRightPosition { get; set; }
 
     /// <summary>
     /// Gets or sets the header content.
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
+    [AddedVersion("1.7.3")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the header content.")]
     [Parameter]
-    public RenderFragment HeaderContent { get; set; } = default!;
+    public RenderFragment? HeaderContent { get; set; }
 
     /// <summary>
     /// Gets or sets the header template.
     /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is null.
-    /// </remarks>
+    /// </para>
     internal RenderFragment HeaderTemplate =>
         headerTemplate ??= builder =>
                            {
@@ -402,37 +448,49 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the table column header text.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the table column header text.")]
     [Parameter]
-    public string HeaderText { get; set; } = default!;
+    public string? HeaderText { get; set; }
 
     /// <summary>
     /// Gets or sets the header text alignment.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Alignment.Start" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(Alignment.Start)]
+    [Description("Gets or sets the header text alignment.")]
     [Parameter]
     public Alignment HeaderTextAlignment { get; set; } = Alignment.Start;
 
     /// <summary>
     /// Gets or sets the default sort column.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the default sort column.")]
     [Parameter]
-    public bool IsDefaultSortColumn { get; set; } = false;
+    public bool IsDefaultSortColumn { get; set; }
 
     /// <summary>
     /// Gets or sets visibility of the Grid column.
+    /// <para>
+    /// Default value is <see langword="true"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is true.
-    /// </remarks>
+    [AddedVersion("3.4.0")]
+    [DefaultValue(true)]
+    [Description("Gets or sets visibility of the Grid column.")]
     [Parameter]
     public bool IsVisible { get; set; } = true;
 
@@ -442,55 +500,76 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the property name.
     /// This is required when `AllowFiltering` is true.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the property name. This is required when <b>AllowFiltering</b> is <b>true</b>.")]
     [Parameter]
-    public string PropertyName { get; set; } = default!;
+    public string? PropertyName { get; set; }
 
     /// <summary>
     /// Enable or disable the sorting on a specific column.
     /// The sorting is enabled or disabled based on the `AllowSorting` parameter on the grid.
+    /// <para>
+    /// Default value is <see langword="true"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is true.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(true)]
+    [Description("Enable or disable the sorting on a specific column. The sorting is enabled or disabled based on the <b>AllowSorting</b> parameter on the grid.")]
     [Parameter]
     public bool Sortable { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the default sort direction of a column.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="SortDirection.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(SortDirection.None)]
+    [Description("Gets or sets the default sort direction of a column.")]
     [Parameter]
     public SortDirection SortDirection { get; set; } = SortDirection.None;
 
     /// <summary>
     /// Expression used for sorting.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Expression used for sorting.")]
     [Parameter]
-    public Expression<Func<TItem, IComparable>> SortKeySelector { get; set; } = default!;
+    public Expression<Func<TItem, IComparable>>? SortKeySelector { get; set; }
 
     /// <summary>
     /// Gets or sets the column sort string.
     /// This value will be passed to the backend/API for sorting.
     /// And this property is ignored for the client-side sorting.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the column sort string. This value will be passed to the backend/API for sorting. And this property is ignored for the client-side sorting.")]
     [Parameter]
-    public string SortString { get; set; } = default!;
+    public string? SortString { get; set; }
 
     /// <summary>
     /// Gets or sets the StringComparison.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="StringComparison.OrdinalIgnoreCase" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(StringComparison.OrdinalIgnoreCase)]
+    [Description("Gets or sets the StringComparison.")]
     [Parameter]
     public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
 
@@ -500,6 +579,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see cref="GridSummaryColumnType.None"/>.
     /// </para>
     /// </summary>
+    [AddedVersion("3.4.0")]
+    [DefaultValue(GridSummaryColumnType.None)]
+    [Description("Gets or sets the summary column type.")]
     [Parameter]
     public GridSummaryColumnType SummaryType { get; set; } = GridSummaryColumnType.None;
 
@@ -509,6 +591,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Default value is <see langword="null"/>.
     /// </para>
     /// </summary>
+    [AddedVersion("3.4.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the summary value display format.")]
     [Parameter]
     public string? SummaryValueDisplayFormat { get; set; }
 
@@ -520,24 +605,33 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// Example: "Total: ", "Average: ", etc.
     /// </para>
     /// </summary>
+    [AddedVersion("3.4.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the summary value prefix. If set, it will be displayed before the summary value. Otherwise, based on the <b>SummaryType</b>, default prefix will be displayed. To remove the default prefix, set this property to an empty string.")]
     [Parameter]
     public string? SummaryValuePrefix { get; set; }
 
     /// <summary>
     /// Gets or sets the text alignment.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Alignment.Start" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(Alignment.Start)]
+    [Description("Gets or sets the text alignment.")]
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.Start;
 
     /// <summary>
     /// Gets or sets text nowrap.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets text nowrap.")]
     [Parameter]
     public bool TextNoWrap { get; set; }
 

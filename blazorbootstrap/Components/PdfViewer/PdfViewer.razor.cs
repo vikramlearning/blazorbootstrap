@@ -32,7 +32,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await PdfViewerJsInterop.InitializeAsync(objRef!, Id!, scale, rotation, Url!, Password!);
+            await PdfViewerJsInterop!.InitializeAsync(objRef!, Id!, scale, rotation, Url!, Password!);
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -53,10 +53,29 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             {
                 oldOrientation = Orientation;
                 rotation = Orientation == Orientation.Portrait ? 0 : -90;
-                await PdfViewerJsInterop.RotateAsync(objRef!, Id!, rotation);
+                await PdfViewerJsInterop!.RotateAsync(objRef!, Id!, rotation);
             }
 
         await base.OnParametersSetAsync();
+    }
+
+    /// <summary>
+    /// Asynchronously sets the zoom level of the PDF viewer to the specified percentage.
+    /// </summary>
+    /// <remarks>The zoom percentage is converted to a scale factor for rendering the PDF document. Ensure
+    /// that the provided zoom percentage is within valid bounds to avoid unexpected display behavior.</remarks>
+    /// <param name="zoomPercentage">The desired zoom percentage to apply to the PDF viewer. Must be a valid value defined by the
+    /// PdfViewerZoomPercentage enumeration.</param>
+    /// <returns>A task that represents the asynchronous operation of updating the zoom level.</returns>
+    [AddedVersion("4.0.0")]
+    [Description("Asynchronously sets the zoom level of the PDF viewer to the specified percentage.")]
+    public async Task SetZoomPercentageAsync(PdfViewerZoomPercentage zoomPercentage)
+    {
+        zoomLevel = (int)zoomPercentage;
+        var zp = GetZoomPercentage(zoomLevel);
+        this.zoomPercentage = $"{zp}%";
+        scale = 0.01 * zp;
+        await PdfViewerJsInterop!.ZoomInOutAsync(objRef!, Id!, scale);
     }
 
     [JSInvokable]
@@ -94,7 +113,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             OnPageChanged.InvokeAsync(new PdfViewerEventArgs(pageNumber, pagesCount));
     }
 
-    private async Task FirstPageAsync() => await PdfViewerJsInterop.FirstPageAsync(objRef!, Id!);
+    private async Task FirstPageAsync() => await PdfViewerJsInterop!.FirstPageAsync(objRef!, Id!);
 
     private int GetZoomPercentage(int zoomLevel) =>
         zoomLevel switch
@@ -119,9 +138,9 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             _ => 100
         };
 
-    private async Task LastPageAsync() => await PdfViewerJsInterop.LastPageAsync(objRef!, Id!);
+    private async Task LastPageAsync() => await PdfViewerJsInterop!.LastPageAsync(objRef!, Id!);
 
-    private async Task NextPageAsync() => await PdfViewerJsInterop.NextPageAsync(objRef!, Id!);
+    private async Task NextPageAsync() => await PdfViewerJsInterop!.NextPageAsync(objRef!, Id!);
 
     private async Task PageNumberChangedAsync(int value)
     {
@@ -130,12 +149,12 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         else
             pageNumber = value;
 
-        await PdfViewerJsInterop.GotoPageAsync(objRef!, Id!, pageNumber);
+        await PdfViewerJsInterop!.GotoPageAsync(objRef!, Id!, pageNumber);
     }
 
-    private async Task PreviousPageAsync() => await PdfViewerJsInterop.PreviousPageAsync(objRef!, Id!);
+    private async Task PreviousPageAsync() => await PdfViewerJsInterop!.PreviousPageAsync(objRef!, Id!);
 
-    private async Task PrintAsync() => await PdfViewerJsInterop.PrintAsync(objRef!, Id!, Url!);
+    private async Task PrintAsync() => await PdfViewerJsInterop!.PrintAsync(objRef!, Id!, Url!);
 
     private async Task ResetZoomAsync()
     {
@@ -143,14 +162,14 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         var zp = GetZoomPercentage(defaultZoomLevel);
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
-        await PdfViewerJsInterop.ZoomInOutAsync(objRef!, Id!, scale);
+        await PdfViewerJsInterop!.ZoomInOutAsync(objRef!, Id!, scale);
     }
 
     private async Task RotateClockwiseAsync()
     {
         rotation += 90;
         rotation = rotation.Equals(360) ? 0 : rotation;
-        await PdfViewerJsInterop.RotateAsync(objRef!, Id!, rotation);
+        await PdfViewerJsInterop!.RotateAsync(objRef!, Id!, rotation);
 
         // Orientation
         SetOrientation();
@@ -160,7 +179,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     {
         rotation -= 90;
         rotation = rotation.Equals(-360) ? 0 : rotation;
-        await PdfViewerJsInterop.RotateAsync(objRef!, Id!, rotation);
+        await PdfViewerJsInterop!.RotateAsync(objRef!, Id!, rotation);
 
         // Orientation
         SetOrientation();
@@ -179,7 +198,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         oldOrientation = Orientation;
         Orientation = Orientation == Orientation.Portrait ? Orientation.Landscape : Orientation.Portrait;
         rotation = Orientation == Orientation.Portrait ? 0 : -90;
-        await PdfViewerJsInterop.RotateAsync(objRef!, Id!, rotation);
+        await PdfViewerJsInterop!.RotateAsync(objRef!, Id!, rotation);
     }
 
     private async Task ZoomInAsync()
@@ -191,7 +210,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         var zp = GetZoomPercentage(zoomLevel);
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
-        await PdfViewerJsInterop.ZoomInOutAsync(objRef!, Id!, scale);
+        await PdfViewerJsInterop!.ZoomInOutAsync(objRef!, Id!, scale);
     }
 
     private async Task ZoomOutAsync()
@@ -203,7 +222,7 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         var zp = GetZoomPercentage(zoomLevel);
         zoomPercentage = $"{zp}%";
         scale = 0.01 * zp;
-        await PdfViewerJsInterop.ZoomInOutAsync(objRef!, Id!, scale);
+        await PdfViewerJsInterop!.ZoomInOutAsync(objRef!, Id!, scale);
     }
 
     #endregion
@@ -213,36 +232,48 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     /// <summary>
     /// This event fires immediately after the PDF document is loaded.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("This event fires immediately after the PDF document is loaded.")]
     [Parameter]
     public EventCallback<PdfViewerEventArgs> OnDocumentLoaded { get; set; }
 
     /// <summary>
     /// This event fires if there is an error loading the PDF document.
     /// </summary>
+    [AddedVersion("1.11.0")]
+    [Description("This event fires if there is an error loading the PDF document.")]
     [Parameter]
     public EventCallback<string> OnDocumentLoadError { get; set; }
 
     /// <summary>
     /// This event fires immediately after the page is changed.
     /// </summary>
+    [AddedVersion("1.11.0")]
+    [Description("This event fires immediately after the page is changed.")]
     [Parameter]
     public EventCallback<PdfViewerEventArgs> OnPageChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the preferred orientation for the PDF viewer.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Orientation.Portrait" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("2.1.0")]
+    [DefaultValue(Orientation.Portrait)]
+    [Description("Gets or sets the preferred orientation for the PDF viewer.")]
     [Parameter]
     public Orientation Orientation { get; set; } = Orientation.Portrait;
 
     /// <summary>
     /// Gets or sets the password used for the PDF document if it is password-protected.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see langword="null"/>.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.5.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the password used for the PDF document if it is password-protected.")]
     [Parameter]
     public string? Password { get; set; }
 
@@ -250,15 +281,18 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     /// Provides JavaScript interop functionality for the PDF viewer.
     /// </summary>
     [Inject]
-    private PdfViewerJsInterop PdfViewerJsInterop { get; set; } = default!;
+    private PdfViewerJsInterop? PdfViewerJsInterop { get; set; }
 
     /// <summary>
     /// Gets or sets the URL of the PDF document to be displayed.
     /// PDF Viewer component supports base64 string as a URL.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.11.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the URL of the PDF document to be displayed. PDF Viewer component supports <b>base64 string</b> as a URL.")]
     [Parameter]
     public string? Url { get; set; }
 

@@ -17,11 +17,17 @@ public class AccordionEventArgs
     /// <summary>
     /// Gets the <see cref="AccordionItem" /> name.
     /// </summary>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("Gets the <b>AccordionItem</b> name.")]
     public string Name { get; }
 
     /// <summary>
     /// Gets the <see cref="AccordionItem" /> title.
     /// </summary>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("Gets the <b>AccordionItem</b> title.")]
     public string Title { get; }
 
     #endregion

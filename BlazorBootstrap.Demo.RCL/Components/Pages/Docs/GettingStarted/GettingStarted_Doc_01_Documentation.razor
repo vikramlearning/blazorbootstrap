@@ -1,0 +1,36 @@
+﻿@page "/docs"
+@page "/docs/getting-started/blazor-webassembly"
+@page "/docs/getting-started/blazor-server"
+@page "/docs/getting-started/maui-blazor"
+
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<Section Size="HeadingSize.H2" Name="Documentation" PageUrl="@pageUrl" Link="documentation">
+    <GettingStarted />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Docs_URL_GettingStarted;
+    private const string pageTitle = "Getting started with Blazor Bootstrap - Blazor Project Setup";
+    private const string pageDescription = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
+    private const string metaTitle = "Getting started with Blazor Bootstrap - Blazor Project Setup";
+    private const string metaDescription = "High-performance, lightweight, and responsive blazor bootstrap components in a single package from the developers for the developers.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Home; // TODO: Update image URL
+
+    private string? version;
+    [Inject] public IConfiguration Configuration { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        version = Configuration["version"]; // example: v3.5.0
+        base.OnInitialized();
+    }
+}

@@ -230,7 +230,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
         formattedValue = GetFormattedValue(Value!);
 
         if (oldValue!.Equals(Value))
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.dateInput.setValue", Id, formattedValue);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.dateInput.setValue", Id, formattedValue);
 
         await ValueChanged.InvokeAsync(Value);
 

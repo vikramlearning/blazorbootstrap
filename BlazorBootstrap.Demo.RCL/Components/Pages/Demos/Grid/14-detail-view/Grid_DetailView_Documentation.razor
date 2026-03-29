@@ -1,0 +1,30 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
+
+<Section Size="HeadingSize.H2" Name="Example" PageUrl="@pageUrl" Link="example">
+    <div class="mb-3">To enable detail view, set the <code>AllowDetailView</code> parameter to <b>true</b>. In the following example, existing <code>&lt;GridColumn&gt;</code> tags are nested under <code>&lt;GridColumns&gt;</code> tag to distinguish them from <code>&lt;GridDetailView&gt;</code>.</div>
+    <Demo Type="typeof(Grid_Demo_14_A_DetailView)" Tabs="false" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Dynamic data" PageUrl="@pageUrl" Link="dynamic-data">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Grid_Demo_14_B_DetailView_Dynamic_Data)" Tabs="false" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_DetailView;
+    private const string pageTitle = "Blazor Grid - Detail View";
+    private const string pageDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string metaTitle = "Blazor Grid Component - Detail View";
+    private const string metaDescription = "Use Blazor Bootstrap grid component to display tabular data from the data source. And it supports client-side and server-side filtering, paging, and sorting.";
+    private const string imageUrl = "https://i.imgur.com/eetvhBB.png";
+}

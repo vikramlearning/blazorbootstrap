@@ -1,0 +1,139 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Tabs" />
+
+<Section Size="HeadingSize.H2" Name="Examples" PageUrl="@pageUrl" Link="examples">
+    <Demo Type="typeof(Tabs_Demo_01_Examples)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Fade effect" PageUrl="@pageUrl" Link="fade-effect">
+    <div>To create a fade-in effect for tabs, add the <code>EnableFadeEffect="true"</code> parameter. Additionally, set the <code>IsActive="true"</code> parameter on the first tab pane to display its content initially.</div>
+    <Demo Type="typeof(Tabs_Demo_02_Enable_FadeEffect)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Title with Icon" PageUrl="@pageUrl" Link="title-with-icon">
+    <div>To customize the tab title, use the <b>TitleTemplate</b> parameter, as demonstrated in the following example.</div>
+    <Demo Type="typeof(Tabs_Demo_03_Title_with_Icon)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disable Tab" PageUrl="@pageUrl" Link="disable-tab">
+    <div>Disable specific tabs by adding <code>Disabled="true"</code> parameter.</div>
+    <Demo Type="typeof(Tabs_Demo_04_Disable_Tab)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Pills" PageUrl="@pageUrl" Link="pills">
+    <div>To transform the tabs into pills, use the parameter <code>NavStyle="NavStyle.Pills"</code>.</div>
+    <Demo Type="typeof(Tabs_Demo_05_Nav_Style_Pills)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Underline" PageUrl="@pageUrl" Link="underline">
+    <div>Use the <code>NavStyle="NavStyle.Underline"</code> parameter to change the tabs to an underlined style.</div>
+    <Demo Type="typeof(Tabs_Demo_06_Nav_Style_Underline)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Vertical" PageUrl="@pageUrl" Link="vertical">
+    <div>Display your tabs vertically by setting the <b>NavStyle</b> parameter to <b>NavStyle.Vertical</b>.</div>
+    <Demo Type="typeof(Tabs_Demo_07_Vertical_A)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Vertical pills" PageUrl="@pageUrl" Link="vertical-pills">
+    <Demo Type="typeof(Tabs_Demo_07_Vertical_B_Pills)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Vertical underline" PageUrl="@pageUrl" Link="vertical-underline">
+    <Demo Type="typeof(Tabs_Demo_07_Vertical_C_Underline)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Activate individual tabs" PageUrl="@pageUrl" Link="activate-individual-tabs">
+    <div>You can activate individual tabs in several ways. Use predefined methods such as <code>ShowFirstTabAsync</code>, <code>ShowLastTabAsync</code>, <code>ShowTabByIndexAsync</code>, and <code>ShowTabByNameAsync</code>, as shown below.</div>
+    <Demo Type="typeof(Tabs_Demo_08_Activate_Individual_Tabs)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Events" PageUrl="@pageUrl" Link="events">
+    <div>
+        When displaying a new tab, the events fire in the following sequence:
+        <p class="py-2 px-3">
+            1. <code>OnHiding</code> (on the currently active tab)<br />
+            2. <code>OnShowing</code> (on the tab that is about to be displayed)<br />
+            3. <code>OnHidden</code> (on the previously active tab, which is the same one that triggered the <code>OnHiding</code> event)<br />
+            4. <code>OnShown</code> (on the newly activated tab that has just been displayed, which is the same one that triggered the <code>OnShowing</code> event)<br />
+        </p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Event Name</th>
+                    <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider">
+                <tr>
+                    <th scope="row"><code>OnHiding</code></th>
+                    <td>This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden).</td>
+                </tr>
+                <tr>
+                    <th scope="row"><code>OnHidden</code></th>
+                    <td>This event fires after a new tab is shown (and thus the previous active tab is hidden).</td>
+                </tr>
+                <tr>
+                    <th scope="row"><code>OnShowing</code></th>
+                    <td>This event fires on tab show, but before the new tab has been shown.</td>
+                </tr>
+                <tr>
+                    <th scope="row"><code>OnShown</code></th>
+                    <td>This event fires on tab show after a tab has been shown.</td>
+                </tr>
+            </tbody>
+        </table>
+        <Callout Color="CalloutColor.Info">
+            If no tab was already active, then the <code>OnHiding</code> and <code>OnHidden</code> events will not be fired.
+        </Callout>
+    </div>
+    <Demo Type="typeof(Tabs_Demo_09_Events_Order)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Events - Example" PageUrl="@pageUrl" Link="events-example">
+    <Demo Type="typeof(Tabs_Demo_10_Events_Example)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Methods: Set active tab OnAfterRender" PageUrl="@pageUrl" Link="methods-set-active-tab-onafterrender">
+    <Demo Type="typeof(Tabs_Demo_11_Methods_Set_Active_Tab_OnAfterRender)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Tab: OnClick" PageUrl="@pageUrl" Link="tab-on-click">
+    <Demo Type="typeof(Tabs_Demo_12_Tab_Callback_Event_OnClick)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Dynamic tabs" PageUrl="@pageUrl" Link="dynamic-tabs">
+    <Demo Type="typeof(Tabs_Demo_13_Dynamic_Tabs)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Remove dynamic tabs" PageUrl="@pageUrl" Link="remove-dynamic-tabs">
+    <Callout Type="CalloutColor.Danger" HideHeading="true">
+        In the following example, we are deleting tabs dynamically.  Ensure that the <b>@@key</b> parameter is added with unique value.
+    </Callout>
+    <Demo Type="typeof(Tabs_Demo_14_Remove_Dynamic_Tabs)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Remove inactive tab" PageUrl="@pageUrl" Link="remove-inactive-tab">
+    <div>
+        In the following example, we are removing the inactive tab by name. The focus will not be lost with this active tab.
+    </div>
+    <Demo Type="typeof(Tabs_Demo_15_Remove_Inactive_Tab_by_Name)" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Tabs;
+    private const string pageTitle = "Blazor Tabs";
+    private const string pageDescription = "Documentation and examples for using Blazor Bootstrap Tabs components.";
+    private const string metaTitle = "Blazor Tabs Component";
+    private const string metaDescription = "Documentation and examples for using Blazor Bootstrap Tabs components.";
+    private const string imageUrl = "https://i.imgur.com/ranwriJ.png";
+}

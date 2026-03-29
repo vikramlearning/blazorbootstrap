@@ -53,19 +53,25 @@ public partial class ThemeSwitcher : BlazorBootstrapComponentBase
     /// <summary>
     /// Fired when the theme is changed.
     /// </summary>
+    [AddedVersion("3.2.0")]
+    [Description("Fired when the theme is changed.")]
     [Parameter]
     public EventCallback<string> OnThemeChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown menu position.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownMenuPosition.Start" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("3.2.0")]
+    [DefaultValue(DropdownMenuPosition.Start)]
+    [Description("Gets or sets the dropdown menu position.")]
     [Parameter]
     public DropdownMenuPosition Position { get; set; } = DropdownMenuPosition.Start;
 
-    [Inject] private ThemeSwitcherJsInterop ThemeSwitcherJsInterop { get; set; } = default!;
+    [Inject] 
+    private ThemeSwitcherJsInterop ThemeSwitcherJsInterop { get; set; } = default!;
 
     #endregion
 }

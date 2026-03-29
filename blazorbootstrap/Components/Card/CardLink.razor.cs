@@ -113,25 +113,37 @@ public partial class CardLink : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, disables the card link.
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(false)]
+    [Description("If <b>true</b>, disables the card link.")]
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
     /// Gets or sets the card link tab index.
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the card link tab index.")]
     [Parameter]
     public int? TabIndex { get; set; }
 
@@ -141,6 +153,9 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Target.None" />.
     /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(Target.None)]
+    [Description("Gets or sets the card link target.")]
     [Parameter]
     public Target Target { get; set; } = Target.None;
 
@@ -148,8 +163,11 @@ public partial class CardLink : BlazorBootstrapComponentBase
     /// Gets or sets the link href attribute.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null"/>.
     /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the link href attribute.")]
     [Parameter]
     public string? To { get; set; }
 

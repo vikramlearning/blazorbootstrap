@@ -171,64 +171,86 @@ public partial class DropdownItem : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the dropdown item active state.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the dropdown item active state.")]
     [Parameter]
     public bool Active { get; set; }
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [EditorRequired]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, dropdown item will be disabled.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is false.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(false)]
+    [Description("If <b>true</b>, dropdown item will be disabled.")]
     [Parameter]
     public bool Disabled { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown item tab index.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the dropdown item tab index.")]
     [Parameter]
     public int? TabIndex { get; set; }
 
     /// <summary>
     /// Gets or sets the target of dropdown item (if the type is link).
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Target.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(Target.None)]
+    [Description("Gets or sets the target of dropdown item (if the type is link).")]
     [Parameter]
     public Target Target { get; set; } = Target.None;
 
     /// <summary>
     /// Get or sets the link href attribute (if the type is link).
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Get or sets the link href attribute (if the type is link).")]
     [Parameter]
     public string? To { get; set; }
 
     /// <summary>
     /// Gets or sets the dropdown item type.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownItemType.Button" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(DropdownItemType.Button)]
+    [Description("Gets or sets the dropdown item type.")]
     [Parameter]
     public DropdownItemType Type { get; set; } = DropdownItemType.Button;
 

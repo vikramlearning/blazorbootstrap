@@ -1,0 +1,71 @@
+<ScatterChart @ref="scatterChart" OnClick="OnClick" Width="560" Height="480" />
+
+<div class="mt-3">
+    <strong>Selected item:</strong> @selectedItemMessage
+</div>
+
+@code {
+    private ScatterChart scatterChart = default!;
+    private ScatterChartOptions scatterChartOptions = default!;
+    private ChartData chartData = default!;
+    private string selectedItemMessage = "Click a point to view its details.";
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+            {
+                Datasets = new List<IChartDataset>
+                {
+                    new ScatterChartDataset
+                    {
+                        Label = "Team 1",
+                        Data = new List<ScatterChartDataPoint?>
+                        {
+                            new(15, 25),
+                            new(22, 48),
+                            new(38, 32),
+                            new(55, 67)
+                        },
+                        BackgroundColor = ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbaString(),
+                        BorderColor = ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbString(),
+                        BorderWidth = 2,
+                        HoverBorderWidth = 4,
+                        PointRadius = new List<double> { 6 },
+                        PointHoverRadius = new List<double> { 8 }
+                    },
+                    new ScatterChartDataset
+                    {
+                        Label = "Team 2",
+                        Data = new List<ScatterChartDataPoint?>
+                        {
+                            new(12, 35),
+                            new(28, 30),
+                            new(41, 52),
+                            new(63, 72)
+                        },
+                        BackgroundColor = ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbaString(),
+                        BorderColor = ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbString(),
+                        BorderWidth = 2,
+                        HoverBorderWidth = 4,
+                        PointRadius = new List<double> { 6 },
+                        PointHoverRadius = new List<double> { 8 }
+                    }
+                }
+            };
+
+        scatterChartOptions = new ScatterChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await scatterChart.InitializeAsync(chartData, scatterChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnClick(ChartClickEventArgs eventArgs)
+    {
+        selectedItemMessage = $"Dataset: {eventArgs.DatasetLabel}, Value: {eventArgs.Value}";
+    }
+}

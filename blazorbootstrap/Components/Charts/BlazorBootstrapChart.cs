@@ -6,6 +6,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     internal ChartType chartType;
 
+    private DotNetObjectReference<BlazorBootstrapChart>? objRef;
+
     #endregion
 
     #region Methods
@@ -47,12 +49,23 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             var _data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins);
+                await SafeInvokeVoidAsync("window.blazorChart.bar.initialize", Id, GetChartType(), _data, (BarChartOptions)chartOptions, plugins, ObjRef);
             else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), _data, (LineChartOptions)chartOptions, plugins);
+                await SafeInvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), _data, (LineChartOptions)chartOptions, plugins, ObjRef);
             else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.initialize", Id, GetChartType(), _data, chartOptions, plugins);
+                await SafeInvokeVoidAsync("window.blazorChart.initialize", Id, GetChartType(), _data, chartOptions, plugins, ObjRef);
         }
+    }
+
+    [JSInvokable]
+    public async Task HandleClickAsync(ChartClickEventArgs eventArgs) => await OnClick.InvokeAsync(eventArgs);
+
+    /// <inheritdoc />
+    protected override void OnInitialized()
+    {
+        objRef ??= DotNetObjectReference.Create(this);
+
+        base.OnInitialized();
     }
 
     //public async Task Render() { }
@@ -70,7 +83,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     {
         var widthWithUnit = $"width:{width.ToString(CultureInfo.InvariantCulture)}{widthUnit.ToCssString()}";
         var heightWithUnit = $"height:{height.ToString(CultureInfo.InvariantCulture)}{heightUnit.ToCssString()}";
-        await JSRuntime.InvokeVoidAsync("window.blazorChart.resize", Id, widthWithUnit, heightWithUnit);
+        await SafeInvokeVoidAsync("window.blazorChart.resize", Id, widthWithUnit, heightWithUnit);
     }
 
     /// <summary>
@@ -86,12 +99,28 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             var data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions);
+                await SafeInvokeVoidAsync("window.blazorChart.bar.update", Id, GetChartType(), data, (BarChartOptions)chartOptions, ObjRef);
             else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions);
+                await SafeInvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions, ObjRef);
             else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions);
+                await SafeInvokeVoidAsync("window.blazorChart.update", Id, GetChartType(), data, chartOptions, ObjRef);
         }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+            objRef?.Dispose();
+
+        base.Dispose(disposing);
+    }
+
+    protected override ValueTask DisposeAsyncCore(bool disposing)
+    {
+        if (disposing)
+            objRef?.Dispose();
+
+        return base.DisposeAsyncCore(disposing);
     }
 
     /// <summary>
@@ -106,11 +135,11 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             var data = GetChartDataObject(chartData);
 
             if (chartType == ChartType.Bar)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.bar.updateDataValues", Id, data);
+                await SafeInvokeVoidAsync("window.blazorChart.bar.updateDataValues", Id, data);
             else if (chartType == ChartType.Line)
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.line.updateDataValues", Id, data);
+                await SafeInvokeVoidAsync("window.blazorChart.line.updateDataValues", Id, data);
             else
-                await JSRuntime.InvokeVoidAsync("window.blazorChart.updateDataValues", Id, data);
+                await SafeInvokeVoidAsync("window.blazorChart.updateDataValues", Id, data);
         }
     }
 
@@ -170,13 +199,26 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     internal string ContainerStyle => GetChartContainerSizeAsStyle();
 
     /// <summary>
+    /// Fired when a chart data point is clicked.
+    /// </summary>
+    [AddedVersion("4.0.0")]
+    [Description("Fired when a chart data point is clicked.")]
+    [Parameter]
+    public EventCallback<ChartClickEventArgs> OnClick { get; set; }
+
+    protected DotNetObjectReference<BlazorBootstrapChart>? ObjRef => objRef;
+
+    /// <summary>
     /// Gets or sets chart container height.
     /// The default unit of measure is <see cref="Unit.Px" />.
     /// To change the unit of measure see <see cref="HeightUnit" />.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null"/>.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets chart container height. The default unit of measure is <code>Unit.Px</code>. To change the unit of measure see <b>HeightUnit</b>.")]
     [Parameter]
     public int? Height { get; set; }
 
@@ -186,6 +228,9 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// <remarks>
     /// Default value is <see cref="Unit.Px" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(Unit.Px)]
+    [Description("Gets or sets chart container height unit of measure.")]
     [Parameter]
     public Unit HeightUnit { get; set; } = Unit.Px;
 
@@ -195,8 +240,11 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// To change the unit of measure see <see cref="WidthUnit" />.
     /// </summary>
     /// <remarks>
-    /// Default value is null.
+    /// Default value is <see langword="null"/>.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Get or sets chart container width. The default unit of measure is <code>Unit.Px</code>. To change the unit of measure see <b>WidthUnit</b>.")]
     [Parameter]
     public int? Width { get; set; }
 
@@ -206,6 +254,9 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// <remarks>
     /// Default value is <see cref="Unit.Px" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(Unit.Px)]
+    [Description("Gets or sets chart container width unit of measure.")]
     [Parameter]
     public Unit WidthUnit { get; set; } = Unit.Px;
 

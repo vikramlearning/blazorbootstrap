@@ -1,0 +1,62 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_ScriptLoader" />
+
+<Section Size="HeadingSize.H2" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
+    <div class="mb-3">
+        In the following example, the jQuery script is loaded using the Script Loader component.
+    </div>
+    <Demo Type="typeof(ScriptLoader_Demo_01_Examples)" />
+</Section>
+
+<Callout Color="CalloutColor.Info" Heading="Test">
+    To test whether the jQuery script has been loaded successfully, run <code>$('#script1')[0]</code> in the browser console.
+</Callout>
+
+<img src="https://i.imgur.com/EWEGAZv.png" class="img-fluid" alt="Blazor Script Loader - Test whether the jQuery script has been loaded successfully" />
+
+<Section Size="HeadingSize.H2" Name="Events" PageUrl="@pageUrl" Link="events">
+    <div class="mb-3">
+        Blazor Bootstrap Script Loader component exposes two events.
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Event Name</th>
+                <th scope="col">Description</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr>
+                <th scope="row"><code>OnError</code></th>
+                <td>An event that is fired when a script loading error occurs.</td>
+            </tr>
+            <tr>
+                <th scope="row"><code>OnLoad</code></th>
+                <td>An event that is fired when a script has been successfully loaded.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        In the following example, an incorrect script source is specified. 
+        This is why the <code>OnError</code> callback event is called, and the message is updated with the error message.
+    </div>
+    <Demo Type="typeof(ScriptLoader_Demo_02_Events)" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_ScriptLoader;
+    private const string pageTitle = "Blazor ScriptLoader";
+    private const string pageDescription = "Documentation and examples for using the Blazor Bootstrap ScriptLoader component.";
+    private const string metaTitle = "Blazor ScriptLoader Component";
+    private const string metaDescription = "Documentation and examples for using the Blazor Bootstrap ScriptLoader component.";
+    private const string imageUrl = "https://i.imgur.com/sBiYPeQ.png";
+}

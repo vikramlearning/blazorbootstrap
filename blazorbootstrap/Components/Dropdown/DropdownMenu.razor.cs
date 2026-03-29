@@ -11,16 +11,26 @@ public partial class DropdownMenu : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
+    [EditorRequired]
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the dropdown menu position.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="DropdownMenuPosition.Start" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.0")]
+    [DefaultValue(DropdownMenuPosition.Start)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [Parameter]
     public DropdownMenuPosition Position { get; set; } = DropdownMenuPosition.Start;
 

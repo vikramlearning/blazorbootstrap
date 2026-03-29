@@ -13,28 +13,37 @@ public partial class Placeholder : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the placeholder color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="PlaceholderColor.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(PlaceholderColor.None)]
+    [Description("Gets or sets the placeholder color.")]
     [Parameter]
     public PlaceholderColor Color { get; set; } = PlaceholderColor.None;
 
     /// <summary>
     /// Gets or sets the placeholder size.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="PlaceholderSize.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(PlaceholderSize.None)]
+    [Description("Gets or sets the placeholder size.")]
     [Parameter]
     public PlaceholderSize Size { get; set; } = PlaceholderSize.None;
 
     /// <summary>
     /// Gets or sets the placeholder width.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="PlaceholderWidth.Col1" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(PlaceholderWidth.Col1)]
+    [Description("Gets or sets the placeholder width.")]
     [Parameter]
     public PlaceholderWidth Width { get; set; } = PlaceholderWidth.Col1;
 

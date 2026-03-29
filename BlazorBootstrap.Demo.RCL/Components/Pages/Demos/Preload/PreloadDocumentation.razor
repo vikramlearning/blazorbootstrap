@@ -1,0 +1,65 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Preload" />
+
+<Section Size="HeadingSize.H2" Name="Things to know when using the blazor preload component" PageUrl="@pageUrl" Link="things-to-know-when-using-the-blazor-preload-component">
+    <div class="mb-3">
+        <ul>
+            <li>Add the <b>Preload</b> component to your <b>current page</b> or your <b>layout page</b>.</li>
+            <li>Inject <code>PreloadService</code>.</li>
+            <li>Call <code>preloadService.Show()</code> before you make any call to the API.</li>
+            <li>Call <code>preloadService.Hide()</code> after you get the response from the API.</li>
+        </ul>
+    </div>
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Global preload service for the application" PageUrl="@pageUrl" Link="global-preload-service-for-the-application">
+    <div class="mb-3">1. Add the <code>Preload</code> component in <code>MainLayout.razor</code> page as shown below.</div>
+    <Demo Type="typeof(Preload_Demo_01_Global_Preload_For_Application_A)" ShowCodeOnly="true" />
+    <div class="mb-3">2. Inject <code>PreloadService</code>, then call the <code>Show()</code> and <code>Hide()</code> methods before and after the Service/API, respectively, as shown below.</div>
+    <Demo Type="typeof(Preload_Demo_01_Global_Preload_For_Application_B)" ShowCodeOnly="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Change loading text" PageUrl="@pageUrl" Link="change-loading-text">
+    <div class="mb-3"></div>
+    <Demo Type="typeof(Preload_Demo_02_Loading_Text)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Change spinner color" PageUrl="@pageUrl" Link="change-spinner-color">
+    <div class="mb-3">
+        Change the default spinner color by passing the <code>SpinnerColor</code> enum to the <code>Show(...)</code> method.
+        In the below example, we are using a <a href="/preload#global-preload-service-for-the-application">global preload service</a>, as shown in the above section.
+    </div>
+    <Demo Type="typeof(Preload_Demo_03_Change_Spinner_Color)" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Preload;
+    private const string pageTitle = "Blazor Preload";
+    private const string pageDescription = "Indicate the loading state of a page with Blazor Bootstrap preload component.";
+    private const string metaTitle = "Blazor Preload Component";
+    private const string metaDescription = "Indicate the loading state of a page with Blazor Bootstrap preload component.";
+    private const string imageUrl = "https://i.imgur.com/2cPuqFa.png";
+
+    [Inject] PreloadService PreloadService { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Task.Run(async () =>
+        {
+            PreloadService.Show();
+            await Task.Delay(3000);
+            PreloadService.Hide();
+        });
+    }
+}

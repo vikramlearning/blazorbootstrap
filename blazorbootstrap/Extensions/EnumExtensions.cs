@@ -458,7 +458,8 @@ public static class EnumExtensions
             SortableListPullMode.True => true,
             SortableListPullMode.False => false,
             SortableListPullMode.Clone => "clone",
-            //SortableListPullMode.Array => "array"
+            //SortableListPullMode.Array => "array",
+            _ => null!
         };
 
     public static object ToSortableListPutMode(this SortableListPutMode sortableListPutMode) =>
@@ -466,7 +467,8 @@ public static class EnumExtensions
         {
             SortableListPutMode.True => true,
             SortableListPutMode.False => false,
-            //SortableListPullMode.Array => "array"
+            //SortableListPullMode.Array => "array",
+            _ => null!
         };
 
     public static string ToSpinnerColorClass(this SpinnerColor spinnerColor) =>
@@ -542,7 +544,7 @@ public static class EnumExtensions
         tooltipColor switch
         {
             TooltipColor.Primary => "bb-tooltip-primary",
-            TooltipColor.Secondary => "bb-tooltip-tooltip-secondary",
+            TooltipColor.Secondary => "bb-tooltip-secondary",
             TooltipColor.Success => "bb-tooltip-success",
             TooltipColor.Danger => "bb-tooltip-danger",
             TooltipColor.Warning => "bb-tooltip-warning",

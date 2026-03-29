@@ -6,5 +6,7 @@ global using Microsoft.AspNetCore.Components.Routing;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.JSInterop;
+global using System.ComponentModel;
 global using System.Linq.Expressions;
 global using System.Net.Http.Json;
+global using System.Reflection;

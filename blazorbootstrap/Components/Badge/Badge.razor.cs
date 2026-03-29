@@ -15,57 +15,75 @@ public partial class Badge : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the content to be rendered within the component.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the content to be rendered within the component.")]
     [Parameter]
-    public RenderFragment ChildContent { get; set; } = default!;
+    public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets the badge color.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="BadgeColor.Secondary" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(BadgeColor.Secondary)]
+    [Description("Gets or sets the badge color.")]
     [Parameter]
     public BadgeColor Color { get; set; } = BadgeColor.Secondary;
 
     /// <summary>
     /// Gets or sets the badge indicator.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="BadgeIndicatorType.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(BadgeIndicatorType.None)]
+    [Description("Gets or sets the badge indicator.")]
     [Parameter]
     public BadgeIndicatorType IndicatorType { get; set; } = BadgeIndicatorType.None;
 
     /// <summary>
     /// Gets or sets the badge placement.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="BadgePlacement.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(BadgePlacement.None)]
+    [Description("Gets or sets the badge placement.")]
     [Parameter]
     public BadgePlacement Placement { get; set; } = BadgePlacement.None;
 
     /// <summary>
     /// Gets or sets the badge position.
-    /// </summary>
-    /// <remarks>
+    /// <para>
     /// Default value is <see cref="Position.None" />.
-    /// </remarks>
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(Position.None)]
+    [Description("Gets or sets the badge position.")]
     [Parameter]
     public Position Position { get; set; } = Position.None;
 
     /// <summary>
     /// Gets or sets the visually hidden text.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
     /// </summary>
-    /// <remarks>
-    /// Default value is null.
-    /// </remarks>
+    [AddedVersion("1.7.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the visually hidden text.")]
     [Parameter]
-    public string VisuallyHiddenText { get; set; } = default!;
+    public string? VisuallyHiddenText { get; set; }
 
     #endregion
 }
