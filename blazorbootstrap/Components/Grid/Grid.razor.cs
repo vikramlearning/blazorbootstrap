@@ -629,9 +629,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task SetCheckboxStateAsync(string id, CheckboxState checkboxState)
     {
-        queuedTasks.Enqueue(async () => await SafeInvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState));
-
-        return Task.CompletedTask;
+        queuedTasks.Enqueue(async () => await SafeInvokeVoidAsync("window.blazorBootstrap.grid.setSelectAllCheckboxState", id, (int)checkboxState));      
     }
 
     /// <summary>
