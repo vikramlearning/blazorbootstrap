@@ -178,6 +178,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             foreach (var dataset in chartData.Datasets)
                 if (dataset is BarChartDataset)
                     datasets.Add((BarChartDataset)dataset);
+                else if (dataset is BubbleChartDataset)
+                    datasets.Add((BubbleChartDataset)dataset);
                 else if (dataset is DoughnutChartDataset)
                     datasets.Add((DoughnutChartDataset)dataset);
                 else if (dataset is LineChartDataset)
@@ -186,6 +188,10 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
                     datasets.Add((PieChartDataset)dataset);
                 else if (dataset is PolarAreaChartDataset)
                     datasets.Add((PolarAreaChartDataset)dataset);
+                else if (dataset is RadarChartDataset)
+                    datasets.Add((RadarChartDataset)dataset);
+                else if (dataset is ScatterChartDataset)
+                    datasets.Add((ScatterChartDataset)dataset);
 
         var data = new { chartData?.Labels, Datasets = datasets };
 

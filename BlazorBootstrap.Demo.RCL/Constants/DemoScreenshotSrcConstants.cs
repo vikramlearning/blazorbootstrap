@@ -93,6 +93,7 @@ public class DemoScreenshotSrcConstants
     // Data Visualization
     public const string Demos_URL_Charts_Prefix = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_BarChart = DemoScreenshotSrcPrefix + "bar-chart.png";
+    public const string Demos_URL_BubbleChart = DemoScreenshotSrcPrefix + "charts.png"; // TODO: add a dedicated screenshot
     public const string Demos_URL_DoughnutChart = DemoScreenshotSrcPrefix + "doughnut-chart.png";
     public const string Demos_URL_LineChart = DemoScreenshotSrcPrefix + "line-chart.png";
     public const string Demos_URL_PieChart = DemoScreenshotSrcPrefix + "pie-chart.png";

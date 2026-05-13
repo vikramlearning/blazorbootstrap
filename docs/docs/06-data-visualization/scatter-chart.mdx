@@ -121,14 +121,26 @@ A Blazor Bootstrap scatter chart components are based on basic line charts with 
 
 | Property Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
+| Animation | `ChartAnimation?` | null | | Configures chart-level animation including delay, duration, easing, and looping. | 4.4.0 |
+| AspectRatio | `double?` | null | | Sets the canvas aspect ratio (`width / height`) when responsive resizing is enabled. | 4.4.0 |
 | IndexAxis | `string?` | null | | The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts. | 3.0.0 |
 | Interaction | `Interaction` | | | Gets or sets the Interaction. | 3.0.0 |
 | Layout | `ChartLayout` | | | Gets or sets the ChartLayout. | 3.0.0 |
 | Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 3.0.0 |
 | MaintainAspectRatio | bool | true | | Maintain the original canvas aspect ratio (width / height) when resizing. | 3.0.0 |
 | Plugins | `ScatterChartPlugins` | | | Gets or sets the Plugins. | 3.0.0 |
+| ResizeDelay | `int?` | null | | Delays the resize update by the given number of milliseconds. | 4.4.0 |
 | Responsive | bool | false | | Gets or sets the Responsive. | 3.0.0 |
 | Scales | `Scales` | | | Gets or sets the Scales. | 3.0.0 |
+
+## Interaction Members
+
+| Property Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Axis | `InteractionAxis?` | null | | Defines which directions are used in calculating distances. Supported values are `X`, `Y`, `XY`, and `R`. | 4.4.0 |
+| IncludeInvisible | `bool?` | null | | Includes invisible points outside the chart area when evaluating interactions. | 4.4.0 |
+| Intersect | bool | true | | If true, the interaction mode only applies when the mouse position intersects an item on the chart. | 3.0.0 |
+| Mode | `InteractionMode` | `Nearest` | | Sets which elements appear in the interaction. | 3.0.0 |
 
 ## Examples
 

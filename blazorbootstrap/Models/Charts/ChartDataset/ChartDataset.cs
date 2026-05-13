@@ -19,6 +19,14 @@ public class ChartDataset<TData> : IChartDataset
     #region Properties, Indexers
 
     /// <summary>
+    /// Chart.js animates charts out of the box.
+    /// A number of options are provided to configure how the animation looks and how long it takes.
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/animations.html" />.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ChartAnimation? Animation { get; set; }
+
+    /// <summary>
     /// How to clip relative to chartArea. Positive value allows overflow, negative value clips that many pixels inside
     /// chartArea. 0 = clip at chartArea.
     /// Clipping can also be configured per side: clip: {left: 5, top: false, right: -2, bottom: 0}
@@ -68,8 +76,13 @@ public class ChartDataset<TData> : IChartDataset
     /// </remarks>
     public int Order { get; set; }
 
-    //Stack
-    //https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration
+    /// <summary>
+    /// The ID of the group to which this dataset belongs when stacked.
+    /// Datasets with the same stack ID are rendered in the same stack group.
+    /// <see href="https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration" />.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Stack { get; set; }
 
     /// <summary>
     /// Gets or sets the chart type.

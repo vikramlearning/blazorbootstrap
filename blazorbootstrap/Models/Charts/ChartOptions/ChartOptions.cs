@@ -9,8 +9,20 @@ public class ChartOptions : IChartOptions
 {
     #region Properties, Indexers
 
-    //aspectRatio
-    //https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options
+    /// <summary>
+    /// Chart.js animates charts out of the box.
+    /// A number of options are provided to configure how the animation looks and how long it takes.
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/animations.html" />.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ChartAnimation? Animation { get; set; }
+
+    /// <summary>
+    /// Canvas aspect ratio (i.e. <c>width / height</c>).
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public double? AspectRatio { get; set; }
 
     /// <summary>
     /// Gets or sets the locale.
@@ -31,8 +43,12 @@ public class ChartOptions : IChartOptions
     //onResize
     //https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options
 
-    //resizeDelay
-    //https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options
+    /// <summary>
+    /// Delay the resize update by the given amount of milliseconds.
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? ResizeDelay { get; set; }
 
     /// <summary>
     /// Resizes the chart canvas when its container does.
@@ -78,6 +94,7 @@ public class Interaction
 {
     #region Fields and Constants
 
+    private InteractionAxis? axis;
     private InteractionMode mode;
 
     #endregion
@@ -105,18 +122,34 @@ public class Interaction
                                    _ => ""
                                };
 
+    private void SetAxis(InteractionAxis? interactionAxis) =>
+        ChartInteractionAxis = interactionAxis switch
+                               {
+                                   InteractionAxis.X => "x",
+                                   InteractionAxis.Y => "y",
+                                   InteractionAxis.XY => "xy",
+                                   InteractionAxis.R => "r",
+                                   _ => null
+                               };
+
     #endregion
 
     #region Properties, Indexers
 
-    //axis
-    //https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions
+    /// <summary>
+    /// Defines which directions are used in calculating distances.
+    /// Supported values are <c>x</c>, <c>y</c>, <c>xy</c>, and <c>r</c>.
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions" />.
+    /// </summary>
+    [JsonPropertyName("axis")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? ChartInteractionAxis { get; private set; }
 
     /// <summary>
     /// Sets which elements appear in the interaction.
     /// </summary>
     [JsonPropertyName("mode")]
-    public string ChartInteractionMode { get; private set; }
+    public string ChartInteractionMode { get; private set; } = string.Empty;
 
     /// <summary>
     /// if <see langword="true" />, the interaction mode only applies when the mouse position intersects an item on the chart.
@@ -125,6 +158,27 @@ public class Interaction
     /// Default value is <see langword="true" />.
     /// </remarks>
     public bool Intersect { get; set; } = true;
+
+    /// <summary>
+    /// If <see langword="true" />, invisible points that are outside of the chart area are included when evaluating interactions.
+    /// <see href="https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions" />.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? IncludeInvisible { get; set; }
+
+    /// <summary>
+    /// Defines which directions are used in calculating distances for interactions.
+    /// </summary>
+    [JsonIgnore]
+    public InteractionAxis? Axis
+    {
+        get => axis;
+        set
+        {
+            axis = value;
+            SetAxis(value);
+        }
+    }
 
     /// <summary>
     /// Sets which elements appear in the tooltip. See Interaction Modes for details.
@@ -141,9 +195,29 @@ public class Interaction
     }
 
     #endregion
+}
 
-    //includeInvisible
-    //https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions
+public enum InteractionAxis
+{
+    /// <summary>
+    /// Calculate interaction distances on the x-axis only.
+    /// </summary>
+    X,
+
+    /// <summary>
+    /// Calculate interaction distances on the y-axis only.
+    /// </summary>
+    Y,
+
+    /// <summary>
+    /// Calculate interaction distances on both x-axis and y-axis.
+    /// </summary>
+    XY,
+
+    /// <summary>
+    /// Calculate interaction distances on the radial axis.
+    /// </summary>
+    R
 }
 
 public enum InteractionMode
@@ -648,4 +722,34 @@ public class ChartFont
     public string? Weight { get; set; } = "bold";
 
     #endregion
+}
+
+/// <summary>
+/// Chart.js animates charts out of the box.
+/// A number of options are provided to configure how the animation looks and how long it takes.
+/// <see href="https://www.chartjs.org/docs/latest/configuration/animations.html#animations" />.
+/// </summary>
+public class ChartAnimation
+{
+    /// <summary>
+    /// Delay before starting the animations.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public double? Delay { get; set; }
+
+    /// <summary>
+    /// The number of milliseconds an animation takes.
+    /// </summary>
+    public double Duration { get; set; } = 1000;
+
+    /// <summary>
+    /// Easing function to use.
+    /// </summary>
+    public string Easing { get; set; } = "easeOutQuart";
+
+    /// <summary>
+    /// If <see langword="true" />, the animations loop endlessly.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Loop { get; set; }
 }

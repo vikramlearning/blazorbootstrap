@@ -1,0 +1,61 @@
+<BarChart @ref="barChart" Width="500" Height="300" />
+
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var colors = ColorUtility.CategoricalTwelveColors;
+
+        chartData = new ChartData
+            {
+                Labels = new List<string> { "January", "February", "March", "April", "May", "June" },
+                Datasets = new List<IChartDataset>
+                {
+                    new BarChartDataset
+                    {
+                        Label = "Product A",
+                        Data = new List<double?> { 65, 59, 80, 81, 56, 55 },
+                        BackgroundColor = new List<string> { colors[0].ToColor().ToRgbString() },
+                        BorderColor = new List<string> { colors[0].ToColor().ToRgbString() },
+                        BorderWidth = new List<double> { 0 },
+                        Animation = new ChartAnimation { Delay = 0, Duration = 1200 }
+                    },
+                    new BarChartDataset
+                    {
+                        Label = "Product B",
+                        Data = new List<double?> { 28, 48, 40, 19, 86, 27 },
+                        BackgroundColor = new List<string> { colors[1].ToColor().ToRgbString() },
+                        BorderColor = new List<string> { colors[1].ToColor().ToRgbString() },
+                        BorderWidth = new List<double> { 0 },
+                        Animation = new ChartAnimation { Delay = 250, Duration = 1200 }
+                    },
+                    new BarChartDataset
+                    {
+                        Label = "Product C",
+                        Data = new List<double?> { 18, 38, 50, 29, 66, 47 },
+                        BackgroundColor = new List<string> { colors[2].ToColor().ToRgbString() },
+                        BorderColor = new List<string> { colors[2].ToColor().ToRgbString() },
+                        BorderWidth = new List<double> { 0 },
+                        Animation = new ChartAnimation { Delay = 500, Duration = 1200 }
+                    }
+                }
+            };
+
+        barChartOptions = new BarChartOptions
+            {
+                Responsive = true,
+                Animation = new ChartAnimation { Duration = 1200, Easing = "easeOutQuart" }
+            };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await barChart.InitializeAsync(chartData, barChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

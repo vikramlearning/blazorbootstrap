@@ -1,18 +1,18 @@
-﻿namespace BlazorBootstrap;
+namespace BlazorBootstrap;
 
-public partial class BarChart : BlazorBootstrapChart
+public partial class BubbleChart : BlazorBootstrapChart
 {
     #region Fields and Constants
 
-    private const string _jsObjectName = "window.blazorChart.bar";
+    private const string _jsObjectName = "window.blazorChart.bubble";
 
     #endregion
 
     #region Constructors
 
-    public BarChart()
+    public BubbleChart()
     {
-        chartType = ChartType.Bar;
+        chartType = ChartType.Bubble;
     }
 
     #endregion
@@ -31,7 +31,9 @@ public partial class BarChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
-            BarLineChartSupport.AppendDataPoint(dataset, data);
+            if (dataset is BubbleChartDataset bubbleChartDataset && bubbleChartDataset.Label == dataLabel)
+                if (data is BubbleChartDatasetData bubbleChartDatasetData && bubbleChartDatasetData.Data is BubbleChartDataPoint bubbleChartDataPoint)
+                    bubbleChartDataset.Data?.Add(bubbleChartDataPoint);
 
         await SafeInvokeVoidAsync($"{_jsObjectName}.addDatasetData", Id, dataLabel, data);
 
@@ -44,10 +46,10 @@ public partial class BarChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets must not be null", nameof(chartData));
 
         if (chartData.Labels is null)
-            throw new ArgumentNullException(nameof(chartData.Labels));
+            throw new ArgumentException("chartData.Labels must not be null", nameof(chartData));
 
         if (dataLabel is null)
             throw new ArgumentNullException(nameof(dataLabel));
@@ -59,7 +61,7 @@ public partial class BarChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(data));
 
         if (!data.Any())
-            throw new Exception($"{nameof(data)} cannot be empty.");
+            throw new ArgumentException($"{nameof(data)} cannot be empty.", nameof(data));
 
         if (chartData.Datasets.Count != data.Count)
             throw new InvalidDataException("The chart dataset count and the new data points count do not match.");
@@ -70,14 +72,15 @@ public partial class BarChart : BlazorBootstrapChart
         chartData.Labels.Add(dataLabel);
 
         foreach (var dataset in chartData.Datasets)
-        {
-            var chartDatasetData = data.FirstOrDefault(x => x is ChartDatasetData chartDataPoint && chartDataPoint.DatasetLabel == (dataset as dynamic).Label);
+            if (dataset is BubbleChartDataset bubbleChartDataset)
+            {
+                var chartDatasetData = data.FirstOrDefault(x => x is BubbleChartDatasetData bubbleChartDatasetData && bubbleChartDatasetData.DatasetLabel == bubbleChartDataset.Label);
 
-            if (chartDatasetData is not null)
-                BarLineChartSupport.AppendDataPoint(dataset, chartDatasetData);
-        }
+                if (chartDatasetData is BubbleChartDatasetData bubbleChartDatasetData && bubbleChartDatasetData.Data is BubbleChartDataPoint bubbleChartDataPoint)
+                    bubbleChartDataset.Data?.Add(bubbleChartDataPoint);
+            }
 
-        await SafeInvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.OfType<ChartDatasetData>());
+        await SafeInvokeVoidAsync($"{_jsObjectName}.addDatasetsData", Id, dataLabel, data?.Select(x => (BubbleChartDatasetData)x));
 
         return chartData;
     }
@@ -88,15 +91,15 @@ public partial class BarChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(chartData));
 
         if (chartData.Datasets is null)
-            throw new ArgumentNullException(nameof(chartData.Datasets));
+            throw new ArgumentException("chartData.Datasets must not be null", nameof(chartData));
 
         if (chartDataset is null)
             throw new ArgumentNullException(nameof(chartDataset));
 
-        if (BarLineChartSupport.IsSupportedDataset(chartDataset))
+        if (chartDataset is BubbleChartDataset)
         {
             chartData.Datasets.Add(chartDataset);
-            await SafeInvokeVoidAsync($"{_jsObjectName}.addDataset", Id, chartDataset);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.addDataset", Id, (BubbleChartDataset)chartDataset);
         }
 
         return chartData;
@@ -113,8 +116,9 @@ public partial class BarChart : BlazorBootstrapChart
         if (chartOptions is null)
             throw new ArgumentNullException(nameof(chartOptions));
 
-        var data = new { chartData.Labels, Datasets = BarLineChartSupport.GetSupportedDatasets(chartData) };
-        await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (BarChartOptions)chartOptions, plugins, ObjRef);
+        var datasets = chartData.Datasets.OfType<BubbleChartDataset>();
+        var data = new { chartData.Labels, Datasets = datasets };
+        await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (BubbleChartOptions)chartOptions, plugins, ObjRef);
     }
 
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
@@ -128,8 +132,9 @@ public partial class BarChart : BlazorBootstrapChart
         if (chartOptions is null)
             throw new ArgumentNullException(nameof(chartOptions));
 
-        var data = new { chartData.Labels, Datasets = BarLineChartSupport.GetSupportedDatasets(chartData) };
-        await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (BarChartOptions)chartOptions, ObjRef);
+        var datasets = chartData.Datasets.OfType<BubbleChartDataset>();
+        var data = new { chartData.Labels, Datasets = datasets };
+        await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (BubbleChartOptions)chartOptions, ObjRef);
     }
 
     #endregion

@@ -7,6 +7,15 @@
 /// </summary>
 public class LineChartDataset : ChartDataset<double?>
 {
+    #region Constructors
+
+    public LineChartDataset()
+    {
+        Type = "line";
+    }
+
+    #endregion
+
     #region Methods
 
     /// <summary>

@@ -101,6 +101,7 @@ public static class DemoRouteConstants
     // Data Visualization
     public const string Demos_URL_Charts_Prefix = Demos_URL_Prefix + "/charts";
     public const string Demos_URL_BarChart = Demos_URL_Charts_Prefix + "/bar-chart";
+    public const string Demos_URL_BubbleChart = Demos_URL_Charts_Prefix + "/bubble-chart";
     public const string Demos_URL_DoughnutChart = Demos_URL_Charts_Prefix + "/doughnut-chart";
     public const string Demos_URL_LineChart = Demos_URL_Charts_Prefix + "/line-chart";
     public const string Demos_URL_PieChart = Demos_URL_Charts_Prefix + "/pie-chart";
@@ -193,6 +194,7 @@ public static class DemoRouteConstants
     // Data Visualization
     public const string Docs_URL_Charts_Prefix = Docs_URL_Prefix + "/charts";
     public const string Docs_URL_BarChart = Docs_URL_Charts_Prefix + "/bar-chart";
+    public const string Docs_URL_BubbleChart = Docs_URL_Charts_Prefix + "/bubble-chart";
     public const string Docs_URL_DoughnutChart = Docs_URL_Charts_Prefix + "/doughnut-chart";
     public const string Docs_URL_LineChart = Docs_URL_Charts_Prefix + "/line-chart";
     public const string Docs_URL_PieChart = Docs_URL_Charts_Prefix + "/pie-chart";

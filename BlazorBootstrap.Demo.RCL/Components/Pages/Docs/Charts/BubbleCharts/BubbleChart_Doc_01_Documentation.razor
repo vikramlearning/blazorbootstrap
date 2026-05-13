@@ -1,0 +1,61 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_BubbleChart" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="BubbleChart Parameters" PageUrl="@pageUrl" Link="bubble-chart-parameters">
+    <DocxTable TItem="BubbleChart" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="BubbleChart Methods" PageUrl="@pageUrl" Link="bubble-chart-methods">
+    <DocxTable TItem="BubbleChart" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="BubbleChart Events" PageUrl="@pageUrl" Link="bubble-chart-events">
+    <DocxTable TItem="BubbleChart" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ChartData Properties" PageUrl="@pageUrl" Link="chart-data-properties">
+    <DocxTable TItem="ChartData" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="BubbleChartDataset Properties" PageUrl="@pageUrl" Link="bubble-chart-dataset-properties">
+    <DocxTable TItem="BubbleChartDataset" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="BubbleChartDatasetData Properties" PageUrl="@pageUrl" Link="bubble-chart-dataset-data-properties">
+    <DocxTable TItem="BubbleChartDatasetData" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="BubbleChartDatasetDataLabels Properties" PageUrl="@pageUrl" Link="bubble-chart-dataset-data-labels-properties">
+    <DocxTable TItem="BubbleChartDatasetDataLabels" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="BubbleChartOptions Properties" PageUrl="@pageUrl" Link="bubble-chart-options-properties">
+    <DocxTable TItem="BubbleChartOptions" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Interaction Properties" PageUrl="@pageUrl" Link="interaction-properties">
+    <DocxTable TItem="Interaction" DocType="DocType.Properties" />
+</Section>
+
+@code {
+    private const string componentName = nameof(BubbleChart);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_BubbleChart;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_BubbleChart;
+}
