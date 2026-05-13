@@ -11,6 +11,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [DefaultValue("rgba(0, 0, 0, 0.1)")]
+    [Description("Gets or sets the arc background color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BackgroundColor { get; set; }
 
@@ -22,6 +24,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'center'.
     /// </remarks>
+    [DefaultValue("center")]
+    [Description("Gets or sets the arc border alignment.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BorderAlign { get; set; } // TODO: change this to enum
 
@@ -31,6 +35,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is '#fff'.
     /// </remarks>
+    [DefaultValue("#fff")]
+    [Description("Gets or sets the arc border color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BorderColor { get; set; }
 
@@ -40,6 +46,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [DefaultValue(null)]
+    [Description("Gets or sets the arc border dash pattern.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? BorderDash { get; set; }
 
@@ -49,6 +57,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.0.
     /// </remarks>
+    [DefaultValue(0d)]
+    [Description("Gets or sets the arc border dash offset.")]
     public double BorderDashOffset { get; set; }
 
     /// <summary>
@@ -58,6 +68,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [DefaultValue(null)]
+    [Description("Gets or sets the arc border join style.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BorderJoinStyle { get; set; } // TODO: change this to enum
 
@@ -67,6 +79,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 2.
     /// </remarks>
+    [DefaultValue(2)]
+    [Description("Gets or sets the arc border width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? BorderWidth { get; set; }
 
@@ -76,8 +90,12 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
+    [DefaultValue(true)]
+    [Description("Gets or sets a value indicating whether arcs are drawn as circles.")]
     public bool Circular { get; set; } = true;
 
+    [AddedVersion("3.0.0")]
+    [Description("Gets or sets the dataset data label configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public PieChartDatasetDataLabels Datalabels { get; set; } = new();
 
@@ -87,6 +105,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [DefaultValue(null)]
+    [Description("Gets or sets the arc background color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? HoverBackgroundColor { get; set; }
 
@@ -96,6 +116,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [DefaultValue(null)]
+    [Description("Gets or sets the arc border color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? HoverBorderColor { get; set; }
 
@@ -105,6 +127,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [DefaultValue(null)]
+    [Description("Gets or sets the hovered arc border dash pattern.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? HoverBorderDash { get; set; }
 
@@ -114,6 +138,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [DefaultValue(null)]
+    [Description("Gets or sets the hovered arc border dash offset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? HoverBorderDashOffset { get; set; }
 
@@ -124,6 +150,8 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [DefaultValue(null)]
+    [Description("Gets or sets the hovered arc border join style.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? HoverBorderJoinStyle { get; set; } // TODO: change this to enum
 
@@ -133,11 +161,16 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [DefaultValue(null)]
+    [Description("Gets or sets the hovered arc border width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? HoverBorderWidth { get; set; }
 
     #endregion
 }
 
+/// <summary>
+/// Represents data label options for a polar area chart dataset.
+/// </summary>
 [AddedVersion("3.0.0")]
 public class PolarAreaChartDatasetDataLabels : ChartDatasetDataLabels { }

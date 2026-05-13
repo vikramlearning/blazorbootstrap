@@ -475,4 +475,8 @@ public class LineChartDataset : ChartDataset<double?>
     #endregion
 }
 
+/// <summary>
+/// Represents data label options for a line chart dataset.
+/// </summary>
+[AddedVersion("1.10.2")]
 public class LineChartDatasetDataLabels : ChartDatasetDataLabels { }

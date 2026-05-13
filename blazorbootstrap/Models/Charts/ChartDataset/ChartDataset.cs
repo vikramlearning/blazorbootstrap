@@ -5,6 +5,7 @@ public interface IChartDataset { }
 /// <summary>
 /// <See href="https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration" />
 /// </summary>
+[AddedVersion("1.0.0")]
 public class ChartDataset<TData> : IChartDataset
 {
     #region Constructors
@@ -24,6 +25,8 @@ public class ChartDataset<TData> : IChartDataset
     /// <see href="https://www.chartjs.org/docs/latest/configuration/animations.html" />.
     /// </summary>
     [AddedVersion("4.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the dataset animation configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartAnimation? Animation { get; set; }
 
@@ -36,6 +39,8 @@ public class ChartDataset<TData> : IChartDataset
     /// Default value is <see langword="null" />.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the clipping configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Clip { get; set; }
 
@@ -46,6 +51,8 @@ public class ChartDataset<TData> : IChartDataset
     /// Default value is <see langword="null" />.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the dataset values.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<TData>? Data { get; set; }
 
@@ -56,21 +63,26 @@ public class ChartDataset<TData> : IChartDataset
     /// Default value is <see langword="false" />.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets a value indicating whether the dataset is hidden.")]
     public bool Hidden { get; set; }
 
     /// <summary>
     /// The label for the dataset which appears in the legend and tooltips.
     /// </summary>
     /// <remarks>
-    /// Default value is <see cref="string.Empty" />.
+    /// Default value is <see langword="null" />.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the dataset label.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Label { get; set; }
 
     /// <summary>
     /// Get unique object id.
     /// </summary>
+    [Description("Gets the unique object identifier.")]
     public Guid Oid { get; private set; }
 
     /// <summary>
@@ -80,6 +92,8 @@ public class ChartDataset<TData> : IChartDataset
     /// Default value is 0.
     /// </remarks>
     [AddedVersion("3.0.0")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the dataset drawing order.")]
     public int Order { get; set; }
 
     /// <summary>
@@ -88,6 +102,8 @@ public class ChartDataset<TData> : IChartDataset
     /// <see href="https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration" />.
     /// </summary>
     [AddedVersion("4.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the dataset stack identifier.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Stack { get; set; }
 
@@ -97,6 +113,9 @@ public class ChartDataset<TData> : IChartDataset
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets the chart type associated with the dataset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Type { get; protected set; }
 

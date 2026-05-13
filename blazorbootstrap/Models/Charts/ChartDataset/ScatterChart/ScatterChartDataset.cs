@@ -339,5 +339,8 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     #endregion
 }
 
+/// <summary>
+/// Represents data label options for a scatter chart dataset.
+/// </summary>
 [AddedVersion("3.0.0")]
 public class ScatterChartDatasetDataLabels : ChartDatasetDataLabels { }

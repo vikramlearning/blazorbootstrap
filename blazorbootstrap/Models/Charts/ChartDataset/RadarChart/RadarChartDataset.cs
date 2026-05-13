@@ -269,5 +269,8 @@ public class RadarChartDataset : ChartDataset<double?>
     #endregion
 }
 
+/// <summary>
+/// Represents data label options for a radar chart dataset.
+/// </summary>
 [AddedVersion("3.0.0")]
 public class RadarChartDatasetDataLabels : ChartDatasetDataLabels { }

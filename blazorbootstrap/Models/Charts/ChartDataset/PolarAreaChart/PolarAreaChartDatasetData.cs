@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a polar area chart data item for dynamic updates.
+/// </summary>
+[AddedVersion("3.0.0")]
 public record PolarAreaChartDatasetData : ChartDatasetData
 {
     #region Constructors
@@ -18,7 +22,15 @@ public record PolarAreaChartDatasetData : ChartDatasetData
 
     #region Properties, Indexers
 
+    /// <summary>
+    /// Gets the background color for the generated segment.
+    /// </summary>
+    [AddedVersion("3.0.0")]
     public string? BackgroundColor { get; init; }
+    /// <summary>
+    /// Gets the border color for the generated segment.
+    /// </summary>
+    [AddedVersion("3.0.0")]
     public string? BorderColor { get; init; }
 
     #endregion
