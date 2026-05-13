@@ -5,6 +5,7 @@
 /// These are used to set display properties for a specific dataset.
 /// <see href="https://www.chartjs.org/docs/latest/charts/line.html#dataset-properties" />.
 /// </summary>
+[AddedVersion("1.0.0")]
 public class LineChartDataset : ChartDataset<double?>
 {
     #region Constructors
@@ -136,6 +137,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public string BackgroundColor { get; set; } = "rgba(0, 0, 0, 0.1)";
 
     /// <summary>
@@ -145,6 +147,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'butt'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public string BorderCapStyle { get; set; } = "butt";
 
     /// <summary>
@@ -153,6 +156,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public string BorderColor { get; set; } = "rgba(0, 0, 0, 0.1)";
 
     /// <summary>
@@ -161,6 +165,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? BorderDash { get; set; }
 
@@ -179,6 +184,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'miter'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public string BorderJoinStyle { get; set; } = "miter";
 
     /// <summary>
@@ -187,6 +193,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 3.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public double BorderWidth { get; set; } = 3;
 
     /// <summary>
@@ -196,8 +203,10 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'default'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public string CubicInterpolationMode { get; set; } = "default";
     
+    [AddedVersion("1.10.2")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public LineChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
@@ -207,6 +216,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<bool>? DrawActiveElementsOnTop { get; set; }
 
@@ -225,6 +235,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? HoverBackgroundColor { get; set; }
 
@@ -234,6 +245,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? HoverBorderCapStyle { get; set; }
 
@@ -243,6 +255,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? HoverBorderColor { get; set; }
 
@@ -252,6 +265,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? HoverBorderDash { get; set; }
 
@@ -261,6 +275,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? HoverBorderDashOffset { get; set; }
 
@@ -271,6 +286,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'miter'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public string HoverBorderJoinStyle { get; set; } = "miter";
 
     /// <summary>
@@ -279,6 +295,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? HoverBorderWidth { get; set; }
 
@@ -288,6 +305,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'x'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? IndexAxis { get; set; }
 

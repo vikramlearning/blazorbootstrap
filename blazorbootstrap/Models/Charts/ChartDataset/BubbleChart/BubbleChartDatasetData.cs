@@ -1,5 +1,6 @@
 namespace BlazorBootstrap;
 
+[AddedVersion("4.0.0")]
 public record BubbleChartDatasetData : ChartDatasetData
 {
     #region Constructors

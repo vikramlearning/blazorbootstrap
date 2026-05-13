@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("1.0.0")]
 public class LineChartOptions : ChartOptions
 {
     #region Properties, Indexers
@@ -14,6 +15,7 @@ public class LineChartOptions : ChartOptions
     /// <remarks>
     /// Default value is <see langword="null"/>.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? IndexAxis { get; set; }
 
@@ -21,6 +23,7 @@ public class LineChartOptions : ChartOptions
 
     public ChartLayout Layout { get; set; } = new();
 
+    [AddedVersion("1.10.2")]
     public LineChartPlugins Plugins { get; set; } = new();
 
     public Scales Scales { get; set; } = new();

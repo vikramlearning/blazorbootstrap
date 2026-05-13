@@ -20,7 +20,7 @@
                 <tbody>
                     @foreach (var propertyInfo in typeof(TItem).GetComponentParametersOnly())
                     {
-                        <DocxPropertyRow TItem="TItem" PropertyInfo="@propertyInfo" />
+                        <DocxPropertyRow TItem="TItem" PropertyInfo="@propertyInfo" VersionContextType="@VersionContextType" AddedVersionOverrides="@AddedVersionOverrides" />
                     }
                 </tbody>
             </table>
@@ -43,7 +43,7 @@
                 <tbody>
                     @foreach (var propertyInfo in typeof(TItem).GetModelProperties())
                     {
-                        <DocxPropertyRow TItem="TItem" PropertyInfo="@propertyInfo" />
+                        <DocxPropertyRow TItem="TItem" PropertyInfo="@propertyInfo" VersionContextType="@VersionContextType" AddedVersionOverrides="@AddedVersionOverrides" />
                     }
                 </tbody>
             </table>
@@ -64,7 +64,7 @@
                 <tbody>
                     @foreach (var methodInfo in typeof(TItem).GetComponentMethods())
                     {
-                        <DocxMethodRow TItem="TItem" MethodInfo="@methodInfo" />
+                        <DocxMethodRow TItem="TItem" MethodInfo="@methodInfo" VersionContextType="@VersionContextType" />
                     }
                 </tbody>
             </table>
@@ -116,3 +116,11 @@
         </div>
     }
 </CascadingValue>
+
+@code {
+    [Parameter]
+    public IReadOnlyDictionary<string, string>? AddedVersionOverrides { get; set; }
+
+    [Parameter]
+    public Type? VersionContextType { get; set; }
+}

@@ -53,7 +53,7 @@ A Blazor Bootstrap line chart component is a graphical representation of data th
 
 | Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
-| Animation | `ChartAnimation?` | null | | Configures dataset-level animation including delay, duration, easing, and looping. | 4.4.0 |
+| Animation | `ChartAnimation?` | null | | Configures dataset-level animation including delay, duration, easing, and looping. | 4.0.0 |
 | BackgroundColor | `string` | `rgba(0, 0, 0, 0.1)` | | Get or sets the line fill color. | 3.0.0 |
 | BorderCapStyle | `string` | `butt` | | Cap style of the line. Supported values are 'butt', 'round', and 'square'. | 3.0.0 |
 | BorderColor | `string` | `rgba(0, 0, 0, 0.1)` | | Get or sets the line color. | 3.0.0 |
@@ -78,7 +78,7 @@ A Blazor Bootstrap line chart component is a graphical representation of data th
 | IndexAxis | `string?` | null | | The base axis of the dataset. 'x' for horizontal lines and 'y' for vertical lines. | 3.0.0 |
 | Label | `string?` | null | | The label for the dataset which appears in the legend and tooltips. | 1.0.0 |
 | Order | int | 0 | | The drawing order of dataset. Also affects order for stacking, tooltip and legend. | 3.0.0 |
-| Stack | `string?` | null | | The ID of the group to which this dataset belongs when stacked. Datasets with the same value are rendered in the same stack group. | 4.4.0 |
+| Stack | `string?` | null | | The ID of the group to which this dataset belongs when stacked. Datasets with the same value are rendered in the same stack group. | 4.0.0 |
 | PointBackgroundColor | `List<string>?` | null | | The fill color for points. | 1.0.0 |
 | PointBorderColor | `List<string>?` | null | | The border color for points. | 1.0.0 |
 | PointBorderWidth | `List<double>?` | null | | The width of the point border in pixels. |  1.0.0 |
@@ -117,15 +117,15 @@ A Blazor Bootstrap line chart component is a graphical representation of data th
 
 | Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
-| Animation | `ChartAnimation?` | null | | Configures chart-level animation including delay, duration, easing, and looping. | 4.4.0 |
-| AspectRatio | `double?` | null | | Sets the canvas aspect ratio (`width / height`) when responsive resizing is enabled. | 4.4.0 |
+| Animation | `ChartAnimation?` | null | | Configures chart-level animation including delay, duration, easing, and looping. | 4.0.0 |
+| AspectRatio | `double?` | null | | Sets the canvas aspect ratio (`width / height`) when responsive resizing is enabled. | 4.0.0 |
 | IndexAxis | `string?` | null | | The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts. | 3.0.0 |
 | Interaction | `Interaction` | | | Gets or sets the Interaction. | 1.0.0 |
 | Layout | `ChartLayout` | | | Gets or sets the ChartLayout. | 1.0.0 |
 | Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 1.10.0 |
 | MaintainAspectRatio | bool | true | | Maintain the original canvas aspect ratio (width / height) when resizing. | 3.0.0 |
 | Plugins | `LineChartPlugins` | | | Gets or sets the Plugins. | 1.10.2 |
-| ResizeDelay | `int?` | null | | Delays the resize update by the given number of milliseconds. | 4.4.0 |
+| ResizeDelay | `int?` | null | | Delays the resize update by the given number of milliseconds. | 4.0.0 |
 | Responsive | bool | false | | Resizes the chart canvas when its container does. | 1.0.0 |
 | Scales | `Scales` | | | Gets or sets the Scales. | 1.0.0 |
 
@@ -133,8 +133,8 @@ A Blazor Bootstrap line chart component is a graphical representation of data th
 
 | Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
-| Axis | `InteractionAxis?` | null | | Defines which directions are used in calculating distances. Supported values are `X`, `Y`, `XY`, and `R`. | 4.4.0 |
-| IncludeInvisible | `bool?` | null | | Includes invisible points outside the chart area when evaluating interactions. | 4.4.0 |
+| Axis | `InteractionAxis?` | null | | Defines which directions are used in calculating distances. Supported values are `X`, `Y`, `XY`, and `R`. | 4.0.0 |
+| IncludeInvisible | `bool?` | null | | Includes invisible points outside the chart area when evaluating interactions. | 4.0.0 |
 | Intersect | bool | true | | If true, the interaction mode only applies when the mouse position intersects an item on the chart. | 1.0.0 |
 | Mode | `InteractionMode` | `Nearest` | | Sets which elements appear in the interaction. | 1.0.0 |
 

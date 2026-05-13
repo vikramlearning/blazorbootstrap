@@ -14,6 +14,7 @@ public class ChartOptions : IChartOptions
     /// A number of options are provided to configure how the animation looks and how long it takes.
     /// <see href="https://www.chartjs.org/docs/latest/configuration/animations.html" />.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartAnimation? Animation { get; set; }
 
@@ -21,6 +22,7 @@ public class ChartOptions : IChartOptions
     /// Canvas aspect ratio (i.e. <c>width / height</c>).
     /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? AspectRatio { get; set; }
 
@@ -28,6 +30,7 @@ public class ChartOptions : IChartOptions
     /// Gets or sets the locale.
     /// By default, the chart is using the default locale of the platform which is running on.
     /// </summary>
+    [AddedVersion("1.10.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Locale { get; set; }
 
@@ -38,6 +41,7 @@ public class ChartOptions : IChartOptions
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public bool MaintainAspectRatio { get; set; } = true;
 
     //onResize
@@ -47,6 +51,7 @@ public class ChartOptions : IChartOptions
     /// Delay the resize update by the given amount of milliseconds.
     /// <see href="https://www.chartjs.org/docs/latest/configuration/responsive.html#configuration-options" />.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? ResizeDelay { get; set; }
 
@@ -57,6 +62,7 @@ public class ChartOptions : IChartOptions
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     public bool Responsive { get; set; }
 
     #endregion
@@ -141,6 +147,7 @@ public class Interaction
     /// Supported values are <c>x</c>, <c>y</c>, <c>xy</c>, and <c>r</c>.
     /// <see href="https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions" />.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [JsonPropertyName("axis")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? ChartInteractionAxis { get; private set; }
@@ -148,6 +155,7 @@ public class Interaction
     /// <summary>
     /// Sets which elements appear in the interaction.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [JsonPropertyName("mode")]
     public string ChartInteractionMode { get; private set; } = string.Empty;
 
@@ -157,18 +165,21 @@ public class Interaction
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     public bool Intersect { get; set; } = true;
 
     /// <summary>
     /// If <see langword="true" />, invisible points that are outside of the chart area are included when evaluating interactions.
     /// <see href="https://www.chartjs.org/docs/latest/configuration/interactions.html#interactions" />.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? IncludeInvisible { get; set; }
 
     /// <summary>
     /// Defines which directions are used in calculating distances for interactions.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [JsonIgnore]
     public InteractionAxis? Axis
     {
@@ -183,6 +194,7 @@ public class Interaction
     /// <summary>
     /// Sets which elements appear in the tooltip. See Interaction Modes for details.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [JsonIgnore]
     public InteractionMode Mode
     {
@@ -202,21 +214,25 @@ public enum InteractionAxis
     /// <summary>
     /// Calculate interaction distances on the x-axis only.
     /// </summary>
+    [AddedVersion("4.0.0")]
     X,
 
     /// <summary>
     /// Calculate interaction distances on the y-axis only.
     /// </summary>
+    [AddedVersion("4.0.0")]
     Y,
 
     /// <summary>
     /// Calculate interaction distances on both x-axis and y-axis.
     /// </summary>
+    [AddedVersion("4.0.0")]
     XY,
 
     /// <summary>
     /// Calculate interaction distances on the radial axis.
     /// </summary>
+    [AddedVersion("4.0.0")]
     R
 }
 

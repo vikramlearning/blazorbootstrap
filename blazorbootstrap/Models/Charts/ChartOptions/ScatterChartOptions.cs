@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("3.0.0")]
 public class ScatterChartOptions : ChartOptions
 {
     #region Properties, Indexers

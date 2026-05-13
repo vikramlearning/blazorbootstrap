@@ -23,6 +23,7 @@ public class ChartDataset<TData> : IChartDataset
     /// A number of options are provided to configure how the animation looks and how long it takes.
     /// <see href="https://www.chartjs.org/docs/latest/configuration/animations.html" />.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartAnimation? Animation { get; set; }
 
@@ -34,6 +35,7 @@ public class ChartDataset<TData> : IChartDataset
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Clip { get; set; }
 
@@ -43,6 +45,7 @@ public class ChartDataset<TData> : IChartDataset
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<TData>? Data { get; set; }
 
@@ -52,6 +55,7 @@ public class ChartDataset<TData> : IChartDataset
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     public bool Hidden { get; set; }
 
     /// <summary>
@@ -60,6 +64,7 @@ public class ChartDataset<TData> : IChartDataset
     /// <remarks>
     /// Default value is <see cref="string.Empty" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Label { get; set; }
 
@@ -74,6 +79,7 @@ public class ChartDataset<TData> : IChartDataset
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public int Order { get; set; }
 
     /// <summary>
@@ -81,6 +87,7 @@ public class ChartDataset<TData> : IChartDataset
     /// Datasets with the same stack ID are rendered in the same stack group.
     /// <see href="https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration" />.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Stack { get; set; }
 

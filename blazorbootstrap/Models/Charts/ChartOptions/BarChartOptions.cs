@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("1.0.0")]
 public class BarChartOptions : ChartOptions
 {
     #region Properties, Indexers
@@ -15,6 +16,7 @@ public class BarChartOptions : ChartOptions
     /// <remarks>
     /// Default value is <see langword="null"/>.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? IndexAxis { get; set; }
 
@@ -22,6 +24,7 @@ public class BarChartOptions : ChartOptions
 
     public ChartLayout Layout { get; set; } = new();
 
+    [AddedVersion("1.10.2")]
     public BarChartPlugins Plugins { get; set; } = new();
 
     public Scales Scales { get; set; } = new();

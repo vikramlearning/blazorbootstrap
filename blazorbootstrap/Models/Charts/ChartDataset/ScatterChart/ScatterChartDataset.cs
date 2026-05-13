@@ -7,6 +7,7 @@
 /// The scatter chart supports all the same properties as the line chart.
 /// By default, the scatter chart will override the showLine property of the line chart to <see langword="false" />.
 /// </summary>
+[AddedVersion("3.0.0")]
 public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
 {
     #region Properties, Indexers
@@ -338,4 +339,5 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     #endregion
 }
 
+[AddedVersion("3.0.0")]
 public class ScatterChartDatasetDataLabels : ChartDatasetDataLabels { }

@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("3.0.0")]
 public class PolarAreaChartDataset : ChartDataset<double?>
 {
     #region Properties, Indexers
@@ -138,4 +139,5 @@ public class PolarAreaChartDataset : ChartDataset<double?>
     #endregion
 }
 
+[AddedVersion("3.0.0")]
 public class PolarAreaChartDatasetDataLabels : ChartDatasetDataLabels { }

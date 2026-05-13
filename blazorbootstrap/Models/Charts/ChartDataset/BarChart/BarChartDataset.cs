@@ -6,6 +6,7 @@
 /// <see href="https://www.chartjs.org/docs/latest/charts/bar.html#dataset-properties" />
 /// <seealso href="https://www.chartjs.org/docs/latest/charts/bar.html#general" />
 /// </summary>
+[AddedVersion("1.0.0")]
 public class BarChartDataset : ChartDataset<double?>
 {
     #region Constructors
@@ -44,6 +45,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? BarThickness { get; set; }
 
@@ -62,6 +64,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public List<double>? BorderRadius { get; set; }
 
     /// <summary>
@@ -84,6 +87,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// </remarks>
     public double CategoryPercentage { get; set; } = 0.8;
 
+    [AddedVersion("1.10.2")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public BarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
@@ -96,6 +100,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public bool Grouped { get; set; } = true;
 
     /// <summary>
@@ -122,6 +127,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? HoverBorderRadius { get; set; }
 
@@ -141,6 +147,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? IndexAxis { get; set; }
 
@@ -153,6 +160,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? MaxBarThickness { get; set; }
 
@@ -162,6 +170,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? MinBarLength { get; set; }
 
@@ -175,6 +184,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
     public bool SkipNull { get; set; }
 
     //Stack

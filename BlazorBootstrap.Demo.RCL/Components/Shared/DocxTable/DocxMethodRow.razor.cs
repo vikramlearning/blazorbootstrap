@@ -5,7 +5,7 @@
 /// </summary>
 public partial class DocxMethodRow<TItem> : BlazorBootstrapComponentBase
 {
-    private string AddedVersion => MethodInfo.GetMethodAddedVersion();
+    private string AddedVersion => MethodInfo.GetMethodAddedVersion(VersionContextType ?? typeof(TItem));
 
     private string Description => MethodInfo.GetMethodDescription();
 
@@ -15,4 +15,7 @@ public partial class DocxMethodRow<TItem> : BlazorBootstrapComponentBase
 
     [Parameter]
     public MethodInfo MethodInfo { get; set; } = default!;
+
+    [Parameter]
+    public Type? VersionContextType { get; set; }
 }
