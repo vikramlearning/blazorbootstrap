@@ -5,10 +5,13 @@ public partial class SplitView : BlazorBootstrapComponentBase
     #region Fields and Constants
 
     private double currentPrimaryPaneSize = 50;
+    private bool hasReceivedParameters;
     private bool isResizing;
     private DotNetObjectReference<SplitView>? objRef;
     private SplitViewColor previousColor;
     private string? previousCustomColor;
+    private double previousMinimumPaneSizeParameter;
+    private double previousPrimaryPaneSizeParameter;
     private double previousMinimumPaneSize;
     private SplitViewOrientation previousOrientation;
     private double previousPrimaryPaneSize;
@@ -68,7 +71,18 @@ public partial class SplitView : BlazorBootstrapComponentBase
 
     protected override Task OnParametersSetAsync()
     {
-        currentPrimaryPaneSize = NormalizePrimaryPaneSize(PrimaryPaneSize);
+        var normalizedPrimaryPaneSize = NormalizePrimaryPaneSize(PrimaryPaneSize);
+        var primaryPaneSizeParameterChanged = !hasReceivedParameters || Math.Abs(previousPrimaryPaneSizeParameter - PrimaryPaneSize) >= 0.01d;
+        var minimumPaneSizeParameterChanged = !hasReceivedParameters || Math.Abs(previousMinimumPaneSizeParameter - MinimumPaneSize) >= 0.01d;
+
+        if (primaryPaneSizeParameterChanged)
+            currentPrimaryPaneSize = normalizedPrimaryPaneSize;
+        else if (minimumPaneSizeParameterChanged)
+            currentPrimaryPaneSize = NormalizePrimaryPaneSize(currentPrimaryPaneSize);
+
+        hasReceivedParameters = true;
+        previousPrimaryPaneSizeParameter = PrimaryPaneSize;
+        previousMinimumPaneSizeParameter = MinimumPaneSize;
 
         return base.OnParametersSetAsync();
     }
