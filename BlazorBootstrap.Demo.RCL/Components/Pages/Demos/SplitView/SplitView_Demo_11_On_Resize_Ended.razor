@@ -1,0 +1,41 @@
+<div class="row g-3">
+    <div class="col-lg-8">
+        <SplitView Class="border rounded shadow-sm"
+                   Style="height: 340px;"
+                   PrimaryPaneSize="36"
+                   OnResizeEnded="HandleResizeEnded">
+            <Pane1>
+                <div class="h-100 p-4 bg-body-tertiary">
+                    <div class="small text-uppercase text-secondary mb-2">OnResizeEnded</div>
+                    <h5 class="mb-3">Persist Final Size</h5>
+                    <p class="mb-0">This event fires once after dragging finishes, which is useful for saving layout preferences.</p>
+                </div>
+            </Pane1>
+            <Pane2>
+                <div class="h-100 p-4 bg-body">
+                    <div class="small text-uppercase text-secondary mb-2">Secondary Pane</div>
+                    <h5 class="mb-3">Release The Divider</h5>
+                    <p class="mb-0">Only the final percentages are recorded here.</p>
+                </div>
+            </Pane2>
+        </SplitView>
+    </div>
+    <div class="col-lg-4">
+        <div class="border rounded p-3 h-100 bg-body-tertiary">
+            <div class="fw-semibold mb-2">Resize Ended</div>
+            <div class="mb-2">Primary pane: <strong>@primaryPaneSize.ToString("0.##")%</strong></div>
+            <div>Secondary pane: <strong>@secondaryPaneSize.ToString("0.##")%</strong></div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private double primaryPaneSize = 36;
+    private double secondaryPaneSize = 64;
+
+    private void HandleResizeEnded(SplitViewResizeEventArgs args)
+    {
+        primaryPaneSize = args.PrimaryPaneSize;
+        secondaryPaneSize = args.SecondaryPaneSize;
+    }
+}

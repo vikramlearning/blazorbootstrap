@@ -82,6 +82,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_ScriptLoader = DemoScreenshotSrcPrefix + "script-loader.png";
     public const string Demos_URL_Sidebar = DemoScreenshotSrcPrefix + "sidebar.png";
     public const string Demos_URL_Sidebar2 = DemoScreenshotSrcPrefix + "sidebar2.png";
+    public const string Demos_URL_SplitView = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_SortableList = DemoScreenshotSrcPrefix + "sortable-list.png";
     public const string Demos_URL_Spinners = DemoScreenshotSrcPrefix + "spinners.png";
     public const string Demos_URL_Tabs = DemoScreenshotSrcPrefix + "tabs.png";

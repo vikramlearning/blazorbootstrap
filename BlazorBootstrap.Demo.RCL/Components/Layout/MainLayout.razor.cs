@@ -82,6 +82,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "522", Text = "Script Loader", Href = DemoRouteConstants.Demos_URL_ScriptLoader, IconName = IconName.CodeSlash, ParentId = "5" },
             new (){ Id = "523", Text = "Sidebar", Href = DemoRouteConstants.Demos_URL_Sidebar, IconName = IconName.LayoutSidebar, ParentId = "5" },
             new (){ Id = "524", Text = "Sidebar 2", Href = DemoRouteConstants.Demos_URL_Sidebar2, IconName = IconName.ListNested, ParentId = "5" },
+            new (){ Id = "5245", Text = "Split View", Href = DemoRouteConstants.Demos_URL_SplitView, IconName = IconName.LayoutSplit, ParentId = "5" },
             new (){ Id = "525", Text = "Sortable List", Href = DemoRouteConstants.Demos_URL_SortableList, IconName = IconName.ArrowsMove, ParentId = "5" },
             new (){ Id = "526", Text = "Spinner", Href = DemoRouteConstants.Demos_URL_Spinners, IconName = IconName.ArrowRepeat, ParentId = "5" },
             new (){ Id = "527", Text = "Tabs", Href = DemoRouteConstants.Demos_URL_Tabs, IconName = IconName.WindowPlus, ParentId = "5" },

@@ -1,0 +1,41 @@
+<div class="row g-3">
+    <div class="col-lg-8">
+        <SplitView Class="border rounded shadow-sm"
+                   Style="height: 340px;"
+                   PrimaryPaneSize="42"
+                   OnResized="HandleResized">
+            <Pane1>
+                <div class="h-100 p-4 bg-body-tertiary">
+                    <div class="small text-uppercase text-secondary mb-2">OnResized</div>
+                    <h5 class="mb-3">Live Resize Stream</h5>
+                    <p class="mb-0">Drag the divider and watch the event payload update continuously.</p>
+                </div>
+            </Pane1>
+            <Pane2>
+                <div class="h-100 p-4 bg-body">
+                    <div class="small text-uppercase text-secondary mb-2">Live Metrics</div>
+                    <h5 class="mb-3">Current Split</h5>
+                    <p class="mb-0">Primary pane: <strong>@primaryPaneSize.ToString("0.##")%</strong></p>
+                </div>
+            </Pane2>
+        </SplitView>
+    </div>
+    <div class="col-lg-4">
+        <div class="border rounded p-3 h-100 bg-body-tertiary">
+            <div class="fw-semibold mb-2">Resized Event</div>
+            <div class="mb-2">Primary pane: <strong>@primaryPaneSize.ToString("0.##")%</strong></div>
+            <div>Secondary pane: <strong>@secondaryPaneSize.ToString("0.##")%</strong></div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private double primaryPaneSize = 42;
+    private double secondaryPaneSize = 58;
+
+    private void HandleResized(SplitViewResizeEventArgs args)
+    {
+        primaryPaneSize = args.PrimaryPaneSize;
+        secondaryPaneSize = args.SecondaryPaneSize;
+    }
+}

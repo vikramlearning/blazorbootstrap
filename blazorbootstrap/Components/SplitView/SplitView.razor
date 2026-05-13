@@ -1,0 +1,14 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    <div class="bb-split-view-pane bb-split-view-pane-primary">
+        @Pane1
+    </div>
+    <div class="bb-split-view-divider" role="separator" aria-disabled="@(IsDisabled ? "true" : "false")" aria-orientation="@SeparatorAriaOrientation">
+        <span class="bb-split-view-divider-handle" aria-hidden="true"></span>
+    </div>
+    <div class="bb-split-view-pane bb-split-view-pane-secondary">
+        @Pane2
+    </div>
+</div>

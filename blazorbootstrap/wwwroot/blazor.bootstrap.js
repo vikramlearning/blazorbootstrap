@@ -814,6 +814,199 @@ window.blazorBootstrap = {
         },
         windowSize: () => window.innerWidth
     },
+    splitView: {
+        applyPaneSize: (state, primaryPaneSize) => {
+            let normalizedPaneSize = window.blazorBootstrap.splitView.normalizePaneSize(state, primaryPaneSize);
+            let availableSize = window.blazorBootstrap.splitView.getAvailableSize(state);
+            let primaryPanePixels = availableSize * normalizedPaneSize / 100;
+
+            state.primaryPaneSize = normalizedPaneSize;
+            state.primaryPane.style.flexBasis = `${primaryPanePixels}px`;
+        },
+        clamp: (value, min, max) => Math.min(Math.max(value, min), max),
+        createResizeObserver: (state) => {
+            if (typeof ResizeObserver === 'undefined')
+                return null;
+
+            let resizeObserver = new ResizeObserver(() => {
+                if (!state.isDragging)
+                    window.blazorBootstrap.splitView.applyPaneSize(state, state.primaryPaneSize);
+            });
+
+            resizeObserver.observe(state.root);
+
+            return resizeObserver;
+        },
+        dispose: (elementId) => {
+            let state = window.blazorBootstrap.splitView.instances[elementId];
+            if (!state)
+                return;
+
+            state.divider.removeEventListener('pointerdown', state.pointerDownHandler);
+            state.divider.removeEventListener('pointermove', state.pointerMoveHandler);
+            state.divider.removeEventListener('pointerup', state.pointerUpHandler);
+            state.divider.removeEventListener('pointercancel', state.pointerUpHandler);
+            state.divider.removeEventListener('lostpointercapture', state.lostPointerCaptureHandler);
+            state.resizeObserver?.disconnect();
+            state.root.classList.remove('bb-split-view-dragging');
+
+            delete window.blazorBootstrap.splitView.instances[elementId];
+        },
+        emitResizeEvent: (state, methodName) => {
+            if (!state.dotNetHelper)
+                return;
+
+            let primaryPaneSize = window.blazorBootstrap.splitView.roundPaneSize(state.primaryPaneSize);
+            let secondaryPaneSize = window.blazorBootstrap.splitView.roundPaneSize(100 - primaryPaneSize);
+
+            state.dotNetHelper.invokeMethodAsync(methodName, primaryPaneSize, secondaryPaneSize)
+                .catch(() => {
+                    // do nothing
+                });
+        },
+        getAvailableSize: (state) => {
+            let rect = state.root.getBoundingClientRect();
+            let dividerRect = state.divider.getBoundingClientRect();
+            let dividerSize = state.orientation === 'Horizontal' ? dividerRect.width : dividerRect.height;
+            let totalSize = state.orientation === 'Horizontal' ? rect.width : rect.height;
+
+            return Math.max(totalSize - dividerSize, 0);
+        },
+        getDirectChild: (root, className) => {
+            let children = Array.from(root.children);
+            return children.find((child) => child.classList?.contains(className)) ?? null;
+        },
+        initialize: (elementId, orientation, primaryPaneSize, minimumPaneSize, isDisabled, dotNetHelper) => {
+            window.blazorBootstrap.splitView.dispose(elementId);
+
+            let root = document.getElementById(elementId);
+            if (!root)
+                return;
+
+            let primaryPane = window.blazorBootstrap.splitView.getDirectChild(root, 'bb-split-view-pane-primary');
+            let divider = window.blazorBootstrap.splitView.getDirectChild(root, 'bb-split-view-divider');
+            let secondaryPane = window.blazorBootstrap.splitView.getDirectChild(root, 'bb-split-view-pane-secondary');
+
+            if (!primaryPane || !divider || !secondaryPane)
+                return;
+
+            let state = {
+                activePointerId: null,
+                divider: divider,
+                dotNetHelper: dotNetHelper,
+                isDisabled: isDisabled,
+                isDragging: false,
+                lostPointerCaptureHandler: null,
+                minimumPaneSize: minimumPaneSize,
+                orientation: orientation,
+                pointerDownHandler: null,
+                pointerMoveHandler: null,
+                pointerUpHandler: null,
+                primaryPane: primaryPane,
+                primaryPaneSize: primaryPaneSize,
+                resizeObserver: null,
+                root: root,
+                secondaryPane: secondaryPane,
+                startPosition: 0,
+                startPrimaryPaneSize: primaryPaneSize
+            };
+
+            state.pointerDownHandler = (event) => window.blazorBootstrap.splitView.onPointerDown(state, event);
+            state.pointerMoveHandler = (event) => window.blazorBootstrap.splitView.onPointerMove(state, event);
+            state.pointerUpHandler = (event) => window.blazorBootstrap.splitView.stopDragging(state, event);
+            state.lostPointerCaptureHandler = (event) => window.blazorBootstrap.splitView.stopDragging(state, event);
+            state.resizeObserver = window.blazorBootstrap.splitView.createResizeObserver(state);
+
+            divider.addEventListener('pointerdown', state.pointerDownHandler);
+            divider.addEventListener('pointermove', state.pointerMoveHandler);
+            divider.addEventListener('pointerup', state.pointerUpHandler);
+            divider.addEventListener('pointercancel', state.pointerUpHandler);
+            divider.addEventListener('lostpointercapture', state.lostPointerCaptureHandler);
+
+            window.blazorBootstrap.splitView.updateState(state, orientation, primaryPaneSize, minimumPaneSize, isDisabled);
+
+            window.blazorBootstrap.splitView.instances[elementId] = state;
+        },
+        instances: {},
+        normalizePaneSize: (state, value) => {
+            let minimumPaneSize = window.blazorBootstrap.splitView.clamp(state.minimumPaneSize, 0, 50);
+            return window.blazorBootstrap.splitView.clamp(value, minimumPaneSize, 100 - minimumPaneSize);
+        },
+        onPointerDown: (state, event) => {
+            if (state.isDisabled)
+                return;
+
+            if (event.pointerType === 'mouse' && event.button !== 0)
+                return;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            state.isDragging = true;
+            state.activePointerId = event.pointerId;
+            state.startPosition = state.orientation === 'Horizontal' ? event.clientX : event.clientY;
+            state.startPrimaryPaneSize = state.primaryPaneSize;
+
+            state.root.classList.add('bb-split-view-dragging');
+            state.divider.setPointerCapture?.(event.pointerId);
+
+            window.blazorBootstrap.splitView.emitResizeEvent(state, 'OnResizeStartedJS');
+        },
+        onPointerMove: (state, event) => {
+            if (!state.isDragging || state.activePointerId !== event.pointerId)
+                return;
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            let currentPosition = state.orientation === 'Horizontal' ? event.clientX : event.clientY;
+            let delta = currentPosition - state.startPosition;
+            let availableSize = window.blazorBootstrap.splitView.getAvailableSize(state);
+
+            if (availableSize <= 0)
+                return;
+
+            let nextPaneSize = state.startPrimaryPaneSize + (delta / availableSize * 100);
+            let normalizedPaneSize = window.blazorBootstrap.splitView.normalizePaneSize(state, nextPaneSize);
+
+            if (Math.abs(normalizedPaneSize - state.primaryPaneSize) < 0.01)
+                return;
+
+            window.blazorBootstrap.splitView.applyPaneSize(state, normalizedPaneSize);
+            window.blazorBootstrap.splitView.emitResizeEvent(state, 'OnResizedJS');
+        },
+        roundPaneSize: (value) => Math.round(value * 100) / 100,
+        stopDragging: (state, event) => {
+            if (!state.isDragging)
+                return;
+
+            if (event && state.activePointerId !== event.pointerId)
+                return;
+
+            state.isDragging = false;
+            state.activePointerId = null;
+            state.root.classList.remove('bb-split-view-dragging');
+
+            window.blazorBootstrap.splitView.emitResizeEvent(state, 'OnResizeEndedJS');
+        },
+        update: (elementId, orientation, primaryPaneSize, minimumPaneSize, isDisabled) => {
+            let state = window.blazorBootstrap.splitView.instances[elementId];
+            if (!state)
+                return;
+
+            window.blazorBootstrap.splitView.updateState(state, orientation, primaryPaneSize, minimumPaneSize, isDisabled);
+        },
+        updateState: (state, orientation, primaryPaneSize, minimumPaneSize, isDisabled) => {
+            state.orientation = orientation;
+            state.minimumPaneSize = minimumPaneSize;
+            state.isDisabled = isDisabled;
+
+            if (state.isDragging && isDisabled)
+                window.blazorBootstrap.splitView.stopDragging(state);
+
+            window.blazorBootstrap.splitView.applyPaneSize(state, primaryPaneSize);
+        }
+    },
     tabs: {
         initialize: (elementId, dotNetHelper) => {
             let navTabsEl = document.getElementById(elementId);

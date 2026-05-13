@@ -65,6 +65,26 @@ public static class EnumExtensions
             _ => ""
         };
 
+    public static string ToSplitViewColorClass(this SplitViewColor splitViewColor) =>
+        splitViewColor switch
+        {
+            SplitViewColor.Primary => "bb-split-view-color-primary",
+            SplitViewColor.Secondary => "bb-split-view-color-secondary",
+            SplitViewColor.Success => "bb-split-view-color-success",
+            SplitViewColor.Danger => "bb-split-view-color-danger",
+            SplitViewColor.Warning => "bb-split-view-color-warning",
+            SplitViewColor.Info => "bb-split-view-color-info",
+            SplitViewColor.Light => "bb-split-view-color-light",
+            SplitViewColor.Dark => "bb-split-view-color-dark",
+            SplitViewColor.Body => "bb-split-view-color-body",
+            SplitViewColor.BodySecondary => "bb-split-view-color-body-secondary",
+            SplitViewColor.BodyTertiary => "bb-split-view-color-body-tertiary",
+            SplitViewColor.Black => "bb-split-view-color-black",
+            SplitViewColor.White => "bb-split-view-color-white",
+            SplitViewColor.Transparent => "bb-split-view-color-transparent",
+            _ => ""
+        };
+
     public static string ToBadgeColorClass(this BadgeColor badgeColor) =>
         badgeColor switch
         {

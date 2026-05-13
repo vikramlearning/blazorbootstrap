@@ -1,0 +1,45 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_SplitView" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Parameters" PageUrl="@pageUrl" Link="parameters">
+    <DocxTable TItem="SplitView" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
+    <DocxTable TItem="SplitView" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="SplitViewResizeEventArgs Properties" PageUrl="@pageUrl" Link="split-view-resize-event-args-properties">
+    <DocxTable TItem="SplitViewResizeEventArgs" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="SplitViewColor Enum" PageUrl="@pageUrl" Link="split-view-color-enum">
+    <DocxTable TItem="SplitViewColor" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="SplitViewOrientation Enum" PageUrl="@pageUrl" Link="split-view-orientation-enum">
+    <DocxTable TItem="SplitViewOrientation" DocType="DocType.Enum" />
+</Section>
+
+@code {
+    private const string componentName = nameof(SplitView);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_SplitView;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_SplitView;
+}

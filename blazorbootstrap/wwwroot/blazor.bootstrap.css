@@ -22,6 +22,29 @@
     --bb-tooltip-dark: var(--bs-dark);
     --bb-tooltip-color-white: var(--bs-white);
     --bb-tooltip-color-dark: var(--bs-black);
+    /* split view */
+    --bb-split-view-divider-size: 0.75rem;
+    --bb-split-view-divider-color: var(--bs-border-color);
+    --bb-split-view-divider-rest-opacity: 0.65;
+    --bb-split-view-divider-hover-opacity: 0.8;
+    --bb-split-view-divider-dragging-opacity: 1;
+    --bb-split-view-divider-disabled-opacity: 0.45;
+    --bb-split-view-divider-handle-color: var(--bs-emphasis-color);
+    --bb-split-view-divider-handle-opacity: 0.5;
+    --bb-split-view-color-primary: var(--bs-primary);
+    --bb-split-view-color-secondary: var(--bs-secondary);
+    --bb-split-view-color-success: var(--bs-success);
+    --bb-split-view-color-danger: var(--bs-danger);
+    --bb-split-view-color-warning: var(--bs-warning);
+    --bb-split-view-color-info: var(--bs-info);
+    --bb-split-view-color-light: var(--bs-light);
+    --bb-split-view-color-dark: var(--bs-dark);
+    --bb-split-view-color-body: var(--bs-body-bg);
+    --bb-split-view-color-body-secondary: var(--bs-secondary-bg);
+    --bb-split-view-color-body-tertiary: var(--bs-tertiary-bg);
+    --bb-split-view-color-black: var(--bs-black);
+    --bb-split-view-color-white: var(--bs-white);
+    --bb-split-view-color-transparent: transparent;
     /* border */
     --bs-border-radius-xs: 0.125rem;
     --bs-border-radius-md: 0.375rem;
@@ -187,6 +210,156 @@ table button.dropdown-toggle.bb-grid-filter::after {
 
 .bb-grid-pagination-text {
     padding: .375rem;
+}
+
+/* split view */
+.bb-split-view {
+    display: flex;
+    min-block-size: 0;
+    min-inline-size: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.bb-split-view-horizontal {
+    flex-direction: row;
+}
+
+.bb-split-view-vertical {
+    flex-direction: column;
+}
+
+.bb-split-view-pane {
+    min-block-size: 0;
+    min-inline-size: 0;
+    overflow: auto;
+}
+
+.bb-split-view-pane-primary {
+    flex: 0 0 auto;
+}
+
+.bb-split-view-pane-secondary {
+    flex: 1 1 auto;
+}
+
+.bb-split-view-divider {
+    align-items: center;
+    background-color: transparent;
+    display: flex;
+    flex: 0 0 var(--bb-split-view-divider-size);
+    justify-content: center;
+    position: relative;
+    touch-action: none;
+    user-select: none;
+}
+
+.bb-split-view-divider::before {
+    background-color: var(--bb-split-view-divider-color);
+    content: "";
+    inset: 0;
+    opacity: var(--bb-split-view-divider-rest-opacity);
+    position: absolute;
+    transition: opacity 0.15s ease-in-out;
+}
+
+.bb-split-view-horizontal > .bb-split-view-divider {
+    cursor: col-resize;
+}
+
+.bb-split-view-vertical > .bb-split-view-divider {
+    cursor: row-resize;
+}
+
+.bb-split-view:not(.bb-split-view-disabled):not(.bb-split-view-dragging) > .bb-split-view-divider:hover::before {
+    opacity: var(--bb-split-view-divider-hover-opacity);
+}
+
+.bb-split-view.bb-split-view-dragging > .bb-split-view-divider::before {
+    opacity: var(--bb-split-view-divider-dragging-opacity);
+}
+
+.bb-split-view-disabled > .bb-split-view-divider {
+    cursor: default;
+}
+
+.bb-split-view-disabled > .bb-split-view-divider::before {
+    opacity: var(--bb-split-view-divider-disabled-opacity);
+}
+
+.bb-split-view-divider-handle {
+    background-color: var(--bb-split-view-divider-handle-color);
+    border-radius: 999px;
+    display: block;
+    opacity: var(--bb-split-view-divider-handle-opacity);
+    position: relative;
+    z-index: 1;
+}
+
+.bb-split-view-horizontal > .bb-split-view-divider > .bb-split-view-divider-handle {
+    height: 2rem;
+    width: 2px;
+}
+
+.bb-split-view-vertical > .bb-split-view-divider > .bb-split-view-divider-handle {
+    height: 2px;
+    width: 2rem;
+}
+
+.bb-split-view.bb-split-view-color-primary {
+    --bb-split-view-divider-color: var(--bb-split-view-color-primary);
+}
+
+.bb-split-view.bb-split-view-color-secondary {
+    --bb-split-view-divider-color: var(--bb-split-view-color-secondary);
+}
+
+.bb-split-view.bb-split-view-color-success {
+    --bb-split-view-divider-color: var(--bb-split-view-color-success);
+}
+
+.bb-split-view.bb-split-view-color-danger {
+    --bb-split-view-divider-color: var(--bb-split-view-color-danger);
+}
+
+.bb-split-view.bb-split-view-color-warning {
+    --bb-split-view-divider-color: var(--bb-split-view-color-warning);
+}
+
+.bb-split-view.bb-split-view-color-info {
+    --bb-split-view-divider-color: var(--bb-split-view-color-info);
+}
+
+.bb-split-view.bb-split-view-color-light {
+    --bb-split-view-divider-color: var(--bb-split-view-color-light);
+}
+
+.bb-split-view.bb-split-view-color-dark {
+    --bb-split-view-divider-color: var(--bb-split-view-color-dark);
+}
+
+.bb-split-view.bb-split-view-color-body {
+    --bb-split-view-divider-color: var(--bb-split-view-color-body);
+}
+
+.bb-split-view.bb-split-view-color-body-secondary {
+    --bb-split-view-divider-color: var(--bb-split-view-color-body-secondary);
+}
+
+.bb-split-view.bb-split-view-color-body-tertiary {
+    --bb-split-view-divider-color: var(--bb-split-view-color-body-tertiary);
+}
+
+.bb-split-view.bb-split-view-color-black {
+    --bb-split-view-divider-color: var(--bb-split-view-color-black);
+}
+
+.bb-split-view.bb-split-view-color-white {
+    --bb-split-view-divider-color: var(--bb-split-view-color-white);
+}
+
+.bb-split-view.bb-split-view-color-transparent {
+    --bb-split-view-divider-color: var(--bb-split-view-color-transparent);
 }
 
 /* grid - fixed header */
