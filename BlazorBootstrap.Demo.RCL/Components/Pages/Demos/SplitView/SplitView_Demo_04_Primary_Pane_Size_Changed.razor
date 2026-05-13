@@ -1,0 +1,30 @@
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <button class="btn btn-outline-secondary btn-sm" @onclick='() => primaryPaneSize = 25'>25%</button>
+    <button class="btn btn-outline-secondary btn-sm" @onclick='() => primaryPaneSize = 40'>40%</button>
+    <button class="btn btn-outline-secondary btn-sm" @onclick='() => primaryPaneSize = 60'>60%</button>
+    <div class="small text-secondary align-self-center">Bound primary pane size: <strong>@primaryPaneSize.ToString("0.##")%</strong></div>
+</div>
+
+<SplitView Class="border rounded shadow-sm"
+           Style="height: 340px;"
+           MinimumPaneSize="15"
+           @bind-PrimaryPaneSize="primaryPaneSize">
+    <Pane1>
+        <div class="h-100 p-4 bg-body-tertiary">
+            <div class="small text-uppercase text-secondary mb-2">Primary Pane</div>
+            <h5 class="mb-3">Two-way Binding</h5>
+            <p class="mb-0">Drag the divider or use the buttons above to update the same bound value.</p>
+        </div>
+    </Pane1>
+    <Pane2>
+        <div class="h-100 p-4 bg-body">
+            <div class="small text-uppercase text-secondary mb-2">Secondary Pane</div>
+            <h5 class="mb-3">Live Value</h5>
+            <p class="mb-0">The parent component stays synchronized through <code>PrimaryPaneSizeChanged</code>.</p>
+        </div>
+    </Pane2>
+</SplitView>
+
+@code {
+    private double primaryPaneSize = 40;
+}

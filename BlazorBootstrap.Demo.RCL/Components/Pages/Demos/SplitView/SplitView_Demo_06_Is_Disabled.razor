@@ -1,0 +1,20 @@
+<SplitView Class="border rounded shadow-sm"
+           Style="height: 320px;"
+           PrimaryPaneSize="40"
+           Color="SplitViewColor.Secondary"
+           IsDisabled="true">
+    <Pane1>
+        <div class="h-100 p-4 bg-body-tertiary">
+            <div class="small text-uppercase text-secondary mb-2">Disabled Divider</div>
+            <h5 class="mb-3">Pinned Pane</h5>
+            <p class="mb-0">The layout remains visible, but pointer dragging and hover states are disabled.</p>
+        </div>
+    </Pane1>
+    <Pane2>
+        <div class="h-100 p-4 bg-body">
+            <div class="small text-uppercase text-secondary mb-2">Secondary Pane</div>
+            <h5 class="mb-3">Static Layout</h5>
+            <p class="mb-0">Programmatic updates to <code>PrimaryPaneSize</code> still work even when interaction is disabled.</p>
+        </div>
+    </Pane2>
+</SplitView>

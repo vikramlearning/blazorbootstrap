@@ -90,6 +90,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_ScriptLoader = Demos_URL_Prefix + "/script-loader";
     public const string Demos_URL_Sidebar = Demos_URL_Prefix + "/sidebar";
     public const string Demos_URL_Sidebar2 = Demos_URL_Prefix + "/sidebar2";
+    public const string Demos_URL_SplitView = Demos_URL_Prefix + "/split-view";
     public const string Demos_URL_SortableList = Demos_URL_Prefix + "/sortable-list";
     public const string Demos_URL_Spinners = Demos_URL_Prefix + "/spinners";
     public const string Demos_URL_Tabs = Demos_URL_Prefix + "/tabs";
@@ -181,6 +182,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_ScriptLoader = Docs_URL_Prefix + "/script-loader";
     public const string Docs_URL_Sidebar = Docs_URL_Prefix + "/sidebar";
     public const string Docs_URL_Sidebar2 = Docs_URL_Prefix + "/sidebar2";
+    public const string Docs_URL_SplitView = Docs_URL_Prefix + "/split-view";
     public const string Docs_URL_SortableList = Docs_URL_Prefix + "/sortable-list";
     public const string Docs_URL_Spinners = Docs_URL_Prefix + "/spinners";
     public const string Docs_URL_Tabs = Docs_URL_Prefix + "/tabs";

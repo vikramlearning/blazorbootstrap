@@ -1,0 +1,50 @@
+<div class="row g-3">
+    <div class="col-lg-4">
+        <SplitView Class="border rounded shadow-sm"
+                   Style="height: 260px;"
+                   PrimaryPaneSize="32"
+                   Color="SplitViewColor.Primary">
+            <Pane1>
+                <div class="h-100 p-3 bg-body-tertiary">
+                    <div class="fw-semibold mb-2">Primary</div>
+                    <div class="small text-secondary">Bootstrap semantic color</div>
+                </div>
+            </Pane1>
+            <Pane2>
+                <div class="h-100 p-3 bg-body">Hover and dragging derive from the same base divider color.</div>
+            </Pane2>
+        </SplitView>
+    </div>
+    <div class="col-lg-4">
+        <SplitView Class="border rounded shadow-sm"
+                   Style="height: 260px;"
+                   PrimaryPaneSize="32"
+                   Color="SplitViewColor.Success">
+            <Pane1>
+                <div class="h-100 p-3 bg-body-tertiary">
+                    <div class="fw-semibold mb-2">Success</div>
+                    <div class="small text-secondary">Shared CSS variable mapping</div>
+                </div>
+            </Pane1>
+            <Pane2>
+                <div class="h-100 p-3 bg-body">Use enum values when you want Bootstrap-aligned theming.</div>
+            </Pane2>
+        </SplitView>
+    </div>
+    <div class="col-lg-4">
+        <SplitView Class="border rounded shadow-sm"
+                   Style="height: 260px;"
+                   PrimaryPaneSize="32"
+                   Color="SplitViewColor.Dark">
+            <Pane1>
+                <div class="h-100 p-3 bg-body-tertiary">
+                    <div class="fw-semibold mb-2">Dark</div>
+                    <div class="small text-secondary">Theme-aware shared CSS</div>
+                </div>
+            </Pane1>
+            <Pane2>
+                <div class="h-100 p-3 bg-body">The divider color comes from the shared <code>blazor.bootstrap.css</code> token mapping.</div>
+            </Pane2>
+        </SplitView>
+    </div>
+</div>

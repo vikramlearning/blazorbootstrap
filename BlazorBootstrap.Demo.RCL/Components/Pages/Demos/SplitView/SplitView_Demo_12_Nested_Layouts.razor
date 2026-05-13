@@ -1,0 +1,43 @@
+<SplitView Class="border rounded shadow-sm"
+           Style="height: 460px;"
+           PrimaryPaneSize="28"
+           MinimumPaneSize="18"
+           Color="SplitViewColor.Secondary">
+    <Pane1>
+        <div class="h-100 p-4 bg-body-tertiary">
+            <div class="small text-uppercase text-secondary mb-2">Explorer</div>
+            <h5 class="mb-3">Files</h5>
+            <div class="list-group list-group-flush">
+                <div class="list-group-item px-0">Pages</div>
+                <div class="list-group-item px-0">Components</div>
+                <div class="list-group-item px-0">Styles</div>
+                <div class="list-group-item px-0">Assets</div>
+            </div>
+        </div>
+    </Pane1>
+    <Pane2>
+        <SplitView Style="height: 100%;"
+                   Orientation="SplitViewOrientation.Vertical"
+                   PrimaryPaneSize="62"
+                   MinimumPaneSize="20"
+                   Color="SplitViewColor.Dark">
+            <Pane1>
+                <div class="h-100 p-4 bg-body">
+                    <div class="small text-uppercase text-secondary mb-2">Editor</div>
+                    <h5 class="mb-3">SplitView.razor</h5>
+                    <pre class="mb-0 small bg-dark text-light rounded p-3 h-100 overflow-auto">&lt;SplitView @@bind-PrimaryPaneSize=&quot;paneSize&quot;&gt;
+    &lt;Pane1&gt;...&lt;/Pane1&gt;
+    &lt;Pane2&gt;...&lt;/Pane2&gt;
+&lt;/SplitView&gt;</pre>
+                </div>
+            </Pane1>
+            <Pane2>
+                <div class="h-100 p-4 bg-body-tertiary">
+                    <div class="small text-uppercase text-secondary mb-2">Preview</div>
+                    <h5 class="mb-3">Live Preview</h5>
+                    <p class="mb-0">Nested SplitView layouts are useful for IDEs, dashboards, and administration portals.</p>
+                </div>
+            </Pane2>
+        </SplitView>
+    </Pane2>
+</SplitView>

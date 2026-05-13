@@ -1,0 +1,48 @@
+<div class="small text-uppercase text-secondary mb-2">Horizontal Orientation</div>
+<SplitView Class="border rounded shadow-sm mb-4"
+           Style="height: 320px;"
+           PrimaryPaneSize="32">
+    <Pane1>
+        <div class="h-100 p-4 bg-body-tertiary">
+            <div class="small text-uppercase text-secondary mb-2">Left Pane</div>
+            <h5 class="mb-3">Navigation</h5>
+            <p class="mb-0">The default horizontal orientation places panes side by side with a vertical divider.</p>
+        </div>
+    </Pane1>
+    <Pane2>
+        <div class="h-100 p-4 bg-body">
+            <div class="small text-uppercase text-secondary mb-2">Right Pane</div>
+            <h5 class="mb-3">Workspace</h5>
+            <ul class="mb-0">
+                <li>Dashboard widgets</li>
+                <li>Tables and forms</li>
+                <li>Contextual details</li>
+            </ul>
+        </div>
+    </Pane2>
+</SplitView>
+
+<div class="small text-uppercase text-secondary mb-2">Vertical Orientation</div>
+<SplitView Class="border rounded shadow-sm"
+           Style="height: 420px;"
+           Orientation="SplitViewOrientation.Vertical"
+           PrimaryPaneSize="35">
+    <Pane1>
+        <div class="h-100 p-4 bg-body-tertiary">
+            <div class="small text-uppercase text-secondary mb-2">Top Pane</div>
+            <h5 class="mb-3">Summary</h5>
+            <p class="mb-0">Vertical orientation stacks panes and changes the divider to horizontal dragging.</p>
+        </div>
+    </Pane1>
+    <Pane2>
+        <div class="h-100 p-4 bg-body">
+            <div class="small text-uppercase text-secondary mb-2">Bottom Pane</div>
+            <h5 class="mb-3">Details</h5>
+            <ul class="mb-0">
+                <li>Release notes</li>
+                <li>Deployment checklist</li>
+                <li>Preview output</li>
+            </ul>
+        </div>
+    </Pane2>
+</SplitView>
