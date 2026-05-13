@@ -28,7 +28,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_PasswordInput = DemoScreenshotSrcPrefix + "password-input.png";
     public const string Demos_URL_RadioInput = DemoScreenshotSrcPrefix + "radio-input.png";
     public const string Demos_URL_RangeInput = DemoScreenshotSrcPrefix + "range-input.png";
-    public const string Demos_URL_SelectInput = DemoScreenshotSrcPrefix + "home.png";
+    public const string Demos_URL_SelectInput = DemoScreenshotSrcPrefix + "select-input.png";
     public const string Demos_URL_Switch = DemoScreenshotSrcPrefix + "switch.png";
     public const string Demos_URL_TextAreaInput = DemoScreenshotSrcPrefix + "textarea-input.png";
     public const string Demos_URL_TextInput = DemoScreenshotSrcPrefix + "text-input.png";
@@ -82,7 +82,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_ScriptLoader = DemoScreenshotSrcPrefix + "script-loader.png";
     public const string Demos_URL_Sidebar = DemoScreenshotSrcPrefix + "sidebar.png";
     public const string Demos_URL_Sidebar2 = DemoScreenshotSrcPrefix + "sidebar2.png";
-    public const string Demos_URL_SplitView = DemoScreenshotSrcPrefix + "home.png";
+    public const string Demos_URL_SplitView = DemoScreenshotSrcPrefix + "split-view.png";
     public const string Demos_URL_SortableList = DemoScreenshotSrcPrefix + "sortable-list.png";
     public const string Demos_URL_Spinners = DemoScreenshotSrcPrefix + "spinners.png";
     public const string Demos_URL_Tabs = DemoScreenshotSrcPrefix + "tabs.png";
