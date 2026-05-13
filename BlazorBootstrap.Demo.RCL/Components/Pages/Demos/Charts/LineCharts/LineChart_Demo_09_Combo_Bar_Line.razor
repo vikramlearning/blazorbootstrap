@@ -1,0 +1,54 @@
+<div class="container-fluid overflow-x-auto">
+    <LineChart @ref="lineChart" Width="800" />
+</div>
+
+@code {
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var forecastColor = ColorUtility.CategoricalTwelveColors[2].ToColor();
+        var actualColor = ColorUtility.CategoricalTwelveColors[3].ToColor();
+
+        chartData = new ChartData
+            {
+                Labels = new List<string> { "January", "February", "March", "April", "May", "June" },
+                Datasets = new List<IChartDataset>
+                {
+                    new LineChartDataset
+                    {
+                        Label = "Forecast",
+                        Data = new List<double?> { 45, 52, 61, 66, 73, 79 },
+                        BackgroundColor = forecastColor.ToRgbaString(),
+                        BorderColor = forecastColor.ToRgbString(),
+                        PointRadius = new List<double> { 4 },
+                        PointHoverRadius = new List<double> { 6 }
+                    },
+                    new BarChartDataset
+                    {
+                        Label = "Actual",
+                        Data = new List<double?> { 41, 49, 58, 70, 75, 82 },
+                        BackgroundColor = new List<string> { actualColor.ToRgbaString() },
+                        BorderColor = new List<string> { actualColor.ToRgbString() },
+                        BorderWidth = new List<double> { 0 }
+                    }
+                }
+            };
+
+        lineChartOptions = new LineChartOptions
+            {
+                Responsive = true,
+                Interaction = new Interaction { Mode = InteractionMode.Index, Intersect = false }
+            };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
