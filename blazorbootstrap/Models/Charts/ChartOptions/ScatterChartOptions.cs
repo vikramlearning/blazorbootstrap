@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents configuration options for a scatter chart.
+/// </summary>
 [AddedVersion("3.0.0")]
 public class ScatterChartOptions : ChartOptions
 {

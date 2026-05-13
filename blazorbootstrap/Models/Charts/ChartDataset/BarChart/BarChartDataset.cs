@@ -26,6 +26,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue("rgba(0, 0, 0, 0.1)")]
     [Description("Gets or sets the bar background color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -61,6 +62,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue("rgba(0, 0, 0, 0.1)")]
     [Description("Gets or sets the bar border color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -83,6 +85,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(0)]
     [Description("Gets or sets the border width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -126,6 +129,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the bar background color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -137,6 +141,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the bar border color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -160,6 +165,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 1.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(1)]
     [Description("Gets or sets the hovered bar border width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -229,6 +235,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is first x axis.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue("first x axis")]
     [Description("Gets or sets the x-axis identifier for the dataset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -240,6 +247,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is first y axis.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue("first y axis")]
     [Description("Gets or sets the y-axis identifier for the dataset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

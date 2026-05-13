@@ -467,42 +467,42 @@ public class ChartAxesBorder
     /// Length and spacing of dashes on grid lines
     /// <see href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash" />
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<int>? Dash { get; set; }
     [DefaultValue(null)]
     [Description("Gets or sets the border dash pattern.")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<int>? Dash { get; set; }
 
     /// <summary>
     /// Offset for line dashes.
     /// <see href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset" />
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? DashOffset { get; set; }
     [DefaultValue(null)]
     [Description("Gets or sets the border dash offset.")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? DashOffset { get; set; }
 
     /// <summary>
     /// If <see langword="true" />, draw a border at the edge between the axis and the chart area.
     /// </summary>
-    public bool Display { get; set; } = true;
-
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether the axis border is displayed.")]
+    public bool Display { get; set; } = true;
+
     /// <summary>
     /// The width of the border line.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? Width { get; set; }
     [DefaultValue(null)]
     [Description("Gets or sets the border width.")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Width { get; set; }
 
     /// <summary>
     /// z-index of the border layer. Values <= 0 are drawn under datasets, > 0 on top.
     /// </summary>
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? Z { get; set; }
     [DefaultValue(null)]
     [Description("Gets or sets the border z-index.")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Z { get; set; }
 
     #endregion
 }

@@ -1,5 +1,8 @@
 namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents configuration options for a bubble chart.
+/// </summary>
 [AddedVersion("4.0.0")]
 public class BubbleChartOptions : ChartOptions
 {

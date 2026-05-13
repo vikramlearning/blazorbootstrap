@@ -16,6 +16,7 @@ public class PieChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue("rgba(0, 0, 0, 0.1)")]
     [Description("Gets or sets the arc background color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -41,6 +42,7 @@ public class PieChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is '#fff'.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue("#fff")]
     [Description("Gets or sets the arc border color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -100,6 +102,7 @@ public class PieChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 2.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(2)]
     [Description("Gets or sets the arc border width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -128,6 +131,7 @@ public class PieChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the arc background color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -139,6 +143,7 @@ public class PieChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the arc border color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

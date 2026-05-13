@@ -18,6 +18,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("rgba(0, 0, 0, 0.1)")]
+    [Description("Gets or sets the line fill color.")]
     public string BackgroundColor { get; set; } = "rgba(0, 0, 0, 0.1)";
 
     /// <summary>
@@ -27,6 +30,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'butt'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("butt")]
+    [Description("Gets or sets the line border cap style.")]
     public string BorderCapStyle { get; set; } = "butt";
 
     /// <summary>
@@ -35,6 +41,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("rgba(0, 0, 0, 0.1)")]
+    [Description("Gets or sets the line color.")]
     public string BorderColor { get; set; } = "rgba(0, 0, 0, 0.1)";
 
     /// <summary>
@@ -43,6 +52,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the line border dash pattern.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? BorderDash { get; set; }
 
@@ -52,6 +64,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 0.0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(0d)]
+    [Description("Gets or sets the line border dash offset.")]
     public double BorderDashOffset { get; set; }
 
     /// <summary>
@@ -61,6 +76,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'miter'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("miter")]
+    [Description("Gets or sets the line border join style.")]
     public string BorderJoinStyle { get; set; } = "miter";
 
     /// <summary>
@@ -69,6 +87,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 3.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(3d)]
+    [Description("Gets or sets the line border width in pixels.")]
     public double BorderWidth { get; set; } = 3;
 
     /// <summary>
@@ -78,8 +99,13 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'default'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("default")]
+    [Description("Gets or sets the cubic interpolation mode.")]
     public string CubicInterpolationMode { get; set; } = "default";
 
+    [AddedVersion("3.0.0")]
+    [Description("Gets or sets the dataset data label configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public LineChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
@@ -89,6 +115,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets whether active points are drawn over other points.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<bool>? DrawActiveElementsOnTop { get; set; }
 
@@ -98,6 +127,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets how the area under the line is filled.")]
     public bool Fill { get; set; }
 
     /// <summary>
@@ -106,6 +138,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the line fill color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? HoverBackgroundColor { get; set; }
 
@@ -115,6 +150,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the line border cap style when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? HoverBorderCapStyle { get; set; }
 
@@ -124,6 +162,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the line color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? HoverBorderColor { get; set; }
 
@@ -133,6 +174,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the line border dash pattern when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? HoverBorderDash { get; set; }
 
@@ -142,6 +186,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the line border dash offset when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? HoverBorderDashOffset { get; set; }
 
@@ -152,6 +199,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'miter'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("miter")]
+    [Description("Gets or sets the line border join style when hovered.")]
     public string HoverBorderJoinStyle { get; set; } = "miter";
 
     /// <summary>
@@ -160,6 +210,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the line border width in pixels when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? HoverBorderWidth { get; set; }
 
@@ -169,6 +222,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'x'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("x")]
+    [Description("Gets or sets the base axis of the dataset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? IndexAxis { get; set; }
 
@@ -178,6 +234,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("rgba(0, 0, 0, 0.1)")]
+    [Description("Gets or sets the point fill color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? PointBackgroundColor { get; set; }
 
@@ -187,6 +246,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("rgba(0, 0, 0, 0.1)")]
+    [Description("Gets or sets the point border color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? PointBorderColor { get; set; }
 
@@ -196,6 +258,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 1.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(1d)]
+    [Description("Gets or sets the point border width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? PointBorderWidth { get; set; }
 
@@ -205,6 +270,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 1.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(1d)]
+    [Description("Gets or sets the point hit radius.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? PointHitRadius { get; set; }
 
@@ -214,6 +282,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the point background color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? PointHoverBackgroundColor { get; set; }
 
@@ -223,6 +294,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the point border color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? PointHoverBorderColor { get; set; }
 
@@ -232,6 +306,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 1.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(1d)]
+    [Description("Gets or sets the point border width when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? PointHoverBorderWidth { get; set; }
 
@@ -241,6 +318,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 4.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(4d)]
+    [Description("Gets or sets the point radius when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? PointHoverRadius { get; set; }
 
@@ -250,6 +330,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 3.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(3d)]
+    [Description("Gets or sets the point radius.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? PointRadius { get; set; }
 
@@ -259,6 +342,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(0d)]
+    [Description("Gets or sets the point rotation in degrees.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? PointRotation { get; set; }
 
@@ -271,6 +357,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'circle'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("circle")]
+    [Description("Gets or sets the point style.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? PointStyle { get; set; }
 
@@ -284,6 +373,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets a value indicating whether the line is displayed.")]
     public bool ShowLine { get; } = false;
 
     /// <summary>
@@ -295,6 +387,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets whether gaps between points are spanned.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SpanGaps { get; set; }
 
@@ -307,6 +402,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets a value indicating whether the line is rendered as stepped.")]
     public bool Stepped { get; set; }
 
     /// <summary>
@@ -316,6 +414,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(0d)]
+    [Description("Gets or sets the bezier curve tension.")]
     public double Tension { get; set; }
 
     /// <summary>
@@ -324,6 +425,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'first x axis'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("first x axis")]
+    [Description("Gets or sets the x-axis identifier for the dataset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? XAxisID { get; set; }
 
@@ -333,6 +437,9 @@ public class ScatterChartDataset : ChartDataset<ScatterChartDataPoint>
     /// <remarks>
     /// Default value is 'first y axis'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("first y axis")]
+    [Description("Gets or sets the y-axis identifier for the dataset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? YAxisID { get; set; }
 

@@ -1,5 +1,8 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents configuration options for a line chart.
+/// </summary>
 [AddedVersion("1.0.0")]
 public class LineChartOptions : ChartOptions
 {
