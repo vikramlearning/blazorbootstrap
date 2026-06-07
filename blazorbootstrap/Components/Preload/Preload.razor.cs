@@ -9,7 +9,8 @@ public partial class Preload : BlazorBootstrapComponentBase
     private bool showBackdrop;
 
     private string? spinnerColor;
-
+    private string? spinnerType;
+    private string? animatedLoaderPrimaryColor;
     #endregion
 
     #region Methods
@@ -39,14 +40,15 @@ public partial class Preload : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
-    private void OnShow(SpinnerColor spinnerColor, string? loadingText)
+    private void OnShow(SpinnerColor spinnerColor, string? loadingText, string? spinnerType)
     {
         this.spinnerColor = spinnerColor.ToSpinnerColorClass();
+        this.animatedLoaderPrimaryColor = spinnerColor.ToHexColorCode();
 
         showBackdrop = true;
 
         this.loadingText = loadingText;
-
+        this.spinnerType = spinnerType;
         StateHasChanged();
     }
 
@@ -96,5 +98,17 @@ public partial class Preload : BlazorBootstrapComponentBase
     [Inject]
     private PreloadService PageLoadingService { get; set; } = default!;
 
+
+    /// <summary>
+    /// Gets or sets the spinner type.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
+    /// </summary>
+    [AddedVersion("1.10.4")]
+    [DefaultValue(StringConstants.DefaultBootstrapSpinner)]
+    [Description("Gets or sets the spinner type.")]
+    [Parameter]
+    public string? SpinnerType { get; set; }
     #endregion
 }
