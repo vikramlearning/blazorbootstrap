@@ -11,6 +11,7 @@ public class ChartPlugins
     /// <summary>
     /// The chart legend displays data about the datasets that are appearing on the chart.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [Description("Gets or sets the legend configuration.")]
     public ChartPluginsLegend Legend { get; set; } = new();
 
@@ -18,6 +19,7 @@ public class ChartPlugins
     /// The chart title defines text to draw at the top of the chart.
     /// <see href="https://www.chartjs.org/docs/latest/configuration/title.html"/> 
     /// </summary>
+    [AddedVersion("1.10.2")]
     [Description("Gets or sets the title configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartPluginsTitle? Title { get; set; } = new();
@@ -26,6 +28,7 @@ public class ChartPlugins
     /// Tooltip for the element.
     /// <see href="https://www.chartjs.org/docs/latest/configuration/tooltip.html"/>
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the tooltip configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -47,6 +50,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// Alignment of the legend. Default values is 'center'. Other possible values 'start' and 'end'.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("center")]
     [Description("Gets or sets the legend alignment.")]
     public string? Align { get; set; } = "center";
@@ -54,6 +58,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// Is the legend shown? Default value is 'true'.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether the legend is displayed.")]
     public bool Display { get; set; } = true;
@@ -61,6 +66,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// If <see langword="true" />, Marks that this box should take the full width/height of the canvas (moving other boxes). This is unlikely to need to be changed in day-to-day use.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether the legend takes the full chart area in its dimension.")]
     public bool FullSize { get; set; } = true;
@@ -68,6 +74,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// Label settings for the legend.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend label configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -76,6 +83,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// Maximum height of the legend, in pixels.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the maximum legend height in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -84,6 +92,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// Maximum width of the legend, in pixels.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the maximum legend width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -92,6 +101,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// Position of the legend. Default value is 'top'. Other possible value is 'bottom'.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("top")]
     [Description("Gets or sets the legend position.")]
     public string Position { get; set; } = "top";
@@ -99,6 +109,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// If <see langword="true" />, the Legend will show datasets in reverse order.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(false)]
     [Description("Gets or sets a value indicating whether legend items are rendered in reverse order.")]
     public bool Reverse { get; set; } = false;
@@ -106,6 +117,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// If <see langword="true" />, for rendering of the legends will go from right to left.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(false)]
     [Description("Gets or sets a value indicating whether the legend is rendered right-to-left.")]
     public bool Rtl { get; set; } = false;
@@ -113,6 +125,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// This will force the text direction 'rtl' or 'ltr' on the canvas for rendering the legend, regardless of the css specified on the canvas
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend text direction.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -121,6 +134,7 @@ public class ChartPluginsLegend
     /// <summary>
     /// Title object
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend title configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -138,6 +152,7 @@ public class ChartPluginsLegendTitle
     /// <summary>
     /// Color of the legend. Default value is 'black'.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend title color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -146,6 +161,7 @@ public class ChartPluginsLegendTitle
     /// <summary>
     /// Is the legend title displayed.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether the legend title is displayed.")]
     public bool Display { get; set; } = true;
@@ -153,6 +169,7 @@ public class ChartPluginsLegendTitle
     /// <summary>
     /// Padding around the title.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the padding around the legend title.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -161,6 +178,7 @@ public class ChartPluginsLegendTitle
     /// <summary>
     /// The string title
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend title text.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -177,6 +195,7 @@ public class ChartPluginsLegendLabels
     /// <summary>
     /// Width of coloured box.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend label box width.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -185,6 +204,7 @@ public class ChartPluginsLegendLabels
     /// <summary>
     /// Height of the coloured box
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend label box height.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -193,6 +213,7 @@ public class ChartPluginsLegendLabels
     /// <summary>
     /// Override the borderRadius to use.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend label border radius.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -201,6 +222,7 @@ public class ChartPluginsLegendLabels
     /// <summary>
     /// Color of label and the strikethrough.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend label color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -209,13 +231,16 @@ public class ChartPluginsLegendLabels
     /// <summary>
     /// Gets or sets the font used for legend labels.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
+    [Description("Gets or sets the font used for legend labels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public ChartFont? Font { get; set; }
     
     /// <summary>
     /// Padding between rows of colored boxes.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the padding between legend rows.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -224,6 +249,7 @@ public class ChartPluginsLegendLabels
     /// <summary>
     /// If specified, this style of point is used for the legend. Only used if <see cref="UsePointStyle"/>> is true.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend point style.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -232,6 +258,7 @@ public class ChartPluginsLegendLabels
     /// <summary>
     /// If <see cref="UsePointStyle"/> is <see langword="true" />, the width of the point style used for the legend.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the legend point style width.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -240,6 +267,7 @@ public class ChartPluginsLegendLabels
     /// <summary>
     /// Label borderRadius will match corresponding <see cref="BorderRadius"/>.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(false)]
     [Description("Gets or sets a value indicating whether legend border radii match dataset border radii.")]
     public bool UseBorderRadius { get; set; } = false;
@@ -247,6 +275,7 @@ public class ChartPluginsLegendLabels
     /// <summary>
     /// If <see langword="true"/>, Label style will match corresponding point style (size is based on pointStyleWidth or the minimum value between <see cref="BoxWidth"/> and <see cref="Font"/> -> Size).
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(false)]
     [Description("Gets or sets a value indicating whether legend labels use the dataset point style.")]
     public bool UsePointStyle { get; set; } = false;
@@ -266,6 +295,7 @@ public class ChartPluginsTitle
     /// Alignment of the title.
     /// Options are: 'start', 'center', and 'end'
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("center")]
     [Description("Gets or sets the title alignment.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -273,6 +303,7 @@ public class ChartPluginsTitle
     /// <summary>
     /// Color of text.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("black")]
     [Description("Gets or sets the title text color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -281,6 +312,7 @@ public class ChartPluginsTitle
     /// <summary>
     /// Is the title shown?
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(false)]
     [Description("Gets or sets a value indicating whether the title is displayed.")]
     public bool Display { get; set; }
@@ -288,6 +320,7 @@ public class ChartPluginsTitle
     /// <summary>
     /// Gets or sets the font used to render the title.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the font used to render the title.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -300,6 +333,7 @@ public class ChartPluginsTitle
     /// <summary>
     /// Gets or sets the title text.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the title text.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -320,6 +354,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Background color of the tooltip.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("rgba(0, 0, 0, 0.8)")]
     [Description("Gets or sets the tooltip background color.")]
     public string BackgroundColor { get; set; } = "rgba(0, 0, 0, 0.8)";
@@ -327,6 +362,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Horizontal alignment of the body text lines. left/right/center.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("left")]
     [Description("Gets or sets the tooltip body text alignment.")]
     public string BodyAlign { get; set; } = "left";
@@ -334,6 +370,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Color of body text.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("#fff")]
     [Description("Gets or sets the tooltip body text color.")]
     public string BodyColor { get; set; } = "#fff";
@@ -341,6 +378,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Gets or sets the font used for tooltip body text.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the font used for tooltip body text.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -349,6 +387,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Spacing to add to top and bottom of each tooltip item.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(2)]
     [Description("Gets or sets the spacing around tooltip body items.")]
     public int BodySpacing { get; set; } = 2;
@@ -356,6 +395,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Extra distance to move the end of the tooltip arrow away from the tooltip point.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(2)]
     [Description("Gets or sets the tooltip caret padding.")]
     public int CaretPadding { get; set; } = 2;
@@ -363,6 +403,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Size, in px, of the tooltip arrow.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(5)]
     [Description("Gets or sets the tooltip caret size in pixels.")]
     public int CaretSize { get; set; } = 5;
@@ -370,6 +411,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// If <see langword="true" />, color boxes are shown in the tooltip.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether color boxes are shown in the tooltip.")]
     public bool DisplayColors { get; set; } = true;
@@ -377,6 +419,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Are on-canvas tooltips enabled?
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether on-canvas tooltips are enabled.")]
     public bool Enabled { get; set; } = true;
@@ -384,6 +427,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Horizontal alignment of the footer text lines. left/right/center.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("left")]
     [Description("Gets or sets the tooltip footer text alignment.")]
     public string FooterAlign { get; set; } = "left";
@@ -391,6 +435,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Color of footer text.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("#fff")]
     [Description("Gets or sets the tooltip footer text color.")]
     public string FooterColor { get; set; } = "#fff";
@@ -398,12 +443,14 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Gets or sets the font used for tooltip footer text.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [Description("Gets or sets the font used for tooltip footer text.")]
     public ChartPluginsTooltipFont FooterFont { get; set; } = new();
 
     /// <summary>
     /// Margin to add before drawing the footer.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(6)]
     [Description("Gets or sets the tooltip footer top margin.")]
     public int FooterMarginTop { get; set; } = 6;
@@ -411,6 +458,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Spacing to add to top and bottom of each footer line.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(2)]
     [Description("Gets or sets the spacing around tooltip footer lines.")]
     public int FooterSpacing { get; set; } = 2;
@@ -418,6 +466,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Horizontal alignment of the title text lines. left/right/center.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("left")]
     [Description("Gets or sets the tooltip title text alignment.")]
     public string TitleAlign { get; set; } = "left";
@@ -425,6 +474,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Color of title text.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("#fff")]
     [Description("Gets or sets the tooltip title text color.")]
     public string TitleColor { get; set; } = "#fff";
@@ -432,12 +482,14 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Gets or sets the font used for tooltip title text.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [Description("Gets or sets the font used for tooltip title text.")]
     public ChartPluginsTooltipFont TitleFont { get; set; } = new();
 
     /// <summary>
     /// Margin to add on bottom of title section.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(6)]
     [Description("Gets or sets the tooltip title bottom margin.")]
     public int TitleMarginBottom { get; set; } = 6;
@@ -445,6 +497,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Spacing to add to top and bottom of each title line.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(2)]
     [Description("Gets or sets the spacing around tooltip title lines.")]
     public int TitleSpacing { get; set; } = 2;
@@ -452,6 +505,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Position of the tooltip caret in the X direction. left/center/right.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the tooltip caret x-axis alignment.")]
     public string? XAlign { get; set; }
@@ -459,6 +513,7 @@ public class ChartPluginsTooltip
     /// <summary>
     /// Position of the tooltip caret in the Y direction. top/center/bottom.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the tooltip caret y-axis alignment.")]
     public string? YAlign { get; set; }
@@ -478,6 +533,7 @@ public class ChartPluginsTooltipFont
     /// Default font family for all text, follows CSS font-family options.
     /// 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the tooltip font family.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -487,6 +543,7 @@ public class ChartPluginsTooltipFont
     /// Height of an individual line of text
     /// <see href="https://developer.mozilla.org/en-US/docs/Web/CSS/line-height" />
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(1.2d)]
     [Description("Gets or sets the tooltip font line height.")]
     public double LineHeight { get; set; } = 1.2;
@@ -494,6 +551,7 @@ public class ChartPluginsTooltipFont
     /// <summary>
     /// Default font size (in px) for text. Does not apply to radialLinear scale point labels.
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(12)]
     [Description("Gets or sets the tooltip font size in pixels.")]
     public int Size { get; set; } = 12;
@@ -502,6 +560,7 @@ public class ChartPluginsTooltipFont
     /// Default font style. Does not apply to tooltip title or footer. Does not apply to chart title.
     /// Follows CSS font-style options (i.e. normal, italic, oblique, initial, inherit).
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue(null)]
     [Description("Gets or sets the tooltip font style.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -511,6 +570,7 @@ public class ChartPluginsTooltipFont
     /// Default font weight (boldness).
     /// <see href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight" />
     /// </summary>
+    [AddedVersion("1.10.2")]
     [DefaultValue("bold")]
     [Description("Gets or sets the tooltip font weight.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

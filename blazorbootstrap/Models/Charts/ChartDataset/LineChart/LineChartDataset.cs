@@ -146,7 +146,7 @@ public class LineChartDataset : ChartDataset<double?>
     #region Properties, Indexers
 
     /// <summary>
-    /// Get or sets the line fill color.
+    /// Gets or sets the line fill color.
     /// </summary>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
@@ -169,7 +169,7 @@ public class LineChartDataset : ChartDataset<double?>
     public string BorderCapStyle { get; set; } = "butt";
 
     /// <summary>
-    /// Get or sets the line color.
+    /// Gets or sets the line color.
     /// </summary>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.

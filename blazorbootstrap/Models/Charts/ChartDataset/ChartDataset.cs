@@ -3,7 +3,7 @@
 public interface IChartDataset { }
 
 /// <summary>
-/// <See href="https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration" />
+/// <see href="https://www.chartjs.org/docs/latest/general/data-structures.html#dataset-configuration" />
 /// </summary>
 [AddedVersion("1.0.0")]
 public class ChartDataset<TData> : IChartDataset
@@ -45,7 +45,7 @@ public class ChartDataset<TData> : IChartDataset
     public string? Clip { get; set; }
 
     /// <summary>
-    /// Get or sets the Data.
+    /// Gets or sets the Data.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
@@ -82,6 +82,7 @@ public class ChartDataset<TData> : IChartDataset
     /// <summary>
     /// Get unique object id.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [Description("Gets the unique object identifier.")]
     public Guid Oid { get; private set; }
 

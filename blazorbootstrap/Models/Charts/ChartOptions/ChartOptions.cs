@@ -96,6 +96,7 @@ public class ChartLayout
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether automatic padding is applied.")]
     public bool AutoPadding { get; set; } = true;
@@ -103,6 +104,7 @@ public class ChartLayout
     /// <summary>
     /// The padding to add inside the chart.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(0)]
     [Description("Gets or sets the padding inside the chart.")]
     public int Padding { get; set; } = 0;
@@ -311,12 +313,14 @@ public class Scales
     /// <summary>
     /// Gets or sets the x-axis configuration.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [Description("Gets or sets the x-axis configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartAxes? X { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the y-axis configuration.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [Description("Gets or sets the y-axis configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public ChartAxes? Y { get; set; } = new();
 
@@ -351,6 +355,7 @@ public class ChartAxes
     /// <summary>
     /// If <see langword="true" />, the scale begins at zero.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether the scale begins at zero.")]
     public bool BeginAtZero { get; set; } = true;
@@ -358,6 +363,7 @@ public class ChartAxes
     /// <summary>
     /// Define options for the border that run perpendicular to the axis.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the border configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -366,6 +372,7 @@ public class ChartAxes
     /// <summary>
     /// Gets or sets the grid configuration.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the grid configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -374,6 +381,7 @@ public class ChartAxes
     /// <summary>
     /// User defined maximum number for the scale, overrides maximum value from data.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the maximum scale value.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -382,20 +390,16 @@ public class ChartAxes
     /// <summary>
     /// User defined minimum number for the scale, overrides minimum value from data.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the minimum scale value.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Min { get; set; }
 
     /// <summary>
-    /// Should the data be stacked.
-    /// By default data is not stacked.
-    /// If the stacked option of the value scale (y-axis on horizontal chart) is true, positive and negative values are stacked
-    /// separately.
-    /// </summary>
-    /// <summary>
     /// If <see langword="true" />, the axis values are stacked.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(false)]
     [Description("Gets or sets a value indicating whether the axis values are stacked.")]
     public bool Stacked { get; set; }
@@ -403,6 +407,7 @@ public class ChartAxes
     /// <summary>
     /// Adjustment used when calculating the maximum data value.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the suggested maximum scale value.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -411,6 +416,7 @@ public class ChartAxes
     /// <summary>
     /// Adjustment used when calculating the minimum data value.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the suggested minimum scale value.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -419,6 +425,7 @@ public class ChartAxes
     /// <summary>
     /// Gets or sets the tick configuration.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -427,6 +434,7 @@ public class ChartAxes
     /// <summary>
     /// Gets or sets the title configuration.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the axis title configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -438,6 +446,7 @@ public class ChartAxes
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the axis type.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -458,6 +467,7 @@ public class ChartAxesBorder
     /// <summary>
     /// The color of the border line.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the border line color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -467,6 +477,7 @@ public class ChartAxesBorder
     /// Length and spacing of dashes on grid lines
     /// <see href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/setLineDash" />
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the border dash pattern.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -476,6 +487,7 @@ public class ChartAxesBorder
     /// Offset for line dashes.
     /// <see href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/lineDashOffset" />
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the border dash offset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -484,6 +496,7 @@ public class ChartAxesBorder
     /// <summary>
     /// If <see langword="true" />, draw a border at the edge between the axis and the chart area.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether the axis border is displayed.")]
     public bool Display { get; set; } = true;
@@ -491,6 +504,7 @@ public class ChartAxesBorder
     /// <summary>
     /// The width of the border line.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the border width.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -499,6 +513,7 @@ public class ChartAxesBorder
     /// <summary>
     /// z-index of the border layer. Values <= 0 are drawn under datasets, > 0 on top.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the border z-index.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -519,6 +534,7 @@ public class ChartAxesGrid
     /// <summary>
     /// If <see langword="true" />, gridlines are circular (on radar and polar area charts only).
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets a value indicating whether grid lines are circular.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -527,6 +543,7 @@ public class ChartAxesGrid
     /// <summary>
     /// Color of the grid axis lines. Here one can write a CSS method or even a JavaScript method for a dynamic color.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the grid line color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -535,6 +552,7 @@ public class ChartAxesGrid
     /// <summary>
     /// If false, do not display grid lines for this axis.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether grid lines are displayed.")]
     public bool Display { get; set; } = true;
@@ -543,6 +561,7 @@ public class ChartAxesGrid
     /// If <see langword="true" />, draw lines on the chart area inside the axis lines. This is useful when there are multiple
     /// axes and you need to control which grid lines are drawn.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether grid lines are drawn on the chart area.")]
     public bool DrawOnChartArea { get; set; } = true;
@@ -550,6 +569,7 @@ public class ChartAxesGrid
     /// <summary>
     /// If <see langword="true" />, draw lines beside the ticks in the axis area beside the chart.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether tick lines are drawn.")]
     public bool DrawTicks { get; set; } = true;
@@ -557,6 +577,7 @@ public class ChartAxesGrid
     /// <summary>
     /// Stroke width of grid lines.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(1)]
     [Description("Gets or sets the grid line width.")]
     public int LineWidth { get; set; } = 1;
@@ -565,6 +586,7 @@ public class ChartAxesGrid
     /// If <see langword="true" />, grid lines will be shifted to be between labels. This is set to true for a bar chart by
     /// default.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(false)]
     [Description("Gets or sets a value indicating whether grid lines are offset between labels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -573,6 +595,7 @@ public class ChartAxesGrid
     /// <summary>
     /// Length and spacing of the tick mark line.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick border dash pattern.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -581,6 +604,7 @@ public class ChartAxesGrid
     /// <summary>
     /// Offset for the line dash of the tick mark.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick border dash offset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -589,6 +613,7 @@ public class ChartAxesGrid
     /// <summary>
     /// Color of the tick line. If unset, defaults to the grid line color.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick line color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -597,6 +622,7 @@ public class ChartAxesGrid
     /// <summary>
     /// Length in pixels that the grid lines will draw into the axis area.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick length in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -605,6 +631,7 @@ public class ChartAxesGrid
     /// <summary>
     /// Width of the tick mark in pixels.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -613,6 +640,7 @@ public class ChartAxesGrid
     /// <summary>
     /// z-index of the gridline layer. Values <= 0 are drawn under datasets, > 0 on top.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the grid line layer z-index.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -663,6 +691,7 @@ public class ChartAxesTicks
 
     #region Properties, Indexers
 
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets the serialized tick alignment value.")]
     [JsonPropertyName("align")]
@@ -672,6 +701,7 @@ public class ChartAxesTicks
     /// <summary>
     /// Color of label backdrops
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick backdrop color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -680,6 +710,7 @@ public class ChartAxesTicks
     /// <summary>
     /// Padding of label backdrop
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick backdrop padding.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -688,6 +719,7 @@ public class ChartAxesTicks
     /// <summary>
     /// Color of ticks
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -696,6 +728,7 @@ public class ChartAxesTicks
     /// <summary>
     /// If <see langword="true" />, show tick labels.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(true)]
     [Description("Gets or sets a value indicating whether tick labels are displayed.")]
     public bool Display { get; set; } = true;
@@ -703,6 +736,7 @@ public class ChartAxesTicks
     /// <summary>
     /// defines options for the major tick marks that are generated by the axis.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the major tick configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -711,6 +745,7 @@ public class ChartAxesTicks
     /// <summary>
     /// Sets the offset of the tick labels from the axis
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick label padding.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -719,6 +754,7 @@ public class ChartAxesTicks
     /// <summary>
     /// If <see langword="true" />, draw a background behind the tick labels.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets a value indicating whether a backdrop is drawn behind tick labels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -727,6 +763,7 @@ public class ChartAxesTicks
     /// <summary>
     /// The color of the stroke around the text.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick text stroke color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -735,11 +772,13 @@ public class ChartAxesTicks
     /// <summary>
     /// Stroke width around the text.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the tick text stroke width.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? TextStrokeWidth { get; set; }
 
+    [AddedVersion("1.0.0")]
     [DefaultValue(TicksAlignment.Center)]
     [Description("Gets or sets the tick alignment.")]
     [JsonIgnore]
@@ -768,6 +807,7 @@ public class ChartAxesTicksMajor
     /// If <see langword="true" />, major ticks are generated. A major tick will affect auto skipping and major will be defined
     /// on ticks in the scriptable options context.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(false)]
     [Description("Gets or sets a value indicating whether major ticks are generated.")]
     public bool Enabled { get; set; } = false;
@@ -807,6 +847,7 @@ public class ChartAxesTitle
     /// Alignment of the title.
     /// Options are: 'start', 'center', and 'end'
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets the serialized title alignment value.")]
     [JsonPropertyName("align")]
@@ -816,6 +857,7 @@ public class ChartAxesTitle
     /// <summary>
     /// Color of text.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue("black")]
     [Description("Gets or sets the title text color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -824,6 +866,7 @@ public class ChartAxesTitle
     /// <summary>
     /// Is the title shown?
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(false)]
     [Description("Gets or sets a value indicating whether the title is displayed.")]
     public bool Display { get; set; }
@@ -831,6 +874,7 @@ public class ChartAxesTitle
     /// <summary>
     /// Gets or sets the font used to render the title.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [Description("Gets or sets the font used to render the title.")]
     public ChartFont? Font { get; set; } = new();
 
@@ -841,10 +885,12 @@ public class ChartAxesTitle
     /// <summary>
     /// Gets or sets the title text.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the title text.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] public string? Text { get; set; }
 
+    [AddedVersion("1.0.0")]
     [DefaultValue(TitleAlignment.Center)]
     [Description("Gets or sets the title alignment.")]
     [JsonIgnore]
@@ -873,6 +919,7 @@ public class ChartFont
     /// Default font family for all text, follows CSS font-family options.
     /// 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the font family.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -882,6 +929,7 @@ public class ChartFont
     /// Height of an individual line of text
     /// <see href="https://developer.mozilla.org/en-US/docs/Web/CSS/line-height" />
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(1.2d)]
     [Description("Gets or sets the font line height.")]
     public double LineHeight { get; set; } = 1.2;
@@ -889,6 +937,7 @@ public class ChartFont
     /// <summary>
     /// Default font size (in px) for text. Does not apply to radialLinear scale point labels.
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(12)]
     [Description("Gets or sets the font size in pixels.")]
     public int Size { get; set; } = 12;
@@ -897,6 +946,7 @@ public class ChartFont
     /// Default font style. Does not apply to tooltip title or footer. Does not apply to chart title.
     /// Follows CSS font-style options (i.e. normal, italic, oblique, initial, inherit).
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the font style.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -906,6 +956,7 @@ public class ChartFont
     /// Default font weight (boldness).
     /// <see href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight" />
     /// </summary>
+    [AddedVersion("1.0.0")]
     [DefaultValue("bold")]
     [Description("Gets or sets the font weight.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -925,6 +976,7 @@ public class ChartAnimation
     /// <summary>
     /// Delay before starting the animations.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the animation delay.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -933,6 +985,7 @@ public class ChartAnimation
     /// <summary>
     /// The number of milliseconds an animation takes.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [DefaultValue(1000d)]
     [Description("Gets or sets the animation duration in milliseconds.")]
     public double Duration { get; set; } = 1000;
@@ -940,6 +993,7 @@ public class ChartAnimation
     /// <summary>
     /// Easing function to use.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [DefaultValue("easeOutQuart")]
     [Description("Gets or sets the animation easing function.")]
     public string Easing { get; set; } = "easeOutQuart";
@@ -947,6 +1001,7 @@ public class ChartAnimation
     /// <summary>
     /// If <see langword="true" />, the animations loop endlessly.
     /// </summary>
+    [AddedVersion("4.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets a value indicating whether the animation loops.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

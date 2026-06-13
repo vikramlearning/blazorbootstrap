@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Base class for BlazorBootstrap chart components.
+/// </summary>
+[AddedVersion("1.0.0")]
 public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, IAsyncDisposable
 {
     #region Fields and Constants
@@ -276,7 +280,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     public Unit HeightUnit { get; set; } = Unit.Px;
 
     /// <summary>
-    /// Get or sets chart container width.
+    /// Gets or sets chart container width.
     /// The default unit of measure is <see cref="Unit.Px" />.
     /// To change the unit of measure see <see cref="WidthUnit" />.
     /// </summary>
@@ -285,7 +289,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Get or sets chart container width. The default unit of measure is <code>Unit.Px</code>. To change the unit of measure see <b>WidthUnit</b>.")]
+    [Description("Gets or sets chart container width. The default unit of measure is <code>Unit.Px</code>. To change the unit of measure see <b>WidthUnit</b>.")]
     [Parameter]
     public int? Width { get; set; }
 

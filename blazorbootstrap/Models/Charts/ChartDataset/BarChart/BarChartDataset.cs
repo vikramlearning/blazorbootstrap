@@ -39,6 +39,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.9.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(0.9d)]
     [Description("Gets or sets the percentage of the category width used by each bar.")]
     public double BarPercentage { get; set; } = 0.9;
@@ -100,6 +101,7 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.8.
     /// </remarks>
+    [AddedVersion("1.0.0")]
     [DefaultValue(0.8d)]
     [Description("Gets or sets the percentage of the sample width used by each category.")]
     public double CategoryPercentage { get; set; } = 0.8;
