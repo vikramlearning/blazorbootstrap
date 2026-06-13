@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents configuration options for a line chart.
+/// </summary>
+[AddedVersion("1.0.0")]
 public class LineChartOptions : ChartOptions
 {
     #region Properties, Indexers
@@ -14,15 +18,26 @@ public class LineChartOptions : ChartOptions
     /// <remarks>
     /// Default value is <see langword="null"/>.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the base axis of the dataset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? IndexAxis { get; set; }
 
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the interaction configuration.")]
     public Interaction Interaction { get; set; } = new();
 
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the layout configuration.")]
     public ChartLayout Layout { get; set; } = new();
 
+    [AddedVersion("1.10.2")]
+    [Description("Gets or sets the plugin configuration.")]
     public LineChartPlugins Plugins { get; set; } = new();
 
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the scale configuration.")]
     public Scales Scales { get; set; } = new();
 
     #endregion

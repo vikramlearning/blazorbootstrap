@@ -67,11 +67,14 @@ public static class TypeExtensions
     {
         var methods = new HashSet<MethodInfo>();
 
+        var includeBlazorBootstrapChartMethods = typeof(BlazorBootstrapChart).IsAssignableFrom(type);
+
         foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance))
         {
             // Filter out methods inherited from System.Object (if needed)
             if (method.DeclaringType != typeof(object)
-                && method.DeclaringType == type // Exclude methods declared in base classes
+                && (method.DeclaringType == type
+                    || (includeBlazorBootstrapChartMethods && method.DeclaringType == typeof(BlazorBootstrapChart)))
                 && !method.Name.StartsWith("get_") // Exclude get_ methods
                 && !method.Name.StartsWith("set_") // Exclude set_ methods
                 && !method.GetCustomAttributes(typeof(JSInvokableAttribute), false).Any()) // Exclude methods that are not general public methods

@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Base class for BlazorBootstrap chart components.
+/// </summary>
+[AddedVersion("1.0.0")]
 public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, IAsyncDisposable
 {
     #region Fields and Constants
@@ -18,10 +22,37 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
 
     //public async Task ToBase64Image(string type, double quality) { }
 
+    /// <summary>
+    /// Adds a data point to each dataset in the chart.
+    /// </summary>
+    /// <param name="chartData">The current chart data.</param>
+    /// <param name="dataLabel">The label to append.</param>
+    /// <param name="data">The data point to append.</param>
+    /// <returns>The updated chart data.</returns>
+    [AddedVersion("1.10.0")]
+    [Description("Adds data to chart.")]
     public virtual async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data) => await Task.FromResult(chartData);
 
+    /// <summary>
+    /// Adds a labeled batch of data points to the chart.
+    /// </summary>
+    /// <param name="chartData">The current chart data.</param>
+    /// <param name="dataLabel">The label to append.</param>
+    /// <param name="data">The dataset values to append.</param>
+    /// <returns>The updated chart data.</returns>
+    [AddedVersion("1.10.0")]
+    [Description("Adds dataset to chart.")]
     public virtual async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data) => await Task.FromResult(chartData);
 
+    /// <summary>
+    /// Adds a dataset to the chart.
+    /// </summary>
+    /// <param name="chartData">The current chart data.</param>
+    /// <param name="chartDataset">The dataset to append.</param>
+    /// <param name="chartOptions">The current chart options.</param>
+    /// <returns>The updated chart data.</returns>
+    [AddedVersion("1.10.0")]
+    [Description("Adds dataset to chart.")]
     public virtual async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions) => await Task.FromResult(chartData);
 
     /// <inheritdoc />
@@ -37,11 +68,13 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     //public async Task Clear() { }
 
     /// <summary>
-    /// Initialize Bar Chart.
+    /// Initializes the chart.
     /// </summary>
-    /// <param name="chartData"></param>
-    /// <param name="chartOptions"></param>
-    /// <param name="plugins"></param>
+    /// <param name="chartData">The chart data to render.</param>
+    /// <param name="chartOptions">The chart options to apply.</param>
+    /// <param name="plugins">The optional Chart.js plugins to enable.</param>
+    [AddedVersion("1.0.0")]
+    [Description("Initializes the chart.")]
     public virtual async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
@@ -73,12 +106,14 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     //public async Task Reset() { }
 
     /// <summary>
-    /// Resize the chart.
+    /// Resizes the chart.
     /// </summary>
-    /// <param name="width"></param>
-    /// <param name="height"></param>
-    /// <param name="widthUnit"></param>
-    /// <param name="heightUnit"></param>
+    /// <param name="width">The new width value.</param>
+    /// <param name="height">The new height value.</param>
+    /// <param name="widthUnit">The unit of measure for the width.</param>
+    /// <param name="heightUnit">The unit of measure for the height.</param>
+    [AddedVersion("1.0.0")]
+    [Description("Resizes the chart.")]
     public async Task ResizeAsync(int width, int height, Unit widthUnit = Unit.Px, Unit heightUnit = Unit.Px)
     {
         var widthWithUnit = $"width:{width.ToString(CultureInfo.InvariantCulture)}{widthUnit.ToCssString()}";
@@ -90,8 +125,10 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// Update chart by reapplying all chart data and options.
     /// If animation is enabled, this will animate the datasets from scratch.
     /// </summary>
-    /// <param name="chartData"></param>
-    /// <param name="chartOptions"></param>
+    /// <param name="chartData">The updated chart data.</param>
+    /// <param name="chartOptions">The updated chart options.</param>
+    [AddedVersion("1.0.0")]
+    [Description("Updates the chart.")]
     public virtual async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
@@ -128,6 +165,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// Changes to the options will not be applied.
     /// </summary>
     /// <param name="chartData">The updated chart data. Only dataset labels and values will be applied.</param>
+    [AddedVersion("3.0.0")]
+    [Description("Updates only data labels and values. Changes to the options are not applied.")]
     public virtual async Task UpdateValuesAsync(ChartData chartData)
     {
         if (chartData is not null && chartData.Datasets is not null && chartData.Datasets.Any())
@@ -178,6 +217,8 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
             foreach (var dataset in chartData.Datasets)
                 if (dataset is BarChartDataset)
                     datasets.Add((BarChartDataset)dataset);
+                else if (dataset is BubbleChartDataset)
+                    datasets.Add((BubbleChartDataset)dataset);
                 else if (dataset is DoughnutChartDataset)
                     datasets.Add((DoughnutChartDataset)dataset);
                 else if (dataset is LineChartDataset)
@@ -186,6 +227,10 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
                     datasets.Add((PieChartDataset)dataset);
                 else if (dataset is PolarAreaChartDataset)
                     datasets.Add((PolarAreaChartDataset)dataset);
+                else if (dataset is RadarChartDataset)
+                    datasets.Add((RadarChartDataset)dataset);
+                else if (dataset is ScatterChartDataset)
+                    datasets.Add((ScatterChartDataset)dataset);
 
         var data = new { chartData?.Labels, Datasets = datasets };
 
@@ -235,7 +280,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     public Unit HeightUnit { get; set; } = Unit.Px;
 
     /// <summary>
-    /// Get or sets chart container width.
+    /// Gets or sets chart container width.
     /// The default unit of measure is <see cref="Unit.Px" />.
     /// To change the unit of measure see <see cref="WidthUnit" />.
     /// </summary>
@@ -244,7 +289,7 @@ public class BlazorBootstrapChart : BlazorBootstrapComponentBase, IDisposable, I
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Get or sets chart container width. The default unit of measure is <code>Unit.Px</code>. To change the unit of measure see <b>WidthUnit</b>.")]
+    [Description("Gets or sets chart container width. The default unit of measure is <code>Unit.Px</code>. To change the unit of measure see <b>WidthUnit</b>.")]
     [Parameter]
     public int? Width { get; set; }
 

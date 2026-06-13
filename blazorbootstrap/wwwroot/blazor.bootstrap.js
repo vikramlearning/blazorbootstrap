@@ -14,6 +14,10 @@ if (!window.blazorChart.bar) {
     window.blazorChart.bar = {};
 }
 
+if (!window.blazorChart.bubble) {
+    window.blazorChart.bubble = {};
+}
+
 if (!window.blazorChart.doughnut) {
     window.blazorChart.doughnut = {};
 }
@@ -1243,7 +1247,7 @@ window.blazorChart = {
     get: (elementId) => {
         let chart;
         Chart.helpers.each(Chart.instances, function (instance) {
-            if (instance.canvas.id === elementId) {
+            if (instance && instance.canvas && instance.canvas.id === elementId) {
                 chart = instance;
             }
         });
@@ -1376,7 +1380,7 @@ window.blazorChart.bar = {
     get: (elementId) => {
         let chart;
         Chart.helpers.each(Chart.instances, function (instance) {
-            if (instance.canvas.id === elementId) {
+            if (instance && instance.canvas && instance.canvas.id === elementId) {
                 chart = instance;
             }
         });
@@ -1431,6 +1435,124 @@ window.blazorChart.bar = {
             }
 
             chart.update();
+        }
+    }
+}
+
+window.blazorChart.bubble = {
+    addDatasetData: (elementId, dataLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            const chartData = chart.data;
+            const chartDatasetData = data;
+
+            if (!chartData.labels.includes(dataLabel))
+                chartData.labels.push(dataLabel);
+
+            const chartDatasets = chartData.datasets;
+
+            if (chartDatasets.length > 0) {
+                let datasetIndex = chartDatasets.findIndex(dataset => dataset.label === chartDatasetData.datasetLabel);
+                if (datasetIndex > -1) {
+                    chartDatasets[datasetIndex].data.push(chartDatasetData.data);
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDatasetsData: (elementId, dataLabel, data) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart && data) {
+            const chartData = chart.data;
+
+            if (!chartData.labels.includes(dataLabel)) {
+                chartData.labels.push(dataLabel);
+
+                if (chartData.datasets.length > 0 && chartData.datasets.length === data.length) {
+                    data.forEach(chartDatasetData => {
+                        let datasetIndex = chartData.datasets.findIndex(dataset => dataset.label === chartDatasetData.datasetLabel);
+                        chartData.datasets[datasetIndex].data.push(chartDatasetData.data);
+                    });
+                    chart.update();
+                }
+            }
+        }
+    },
+    addDataset: (elementId, newDataset) => {
+        let chart = window.blazorChart.get(elementId);
+        if (chart) {
+            chart.data.datasets.push(newDataset);
+            chart.update();
+        }
+    },
+    create: (elementId, type, data, options, plugins, dotNetHelper) => {
+        let chartEl = document.getElementById(elementId);
+        let _plugins = [];
+
+        window.blazorChart.setOnClickHandler(options, dotNetHelper);
+
+        if (plugins && plugins.length > 0) {
+            if (plugins.includes('ChartDataLabels')) {
+                _plugins.push(ChartDataLabels);
+
+                options.plugins.datalabels.backgroundColor = function (context) {
+                    return context.dataset.backgroundColor;
+                };
+            }
+        }
+
+        const config = {
+            type: type,
+            data: data,
+            options: options,
+            plugins: _plugins
+        };
+
+        const chart = new Chart(
+            chartEl,
+            config
+        );
+    },
+    get: (elementId) => {
+        let chart;
+        Chart.helpers.each(Chart.instances, function (instance) {
+            if (instance && instance.canvas && instance.canvas.id === elementId) {
+                chart = instance;
+            }
+        });
+
+        return chart;
+    },
+    initialize: (elementId, type, data, options, plugins, dotNetHelper) => {
+        let chart = window.blazorChart.bubble.get(elementId);
+        if (chart) return;
+        else
+            window.blazorChart.bubble.create(elementId, type, data, options, plugins, dotNetHelper);
+    },
+    resize: (elementId, width, height) => {
+        let chart = window.blazorChart.bubble.get(elementId);
+        if (chart) {
+            chart.canvas.parentNode.style.height = height;
+            chart.canvas.parentNode.style.width = width;
+        }
+    },
+    update: (elementId, type, data, options, dotNetHelper) => {
+        let chart = window.blazorChart.bubble.get(elementId);
+        if (chart) {
+            if (chart.config.plugins && chart.config.plugins.findIndex(x => x.id == 'datalabels') > -1) {
+                options.plugins.datalabels.backgroundColor = function (context) {
+                    return context.dataset.backgroundColor;
+                };
+            }
+
+            window.blazorChart.setOnClickHandler(options, dotNetHelper);
+
+            chart.data = data;
+            chart.options = options;
+            chart.update();
+        }
+        else {
+            console.warn(`The chart is not initialized. Initialize it and then call update.`);
         }
     }
 }
@@ -1515,7 +1637,7 @@ window.blazorChart.doughnut = {
     get: (elementId) => {
         let chart;
         Chart.helpers.each(Chart.instances, function (instance) {
-            if (instance.canvas.id === elementId) {
+            if (instance && instance.canvas && instance.canvas.id === elementId) {
                 chart = instance;
             }
         });
@@ -1686,7 +1808,7 @@ window.blazorChart.line = {
     get: (elementId) => {
         let chart;
         Chart.helpers.each(Chart.instances, function (instance) {
-            if (instance.canvas.id === elementId) {
+            if (instance && instance.canvas && instance.canvas.id === elementId) {
                 chart = instance;
             }
         });
@@ -1826,7 +1948,7 @@ window.blazorChart.pie = {
     get: (elementId) => {
         let chart;
         Chart.helpers.each(Chart.instances, function (instance) {
-            if (instance.canvas.id === elementId) {
+            if (instance && instance.canvas && instance.canvas.id === elementId) {
                 chart = instance;
             }
         });
@@ -1966,7 +2088,7 @@ window.blazorChart.polarArea = {
     get: (elementId) => {
         let chart;
         Chart.helpers.each(Chart.instances, function (instance) {
-            if (instance.canvas.id === elementId) {
+            if (instance && instance.canvas && instance.canvas.id === elementId) {
                 chart = instance;
             }
         });
@@ -2105,7 +2227,7 @@ window.blazorChart.radar = {
     get: (elementId) => {
         let chart;
         Chart.helpers.each(Chart.instances, function (instance) {
-            if (instance.canvas.id === elementId) {
+            if (instance && instance.canvas && instance.canvas.id === elementId) {
                 chart = instance;
             }
         });
@@ -2244,7 +2366,7 @@ window.blazorChart.scatter = {
     get: (elementId) => {
         let chart;
         Chart.helpers.each(Chart.instances, function (instance) {
-            if (instance.canvas.id === elementId) {
+            if (instance && instance.canvas && instance.canvas.id === elementId) {
                 chart = instance;
             }
         });

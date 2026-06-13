@@ -31,11 +31,11 @@
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="ChartData Properties" PageUrl="@pageUrl" Link="chart-data-properties">
-    <DocxTable TItem="ChartData" DocType="DocType.Properties" />
+    <DocxTable TItem="ChartData" DocType="DocType.Properties" VersionContextType="typeof(LineChart)" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="LineChartDataset Properties" PageUrl="@pageUrl" Link="line-chart-dataset-properties">
-    <DocxTable TItem="LineChartDataset" DocType="DocType.Properties" />
+    <DocxTable TItem="LineChartDataset" DocType="DocType.Properties" AddedVersionOverrides="@lineChartDatasetAddedVersionOverrides" />
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="LineChartDatasetDataLabels Properties" PageUrl="@pageUrl" Link="line-chart-dataset-datalabels-properties">
@@ -46,6 +46,10 @@
     <DocxTable TItem="LineChartOptions" DocType="DocType.Properties" />
 </Section>
 
+<Section Class="p-0" Size="HeadingSize.H3" Name="Interaction Properties" PageUrl="@pageUrl" Link="interaction-properties">
+    <DocxTable TItem="Interaction" DocType="DocType.Properties" VersionContextType="typeof(LineChart)" />
+</Section>
+
 @code {
     private const string componentName = nameof(LineChart);
     private const string pageUrl = DemoRouteConstants.Docs_URL_LineChart;
@@ -54,4 +58,8 @@
     private const string metaTitle = $"Blazor {componentName} Component";
     private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
     private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_LineChart;
+    private static readonly IReadOnlyDictionary<string, string> lineChartDatasetAddedVersionOverrides = new Dictionary<string, string>
+    {
+        ["Data"] = "3.0.0"
+    };
 }

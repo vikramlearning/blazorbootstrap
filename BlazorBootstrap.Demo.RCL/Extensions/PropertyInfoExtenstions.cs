@@ -55,6 +55,24 @@ public static class PropertyInfoExtenstions
     }
 
     /// <summary>
+    /// Get the effective added version of a property using an optional docs context and overrides.
+    /// </summary>
+    /// <param name="propertyInfo"></param>
+    /// <param name="versionContextType"></param>
+    /// <param name="addedVersionOverrides"></param>
+    /// <returns>string</returns>
+    public static string GetPropertyAddedVersion(this PropertyInfo propertyInfo, Type? versionContextType, IReadOnlyDictionary<string, string>? addedVersionOverrides = null)
+    {
+        if (addedVersionOverrides is not null && addedVersionOverrides.TryGetValue(propertyInfo.Name, out var overrideVersion))
+            return overrideVersion;
+
+        var propertyVersion = propertyInfo.GetPropertyAddedVersion();
+        var contextVersion = versionContextType.GetTypeAddedVersion();
+
+        return GetEffectiveAddedVersion(propertyVersion, contextVersion);
+    }
+
+    /// <summary>
     /// Get default value of a property.
     /// </summary>
     /// <param name="propertyInfo"></param>
@@ -114,5 +132,29 @@ public static class PropertyInfoExtenstions
     {
         var editorRequiredAttribute = (EditorRequiredAttribute?)Attribute.GetCustomAttribute(propertyInfo, typeof(EditorRequiredAttribute));
         return editorRequiredAttribute is not null;
+    }
+
+    private static string GetEffectiveAddedVersion(string propertyVersion, string contextVersion)
+    {
+        if (string.IsNullOrWhiteSpace(propertyVersion))
+            return contextVersion;
+
+        if (string.IsNullOrWhiteSpace(contextVersion))
+            return propertyVersion;
+
+        if (Version.TryParse(propertyVersion, out var parsedPropertyVersion)
+            && Version.TryParse(contextVersion, out var parsedContextVersion))
+            return parsedPropertyVersion >= parsedContextVersion ? propertyVersion : contextVersion;
+
+        return propertyVersion;
+    }
+
+    private static string GetTypeAddedVersion(this Type? type)
+    {
+        if (type is null)
+            return string.Empty;
+
+        var addedVersionAttribute = (AddedVersionAttribute?)Attribute.GetCustomAttribute(type, typeof(AddedVersionAttribute));
+        return addedVersionAttribute?.Version ?? string.Empty;
     }
 }

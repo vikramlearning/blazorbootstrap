@@ -1,0 +1,72 @@
+<div class="container-fluid overflow-x-auto">
+    <LineChart @ref="lineChart" Width="800" />
+</div>
+
+@code {
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
+
+    private readonly int dataCount = 13;
+    private readonly List<double?> dataPoints = new() { 0, 20, 20, 60, 60, 120, null, 180, 120, 125, 105, 110, 170 };
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData { Labels = GetDefaultDataLabels(), Datasets = GetDefaultDataSets() };
+        lineChartOptions = new LineChartOptions
+            {
+                IndexAxis = "x",
+                Interaction = new Interaction { Mode = InteractionMode.Index, Intersect = false },
+                Responsive = true
+            };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private List<string> GetDefaultDataLabels()
+    {
+        var labels = new List<string>();
+
+        for (var index = 0; index < dataCount; index++)
+            labels.Add(index.ToString());
+
+        return labels;
+    }
+
+    private List<IChartDataset> GetDefaultDataSets()
+    {
+        return new List<IChartDataset>
+        {
+            new LineChartDataset
+            {
+                Label = "Cubic interpolation (monotone)",
+                Data = dataPoints,
+                BorderColor = ColorUtility.CategoricalSixColors[0].ToColor().ToRgbString(),
+                CubicInterpolationMode = "monotone",
+                Fill = false,
+                Tension = 0.4
+            },
+            new LineChartDataset
+            {
+                Label = "Cubic interpolation",
+                Data = dataPoints,
+                BorderColor = ColorUtility.CategoricalSixColors[1].ToColor().ToRgbString(),
+                Fill = false,
+                Tension = 0.4
+            },
+            new LineChartDataset
+            {
+                Label = "Linear interpolation (default)",
+                Data = dataPoints,
+                BorderColor = ColorUtility.CategoricalSixColors[2].ToColor().ToRgbString(),
+                Fill = false
+            }
+        };
+    }
+}

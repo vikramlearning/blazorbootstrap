@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("1.0.0")]
 public partial class LineChart : BlazorBootstrapChart
 {
     #region Constructors
@@ -13,6 +14,8 @@ public partial class LineChart : BlazorBootstrapChart
 
     #region Methods
 
+    [AddedVersion("1.10.0")]
+    [Description("Adds data to chart.")]
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
@@ -25,15 +28,15 @@ public partial class LineChart : BlazorBootstrapChart
             throw new ArgumentNullException(nameof(data));
 
         foreach (var dataset in chartData.Datasets)
-            if (dataset is LineChartDataset lineChartDataset && lineChartDataset.Label == dataLabel)
-                if (data is LineChartDatasetData lineChartDatasetData)
-                    lineChartDataset.Data?.Add(lineChartDatasetData.Data as double?);
+            BarLineChartSupport.AppendDataPoint(dataset, data);
 
         await SafeInvokeVoidAsync("window.blazorChart.line.addDatasetData", Id, dataLabel, data);
 
         return chartData;
     }
 
+    [AddedVersion("1.10.0")]
+    [Description("Adds dataset to chart.")]
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data)
     {
         if (chartData is null)
@@ -66,19 +69,20 @@ public partial class LineChart : BlazorBootstrapChart
         chartData.Labels.Add(dataLabel);
 
         foreach (var dataset in chartData.Datasets)
-            if (dataset is LineChartDataset lineChartDataset)
-            {
-                var chartDatasetData = data.FirstOrDefault(x => x is LineChartDatasetData lineChartDatasetData && lineChartDatasetData.DatasetLabel == lineChartDataset.Label);
+        {
+            var chartDatasetData = data.FirstOrDefault(x => x is ChartDatasetData chartDataPoint && chartDataPoint.DatasetLabel == (dataset as dynamic).Label);
 
-                if (chartDatasetData is LineChartDatasetData lineChartDatasetData)
-                    lineChartDataset.Data?.Add(lineChartDatasetData.Data as double?);
-            }
+            if (chartDatasetData is not null)
+                BarLineChartSupport.AppendDataPoint(dataset, chartDatasetData);
+        }
 
-        await SafeInvokeVoidAsync("window.blazorChart.line.addDatasetsData", Id, dataLabel, data?.Select(x => (LineChartDatasetData)x));
+        await SafeInvokeVoidAsync("window.blazorChart.line.addDatasetsData", Id, dataLabel, data?.OfType<ChartDatasetData>());
 
         return chartData;
     }
 
+    [AddedVersion("1.10.0")]
+    [Description("Adds dataset to chart.")]
     public override async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions)
     {
         if (chartData is null)
@@ -90,15 +94,17 @@ public partial class LineChart : BlazorBootstrapChart
         if (chartDataset is null)
             throw new ArgumentNullException(nameof(chartDataset));
 
-        if (chartDataset is LineChartDataset)
+        if (BarLineChartSupport.IsSupportedDataset(chartDataset))
         {
             chartData.Datasets.Add(chartDataset);
-            await SafeInvokeVoidAsync("window.blazorChart.line.addDataset", Id, (LineChartDataset)chartDataset);
+            await SafeInvokeVoidAsync("window.blazorChart.line.addDataset", Id, chartDataset);
         }
 
         return chartData;
     }
 
+    [AddedVersion("1.0.0")]
+    [Description("Initializes the chart.")]
     public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is null)
@@ -110,11 +116,12 @@ public partial class LineChart : BlazorBootstrapChart
         if (chartOptions is null)
             throw new ArgumentNullException(nameof(chartOptions));
 
-        var datasets = chartData.Datasets.OfType<LineChartDataset>();
-        var data = new { chartData.Labels, Datasets = datasets };
+        var data = new { chartData.Labels, Datasets = BarLineChartSupport.GetSupportedDatasets(chartData) };
         await SafeInvokeVoidAsync("window.blazorChart.line.initialize", Id, GetChartType(), data, (LineChartOptions)chartOptions, plugins, ObjRef);
     }
 
+    [AddedVersion("1.0.0")]
+    [Description("Updates the chart.")]
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
         if (chartData is null)
@@ -126,8 +133,7 @@ public partial class LineChart : BlazorBootstrapChart
         if (chartOptions is null)
             throw new ArgumentNullException(nameof(chartOptions));
 
-        var datasets = chartData.Datasets.OfType<LineChartDataset>();
-        var data = new { chartData.Labels, Datasets = datasets };
+        var data = new { chartData.Labels, Datasets = BarLineChartSupport.GetSupportedDatasets(chartData) };
         await SafeInvokeVoidAsync("window.blazorChart.line.update", Id, GetChartType(), data, (LineChartOptions)chartOptions, ObjRef);
     }
 

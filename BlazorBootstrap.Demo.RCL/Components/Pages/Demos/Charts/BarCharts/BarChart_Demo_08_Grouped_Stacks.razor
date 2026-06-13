@@ -1,0 +1,77 @@
+<BarChart @ref="barChart" Width="500" Height="300" />
+
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var colors = ColorUtility.CategoricalTwelveColors;
+
+        chartData = new ChartData
+            {
+                Labels = new List<string> { "Q1", "Q2", "Q3", "Q4" },
+                Datasets = new List<IChartDataset>
+                {
+                    new BarChartDataset
+                    {
+                        Label = "North Budget",
+                        Data = new List<double?> { 42, 47, 44, 50 },
+                        BackgroundColor = new List<string> { colors[0] },
+                        BorderColor = new List<string> { colors[0] },
+                        BorderWidth = new List<double> { 0 },
+                        Stack = "North"
+                    },
+                    new BarChartDataset
+                    {
+                        Label = "North Actual",
+                        Data = new List<double?> { 39, 45, 48, 53 },
+                        BackgroundColor = new List<string> { colors[1] },
+                        BorderColor = new List<string> { colors[1] },
+                        BorderWidth = new List<double> { 0 },
+                        Stack = "North"
+                    },
+                    new BarChartDataset
+                    {
+                        Label = "South Budget",
+                        Data = new List<double?> { 35, 38, 41, 46 },
+                        BackgroundColor = new List<string> { colors[4] },
+                        BorderColor = new List<string> { colors[4] },
+                        BorderWidth = new List<double> { 0 },
+                        Stack = "South"
+                    },
+                    new BarChartDataset
+                    {
+                        Label = "South Actual",
+                        Data = new List<double?> { 33, 40, 43, 45 },
+                        BackgroundColor = new List<string> { colors[5] },
+                        BorderColor = new List<string> { colors[5] },
+                        BorderWidth = new List<double> { 0 },
+                        Stack = "South"
+                    }
+                }
+            };
+
+        barChartOptions = new BarChartOptions
+            {
+                Responsive = true,
+                Interaction = new Interaction { Mode = InteractionMode.Index }
+            };
+
+        barChartOptions.Scales.X!.Stacked = true;
+        barChartOptions.Scales.Y!.Stacked = true;
+        barChartOptions.Scales.X.Title = new ChartAxesTitle { Text = "Quarter", Display = true };
+        barChartOptions.Scales.Y.Title = new ChartAxesTitle { Text = "Revenue (in millions)", Display = true };
+        barChartOptions.Plugins.Title!.Text = "Grouped stacked revenue by region";
+        barChartOptions.Plugins.Title.Display = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await barChart.InitializeAsync(chartData, barChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}
