@@ -26,7 +26,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <param name="relativeIndex">Whether the specified index is relative or absolute (zero based)</param>
     /// <returns>The dataset, for method chaining</returns>
     /// <exception cref="ArgumentException">If the relative index is zero.</exception>
-    [AddedVersion("1.0.0")]
+    [AddedVersion("3.1.0")]
     [Description("Fills the area between this dataset and another dataset by index.")]
     public LineChartDataset FillToDataset(int index, bool relativeIndex = false)
     {
@@ -46,7 +46,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <param name="relativeIndex">Whether to specify the fill index relative ("+/-n" string) or absolute (as zero-based int)</param>
     /// <returns>The dataset, for method chaining</returns>
     /// <exception cref="ArgumentException">If any of the datasets is not in the chart data, or if both datasets are the same.</exception>
-    [AddedVersion("1.0.0")]
+    [AddedVersion("3.1.0")]
     [Description("Fills the area between this dataset and another dataset in the same chart.")]
     public LineChartDataset FillToDataset(ChartData chartData, IChartDataset dataset, bool relativeIndex = false)
     {
@@ -79,7 +79,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// Fills between the current dataset and the top of the chart (fill: 'end').
     /// </summary>
     /// <returns>The dataset, for method chaining</returns>
-    [AddedVersion("1.0.0")]
+    [AddedVersion("3.1.0")]
     [Description("Fills between the current dataset and the end of the chart.")]
     public LineChartDataset FillToEnd()
     {
@@ -92,7 +92,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// Fills between the current dataset and the origin. For legacy reasons, this is the same as fill: true.
     /// </summary>
     /// <returns>The dataset, for method chaining</returns>
-    [AddedVersion("1.0.0")]
+    [AddedVersion("3.1.0")]
     [Description("Fills between the current dataset and the origin.")]
     public LineChartDataset FillToOrigin()
     {
@@ -105,7 +105,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// Fill to the line below the current dataset (fill: 'stack').
     /// </summary>
     /// <returns>The dataset, for method chaining</returns>
-    [AddedVersion("1.0.0")]
+    [AddedVersion("3.1.0")]
     [Description("Fills to the stacked value below the current dataset.")]
     public LineChartDataset FillToStackedValueBelow()
     {
@@ -118,7 +118,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// Fills between the current dataset and the start (fill: 'start').
     /// </summary>
     /// <returns>The dataset, for method chaining</returns>
-    [AddedVersion("1.0.0")]
+    [AddedVersion("3.1.0")]
     [Description("Fills between the current dataset and the start of the chart.")]
     public LineChartDataset FillToStart()
     {
@@ -132,7 +132,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// </summary>
     /// <param name="value">The value to fill to</param>
     /// <returns>The dataset, for method chaining</returns>
-    [AddedVersion("1.0.0")]
+    [AddedVersion("3.1.0")]
     [Description("Fills to a constant value.")]
     public LineChartDataset FillToValue(double value)
     {
@@ -261,6 +261,7 @@ public class LineChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
+    [AddedVersion("3.1.0")]
     [DefaultValue(false)]
     [Description("Gets or sets how the area under the line is filled.")]
     public object Fill { get; set; } = false;
