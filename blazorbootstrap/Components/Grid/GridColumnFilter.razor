@@ -31,28 +31,7 @@
         }
     </ul>
 
-    @if (PropertyTypeName == StringConstants.PropertyTypeNameInt16
-    || PropertyTypeName == StringConstants.PropertyTypeNameInt32
-    || PropertyTypeName == StringConstants.PropertyTypeNameInt64
-    || PropertyTypeName == StringConstants.PropertyTypeNameSingle // float
-    || PropertyTypeName == StringConstants.PropertyTypeNameDecimal
-    || PropertyTypeName == StringConstants.PropertyTypeNameDouble)
-    {
-        <input class="form-control" style="@filterStyle" type="number" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))">
-    }
-    else if (PropertyTypeName == StringConstants.PropertyTypeNameDateOnly)
-    {
-        <input class="form-control" style="@filterStyle" type="date" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
-    }
-    else if (PropertyTypeName == StringConstants.PropertyTypeNameDateTime)
-    {
-        <input class="form-control" style="@filterStyle" type="datetime-local" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
-    }
-    else if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
-    {
-        <input class="form-check-input" type="checkbox" value="@filterValue" @onchange="@(async args => await OnFilterValueChangedAsync(args))" />
-    }
-    else if (PropertyTypeName == StringConstants.PropertyTypeNameEnum)
+    @if (PropertyTypeName == StringConstants.PropertyTypeNameEnum)
     {
         <Dropdown Color="DropdownColor.Light">
             <DropdownToggleButton Class="px-1" Style="@filterStyle">
@@ -77,8 +56,8 @@
             </DropdownMenu>
         </Dropdown>
     }
-    else // guid or string
+    else
     {
-        <input class="form-control" style="@filterStyle" type="text" value="@filterValue" @oninput="@(async args => await OnFilterValueChangedAsync(args))" />
+        @InputFilterTemplate
     }
 </div>

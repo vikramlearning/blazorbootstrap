@@ -72,6 +72,62 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         }
     }
 
+   private RenderFragment InputFilterTemplate => builder =>
+   {
+       string inputType;
+       string inputClass;
+
+       switch (PropertyTypeName)
+       {
+           case StringConstants.PropertyTypeNameInt16:
+           case StringConstants.PropertyTypeNameInt32:
+           case StringConstants.PropertyTypeNameInt64:
+           case StringConstants.PropertyTypeNameSingle:
+           case StringConstants.PropertyTypeNameDecimal:
+           case StringConstants.PropertyTypeNameDouble:
+               inputType = "number";
+               inputClass = "form-control";
+               break;
+           case StringConstants.PropertyTypeNameDateOnly:
+               inputType = "date";
+               inputClass = "form-control";
+               break;
+           case StringConstants.PropertyTypeNameDateTime:
+               inputType = "datetime-local";
+               inputClass = "form-control";
+               break;
+           case StringConstants.PropertyTypeNameBoolean:
+               inputType = "checkbox";
+               inputClass = "form-check-input";
+               break;
+           default:
+               inputType = "text";
+               inputClass = "form-control";
+               break;
+       }
+
+       builder.OpenElement(100, "input");
+       builder.AddAttribute(101, "class", inputClass);
+
+       builder.AddAttribute(102, "type", inputType);
+       builder.AddAttribute(103, "value", filterValue);
+
+       if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
+       {
+           if ((bool.TryParse(filterValue, out bool isChecked)) && isChecked)
+               builder.AddAttribute(104, "checked", "checked");
+
+           builder.AddAttribute(106, "onchange", async (ChangeEventArgs args) => await OnFilterValueChangedAsync(args));
+       }
+       else
+       {
+           builder.AddAttribute(105, "style", filterStyle);
+           builder.AddAttribute(106, "oninput", async (ChangeEventArgs args) => await OnFilterValueChangedAsync(args));
+       }
+
+       builder.CloseElement();
+   };
+
     private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync(string propertyTypeName)
     {
         if (FiltersTranslationProvider is null)

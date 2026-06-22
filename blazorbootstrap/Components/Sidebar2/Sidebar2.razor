@@ -6,7 +6,7 @@
         <aside @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="navigation" @attributes="@AdditionalAttributes">
             <div class="bb-sidebar2-top-row navbar">
                 <div class="container-fluid ps-3">
-                    <a class="navbar-brand d-flex align-items-center" href="@Href">
+                    <a class="navbar-brand d-flex align-items-center" href="@Href" @onclick=HideNavMenuOnMobile>
                         @if (!string.IsNullOrWhiteSpace(ImageSrc))
                         {
                             <span class="navbar-brand-image me-2">
