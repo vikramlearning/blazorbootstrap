@@ -51,6 +51,24 @@ class Pdf {
     }
 }
 
+export function downloadPdf(dotNetHelper, elementId, url) {
+    if (url) {
+        if (url.indexOf('data:') === 0) {
+            const split = url.split(',');
+            const base64Data = split.length > 1 ? split[1] : '';
+            try {
+                saveAsFileFromBase64Data(base64Data);
+            } catch (e) {
+                console.error('Failed to trigger PDF download:', e);
+            }
+        } else {
+            saveAsFileFromUrl(url);
+        }
+    } else {
+        console.error('Pdf Url empty');
+    }
+}
+
 export function firstPage(dotNetHelper, elementId) {
     const pdf = getPdf(elementId);
 
@@ -63,6 +81,11 @@ export function firstPage(dotNetHelper, elementId) {
     queueRenderPage(pdf, pdf.pageNum);
 
     setPdfViewerMetaData(dotNetHelper, pdf);
+}
+
+function getUUIDPDFName(prefix = 'document') {
+    const uuid = self.crypto.randomUUID(); // Built-in browser API
+    return `${prefix}-${uuid}.pdf`;
 }
 
 export function gotoPage(dotNetHelper, elementId, gotoPageNum) {
@@ -170,6 +193,37 @@ export function rotate(dotNetHelper, elementId, rotation) {
     queueRenderPage(pdf, pdf.pageNum);
 }
 
+function saveAsFileFromBase64Data(base64Data) {
+    const link = document.createElement('a');
+    link.download = getUUIDPDFName();
+    link.href = "data:application/pdf;base64," + base64Data;
+    link.style.display = 'none'; // Avoid potential layout/scroll quirks
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function saveAsFileFromUrl(url) {
+    // Validate the URL to ensure it uses an allowed scheme
+    const allowedSchemes = ['http:', 'https:', 'blob:'];
+    try {
+        const parsedUrl = new URL(url, window.location.origin);
+        if (!allowedSchemes.includes(parsedUrl.protocol)) {
+            console.error('Invalid URL scheme:', parsedUrl.protocol);
+            return;
+        }
+    } catch (e) {
+        console.error('Invalid URL:', e);
+        return;
+    }
+
+    var link = document.createElement('a');
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 export function zoomInOut(dotNetHelper, elementId, scale) {
     const pdf = getPdf(elementId);
 
@@ -180,14 +234,6 @@ export function zoomInOut(dotNetHelper, elementId, scale) {
         pdf.scale = scale;
 
     queueRenderPage(pdf, pdf.pageNum);
-}
-
-export function downloadPdf(fileUrl) {
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
 }
 
 // resize

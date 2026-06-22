@@ -113,6 +113,11 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
             OnPageChanged.InvokeAsync(new PdfViewerEventArgs(pageNumber, pagesCount));
     }
 
+    private async Task DownloadPdf()
+    {
+        await PdfViewerJsInterop!.DownloadPdfAsync(objRef!, Id!, Url!);
+    }
+
     private async Task FirstPageAsync() => await PdfViewerJsInterop!.FirstPageAsync(objRef!, Id!);
 
     private int GetZoomPercentage(int zoomLevel) =>
@@ -225,10 +230,6 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
         await PdfViewerJsInterop!.ZoomInOutAsync(objRef!, Id!, scale);
     }
 
-    private async Task DownloadPdf()
-    {
-        await PdfViewerJsInterop!.DownloadPdfAsync(Url);
-    }
     #endregion
 
     #region Properties, Indexers
