@@ -182,6 +182,14 @@ export function zoomInOut(dotNetHelper, elementId, scale) {
     queueRenderPage(pdf, pdf.pageNum);
 }
 
+export function downloadPdf(fileUrl) {
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
 // resize
 // print
 // download

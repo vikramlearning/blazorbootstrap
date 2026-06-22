@@ -1,4 +1,5 @@
-﻿namespace BlazorBootstrap;
+﻿
+namespace BlazorBootstrap;
 
 public class PdfViewerJsInterop : JsInteropBase
 {
@@ -58,5 +59,9 @@ public class PdfViewerJsInterop : JsInteropBase
         await SafeInvokeVoidAsync("zoomInOut", objRef, elementId, scale);
     }
 
+    public async Task DownloadPdfAsync(string fileUrl)
+    {
+        await SafeInvokeVoidAsync("downloadPdf", fileUrl);
+    }
     #endregion
 }
