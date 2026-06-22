@@ -1,5 +1,4 @@
-﻿
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public class PdfViewerJsInterop : JsInteropBase
 {
@@ -13,6 +12,14 @@ public class PdfViewerJsInterop : JsInteropBase
     #endregion
 
     #region Methods
+
+    public async Task DownloadPdfAsync(object objRef, string elementId, string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            throw new ArgumentException("URL cannot be null or empty.", nameof(url));
+
+        await SafeInvokeVoidAsync("downloadPdf", objRef, elementId, url);
+    }
 
     public async Task FirstPageAsync(object objRef, string elementId)
     {
@@ -57,11 +64,6 @@ public class PdfViewerJsInterop : JsInteropBase
     public async Task ZoomInOutAsync(object objRef, string elementId, double scale)
     {
         await SafeInvokeVoidAsync("zoomInOut", objRef, elementId, scale);
-    }
-
-    public async Task DownloadPdfAsync(string fileUrl)
-    {
-        await SafeInvokeVoidAsync("downloadPdf", fileUrl);
     }
     #endregion
 }
