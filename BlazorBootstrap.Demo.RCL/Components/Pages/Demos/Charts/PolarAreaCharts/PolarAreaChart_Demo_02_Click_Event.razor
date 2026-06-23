@@ -1,0 +1,59 @@
+<PolarAreaChart @ref="polarAreaChart" OnClick="OnClick" Width="600" />
+
+<div class="mt-3">
+    <strong>Selected item:</strong> @selectedItemMessage
+</div>
+
+@code {
+    private PolarAreaChart polarAreaChart = default!;
+    private PolarAreaChartOptions polarAreaChartOptions = default!;
+    private ChartData chartData = default!;
+    private string selectedItemMessage = "Click a segment to view its details.";
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+            {
+                Labels = new List<string> { "North", "South", "East", "West", "Central" },
+                Datasets = new List<IChartDataset>
+                {
+                    new PolarAreaChartDataset
+                    {
+                        Label = "Regions",
+                        Data = new List<double?> { 11, 16, 7, 3, 14 },
+                        BackgroundColor = new List<string>
+                        {
+                            ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbaString(0.5),
+                            ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbaString(0.5),
+                            ColorUtility.CategoricalTwelveColors[2].ToColor().ToRgbaString(0.5),
+                            ColorUtility.CategoricalTwelveColors[3].ToColor().ToRgbaString(0.5),
+                            ColorUtility.CategoricalTwelveColors[4].ToColor().ToRgbaString(0.5)
+                        },
+                        BorderColor = new List<string>
+                        {
+                            ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbString(),
+                            ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbString(),
+                            ColorUtility.CategoricalTwelveColors[2].ToColor().ToRgbString(),
+                            ColorUtility.CategoricalTwelveColors[3].ToColor().ToRgbString(),
+                            ColorUtility.CategoricalTwelveColors[4].ToColor().ToRgbString()
+                        }
+                    }
+                }
+            };
+
+        polarAreaChartOptions = new PolarAreaChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await polarAreaChart.InitializeAsync(chartData, polarAreaChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void OnClick(ChartClickEventArgs eventArgs)
+    {
+        selectedItemMessage = $"Dataset: {eventArgs.DatasetLabel}, Label: {eventArgs.Label}, Value: {eventArgs.Value}";
+    }
+}

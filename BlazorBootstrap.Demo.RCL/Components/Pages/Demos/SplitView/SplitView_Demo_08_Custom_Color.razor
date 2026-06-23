@@ -1,0 +1,19 @@
+<SplitView Class="border rounded shadow-sm"
+           Style="height: 320px;"
+           PrimaryPaneSize="34"
+           CustomColor="rgba(var(--bs-info-rgb), 0.85)">
+    <Pane1>
+        <div class="h-100 p-4 bg-body-tertiary">
+            <div class="small text-uppercase text-secondary mb-2">CustomColor</div>
+            <h5 class="mb-3">CSS Expression Override</h5>
+            <p class="mb-0">This example uses <code>rgba(var(--bs-info-rgb), 0.85)</code> instead of a semantic enum value.</p>
+        </div>
+    </Pane1>
+    <Pane2>
+        <div class="h-100 p-4 bg-body">
+            <div class="small text-uppercase text-secondary mb-2">Override Precedence</div>
+            <h5 class="mb-3">Inline Custom Value</h5>
+            <p class="mb-0">When both are supplied, <code>CustomColor</code> overrides the shared default and semantic enum class.</p>
+        </div>
+    </Pane2>
+</SplitView>

@@ -6,8 +6,18 @@
 /// <see href="https://www.chartjs.org/docs/latest/charts/bar.html#dataset-properties" />
 /// <seealso href="https://www.chartjs.org/docs/latest/charts/bar.html#general" />
 /// </summary>
+[AddedVersion("1.0.0")]
 public class BarChartDataset : ChartDataset<double?>
 {
+    #region Constructors
+
+    public BarChartDataset()
+    {
+        Type = "bar";
+    }
+
+    #endregion
+
     #region Properties, Indexers
 
     /// <summary>
@@ -16,6 +26,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue("rgba(0, 0, 0, 0.1)")]
+    [Description("Gets or sets the bar background color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BackgroundColor { get; set; }
 
@@ -26,6 +39,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.9.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(0.9d)]
+    [Description("Gets or sets the percentage of the category width used by each bar.")]
     public double BarPercentage { get; set; } = 0.9;
 
     /// <summary>
@@ -35,6 +51,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the bar thickness in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? BarThickness { get; set; }
 
@@ -44,6 +63,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue("rgba(0, 0, 0, 0.1)")]
+    [Description("Gets or sets the bar border color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BorderColor { get; set; }
 
@@ -53,6 +75,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the bar border radius.")]
     public List<double>? BorderRadius { get; set; }
 
     /// <summary>
@@ -61,6 +86,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the border width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? BorderWidth { get; set; }
 
@@ -73,8 +101,13 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.8.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(0.8d)]
+    [Description("Gets or sets the percentage of the sample width used by each category.")]
     public double CategoryPercentage { get; set; } = 0.8;
 
+    [AddedVersion("1.10.2")]
+    [Description("Gets or sets the dataset data label configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public BarChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
@@ -87,6 +120,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="true" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(true)]
+    [Description("Gets or sets a value indicating whether bars are grouped on the index axis.")]
     public bool Grouped { get; set; } = true;
 
     /// <summary>
@@ -95,6 +131,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the bar background color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? HoverBackgroundColor { get; set; }
 
@@ -104,6 +143,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the bar border color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? HoverBorderColor { get; set; }
 
@@ -113,6 +155,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the hovered bar border radius in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? HoverBorderRadius { get; set; }
 
@@ -122,6 +167,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 1.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(1)]
+    [Description("Gets or sets the hovered bar border width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? HoverBorderWidth { get; set; }
 
@@ -132,6 +180,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the base axis of the dataset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? IndexAxis { get; set; }
 
@@ -144,6 +195,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the maximum bar thickness.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? MaxBarThickness { get; set; }
 
@@ -153,6 +207,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the minimum bar length in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? MinBarLength { get; set; }
 
@@ -166,6 +223,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="false" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets a value indicating whether null values are skipped during bar size calculation.")]
     public bool SkipNull { get; set; }
 
     //Stack
@@ -177,6 +237,9 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is first x axis.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue("first x axis")]
+    [Description("Gets or sets the x-axis identifier for the dataset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? XAxisID { get; set; }
 
@@ -186,10 +249,17 @@ public class BarChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is first y axis.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue("first y axis")]
+    [Description("Gets or sets the y-axis identifier for the dataset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? YAxisID { get; set; }
 
     #endregion
 }
 
+/// <summary>
+/// Represents data label options for a bar chart dataset.
+/// </summary>
+[AddedVersion("1.10.2")]
 public class BarChartDatasetDataLabels : ChartDatasetDataLabels { }

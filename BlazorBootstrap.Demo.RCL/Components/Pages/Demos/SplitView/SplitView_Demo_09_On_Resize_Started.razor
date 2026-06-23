@@ -1,0 +1,44 @@
+<div class="row g-3">
+    <div class="col-lg-8">
+        <SplitView Class="border rounded shadow-sm"
+                   Style="height: 320px;"
+                   PrimaryPaneSize="38"
+                   OnResizeStarted="HandleResizeStarted">
+            <Pane1>
+                <div class="h-100 p-4 bg-body-tertiary">
+                    <div class="small text-uppercase text-secondary mb-2">OnResizeStarted</div>
+                    <h5 class="mb-3">Drag To Start</h5>
+                    <p class="mb-0">Grab the divider to trigger the start event once per interaction.</p>
+                </div>
+            </Pane1>
+            <Pane2>
+                <div class="h-100 p-4 bg-body">
+                    <div class="small text-uppercase text-secondary mb-2">Secondary Pane</div>
+                    <h5 class="mb-3">Event Snapshot</h5>
+                    <p class="mb-0">The event args include both pane sizes as percentages.</p>
+                </div>
+            </Pane2>
+        </SplitView>
+    </div>
+    <div class="col-lg-4">
+        <div class="border rounded p-3 h-100 bg-body-tertiary">
+            <div class="fw-semibold mb-2">Start Event</div>
+            <div class="mb-2">Count: <strong>@count</strong></div>
+            <div class="mb-2">Primary pane: <strong>@primaryPaneSize.ToString("0.##")%</strong></div>
+            <div>Secondary pane: <strong>@secondaryPaneSize.ToString("0.##")%</strong></div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int count;
+    private double primaryPaneSize = 38;
+    private double secondaryPaneSize = 62;
+
+    private void HandleResizeStarted(SplitViewResizeEventArgs args)
+    {
+        count++;
+        primaryPaneSize = args.PrimaryPaneSize;
+        secondaryPaneSize = args.SecondaryPaneSize;
+    }
+}

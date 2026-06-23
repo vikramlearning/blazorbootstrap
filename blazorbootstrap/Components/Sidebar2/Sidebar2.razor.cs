@@ -94,7 +94,10 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     internal void HideNavMenuOnMobile()
     {
         if (isMobile && !collapseNavMenu)
+        {
             collapseNavMenu = true;
+            StateHasChanged();
+        }           
     }
 
     private string GetNavMenuCssClass()

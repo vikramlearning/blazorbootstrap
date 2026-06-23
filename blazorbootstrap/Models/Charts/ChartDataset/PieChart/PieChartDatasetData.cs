@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a pie chart data item for dynamic updates.
+/// </summary>
+[AddedVersion("1.10.0")]
 public record PieChartDatasetData : ChartDatasetData
 {
     #region Constructors
@@ -13,6 +17,10 @@ public record PieChartDatasetData : ChartDatasetData
 
     #region Properties, Indexers
 
+    /// <summary>
+    /// Gets the background color for the generated arc.
+    /// </summary>
+    [AddedVersion("1.10.0")]
     public string? BackgroundColor { get; init; }
 
     #endregion

@@ -5,6 +5,7 @@
 /// These are used to set display properties for a specific dataset.
 /// <see href="https://www.chartjs.org/docs/latest/charts/doughnut.html#dataset-properties" />.
 /// </summary>
+[AddedVersion("1.0.0")]
 public class DoughnutChartDataset : ChartDataset<double?>
 {
     #region Properties, Indexers
@@ -15,6 +16,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'rgba(0, 0, 0, 0.1)'.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue("rgba(0, 0, 0, 0.1)")]
+    [Description("Gets or sets the arc background color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BackgroundColor { get; set; }
 
@@ -26,6 +30,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 'center'.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue("center")]
+    [Description("Gets or sets the arc border alignment.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BorderAlign { get; set; } // TODO: change this to enum
 
@@ -35,6 +42,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is '#fff'.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue("#fff")]
+    [Description("Gets or sets the arc border color.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BorderColor { get; set; }
 
@@ -44,6 +54,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the arc border dash pattern.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? BorderDash { get; set; }
 
@@ -53,6 +66,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(0d)]
+    [Description("Gets or sets the arc border dash offset.")]
     public double BorderDashOffset { get; set; }
 
     /// <summary>
@@ -62,6 +78,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the arc border join style.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? BorderJoinStyle { get; set; } // TODO: change this to enum
 
@@ -71,6 +90,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the arc border radius.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? BorderRadius { get; set; }
 
@@ -80,6 +102,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 2.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(2)]
+    [Description("Gets or sets the arc border width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? BorderWidth { get; set; }
 
@@ -89,9 +114,14 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the sweep covered by the arcs.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Circumference { get; set; }
 
+    [AddedVersion("1.10.2")]
+    [Description("Gets or sets the dataset data label configuration.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] 
     public DoughnutChartDatasetDataLabels Datalabels { get; set; } = new(); // TODO: add the reference link
 
@@ -101,6 +131,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the arc background color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? HoverBackgroundColor { get; set; }
 
@@ -110,6 +143,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the arc border color when hovered.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? HoverBorderColor { get; set; }
 
@@ -119,6 +155,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the hovered arc border dash pattern.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? HoverBorderDash { get; set; }
 
@@ -128,6 +167,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the hovered arc border dash offset.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? HoverBorderDashOffset { get; set; }
 
@@ -138,6 +180,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the hovered arc border join style.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string>? HoverBorderJoinStyle { get; set; } // TODO: change this to enum
 
@@ -147,6 +192,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the hovered arc border width in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? HoverBorderWidth { get; set; }
 
@@ -156,6 +204,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the hovered arc offset in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? HoverOffset { get; set; }
 
@@ -165,6 +216,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the arc offset in pixels.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<double>? Offset { get; set; }
 
@@ -174,6 +228,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the starting rotation angle for the arcs.")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Rotation { get; set; }
 
@@ -183,6 +240,9 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 0.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the fixed arc spacing in pixels.")]
     public double Spacing { get; set; }
 
     /// <summary>
@@ -193,9 +253,16 @@ public class DoughnutChartDataset : ChartDataset<double?>
     /// <remarks>
     /// Default value is 1.
     /// </remarks>
+    [AddedVersion("3.0.0")]
+    [DefaultValue(1d)]
+    [Description("Gets or sets the relative dataset thickness.")]
     public double Weight { get; set; } = 1;
 
     #endregion
 }
 
+/// <summary>
+/// Represents data label options for a doughnut chart dataset.
+/// </summary>
+[AddedVersion("1.10.2")]
 public class DoughnutChartDatasetDataLabels : ChartDatasetDataLabels { }

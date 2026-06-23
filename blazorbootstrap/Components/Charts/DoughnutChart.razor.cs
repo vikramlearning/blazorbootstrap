@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("1.0.0")]
 public partial class DoughnutChart : BlazorBootstrapChart
 {
     #region Fields and Constants
@@ -19,6 +20,8 @@ public partial class DoughnutChart : BlazorBootstrapChart
 
     #region Methods
 
+    [AddedVersion("1.10.0")]
+    [Description("Adds data to chart.")]
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
@@ -43,6 +46,8 @@ public partial class DoughnutChart : BlazorBootstrapChart
         return chartData;
     }
 
+    [AddedVersion("1.10.0")]
+    [Description("Adds dataset to chart.")]
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data)
     {
         if (chartData is null)
@@ -91,6 +96,8 @@ public partial class DoughnutChart : BlazorBootstrapChart
         return chartData;
     }
 
+    [AddedVersion("1.10.0")]
+    [Description("Adds dataset to chart.")]
     public override async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions)
     {
         if (chartData is null)
@@ -111,23 +118,27 @@ public partial class DoughnutChart : BlazorBootstrapChart
         return chartData;
     }
 
+    [AddedVersion("1.0.0")]
+    [Description("Initializes the chart.")]
     public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
             var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions, plugins);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions, plugins, ObjRef);
         }
     }
 
+    [AddedVersion("1.0.0")]
+    [Description("Updates the chart.")]
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
         if (chartData is not null && chartData.Datasets is not null)
         {
             var datasets = chartData.Datasets.OfType<DoughnutChartDataset>();
             var data = new { chartData.Labels, Datasets = datasets };
-            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions);
+            await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (DoughnutChartOptions)chartOptions, ObjRef);
         }
     }
 

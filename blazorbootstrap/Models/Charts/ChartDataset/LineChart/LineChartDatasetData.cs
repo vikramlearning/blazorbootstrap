@@ -1,5 +1,9 @@
 ﻿namespace BlazorBootstrap;
 
+/// <summary>
+/// Represents a line chart data item for dynamic updates.
+/// </summary>
+[AddedVersion("1.10.0")]
 public record LineChartDatasetData : ChartDatasetData
 {
     #region Constructors

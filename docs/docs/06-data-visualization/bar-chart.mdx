@@ -53,6 +53,7 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 
 | Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
+| Animation | `ChartAnimation?` | null | | Configures dataset-level animation including delay, duration, easing, and looping. | 4.0.0 |
 | BackgroundColor | `List<string>?` | null | | Get or sets the BackgroundColor. | 1.0.0 |
 | BarPercentage | double | 0.9 | | Percent (0-1) of the available width each bar should be within the category width. 1.0 will take the whole category width and put the bars right next to each other. | 1.0.0 |
 | BarThickness | `double?` | null | | It is applied to the width of each bar, in pixels. When this is enforced, barPercentage and categoryPercentage are ignored. | 3.0.0 |
@@ -74,6 +75,7 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 | MaxBarThickness | `double?` | null | Set this to ensure that bars are not sized thicker than this. | 3.0.0 |
 | MinBarLength | `double?` | null | Set this to ensure that bars have a minimum length in pixels. | 3.0.0 |
 | Order | int | 0 | | The drawing order of dataset. Also affects order for stacking, tooltip and legend. | 3.0.0 |
+| Stack | `string?` | null | | The ID of the group to which this dataset belongs when stacked. Datasets with the same value are rendered in the same stack group. | 4.0.0 |
 | SkipNull | bool | false | If true, null or undefined values will not be used for spacing calculations when determining bar size. | 3.0.0 |
 | XAxisID | `string?` | null | | The ID of the x axis to plot this dataset on. | 1.0.0 |
 | YAxisID | `string?` | null | | The ID of the y axis to plot this dataset on. | 1.0.0 |
@@ -98,14 +100,26 @@ It is sometimes used to show trend data and to compare multiple data sets side b
 
 | Property Name | Type | Default | Required | Description | Added / Modified Version |
 |:--|:--|:--|:--|:--|:--|
+| Animation | `ChartAnimation?` | null | | Configures chart-level animation including delay, duration, easing, and looping. | 4.0.0 |
+| AspectRatio | `double?` | null | | Sets the canvas aspect ratio (`width / height`) when responsive resizing is enabled. | 4.0.0 |
 | IndexAxis | string | x | | The base axis of the chart. 'x' for vertical charts and 'y' for horizontal charts. | 1.0.0 |
 | Interaction | `Interaction` | | | Gets or sets the Interaction. | 1.0.0 |
 | Layout | `ChartLayout` | | | Gets or sets the ChartLayout. | 1.0.0 |
 | Locale | `string?` | | | Gets or sets the locale. By default, the chart is using the default locale of the platform which is running on. | 1.10.0 |
 | MaintainAspectRatio | bool | true | | Maintain the original canvas aspect ratio (width / height) when resizing. | 3.0.0 |
 | Plugins | `BarChartPlugins` | | | Gets or sets the Plugins. | 1.10.2 |
+| ResizeDelay | `int?` | null | | Delays the resize update by the given number of milliseconds. | 4.0.0 |
 | Responsive | bool | false | | Resizes the chart canvas when its container does. | 1.0.0 |
 | Scales | `Scales` | | | Gets or sets the Scales. | 1.0.0 |
+
+## Interaction Members
+
+| Property Name | Type | Default | Required | Description | Added / Modified Version |
+|:--|:--|:--|:--|:--|:--|
+| Axis | `InteractionAxis?` | null | | Defines which directions are used in calculating distances. Supported values are `X`, `Y`, `XY`, and `R`. | 4.0.0 |
+| IncludeInvisible | `bool?` | null | | Includes invisible points outside the chart area when evaluating interactions. | 4.0.0 |
+| Intersect | bool | true | | If true, the interaction mode only applies when the mouse position intersects an item on the chart. | 1.0.0 |
+| Mode | `InteractionMode` | `Nearest` | | Sets which elements appear in the interaction. | 1.0.0 |
 
 ## Examples
 
@@ -329,7 +343,7 @@ These palettes offer a range of distinct and visually appealing colors that can 
 
         barChartOptions = new BarChartOptions();
         barChartOptions.Responsive = true;
-        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index, Axis = InteractionAxis.Y };
         barChartOptions.IndexAxis = "y";
 
         barChartOptions.Scales.X.Title.Text = "Visitors";
@@ -413,7 +427,7 @@ These palettes offer a range of distinct and visually appealing colors that can 
 
         barChartOptions = new();
         barChartOptions.Responsive = true;
-        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index, Axis = InteractionAxis.Y };
         barChartOptions.IndexAxis = "y";
 
         barChartOptions.Scales.X.Title.Text = "Visitors";
@@ -441,6 +455,79 @@ These palettes offer a range of distinct and visually appealing colors that can 
 ```
 
 [See the demo here.](https://demos.blazorbootstrap.com/charts/bar-chart#stacked-bar-chart)
+
+### Grouped stacks
+
+Use the `Stack` property on each dataset when you want multiple stacked groups in the same chart. Datasets with the same stack ID are rendered together, while different IDs create separate stacked groups.
+
+```cs {} showLineNumbers
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+
+    protected override void OnInitialized()
+    {
+        var colors = ColorBuilder.CategoricalTwelveColors;
+
+        chartData = new ChartData
+            {
+                Labels = new List<string> { "Q1", "Q2", "Q3", "Q4" },
+                Datasets = new List<IChartDataset>
+                {
+                    new BarChartDataset
+                    {
+                        Label = "North Budget",
+                        Data = new List<double> { 42, 47, 44, 50 },
+                        BackgroundColor = new List<string> { colors[0] },
+                        BorderColor = new List<string> { colors[0] },
+                        BorderWidth = new List<double> { 0 },
+                        Stack = "North"
+                    },
+                    new BarChartDataset
+                    {
+                        Label = "North Actual",
+                        Data = new List<double> { 39, 45, 48, 53 },
+                        BackgroundColor = new List<string> { colors[1] },
+                        BorderColor = new List<string> { colors[1] },
+                        BorderWidth = new List<double> { 0 },
+                        Stack = "North"
+                    },
+                    new BarChartDataset
+                    {
+                        Label = "South Budget",
+                        Data = new List<double> { 35, 38, 41, 46 },
+                        BackgroundColor = new List<string> { colors[4] },
+                        BorderColor = new List<string> { colors[4] },
+                        BorderWidth = new List<double> { 0 },
+                        Stack = "South"
+                    },
+                    new BarChartDataset
+                    {
+                        Label = "South Actual",
+                        Data = new List<double> { 33, 40, 43, 45 },
+                        BackgroundColor = new List<string> { colors[5] },
+                        BorderColor = new List<string> { colors[5] },
+                        BorderWidth = new List<double> { 0 },
+                        Stack = "South"
+                    }
+                }
+            };
+
+        barChartOptions = new() { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+        barChartOptions.Scales.X.Stacked = true;
+        barChartOptions.Scales.Y.Stacked = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await barChart.InitializeAsync(chartData, barChartOptions);
+    }
+}
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/charts/bar-chart#grouped-stacks)
 
 ### Locale
 
@@ -505,7 +592,7 @@ In the following example, you will see the chart in the **German** locale (**de_
         barChartOptions = new();
         barChartOptions.Locale = "de-DE";
         barChartOptions.Responsive = true;
-        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index, Axis = InteractionAxis.Y };
         barChartOptions.IndexAxis = "y";
 
         barChartOptions.Scales.X.Title.Text = "Visitors";
@@ -593,7 +680,7 @@ In the following example, you will see the chart in the **German** locale (**de_
 
         barChartOptions = new();
         barChartOptions.Responsive = true;
-        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index, Axis = InteractionAxis.Y };
         barChartOptions.IndexAxis = "y";
 
         barChartOptions.Scales.X.Title.Text = "Visitors";

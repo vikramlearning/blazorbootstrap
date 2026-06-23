@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("3.0.0")]
 public partial class ScatterChart : BlazorBootstrapChart
 {
     #region Fields and Constants
@@ -20,6 +21,8 @@ public partial class ScatterChart : BlazorBootstrapChart
     #region Methods
 
     // TODO: May be this method is not required
+    [AddedVersion("3.0.0")]
+    [Description("Adds data to chart.")]
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IChartDatasetData data)
     {
         if (chartData is null)
@@ -41,6 +44,8 @@ public partial class ScatterChart : BlazorBootstrapChart
         return chartData;
     }
 
+    [AddedVersion("3.0.0")]
+    [Description("Adds dataset to chart.")]
     public override async Task<ChartData> AddDataAsync(ChartData chartData, string dataLabel, IReadOnlyCollection<IChartDatasetData> data)
     {
         if (chartData is null)
@@ -86,6 +91,8 @@ public partial class ScatterChart : BlazorBootstrapChart
         return chartData;
     }
 
+    [AddedVersion("3.0.0")]
+    [Description("Adds dataset to chart.")]
     public override async Task<ChartData> AddDatasetAsync(ChartData chartData, IChartDataset chartDataset, IChartOptions chartOptions)
     {
         if (chartData is null)
@@ -106,6 +113,8 @@ public partial class ScatterChart : BlazorBootstrapChart
         return chartData;
     }
 
+    [AddedVersion("3.0.0")]
+    [Description("Initializes the chart.")]
     public override async Task InitializeAsync(ChartData chartData, IChartOptions chartOptions, string[]? plugins = null)
     {
         if (chartData is null)
@@ -119,9 +128,11 @@ public partial class ScatterChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<ScatterChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, plugins);
+        await SafeInvokeVoidAsync($"{_jsObjectName}.initialize", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, plugins, ObjRef);
     }
 
+    [AddedVersion("3.0.0")]
+    [Description("Updates the chart.")]
     public override async Task UpdateAsync(ChartData chartData, IChartOptions chartOptions)
     {
         if (chartData is null)
@@ -135,7 +146,7 @@ public partial class ScatterChart : BlazorBootstrapChart
 
         var datasets = chartData.Datasets.OfType<ScatterChartDataset>();
         var data = new { chartData.Labels, Datasets = datasets };
-        await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (ScatterChartOptions)chartOptions);
+        await SafeInvokeVoidAsync($"{_jsObjectName}.update", Id, GetChartType(), data, (ScatterChartOptions)chartOptions, ObjRef);
     }
 
     #endregion

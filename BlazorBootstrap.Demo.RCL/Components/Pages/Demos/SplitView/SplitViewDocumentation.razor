@@ -1,0 +1,104 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_SplitView" />
+
+<Section Size="HeadingSize.H2" Name="Pane Content" PageUrl="@pageUrl" Link="pane-content">
+    <div class="mb-3">
+        <code>Pane1</code> and <code>Pane2</code> are the required content regions for SplitView.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_01_Pane_Content)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Orientation" PageUrl="@pageUrl" Link="orientation">
+    <div class="mb-3">
+        Set <code>Orientation="SplitViewOrientation.Vertical"</code> to stack panes top to bottom with a horizontal divider.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_02_Orientation)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Primary Pane Size" PageUrl="@pageUrl" Link="primary-pane-size">
+    <div class="mb-3">
+        Use <code>PrimaryPaneSize</code> to set the initial percentage allocated to the primary pane.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_03_Primary_Pane_Size)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Primary Pane Size Changed" PageUrl="@pageUrl" Link="primary-pane-size-changed">
+    <div class="mb-3">
+        Use <code>@@bind-PrimaryPaneSize</code> or <code>PrimaryPaneSizeChanged</code> to react to live divider movement.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_04_Primary_Pane_Size_Changed)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Minimum Pane Size" PageUrl="@pageUrl" Link="minimum-pane-size">
+    <div class="mb-3">
+        <code>MinimumPaneSize</code> clamps both panes so one side cannot fully collapse while dragging.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_05_Minimum_Pane_Size)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disabled State" PageUrl="@pageUrl" Link="disabled-state">
+    <div class="mb-3">
+        Set <code>IsDisabled="true"</code> to keep the layout visible while preventing pointer-based resizing.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_06_Is_Disabled)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Semantic Color" PageUrl="@pageUrl" Link="semantic-color">
+    <div class="mb-3">
+        The <code>Color</code> parameter uses the <code>SplitViewColor</code> enum and maps to shared Bootstrap-backed CSS variables.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_07_Color)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Custom Color" PageUrl="@pageUrl" Link="custom-color">
+    <div class="mb-3">
+        Use <code>CustomColor</code> when you want to pass a CSS color expression such as <code>var(...)</code> or <code>rgba(...)</code>.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_08_Custom_Color)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="OnResizeStarted" PageUrl="@pageUrl" Link="onresizestarted">
+    <div class="mb-3">
+        <code>OnResizeStarted</code> fires once when the pointer first captures the divider.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_09_On_Resize_Started)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="OnResized" PageUrl="@pageUrl" Link="onresized">
+    <div class="mb-3">
+        <code>OnResized</code> streams live primary and secondary pane percentages during drag.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_10_On_Resized)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="OnResizeEnded" PageUrl="@pageUrl" Link="onresizeended">
+    <div class="mb-3">
+        <code>OnResizeEnded</code> is useful when you only want to persist the final pane sizes after dragging stops.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_11_On_Resize_Ended)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Nested Layouts" PageUrl="@pageUrl" Link="nested-layouts">
+    <div class="mb-3">
+        SplitView supports nested layouts, enabling IDE-style and dashboard-style workspaces.
+    </div>
+    <Demo Type="typeof(SplitView_Demo_12_Nested_Layouts)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_SplitView;
+    private const string pageTitle = "Blazor Split View";
+    private const string pageDescription = "The Blazor Split View component arranges two resizable panes horizontally or vertically with live drag updates, Bootstrap color theming, and focused parameter demos.";
+    private const string metaTitle = "Blazor Split View Component";
+    private const string metaDescription = "The Blazor Split View component arranges two resizable panes horizontally or vertically with live drag updates, Bootstrap color theming, and focused parameter demos.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_SplitView;
+}

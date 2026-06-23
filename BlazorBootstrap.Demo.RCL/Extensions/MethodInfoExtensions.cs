@@ -23,6 +23,30 @@ public static class MethodInfoExtensions
     }
 
     /// <summary>
+    /// Get the effective added version of a method using an optional docs context.
+    /// </summary>
+    /// <param name="methodInfo"></param>
+    /// <param name="versionContextType"></param>
+    /// <returns>string</returns>
+    public static string GetMethodAddedVersion(this MethodInfo methodInfo, Type? versionContextType)
+    {
+        var methodVersion = methodInfo.GetMethodAddedVersion();
+        var contextVersion = versionContextType.GetTypeAddedVersion();
+
+        if (string.IsNullOrWhiteSpace(methodVersion))
+            return contextVersion;
+
+        if (string.IsNullOrWhiteSpace(contextVersion))
+            return methodVersion;
+
+        if (Version.TryParse(methodVersion, out var parsedMethodVersion)
+            && Version.TryParse(contextVersion, out var parsedContextVersion))
+            return parsedMethodVersion >= parsedContextVersion ? methodVersion : contextVersion;
+
+        return methodVersion;
+    }
+
+    /// <summary>
     /// Get method description.
     /// </summary>
     /// <param name="type"></param>
@@ -61,5 +85,14 @@ public static class MethodInfoExtensions
     {
         var nullabilityInfo = _nullabilityInfoContext.Create(methodInfo.ReturnParameter);
         return nullabilityInfo.GetFriendlyTypeName();
+    }
+
+    private static string GetTypeAddedVersion(this Type? type)
+    {
+        if (type is null)
+            return string.Empty;
+
+        var addedVersionAttribute = (AddedVersionAttribute?)Attribute.GetCustomAttribute(type, typeof(AddedVersionAttribute));
+        return addedVersionAttribute?.Version ?? string.Empty;
     }
 }

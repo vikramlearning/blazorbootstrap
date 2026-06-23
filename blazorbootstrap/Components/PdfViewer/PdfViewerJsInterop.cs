@@ -13,6 +13,14 @@ public class PdfViewerJsInterop : JsInteropBase
 
     #region Methods
 
+    public async Task DownloadPdfAsync(object objRef, string elementId, string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            throw new ArgumentException("URL cannot be null or empty.", nameof(url));
+
+        await SafeInvokeVoidAsync("downloadPdf", objRef, elementId, url);
+    }
+
     public async Task FirstPageAsync(object objRef, string elementId)
     {
         await SafeInvokeVoidAsync("firstPage", objRef, elementId);
@@ -57,6 +65,5 @@ public class PdfViewerJsInterop : JsInteropBase
     {
         await SafeInvokeVoidAsync("zoomInOut", objRef, elementId, scale);
     }
-
     #endregion
 }

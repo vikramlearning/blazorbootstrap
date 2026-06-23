@@ -47,7 +47,7 @@
         barChartOptions = new();
         barChartOptions.Locale = "de-DE";
         barChartOptions.Responsive = true;
-        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index, Axis = InteractionAxis.Y };
         barChartOptions.IndexAxis = "y";
 
         barChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "Visitors", Display = true };
