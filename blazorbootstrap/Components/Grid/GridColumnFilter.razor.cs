@@ -8,7 +8,22 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
 
     private IEnumerable<FilterOperatorInfo>? filterOperators;
 
-    private string? filterValue;
+    private string? _filterValue;
+    private string? filterValue
+    {
+        get => _filterValue;
+        set
+        {
+            if (_filterValue != value)
+            {
+                _filterValue = value;
+                if (GridColumnFilterChanged.HasDelegate)
+                {
+                    _ = InvokeAsync(() => GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(_filterValue ?? string.Empty, filterOperator)));
+                }
+            }
+        }
+    }
 
     private string? selectedFilterSymbol;
 
@@ -72,61 +87,67 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         }
     }
 
-   private RenderFragment InputFilterTemplate => builder =>
-   {
-       string inputType;
-       string inputClass;
+    private RenderFragment InputFilterTemplate => builder =>
+    {
+        string inputType;
+        string inputClass;
 
-       switch (PropertyTypeName)
-       {
-           case StringConstants.PropertyTypeNameInt16:
-           case StringConstants.PropertyTypeNameInt32:
-           case StringConstants.PropertyTypeNameInt64:
-           case StringConstants.PropertyTypeNameSingle:
-           case StringConstants.PropertyTypeNameDecimal:
-           case StringConstants.PropertyTypeNameDouble:
-               inputType = "number";
-               inputClass = "form-control";
-               break;
-           case StringConstants.PropertyTypeNameDateOnly:
-               inputType = "date";
-               inputClass = "form-control";
-               break;
-           case StringConstants.PropertyTypeNameDateTime:
-               inputType = "datetime-local";
-               inputClass = "form-control";
-               break;
-           case StringConstants.PropertyTypeNameBoolean:
-               inputType = "checkbox";
-               inputClass = "form-check-input";
-               break;
-           default:
-               inputType = "text";
-               inputClass = "form-control";
-               break;
-       }
+        switch (PropertyTypeName)
+        {
+            case StringConstants.PropertyTypeNameInt16:
+            case StringConstants.PropertyTypeNameInt32:
+            case StringConstants.PropertyTypeNameInt64:
+            case StringConstants.PropertyTypeNameSingle:
+            case StringConstants.PropertyTypeNameDecimal:
+            case StringConstants.PropertyTypeNameDouble:
+                inputType = "number";
+                inputClass = "form-control";
+                break;
+            case StringConstants.PropertyTypeNameDateOnly:
+                inputType = "date";
+                inputClass = "form-control";
+                break;
+            case StringConstants.PropertyTypeNameDateTime:
+                inputType = "datetime-local";
+                inputClass = "form-control";
+                break;
+            case StringConstants.PropertyTypeNameBoolean:
+                inputType = "checkbox";
+                inputClass = "form-check-input";
+                break;
+            default:
+                inputType = "text";
+                inputClass = "form-control";
+                break;
+        }
 
-       builder.OpenElement(100, "input");
-       builder.AddAttribute(101, "class", inputClass);
+        builder.OpenElement(100, "input");
+        builder.AddAttribute(101, "class", inputClass);
+        builder.AddAttribute(102, "type", inputType);
 
-       builder.AddAttribute(102, "type", inputType);
-       builder.AddAttribute(103, "value", filterValue);
+        if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
+        {
+            _ = bool.TryParse(filterValue, out bool isChecked);
 
-       if (PropertyTypeName == StringConstants.PropertyTypeNameBoolean)
-       {
-           if ((bool.TryParse(filterValue, out bool isChecked)) && isChecked)
-               builder.AddAttribute(104, "checked", "checked");
+            builder.AddAttribute(103, "checked", isChecked);
+            builder.AddAttribute(104, "onchange", EventCallback.Factory.CreateBinder<bool>(this, value => filterValue = value.ToString(), isChecked));
+            builder.SetUpdatesAttributeName("checked");
+        }
+        else
+        {
+            builder.AddAttribute(103, "style", filterStyle);
+            builder.AddAttribute(104, "value", BindConverter.FormatValue(filterValue));
 
-           builder.AddAttribute(106, "onchange", async (ChangeEventArgs args) => await OnFilterValueChangedAsync(args));
-       }
-       else
-       {
-           builder.AddAttribute(105, "style", filterStyle);
-           builder.AddAttribute(106, "oninput", async (ChangeEventArgs args) => await OnFilterValueChangedAsync(args));
-       }
+            if (PropertyTypeName is StringConstants.PropertyTypeNameDateOnly or StringConstants.PropertyTypeNameDateTime)
+                builder.AddAttribute(105, "oninput", EventCallback.Factory.Create<ChangeEventArgs>(this, OnFilterValueInput));
+            else
+                builder.AddAttribute(105, "oninput", EventCallback.Factory.CreateBinder<string?>(this, value => filterValue = value, filterValue));
 
-       builder.CloseElement();
-   };
+            builder.SetUpdatesAttributeName("value");
+        }
+
+        builder.CloseElement();
+    };
 
     private async Task<IEnumerable<FilterOperatorInfo>> GetFilterOperatorsAsync(string propertyTypeName)
     {
@@ -144,9 +165,11 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     private async Task OnEnumFilterValueChangedAsync(object enumValue)
     {
         filterValue = enumValue?.ToString();
+    }
 
-        if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
+    private void OnFilterValueInput(ChangeEventArgs args)
+    {
+        filterValue = args?.Value?.ToString();
     }
 
     private async Task OnFilterOperatorChangedAsync(FilterOperatorInfo filterOperatorInfo)
@@ -163,21 +186,13 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
         else
         {
             filterOperator = filterOperatorInfo.FilterOperator;
+            if (GridColumnFilterChanged.HasDelegate)
+                await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue ?? string.Empty, filterOperator));
         }
 
         SetSelectedFilterSymbol();
-
-        if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
     }
 
-    private async Task OnFilterValueChangedAsync(ChangeEventArgs args)
-    {
-        filterValue = args?.Value?.ToString();
-
-        if (GridColumnFilterChanged.HasDelegate)
-            await GridColumnFilterChanged.InvokeAsync(new FilterEventArgs(filterValue!, filterOperator));
-    }
 
     private void SetSelectedFilterSymbol()
     {
