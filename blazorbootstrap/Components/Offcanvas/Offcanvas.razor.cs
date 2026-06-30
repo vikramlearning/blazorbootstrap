@@ -107,7 +107,7 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
 
     protected override string? ClassNames =>
         BuildClassNames(Class,
-            (BootstrapClass.Offcanvas, true),
+            (Responsive.ToOffcanvasResponsiveClass(), true),
             (Placement.ToOffcanvasPlacementClass(), true),
             (Size.ToOffcanvasSizeClass(), true));
 
@@ -250,6 +250,18 @@ public partial class Offcanvas : BlazorBootstrapComponentBase
     [Description("Gets or sets the offcanvas placement.")]
     [Parameter]
     public Placement Placement { get; set; } = Placement.End;
+
+    /// <summary>
+    /// Gets or sets the offcanvas responsive behavior.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see cref="OffcanvasResponsive.Always" />.
+    /// </remarks>
+    [AddedVersion("3.6.0")]
+    [DefaultValue(OffcanvasResponsive.Always)]
+    [Description("Gets or sets the offcanvas responsive behavior.")]
+    [Parameter]
+    public OffcanvasResponsive Responsive { get; set; } = OffcanvasResponsive.Always;
 
     /// <summary>
     /// If <see langword="true" />, modal shows close button in the header.
