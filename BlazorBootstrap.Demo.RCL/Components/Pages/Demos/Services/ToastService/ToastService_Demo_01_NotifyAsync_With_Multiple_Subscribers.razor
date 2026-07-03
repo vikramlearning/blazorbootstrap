@@ -1,0 +1,39 @@
+<div class="d-flex flex-column gap-3">
+    <div>This example registers two <code>Toasts</code> hosts on the same page. Clicking the button publishes one message to both hosts and awaits both subscribers.</div>
+
+    <div>
+        <Button Color="ButtonColor.Primary" Disabled="@isNotifying" @onclick="NotifyBothHostsAsync">
+            @(isNotifying ? "Sending..." : "Notify both hosts")
+        </Button>
+    </div>
+
+    <div class="text-body-secondary">@statusMessage</div>
+
+    @* These local Toasts hosts intentionally add extra ToastService subscribers on this page
+       so NotifyAsync can demonstrate awaiting multiple handlers for a single published message. *@
+    <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopLeft" />
+    <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.BottomRight" />
+</div>
+
+@code {
+    [Inject]
+    protected ToastService ToastService { get; set; } = default!;
+
+    private bool isNotifying;
+
+    private string statusMessage = "Click the button to publish the same toast to two hosts.";
+
+    private async Task NotifyBothHostsAsync()
+    {
+        isNotifying = true;
+        statusMessage = "Publishing to both toast hosts...";
+
+        await ToastService.NotifyAsync(new ToastMessage(
+            ToastType.Info,
+            "Toast Service",
+            $"NotifyAsync delivered this message to both toast hosts at {DateTime.Now:T}."));
+
+        statusMessage = $"NotifyAsync completed after both toast hosts handled the message at {DateTime.Now:T}.";
+        isNotifying = false;
+    }
+}
