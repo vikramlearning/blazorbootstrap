@@ -12,7 +12,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
             Messages = null;
 
             if (ToastService is not null)
-                ToastService.OnNotify -= OnNotify;
+                ToastService.OnNotify -= OnNotifyAsync;
         }
 
         await base.DisposeAsyncCore(disposing);
@@ -21,12 +21,12 @@ public partial class Toasts : BlazorBootstrapComponentBase
     protected override void OnInitialized()
     {
         if (ToastService is not null)
-            ToastService.OnNotify += OnNotify;
+            ToastService.OnNotify += OnNotifyAsync;
 
         base.OnInitialized();
     }
 
-    private void OnNotify(ToastMessage toastMessage)
+    private async Task OnNotifyAsync(ToastMessage toastMessage)
     {
         if (toastMessage is null)
             return;
@@ -35,7 +35,7 @@ public partial class Toasts : BlazorBootstrapComponentBase
 
         Messages.Add(toastMessage);
 
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     private void OnToastHiddenAsync(ToastEventArgs args)
@@ -70,8 +70,11 @@ public partial class Toasts : BlazorBootstrapComponentBase
             {
                 if (message is not null)
                 {
-                    Messages.Remove(message);
-                    if (!string.IsNullOrWhiteSpace(message.ElementId))
+                    if (string.IsNullOrWhiteSpace(message.ElementId))
+                        Messages.Remove(message);
+                    else
+                        // Keep rendered toasts in the DOM until Bootstrap completes the hide transition.
+                        // Removing them first can dispose the element before toast.js raises hidden.
                         await SafeInvokeVoidAsync("window.blazorBootstrap.toasts.hide", message.ElementId);
                 }
             }
@@ -153,10 +156,13 @@ public partial class Toasts : BlazorBootstrapComponentBase
     /// <para>
     /// Default value is 5.
     /// </para>
+    /// <para>
+    /// When the limit is exceeded, the oldest rendered toasts are dismissed first.
+    /// </para>
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(5)]
-    [Description("Gets or sets the toast container maximum capacity.")]
+    [Description("Gets or sets the toast container maximum capacity. When the limit is exceeded, the oldest rendered toasts are dismissed first.")]
     [Parameter]
     public int StackLength { get; set; } = 5;
 

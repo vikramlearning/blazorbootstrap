@@ -8,7 +8,7 @@
                      MetaDescription="@metaDescription"
                      ImageUrl="@imageUrl" />
 
-<DemoLink Href="@DemoRouteConstants.Demos_URL_PreloadService" />
+<DemoLink Href="@DemoRouteConstants.Demos_URL_ToastService" />
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
     <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
@@ -16,6 +16,11 @@
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="ToastService Methods" PageUrl="@pageUrl" Link="toast-service-methods">
     <DocxTable TItem="ToastService" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Usage Notes" PageUrl="@pageUrl" Link="usage-notes">
+    <div>Use <code>Notify(...)</code> for the common single <code>Toasts</code> host scenario.</div>
+    <div class="mt-3">Use <code>await NotifyAsync(...)</code> when multiple toast subscribers may be registered and the caller needs to await all handlers.</div>
 </Section>
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="ToastMessage Properties" PageUrl="@pageUrl" Link="toast-message-properties">
@@ -30,8 +35,8 @@
     private const string componentName = nameof(ToastService);
     private const string pageUrl = DemoRouteConstants.Docs_URL_ToastService;
     private const string pageTitle = componentName;
-    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
-    private const string metaTitle = $"Blazor {componentName} Component";
-    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> service, guiding you through its usage.";
+    private const string metaTitle = $"Blazor {componentName} Service";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} service, guiding you through its usage.";
     private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Toasts;
 }
