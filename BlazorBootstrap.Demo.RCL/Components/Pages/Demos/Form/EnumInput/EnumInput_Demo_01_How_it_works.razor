@@ -1,3 +1,5 @@
+@using System.ComponentModel.DataAnnotations
+
 <EnumInput TEnum="Status" @bind-Value="@selectedStatusValue" />
 <div class="mb-3">Selected value: @selectedStatusValue</div>
 
@@ -10,14 +12,22 @@
 
     override protected void OnInitialized()
     {
-        selectedStatusValue = (int)Status.Pending;
-        selectedStatusText = Status.Inactive.ToString();
+        selectedStatusValue = (int)Status.Active;
+        selectedStatusText = StatusLabels.Pending;
     }
 
     public enum Status
     {
         Active,
+        [Display(Name = "Inactive user")]
         Inactive,
+
+        [Display(Name = nameof(StatusLabels.Pending), ResourceType = typeof(StatusLabels))]
         Pending
+    }
+
+    public static class StatusLabels
+    {
+        public static string Pending => "Waiting for review";
     }
 }

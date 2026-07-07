@@ -87,10 +87,10 @@ public static class TypeExtensions
 
     public static string? GetDisplayName(this Type type, string? name)
     {
-        if (name != null)
+        if (name is not null)
         {
             var attr = type!.GetMember(name).FirstOrDefault()?.GetCustomAttribute<DisplayAttribute>();
-            name = attr?.Name ?? name;
+            name = attr?.GetName() ?? name;
         }
 
         return name;

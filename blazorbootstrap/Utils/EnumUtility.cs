@@ -1,5 +1,3 @@
-﻿using System.ComponentModel;
-
 namespace BlazorBootstrap;
 
 public class EnumUtility<TEnum> where TEnum : Enum
@@ -10,17 +8,7 @@ public class EnumUtility<TEnum> where TEnum : Enum
                 select new EnumItem
                 {
                     Value = Convert.ToInt32(e),
-                    Text = GetEnumDescription(e)
+                    Text = typeof(TEnum).GetDisplayName(e.ToString()) ?? e.ToString()
                 }).ToList();
-    }
-
-    private static string GetEnumDescription(TEnum value)
-    {
-        if (!(value.GetType().GetField(value.ToString())?.GetCustomAttributes(typeof(DescriptionAttribute), inherit: false)?.FirstOrDefault() is DescriptionAttribute descriptionAttribute))
-        {
-            return value.ToString();
-        }
-
-        return descriptionAttribute.Description;
     }
 }

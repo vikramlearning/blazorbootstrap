@@ -62,8 +62,15 @@
     public enum UserStatus
     {
         Registered,
-        [Display(Name = "Pending Verification")]
+
+        [Display(Name = nameof(UserStatusLabels.VerificationPending), ResourceType = typeof(UserStatusLabels))]
         VerificationPending,
+
         Verified
+    }
+
+    public static class UserStatusLabels
+    {
+        public static string VerificationPending => "Pending Verification";
     }
 }

@@ -43,7 +43,7 @@ The Blazor Bootstrap `EnumInput` component renders a dropdown list from an enume
 
 ### How it works
 
-The **EnumInput** component displays enum values in a dropdown, allowing users to select from a predefined set of options.
+The **EnumInput** component displays enum values in a dropdown, allowing users to select from a predefined set of options. Enum labels use `DisplayAttribute.GetName()` when a `DisplayAttribute` is present, including resource-backed names, and fall back to the enum member name when no display metadata exists.
 
 <img src="https://private-user-images.githubusercontent.com/2337067/517874250-8a624590-1dfc-470a-8f9d-7636851d6c95.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjM5MjAxNzEsIm5iZiI6MTc2MzkxOTg3MSwicGF0aCI6Ii8yMzM3MDY3LzUxNzg3NDI1MC04YTYyNDU5MC0xZGZjLTQ3MGEtOGY5ZC03NjM2ODUxZDZjOTUucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MTEyMyUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTExMjNUMTc0NDMxWiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9ZmVlNDlmZDZkNGQ5ZWUxMjE5MGM3NmEzMzc2OTdhYzk0MjY4YTU3NTk5M2JmMGIxNDNkYjI0ZWYyM2UwMDA5YyZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.hvU9-57w9n41vwE3eyy3ZcDPDYXbQ3p_JW1RmDmT-c8" alt="Blazor Bootstrap Enum Input Component - How it works" />
 
@@ -56,21 +56,31 @@ The **EnumInput** component displays enum values in a dropdown, allowing users t
 ```
 
 ```cs {} showLineNumbers
+@using System.ComponentModel.DataAnnotations
+
 @code {
     private int selectedStatusValue;
     private string? selectedStatusText;
 
     override protected void OnInitialized()
     {
-        selectedStatusValue = (int)Status.Pending;
-        selectedStatusText = Status.Inactive.ToString();
+        selectedStatusValue = (int)Status.Active;
+        selectedStatusText = StatusLabels.Pending;
     }
 
     public enum Status
     {
         Active,
+        [Display(Name = "Inactive user")]
         Inactive,
+
+        [Display(Name = nameof(StatusLabels.Pending), ResourceType = typeof(StatusLabels))]
         Pending
+    }
+
+    public static class StatusLabels
+    {
+        public static string Pending => "Waiting for review";
     }
 }
 ```

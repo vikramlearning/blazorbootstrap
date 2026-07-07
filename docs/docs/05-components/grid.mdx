@@ -3709,6 +3709,8 @@ Automatically hides the paging controls when the grid item count is less than or
 
 ### Enum filter
 
+Enum filter labels use `DisplayAttribute.GetName()` when a `DisplayAttribute` is present, including resource-backed names, and fall back to the enum member name when no display metadata exists.
+
 <img src="https://i.imgur.com/eJ9tlTH.png" alt="Blazor Bootstrap: Grid Component - Enum filter" />
 
 ```cshtml {18-20} showLineNumbers
@@ -3730,14 +3732,16 @@ Automatically hides the paging controls when the grid item count is less than or
             @context.DOB
         </GridColumn>
         <GridColumn TItem="User" HeaderText="Status" PropertyName="Status" FilterTextboxWidth="170">
-            @context.Status
+            @(typeof(UserStatus).GetDisplayName(context.Status.ToString()))
         </GridColumn>
     </GridColumns>
 
 </Grid>
 ```
 
-```cshtml {40,43-48} showLineNumbers
+```cshtml {1,44,47-57} showLineNumbers
+@using System.ComponentModel.DataAnnotations
+
 @code {
     BlazorBootstrap.Grid<User> grid = default!;
     private IEnumerable<User> users = default!;
@@ -3783,8 +3787,16 @@ Automatically hides the paging controls when the grid item count is less than or
     public enum UserStatus
     {
         Registered,
+
+        [Display(Name = nameof(UserStatusLabels.VerificationPending), ResourceType = typeof(UserStatusLabels))]
         VerificationPending,
+
         Verified
+    }
+
+    public static class UserStatusLabels
+    {
+        public static string VerificationPending => "Pending Verification";
     }
 }
 ```

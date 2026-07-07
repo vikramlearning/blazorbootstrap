@@ -15,6 +15,7 @@
 <Section Class="p-0" Size="HeadingSize.H3" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
     <div class="mb-3">
         The <strong>EnumInput</strong> component displays enum values in a dropdown, allowing users to select from a predefined set of options.
+        Enum labels use <code>DisplayAttribute.GetName()</code> when a <code>DisplayAttribute</code> is present, including resource-backed names, and fall back to the enum member name.
         <br />
         <strong>How to use:</strong>
         <div class="content mb-2">
