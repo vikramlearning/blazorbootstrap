@@ -1,7 +1,4 @@
 ﻿namespace BlazorBootstrap;
-using System.ComponentModel.DataAnnotations;
-using System.Reflection;
-
 
 /// <summary>
 /// Various extension methods for <see cref="Type" />.
