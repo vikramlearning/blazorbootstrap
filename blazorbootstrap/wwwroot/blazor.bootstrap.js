@@ -547,10 +547,14 @@ window.blazorBootstrap = {
                 return;
             }
 
+            const element = document.getElementById(elementId);
+            if (!element)
+                return;
+
             window.blazorBootstrap.googlemaps.markerEls[elementId] = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
 
             let mapOptions = { center: center, zoom: zoom, mapId: elementId };
-            let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
+            let map = new google.maps.Map(element, mapOptions);
 
             window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable);
 
