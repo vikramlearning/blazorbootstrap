@@ -10,6 +10,7 @@
            OnMarkerClick="OnGoogleMapMarkerClick" />
 
 @code {
+#pragma warning disable CS0618 // This demo intentionally exercises the legacy icon-font compatibility path.
     [Inject] public ToastService ToastService { get; set; } = default!;
 
     private void OnGoogleMapMarkerClick(GoogleMapMarker marker)
@@ -116,4 +117,5 @@
             Title = "Heavy rain",
         }
     };
+#pragma warning restore CS0618
 }

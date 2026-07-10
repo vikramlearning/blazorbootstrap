@@ -266,7 +266,7 @@ Use the **PinElement.GlyphColor** option to change the glyph color of a marker.
 
 ### Hide the glyph
 
-Set the **PinElement.Glyph** option to an empty string to hide a marker's glyph.
+Set the **PinElement.GlyphText** option to an empty string to hide a marker's glyph.
 
 <img src="https://i.imgur.com/SE0ptb1.png" alt="Blazor Bootstrap: Google Map Component - Hide the glyph" />
 
@@ -287,13 +287,13 @@ Set the **PinElement.Glyph** option to an empty string to hide a marker's glyph.
     {
         new GoogleMapMarker()
         {
-            PinElement = new PinElement{ Glyph = "",  },
+            PinElement = new PinElement{ GlyphText = "",  },
             Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352) ,
             Title = "Single family house with modern design",
         },
         new GoogleMapMarker()
         {
-            PinElement = new PinElement{ Glyph = "",  },
+            PinElement = new PinElement{ GlyphText = "",  },
             Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727) ,
             Title = "Townhouse with friendly neighbors",
         }
@@ -303,9 +303,36 @@ Set the **PinElement.Glyph** option to an empty string to hide a marker's glyph.
 
 [See demo here](https://demos.blazorbootstrap.com/google-map#hide-the-glyph)
 
+### Use text glyphs
+
+Use **PinElement.GlyphText** to show text in a marker pin.
+
+```cs {} showLineNumbers
+PinElement = new PinElement
+{
+    GlyphText = "A",
+    GlyphColor = "white"
+};
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-map#use-text-glyphs)
+
+### Use image glyphs
+
+Use **PinElement.GlyphSrc** to show an image URL in a marker pin.
+
+```cs {} showLineNumbers
+PinElement = new PinElement
+{
+    GlyphSrc = "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png"
+};
+```
+
+[See demo here](https://demos.blazorbootstrap.com/google-map#use-image-glyphs)
+
 ### Use icon fonts
 
-Use the **PinElement.UseIconFonts** and **PinElement.Glyph** options to use the icon fonts.
+Existing **PinElement.UseIconFonts** and **PinElement.Glyph** configurations remain supported as a compatibility path and render as custom advanced-marker content. **Glyph** is obsolete, so use this path only while migrating existing icon-font configurations; use **GoogleMapMarker.Content** for new custom HTML marker content.
 
 <img src="https://i.imgur.com/l1ss4Nl.png" alt="Blazor Bootstrap: Google Map Component - Use icon fonts" />
 

@@ -453,6 +453,7 @@ window.blazorBootstrap = {
         }
     },
     googlemaps: {
+        apiLoaded: false,
         addMarker: (elementId, marker, dotNetHelper) => {
             let mapInstance = window.blazorBootstrap.googlemaps.get(elementId);
             if (mapInstance) {
@@ -461,24 +462,42 @@ window.blazorBootstrap = {
                 let _content;
 
                 if (marker.pinElement) {
-                    let _glyph;
-
                     if (marker.pinElement.useIconFonts) {
-                        const icon = document.createElement("div");
-                        icon.innerHTML = `<i class="${marker.pinElement.glyph}"></i>`;
-                        _glyph = icon;
-                    } else {
-                        _glyph = marker.pinElement.glyph;
-                    }
+                        const content = document.createElement("div");
+                        const icon = document.createElement("i");
+                        const scale = marker.pinElement.scale ?? 1;
 
-                    const pin = new google.maps.marker.PinElement({
-                        background: marker.pinElement.background,
-                        borderColor: marker.pinElement.borderColor,
-                        glyph: _glyph,
-                        glyphColor: marker.pinElement.glyphColor,
-                        scale: marker.pinElement.scale,
-                    });
-                    _content = pin.element;
+                        content.classList.add("bb-google-marker-content");
+                        content.style.alignItems = "center";
+                        content.style.backgroundColor = marker.pinElement.background;
+                        content.style.border = `2px solid ${marker.pinElement.borderColor ?? "transparent"}`;
+                        content.style.borderRadius = "50%";
+                        content.style.boxSizing = "border-box";
+                        content.style.color = marker.pinElement.glyphColor;
+                        content.style.display = "flex";
+                        content.style.height = `${48 * scale}px`;
+                        content.style.justifyContent = "center";
+                        content.style.width = `${48 * scale}px`;
+
+                        icon.className = marker.pinElement.glyph ?? "";
+                        content.append(icon);
+                        _content = content;
+                    } else {
+                        const pinOptions = {
+                            background: marker.pinElement.background,
+                            borderColor: marker.pinElement.borderColor,
+                            glyphColor: marker.pinElement.glyphColor,
+                            scale: marker.pinElement.scale,
+                        };
+
+                        if (marker.pinElement.glyphSrc) {
+                            pinOptions.glyphSrc = marker.pinElement.glyphSrc;
+                        } else {
+                            pinOptions.glyphText = marker.pinElement.glyphText ?? (typeof marker.pinElement.glyph === "string" ? marker.pinElement.glyph : undefined);
+                        }
+
+                        _content = new google.maps.marker.PinElement(pinOptions);
+                    }
                 }
                 else if (marker.content) {
                     _content = document.createElement("div");
@@ -488,18 +507,19 @@ window.blazorBootstrap = {
 
                 const markerEl = new google.maps.marker.AdvancedMarkerElement({
                     map,
-                    content: _content,
                     position: marker.position,
                     title: marker.title,
                     gmpClickable: clickable
                 });
 
+                if (_content)
+                    markerEl.append(_content);
+
                 window.blazorBootstrap.googlemaps.markerEls[elementId].push(markerEl);
 
                 // add a click listener for each marker, and set up the info window.
                 if (clickable) {
-                    markerEl.addListener("click", ({ domEvent, latLng }) => {
-                        const { target } = domEvent;
+                    markerEl.addEventListener("gmp-click", () => {
                         const infoWindow = new google.maps.InfoWindow();
                         infoWindow.close();
                         infoWindow.setContent(markerEl.title);
@@ -522,10 +542,19 @@ window.blazorBootstrap = {
             return window.blazorBootstrap.googlemaps.instances[elementId];
         },
         initialize: (elementId, zoom, center, markers, clickable, dotNetHelper) => {
+            if (!window.blazorBootstrap.googlemaps.apiLoaded) {
+                window.blazorBootstrap.googlemaps.pendingInitializations[elementId] = { center, clickable, dotNetHelper, markers, zoom };
+                return;
+            }
+
+            const element = document.getElementById(elementId);
+            if (!element)
+                return;
+
             window.blazorBootstrap.googlemaps.markerEls[elementId] = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
 
             let mapOptions = { center: center, zoom: zoom, mapId: elementId };
-            let map = new google.maps.Map(document.getElementById(elementId), mapOptions);
+            let map = new google.maps.Map(element, mapOptions);
 
             window.blazorBootstrap.googlemaps.create(elementId, map, zoom, center, markers, clickable);
 
@@ -537,6 +566,17 @@ window.blazorBootstrap = {
         },
         instances: {},
         markerEls: {},
+        onApiLoaded: () => {
+            window.blazorBootstrap.googlemaps.apiLoaded = true;
+
+            const pendingInitializations = Object.entries(window.blazorBootstrap.googlemaps.pendingInitializations);
+            window.blazorBootstrap.googlemaps.pendingInitializations = {};
+
+            for (const [elementId, { center, clickable, dotNetHelper, markers, zoom }] of pendingInitializations) {
+                window.blazorBootstrap.googlemaps.initialize(elementId, zoom, center, markers, clickable, dotNetHelper);
+            }
+        },
+        pendingInitializations: {},
         updateMarkers: (elementId, markers, dotNetHelper) => {
             let markerEls = window.blazorBootstrap.googlemaps.markerEls[elementId] ?? [];
 
@@ -783,6 +823,30 @@ window.blazorBootstrap = {
                 return;
             }
 
+            let existingScriptEl = scriptId == null ? null : document.getElementById(scriptId);
+
+            if (existingScriptEl?.tagName === 'SCRIPT') {
+                if (existingScriptEl.dataset.blazorBootstrapScriptLoaderStatus === 'loaded') {
+                    dotNetHelper.invokeMethodAsync('OnLoadJS');
+                    return;
+                }
+
+                if (existingScriptEl.dataset.blazorBootstrapScriptLoaderStatus === 'error') {
+                    dotNetHelper.invokeMethodAsync('OnErrorJS', `An error occurred while loading the script: ${source}`);
+                    return;
+                }
+
+                existingScriptEl.addEventListener("error", (event) => {
+                    dotNetHelper.invokeMethodAsync('OnErrorJS', `An error occurred while loading the script: ${source}`);
+                }, { once: true });
+
+                existingScriptEl.addEventListener("load", (event) => {
+                    dotNetHelper.invokeMethodAsync('OnLoadJS');
+                }, { once: true });
+
+                return;
+            }
+
             let scriptEl = document.createElement('script');
 
             scriptEl.async = async;
@@ -799,10 +863,12 @@ window.blazorBootstrap = {
                 scriptEl.type = type;
 
             scriptEl.addEventListener("error", (event) => {
+                scriptEl.dataset.blazorBootstrapScriptLoaderStatus = 'error';
                 dotNetHelper.invokeMethodAsync('OnErrorJS', `An error occurred while loading the script: ${source}`);
             });
 
             scriptEl.addEventListener("load", (event) => {
+                scriptEl.dataset.blazorBootstrapScriptLoaderStatus = 'loaded';
                 dotNetHelper.invokeMethodAsync('OnLoadJS');
             });
 

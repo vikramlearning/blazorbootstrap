@@ -4,9 +4,8 @@
 <ScriptLoader Async="true"
               Defer="true"
               Class="mt-4"
-              ScriptId="@($"script{Id}")"
-              Source="@GoogleMapsJsFileUrl"
-              OnLoad="OnScriptLoad" />
+              ScriptId="blazor-bootstrap-google-maps-script"
+              Source="@GoogleMapsJsFileUrl" />
 
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
 </div>

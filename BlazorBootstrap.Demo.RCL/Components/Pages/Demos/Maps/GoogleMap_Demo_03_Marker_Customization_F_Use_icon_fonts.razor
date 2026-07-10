@@ -8,6 +8,7 @@
            Markers="markers" />
 
 @code {
+#pragma warning disable CS0618 // This demo intentionally exercises the legacy icon-font compatibility path.
     List<GoogleMapMarker> markers = new()
     {
         new GoogleMapMarker()
@@ -107,4 +108,5 @@
             Title = "Heavy rain",
         }
     };
+#pragma warning restore CS0618
 }

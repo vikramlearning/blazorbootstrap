@@ -10,6 +10,14 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
 
     #region Methods
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await SafeInvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     protected override async Task OnInitializedAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
@@ -64,11 +72,6 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
         return ValueTask.CompletedTask;
     }
 
-    private void OnScriptLoad()
-    {
-        Task.Run(() => SafeInvokeVoidAsync("window.blazorBootstrap.googlemaps.initialize", Id, Zoom, Center, Markers, Clickable, objRef));
-    }
-
     #endregion
 
     #region Properties, Indexers
@@ -116,7 +119,7 @@ public partial class GoogleMap : BlazorBootstrapComponentBase
     [Parameter] 
     public bool Clickable { get; set; }
 
-    private string? GoogleMapsJsFileUrl => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&libraries=maps,marker";
+    private string? GoogleMapsJsFileUrl => $"https://maps.googleapis.com/maps/api/js?key={ApiKey}&libraries=maps,marker&loading=async&callback=blazorBootstrap.googlemaps.onApiLoaded";
 
     /// <summary>
     /// Gets or sets the height of the <see cref="GoogleMap" />.
