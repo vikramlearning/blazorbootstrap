@@ -783,6 +783,30 @@ window.blazorBootstrap = {
                 return;
             }
 
+            let existingScriptEl = scriptId == null ? null : document.getElementById(scriptId);
+
+            if (existingScriptEl?.tagName === 'SCRIPT') {
+                if (existingScriptEl.dataset.blazorBootstrapScriptLoaderStatus === 'loaded') {
+                    dotNetHelper.invokeMethodAsync('OnLoadJS');
+                    return;
+                }
+
+                if (existingScriptEl.dataset.blazorBootstrapScriptLoaderStatus === 'error') {
+                    dotNetHelper.invokeMethodAsync('OnErrorJS', `An error occurred while loading the script: ${source}`);
+                    return;
+                }
+
+                existingScriptEl.addEventListener("error", (event) => {
+                    dotNetHelper.invokeMethodAsync('OnErrorJS', `An error occurred while loading the script: ${source}`);
+                }, { once: true });
+
+                existingScriptEl.addEventListener("load", (event) => {
+                    dotNetHelper.invokeMethodAsync('OnLoadJS');
+                }, { once: true });
+
+                return;
+            }
+
             let scriptEl = document.createElement('script');
 
             scriptEl.async = async;
@@ -799,10 +823,12 @@ window.blazorBootstrap = {
                 scriptEl.type = type;
 
             scriptEl.addEventListener("error", (event) => {
+                scriptEl.dataset.blazorBootstrapScriptLoaderStatus = 'error';
                 dotNetHelper.invokeMethodAsync('OnErrorJS', `An error occurred while loading the script: ${source}`);
             });
 
             scriptEl.addEventListener("load", (event) => {
+                scriptEl.dataset.blazorBootstrapScriptLoaderStatus = 'loaded';
                 dotNetHelper.invokeMethodAsync('OnLoadJS');
             });
 

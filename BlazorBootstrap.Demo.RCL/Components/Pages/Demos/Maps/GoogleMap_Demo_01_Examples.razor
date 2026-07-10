@@ -1,7 +1,18 @@
 ﻿@inherits GoogleMapDemoComponentBase
 
-<GoogleMap ApiKey="@ApiKey"
-           Center="new GoogleMapCenter(-34.397, 150.644)"
-           Height="400"
-           Width="100"
-           Zoom="8" />
+<div class="row g-4">
+    <div class="col-md-6">
+        <GoogleMap ApiKey="@ApiKey"
+                   Center="new GoogleMapCenter(-34.397, 150.644)"
+                   Height="400"
+                   Width="100"
+                   Zoom="8" />
+    </div>
+    <div class="col-md-6">
+        <GoogleMap ApiKey="@ApiKey"
+                   Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+                   Height="400"
+                   Width="100"
+                   Zoom="12" />
+    </div>
+</div>
