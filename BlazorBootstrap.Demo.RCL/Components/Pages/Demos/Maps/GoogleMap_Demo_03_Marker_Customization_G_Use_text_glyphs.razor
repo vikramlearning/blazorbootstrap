@@ -1,0 +1,26 @@
+@inherits GoogleMapDemoComponentBase
+
+<GoogleMap ApiKey="@ApiKey"
+           Center="new GoogleMapCenter(37.43238031167444, -122.16795397128632)"
+           Height="400"
+           Width="100"
+           Zoom="10"
+           Markers="markers" />
+
+@code {
+    List<GoogleMapMarker> markers = new()
+    {
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement { Background = "#137333", GlyphColor = "white", GlyphText = "A" },
+            Position = new GoogleMapMarkerPosition(37.50024109655184, -122.28528451834352),
+            Title = "Marker A",
+        },
+        new GoogleMapMarker()
+        {
+            PinElement = new PinElement { Background = "#1A73E8", GlyphColor = "white", GlyphText = "B" },
+            Position = new GoogleMapMarkerPosition(37.44440882321596, -122.2160620727),
+            Title = "Marker B",
+        }
+    };
+}
