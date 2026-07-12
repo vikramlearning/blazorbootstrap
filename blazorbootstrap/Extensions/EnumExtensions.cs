@@ -627,5 +627,19 @@ public static class EnumExtensions
             _ => ""
         };
 
+    public static string ToHexColorCode(this SpinnerColor spinnerColor) =>
+    spinnerColor switch
+    {
+        SpinnerColor.Primary => "#0d6efd",
+        SpinnerColor.Secondary => "#6c757d",
+        SpinnerColor.Success => "#198754",
+        SpinnerColor.Danger => "#dc3545",
+        SpinnerColor.Warning => "#ffc107",
+        SpinnerColor.Info => "#0dcaf0",
+        SpinnerColor.Light => "#f8f9fa",
+        SpinnerColor.Dark => "#212529",
+        _ => ""
+    };
+
     #endregion
 }
