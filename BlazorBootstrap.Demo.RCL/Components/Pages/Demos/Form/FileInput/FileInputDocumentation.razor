@@ -1,0 +1,46 @@
+@page "/file-input"
+
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_FileInput" />
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <Demo Type="typeof(FileInput_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Multiple files and removal" PageUrl="@pageUrl" Link="multiple-files-and-removal">
+    <div class="mb-3">Set <code>Multiple</code> to allow a selected file to be removed without clearing the others.</div>
+    <Demo Type="typeof(FileInput_Demo_02_Multiple_Files_And_Removal)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Colors and sizes" PageUrl="@pageUrl" Link="colors-and-sizes">
+    <div class="mb-3">Use <code>BackgroundColor</code> and <code>Size</code> to match the surrounding Bootstrap UI.</div>
+    <Demo Type="typeof(FileInput_Demo_03_Colors_And_Sizes)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Validation" PageUrl="@pageUrl" Link="validation">
+    <div class="mb-3">FileInput validates sizes, counts, and extensions for file-dialog and drag-and-drop selection.</div>
+    <Demo Type="typeof(FileInput_Demo_04_Validation)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Hint text and unrestricted extensions" PageUrl="@pageUrl" Link="hint-text-and-unrestricted-extensions">
+    <div class="mb-3">An empty <code>AllowedFileTypes</code> collection accepts every extension while other configured rules remain active.</div>
+    <Demo Type="typeof(FileInput_Demo_05_Hint_And_Unrestricted_Extensions)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_FileInput;
+    private const string pageTitle = "Blazor FileInput";
+    private const string pageDescription = "The Blazor Bootstrap FileInput component supports click and drag-and-drop file selection with validation and removal.";
+    private const string metaTitle = "Blazor FileInput Component";
+    private const string metaDescription = "The Blazor Bootstrap FileInput component supports click and drag-and-drop file selection with validation and removal.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Forms_Prefix;
+}

@@ -1,0 +1,58 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@Element"
+     id="@Id"
+     class="@ClassNames"
+     style="@StyleNames"
+     @attributes="@AdditionalAttributes">
+    <div class="@DropZoneClassNames"
+         @ondragenter="OnDragEnter"
+         @ondragleave="OnDragLeave"
+         @ondragover:preventDefault="true"
+         @ondrop="OnDrop">
+        <InputFile class="bb-file-input__native"
+                   OnChange="OnInputFileChangedAsync"
+                   accept="@Accept"
+                   multiple="@Multiple"
+                   aria-label="@AriaLabel" />
+        <div class="bb-file-input__content" aria-hidden="true">
+            <span class="bb-file-input__title">Drop files here or click to browse</span>
+            @if (Multiple)
+            {
+                <span class="bb-file-input__description">Multiple files are allowed.</span>
+            }
+        </div>
+    </div>
+
+    @if (files.Any())
+    {
+        <ul class="bb-file-input__files" aria-label="Selected files">
+            @foreach (var file in files)
+            {
+                <li class="bb-file-input__file">
+                    <span>@file.Name</span>
+                    <button type="button"
+                            class="btn-close"
+                            aria-label="Remove @file.Name"
+                            @onclick="async () => await RemoveFileAsync(file)"></button>
+                </li>
+            }
+        </ul>
+    }
+
+    @if (validationErrors.Any())
+    {
+        <div class="bb-file-input__errors" role="alert" aria-live="assertive">
+            @foreach (var validationError in validationErrors)
+            {
+                <div>@validationError</div>
+            }
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(HintText))
+    {
+        <div class="form-text">@HintText</div>
+    }
+</div>
