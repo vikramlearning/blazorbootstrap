@@ -1,0 +1,114 @@
+---
+title: Blazor File Input Component
+description: The Blazor Bootstrap FileInput component supports click and drag-and-drop file selection, validation, feedback, and removal.
+sidebar_label: File Input
+sidebar_position: 6
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor FileInput
+
+The Blazor Bootstrap `FileInput` component provides a drop area that users can click or drag files onto. It supports single or multiple files, per-file removal, validation, contextual colors, sizes, and accessible feedback.
+
+<CarbonAd />
+
+## Parameters
+
+| Name | Type | Default | Description | Added Version |
+|:--|:--|:--|:--|:--|
+| AllowedFileTypes | IEnumerable&lt;string&gt; | null | Allowed file extensions. Values can use `.pdf` or `pdf` and match case-insensitively. An empty collection allows every extension. | 3.5.0 |
+| AriaLabel | string | Select files | Accessible label for the selection area. | 3.5.0 |
+| BackgroundColor | BackgroundColor | BackgroundColor.None | Bootstrap contextual background color. | 3.5.0 |
+| HintText | string | null | Help text displayed below the component. | 3.5.0 |
+| MaxFileCount | int | null | Maximum number of selected files. | 3.5.0 |
+| MaxFileSize | long | null | Maximum file size in bytes. | 3.5.0 |
+| Multiple | bool | false | Allows multiple files to be selected. | 3.5.0 |
+| Size | FileInputSize | FileInputSize.Default | Component size. | 3.5.0 |
+
+## Events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| FilesChanged | Fires when the accepted selected-file list changes. | 3.5.0 |
+
+## Examples
+
+### Basic usage and drag-and-drop
+
+Click the drop area to open the native file picker, or drag a file onto it. The same validation rules apply to either path.
+
+```cshtml showLineNumbers
+<FileInput HintText="Click or drop a file here." />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/file-input#basic-usage)
+
+### Multiple files and removal
+
+Set `Multiple` to show every accepted file. Each file has its own keyboard-accessible remove button, so removing one does not clear the others.
+
+```cshtml showLineNumbers
+<FileInput Multiple="true"
+           HintText="Select multiple files and remove them individually." />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/file-input#multiple-files-and-removal)
+
+### Validation
+
+`AllowedFileTypes` accepts extensions only. Values with or without a leading dot are equivalent, and matching is case-insensitive. Files that fail an extension, size, or count rule show a file-specific error; valid files from a mixed selection remain selected.
+
+```cshtml showLineNumbers
+<FileInput Multiple="true"
+           MaxFileCount="3"
+           MaxFileSize="1048576"
+           AllowedFileTypes="@allowedExtensions"
+           HintText="Up to three PDF or PNG files, each no larger than 1 MB." />
+
+@code {
+    private readonly string[] allowedExtensions = [".pdf", "png"];
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/file-input#validation)
+
+### Unrestricted extensions
+
+Use an empty `AllowedFileTypes` collection when every extension is permitted. Other rules, such as `MaxFileSize` and `MaxFileCount`, still apply.
+
+```cshtml showLineNumbers
+<FileInput Multiple="true"
+           AllowedFileTypes="@allowedExtensions"
+           MaxFileSize="5242880"
+           HintText="Any extension is allowed; the 5 MB size limit still applies." />
+
+@code {
+    private readonly string[] allowedExtensions = [];
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/file-input#hint-text-and-unrestricted-extensions)
+
+### Colors, sizes, and styling
+
+Use `BackgroundColor` and `Size` to match the surrounding Bootstrap interface. Consumer CSS can override the component variables for borders, drag feedback, and validation colors.
+
+```cshtml showLineNumbers
+<FileInput BackgroundColor="BackgroundColor.Light"
+           Size="FileInputSize.Large"
+           HintText="Large light file input." />
+```
+
+```css
+.bb-file-input {
+    --bb-file-input-drag-border-color: var(--bs-success);
+    --bb-file-input-drag-background-color: rgba(var(--bs-success-rgb), .1);
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/file-input#colors-and-sizes)
+
+## Accessibility
+
+Provide a clear `AriaLabel` when the default label does not describe the expected files. FileInput announces validation errors through an alert region, and each selected file has an accessible, keyboard-operable remove button.
