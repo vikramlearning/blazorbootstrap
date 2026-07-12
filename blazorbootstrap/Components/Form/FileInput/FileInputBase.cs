@@ -160,14 +160,5 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// </summary>
     public IReadOnlyList<IBrowserFile> SelectedFiles => files.AsReadOnly();
 
-    /// <summary>
-    /// Gets or sets the component size.
-    /// </summary>
-    [AddedVersion("4.0.0")]
-    [DefaultValue(FileInputSize.Default)]
-    [Description("Gets or sets the component size.")]
-    [Parameter]
-    public FileInputSize Size { get; set; } = FileInputSize.Default;
-
     #endregion
 }

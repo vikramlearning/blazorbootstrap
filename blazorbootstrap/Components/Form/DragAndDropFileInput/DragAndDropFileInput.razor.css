@@ -11,7 +11,7 @@
     background-color: var(--bs-primary-bg-subtle);
 }
 
-.bb-drag-and-drop-file-input__native-input {
+::deep .bb-drag-and-drop-file-input__native-input {
     position: absolute;
     inset: 0;
     z-index: 1;
