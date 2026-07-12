@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace BlazorBootstrap;
@@ -37,6 +38,15 @@ public partial class DragAndDropFileInput : FileInputBase
     #endregion
 
     #region Properties, Indexers
+
+    /// <summary>
+    /// Gets or sets the contextual background color of the drag-and-drop area.
+    /// </summary>
+    [AddedVersion("4.0.0")]
+    [DefaultValue(BackgroundColor.None)]
+    [Description("Gets or sets the contextual background color of the drag-and-drop area.")]
+    [Parameter]
+    public BackgroundColor BackgroundColor { get; set; } = BackgroundColor.None;
 
     protected override string? ClassNames =>
         BuildClassNames(Class,

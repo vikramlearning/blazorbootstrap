@@ -1,0 +1,32 @@
+@page "/drag-and-drop-file-input"
+
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_DragAndDropFileInput" />
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">Drop files onto the area on desktop, or tap it on touch devices to open the native file picker.</div>
+    <Demo Type="typeof(DragAndDropFileInput_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Validation" PageUrl="@pageUrl" Link="validation">
+    <div class="mb-3">Drop and picker selection share the same extension, size, and count validation behavior.</div>
+    <Demo Type="typeof(DragAndDropFileInput_Demo_02_Validation)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_DragAndDropFileInput;
+    private const string pageTitle = "Blazor DragAndDropFileInput";
+    private const string pageDescription = "The Blazor Bootstrap DragAndDropFileInput component supports desktop drag and drop and touch file-picker selection.";
+    private const string metaTitle = "Blazor DragAndDropFileInput Component";
+    private const string metaDescription = "The Blazor Bootstrap DragAndDropFileInput component supports desktop drag and drop and touch file-picker selection.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Forms_Prefix;
+}

@@ -1,0 +1,9 @@
+<DragAndDropFileInput Multiple="true"
+                      MaxFileCount="3"
+                      MaxFileSize="1048576"
+                      AllowedFileTypes="@allowedFileTypes"
+                      HintText="Select up to three PDF or PNG files, each no larger than 1 MB." />
+
+@code {
+    private readonly string[] allowedFileTypes = [".pdf", "png"];
+}

@@ -1,0 +1,29 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_DragAndDropFileInput" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Parameters" PageUrl="@pageUrl" Link="parameters">
+    <DocxTable TItem="DragAndDropFileInput" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
+    <DocxTable TItem="DragAndDropFileInput" DocType="DocType.Events" />
+</Section>
+
+@code {
+    private const string componentName = nameof(DragAndDropFileInput);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_DragAndDropFileInput;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Forms_Prefix;
+}

@@ -23,6 +23,7 @@ public partial class DemosMainLayout : MainLayoutBase
             new (){ Id = "403", Text = "Date Input", Href = DemoRouteConstants.Demos_URL_DateInput, IconName = IconName.CalendarDate, ParentId = "4" },
             new (){ Id = "404", Text = "Enum Input", Href = DemoRouteConstants.Demos_URL_EnumInput, IconName = IconName.MenuButtonWideFill, ParentId = "4" },
             new (){ Id = "414", Text = "File Input", Href = DemoRouteConstants.Demos_URL_FileInput, IconName = IconName.FileEarmarkArrowUp, ParentId = "4" },
+            new (){ Id = "415", Text = "Drag and Drop File Input", Href = DemoRouteConstants.Demos_URL_DragAndDropFileInput, IconName = IconName.FileEarmarkArrowUp, ParentId = "4" },
             new (){ Id = "405", Text = "Number Input", Href = DemoRouteConstants.Demos_URL_NumberInput, IconName = IconName.InputCursor, ParentId = "4" },
             new (){ Id = "406", Text = "OTP Input", Href = DemoRouteConstants.Demos_URL_OTPInput, IconName = IconName.Asterisk, ParentId = "4" },
             new (){ Id = "407", Text = "Password Input", Href = DemoRouteConstants.Demos_URL_PasswordInput, IconName = IconName.EyeSlashFill, ParentId = "4" },

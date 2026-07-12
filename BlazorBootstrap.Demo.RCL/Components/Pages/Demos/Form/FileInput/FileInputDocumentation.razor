@@ -13,6 +13,7 @@
 <DocsLink Href="@DemoRouteConstants.Docs_URL_FileInput" />
 
 <Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">FileInput uses Bootstrap's standard visible file-control presentation. Use DragAndDropFileInput when a drop area is needed.</div>
     <Demo Type="typeof(FileInput_Demo_01_Basic_Usage)" Tabs="true" />
 </Section>
 
@@ -21,13 +22,13 @@
     <Demo Type="typeof(FileInput_Demo_02_Multiple_Files_And_Removal)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Colors and sizes" PageUrl="@pageUrl" Link="colors-and-sizes">
-    <div class="mb-3">Use <code>BackgroundColor</code> and <code>Size</code> to match the surrounding Bootstrap UI.</div>
+<Section Size="HeadingSize.H2" Name="Sizes" PageUrl="@pageUrl" Link="sizes">
+    <div class="mb-3">Use <code>Size</code> to apply Bootstrap's <code>form-control-lg</code> and <code>form-control-sm</code> file-control sizes.</div>
     <Demo Type="typeof(FileInput_Demo_03_Colors_And_Sizes)" Tabs="true" />
 </Section>
 
 <Section Size="HeadingSize.H2" Name="Validation" PageUrl="@pageUrl" Link="validation">
-    <div class="mb-3">FileInput validates sizes, counts, and extensions for file-dialog and drag-and-drop selection.</div>
+    <div class="mb-3">FileInput validates sizes, counts, and extensions selected from the file dialog.</div>
     <Demo Type="typeof(FileInput_Demo_04_Validation)" Tabs="true" />
 </Section>
 
@@ -39,8 +40,8 @@
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_FileInput;
     private const string pageTitle = "Blazor FileInput";
-    private const string pageDescription = "The Blazor Bootstrap FileInput component supports click and drag-and-drop file selection with validation and removal.";
+    private const string pageDescription = "The Blazor Bootstrap FileInput component provides a standard Bootstrap file control with validation and removal.";
     private const string metaTitle = "Blazor FileInput Component";
-    private const string metaDescription = "The Blazor Bootstrap FileInput component supports click and drag-and-drop file selection with validation and removal.";
+    private const string metaDescription = "The Blazor Bootstrap FileInput component provides a standard Bootstrap file control with validation and removal.";
     private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Forms_Prefix;
 }

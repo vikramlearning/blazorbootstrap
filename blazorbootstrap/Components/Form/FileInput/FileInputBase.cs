@@ -112,15 +112,6 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     public string AriaLabel { get; set; } = "Select files";
 
     /// <summary>
-    /// Gets or sets the contextual background color used by DragAndDropFileInput.
-    /// </summary>
-    [AddedVersion("4.0.0")]
-    [DefaultValue(BackgroundColor.None)]
-    [Description("Gets or sets the contextual background color used by DragAndDropFileInput.")]
-    [Parameter]
-    public BackgroundColor BackgroundColor { get; set; } = BackgroundColor.None;
-
-    /// <summary>
     /// This event fires when the selected files change.
     /// </summary>
     [AddedVersion("4.0.0")]
