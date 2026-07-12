@@ -1,6 +1,3 @@
-using System.ComponentModel;
-using Microsoft.AspNetCore.Components.Web;
-
 namespace BlazorBootstrap;
 
 public partial class DragAndDropFileInput : FileInputBase

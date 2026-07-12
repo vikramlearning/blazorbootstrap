@@ -1,6 +1,3 @@
-using System.ComponentModel;
-using Microsoft.AspNetCore.Components.Forms;
-
 namespace BlazorBootstrap;
 
 public abstract class FileInputBase : BlazorBootstrapComponentBase

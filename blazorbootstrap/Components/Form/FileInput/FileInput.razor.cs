@@ -1,5 +1,3 @@
-using System.ComponentModel;
-
 namespace BlazorBootstrap;
 
 public partial class FileInput : FileInputBase
