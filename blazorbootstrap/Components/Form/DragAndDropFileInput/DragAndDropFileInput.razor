@@ -27,10 +27,10 @@
 
     @if (files.Any())
     {
-        <ul class="bb-file-input__files" aria-label="Selected files">
+        <ul class="list-group list-group-flush mt-3" aria-label="Selected files">
             @foreach (var file in files)
             {
-                <li class="bb-file-input__file">
+                <li class="list-group-item d-flex align-items-center justify-content-between">
                     <span>@file.Name</span>
                     <button type="button" class="btn-close" aria-label="Remove @file.Name" @onclick="async () => await RemoveFileAsync(file)"></button>
                 </li>
@@ -40,7 +40,7 @@
 
     @if (validationErrors.Any())
     {
-        <div class="bb-file-input__errors" role="alert" aria-live="assertive">
+        <div class="text-danger" role="alert" aria-live="assertive">
             @foreach (var validationError in validationErrors)
             {
                 <div>@validationError</div>

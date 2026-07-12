@@ -25,7 +25,7 @@
 
     @if (validationErrors.Any())
     {
-        <div class="bb-file-input__errors" role="alert" aria-live="assertive">
+        <div class="text-danger" role="alert" aria-live="assertive">
             @foreach (var validationError in validationErrors)
             {
                 <div>@validationError</div>
