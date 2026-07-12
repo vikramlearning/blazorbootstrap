@@ -2,6 +2,10 @@
            MaxFileCount="3"
            MaxFileSize="1048576"
            AllowedFileTypes="@allowedFileTypes"
+           InvalidFileTypeErrorMessage="{FileName} must use one of: {AllowedFileTypes}."
+           MaxFileCountErrorMessage="{FileName} would exceed the {MaxFileCount}-file limit."
+           MaxFileSizeErrorMessage="{FileName} exceeds the {MaxFileSize}-byte limit."
+           SingleFileErrorMessage="Select only one file."
            HintText="Select up to three PDF or PNG files, each no larger than 1 MB." />
 
 @code {

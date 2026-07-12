@@ -21,9 +21,13 @@ The Blazor Bootstrap `DragAndDropFileInput` component displays a file drop area.
 | AriaLabel | string | Select files | Accessible label for the drop area and native file picker. | 4.0.0 |
 | BackgroundColor | BackgroundColor | BackgroundColor.None | Bootstrap contextual background color for the drop area. | 4.0.0 |
 | HintText | string | null | Help text displayed in the drop area. | 4.0.0 |
+| InvalidFileTypeErrorMessage | string | `{FileName}: the file extension is not allowed.` | Invalid-extension message template. Supports `{FileName}` and `{AllowedFileTypes}`. | 4.0.0 |
 | MaxFileCount | int | null | Maximum number of selected files. | 4.0.0 |
+| MaxFileCountErrorMessage | string | `{FileName}: the maximum number of files has been reached.` | Maximum-count message template. Supports `{FileName}` and `{MaxFileCount}`. | 4.0.0 |
 | MaxFileSize | long | null | Maximum file size in bytes. | 4.0.0 |
+| MaxFileSizeErrorMessage | string | `{FileName}: the file exceeds the maximum allowed size.` | Maximum-size message template. Supports `{FileName}` and `{MaxFileSize}`. | 4.0.0 |
 | Multiple | bool | false | Allows multiple files to be selected. | 4.0.0 |
+| SingleFileErrorMessage | string | Only one file can be selected. | Single-file selection message template; no dynamic token applies. | 4.0.0 |
 
 ## Events
 
@@ -60,6 +64,18 @@ Drop a file onto the area in desktop browsers. On tablet and mobile touch browse
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/form/drag-and-drop-file-input#validation)
+
+### Validation message templates
+
+DragAndDropFileInput inherits the same validation-message templates as FileInput. The current messages remain the defaults. Use `{FileName}` for file-specific errors, `{MaxFileSize}` for size errors, `{AllowedFileTypes}` for extension errors, and `{MaxFileCount}` for count errors. `SingleFileErrorMessage` is static and has no dynamic token.
+
+~~~cshtml showLineNumbers
+<DragAndDropFileInput Multiple="true"
+                      InvalidFileTypeErrorMessage="{FileName} must use: {AllowedFileTypes}."
+                      MaxFileCountErrorMessage="{FileName} would exceed the {MaxFileCount}-file limit."
+                      MaxFileSizeErrorMessage="{FileName} exceeds the {MaxFileSize}-byte limit."
+                      SingleFileErrorMessage="Select only one file." />
+~~~
 
 ### Background color
 

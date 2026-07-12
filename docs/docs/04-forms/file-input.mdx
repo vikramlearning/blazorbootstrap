@@ -20,9 +20,13 @@ The Blazor Bootstrap `FileInput` component follows the standard Bootstrap file-c
 | AllowedFileTypes | IEnumerable&lt;string&gt; | null | Allowed file extensions. Values can use `.pdf` or `pdf` and match case-insensitively. An empty collection allows every extension. | 4.0.0 |
 | AriaLabel | string | Select files | Accessible label for the file control. | 4.0.0 |
 | HintText | string | null | Help text displayed below the component. | 4.0.0 |
+| InvalidFileTypeErrorMessage | string | `{FileName}: the file extension is not allowed.` | Invalid-extension message template. Supports `{FileName}` and `{AllowedFileTypes}`. | 4.0.0 |
 | MaxFileCount | int | null | Maximum number of selected files. | 4.0.0 |
+| MaxFileCountErrorMessage | string | `{FileName}: the maximum number of files has been reached.` | Maximum-count message template. Supports `{FileName}` and `{MaxFileCount}`. | 4.0.0 |
 | MaxFileSize | long | null | Maximum file size in bytes. | 4.0.0 |
+| MaxFileSizeErrorMessage | string | `{FileName}: the file exceeds the maximum allowed size.` | Maximum-size message template. Supports `{FileName}` and `{MaxFileSize}`. | 4.0.0 |
 | Multiple | bool | false | Allows multiple files to be selected. | 4.0.0 |
+| SingleFileErrorMessage | string | Only one file can be selected. | Single-file selection message template; no dynamic token applies. | 4.0.0 |
 | Size | FileInputSize | FileInputSize.Default | Applies Bootstrap `form-control-lg` or `form-control-sm` sizing. | 4.0.0 |
 
 ## Events
@@ -71,6 +75,18 @@ Set `Multiple` to show every accepted file. Each file has its own keyboard-acces
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/form/file-input#validation)
+
+### Validation message templates
+
+Each validation message can be customized. The current messages remain the defaults. Use only the tokens that apply to the condition: `{FileName}` with file-specific errors, `{MaxFileSize}` for size errors, `{AllowedFileTypes}` for extension errors, and `{MaxFileCount}` for count errors. `SingleFileErrorMessage` is static and has no dynamic token.
+
+~~~cshtml showLineNumbers
+<FileInput Multiple="true"
+           InvalidFileTypeErrorMessage="{FileName} must use: {AllowedFileTypes}."
+           MaxFileCountErrorMessage="{FileName} would exceed the {MaxFileCount}-file limit."
+           MaxFileSizeErrorMessage="{FileName} exceeds the {MaxFileSize}-byte limit."
+           SingleFileErrorMessage="Select only one file." />
+~~~
 
 ### Unrestricted extensions
 
