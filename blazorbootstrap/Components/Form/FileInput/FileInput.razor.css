@@ -1,53 +1,3 @@
-.bb-file-input {
-    --bb-file-input-border-color: var(--bs-border-color);
-    --bb-file-input-border-radius: var(--bs-border-radius);
-    --bb-file-input-drag-border-color: var(--bs-primary);
-    --bb-file-input-drag-background-color: rgba(var(--bs-primary-rgb), .08);
-    --bb-file-input-error-color: var(--bs-danger-text-emphasis);
-}
-
-.bb-file-input__drop-zone {
-    border: 2px dashed var(--bb-file-input-border-color);
-    border-radius: var(--bb-file-input-border-radius);
-    min-height: 8rem;
-    padding: 1.5rem;
-    position: relative;
-    transition: background-color .15s ease-in-out, border-color .15s ease-in-out;
-}
-
-.bb-file-input__drop-zone--drag-over {
-    background-color: var(--bb-file-input-drag-background-color);
-    border-color: var(--bb-file-input-drag-border-color);
-}
-
-.bb-file-input__native {
-    cursor: pointer;
-    height: 100%;
-    inset: 0;
-    opacity: 0;
-    position: absolute;
-    width: 100%;
-    z-index: 1;
-}
-
-.bb-file-input__content {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    gap: .25rem;
-    justify-content: center;
-    min-height: 5rem;
-    text-align: center;
-}
-
-.bb-file-input__title {
-    font-weight: 600;
-}
-
-.bb-file-input__description {
-    font-size: .875em;
-}
-
 .bb-file-input__files {
     list-style: none;
     margin: .75rem 0 0;
@@ -63,6 +13,6 @@
 }
 
 .bb-file-input__errors {
-    color: var(--bb-file-input-error-color);
+    color: var(--bs-danger-text-emphasis);
     margin-top: .75rem;
 }
