@@ -60,6 +60,11 @@
     /* callout */
     --bb-callout-link: 10, 88, 202;
     --bb-callout-code-color: #ab296a;
+    /* validation */
+    --bb-validation-outline-width: 1px;
+    --bb-validation-valid-outline-color: #26b050;
+    --bb-validation-invalid-outline-color: red;
+    --bb-validation-message-color: red;
     /* sidebar */
     --bb-violet: #9461fb;
     --bb-violet-bg: #712cf9;
@@ -210,6 +215,19 @@ table button.dropdown-toggle.bb-grid-filter::after {
 
 .bb-grid-pagination-text {
     padding: .375rem;
+}
+
+/* forms - validation */
+.valid.modified:not([type=checkbox]) {
+    outline: var(--bb-validation-outline-width) solid var(--bb-validation-valid-outline-color);
+}
+
+.invalid {
+    outline: var(--bb-validation-outline-width) solid var(--bb-validation-invalid-outline-color);
+}
+
+.validation-message {
+    color: var(--bb-validation-message-color);
 }
 
 /* split view */
@@ -813,7 +831,7 @@ main {
 }
 
 /* sortable-list */
-.list-group-item:not(:has(.bb-sortable-list-handle)) {
+.sortable-list-group-item:not(:has(.bb-sortable-list-handle)) {
     cursor: grab !important;
 }
 
