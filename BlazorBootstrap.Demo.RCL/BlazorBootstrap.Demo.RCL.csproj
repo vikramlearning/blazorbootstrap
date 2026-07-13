@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BlazorExpress.ChartJS" Version="1.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0" />
   </ItemGroup>
