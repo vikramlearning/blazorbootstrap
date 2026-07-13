@@ -1,4 +1,4 @@
-﻿<ScatterChart @ref="scatterChart" />
+<ScatterChart @ref="scatterChart" />
 
 <div class="mt-5">
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="async () => await RandomizeAsync()"> Randomize </Button>
@@ -120,7 +120,7 @@
 
     private ScatterChartDataset GetRandomScatterChartDataset()
     {
-        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
+        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToChartColor();
 
         datasetsCount += 1;
 
@@ -128,8 +128,8 @@
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = c.ToRgbaString(), // RGBA
-                BorderColor = c.ToRgbString(), // RGB
+                BackgroundColor = c.ToChartRgbaString(), // RGBA
+                BorderColor = c.ToChartRgbString(), // RGB
                 BorderWidth = 2,
                 Fill = true,
                 HoverBorderWidth = 4,

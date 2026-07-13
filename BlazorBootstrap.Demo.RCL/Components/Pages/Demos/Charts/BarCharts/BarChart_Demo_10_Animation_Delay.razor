@@ -43,7 +43,7 @@
 
         barChartOptions = new();
         barChartOptions.Responsive = true;
-        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index, Axis = InteractionAxis.Y };
+        barChartOptions.Interaction = new Interaction { Mode = InteractionMode.Y };
         barChartOptions.IndexAxis = "y";
         barChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "Visitors", Display = true };
         barChartOptions.Scales.Y!.Title = new ChartAxesTitle { Text = "Browser", Display = true };

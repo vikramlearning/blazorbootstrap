@@ -1,6 +1,6 @@
 ---
-title: Blazor Bubble Chart Component
-description: A Blazor Bootstrap bubble chart component is used to display three dimensions of data at the same time. The location of the bubble is determined by the first two dimensions and the size of each bubble represents a third value.
+title: Blazor Bubble Chart with BlazorExpress.ChartJS
+description: Use the dedicated BlazorExpress.ChartJS package for the Blazor bubble chart component, documentation, and original demos.
 image: https://i.imgur.com/JLV7oss.png
 
 sidebar_label: Bubble Chart
@@ -9,93 +9,18 @@ sidebar_position: 2
 
 import CarbonAd from '/carbon-ad.mdx'
 
-# Blazor Bubble Chart
+# Blazor Bubble Chart with BlazorExpress.ChartJS
 
-A Blazor Bootstrap bubble chart component is used to visualize three dimensions of data at the same time. Each data point is represented by a bubble where the `X` and `Y` coordinates determine the position and `R` controls the bubble size.
+The **Bubble Chart** component is no longer shipped by BlazorBootstrap. Use the dedicated [BlazorExpress.ChartJS](https://chartjs.blazorexpress.com/) package for the current component and API.
 
 <CarbonAd />
 
-## Demo and Documentation
+:::warning Migrating from the former BlazorBootstrap chart
+Install BlazorExpress.ChartJS, import its namespace, load its browser scripts, and update your chart code to the dedicated package API. See the [chart migration and setup guide](/components/charts).
+:::
 
-<a href="https://demos.blazorbootstrap.com/charts/bubble-chart">See blazor bubble chart demo here.</a>
-<br />
-<a href="https://docs.blazorbootstrap.com/charts/bubble-chart">See blazor bubble chart API documentation here.</a>
+- [Official Bubble Chart documentation](https://chartjs.blazorexpress.com/docs/bubble-chart)
+- [Original Bubble Chart demo](https://chartjs.blazorexpress.com/demos/bubble-chart)
+- [BlazorExpress.ChartJS GitHub repository](https://github.com/BlazorExpress/BlazorExpress.ChartJS)
 
-## Basic Example
-
-```razor showLineNumbers
-<BubbleChart @ref="bubbleChart" Width="600" />
-
-@code {
-    private BubbleChart bubbleChart = default!;
-    private BubbleChartOptions bubbleChartOptions = new() { Responsive = true };
-    private ChartData chartData = new()
-    {
-        Labels = new List<string> { "January", "February", "March" },
-        Datasets = new List<IChartDataset>
-        {
-            new BubbleChartDataset
-            {
-                Label = "Product 1",
-                Data = new List<BubbleChartDataPoint>
-                {
-                    new(10, 20, 8),
-                    new(14, 11, 6),
-                    new(18, 24, 10)
-                },
-                BackgroundColor = new List<string> { "rgba(13, 110, 253, 0.6)" },
-                BorderColor = new List<string> { "rgb(13, 110, 253)" }
-            }
-        }
-    };
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-            await bubbleChart.InitializeAsync(chartData, bubbleChartOptions);
-    }
-}
-```
-
-## Key Types
-
-- `BubbleChart` renders the Chart.js bubble chart canvas.
-- `BubbleChartOptions` configures responsiveness, interaction, scales, layout, and plugins.
-- `BubbleChartDataset` contains the dataset styling and the `List<BubbleChartDataPoint>` values.
-- `BubbleChartDataPoint` is the core data shape and contains `X`, `Y`, and `R` values.
-- `BubbleChartDatasetData` supports dynamic `AddDataAsync` updates.
-
-## Interaction Options
-
-Bubble charts use the shared `Interaction` model, so you can control hover and tooltip behavior with the same properties used by the other cartesian charts.
-
-```razor showLineNumbers
-@code {
-    private BubbleChartOptions bubbleChartOptions = new()
-    {
-        Responsive = true,
-        Interaction = new Interaction
-        {
-            Mode = InteractionMode.Index,
-            Axis = InteractionAxis.XY,
-            IncludeInvisible = false
-        }
-    };
-}
-```
-
-## Dynamic Updates
-
-Use the same methods available on the other chart components:
-
-- `AddDatasetAsync` to append a dataset.
-- `AddDataAsync` to append a new bubble to existing datasets.
-- `UpdateAsync` to replace chart data or options.
-- `ResizeAsync` to resize the chart container.
-
-## Related Pages
-
-- [Charts Overview](/components/charts)
-- [Scatter Chart](/data-visualization/scatter-chart)
-- [Bar Chart](/data-visualization/bar-chart)
-- [Line Chart](/data-visualization/line-chart)
+We recommend checking the original BlazorExpress.ChartJS demo before adapting advanced examples.

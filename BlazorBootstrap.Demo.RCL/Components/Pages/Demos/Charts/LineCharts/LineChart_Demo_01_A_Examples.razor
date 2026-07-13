@@ -1,4 +1,4 @@
-﻿<div class="container-fluid overflow-x-auto">
+<div class="container-fluid overflow-x-auto">
     <LineChart @ref="lineChart" Width="800" />
 </div>
 
@@ -67,7 +67,7 @@
 
         chartData.Datasets = newDatasets;
 
-        await lineChart.UpdateValuesAsync(chartData);
+        await lineChart.UpdateAsync(chartData, lineChartOptions);
     }
 
     private async Task AddDatasetAsync()
@@ -121,7 +121,7 @@
 
     private LineChartDataset GetRandomLineChartDataset()
     {
-        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
+        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToChartColor();
 
         datasetsCount += 1;
 
@@ -129,8 +129,8 @@
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = c.ToRgbaString(),
-                BorderColor = c.ToRgbString(),
+                BackgroundColor = c.ToChartRgbaString(),
+                BorderColor = c.ToChartRgbString(),
                 PointRadius = new List<double> { 5 },
                 PointHoverRadius = new List<double> { 8 },
             };

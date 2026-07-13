@@ -1,8 +1,33 @@
 @namespace BlazorBootstrap.Demo.RCL
 
-<Callout Color="CalloutColor.Warning" HideHeading="true">
-    <h4>Using charts only</h4>
-    <p>If you only need chart components (without the rest of the Blazor Bootstrap UI), install the <b>BlazorExpress.ChartJS</b> package from NuGet.</p>
-    <pre class="mb-2">> dotnet add package BlazorExpress.ChartJS</pre>
-    <p>For setup and usage details, see the <a href="https://chartjs.blazorexpress.com/docs/getting-started/introduction" target="_blank" rel="noopener">BlazorExpress.ChartJS getting started guide</a>.</p>
+<Callout Color="CalloutColor.Info" HideHeading="true">
+    <h4>Set up BlazorExpress.ChartJS</h4>
+    <p>
+        Chart components are provided by the dedicated <strong>BlazorExpress.ChartJS</strong> package.
+        Complete these steps in the Blazor project that renders the charts.
+    </p>
+    <ol class="mb-3">
+        <li class="mb-3">
+            <strong>Install the package used by these demos:</strong>
+            <pre class="mt-2 mb-0"><code>dotnet add package BlazorExpress.ChartJS --version 1.2.3</code></pre>
+        </li>
+        <li class="mb-3">
+            <strong>Import the component namespace</strong> in <code>_Imports.razor</code>:
+            <pre class="mt-2 mb-0"><code>@@using BlazorExpress.ChartJS</code></pre>
+        </li>
+        <li>
+            <strong>Load the browser scripts in this order</strong> from the host page, after the Blazor framework script.
+            The data-labels plugin is needed only when a chart uses data labels.
+            <pre class="mt-2 mb-0"><code>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"&gt;&lt;/script&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"&gt;&lt;/script&gt;
+&lt;script src="_content/BlazorExpress.ChartJS/blazorexpress.chartjs.js"&gt;&lt;/script&gt;</code></pre>
+        </li>
+    </ol>
+    <p class="mb-0">
+        See the <a href="https://chartjs.blazorexpress.com/" target="_blank" rel="noopener noreferrer">BlazorExpress.ChartJS website</a>
+        and <a href="https://github.com/BlazorExpress/BlazorExpress.ChartJS" target="_blank" rel="noopener noreferrer">GitHub repository</a>
+        for current package documentation. We also recommend checking the
+        <a href="https://chartjs.blazorexpress.com/demos/bar-chart" target="_blank" rel="noopener noreferrer">original BlazorExpress.ChartJS demos</a>
+        when adapting advanced examples.
+    </p>
 </Callout>

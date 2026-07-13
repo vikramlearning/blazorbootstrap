@@ -1,6 +1,6 @@
-﻿---
-title: Blazor Chart Components
-description: Blazor Bootstrap charts are well-designed chart components on top of Chart.js to visualize data. It contains a rich UI gallery of charts that cater to all charting scenarios. Its high performance helps render large amounts of data quickly.
+---
+title: Blazor Charts with BlazorExpress.ChartJS
+description: BlazorBootstrap chart components have moved to the dedicated BlazorExpress.ChartJS package. Follow this migration and setup guide for Chart.js components.
 image: https://i.imgur.com/ATtFiUZ.png
 
 sidebar_label: Charts
@@ -9,94 +9,57 @@ sidebar_position: 8
 
 import CarbonAd from '/carbon-ad.mdx'
 
-# Blazor Charts
+# Blazor Charts with BlazorExpress.ChartJS
 
-Blazor Bootstrap charts are well-designed chart components on top of Chart.js to visualize data. It contains a rich UI gallery of charts that cater to all charting scenarios. Its high performance helps render large amounts of data quickly.
+Chart components are no longer included in the **BlazorBootstrap** package. They are developed and released separately as [BlazorExpress.ChartJS](https://chartjs.blazorexpress.com/), a dedicated Blazor component library built on Chart.js.
 
 <CarbonAd />
 
-## Example
-
-<img src="https://i.imgur.com/JLV7oss.png" alt="Blazor Chart Component - Blazor Bar Chart Example" />
-<br />
-<img src="https://i.imgur.com/CzdXpqr.png" alt="Blazor Chart Component - Blazor Line Chart Example" />
-<br />
-<a href="https://demos.blazorbootstrap.com/charts#bar-chart">See blazor chart demo here.</a>
-
-## Chart Types
-
-At this moment we are supporting eight blazor chart types.
-1. Bar Chart
-1. Bubble Chart
-1. Doughnut Chart
-1. Line Chart
-1. Pie Chart
-1. Polar Area Chart
-1. Radar Chart
-1. Scatter Chart
-
-:::info
-**Bubble Chart** is now available, and **Bar Chart** and **Line Chart** support mixed bar/line datasets.
+:::warning Breaking change
+When upgrading from a BlazorBootstrap version that included charts, add the `BlazorExpress.ChartJS` package and namespace, add its browser scripts, and update chart code to the dedicated package API. Remove references to the former BlazorBootstrap chart types and `window.blazorChart` interop.
 :::
 
-## Bar Chart
+## Install the package
 
-<img src="https://i.imgur.com/IX3bajc.png" alt="Blazor Chart Component - Blazor Bar Chart" />
-<br />
-<a href="https://demos.blazorbootstrap.com/charts/bar-chart">See blazor bar chart demo here.</a>
-<br />
-<a href="/data-visualization/bar-chart">See blazor bar chart full documentation here.</a>
+```shell
+dotnet add package BlazorExpress.ChartJS --version 1.2.3
+```
 
-## Doughnut Chart
+Add the namespace to the `_Imports.razor` used by your chart pages:
 
-<img src="https://i.imgur.com/xEPhAsW.png" alt="Blazor Chart Component - Blazor Doughnut Chart" />
-<br />
-<a href="https://demos.blazorbootstrap.com/charts/doughnut-chart">See blazor doughnut chart demo here.</a>
-<br />
-<a href="/data-visualization/doughnut-chart">See blazor doughnut chart full documentation here.</a>
+```razor
+@using BlazorExpress.ChartJS
+```
 
-## Bubble Chart
+## Add browser scripts
 
-<a href="https://demos.blazorbootstrap.com/charts/bubble-chart">See blazor bubble chart demo here.</a>
-<br />
-<a href="/data-visualization/bubble-chart">See blazor bubble chart full documentation here.</a>
+Load these scripts from the host page after the Blazor framework script and in the order shown. The data-labels plugin is needed only by charts that use data labels.
 
-## Line Chart
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<script src="_content/BlazorExpress.ChartJS/blazorexpress.chartjs.js"></script>
+```
 
-<img src="https://i.imgur.com/8b7jH0D.png" alt="Blazor Chart Component - Blazor Line Chart" />
-<br />
-<a href="https://demos.blazorbootstrap.com/charts/line-chart">See blazor line chart demo here.</a>
-<br />
-<a href="/data-visualization/line-chart">See blazor line chart full documentation here.</a>
+## Documentation and original demos
 
-## Pie Chart
+Use the dedicated project as the source of truth for current chart APIs and examples:
 
-<img src="https://i.imgur.com/dDpIuzk.png" alt="Blazor Chart Component - Blazor Pie Chart" />
-<br />
-<a href="https://demos.blazorbootstrap.com/charts/pie-chart">See blazor pie chart demo here.</a>
-<br />
-<a href="/data-visualization/pie-chart">See blazor pie chart full documentation here.</a>
+- [BlazorExpress.ChartJS website and documentation](https://chartjs.blazorexpress.com/)
+- [BlazorExpress.ChartJS GitHub repository](https://github.com/BlazorExpress/BlazorExpress.ChartJS)
+- [Original BlazorExpress.ChartJS demos](https://chartjs.blazorexpress.com/demos/bar-chart)
 
-## Polar Area Chart
+We recommend checking the original demos before adapting advanced examples.
 
-<img src="https://i.imgur.com/xLAqwGi.png" alt="Blazor Chart Component - Blazor Polar Area Chart" />
-<br />
-<a href="https://demos.blazorbootstrap.com/charts/polar-area-chart">See blazor polar area chart demo here.</a>
-<br />
-<a href="/data-visualization/polar-area-chart">See blazor polar area chart full documentation here.</a>
+## Chart types
 
-## Radar Chart
-
-<img src="https://i.imgur.com/Urrb79M.png" alt="Blazor Chart Component - Blazor Radar Chart" />
-<br />
-<a href="https://demos.blazorbootstrap.com/charts/radar-chart">See blazor radar chart demo here.</a>
-<br />
-<a href="/data-visualization/radar-chart">See blazor radar chart full documentation here.</a>
-
-## Scatter Chart
-
-<img src="https://i.imgur.com/GEox0tS.png" alt="Blazor Chart Component - Blazor Scatter Chart" />
-<br />
-<a href="https://demos.blazorbootstrap.com/charts/scatter-chart">See blazor scatter chart demo here.</a>
-<br />
-<a href="/data-visualization/scatter-chart">See blazor scatter chart full documentation here.</a>
+| Chart | Official documentation | Original demo |
+|:--|:--|:--|
+| Bar | [Documentation](https://chartjs.blazorexpress.com/docs/bar-chart) | [Demo](https://chartjs.blazorexpress.com/demos/bar-chart) |
+| Bubble | [Documentation](https://chartjs.blazorexpress.com/docs/bubble-chart) | [Demo](https://chartjs.blazorexpress.com/demos/bubble-chart) |
+| Doughnut | [Documentation](https://chartjs.blazorexpress.com/docs/doughnut-chart) | [Demo](https://chartjs.blazorexpress.com/demos/doughnut-chart) |
+| Line | [Documentation](https://chartjs.blazorexpress.com/docs/line-chart) | [Demo](https://chartjs.blazorexpress.com/demos/line-chart) |
+| Pie | [Documentation](https://chartjs.blazorexpress.com/docs/pie-chart) | [Demo](https://chartjs.blazorexpress.com/demos/pie-chart) |
+| Polar Area | [Documentation](https://chartjs.blazorexpress.com/docs/polar-area-chart) | [Demo](https://chartjs.blazorexpress.com/demos/polar-area-chart) |
+| Radar | [Documentation](https://chartjs.blazorexpress.com/docs/radar-chart) | [Demo](https://chartjs.blazorexpress.com/demos/radar-chart) |
+| Scatter | [Documentation](https://chartjs.blazorexpress.com/docs/scatter-chart) | [Demo](https://chartjs.blazorexpress.com/demos/scatter-chart) |

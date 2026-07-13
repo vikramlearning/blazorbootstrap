@@ -1,4 +1,4 @@
-﻿<PolarAreaChart @ref="polarAreaChart" Width="600" />
+<PolarAreaChart @ref="polarAreaChart" Width="600" />
 
 <div class="mt-5">
     <button class="btn btn-primary btn-sm" @onclick="async () => await RandomizeAsync()"> Randomize </button>
@@ -59,7 +59,7 @@
                 var backgroundColors = new List<string>();
                 for (var index = 0; index < count; index++)
                 {
-                    backgroundColors.Add(chartColors![index].ToColor().ToRgbaString(0.5)); // RGBA
+                    backgroundColors.Add(chartColors![index].ToChartColor().ToChartRgbaString(0.5)); // RGBA
                 }
 
                 polarAreaChartDataset.Data = newData;
@@ -95,7 +95,7 @@
         foreach (var dataset in chartData.Datasets)
         {
             if (dataset is PolarAreaChartDataset polarAreaChartDataset)
-                data.Add(new PolarAreaChartDatasetData(polarAreaChartDataset.Label, random.Next(0, 100), chartColors![dataLabelsCount - 1].ToColor().ToRgbaString(0.5), null));
+                data.Add(new PolarAreaChartDatasetData(polarAreaChartDataset.Label, random.Next(0, 100), chartColors![dataLabelsCount - 1].ToChartColor().ToChartRgbaString(0.5), null));
         }
 
         chartData = await polarAreaChart.AddDataAsync(chartData, GetNextDataLabel(), data);
@@ -156,7 +156,7 @@
         var colors = new List<string>();
         for (var index = 0; index < dataLabelsCount; index++)
         {
-            colors.Add(chartColors![index].ToColor().ToRgbaString(0.5)); // RGBA
+            colors.Add(chartColors![index].ToChartColor().ToChartRgbaString(0.5)); // RGBA
         }
 
         return colors;
@@ -167,7 +167,7 @@
         var colors = new List<string>();
         for (var index = 0; index < dataLabelsCount; index++)
         {
-            colors.Add(chartColors![index].ToColor().ToRgbString()); // RGB
+            colors.Add(chartColors![index].ToChartColor().ToChartRgbString()); // RGB
         }
 
         return colors;
