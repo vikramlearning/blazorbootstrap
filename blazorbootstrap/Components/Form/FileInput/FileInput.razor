@@ -1,0 +1,40 @@
+@namespace BlazorBootstrap
+@inherits FileInputBase
+
+<div @ref="@Element" @attributes="@AdditionalAttributes">
+    <InputFile id="@Id"
+               class="@ClassNames"
+               style="@StyleNames"
+               OnChange="OnInputFileChangedAsync"
+               accept="@Accept"
+               multiple="@Multiple"
+               aria-label="@AriaLabel" />
+
+    @if (files.Any())
+    {
+        <ul class="list-group list-group-flush mt-3" aria-label="Selected files">
+            @foreach (var file in files)
+            {
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <span>@file.Name</span>
+                    <button type="button" class="btn-close" aria-label="Remove @file.Name" @onclick="async () => await RemoveFileAsync(file)"></button>
+                </li>
+            }
+        </ul>
+    }
+
+    @if (validationErrors.Any())
+    {
+        <div class="text-danger" role="alert" aria-live="assertive">
+            @foreach (var validationError in validationErrors)
+            {
+                <div>@validationError</div>
+            }
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(HintText))
+    {
+        <div class="form-text">@HintText</div>
+    }
+</div>

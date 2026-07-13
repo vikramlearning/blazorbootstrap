@@ -30,7 +30,9 @@ public static class DemoRouteConstants
     public const string Demos_URL_CheckboxInput = Demos_URL_Forms_Prefix + "/checkbox-input";
     public const string Demos_URL_CurrencyInput = Demos_URL_Forms_Prefix + "/currency-input";
     public const string Demos_URL_DateInput = Demos_URL_Forms_Prefix + "/date-input";
+    public const string Demos_URL_DragAndDropFileInput = Demos_URL_Forms_Prefix + "/drag-and-drop-file-input";
     public const string Demos_URL_EnumInput = Demos_URL_Forms_Prefix + "/enum-input";
+    public const string Demos_URL_FileInput = Demos_URL_Forms_Prefix + "/file-input";
     public const string Demos_URL_NumberInput = Demos_URL_Forms_Prefix + "/number-input";
     public const string Demos_URL_OTPInput = Demos_URL_Forms_Prefix + "/otp-input";
     public const string Demos_URL_PasswordInput = Demos_URL_Forms_Prefix + "/password-input";
@@ -144,7 +146,9 @@ public static class DemoRouteConstants
     public const string Docs_URL_CheckboxInput = Docs_URL_Forms_Prefix + "/checkbox-input";
     public const string Docs_URL_CurrencyInput = Docs_URL_Forms_Prefix + "/currency-input";
     public const string Docs_URL_DateInput = Docs_URL_Forms_Prefix + "/date-input";
+    public const string Docs_URL_DragAndDropFileInput = Docs_URL_Forms_Prefix + "/drag-and-drop-file-input";
     public const string Docs_URL_EnumInput = Docs_URL_Forms_Prefix + "/enum-input";
+    public const string Docs_URL_FileInput = Docs_URL_Forms_Prefix + "/file-input";
     public const string Docs_URL_NumberInput = Docs_URL_Forms_Prefix + "/number-input";
     public const string Docs_URL_OTPInput = Docs_URL_Forms_Prefix + "/otp-input";
     public const string Docs_URL_PasswordInput = Docs_URL_Forms_Prefix + "/password-input";

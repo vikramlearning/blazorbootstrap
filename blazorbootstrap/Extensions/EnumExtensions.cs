@@ -310,6 +310,19 @@ public static class EnumExtensions
             _ => ""
         };
 
+    /// <summary>
+    /// Converts a <see cref="FileInputSize" /> value to its Bootstrap CSS class.
+    /// </summary>
+    [AddedVersion("4.0.0")]
+    [Description("Converts a FileInputSize value to its Bootstrap CSS class.")]
+    public static string ToFileInputSizeClass(this FileInputSize fileInputSize) =>
+        fileInputSize switch
+        {
+            FileInputSize.Large => "form-control-lg",
+            FileInputSize.Small => "form-control-sm",
+            _ => ""
+        };
+
     public static string ToIconColorClass(this IconColor iconColor) =>
         iconColor switch
         {

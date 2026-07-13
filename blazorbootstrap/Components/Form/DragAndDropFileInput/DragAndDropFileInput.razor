@@ -1,0 +1,50 @@
+@namespace BlazorBootstrap
+@inherits FileInputBase
+
+<div @ref="@Element" @attributes="@AdditionalAttributes">
+    <div class="@ClassNames"
+         style="@StyleNames"
+         @ondragenter="OnDragEnter"
+         @ondragleave="OnDragLeave"
+         @ondragover:preventDefault
+         @ondrop="OnDrop"
+         role="group"
+         aria-label="@AriaLabel">
+        <InputFile id="@Id"
+                   class="bb-drag-and-drop-file-input__native-input"
+                   OnChange="OnInputFileChangedAsync"
+                   accept="@Accept"
+                   multiple="@Multiple"
+                   aria-label="@AriaLabel" />
+        <div class="bb-drag-and-drop-file-input__content" aria-hidden="true">
+            <span class="bb-drag-and-drop-file-input__title">Drop files here or tap to browse</span>
+            @if (!string.IsNullOrWhiteSpace(HintText))
+            {
+                <span class="bb-drag-and-drop-file-input__hint">@HintText</span>
+            }
+        </div>
+    </div>
+
+    @if (files.Any())
+    {
+        <ul class="list-group list-group-flush mt-3" aria-label="Selected files">
+            @foreach (var file in files)
+            {
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <span>@file.Name</span>
+                    <button type="button" class="btn-close" aria-label="Remove @file.Name" @onclick="async () => await RemoveFileAsync(file)"></button>
+                </li>
+            }
+        </ul>
+    }
+
+    @if (validationErrors.Any())
+    {
+        <div class="text-danger" role="alert" aria-live="assertive">
+            @foreach (var validationError in validationErrors)
+            {
+                <div>@validationError</div>
+            }
+        </div>
+    }
+</div>

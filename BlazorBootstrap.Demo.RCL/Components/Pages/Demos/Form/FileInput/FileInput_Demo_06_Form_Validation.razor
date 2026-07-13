@@ -1,0 +1,50 @@
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Forms
+
+<EditForm EditContext="@editContext" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Supporting document <span class="text-danger">*</span></label>
+        <FileInput AllowedFileTypes="@allowedFileTypes"
+                   MaxFileSize="1048576"
+                   FilesChanged="OnFilesChanged"
+                   HintText="A PDF document up to 1 MB is required." />
+        <ValidationMessage For="@(() => upload.DocumentName)" />
+    </div>
+
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
+
+    @if (submitted)
+    {
+        <div class="alert alert-success mt-3" role="status">Form submitted with @upload.DocumentName.</div>
+    }
+</EditForm>
+
+@code {
+    private readonly string[] allowedFileTypes = ["pdf"];
+    private readonly UploadModel upload = new();
+    private EditContext editContext = null!;
+    private bool submitted;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(upload);
+    }
+
+    private void HandleValidSubmit() => submitted = true;
+
+    private void OnFilesChanged(IReadOnlyList<IBrowserFile> files)
+    {
+        upload.DocumentName = files.FirstOrDefault()?.Name;
+        submitted = false;
+        editContext.NotifyFieldChanged(new FieldIdentifier(upload, nameof(upload.DocumentName)));
+    }
+
+    private sealed class UploadModel
+    {
+        [Required(ErrorMessage = "A supporting document is required.")]
+        public string? DocumentName { get; set; }
+    }
+}
