@@ -61,10 +61,11 @@
     --bb-callout-link: 10, 88, 202;
     --bb-callout-code-color: #ab296a;
     /* validation */
+    --bs-text-opacity: 1;
     --bb-validation-outline-width: 1px;
-    --bb-validation-valid-outline-color: #26b050;
-    --bb-validation-invalid-outline-color: red;
-    --bb-validation-message-color: red;
+    --bb-validation-valid-outline-color: rgba(var(--bs-success-rgb), var(--bs-text-opacity));
+    --bb-validation-invalid-outline-color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity));
+    --bb-validation-message-color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity));
     /* sidebar */
     --bb-violet: #9461fb;
     --bb-violet-bg: #712cf9;
