@@ -1,0 +1,60 @@
+<PolarAreaChart @ref="polarAreaChart" Width="600" OnClick="HandleClickAsync" />
+
+@if (selectedChartItem is not null)
+{
+    <p class="mt-3 mb-0">
+        Selected: @selectedChartItem.DatasetLabel (dataset @selectedChartItem.DatasetIndex),
+        @FormatLabel(selectedChartItem) (index @selectedChartItem.Index),
+        value @FormatValue(selectedChartItem)
+    </p>
+}
+
+@code {
+    private PolarAreaChart polarAreaChart = default!;
+    private PolarAreaChartOptions polarAreaChartOptions = default!;
+    private ChartData chartData = default!;
+    private ChartClickEventArgs? selectedChartItem;
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+        {
+            Labels = new List<string> { "North", "South", "East", "West" },
+            Datasets = new List<IChartDataset>
+            {
+                new PolarAreaChartDataset
+                {
+                    Label = "Sales",
+                    Data = new List<double?> { 35, 55, 40, 25 },
+                    BackgroundColor = new List<string>
+                    {
+                        "rgba(255, 99, 132, 0.5)",
+                        "rgba(54, 162, 235, 0.5)",
+                        "rgba(255, 206, 86, 0.5)",
+                        "rgba(75, 192, 192, 0.5)",
+                    },
+                },
+            },
+        };
+
+        polarAreaChartOptions = new PolarAreaChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await polarAreaChart.InitializeAsync(chartData, polarAreaChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private Task HandleClickAsync(ChartClickEventArgs eventArgs)
+    {
+        selectedChartItem = eventArgs;
+        return Task.CompletedTask;
+    }
+
+    private static string FormatLabel(ChartClickEventArgs eventArgs) => eventArgs.Label ?? $"item {eventArgs.Index}";
+
+    private static string FormatValue(ChartClickEventArgs eventArgs) => eventArgs.Value?.ToString() ?? "null";
+}

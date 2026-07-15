@@ -22,7 +22,7 @@ When upgrading from a BlazorBootstrap version that included charts, add the `Bla
 ## Install the package
 
 ```shell
-dotnet add package BlazorExpress.ChartJS --version 1.2.3
+dotnet add package BlazorExpress.ChartJS --version 1.2.4
 ```
 
 Add the namespace to the `_Imports.razor` used by your chart pages:
@@ -50,6 +50,12 @@ Use the dedicated project as the source of truth for current chart APIs and exam
 - [Original BlazorExpress.ChartJS demos](https://chartjs.blazorexpress.com/demos/bar-chart)
 
 We recommend checking the original demos before adapting advanced examples.
+
+## Click events in 1.2.4
+
+BlazorExpress.ChartJS 1.2.4 adds chart item click callbacks for every supported chart family. Set the package-provided `OnClick` callback to receive `ChartClickEventArgs`, which includes the selected dataset index and label, data-item index and label, and raw selected value.
+
+Use the official documentation and original demos below for the current click-event examples and API details.
 
 ## Chart types
 

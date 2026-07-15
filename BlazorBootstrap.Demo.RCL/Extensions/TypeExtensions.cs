@@ -71,13 +71,16 @@ public static class TypeExtensions
 
         foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance))
         {
+            var isChartComponentBaseMethod = includeChartComponentBaseMethods && method.DeclaringType == typeof(BlazorExpress.ChartJS.ChartComponentBase);
+            var isDocumentedChartClickHandler = isChartComponentBaseMethod && method.Name == nameof(BlazorExpress.ChartJS.ChartComponentBase.HandleClickAsync);
+
             // Filter out methods inherited from System.Object (if needed)
             if (method.DeclaringType != typeof(object)
                 && (method.DeclaringType == type
-                    || (includeChartComponentBaseMethods && method.DeclaringType == typeof(BlazorExpress.ChartJS.ChartComponentBase)))
+                    || isChartComponentBaseMethod)
                 && !method.Name.StartsWith("get_") // Exclude get_ methods
                 && !method.Name.StartsWith("set_") // Exclude set_ methods
-                && !method.GetCustomAttributes(typeof(JSInvokableAttribute), false).Any()) // Exclude methods that are not general public methods
+                && (!method.GetCustomAttributes(typeof(JSInvokableAttribute), false).Any() || isDocumentedChartClickHandler)) // Exclude methods that are not general public methods
             {
                 methods.Add(method);
             }

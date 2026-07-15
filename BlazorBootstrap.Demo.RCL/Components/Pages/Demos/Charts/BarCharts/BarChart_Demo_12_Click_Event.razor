@@ -1,0 +1,54 @@
+<BarChart @ref="barChart" Width="600" OnClick="HandleClickAsync" />
+
+@if (selectedChartItem is not null)
+{
+    <p class="mt-3 mb-0">
+        Selected: @selectedChartItem.DatasetLabel (dataset @selectedChartItem.DatasetIndex),
+        @FormatLabel(selectedChartItem) (index @selectedChartItem.Index),
+        value @FormatValue(selectedChartItem)
+    </p>
+}
+
+@code {
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
+    private ChartData chartData = default!;
+    private ChartClickEventArgs? selectedChartItem;
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+        {
+            Labels = new List<string> { "January", "February", "March" },
+            Datasets = new List<IChartDataset>
+            {
+                new BarChartDataset
+                {
+                    Label = "Orders",
+                    Data = new List<double?> { 45, 68, 54 },
+                    BackgroundColor = new List<string> { "#36A2EB" },
+                },
+            },
+        };
+
+        barChartOptions = new BarChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await barChart.InitializeAsync(chartData, barChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private Task HandleClickAsync(ChartClickEventArgs eventArgs)
+    {
+        selectedChartItem = eventArgs;
+        return Task.CompletedTask;
+    }
+
+    private static string FormatLabel(ChartClickEventArgs eventArgs) => eventArgs.Label ?? $"item {eventArgs.Index}";
+
+    private static string FormatValue(ChartClickEventArgs eventArgs) => eventArgs.Value?.ToString() ?? "null";
+}

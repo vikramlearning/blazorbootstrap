@@ -1,0 +1,54 @@
+<DoughnutChart @ref="doughnutChart" Width="600" OnClick="HandleClickAsync" />
+
+@if (selectedChartItem is not null)
+{
+    <p class="mt-3 mb-0">
+        Selected: @selectedChartItem.DatasetLabel (dataset @selectedChartItem.DatasetIndex),
+        @FormatLabel(selectedChartItem) (index @selectedChartItem.Index),
+        value @FormatValue(selectedChartItem)
+    </p>
+}
+
+@code {
+    private DoughnutChart doughnutChart = default!;
+    private DoughnutChartOptions doughnutChartOptions = default!;
+    private ChartData chartData = default!;
+    private ChartClickEventArgs? selectedChartItem;
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+        {
+            Labels = new List<string> { "Direct", "Referral", "Social" },
+            Datasets = new List<IChartDataset>
+            {
+                new DoughnutChartDataset
+                {
+                    Label = "Visitors",
+                    Data = new List<double?> { 55, 30, 15 },
+                    BackgroundColor = new List<string> { "#36A2EB", "#FF6384", "#FFCE56" },
+                },
+            },
+        };
+
+        doughnutChartOptions = new DoughnutChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await doughnutChart.InitializeAsync(chartData, doughnutChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private Task HandleClickAsync(ChartClickEventArgs eventArgs)
+    {
+        selectedChartItem = eventArgs;
+        return Task.CompletedTask;
+    }
+
+    private static string FormatLabel(ChartClickEventArgs eventArgs) => eventArgs.Label ?? $"item {eventArgs.Index}";
+
+    private static string FormatValue(ChartClickEventArgs eventArgs) => eventArgs.Value?.ToString() ?? "null";
+}

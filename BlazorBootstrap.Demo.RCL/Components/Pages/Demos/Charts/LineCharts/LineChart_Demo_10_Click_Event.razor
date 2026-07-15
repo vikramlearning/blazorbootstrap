@@ -1,0 +1,57 @@
+<LineChart @ref="lineChart" Width="600" OnClick="HandleClickAsync" />
+
+@if (selectedChartItem is not null)
+{
+    <p class="mt-3 mb-0">
+        Selected: @selectedChartItem.DatasetLabel (dataset @selectedChartItem.DatasetIndex),
+        @FormatLabel(selectedChartItem) (index @selectedChartItem.Index),
+        value @FormatValue(selectedChartItem)
+    </p>
+}
+
+@code {
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
+    private ChartClickEventArgs? selectedChartItem;
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+        {
+            Labels = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday" },
+            Datasets = new List<IChartDataset>
+            {
+                new LineChartDataset
+                {
+                    Label = "Visitors",
+                    Data = new List<double?> { 120, 190, 150, 230 },
+                    BackgroundColor = "rgba(54, 162, 235, 0.2)",
+                    BorderColor = "rgb(54, 162, 235)",
+                    PointRadius = new List<double> { 5 },
+                    PointHoverRadius = new List<double> { 8 },
+                },
+            },
+        };
+
+        lineChartOptions = new LineChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private Task HandleClickAsync(ChartClickEventArgs eventArgs)
+    {
+        selectedChartItem = eventArgs;
+        return Task.CompletedTask;
+    }
+
+    private static string FormatLabel(ChartClickEventArgs eventArgs) => eventArgs.Label ?? $"item {eventArgs.Index}";
+
+    private static string FormatValue(ChartClickEventArgs eventArgs) => eventArgs.Value?.ToString() ?? "null";
+}

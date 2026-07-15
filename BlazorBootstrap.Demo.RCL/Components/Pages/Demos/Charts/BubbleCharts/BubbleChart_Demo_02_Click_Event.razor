@@ -1,0 +1,61 @@
+<BubbleChart @ref="bubbleChart" Width="600" OnClick="HandleClickAsync" />
+
+@if (selectedChartItem is not null)
+{
+    <p class="mt-3 mb-0">
+        Selected: @selectedChartItem.DatasetLabel (dataset @selectedChartItem.DatasetIndex),
+        @FormatLabel(selectedChartItem) (index @selectedChartItem.Index),
+        value @FormatValue(selectedChartItem)
+    </p>
+}
+
+@code {
+    private BubbleChart bubbleChart = default!;
+    private BubbleChartOptions bubbleChartOptions = default!;
+    private ChartData chartData = default!;
+    private ChartClickEventArgs? selectedChartItem;
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+        {
+            Labels = new List<string> { "January", "February", "March" },
+            Datasets = new List<IChartDataset>
+            {
+                new BubbleChartDataset
+                {
+                    Label = "Projects",
+                    Data = new List<BubbleChartDataPoint>
+                    {
+                        new(10, 20, 8),
+                        new(15, 12, 12),
+                        new(8, 25, 6),
+                    },
+                    BackgroundColor = new List<string> { "rgba(255, 99, 132, 0.5)" },
+                    BorderColor = new List<string> { "rgb(255, 99, 132)" },
+                    BorderWidth = 1,
+                },
+            },
+        };
+
+        bubbleChartOptions = new BubbleChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await bubbleChart.InitializeAsync(chartData, bubbleChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private Task HandleClickAsync(ChartClickEventArgs eventArgs)
+    {
+        selectedChartItem = eventArgs;
+        return Task.CompletedTask;
+    }
+
+    private static string FormatLabel(ChartClickEventArgs eventArgs) => eventArgs.Label ?? $"item {eventArgs.Index}";
+
+    private static string FormatValue(ChartClickEventArgs eventArgs) => eventArgs.Value?.ToString() ?? "null";
+}

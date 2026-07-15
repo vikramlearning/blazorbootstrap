@@ -1,0 +1,57 @@
+<RadarChart @ref="radarChart" Width="600" OnClick="HandleClickAsync" />
+
+@if (selectedChartItem is not null)
+{
+    <p class="mt-3 mb-0">
+        Selected: @selectedChartItem.DatasetLabel (dataset @selectedChartItem.DatasetIndex),
+        @FormatLabel(selectedChartItem) (index @selectedChartItem.Index),
+        value @FormatValue(selectedChartItem)
+    </p>
+}
+
+@code {
+    private RadarChart radarChart = default!;
+    private RadarChartOptions radarChartOptions = default!;
+    private ChartData chartData = default!;
+    private ChartClickEventArgs? selectedChartItem;
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+        {
+            Labels = new List<string> { "Speed", "Reliability", "Comfort", "Safety", "Efficiency" },
+            Datasets = new List<IChartDataset>
+            {
+                new RadarChartDataset
+                {
+                    Label = "Vehicle A",
+                    Data = new List<double?> { 80, 72, 65, 90, 78 },
+                    BackgroundColor = "rgba(153, 102, 255, 0.2)",
+                    BorderColor = "rgba(153, 102, 255, 0.8)",
+                    BorderWidth = 2,
+                    Fill = true,
+                },
+            },
+        };
+
+        radarChartOptions = new RadarChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await radarChart.InitializeAsync(chartData, radarChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private Task HandleClickAsync(ChartClickEventArgs eventArgs)
+    {
+        selectedChartItem = eventArgs;
+        return Task.CompletedTask;
+    }
+
+    private static string FormatLabel(ChartClickEventArgs eventArgs) => eventArgs.Label ?? $"item {eventArgs.Index}";
+
+    private static string FormatValue(ChartClickEventArgs eventArgs) => eventArgs.Value?.ToString() ?? "null";
+}

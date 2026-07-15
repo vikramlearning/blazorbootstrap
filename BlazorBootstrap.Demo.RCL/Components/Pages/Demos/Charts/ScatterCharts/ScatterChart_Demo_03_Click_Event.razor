@@ -1,0 +1,62 @@
+<ScatterChart @ref="scatterChart" Width="600" Height="480" OnClick="HandleClickAsync" />
+
+@if (selectedChartItem is not null)
+{
+    <p class="mt-3 mb-0">
+        Selected: @selectedChartItem.DatasetLabel (dataset @selectedChartItem.DatasetIndex),
+        @FormatLabel(selectedChartItem) (index @selectedChartItem.Index),
+        value @FormatValue(selectedChartItem)
+    </p>
+}
+
+@code {
+    private ScatterChart scatterChart = default!;
+    private ScatterChartOptions scatterChartOptions = default!;
+    private ChartData chartData = default!;
+    private ChartClickEventArgs? selectedChartItem;
+
+    protected override void OnInitialized()
+    {
+        chartData = new ChartData
+        {
+            Labels = new List<string> { "First", "Second", "Third", "Fourth" },
+            Datasets = new List<IChartDataset>
+            {
+                new ScatterChartDataset
+                {
+                    Label = "Measurements",
+                    Data = new List<ScatterChartDataPoint>
+                    {
+                        new(10, 25),
+                        new(25, 15),
+                        new(35, 40),
+                        new(50, 30),
+                    },
+                    BackgroundColor = "rgba(255, 159, 64, 0.6)",
+                    BorderColor = "rgb(255, 159, 64)",
+                    BorderWidth = 2,
+                },
+            },
+        };
+
+        scatterChartOptions = new ScatterChartOptions { Responsive = true };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await scatterChart.InitializeAsync(chartData, scatterChartOptions);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private Task HandleClickAsync(ChartClickEventArgs eventArgs)
+    {
+        selectedChartItem = eventArgs;
+        return Task.CompletedTask;
+    }
+
+    private static string FormatLabel(ChartClickEventArgs eventArgs) => eventArgs.Label ?? $"point {eventArgs.Index}";
+
+    private static string FormatValue(ChartClickEventArgs eventArgs) => eventArgs.Value?.ToString() ?? "null";
+}
