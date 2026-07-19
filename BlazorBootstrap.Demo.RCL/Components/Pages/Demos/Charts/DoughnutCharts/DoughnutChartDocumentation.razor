@@ -1,4 +1,4 @@
-﻿@attribute [Route(pageUrl)]
+@attribute [Route(pageUrl)]
 @layout DemosMainLayout
 
 <DemosPageHeadSection PageUrl="@pageUrl"
@@ -9,12 +9,6 @@
                       ImageUrl="@imageUrl" />
 
 <DocsLink Href="@DemoRouteConstants.Docs_URL_DoughnutChart" />
-
-<Section Size="HeadingSize.H4" Name="Prerequisites" PageUrl="@pageUrl" Link="prerequisites">
-    <div class="mb-3">
-        Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
-    </div>
-</Section>
 
 <Section Size="HeadingSize.H4" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
     <div class="mb-3">
@@ -32,10 +26,11 @@
 </Section>
 
 <Section Size="HeadingSize.H4" Name="Click event" PageUrl="@pageUrl" Link="click-event">
+    <div class="my-3">
+        Set the <code>OnClick</code> callback to react when a doughnut segment is selected. The callback receives <code>ChartClickEventArgs</code> with the dataset, item index, label, and raw value.
+    </div>
     <Demo Type="typeof(DoughnutChart_Demo_03_Click_Event)" Tabs="true" />
 </Section>
-
-<ChartJSCallout />
 
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_DoughnutChart;

@@ -10,11 +10,6 @@
 
 <DocsLink Href="@DemoRouteConstants.Docs_URL_BarChart" />
 
-<Section Size="HeadingSize.H4" Name="Prerequisites" PageUrl="@pageUrl" Link="prerequisites" />
-<div class="mb-3">
-    Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
-</div>
-
 <Section Size="HeadingSize.H4" Name="How it works" PageUrl="@pageUrl" Link="how-it-works" />
 <div class="mb-3">
     In the following example, a <a href="/utils/color-utility#categorical-12-color">categorical 12-color</a> palette is used.
@@ -71,16 +66,18 @@
 </div>
 <Demo Type="typeof(BarChart_Demo_11_Combo_Bar_Line)" Tabs="true" />
 
-<Section Size="HeadingSize.H4" Name="Click event" PageUrl="@pageUrl" Link="click-event" />
-<Demo Type="typeof(BarChart_Demo_06_Click_Event)" Tabs="true" />
-
-<ChartJSCallout />
+<Section Size="HeadingSize.H4" Name="Click event" PageUrl="@pageUrl" Link="click-event">
+    <div class="my-3">
+        Set the <code>OnClick</code> callback to react when a chart data item is selected. The callback receives <code>ChartClickEventArgs</code> with the dataset index and label, data-item index and label, and raw value.
+    </div>
+    <Demo Type="typeof(BarChart_Demo_12_Click_Event)" Tabs="true" />
+</Section>
 
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_BarChart;
     private const string pageTitle = "Blazor Bar Chart";
-    private const string pageDescription = "A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.";
+    private const string pageDescription = "A BlazorExpress.ChartJS bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.";
     private const string metaTitle = "Blazor Bar Chart Component";
-    private const string metaDescription = "A Blazor Bootstrap bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.";
+    private const string metaDescription = "A BlazorExpress.ChartJS bar chart component is used to represent data values as vertical bars. It is sometimes used to show trend data and to compare multiple data sets side by side.";
     private const string imageUrl = "https://i.imgur.com/IX3bajc.png";
 }

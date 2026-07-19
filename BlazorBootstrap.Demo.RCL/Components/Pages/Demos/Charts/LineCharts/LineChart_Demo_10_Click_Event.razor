@@ -1,4 +1,4 @@
-<RadarChart @ref="radarChart" Width="600" OnClick="HandleClickAsync" />
+<LineChart @ref="lineChart" Width="600" OnClick="HandleClickAsync" />
 
 @if (selectedChartItem is not null)
 {
@@ -10,8 +10,8 @@
 }
 
 @code {
-    private RadarChart radarChart = default!;
-    private RadarChartOptions radarChartOptions = default!;
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
     private ChartData chartData = default!;
     private ChartClickEventArgs? selectedChartItem;
 
@@ -19,28 +19,28 @@
     {
         chartData = new ChartData
         {
-            Labels = new List<string> { "Speed", "Reliability", "Comfort", "Safety", "Efficiency" },
+            Labels = new List<string> { "Monday", "Tuesday", "Wednesday", "Thursday" },
             Datasets = new List<IChartDataset>
             {
-                new RadarChartDataset
+                new LineChartDataset
                 {
-                    Label = "Vehicle A",
-                    Data = new List<double?> { 80, 72, 65, 90, 78 },
-                    BackgroundColor = "rgba(153, 102, 255, 0.2)",
-                    BorderColor = "rgba(153, 102, 255, 0.8)",
-                    BorderWidth = 2,
-                    Fill = true,
+                    Label = "Visitors",
+                    Data = new List<double?> { 120, 190, 150, 230 },
+                    BackgroundColor = "rgba(54, 162, 235, 0.2)",
+                    BorderColor = "rgb(54, 162, 235)",
+                    PointRadius = new List<double> { 5 },
+                    PointHoverRadius = new List<double> { 8 },
                 },
             },
         };
 
-        radarChartOptions = new RadarChartOptions { Responsive = true };
+        lineChartOptions = new LineChartOptions { Responsive = true };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await radarChart.InitializeAsync(chartData, radarChartOptions);
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
 
         await base.OnAfterRenderAsync(firstRender);
     }

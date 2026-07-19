@@ -1,57 +1,43 @@
-<ScatterChart @ref="scatterChart" OnClick="OnClick" Width="560" Height="480" />
+<ScatterChart @ref="scatterChart" Width="600" Height="480" OnClick="HandleClickAsync" />
 
-<div class="mt-3">
-    <strong>Selected item:</strong> @selectedItemMessage
-</div>
+@if (selectedChartItem is not null)
+{
+    <p class="mt-3 mb-0">
+        Selected: @selectedChartItem.DatasetLabel (dataset @selectedChartItem.DatasetIndex),
+        @FormatLabel(selectedChartItem) (index @selectedChartItem.Index),
+        value @FormatValue(selectedChartItem)
+    </p>
+}
 
 @code {
     private ScatterChart scatterChart = default!;
     private ScatterChartOptions scatterChartOptions = default!;
     private ChartData chartData = default!;
-    private string selectedItemMessage = "Click a point to view its details.";
+    private ChartClickEventArgs? selectedChartItem;
 
     protected override void OnInitialized()
     {
         chartData = new ChartData
+        {
+            Labels = new List<string> { "First", "Second", "Third", "Fourth" },
+            Datasets = new List<IChartDataset>
             {
-                Datasets = new List<IChartDataset>
+                new ScatterChartDataset
                 {
-                    new ScatterChartDataset
+                    Label = "Measurements",
+                    Data = new List<ScatterChartDataPoint>
                     {
-                        Label = "Team 1",
-                        Data = new List<ScatterChartDataPoint?>
-                        {
-                            new(15, 25),
-                            new(22, 48),
-                            new(38, 32),
-                            new(55, 67)
-                        },
-                        BackgroundColor = ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbaString(),
-                        BorderColor = ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbString(),
-                        BorderWidth = 2,
-                        HoverBorderWidth = 4,
-                        PointRadius = new List<double> { 6 },
-                        PointHoverRadius = new List<double> { 8 }
+                        new(10, 25),
+                        new(25, 15),
+                        new(35, 40),
+                        new(50, 30),
                     },
-                    new ScatterChartDataset
-                    {
-                        Label = "Team 2",
-                        Data = new List<ScatterChartDataPoint?>
-                        {
-                            new(12, 35),
-                            new(28, 30),
-                            new(41, 52),
-                            new(63, 72)
-                        },
-                        BackgroundColor = ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbaString(),
-                        BorderColor = ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbString(),
-                        BorderWidth = 2,
-                        HoverBorderWidth = 4,
-                        PointRadius = new List<double> { 6 },
-                        PointHoverRadius = new List<double> { 8 }
-                    }
-                }
-            };
+                    BackgroundColor = "rgba(255, 159, 64, 0.6)",
+                    BorderColor = "rgb(255, 159, 64)",
+                    BorderWidth = 2,
+                },
+            },
+        };
 
         scatterChartOptions = new ScatterChartOptions { Responsive = true };
     }
@@ -64,8 +50,13 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private void OnClick(ChartClickEventArgs eventArgs)
+    private Task HandleClickAsync(ChartClickEventArgs eventArgs)
     {
-        selectedItemMessage = $"Dataset: {eventArgs.DatasetLabel}, Value: {eventArgs.Value}";
+        selectedChartItem = eventArgs;
+        return Task.CompletedTask;
     }
+
+    private static string FormatLabel(ChartClickEventArgs eventArgs) => eventArgs.Label ?? $"point {eventArgs.Index}";
+
+    private static string FormatValue(ChartClickEventArgs eventArgs) => eventArgs.Value?.ToString() ?? "null";
 }

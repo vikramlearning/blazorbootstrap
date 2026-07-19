@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Demo.RCL;
+namespace BlazorBootstrap.Demo.RCL;
 
 /// <summary>
 /// Extension methods for <see cref="Type" />.
@@ -67,17 +67,20 @@ public static class TypeExtensions
     {
         var methods = new HashSet<MethodInfo>();
 
-        var includeBlazorBootstrapChartMethods = typeof(BlazorBootstrapChart).IsAssignableFrom(type);
+        var includeChartComponentBaseMethods = typeof(BlazorExpress.ChartJS.ChartComponentBase).IsAssignableFrom(type);
 
         foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance))
         {
+            var isChartComponentBaseMethod = includeChartComponentBaseMethods && method.DeclaringType == typeof(BlazorExpress.ChartJS.ChartComponentBase);
+            var isDocumentedChartClickHandler = isChartComponentBaseMethod && method.Name == nameof(BlazorExpress.ChartJS.ChartComponentBase.HandleClickAsync);
+
             // Filter out methods inherited from System.Object (if needed)
             if (method.DeclaringType != typeof(object)
                 && (method.DeclaringType == type
-                    || (includeBlazorBootstrapChartMethods && method.DeclaringType == typeof(BlazorBootstrapChart)))
+                    || isChartComponentBaseMethod)
                 && !method.Name.StartsWith("get_") // Exclude get_ methods
                 && !method.Name.StartsWith("set_") // Exclude set_ methods
-                && !method.GetCustomAttributes(typeof(JSInvokableAttribute), false).Any()) // Exclude methods that are not general public methods
+                && (!method.GetCustomAttributes(typeof(JSInvokableAttribute), false).Any() || isDocumentedChartClickHandler)) // Exclude methods that are not general public methods
             {
                 methods.Add(method);
             }
