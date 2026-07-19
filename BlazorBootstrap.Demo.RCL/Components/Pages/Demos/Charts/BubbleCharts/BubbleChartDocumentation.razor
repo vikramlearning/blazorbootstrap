@@ -10,12 +10,6 @@
 
 <DocsLink Href="@DemoRouteConstants.Docs_URL_BubbleChart" />
 
-<Section Size="HeadingSize.H4" Name="Prerequisites" PageUrl="@pageUrl" Link="prerequisites">
-    <div class="mb-3">
-        Refer to the <a href="/getting-started/blazor-webassembly">getting started guide</a> for setting up charts.
-    </div>
-</Section>
-
 <Section Size="HeadingSize.H4" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
     <div class="mb-3">
         The bubble chart visualizes three dimensions of data by mapping each point to <code>X</code>, <code>Y</code>, and <code>R</code> values.
@@ -33,8 +27,6 @@
     </div>
     <Demo Type="typeof(BubbleChart_Demo_02_Click_Event)" Tabs="true" />
 </Section>
-
-<ChartJSCallout />
 
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_BubbleChart;
