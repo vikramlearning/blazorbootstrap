@@ -1,36 +1,35 @@
-<PieChart @ref="pieChart" OnClick="OnClick" Width="500" />
+<PieChart @ref="pieChart" Width="600" OnClick="HandleClickAsync" />
 
-<div class="mt-3">
-    <strong>Selected item:</strong> @selectedItemMessage
-</div>
+@if (selectedChartItem is not null)
+{
+    <p class="mt-3 mb-0">
+        Selected: @selectedChartItem.DatasetLabel (dataset @selectedChartItem.DatasetIndex),
+        @FormatLabel(selectedChartItem) (index @selectedChartItem.Index),
+        value @FormatValue(selectedChartItem)
+    </p>
+}
 
 @code {
     private PieChart pieChart = default!;
     private PieChartOptions pieChartOptions = default!;
     private ChartData chartData = default!;
-    private string selectedItemMessage = "Click a slice to view its details.";
+    private ChartClickEventArgs? selectedChartItem;
 
     protected override void OnInitialized()
     {
         chartData = new ChartData
+        {
+            Labels = new List<string> { "Desktop", "Tablet", "Mobile" },
+            Datasets = new List<IChartDataset>
             {
-                Labels = new List<string> { "Chrome", "Edge", "Firefox", "Safari" },
-                Datasets = new List<IChartDataset>
+                new PieChartDataset
                 {
-                    new PieChartDataset
-                    {
-                        Label = "Browsers",
-                        Data = new List<double?> { 62, 18, 11, 9 },
-                        BackgroundColor = new List<string>
-                        {
-                            ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbString(),
-                            ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbString(),
-                            ColorUtility.CategoricalTwelveColors[2].ToColor().ToRgbString(),
-                            ColorUtility.CategoricalTwelveColors[3].ToColor().ToRgbString()
-                        }
-                    }
-                }
-            };
+                    Label = "Sessions",
+                    Data = new List<double?> { 62, 18, 20 },
+                    BackgroundColor = new List<string> { "#4BC0C0", "#9966FF", "#FF9F40" },
+                },
+            },
+        };
 
         pieChartOptions = new PieChartOptions { Responsive = true };
     }
@@ -43,8 +42,13 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private void OnClick(ChartClickEventArgs eventArgs)
+    private Task HandleClickAsync(ChartClickEventArgs eventArgs)
     {
-        selectedItemMessage = $"Dataset: {eventArgs.DatasetLabel}, Label: {eventArgs.Label}, Value: {eventArgs.Value}";
+        selectedChartItem = eventArgs;
+        return Task.CompletedTask;
     }
+
+    private static string FormatLabel(ChartClickEventArgs eventArgs) => eventArgs.Label ?? $"item {eventArgs.Index}";
+
+    private static string FormatValue(ChartClickEventArgs eventArgs) => eventArgs.Value?.ToString() ?? "null";
 }

@@ -1,4 +1,4 @@
-<RadarChart @ref="radarChart" Width="600" OnClick="HandleClickAsync" />
+<BarChart @ref="barChart" Width="600" OnClick="HandleClickAsync" />
 
 @if (selectedChartItem is not null)
 {
@@ -10,8 +10,8 @@
 }
 
 @code {
-    private RadarChart radarChart = default!;
-    private RadarChartOptions radarChartOptions = default!;
+    private BarChart barChart = default!;
+    private BarChartOptions barChartOptions = default!;
     private ChartData chartData = default!;
     private ChartClickEventArgs? selectedChartItem;
 
@@ -19,28 +19,25 @@
     {
         chartData = new ChartData
         {
-            Labels = new List<string> { "Speed", "Reliability", "Comfort", "Safety", "Efficiency" },
+            Labels = new List<string> { "January", "February", "March" },
             Datasets = new List<IChartDataset>
             {
-                new RadarChartDataset
+                new BarChartDataset
                 {
-                    Label = "Vehicle A",
-                    Data = new List<double?> { 80, 72, 65, 90, 78 },
-                    BackgroundColor = "rgba(153, 102, 255, 0.2)",
-                    BorderColor = "rgba(153, 102, 255, 0.8)",
-                    BorderWidth = 2,
-                    Fill = true,
+                    Label = "Orders",
+                    Data = new List<double?> { 45, 68, 54 },
+                    BackgroundColor = new List<string> { "#36A2EB" },
                 },
             },
         };
 
-        radarChartOptions = new RadarChartOptions { Responsive = true };
+        barChartOptions = new BarChartOptions { Responsive = true };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await radarChart.InitializeAsync(chartData, radarChartOptions);
+            await barChart.InitializeAsync(chartData, barChartOptions);
 
         await base.OnAfterRenderAsync(firstRender);
     }

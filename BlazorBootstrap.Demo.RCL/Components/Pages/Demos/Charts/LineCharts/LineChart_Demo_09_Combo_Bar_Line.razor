@@ -9,8 +9,8 @@
 
     protected override void OnInitialized()
     {
-        var forecastColor = ColorUtility.CategoricalTwelveColors[2].ToColor();
-        var actualColor = ColorUtility.CategoricalTwelveColors[3].ToColor();
+        var forecastColor = ColorUtility.CategoricalTwelveColors[2].ToChartColor();
+        var actualColor = ColorUtility.CategoricalTwelveColors[3].ToChartColor();
 
         chartData = new ChartData
             {
@@ -21,8 +21,8 @@
                     {
                         Label = "Forecast",
                         Data = new List<double?> { 45, 52, 61, 66, 73, 79 },
-                        BackgroundColor = forecastColor.ToRgbaString(),
-                        BorderColor = forecastColor.ToRgbString(),
+                        BackgroundColor = forecastColor.ToChartRgbaString(),
+                        BorderColor = forecastColor.ToChartRgbString(),
                         PointRadius = new List<double> { 4 },
                         PointHoverRadius = new List<double> { 6 }
                     },
@@ -30,8 +30,8 @@
                     {
                         Label = "Actual",
                         Data = new List<double?> { 41, 49, 58, 70, 75, 82 },
-                        BackgroundColor = new List<string> { actualColor.ToRgbaString() },
-                        BorderColor = new List<string> { actualColor.ToRgbString() },
+                        BackgroundColor = new List<string> { actualColor.ToChartRgbaString() },
+                        BorderColor = new List<string> { actualColor.ToChartRgbString() },
                         BorderWidth = new List<double> { 0 }
                     }
                 }

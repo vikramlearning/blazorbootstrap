@@ -19,7 +19,7 @@
     protected override void OnInitialized()
     {
         chartData = new ChartData { Labels = GetDefaultDataLabels(6), Datasets = GetDefaultDataSets(3) };
-        bubbleChartOptions = new BubbleChartOptions { Responsive = true, Interaction = new Interaction { Mode = InteractionMode.Index } };
+        bubbleChartOptions = new BubbleChartOptions { Responsive = true };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -91,7 +91,7 @@
 
     private BubbleChartDataset GetRandomBubbleChartDataset()
     {
-        var color = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
+        var color = ColorUtility.CategoricalTwelveColors[datasetsCount].ToChartColor();
 
         datasetsCount += 1;
 
@@ -99,8 +99,8 @@
         {
             Label = $"Product {datasetsCount}",
             Data = GetRandomData(),
-            BackgroundColor = new List<string> { color.ToRgbString() },
-            BorderColor = new List<string> { color.ToRgbString() },
+            BackgroundColor = new List<string> { color.ToChartRgbString() },
+            BorderColor = new List<string> { color.ToChartRgbString() },
             HoverBorderWidth = new List<double> { 4 }
         };
     }

@@ -1,45 +1,41 @@
-<PolarAreaChart @ref="polarAreaChart" OnClick="OnClick" Width="600" />
+<PolarAreaChart @ref="polarAreaChart" Width="600" OnClick="HandleClickAsync" />
 
-<div class="mt-3">
-    <strong>Selected item:</strong> @selectedItemMessage
-</div>
+@if (selectedChartItem is not null)
+{
+    <p class="mt-3 mb-0">
+        Selected: @selectedChartItem.DatasetLabel (dataset @selectedChartItem.DatasetIndex),
+        @FormatLabel(selectedChartItem) (index @selectedChartItem.Index),
+        value @FormatValue(selectedChartItem)
+    </p>
+}
 
 @code {
     private PolarAreaChart polarAreaChart = default!;
     private PolarAreaChartOptions polarAreaChartOptions = default!;
     private ChartData chartData = default!;
-    private string selectedItemMessage = "Click a segment to view its details.";
+    private ChartClickEventArgs? selectedChartItem;
 
     protected override void OnInitialized()
     {
         chartData = new ChartData
+        {
+            Labels = new List<string> { "North", "South", "East", "West" },
+            Datasets = new List<IChartDataset>
             {
-                Labels = new List<string> { "North", "South", "East", "West", "Central" },
-                Datasets = new List<IChartDataset>
+                new PolarAreaChartDataset
                 {
-                    new PolarAreaChartDataset
+                    Label = "Sales",
+                    Data = new List<double?> { 35, 55, 40, 25 },
+                    BackgroundColor = new List<string>
                     {
-                        Label = "Regions",
-                        Data = new List<double?> { 11, 16, 7, 3, 14 },
-                        BackgroundColor = new List<string>
-                        {
-                            ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbaString(0.5),
-                            ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbaString(0.5),
-                            ColorUtility.CategoricalTwelveColors[2].ToColor().ToRgbaString(0.5),
-                            ColorUtility.CategoricalTwelveColors[3].ToColor().ToRgbaString(0.5),
-                            ColorUtility.CategoricalTwelveColors[4].ToColor().ToRgbaString(0.5)
-                        },
-                        BorderColor = new List<string>
-                        {
-                            ColorUtility.CategoricalTwelveColors[0].ToColor().ToRgbString(),
-                            ColorUtility.CategoricalTwelveColors[1].ToColor().ToRgbString(),
-                            ColorUtility.CategoricalTwelveColors[2].ToColor().ToRgbString(),
-                            ColorUtility.CategoricalTwelveColors[3].ToColor().ToRgbString(),
-                            ColorUtility.CategoricalTwelveColors[4].ToColor().ToRgbString()
-                        }
-                    }
-                }
-            };
+                        "rgba(255, 99, 132, 0.5)",
+                        "rgba(54, 162, 235, 0.5)",
+                        "rgba(255, 206, 86, 0.5)",
+                        "rgba(75, 192, 192, 0.5)",
+                    },
+                },
+            },
+        };
 
         polarAreaChartOptions = new PolarAreaChartOptions { Responsive = true };
     }
@@ -52,8 +48,13 @@
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private void OnClick(ChartClickEventArgs eventArgs)
+    private Task HandleClickAsync(ChartClickEventArgs eventArgs)
     {
-        selectedItemMessage = $"Dataset: {eventArgs.DatasetLabel}, Label: {eventArgs.Label}, Value: {eventArgs.Value}";
+        selectedChartItem = eventArgs;
+        return Task.CompletedTask;
     }
+
+    private static string FormatLabel(ChartClickEventArgs eventArgs) => eventArgs.Label ?? $"item {eventArgs.Index}";
+
+    private static string FormatValue(ChartClickEventArgs eventArgs) => eventArgs.Value?.ToString() ?? "null";
 }

@@ -1,4 +1,4 @@
-﻿<p align="center">
+<p align="center">
   <a href="https://getblazorbootstrap.com/">
     <img src="https://demos.blazorbootstrap.com/images/logo/logo-color.svg" alt="Blazor Bootstrap logo" width="200" height="200">
   </a>
@@ -51,6 +51,11 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 
 - Read the [Getting started page](https://docs.blazorbootstrap.com/getting-started/blazor-webassembly-net-8) for information on the framework installation, contents, examples, and more.
 
+## Charts
+
+Chart components have moved out of BlazorBootstrap and are now provided by the dedicated [BlazorExpress.ChartJS](https://chartjs.blazorexpress.com/) package.
+
+This is a breaking change for existing chart users: install `BlazorExpress.ChartJS`, import its namespace, load its browser scripts, and migrate from the former BlazorBootstrap chart API. See the [migration and setup guide](https://docs.blazorbootstrap.com/components/charts), the [GitHub repository](https://github.com/BlazorExpress/BlazorExpress.ChartJS), and the [original demos](https://chartjs.blazorexpress.com/demos/bar-chart).
 ## Blazor Bootstrap Components
 
 | Component Name | Docs | Demos |
@@ -64,13 +69,6 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 | Callout | [Docs](https://docs.blazorbootstrap.com/components/callout) | [Demos](https://demos.blazorbootstrap.com/callout) |
 | Card | [Docs](https://docs.blazorbootstrap.com/components/card) | [Demos](https://demos.blazorbootstrap.com/card) |
 | Carousel | [Docs](https://docs.blazorbootstrap.com/components/carousel) | [Demos](https://demos.blazorbootstrap.com/carousel) |
-| Charts: Bar chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/bar-chart) | [Demos](https://demos.blazorbootstrap.com/charts/bar-chart) |
-| Charts: Doughnut chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/doughnut-chart) | [Demos](https://demos.blazorbootstrap.com/charts/doughnut-chart) |
-| Charts: Line chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/line-chart) | [Demos](https://demos.blazorbootstrap.com/charts/line-chart) |
-| Charts: Pie chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/pie-chart) | [Demos](https://demos.blazorbootstrap.com/charts/pie-chart) |
-| Charts: Polar Area chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/polar-area-chart) | [Demos](https://demos.blazorbootstrap.com/charts/polar-area-chart) |
-| Charts: Radar chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/radar-chart) | [Demos](https://demos.blazorbootstrap.com/charts/radar-chart) |
-| Charts: Scatter chart | [Docs](https://docs.blazorbootstrap.com/data-visualization/scatter-chart) | [Demos](https://demos.blazorbootstrap.com/charts/scatter-chart) |
 | Checkbox Input | [Docs](https://docs.blazorbootstrap.com/forms/checkbox-input) | [Demos](https://demos.blazorbootstrap.com/form/checkbox-input) |
 | Collapse | [Docs](https://docs.blazorbootstrap.com/components/collapse) | [Demos](https://demos.blazorbootstrap.com/collapse) |
 | Confirm Dialog | [Docs](https://docs.blazorbootstrap.com/components/confirm-dialog) | [Demos](https://demos.blazorbootstrap.com/confirm-dialog) |
@@ -143,21 +141,6 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Carousel
 ![Blazor Bootstrap - Carousel](https://i.imgur.com/YoZd9Hy.png "Blazor Bootstrap - Carousel")
-
-### Blazor Bootstrap - Charts: Bar Chart
-![Blazor Bootstrap - Charts: Bar Chart](https://i.imgur.com/JLV7oss.png "Blazor Bootstrap - Charts: Bar Chart")
-
-### Blazor Bootstrap - Charts: Doughnut Chart
-![Blazor Bootstrap - Charts: Doughnut Chart](https://i.imgur.com/e5fnMXQ.png "Blazor Bootstrap - Charts: Doughnut Chart")
-
-### Blazor Bootstrap - Charts: Line Chart
-![Blazor Bootstrap - Charts: Line Chart](https://i.imgur.com/CzdXpqr.png "Blazor Bootstrap - Charts: Line Chart")
-
-### Blazor Bootstrap - Charts: Pie Chart
-![Blazor Bootstrap - Charts: Pie Chart](https://i.imgur.com/jr3w0fM.png "Blazor Bootstrap - Charts: Pie Chart")
-
-### Blazor Bootstrap - Charts: Polar Area Chart
-![Blazor Bootstrap - Charts: Polar Area Chart](https://i.imgur.com/MSFDsSo.png "Blazor Bootstrap - Charts: Polar Area Chart")
 
 ### Blazor Bootstrap - Checkbox Input
 ![Blazor Bootstrap - Checkbox Input](https://i.imgur.com/kqSggFK.png "Blazor Bootstrap - Checkbox Input")

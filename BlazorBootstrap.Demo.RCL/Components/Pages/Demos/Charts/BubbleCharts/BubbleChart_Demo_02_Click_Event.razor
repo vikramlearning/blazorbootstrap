@@ -1,4 +1,4 @@
-<RadarChart @ref="radarChart" Width="600" OnClick="HandleClickAsync" />
+<BubbleChart @ref="bubbleChart" Width="600" OnClick="HandleClickAsync" />
 
 @if (selectedChartItem is not null)
 {
@@ -10,8 +10,8 @@
 }
 
 @code {
-    private RadarChart radarChart = default!;
-    private RadarChartOptions radarChartOptions = default!;
+    private BubbleChart bubbleChart = default!;
+    private BubbleChartOptions bubbleChartOptions = default!;
     private ChartData chartData = default!;
     private ChartClickEventArgs? selectedChartItem;
 
@@ -19,28 +19,32 @@
     {
         chartData = new ChartData
         {
-            Labels = new List<string> { "Speed", "Reliability", "Comfort", "Safety", "Efficiency" },
+            Labels = new List<string> { "January", "February", "March" },
             Datasets = new List<IChartDataset>
             {
-                new RadarChartDataset
+                new BubbleChartDataset
                 {
-                    Label = "Vehicle A",
-                    Data = new List<double?> { 80, 72, 65, 90, 78 },
-                    BackgroundColor = "rgba(153, 102, 255, 0.2)",
-                    BorderColor = "rgba(153, 102, 255, 0.8)",
-                    BorderWidth = 2,
-                    Fill = true,
+                    Label = "Projects",
+                    Data = new List<BubbleChartDataPoint>
+                    {
+                        new(10, 20, 8),
+                        new(15, 12, 12),
+                        new(8, 25, 6),
+                    },
+                    BackgroundColor = new List<string> { "rgba(255, 99, 132, 0.5)" },
+                    BorderColor = new List<string> { "rgb(255, 99, 132)" },
+                    BorderWidth = 1,
                 },
             },
         };
 
-        radarChartOptions = new RadarChartOptions { Responsive = true };
+        bubbleChartOptions = new BubbleChartOptions { Responsive = true };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await radarChart.InitializeAsync(chartData, radarChartOptions);
+            await bubbleChart.InitializeAsync(chartData, bubbleChartOptions);
 
         await base.OnAfterRenderAsync(firstRender);
     }

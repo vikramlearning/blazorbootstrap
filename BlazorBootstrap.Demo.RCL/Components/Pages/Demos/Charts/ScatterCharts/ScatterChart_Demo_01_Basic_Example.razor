@@ -1,4 +1,4 @@
-﻿<ScatterChart @ref="scatterChart" Width="560" Height="480" />
+<ScatterChart @ref="scatterChart" Width="560" Height="480" />
 
 @code {
     private ScatterChart scatterChart = default!;
@@ -35,14 +35,14 @@
 
     private ScatterChartDataset GetRandomRadarChartDataset(int recordIndex)
     {
-        var c = ColorUtility.CategoricalTwelveColors[recordIndex].ToColor();
+        var c = ColorUtility.CategoricalTwelveColors[recordIndex].ToChartColor();
 
         return new ScatterChartDataset
             {
                 Label = $"Team {recordIndex + 1}",
                 Data = GetRandomData(),
-                BackgroundColor = c.ToRgbaString(), // RGBA
-                BorderColor = c.ToRgbString(), // RGB
+                BackgroundColor = c.ToChartRgbaString(), // RGBA
+                BorderColor = c.ToChartRgbString(), // RGB
                 BorderWidth = 2,
                 HoverBorderWidth = 4,
             };

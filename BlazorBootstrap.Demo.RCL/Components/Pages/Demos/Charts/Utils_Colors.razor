@@ -1,4 +1,4 @@
-﻿@using System.Drawing;
+@using System.Drawing;
 
 <table class="table table-hover table-bordered table-striped">
     <thead>
@@ -183,10 +183,10 @@
         public ChartColor(Color color)
         {
             Name = color.Name;
-            Hex = color.ToHexString();
-            Hexa = color.ToHexaString();
-            Rgb = color.ToRgbString();
-            Rgba = color.ToRgbaString();
+            Hex = color.ToChartHexString();
+            Hexa = color.ToChartHexaString();
+            Rgb = color.ToChartRgbString();
+            Rgba = color.ToChartRgbaString();
         }
 
         public string Name { get; set; }

@@ -1,4 +1,4 @@
-﻿<div class="container-fluid overflow-x-auto">
+<div class="container-fluid overflow-x-auto">
     <LineChart @ref="lineChart" Width="800" />
 </div>
 
@@ -71,7 +71,7 @@
 
     private LineChartDataset GetRandomLineChartDataset()
     {
-        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToColor();
+        var c = ColorUtility.CategoricalTwelveColors[datasetsCount].ToChartColor();
 
         datasetsCount += 1;
 
@@ -79,11 +79,11 @@
             {
                 Label = $"Team {datasetsCount}",
                 Data = GetRandomData(),
-                BackgroundColor = c.ToRgbString(),
-                BorderColor = c.ToRgbString(),
+                BackgroundColor = c.ToChartRgbString(),
+                BorderColor = c.ToChartRgbString(),
                 BorderWidth = 2,
                 HoverBorderWidth = 4,
-                // PointBackgroundColor = c.ToRgbString(),
+                // PointBackgroundColor = c.ToChartRgbString(),
                 // PointRadius = 0, // hide points
                 // PointHoverRadius = 4,
             };
