@@ -8,8 +8,6 @@
                       MetaDescription="@metaDescription"
                       ImageUrl="@imageUrl" />
 
-<DocsLink Href="@DemoRouteConstants.Docs_URL_DoughnutChart" />
-
 <Section Size="HeadingSize.H4" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
     <div class="mb-3">
         In the following example, a <a href="/utils/color-utility#categorical-12-color">categorical 12-color</a> palette is used.
@@ -32,11 +30,18 @@
     <Demo Type="typeof(DoughnutChart_Demo_03_Click_Event)" Tabs="true" />
 </Section>
 
+<ChartJSCallout />
+
+<Callout Color="CalloutColor.Info" HideHeading="true">
+    For a complete charts setup walkthrough, see the
+    <a href="@(DemoRouteConstants.Demos_URL_GettingStarted)#documentation">Getting Started — Charts Setup</a> section.
+</Callout>
+
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_DoughnutChart;
     private const string pageTitle = "Blazor Doughnut Chart";
-    private const string pageDescription = "A Blazor donut chart component is a circular chart that shows the proportional values of different categories. It is similar to a pie chart, but the center of the donut chart is hollow. This makes it easier to see the individual values of each category.";
+    private const string pageDescription = "A BlazorExpress.ChartJS doughnut chart component is a circular chart that shows the proportional values of different categories. It is similar to a pie chart, but the center of the doughnut chart is hollow. This makes it easier to see the individual values of each category.";
     private const string metaTitle = "Blazor Doughnut Chart Component";
-    private const string metaDescription = "A Blazor donut chart component is a circular chart that shows the proportional values of different categories. It is similar to a pie chart, but the center of the donut chart is hollow. This makes it easier to see the individual values of each category.";
+    private const string metaDescription = "A BlazorExpress.ChartJS doughnut chart component is a circular chart that shows the proportional values of different categories. It is similar to a pie chart, but the center of the doughnut chart is hollow. This makes it easier to see the individual values of each category.";
     private const string imageUrl = "https://i.imgur.com/xEPhAsW.png";
 }

@@ -195,17 +195,6 @@ public static class DemoRouteConstants
     public const string Docs_URL_Toasts = Docs_URL_Prefix + "/toasts";
     public const string Docs_URL_Tooltips = Docs_URL_Prefix + "/tooltips";
 
-    // Data Visualization
-    public const string Docs_URL_Charts_Prefix = Docs_URL_Prefix + "/charts";
-    public const string Docs_URL_BarChart = Docs_URL_Charts_Prefix + "/bar-chart";
-    public const string Docs_URL_BubbleChart = Docs_URL_Charts_Prefix + "/bubble-chart";
-    public const string Docs_URL_DoughnutChart = Docs_URL_Charts_Prefix + "/doughnut-chart";
-    public const string Docs_URL_LineChart = Docs_URL_Charts_Prefix + "/line-chart";
-    public const string Docs_URL_PieChart = Docs_URL_Charts_Prefix + "/pie-chart";
-    public const string Docs_URL_PolarAreaChart = Docs_URL_Charts_Prefix + "/polar-area-chart";
-    public const string Docs_URL_RadarChart = Docs_URL_Charts_Prefix + "/radar-chart";
-    public const string Docs_URL_ScatterChart = Docs_URL_Charts_Prefix + "/scatter-chart";
-
     // Services
     public const string Docs_URL_Services_Prefix = Docs_URL_Prefix + "/services";
     public const string Docs_URL_BreadcrumbService = Docs_URL_Services_Prefix + "/breadcrumb-service";
