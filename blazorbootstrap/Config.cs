@@ -1,4 +1,4 @@
-﻿using BlazorBootstrap;
+using BlazorBootstrap;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -19,6 +19,7 @@ public static class Config
         services.AddScoped<ToastService>();
 
         services.AddScoped<PdfViewerJsInterop>();
+        services.AddScoped<RichTextEditorJsInterop>();
         services.AddScoped<SortableListJsInterop>();
         services.AddScoped<ThemeSwitcherJsInterop>();
 

@@ -1,0 +1,61 @@
+@namespace BlazorBootstrap
+
+@if (HasAny(historyItems))
+{
+    <RichTextEditorToolbarGroup Label="History">
+        @foreach (var item in historyItems.Where(Items.Contains))
+        {
+            <RichTextEditorToolbarButton Item="@item" Disabled="@Disabled" />
+        }
+    </RichTextEditorToolbarGroup>
+}
+
+@if (HasAny(textItems))
+{
+    <RichTextEditorToolbarGroup Label="Text">
+        <RichTextEditorToolbarSelect Items="@Items" Disabled="@Disabled" />
+        @foreach (var item in textItems.Where(Items.Contains).Where(item => item is not RichTextEditorToolbarItem.Paragraph and not RichTextEditorToolbarItem.Heading1 and not RichTextEditorToolbarItem.Heading2 and not RichTextEditorToolbarItem.Heading3))
+        {
+            <RichTextEditorToolbarButton Item="@item" Disabled="@Disabled" />
+        }
+    </RichTextEditorToolbarGroup>
+}
+
+@if (HasAny(paragraphItems))
+{
+    <RichTextEditorToolbarGroup Label="Paragraph">
+        @foreach (var item in paragraphItems.Where(Items.Contains))
+        {
+            <RichTextEditorToolbarButton Item="@item" Disabled="@Disabled" />
+        }
+    </RichTextEditorToolbarGroup>
+}
+
+@if (Items.Contains(RichTextEditorToolbarItem.TextColor))
+{
+    <RichTextEditorToolbarGroup Label="Color">
+        <RichTextEditorToolbarSelect IsColorSelector="true" Disabled="@Disabled" />
+    </RichTextEditorToolbarGroup>
+}
+
+@if (HasAny(insertItems))
+{
+    <RichTextEditorToolbarGroup Label="Insert">
+        @foreach (var item in insertItems.Where(Items.Contains))
+        {
+            <RichTextEditorToolbarButton Item="@item" Disabled="@Disabled" />
+        }
+    </RichTextEditorToolbarGroup>
+}
+
+@code {
+    private static readonly RichTextEditorToolbarItem[] historyItems = { RichTextEditorToolbarItem.Undo, RichTextEditorToolbarItem.Redo };
+    private static readonly RichTextEditorToolbarItem[] textItems = { RichTextEditorToolbarItem.Paragraph, RichTextEditorToolbarItem.Heading1, RichTextEditorToolbarItem.Heading2, RichTextEditorToolbarItem.Heading3, RichTextEditorToolbarItem.Bold, RichTextEditorToolbarItem.Italic, RichTextEditorToolbarItem.Underline, RichTextEditorToolbarItem.Strikethrough, RichTextEditorToolbarItem.ClearFormatting };
+    private static readonly RichTextEditorToolbarItem[] paragraphItems = { RichTextEditorToolbarItem.AlignStart, RichTextEditorToolbarItem.AlignCenter, RichTextEditorToolbarItem.AlignEnd, RichTextEditorToolbarItem.OrderedList, RichTextEditorToolbarItem.UnorderedList, RichTextEditorToolbarItem.Blockquote, RichTextEditorToolbarItem.CodeBlock };
+    private static readonly RichTextEditorToolbarItem[] insertItems = { RichTextEditorToolbarItem.Link, RichTextEditorToolbarItem.Image, RichTextEditorToolbarItem.UploadImage, RichTextEditorToolbarItem.Table };
+
+    private bool HasAny(IEnumerable<RichTextEditorToolbarItem> toolbarItems) => toolbarItems.Any(Items.Contains);
+
+    [Parameter, EditorRequired] public IReadOnlyCollection<RichTextEditorToolbarItem> Items { get; set; } = Array.Empty<RichTextEditorToolbarItem>();
+    [Parameter] public bool Disabled { get; set; }
+}

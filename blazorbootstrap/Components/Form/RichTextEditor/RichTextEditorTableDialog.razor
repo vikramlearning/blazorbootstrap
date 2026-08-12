@@ -1,0 +1,19 @@
+@namespace BlazorBootstrap
+
+<dialog id="@($"{EditorId}-table-dialog")" class="bb-rich-text-editor-dialog">
+    <form method="dialog">
+        <h2 class="h5">Insert table</h2>
+        <label class="form-label" for="@($"{EditorId}-table-rows")">Rows</label>
+        <input id="@($"{EditorId}-table-rows")" class="form-control" data-bb-rte-table-rows type="number" min="1" max="20" value="2" required />
+        <label class="form-label mt-2" for="@($"{EditorId}-table-columns")">Columns</label>
+        <input id="@($"{EditorId}-table-columns")" class="form-control" data-bb-rte-table-columns type="number" min="1" max="10" value="2" required />
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <button class="btn btn-secondary" value="cancel" type="submit">Cancel</button>
+            <button class="btn btn-primary" value="save" type="submit">Insert</button>
+        </div>
+    </form>
+</dialog>
+
+@code {
+    [Parameter, EditorRequired] public string EditorId { get; set; } = default!;
+}

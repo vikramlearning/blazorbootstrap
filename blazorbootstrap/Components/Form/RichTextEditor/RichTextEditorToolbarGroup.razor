@@ -1,0 +1,11 @@
+@namespace BlazorBootstrap
+
+<div class="bb-rich-text-editor-toolbar-group" role="group" aria-label="@Label">
+    <div class="bb-rich-text-editor-toolbar-group-items">@ChildContent</div>
+    <div class="bb-rich-text-editor-toolbar-group-label">@Label</div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter, EditorRequired] public string Label { get; set; } = default!;
+}

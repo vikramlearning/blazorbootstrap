@@ -1,0 +1,20 @@
+@namespace BlazorBootstrap
+
+<div id="@EditorId"
+     class="form-control bb-rich-text-editor-editable @FieldCssClasses"
+     contenteditable="@(!Disabled && !ReadOnly)"
+     role="textbox"
+     aria-multiline="true"
+     aria-label="@AriaLabel"
+     aria-disabled="@Disabled"
+     data-placeholder="@Placeholder">@((MarkupString)Value)</div>
+
+@code {
+    [Parameter, EditorRequired] public string EditorId { get; set; } = default!;
+    [Parameter] public string FieldCssClasses { get; set; } = string.Empty;
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string AriaLabel { get; set; } = "Rich text editor";
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public string Value { get; set; } = string.Empty;
+}

@@ -1,0 +1,24 @@
+---
+title: Blazor RichTextEditor Component
+description: A dependency-free rich text editor with Bootstrap ribbon groups and safe client-side HTML filtering.
+sidebar_label: RichTextEditor
+sidebar_position: 13
+---
+
+# Blazor RichTextEditor
+
+`RichTextEditor` provides grouped History, Text, Paragraph, Color, and Insert controls using the library's Bootstrap Icons. It has no third-party package, script, CDN, or copied editor dependency.
+
+```cshtml
+<RichTextEditor @bind-Value="@content"
+                ImageUploadHandler="UploadImageAsync"
+                Placeholder="Write the article" />
+```
+
+## Security
+
+The component removes unsafe elements, event handlers, inline styles, unsupported classes, and unsafe URL schemes. It only permits HTTPS image URLs and HTTPS, relative, or fragment links. This browser-side filtering is defense in depth: validate uploaded files and sanitize HTML again on the server before persistence or markup rendering. Razor encoding displays the HTML as text, not formatted content.
+
+## Toolbar and API coverage
+
+The demo covers every toolbar command, `ValueChanged`, two-way binding, `FocusAsync()`, `ClearAsync()`, restricted `ToolbarItems`, debounce, upload cancellation, and safe-image behavior. See [the demo](https://demos.blazorbootstrap.com/rich-text-editor).

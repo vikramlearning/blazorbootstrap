@@ -1,0 +1,19 @@
+@namespace BlazorBootstrap
+
+<dialog id="@($"{EditorId}-image-dialog")" class="bb-rich-text-editor-dialog">
+    <form method="dialog">
+        <h2 class="h5">Insert image</h2>
+        <label class="form-label" for="@($"{EditorId}-image-url")">HTTPS image URL</label>
+        <input id="@($"{EditorId}-image-url")" class="form-control" data-bb-rte-image-url type="url" />
+        <label class="form-label mt-2" for="@($"{EditorId}-image-alt")">Alternative text</label>
+        <input id="@($"{EditorId}-image-alt")" class="form-control" data-bb-rte-image-alt type="text" required />
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <button class="btn btn-secondary" value="cancel" type="submit">Cancel</button>
+            <button class="btn btn-primary" value="save" type="submit">Insert</button>
+        </div>
+    </form>
+</dialog>
+
+@code {
+    [Parameter, EditorRequired] public string EditorId { get; set; } = default!;
+}

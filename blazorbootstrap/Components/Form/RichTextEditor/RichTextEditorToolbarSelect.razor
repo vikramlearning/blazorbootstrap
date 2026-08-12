@@ -1,0 +1,30 @@
+@namespace BlazorBootstrap
+
+@if (IsColorSelector)
+{
+    <select class="form-select form-select-sm bb-rich-text-editor-toolbar-select" data-bb-rte-command="TextColor" disabled="@Disabled" aria-label="Text color">
+        <option value="">Text color</option>
+        <option value="text-primary">Primary</option>
+        <option value="text-secondary">Secondary</option>
+        <option value="text-success">Success</option>
+        <option value="text-danger">Danger</option>
+        <option value="text-warning">Warning</option>
+        <option value="text-info">Info</option>
+        <option value="text-dark">Dark</option>
+    </select>
+}
+else if (Items.Any(item => item is RichTextEditorToolbarItem.Paragraph or RichTextEditorToolbarItem.Heading1 or RichTextEditorToolbarItem.Heading2 or RichTextEditorToolbarItem.Heading3))
+{
+    <select class="form-select form-select-sm bb-rich-text-editor-toolbar-select" data-bb-rte-command="BlockFormat" disabled="@Disabled" aria-label="Text style">
+        @if (Items.Contains(RichTextEditorToolbarItem.Paragraph)) { <option value="p">Paragraph</option> }
+        @if (Items.Contains(RichTextEditorToolbarItem.Heading1)) { <option value="h1">Heading 1</option> }
+        @if (Items.Contains(RichTextEditorToolbarItem.Heading2)) { <option value="h2">Heading 2</option> }
+        @if (Items.Contains(RichTextEditorToolbarItem.Heading3)) { <option value="h3">Heading 3</option> }
+    </select>
+}
+
+@code {
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool IsColorSelector { get; set; }
+    [Parameter] public IReadOnlyCollection<RichTextEditorToolbarItem> Items { get; set; } = Array.Empty<RichTextEditorToolbarItem>();
+}

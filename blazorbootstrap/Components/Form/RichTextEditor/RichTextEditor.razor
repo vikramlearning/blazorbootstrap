@@ -1,0 +1,31 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    <div class="bb-rich-text-editor-toolbar">
+        <RichTextEditorToolbar Items="@EnabledToolbarItems" Disabled="@Disabled" />
+    </div>
+
+    <RichTextEditorEditableArea EditorId="@EditorId"
+                                 Value="@Value"
+                                 Placeholder="@Placeholder"
+                                 AriaLabel="@AriaLabel"
+                                 Disabled="@Disabled"
+                                 ReadOnly="@ReadOnly"
+                                 FieldCssClasses="@fieldCssClasses" />
+
+    <InputFile id="@ImageInputId"
+               class="d-none"
+               accept="@Accept"
+               OnChange="OnImageFileChangedAsync"
+               aria-label="Upload an image" />
+
+    <RichTextEditorLinkDialog EditorId="@Id" />
+    <RichTextEditorImageDialog EditorId="@Id" />
+    <RichTextEditorTableDialog EditorId="@Id" />
+
+    @if (!string.IsNullOrWhiteSpace(imageUploadError))
+    {
+        <div class="text-danger mt-2" role="alert">@imageUploadError</div>
+    }
+</div>
