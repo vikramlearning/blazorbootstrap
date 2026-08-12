@@ -2,10 +2,16 @@ namespace BlazorBootstrap;
 
 internal sealed class RichTextEditorJsInterop : JsInteropBase
 {
+    #region Constructors
+
     public RichTextEditorJsInterop(IJSRuntime jsRuntime)
         : base(jsRuntime, "./_content/Blazor.Bootstrap/blazor.bootstrap.rich-text-editor.js")
     {
     }
+
+    #endregion
+
+    #region Methods
 
     public Task ClearAsync(string id) => SafeInvokeVoidAsync("clear", id);
 
@@ -19,4 +25,6 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
     public Task InsertImageAsync(string id, string url, string altText) => SafeInvokeVoidAsync("insertImage", id, url, altText);
 
     public Task SetValueAsync(string id, string value) => SafeInvokeVoidAsync("setValue", id, value);
+
+    #endregion
 }

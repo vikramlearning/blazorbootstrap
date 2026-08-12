@@ -1,15 +1,15 @@
-@page "/rich-text-editor"
+@attribute [Route(DemoRouteConstants.Demos_URL_RichTextEditor)]
 @layout DemosMainLayout
 
-<DemosPageHeadSection PageUrl="/rich-text-editor" PageTitle="Blazor RichTextEditor" PageDescription="A dependency-free rich text editor with a grouped Bootstrap toolbar." MetaTitle="Blazor RichTextEditor Component" MetaDescription="Rich text editing with safe HTML output." />
+<DemosPageHeadSection PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" PageTitle="Blazor RichTextEditor" PageDescription="A dependency-free rich text editor with a grouped Bootstrap toolbar." MetaTitle="Blazor RichTextEditor Component" MetaDescription="Rich text editing with safe HTML output." />
 
-<Section Size="HeadingSize.H2" Name="All toolbar commands" PageUrl="/rich-text-editor" Link="all-toolbar-commands">
+<Section Size="HeadingSize.H2" Name="All toolbar commands" PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" Link="all-toolbar-commands">
     <p>The default ribbon exposes every supported History, Text, Paragraph, Color, and Insert command. Select content before using a formatting command.</p>
     <RichTextEditor @ref="editor" @bind-Value="value" ImageUploadHandler="UploadImageAsync" Placeholder="Write formatted content" AriaLabel="Complete editor demo" />
     <pre class="mt-3 p-3 border bg-body-tertiary"><code>@value</code></pre>
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Events and public methods" PageUrl="/rich-text-editor" Link="events-and-public-methods">
+<Section Size="HeadingSize.H2" Name="Events and public methods" PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" Link="events-and-public-methods">
     <p><code>ValueChanged</code> is raised after the configured debounce period. The buttons exercise <code>FocusAsync()</code> and <code>ClearAsync()</code>.</p>
     <RichTextEditor @ref="eventEditor" Value="@eventValue" ValueChanged="OnValueChanged" DebounceInterval="600" ToolbarItems="@restrictedToolbarItems" Placeholder="Type to raise ValueChanged" />
     <Button Color="ButtonColor.Primary" Class="me-2" @onclick="FocusAsync">Focus</Button>
@@ -17,7 +17,7 @@
     <div class="mt-2">ValueChanged calls: @valueChangedCount</div>
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Security and images" PageUrl="/rich-text-editor" Link="security-and-images">
+<Section Size="HeadingSize.H2" Name="Security and images" PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" Link="security-and-images">
     <p>The editor removes scripts, event attributes, inline styles, unsafe URLs, data URLs, and unsupported tags from pasted or supplied HTML. Server-side sanitization is still required before storing or rendering rich HTML. Use normal Razor encoding when the value must be displayed as plain text.</p>
     <p>Image URL insertion accepts HTTPS only. Upload callbacks must validate, authorize, scan, and store the file, then return a trusted HTTPS URL; this demo intentionally cancels uploads.</p>
 </Section>

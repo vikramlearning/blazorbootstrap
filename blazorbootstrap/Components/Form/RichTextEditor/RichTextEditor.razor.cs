@@ -5,12 +5,18 @@ namespace BlazorBootstrap;
 /// </summary>
 public partial class RichTextEditor : BlazorBootstrapComponentBase
 {
+    #region Fields and Constants
+
     private static readonly string[] defaultAllowedImageFileTypes = { "jpg", "jpeg", "png", "gif", "webp" };
     private CancellationTokenSource uploadCancellationTokenSource = new();
     private FieldIdentifier fieldIdentifier;
     private string? imageUploadError;
     private string? lastRenderedValue;
     private DotNetObjectReference<RichTextEditor>? objRef;
+
+    #endregion
+
+    #region Properties, Indexers
 
     private string Accept => string.Join(',', NormalizedAllowedImageFileTypes.Select(fileType => $".{fileType}"));
 
@@ -40,6 +46,10 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
     protected override string? ClassNames => BuildClassNames(Class, ("bb-rich-text-editor", true));
+
+    #endregion
+
+    #region Methods
 
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -163,6 +173,10 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         }
     }
 
+    #endregion
+
+    #region Properties, Indexers
+
     /// <summary>
     /// Gets or sets the accessible label for the editor.
     /// </summary>
@@ -278,4 +292,6 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [CascadingParameter] private EditContext? EditContext { get; set; }
 
     [Inject] private RichTextEditorJsInterop RichTextEditorJsInterop { get; set; } = default!;
+
+    #endregion
 }

@@ -1,0 +1,29 @@
+@attribute [Route(DemoRouteConstants.Docs_URL_RichTextEditor)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@DemoRouteConstants.Docs_URL_RichTextEditor"
+                     PageTitle="@componentName"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_RichTextEditor" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Parameters" PageUrl="@DemoRouteConstants.Docs_URL_RichTextEditor" Link="parameters">
+    <DocxTable TItem="RichTextEditor" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Methods" PageUrl="@DemoRouteConstants.Docs_URL_RichTextEditor" Link="methods">
+    <DocxTable TItem="RichTextEditor" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@DemoRouteConstants.Docs_URL_RichTextEditor" Link="events">
+    <DocxTable TItem="RichTextEditor" DocType="DocType.Events" />
+</Section>
+
+@code {
+    private const string componentName = nameof(RichTextEditor);
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+}

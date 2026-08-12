@@ -1,0 +1,10 @@
+<div class="mb-3">
+    <RichTextEditor @bind-Value="@content" ToolbarItems="@toolbarItems" Placeholder="Select text, then use the toolbar command." />
+</div>
+<div class="mb-3">@content</div>
+
+@code {
+    private string content = "<p>Sample rich text content</p>";
+
+    private readonly RichTextEditorToolbarItem[] toolbarItems = { RichTextEditorToolbarItem.UploadImage };
+}
