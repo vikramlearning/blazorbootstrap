@@ -2,7 +2,7 @@
 @inherits BlazorBootstrapComponentBase
 
 <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-    <div class="bb-rich-text-editor-toolbar">
+    <div class="d-flex flex-row overflow-x-auto">
         <RichTextEditorToolbar Items="@EnabledToolbarItems" Disabled="@Disabled" />
     </div>
 
