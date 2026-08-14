@@ -1,12 +1,10 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
-/// Provides a dependency-free rich-text editing control with a grouped toolbar.
+/// Provides a dependency-free rich-text editing control with a grouped Bootstrap toolbar.
 /// </summary>
 public partial class RichTextEditor : BlazorBootstrapComponentBase
 {
-    #region Fields and Constants
-
     private static readonly string[] defaultAllowedImageFileTypes = { "jpg", "jpeg", "png", "gif", "webp" };
     private CancellationTokenSource uploadCancellationTokenSource = new();
     private FieldIdentifier fieldIdentifier;
@@ -14,28 +12,9 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private string? lastRenderedValue;
     private DotNetObjectReference<RichTextEditor>? objRef;
 
-    #endregion
-
-    #region Properties, Indexers
-
     private string Accept => string.Join(',', NormalizedAllowedImageFileTypes.Select(fileType => $".{fileType}"));
 
     private string EditorId => $"{Id}-editor";
-
-    internal IReadOnlyCollection<RichTextEditorToolbarItem> EnabledToolbarItems
-    {
-        get
-        {
-            var items = ToolbarItems?.Distinct().ToHashSet() ?? Enum.GetValues<RichTextEditorToolbarItem>().ToHashSet();
-
-            if (ImageUploadHandler is null)
-                items.Remove(RichTextEditorToolbarItem.UploadImage);
-
-            return items;
-        }
-    }
-
-    private string fieldCssClasses => ValueExpression is null ? string.Empty : EditContext?.FieldCssClass(fieldIdentifier) ?? string.Empty;
 
     private string ImageInputId => $"{Id}-image-input";
 
@@ -44,12 +23,6 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             .Select(fileType => fileType.Trim().TrimStart('.').ToLowerInvariant())
             .Where(fileType => !string.IsNullOrWhiteSpace(fileType))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-    protected override string? ClassNames => BuildClassNames(Class, ("bb-rich-text-editor", true));
-
-    #endregion
-
-    #region Methods
 
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -99,10 +72,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [Description("Clears the editor content.")]
-    public async Task ClearAsync()
-    {
-        await RichTextEditorJsInterop.ClearAsync(Id!);
-    }
+    public Task ClearAsync() => RichTextEditorJsInterop.ClearAsync(Id!);
 
     /// <summary>
     /// Focuses the editable area.
@@ -116,11 +86,15 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     {
         imageUploadError = null;
         lastRenderedValue = html;
-        await ValueChanged.InvokeAsync(html);
+        var text = ToPlainText(html);
+        await ValueChanged.InvokeAsync(new RichTextEditorChange(html, text, text.Length, CountWords(text)));
 
         if (ValueExpression is not null)
             EditContext?.NotifyFieldChanged(fieldIdentifier);
     }
+
+    [JSInvokable]
+    public Task OnEditorStatusChangedAsync(string status) => StatusChanged.InvokeAsync(status);
 
     private async Task OnImageFileChangedAsync(InputFileChangeEventArgs e)
     {
@@ -130,6 +104,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         if (ImageUploadHandler is null)
         {
             imageUploadError = "An image upload handler is not configured.";
+            await OnEditorStatusChangedAsync(imageUploadError);
             return;
         }
 
@@ -137,12 +112,14 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         if (!NormalizedAllowedImageFileTypes.Contains(extension))
         {
             imageUploadError = "The selected image type is not allowed.";
+            await OnEditorStatusChangedAsync(imageUploadError);
             return;
         }
 
         if (file.Size > MaxImageFileSize)
         {
             imageUploadError = "The selected image exceeds the maximum allowed size.";
+            await OnEditorStatusChangedAsync(imageUploadError);
             return;
         }
 
@@ -158,6 +135,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             if (result is null || !Uri.TryCreate(result.Url, UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps)
             {
                 imageUploadError = "The upload did not return a valid HTTPS image URL.";
+                await OnEditorStatusChangedAsync(imageUploadError);
                 return;
             }
 
@@ -170,128 +148,99 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         catch (Exception)
         {
             imageUploadError = "The image could not be uploaded.";
+            await OnEditorStatusChangedAsync(imageUploadError);
         }
     }
 
-    #endregion
+    private static int CountWords(string text) => string.IsNullOrWhiteSpace(text) ? 0 : text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
 
-    #region Properties, Indexers
+    private static string ToPlainText(string html) => System.Net.WebUtility.HtmlDecode(System.Text.RegularExpressions.Regex.Replace(html, "<[^>]+>", " ")).Trim();
 
-    /// <summary>
-    /// Gets or sets the accessible label for the editor.
-    /// </summary>
+    /// <summary>Gets or sets the accessible label for the editor.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue("Rich text editor")]
     [Description("Gets or sets the accessible label for the editor.")]
     [Parameter]
     public string AriaLabel { get; set; } = "Rich text editor";
 
-    /// <summary>
-    /// Gets or sets the permitted image file extensions.
-    /// </summary>
+    /// <summary>Gets or sets the permitted image file extensions.</summary>
     [AddedVersion("4.0.0")]
     [Description("Gets or sets the permitted image file extensions.")]
     [Parameter]
     public IEnumerable<string>? AllowedImageFileTypes { get; set; }
 
-    /// <summary>
-    /// Gets or sets the delay, in milliseconds, before editor changes are raised.
-    /// </summary>
+    /// <summary>Gets or sets the delay, in milliseconds, before editor changes are raised.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(300)]
     [Description("Gets or sets the delay, in milliseconds, before editor changes are raised.")]
     [Parameter]
     public int DebounceInterval { get; set; } = 300;
 
-    /// <summary>
-    /// Gets or sets whether the editor is disabled.
-    /// </summary>
+    /// <summary>Gets or sets whether the editor is disabled.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(false)]
     [Description("Gets or sets whether the editor is disabled.")]
     [Parameter]
     public bool Disabled { get; set; }
 
-    /// <summary>
-    /// Gets or sets the image upload handler.
-    /// </summary>
+    /// <summary>Gets or sets the image upload handler.</summary>
     [AddedVersion("4.0.0")]
-    [DefaultValue(null)]
     [Description("Gets or sets the image upload handler.")]
     [Parameter]
     public RichTextEditorImageUploadDelegate? ImageUploadHandler { get; set; }
 
-    /// <summary>
-    /// Gets or sets the maximum allowed image size in bytes.
-    /// </summary>
+    /// <summary>Gets or sets the maximum allowed image size in bytes.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(5242880)]
     [Description("Gets or sets the maximum allowed image size in bytes.")]
     [Parameter]
     public long MaxImageFileSize { get; set; } = 5 * 1024 * 1024;
 
-    /// <summary>
-    /// Gets or sets the maximum plain-text character count.
-    /// </summary>
+    /// <summary>Gets or sets the maximum plain-text character count.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the maximum plain-text character count.")]
     [Parameter]
     public int? MaxLength { get; set; }
 
-    /// <summary>
-    /// Gets or sets the placeholder text.
-    /// </summary>
+    /// <summary>Gets or sets the placeholder text.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the placeholder text.")]
     [Parameter]
     public string? Placeholder { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether the editor is read-only.
-    /// </summary>
+    /// <summary>Gets or sets whether the editor is read-only.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(false)]
     [Description("Gets or sets whether the editor is read-only.")]
     [Parameter]
     public bool ReadOnly { get; set; }
 
-    /// <summary>
-    /// Gets or sets the enabled toolbar commands.
-    /// </summary>
-    [AddedVersion("4.0.0")]
-    [DefaultValue(null)]
-    [Description("Gets or sets the enabled toolbar commands.")]
-    [Parameter]
-    public IEnumerable<RichTextEditorToolbarItem>? ToolbarItems { get; set; }
-
-    /// <summary>
-    /// Gets or sets the HTML value.
-    /// </summary>
+    /// <summary>Gets or sets the HTML value.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the HTML value.")]
     [Parameter]
     public string Value { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Fires when the HTML value changes.
-    /// </summary>
+    /// <summary>Fires after the editor commits a content change.</summary>
     [AddedVersion("4.0.0")]
-    [Description("Fires when the HTML value changes.")]
+    [Description("Fires after the editor commits a content change.")]
     [Parameter]
-    public EventCallback<string> ValueChanged { get; set; }
+    public EventCallback<RichTextEditorChange> ValueChanged { get; set; }
 
-    /// <summary>
-    /// Gets or sets the expression that identifies the bound value.
-    /// </summary>
+    /// <summary>Fires for transient editor activity and error status.</summary>
+    [AddedVersion("4.0.0")]
+    [Description("Fires for transient editor activity and error status.")]
+    [Parameter]
+    public EventCallback<string> StatusChanged { get; set; }
+
+    /// <summary>Gets or sets the expression that identifies the bound value.</summary>
     [Parameter]
     public Expression<Func<string>>? ValueExpression { get; set; }
 
     [CascadingParameter] private EditContext? EditContext { get; set; }
 
     [Inject] private RichTextEditorJsInterop RichTextEditorJsInterop { get; set; } = default!;
-
-    #endregion
 }
