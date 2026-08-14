@@ -14,7 +14,9 @@ function isSafeUrl(value, image = false) {
     } catch { return false; }
 }
 
-function sanitizeStyle(value) { const style = document.createElement("span").style; style.cssText = value; const allowed = new Map([["color", /^#[0-9a-f]{6}$/i], ["background-color", /^#[0-9a-f]{6}$/i], ["font-family", /^(Inter|Arial|Georgia|Courier New)$/], ["font-size", /^(12|14|16|18|24)px$/], ["text-align", /^(left|center|right)$/], ["margin-left", /^(0|24|48|72|96)px$/]]); const safe = []; for (const [name, pattern] of allowed) { const value = style.getPropertyValue(name).trim(); if (value && pattern.test(value)) safe.push(`${name}: ${value}`); } return safe.join("; "); }\n\nfunction sanitize(html) {
+function sanitizeStyle(value) { const style = document.createElement("span").style; style.cssText = value; const allowed = new Map([["color", /^#[0-9a-f]{6}$/i], ["background-color", /^#[0-9a-f]{6}$/i], ["font-family", /^(Inter|Arial|Georgia|Courier New)$/], ["font-size", /^(12|14|16|18|24)px$/], ["text-align", /^(left|center|right)$/], ["margin-left", /^(0|24|48|72|96)px$/]]); const safe = []; for (const [name, pattern] of allowed) { const value = style.getPropertyValue(name).trim(); if (value && pattern.test(value)) safe.push(`${name}: ${value}`); } return safe.join("; "); }
+
+function sanitize(html) {
     const documentFragment = new DOMParser().parseFromString(html || "", "text/html");
     for (const node of [...documentFragment.body.querySelectorAll("*")]) {
         if (blockedTags.has(node.tagName)) { node.remove(); continue; }
@@ -112,20 +114,55 @@ function insertTable(instance) {
     for (let row = 1; row < rows; row++) { const tr = document.createElement("tr"); for (let column = 0; column < columns; column++) { const cell = document.createElement("td"); cell.append(document.createElement("br")); tr.append(cell); } body.append(tr); }
     table.append(body); insertNode(instance, table); window.bootstrap.Modal.getInstance(modal)?.hide(); commit(instance);
 }
-function toggleList(instance, tagName) { restoreRange(instance); const range = currentRange(instance); let node = range?.commonAncestorContainer; if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement; const block = node?.closest?.("p,h1,h2,h3,figcaption,blockquote,pre,li"); if (!block) return false; const list = document.createElement(tagName); const item = document.createElement("li"); item.append(...block.childNodes); list.append(item); block.replaceWith(list); const selection = window.getSelection(); const nextRange = document.createRange(); nextRange.selectNodeContents(item); nextRange.collapse(false); selection.removeAllRanges(); selection.addRange(nextRange); saveRange(instance); return true; }\n\nfunction execute(instance, command, value) {
+function toggleList(instance, tagName) { restoreRange(instance); const range = currentRange(instance); let node = range?.commonAncestorContainer; if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement; const block = node?.closest?.("p,h1,h2,h3,figcaption,blockquote,pre,li"); if (!block) return false; const list = document.createElement(tagName); const item = document.createElement("li"); item.append(...block.childNodes); list.append(item); block.replaceWith(list); const selection = window.getSelection(); const nextRange = document.createRange(); nextRange.selectNodeContents(item); nextRange.collapse(false); selection.removeAllRanges(); selection.addRange(nextRange); saveRange(instance); return true; }
+
+function execute(instance, command, value) {
     if (instance.disabled || instance.readOnly) return;
-    instance.editor.focus(); restoreRange(instance);
+    instance.editor.focus();
+    restoreRange(instance);
     let changed = false;
-    if (command === "Link") { showModal(instance, "link"); return; } else if (command === "Image") { showModal(instance, "image"); return; } else if (command === "Table") { showModal(instance, "table"); return; } else if (command === "Fullscreen") { toggleFullscreen(instance); return; } else if (command === "Print") { printEditor(instance); return; } else if (["Bold", "Italic", "Underline", "Strikethrough"].includes(command)) changed = wrapSelection(instance, { Bold: "strong", Italic: "em", Underline: "u", Strikethrough: "s" }[command]);
-    else if (command === "BlockFormat") changed = blockFormat(instance, value || "p");\n    else if (command === "OrderedList") changed = toggleList(instance, "ol");\n    else if (command === "UnorderedList") changed = toggleList(instance, "ul");\n    else if (command === "Blockquote") changed = blockFormat(instance, "blockquote");\n    else if (command === "CodeBlock") changed = blockFormat(instance, "pre");
+
+    if (command === "Link") { showModal(instance, "link"); return; }
+    if (command === "Image") { showModal(instance, "image"); return; }
+    if (command === "Table") { showModal(instance, "table"); return; }
+    if (command === "Fullscreen") { toggleFullscreen(instance); return; }
+    if (command === "Print") { printEditor(instance); return; }
+
+    if (["Bold", "Italic", "Underline", "Strikethrough"].includes(command))
+        changed = wrapSelection(instance, { Bold: "strong", Italic: "em", Underline: "u", Strikethrough: "s" }[command]);
+    else if (command === "BlockFormat")
+        changed = blockFormat(instance, value || "p");
+    else if (command === "OrderedList")
+        changed = toggleList(instance, "ol");
+    else if (command === "UnorderedList")
+        changed = toggleList(instance, "ul");
+    else if (command === "Blockquote")
+        changed = blockFormat(instance, "blockquote");
+    else if (command === "CodeBlock")
+        changed = blockFormat(instance, "pre");
     else if (command === "HorizontalRule") { insertNode(instance, document.createElement("hr")); changed = true; }
-    else if (command === "Undo" || command === "Redo") { const next = instance.historyIndex + (command === "Undo" ? -1 : 1); if (next >= 0 && next < instance.history.length) { instance.historyIndex = next; instance.editor.innerHTML = instance.history[next]; changed = true; } }
-    else if (command === "ClearFormatting") { restoreRange(instance); const range = currentRange(instance); if (range && !range.collapsed) { const text = range.toString(); range.deleteContents(); range.insertNode(document.createTextNode(text)); changed = true; } }
-    else if (["TextColor", "HighlightColor", "FontFamily", "FontSize"].includes(command)) { changed = wrapSelection(instance, "span", { "data-bb-rte-color": value || "" }); const range = currentRange(instance); const span = range?.commonAncestorContainer?.parentElement?.closest?.("span"); if (span) { if (command === "TextColor") span.style.color = value; if (command === "HighlightColor") span.style.backgroundColor = value; if (command === "FontFamily") span.style.fontFamily = value; if (command === "FontSize") span.style.fontSize = `${value}px`; } } else if (["AlignStart", "AlignCenter", "AlignEnd", "Indent", "Outdent"].includes(command)) {
-        const range = currentRange(instance); let node = range?.commonAncestorContainer; if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement; const block = node?.closest?.("p,h1,h2,h3,figcaption,blockquote,pre,li"); if (block) { if (command.startsWith("Align")) block.style.textAlign = { AlignStart: "left", AlignCenter: "center", AlignEnd: "right" }[command]; else { const margin = Number.parseInt(block.style.marginLeft || "0", 10) || 0; block.style.marginLeft = `${Math.max(0, margin + (command === "Indent" ? 24 : -24))}px`; } changed = true; }
-        if (changed) commit(instance);
-        else if (!["Link", "Image", "Table", "Fullscreen", "Print"].includes(command)) instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", "Select content before applying this command.");
+    else if (command === "Undo" || command === "Redo") {
+        const next = instance.historyIndex + (command === "Undo" ? -1 : 1);
+        if (next >= 0 && next < instance.history.length) { instance.historyIndex = next; instance.editor.innerHTML = instance.history[next]; changed = true; }
     }
+    else if (command === "ClearFormatting") {
+        const range = currentRange(instance);
+        if (range && !range.collapsed) { const text = range.toString(); range.deleteContents(); range.insertNode(document.createTextNode(text)); changed = true; }
+    }
+    else if (["TextColor", "HighlightColor", "FontFamily", "FontSize"].includes(command)) {
+        changed = wrapSelection(instance, "span", { "data-bb-rte-color": value || "" });
+        const span = selectedElement(instance, "span");
+        if (span) { if (command === "TextColor") span.style.color = value; if (command === "HighlightColor") span.style.backgroundColor = value; if (command === "FontFamily") span.style.fontFamily = value; if (command === "FontSize") span.style.fontSize = `${value}px`; }
+    }
+    else if (["AlignStart", "AlignCenter", "AlignEnd", "Indent", "Outdent"].includes(command)) {
+        const block = selectedElement(instance, "p,h1,h2,h3,figcaption,blockquote,pre,li");
+        if (block) { if (command.startsWith("Align")) block.style.textAlign = { AlignStart: "left", AlignCenter: "center", AlignEnd: "right" }[command]; else { const margin = Number.parseInt(block.style.marginLeft || "0", 10) || 0; block.style.marginLeft = `${Math.max(0, margin + (command === "Indent" ? 24 : -24))}px`; } changed = true; }
+    }
+
+    if (changed) commit(instance);
+    else instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", "Select content before applying this command.");
+}
+
 
     export function initialize(id, dotNetRef, debounceInterval, maxLength, readOnly, disabled) {
         dispose(id); const root = document.getElementById(id); const editor = document.getElementById(`${id}-editor`); if (!root || !editor) return;
