@@ -1,10 +1,12 @@
-﻿namespace BlazorBootstrap;
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Provides a dependency-free rich-text editing control with a grouped Bootstrap toolbar.
 /// </summary>
 public partial class RichTextEditor : BlazorBootstrapComponentBase
 {
+    #region Fields and Constants
+
     private static readonly string[] defaultAllowedImageFileTypes = { "jpg", "jpeg", "png", "gif", "webp" };
     private CancellationTokenSource uploadCancellationTokenSource = new();
     private FieldIdentifier fieldIdentifier;
@@ -12,17 +14,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private string? lastRenderedValue;
     private DotNetObjectReference<RichTextEditor>? objRef;
 
-    private string Accept => string.Join(',', NormalizedAllowedImageFileTypes.Select(fileType => $".{fileType}"));
+    #endregion
 
-    private string EditorId => $"{Id}-editor";
+    #region Methods
 
-    private string ImageInputId => $"{Id}-image-input";
-
-    private HashSet<string> NormalizedAllowedImageFileTypes =>
-        (AllowedImageFileTypes ?? defaultAllowedImageFileTypes)
-            .Select(fileType => fileType.Trim().TrimStart('.').ToLowerInvariant())
-            .Where(fileType => !string.IsNullOrWhiteSpace(fileType))
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+    #region Protected Override Methods
 
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -67,6 +63,10 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
+    #endregion
+
+    #region Public Methods
+
     /// <summary>
     /// Clears the editor content.
     /// </summary>
@@ -81,6 +81,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Description("Focuses the editable area.")]
     public Task FocusAsync() => RichTextEditorJsInterop.FocusAsync(Id!);
 
+    /// <summary>
+    /// Raises the committed editor value callback.
+    /// </summary>
+    [AddedVersion("4.0.0")]
+    [Description("Raises the committed editor value callback.")]
     [JSInvokable]
     public async Task OnEditorValueChangedAsync(string html)
     {
@@ -93,8 +98,19 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             EditContext?.NotifyFieldChanged(fieldIdentifier);
     }
 
+    /// <summary>
+    /// Raises the transient editor status callback.
+    /// </summary>
+    [AddedVersion("4.0.0")]
+    [Description("Raises the transient editor status callback.")]
     [JSInvokable]
     public Task OnEditorStatusChangedAsync(string status) => StatusChanged.InvokeAsync(status);
+
+    #endregion
+
+    #region Private Methods
+
+    private static int CountWords(string text) => string.IsNullOrWhiteSpace(text) ? 0 : text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
 
     private async Task OnImageFileChangedAsync(InputFileChangeEventArgs e)
     {
@@ -152,9 +168,25 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         }
     }
 
-    private static int CountWords(string text) => string.IsNullOrWhiteSpace(text) ? 0 : text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
-
     private static string ToPlainText(string html) => System.Net.WebUtility.HtmlDecode(System.Text.RegularExpressions.Regex.Replace(html, "<[^>]+>", " ")).Trim();
+
+    #endregion
+
+    #endregion
+
+    #region Properties, Indexers
+
+    private string Accept => string.Join(',', NormalizedAllowedImageFileTypes.Select(fileType => $".{fileType}"));
+
+    private string EditorId => $"{Id}-editor";
+
+    private string ImageInputId => $"{Id}-image-input";
+
+    private HashSet<string> NormalizedAllowedImageFileTypes =>
+        (AllowedImageFileTypes ?? defaultAllowedImageFileTypes)
+            .Select(fileType => fileType.Trim().TrimStart('.').ToLowerInvariant())
+            .Where(fileType => !string.IsNullOrWhiteSpace(fileType))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Gets or sets the accessible label for the editor.</summary>
     [AddedVersion("4.0.0")]
@@ -185,6 +217,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     /// <summary>Gets or sets the image upload handler.</summary>
     [AddedVersion("4.0.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the image upload handler.")]
     [Parameter]
     public RichTextEditorImageUploadDelegate? ImageUploadHandler { get; set; }
@@ -237,10 +270,14 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     public EventCallback<string> StatusChanged { get; set; }
 
     /// <summary>Gets or sets the expression that identifies the bound value.</summary>
+    [AddedVersion("4.0.0")]
+    [Description("Gets or sets the expression that identifies the bound value.")]
     [Parameter]
     public Expression<Func<string>>? ValueExpression { get; set; }
 
     [CascadingParameter] private EditContext? EditContext { get; set; }
 
     [Inject] private RichTextEditorJsInterop RichTextEditorJsInterop { get; set; } = default!;
+
+    #endregion
 }
