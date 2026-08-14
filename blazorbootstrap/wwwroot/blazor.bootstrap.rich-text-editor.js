@@ -48,31 +48,76 @@ function commit(instance, status = "") { const html = sanitize(instance.editor.i
 function insertNode(instance, node) { restoreRange(instance); const range = currentRange(instance) || document.createRange(); if (!range.startContainer.isConnected) range.selectNodeContents(instance.editor); range.collapse(false); range.deleteContents(); range.insertNode(node); range.setStartAfter(node); range.collapse(true); const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range); saveRange(instance); }
 function wrapSelection(instance, tagName, attributes = {}) { restoreRange(instance); const range = currentRange(instance); if (!range || range.collapsed) return false; const element = document.createElement(tagName); Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value)); try { range.surroundContents(element); } catch { const fragment = range.extractContents(); element.append(fragment); range.insertNode(element); } saveRange(instance); return true; }
 function blockFormat(instance, tagName) { restoreRange(instance); const range = currentRange(instance); let node = range?.commonAncestorContainer; if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement; const block = node?.closest("p,h1,h2,h3,figcaption,blockquote,pre,li") || null; if (!block) return false; const replacement = document.createElement(tagName); replacement.append(...block.childNodes); block.replaceWith(replacement); const selection = window.getSelection(); const nextRange = document.createRange(); nextRange.selectNodeContents(replacement); nextRange.collapse(false); selection.removeAllRanges(); selection.addRange(nextRange); saveRange(instance); return true; }
+function showModal(instance, name) {
+    saveRange(instance);
+    const element = document.getElementById(`${instance.id}-${name}-modal`);
+    if (!element || !window.bootstrap?.Modal) { instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", "This dialog is unavailable."); return; }
+    window.bootstrap.Modal.getOrCreateInstance(element).show();
+}
+function insertLink(instance) {
+    const modal = document.getElementById(`${instance.id}-link-modal`);
+    const url = modal?.querySelector("[data-bb-rte-link-url]")?.value?.trim();
+    const text = modal?.querySelector("[data-bb-rte-link-text]")?.value?.trim();
+    const newTab = modal?.querySelector("[data-bb-rte-link-new-tab]")?.checked;
+    if (!isSafeUrl(url)) { instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", "Enter an HTTPS, relative, mailto, or telephone URL."); return; }
+    const link = document.createElement("a"); link.href = url; link.textContent = text || currentRange(instance)?.toString() || url;
+    if (newTab) { link.target = "_blank"; link.rel = "noopener noreferrer"; }
+    insertNode(instance, link); window.bootstrap.Modal.getInstance(modal)?.hide(); commit(instance);
+}
+function insertImageFromModal(instance) {
+    const modal = document.getElementById(`${instance.id}-image-modal`);
+    const url = modal?.querySelector("[data-bb-rte-image-url]")?.value?.trim();
+    const alt = modal?.querySelector("[data-bb-rte-image-alt]")?.value?.trim();
+    if (!isSafeUrl(url, true) || !alt) { instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", "Provide an HTTPS image URL and alternative text."); return; }
+    const image = document.createElement("img"); image.src = url; image.alt = alt; image.className = "img-fluid";
+    insertNode(instance, image); window.bootstrap.Modal.getInstance(modal)?.hide(); commit(instance);
+}
+function toggleFullscreen(instance) {
+    if (document.fullscreenElement === instance.root) document.exitFullscreen?.();
+    else instance.root.requestFullscreen?.().catch(() => instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", "Fullscreen is unavailable."));
+}
+function printEditor(instance) {
+    const previousTitle = document.title; document.title = instance.root.getAttribute("aria-label") || "Rich text document";
+    window.addEventListener("afterprint", () => { document.title = previousTitle; }, { once: true }); window.print();
+}
+function insertTable(instance) {
+    const modal = document.getElementById(`${instance.id}-table-modal`);
+    const rows = Number(modal?.querySelector("[data-bb-rte-table-rows]")?.value);
+    const columns = Number(modal?.querySelector("[data-bb-rte-table-columns]")?.value);
+    if (!Number.isInteger(rows) || !Number.isInteger(columns) || rows < 1 || rows > 20 || columns < 1 || columns > 10) { instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", "Choose between 1–20 rows and 1–10 columns."); return; }
+    const table = document.createElement("table"); table.className = "table table-bordered";
+    const thead = document.createElement("thead"); const header = document.createElement("tr");
+    for (let column = 0; column < columns; column++) { const cell = document.createElement("th"); cell.scope = "col"; cell.append(document.createElement("br")); header.append(cell); }
+    thead.append(header); table.append(thead); const body = document.createElement("tbody");
+    for (let row = 1; row < rows; row++) { const tr = document.createElement("tr"); for (let column = 0; column < columns; column++) { const cell = document.createElement("td"); cell.append(document.createElement("br")); tr.append(cell); } body.append(tr); }
+    table.append(body); insertNode(instance, table); window.bootstrap.Modal.getInstance(modal)?.hide(); commit(instance);
+}
 function execute(instance, command, value) {
     if (instance.disabled || instance.readOnly) return;
     instance.editor.focus(); restoreRange(instance);
     let changed = false;
-    if (["Bold", "Italic", "Underline", "Strikethrough"].includes(command)) changed = wrapSelection(instance, { Bold: "strong", Italic: "em", Underline: "u", Strikethrough: "s" }[command]);
+    if (command === "Link") { showModal(instance, "link"); return; } else if (command === "Image") { showModal(instance, "image"); return; } else if (command === "Table") { showModal(instance, "table"); return; } else if (command === "Fullscreen") { toggleFullscreen(instance); return; } else if (command === "Print") { printEditor(instance); return; } else if (["Bold", "Italic", "Underline", "Strikethrough"].includes(command)) changed = wrapSelection(instance, { Bold: "strong", Italic: "em", Underline: "u", Strikethrough: "s" }[command]);
     else if (command === "BlockFormat") changed = blockFormat(instance, value || "p");
     else if (command === "HorizontalRule") { insertNode(instance, document.createElement("hr")); changed = true; }
     else if (command === "Undo" || command === "Redo") { const next = instance.historyIndex + (command === "Undo" ? -1 : 1); if (next >= 0 && next < instance.history.length) { instance.historyIndex = next; instance.editor.innerHTML = instance.history[next]; changed = true; } }
     else if (command === "ClearFormatting") { restoreRange(instance); const range = currentRange(instance); if (range && !range.collapsed) { const text = range.toString(); range.deleteContents(); range.insertNode(document.createTextNode(text)); changed = true; } }
-    else if (["TextColor", "HighlightColor", "FontFamily", "FontSize"].includes(command)) { changed = wrapSelection(instance, "span", { "data-bb-rte-color": value || "" }); const range = currentRange(instance); const span = range?.commonAncestorContainer?.parentElement?.closest?.("span"); if (span) { if (command === "TextColor") span.style.color = value; if (command === "HighlightColor") span.style.backgroundColor = value; if (command === "FontFamily") span.style.fontFamily = value; if (command === "FontSize") span.style.fontSize = `${value}px`; } } else if (["AlignStart", "AlignCenter", "AlignEnd", "Indent", "Outdent"].includes(command)) { const range = currentRange(instance); let node = range?.commonAncestorContainer; if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement; const block = node?.closest?.("p,h1,h2,h3,figcaption,blockquote,pre,li"); if (block) { if (command.startsWith("Align")) block.style.textAlign = { AlignStart: "left", AlignCenter: "center", AlignEnd: "right" }[command]; else { const margin = Number.parseInt(block.style.marginLeft || "0", 10) || 0; block.style.marginLeft = `${Math.max(0, margin + (command === "Indent" ? 24 : -24))}px`; } changed = true; }
-    if (changed) commit(instance);
-    else if (!["Link", "Image", "Table", "Fullscreen", "Print"].includes(command)) instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", "Select content before applying this command.");
-}
+    else if (["TextColor", "HighlightColor", "FontFamily", "FontSize"].includes(command)) { changed = wrapSelection(instance, "span", { "data-bb-rte-color": value || "" }); const range = currentRange(instance); const span = range?.commonAncestorContainer?.parentElement?.closest?.("span"); if (span) { if (command === "TextColor") span.style.color = value; if (command === "HighlightColor") span.style.backgroundColor = value; if (command === "FontFamily") span.style.fontFamily = value; if (command === "FontSize") span.style.fontSize = `${value}px`; } } else if (["AlignStart", "AlignCenter", "AlignEnd", "Indent", "Outdent"].includes(command)) {
+        const range = currentRange(instance); let node = range?.commonAncestorContainer; if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement; const block = node?.closest?.("p,h1,h2,h3,figcaption,blockquote,pre,li"); if (block) { if (command.startsWith("Align")) block.style.textAlign = { AlignStart: "left", AlignCenter: "center", AlignEnd: "right" }[command]; else { const margin = Number.parseInt(block.style.marginLeft || "0", 10) || 0; block.style.marginLeft = `${Math.max(0, margin + (command === "Indent" ? 24 : -24))}px`; } changed = true; }
+        if (changed) commit(instance);
+        else if (!["Link", "Image", "Table", "Fullscreen", "Print"].includes(command)) instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", "Select content before applying this command.");
+    }
 
-export function initialize(id, dotNetRef, debounceInterval, maxLength, readOnly, disabled) {
-    dispose(id); const root = document.getElementById(id); const editor = document.getElementById(`${id}-editor`); if (!root || !editor) return;
-    const instance = { id, root, editor, dotNetRef, debounceInterval: Math.max(0, debounceInterval || 300), maxLength, readOnly, disabled, range: null, timer: 0, history: [], historyIndex: -1 };
-    instances.set(id, instance); let stored = null; try { stored = sessionStorage.getItem(draftKey); } catch { } editor.innerHTML = sanitize(stored || editor.innerHTML); pushHistory(instance); updateFooter(instance);
-    editor.addEventListener("input", () => { if (instance.maxLength && editor.innerText.length > instance.maxLength) editor.innerText = editor.innerText.slice(0, instance.maxLength); saveRange(instance); clearTimeout(instance.timer); instance.timer = setTimeout(() => commit(instance), instance.debounceInterval); });
-    ["keyup", "mouseup", "focusout"].forEach(eventName => editor.addEventListener(eventName, () => saveRange(instance)));
-    editor.addEventListener("paste", event => { event.preventDefault(); const text = event.clipboardData.getData("text/plain"); insertNode(instance, document.createTextNode(text)); commit(instance); });
-    root.addEventListener("click", event => { const button = event.target.closest("[data-bb-rte-command]"); if (!button) return; saveRange(instance); execute(instance, button.dataset.bbRteCommand, button.dataset.bbRteValue); });
-}
-export function clear(id) { const instance = instances.get(id); if (!instance) return; instance.editor.innerHTML = ""; commit(instance); }
-export function dispose(id) { const instance = instances.get(id); if (instance) clearTimeout(instance.timer); instances.delete(id); }
-export function focus(id) { instances.get(id)?.editor.focus(); }
-export function insertImage(id, url, altText) { const instance = instances.get(id); if (!instance || !isSafeUrl(url, true)) return; const image = document.createElement("img"); image.src = url; image.alt = altText || ""; image.className = "img-fluid"; insertNode(instance, image); commit(instance); }
-export function setValue(id, value) { const instance = instances.get(id); if (!instance) return; instance.editor.innerHTML = sanitize(value); pushHistory(instance); updateFooter(instance); }
+    export function initialize(id, dotNetRef, debounceInterval, maxLength, readOnly, disabled) {
+        dispose(id); const root = document.getElementById(id); const editor = document.getElementById(`${id}-editor`); if (!root || !editor) return;
+        const instance = { id, root, editor, dotNetRef, debounceInterval: Math.max(0, debounceInterval || 300), maxLength, readOnly, disabled, range: null, timer: 0, history: [], historyIndex: -1 };
+        instances.set(id, instance); let stored = null; try { stored = sessionStorage.getItem(draftKey); } catch { } editor.innerHTML = sanitize(stored || editor.innerHTML); pushHistory(instance); updateFooter(instance);
+        editor.addEventListener("input", () => { if (instance.maxLength && editor.innerText.length > instance.maxLength) editor.innerText = editor.innerText.slice(0, instance.maxLength); saveRange(instance); clearTimeout(instance.timer); instance.timer = setTimeout(() => commit(instance), instance.debounceInterval); });
+        ["keyup", "mouseup", "focusout"].forEach(eventName => editor.addEventListener(eventName, () => saveRange(instance)));
+        editor.addEventListener("paste", event => { event.preventDefault(); const text = event.clipboardData.getData("text/plain"); insertNode(instance, document.createTextNode(text)); commit(instance); });
+        root.addEventListener("click", event => { const button = event.target.closest("[data-bb-rte-command]"); if (button) { saveRange(instance); execute(instance, button.dataset.bbRteCommand, button.dataset.bbRteValue); return; } if (event.target.closest("[data-bb-rte-save-link]")) insertLink(instance); if (event.target.closest("[data-bb-rte-save-image]")) insertImageFromModal(instance); if (event.target.closest("[data-bb-rte-save-table]")) insertTable(instance); });
+    }
+    export function clear(id) { const instance = instances.get(id); if (!instance) return; instance.editor.innerHTML = ""; commit(instance); }
+    export function dispose(id) { const instance = instances.get(id); if (instance) clearTimeout(instance.timer); instances.delete(id); }
+    export function focus(id) { instances.get(id)?.editor.focus(); }
+    export function insertImage(id, url, altText) { const instance = instances.get(id); if (!instance || !isSafeUrl(url, true)) return; const image = document.createElement("img"); image.src = url; image.alt = altText || ""; image.className = "img-fluid"; insertNode(instance, image); commit(instance); }
+    export function setValue(id, value) { const instance = instances.get(id); if (!instance) return; instance.editor.innerHTML = sanitize(value); pushHistory(instance); updateFooter(instance); }
