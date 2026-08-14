@@ -14,7 +14,7 @@ function isSafeUrl(value, image = false) {
     } catch { return false; }
 }
 
-function sanitize(html) {
+function sanitizeStyle(value) { const style = document.createElement("span").style; style.cssText = value; const allowed = new Map([["color", /^#[0-9a-f]{6}$/i], ["background-color", /^#[0-9a-f]{6}$/i], ["font-family", /^(Inter|Arial|Georgia|Courier New)$/], ["font-size", /^(12|14|16|18|24)px$/], ["text-align", /^(left|center|right)$/], ["margin-left", /^(0|24|48|72|96)px$/]]); const safe = []; for (const [name, pattern] of allowed) { const value = style.getPropertyValue(name).trim(); if (value && pattern.test(value)) safe.push(`${name}: ${value}`); } return safe.join("; "); }\n\nfunction sanitize(html) {
     const documentFragment = new DOMParser().parseFromString(html || "", "text/html");
     for (const node of [...documentFragment.body.querySelectorAll("*")]) {
         if (blockedTags.has(node.tagName)) { node.remove(); continue; }
@@ -44,10 +44,30 @@ function restoreRange(instance) { if (!instance.range) return false; const selec
 function textMetrics(instance) { const text = instance.editor.innerText.trim(); return { text, characters: text.length, words: text ? text.split(/\s+/).length : 0 }; }
 function updateFooter(instance) { const metrics = textMetrics(instance); instance.root.querySelector("[data-bb-rte-character-count]").textContent = `${metrics.characters} characters`; instance.root.querySelector("[data-bb-rte-word-count]").textContent = `${metrics.words} words`; const range = currentRange(instance); let node = range?.commonAncestorContainer; if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement; const block = node?.closest?.("p,h1,h2,h3,figcaption,blockquote,pre,li"); const context = block?.tagName === "P" || !block ? "Paragraph" : block.tagName.replace("H", "Heading "); instance.root.querySelector("[data-bb-rte-context]").textContent = context; instance.root.querySelector("[data-bb-rte-alignment-context]").textContent = block?.style.textAlign ? `${block.style.textAlign[0].toUpperCase()}${block.style.textAlign.slice(1)} aligned` : "Left aligned"; }
 function pushHistory(instance) { const html = sanitize(instance.editor.innerHTML); if (instance.history[instance.historyIndex] === html) return; instance.history.splice(instance.historyIndex + 1); instance.history.push(html); if (instance.history.length > 100) instance.history.shift(); instance.historyIndex = instance.history.length - 1; }
-function commit(instance, status = "") { const html = sanitize(instance.editor.innerHTML); if (instance.editor.innerHTML !== html) instance.editor.innerHTML = html; pushHistory(instance); updateFooter(instance); try { sessionStorage.setItem(draftKey, html); } catch { } instance.dotNetRef.invokeMethodAsync("OnEditorValueChangedAsync", html); if (status) instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", status); }
+function commit(instance, status = "") { normalizeTables(instance); const html = sanitize(instance.editor.innerHTML); if (instance.editor.innerHTML !== html) instance.editor.innerHTML = html; pushHistory(instance); updateFooter(instance); try { sessionStorage.setItem(draftKey, html); } catch { } instance.dotNetRef.invokeMethodAsync("OnEditorValueChangedAsync", html); if (status) instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", status); }
 function insertNode(instance, node) { restoreRange(instance); const range = currentRange(instance) || document.createRange(); if (!range.startContainer.isConnected) range.selectNodeContents(instance.editor); range.collapse(false); range.deleteContents(); range.insertNode(node); range.setStartAfter(node); range.collapse(true); const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range); saveRange(instance); }
 function wrapSelection(instance, tagName, attributes = {}) { restoreRange(instance); const range = currentRange(instance); if (!range || range.collapsed) return false; const element = document.createElement(tagName); Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value)); try { range.surroundContents(element); } catch { const fragment = range.extractContents(); element.append(fragment); range.insertNode(element); } saveRange(instance); return true; }
 function blockFormat(instance, tagName) { restoreRange(instance); const range = currentRange(instance); let node = range?.commonAncestorContainer; if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement; const block = node?.closest("p,h1,h2,h3,figcaption,blockquote,pre,li") || null; if (!block) return false; const replacement = document.createElement(tagName); replacement.append(...block.childNodes); block.replaceWith(replacement); const selection = window.getSelection(); const nextRange = document.createRange(); nextRange.selectNodeContents(replacement); nextRange.collapse(false); selection.removeAllRanges(); selection.addRange(nextRange); saveRange(instance); return true; }
+function selectedElement(instance, selector) {
+    const range = currentRange(instance); let node = range?.commonAncestorContainer;
+    if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement;
+    return node?.closest?.(selector) || null;
+}
+function normalizeTables(instance) {
+    for (const table of instance.editor.querySelectorAll("table")) {
+        table.classList.add("table", "table-bordered");
+        let rows = [...table.querySelectorAll(":scope > tr, :scope > thead > tr, :scope > tbody > tr")];
+        if (!rows.length) continue;
+        let thead = table.querySelector(":scope > thead");
+        let tbody = table.querySelector(":scope > tbody");
+        if (!thead) { thead = document.createElement("thead"); table.prepend(thead); }
+        if (!tbody) { tbody = document.createElement("tbody"); table.append(tbody); }
+        const header = rows.shift();
+        for (const cell of [...header.children]) { const th = document.createElement("th"); th.scope = "col"; th.append(...cell.childNodes); cell.replaceWith(th); }
+        thead.replaceChildren(header);
+        for (const row of rows) { for (const cell of [...row.children]) { const td = document.createElement("td"); td.append(...cell.childNodes); cell.replaceWith(td); } tbody.append(row); }
+    }
+}
 function showModal(instance, name) {
     saveRange(instance);
     const element = document.getElementById(`${instance.id}-${name}-modal`);
@@ -60,7 +80,7 @@ function insertLink(instance) {
     const text = modal?.querySelector("[data-bb-rte-link-text]")?.value?.trim();
     const newTab = modal?.querySelector("[data-bb-rte-link-new-tab]")?.checked;
     if (!isSafeUrl(url)) { instance.dotNetRef.invokeMethodAsync("OnEditorStatusChangedAsync", "Enter an HTTPS, relative, mailto, or telephone URL."); return; }
-    const link = document.createElement("a"); link.href = url; link.textContent = text || currentRange(instance)?.toString() || url;
+    const link = instance.editingLink || document.createElement("a"); link.href = url; link.textContent = text || currentRange(instance)?.toString() || url;
     if (newTab) { link.target = "_blank"; link.rel = "noopener noreferrer"; }
     insertNode(instance, link); window.bootstrap.Modal.getInstance(modal)?.hide(); commit(instance);
 }
@@ -92,12 +112,12 @@ function insertTable(instance) {
     for (let row = 1; row < rows; row++) { const tr = document.createElement("tr"); for (let column = 0; column < columns; column++) { const cell = document.createElement("td"); cell.append(document.createElement("br")); tr.append(cell); } body.append(tr); }
     table.append(body); insertNode(instance, table); window.bootstrap.Modal.getInstance(modal)?.hide(); commit(instance);
 }
-function execute(instance, command, value) {
+function toggleList(instance, tagName) { restoreRange(instance); const range = currentRange(instance); let node = range?.commonAncestorContainer; if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement; const block = node?.closest?.("p,h1,h2,h3,figcaption,blockquote,pre,li"); if (!block) return false; const list = document.createElement(tagName); const item = document.createElement("li"); item.append(...block.childNodes); list.append(item); block.replaceWith(list); const selection = window.getSelection(); const nextRange = document.createRange(); nextRange.selectNodeContents(item); nextRange.collapse(false); selection.removeAllRanges(); selection.addRange(nextRange); saveRange(instance); return true; }\n\nfunction execute(instance, command, value) {
     if (instance.disabled || instance.readOnly) return;
     instance.editor.focus(); restoreRange(instance);
     let changed = false;
     if (command === "Link") { showModal(instance, "link"); return; } else if (command === "Image") { showModal(instance, "image"); return; } else if (command === "Table") { showModal(instance, "table"); return; } else if (command === "Fullscreen") { toggleFullscreen(instance); return; } else if (command === "Print") { printEditor(instance); return; } else if (["Bold", "Italic", "Underline", "Strikethrough"].includes(command)) changed = wrapSelection(instance, { Bold: "strong", Italic: "em", Underline: "u", Strikethrough: "s" }[command]);
-    else if (command === "BlockFormat") changed = blockFormat(instance, value || "p");
+    else if (command === "BlockFormat") changed = blockFormat(instance, value || "p");\n    else if (command === "OrderedList") changed = toggleList(instance, "ol");\n    else if (command === "UnorderedList") changed = toggleList(instance, "ul");\n    else if (command === "Blockquote") changed = blockFormat(instance, "blockquote");\n    else if (command === "CodeBlock") changed = blockFormat(instance, "pre");
     else if (command === "HorizontalRule") { insertNode(instance, document.createElement("hr")); changed = true; }
     else if (command === "Undo" || command === "Redo") { const next = instance.historyIndex + (command === "Undo" ? -1 : 1); if (next >= 0 && next < instance.history.length) { instance.historyIndex = next; instance.editor.innerHTML = instance.history[next]; changed = true; } }
     else if (command === "ClearFormatting") { restoreRange(instance); const range = currentRange(instance); if (range && !range.collapsed) { const text = range.toString(); range.deleteContents(); range.insertNode(document.createTextNode(text)); changed = true; } }

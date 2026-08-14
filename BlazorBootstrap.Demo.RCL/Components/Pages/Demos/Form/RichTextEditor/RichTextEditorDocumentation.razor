@@ -3,35 +3,41 @@
 
 <DemosPageHeadSection PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" PageTitle="Blazor RichTextEditor" PageDescription="A dependency-free rich text editor with a grouped Bootstrap toolbar." MetaTitle="Blazor RichTextEditor Component" MetaDescription="Rich text editing with safe HTML output." />
 
-<Section Size="HeadingSize.H2" Name="All toolbar commands" PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" Link="all-toolbar-commands">
-    <p>The default ribbon exposes every supported History, Text, Paragraph, Color, and Insert command. Select content before using a formatting command.</p>
-    <RichTextEditor @ref="editor" @bind-Value="value" ImageUploadHandler="UploadImageAsync" Placeholder="Write formatted content" AriaLabel="Complete editor demo" />
+<Section Size="HeadingSize.H2" Name="Advanced editor" PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" Link="advanced-editor">
+    <p>The default toolbar supports formatted document authoring. Drafts use this browser tab's session storage only.</p>
+    <RichTextEditor @ref="editor" Value="@value" ValueChanged="OnDocumentChanged" StatusChanged="OnStatusChanged" ImageUploadHandler="UploadImageAsync" Placeholder="Write formatted content" AriaLabel="Complete editor demo" />
     <pre class="mt-3 p-3 border bg-body-tertiary"><code>@value</code></pre>
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Events and public methods" PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" Link="events-and-public-methods">
-    <p><code>ValueChanged</code> is raised after the configured debounce period. The buttons exercise <code>FocusAsync()</code> and <code>ClearAsync()</code>.</p>
-    <RichTextEditor @ref="eventEditor" Value="@eventValue" ValueChanged="OnValueChanged" DebounceInterval="600" ToolbarItems="@restrictedToolbarItems" Placeholder="Type to raise ValueChanged" />
+<Section Size="HeadingSize.H2" Name="Events and methods" PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" Link="events-and-methods">
+    <p><code>ValueChanged</code> receives sanitized HTML, plain text, and counts after a content commit. <code>StatusChanged</code> is for transient feedback.</p>
+    <RichTextEditor @ref="eventEditor" Value="@eventValue" ValueChanged="OnValueChanged" StatusChanged="OnStatusChanged" DebounceInterval="600" Placeholder="Type to raise ValueChanged" />
     <Button Color="ButtonColor.Primary" Class="me-2" @onclick="FocusAsync">Focus</Button>
     <Button Color="ButtonColor.Secondary" @onclick="ClearAsync">Clear</Button>
     <div class="mt-2">ValueChanged calls: @valueChangedCount</div>
+    @if (!string.IsNullOrWhiteSpace(status))
+    {
+        <div class="mt-2" role="status">@status</div>
+    }
 </Section>
 
 <Section Size="HeadingSize.H2" Name="Security and images" PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" Link="security-and-images">
-    <p>The editor removes scripts, event attributes, inline styles, unsafe URLs, data URLs, and unsupported tags from pasted or supplied HTML. Server-side sanitization is still required before storing or rendering rich HTML. Use normal Razor encoding when the value must be displayed as plain text.</p>
-    <p>Image URL insertion accepts HTTPS only. Upload callbacks must validate, authorize, scan, and store the file, then return a trusted HTTPS URL; this demo intentionally cancels uploads.</p>
+    <p>The browser module sanitizes untrusted rich HTML before rendering and before callbacks. Validate uploads and sanitize again on the server before persistence or markup rendering.</p>
+    <p>Image URL insertion accepts HTTPS only. Upload callbacks must validate, authorize, scan, and store files before returning a trusted HTTPS URL.</p>
 </Section>
 
 @code {
     private RichTextEditor? editor;
     private RichTextEditor? eventEditor;
+    private string status = string.Empty;
     private string value = "<p>Select this text and use the ribbon toolbar.</p>";
     private string eventValue = string.Empty;
     private int valueChangedCount;
-    private readonly RichTextEditorToolbarItem[] restrictedToolbarItems = { RichTextEditorToolbarItem.Bold, RichTextEditorToolbarItem.Italic, RichTextEditorToolbarItem.Underline, RichTextEditorToolbarItem.Undo, RichTextEditorToolbarItem.Redo };
 
     private Task ClearAsync() => eventEditor?.ClearAsync() ?? Task.CompletedTask;
     private Task FocusAsync() => eventEditor?.FocusAsync() ?? Task.CompletedTask;
-    private void OnValueChanged(string html) { eventValue = html; valueChangedCount++; }
+    private void OnDocumentChanged(RichTextEditorChange change) => value = change.Html;
+    private void OnStatusChanged(string message) => status = message;
+    private void OnValueChanged(RichTextEditorChange change) { eventValue = change.Html; valueChangedCount++; }
     private Task<RichTextEditorImageUploadResult?> UploadImageAsync(RichTextEditorImageUploadRequest request) => Task.FromResult<RichTextEditorImageUploadResult?>(null);
 }

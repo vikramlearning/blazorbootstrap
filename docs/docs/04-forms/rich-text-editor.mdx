@@ -1,24 +1,35 @@
 ---
 title: Blazor RichTextEditor Component
-description: A dependency-free rich text editor with Bootstrap ribbon groups and safe client-side HTML filtering.
+description: A dependency-free rich-text editor with Bootstrap toolbar groups and safe client-side HTML filtering.
 sidebar_label: RichTextEditor
 sidebar_position: 13
 ---
 
 # Blazor RichTextEditor
 
-`RichTextEditor` provides grouped History, Text, Paragraph, Color, and Insert controls using the library's Bootstrap Icons. It has no third-party package, script, CDN, or copied editor dependency.
+`RichTextEditor` provides document, style, color, alignment, list, link, image, table, block, fullscreen, and print controls without a third-party editor dependency.
 
 ```cshtml
-<RichTextEditor @bind-Value="@content"
-                ImageUploadHandler="UploadImageAsync"
+<RichTextEditor Value="@content"
+                ValueChanged="OnContentChanged"
+                StatusChanged="OnEditorStatus"
                 Placeholder="Write the article" />
+
+@code {
+    private string content = "<p>Draft</p>";
+    private void OnContentChanged(RichTextEditorChange change) => content = change.Html;
+    private void OnEditorStatus(string status) { }
+}
 ```
 
-## Security
+`ValueChanged` receives `RichTextEditorChange`, containing sanitized HTML, plain text, character count, and word count. `StatusChanged` is reserved for transient activity and error feedback.
 
-The component removes unsafe elements, event handlers, inline styles, unsupported classes, and unsafe URL schemes. It only permits HTTPS image URLs and HTTPS, relative, or fragment links. This browser-side filtering is defense in depth: validate uploaded files and sanitize HTML again on the server before persistence or markup rendering. Razor encoding displays the HTML as text, not formatted content.
+## Security and drafts
+
+The browser module removes unsafe elements, event handlers, unsupported attributes, and unsafe URL schemes before content renders or is emitted. HTTPS image URLs are required. Browser filtering is defense in depth: validate uploads and sanitize HTML again on the server before persistence or markup rendering.
+
+The demo stores a draft under `advanced-rich-text-editor-document` in `sessionStorage`; it does not use local storage.
 
 ## Toolbar and API coverage
 
-The demo covers every toolbar command, `ValueChanged`, two-way binding, `FocusAsync()`, `ClearAsync()`, restricted `ToolbarItems`, debounce, upload cancellation, and safe-image behavior. See [the demo](https://demos.blazorbootstrap.com/rich-text-editor).
+See [the demo](https://demos.blazorbootstrap.com/rich-text-editor) for selection, history, formatting, links, tables, images, fullscreen, print, callbacks, and session-only draft behavior.
