@@ -250,6 +250,12 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Parameter]
     public bool ReadOnly { get; set; }
 
+    [AddedVersion("4.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the toolbar items.")]
+    [Parameter]
+    public RichTextEditorToolbarItem[]? ToolbarItems { get; set; }
+
     /// <summary>Gets or sets the HTML value.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]

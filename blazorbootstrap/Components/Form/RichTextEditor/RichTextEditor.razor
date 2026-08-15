@@ -6,9 +6,9 @@
         <div class="border-bottom bg-body-tertiary p-2" role="toolbar" aria-label="Rich text formatting toolbar">
             <div class="d-flex flex-wrap align-items-center gap-1">
                 <div class="btn-group btn-group-sm" role="group" aria-label="History">
-                    <button type="button" class="btn btn-outline-secondary" data-editor-action="print" aria-label="Print" title="Print"><i class="bi bi-printer" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="undo" aria-label="Undo" title="Undo"><i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="redo" aria-label="Redo" title="Redo"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i></button>
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Print" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Undo" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Redo" Disabled="@Disabled" />
                 </div>
 
                 <div class="dropdown">

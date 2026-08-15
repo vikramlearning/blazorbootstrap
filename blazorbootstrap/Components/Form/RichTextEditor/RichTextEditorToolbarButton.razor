@@ -2,52 +2,11 @@
 @inherits BlazorBootstrapComponentBase
 
 <button type="button"
-        class="btn btn-sm btn-light m-1"
-        data-bb-rte-command="@Item"
+        class="btn btn-outline-secondary"
+        data-editor-action="print"
         disabled="@Disabled"
         aria-label="@Label"
         title="@Label"
         data-bs-toggle="tooltip">
     <Icon Name="@Icon" />
 </button>
-
-@code {
-    private IconName Icon => Item switch
-    {
-        RichTextEditorToolbarItem.Undo => IconName.ArrowCounterclockwise,
-        RichTextEditorToolbarItem.Redo => IconName.ArrowClockwise,
-        RichTextEditorToolbarItem.Bold => IconName.TypeBold,
-        RichTextEditorToolbarItem.Italic => IconName.TypeItalic,
-        RichTextEditorToolbarItem.Underline => IconName.TypeUnderline,
-        RichTextEditorToolbarItem.Strikethrough => IconName.TypeStrikethrough,
-        RichTextEditorToolbarItem.ClearFormatting => IconName.Eraser,
-        RichTextEditorToolbarItem.AlignStart => IconName.TextLeft,
-        RichTextEditorToolbarItem.AlignCenter => IconName.TextCenter,
-        RichTextEditorToolbarItem.AlignEnd => IconName.TextRight,
-        RichTextEditorToolbarItem.OrderedList => IconName.ListOl,
-        RichTextEditorToolbarItem.UnorderedList => IconName.ListUl,
-        RichTextEditorToolbarItem.Blockquote => IconName.Quote,
-        RichTextEditorToolbarItem.CodeBlock => IconName.Code,
-        RichTextEditorToolbarItem.Link => IconName.Link45Deg,
-        RichTextEditorToolbarItem.Image => IconName.Image,
-        RichTextEditorToolbarItem.UploadImage => IconName.Upload,
-        RichTextEditorToolbarItem.Table => IconName.Table,
-        _ => IconName.Type
-    };
-
-    private string Label => Item switch
-    {
-        RichTextEditorToolbarItem.AlignStart => "Align left",
-        RichTextEditorToolbarItem.AlignCenter => "Align center",
-        RichTextEditorToolbarItem.AlignEnd => "Align right",
-        RichTextEditorToolbarItem.OrderedList => "Ordered list",
-        RichTextEditorToolbarItem.UnorderedList => "Unordered list",
-        RichTextEditorToolbarItem.ClearFormatting => "Clear formatting",
-        RichTextEditorToolbarItem.CodeBlock => "Code block",
-        RichTextEditorToolbarItem.UploadImage => "Upload image",
-        _ => System.Text.RegularExpressions.Regex.Replace(Item.ToString(), "([a-z])([A-Z])", "$1 $2")
-    };
-
-    [Parameter] public bool Disabled { get; set; }
-    [Parameter, EditorRequired] public RichTextEditorToolbarItem Item { get; set; }
-}
